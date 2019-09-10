@@ -61,11 +61,12 @@ module.exports = function (ctx) {
         'QUploader',
         'QBar', 'QBanner', 'QImg',
         'QTab', 'QTabs', 'QTabPanels', 'QTabPanel', 'QExpansionItem',
-        'QFab', 'QFabAction'
+        'QFab', 'QFabAction',
+        'QPageSticky', 'QScrollArea', 'QPageScroller'
       ],
 
       directives: [
-        'Ripple'
+        'Ripple', 'ClosePopup'
       ],
 
       // Quasar plugins
@@ -74,7 +75,8 @@ module.exports = function (ctx) {
         'LoadingBar',
         'Loading',
         'AppVisibility',
-        'AppFullscreen'
+        'AppFullscreen',
+        'BottomSheet'
       ]
     },
 

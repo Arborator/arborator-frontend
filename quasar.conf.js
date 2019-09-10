@@ -17,7 +17,7 @@ module.exports = function (ctx) {
     extras: [
       // 'ionicons-v4',
       // 'mdi-v3',
-      // 'fontawesome-v5',
+      'fontawesome-v5',
       // 'eva-icons',
       // 'themify',
       // 'roboto-font-latin-ext', // this or either 'roboto-font', NEVER both!
@@ -34,18 +34,34 @@ module.exports = function (ctx) {
 
       components: [
         'QLayout',
-        'QHeader',
+        'QHeader', 'QFooter',
         'QDrawer',
         'QPageContainer',
         'QPage',
         'QToolbar',
         'QToolbarTitle',
-        'QBtn',
+        'QBtn', 'QBtnDropdown', 'QBtnGroup',
         'QIcon',
         'QList',
         'QItem',
         'QItemSection',
-        'QItemLabel'
+        'QItemLabel',
+        'QSpace',
+        'QBadge',
+        'QTooltip',
+        'QAvatar',
+        'QCard', 'QCardSection', 'QCardActions', 'QSeparator',
+        'QParallax',
+        'QInput', 'QSelect', 'QField', 'QForm', 'QRadio',
+        'QAvatar', 'QChip',
+        'QTable', 'QTr', 'QTd', 'QPopupEdit', 'QMenu', 'QToggle', 'QMarkupTable',
+        'QBreadcrumbs',
+        'QBreadcrumbsEl',
+        'QDialog',
+        'QUploader',
+        'QBar', 'QBanner', 'QImg',
+        'QTab', 'QTabs', 'QTabPanels', 'QTabPanel', 'QExpansionItem',
+        'QFab', 'QFabAction'
       ],
 
       directives: [
@@ -54,11 +70,15 @@ module.exports = function (ctx) {
 
       // Quasar plugins
       plugins: [
-        'Notify'
+        'Notify',
+        'LoadingBar',
+        'Loading',
+        'AppVisibility',
+        'AppFullscreen'
       ]
     },
 
-    supportIE: false,
+    supportIE: true,
 
     build: {
       scopeHoisting: true,
@@ -74,7 +94,14 @@ module.exports = function (ctx) {
     devServer: {
       // https: true,
       // port: 8080,
-      open: true // opens browser window automatically
+      open: true, // opens browser window automatically
+      proxy: {
+        '/home': {
+          target: '127.0.0.1:5000',
+          ws: true,
+          changeOrigin: true
+        }
+      }
     },
 
     // animations: 'all', // --- includes all animations

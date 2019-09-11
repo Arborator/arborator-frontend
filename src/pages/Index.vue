@@ -9,10 +9,17 @@
       <q-card flat>
         <q-card-section class="q-pa-md row items-start q-gutter-md">
           <q-toolbar class="bg-primary text-white shadow-2 text-center">
-            <q-toolbar-title>Projects</q-toolbar-title>
+            <q-toolbar-title>
+              Projects
+              <q-input filled bottom-slots v-model="search" label="Search Project" type="text" @keyup.enter="searchProject(search)" dark>
+                <template v-slot:append>
+                  <q-icon name="search" />
+                </template>
+              </q-input>
+            </q-toolbar-title>
           </q-toolbar>
           <q-list style="width:100%" bordered>
-            <project-card v-for="project in projects" :props="project" :key="project.id"></project-card>
+            <project-card v-for="project in visibleProjects" :props="project" :key="project.id"></project-card>
           </q-list>
         </q-card-section>
       </q-card>
@@ -26,7 +33,7 @@
       :style="hover ? 'transform: scale(0.95);' : ''"
       style="border-radius: 20px 20px 10px 10px">
         <q-card-section>
-            <img src="../statics/q.png"/> <q-badge align="top" color="positive">No login!</q-badge>
+            <img src="../statics/arborator.quick.svg" width="100em" /> <q-badge align="top" color="positive">No login!</q-badge>
             <q-item-section>
                 <q-item-label lines="1"> </q-item-label>
                 <q-item-label caption lines="2">
@@ -64,7 +71,9 @@ export default {
     return {
       lorem: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.',
       projects: [],
-      hover: false
+      visibleProjects: [],
+      hover: false,
+      search: ''
     }
   },
   mounted(){
@@ -76,16 +85,25 @@ export default {
       // .then(response => { console.log(response); this.projects = response.data})
       // .catch(error => { console.log(error); });
       this.projects = [ {id:1, description: 'super project', name: 'project', is_private: false}, 
-      {id:2, description: 'super project', name: 'project2', is_private: true}, 
-      {id:3, description: 'super project', name: 'project3', is_private: false},
-      {id:4, description: 'super project', name: 'project4', is_private: true},
-      {id:5, description: 'super project', name: 'project5', is_private: false},
+      {id:2, description: 'super project', name: 'hello naija', is_private: true}, 
+      {id:3, description: 'super project', name: 'hello bambara', is_private: false},
+      {id:4, description: 'super project', name: 'hi french', is_private: true},
+      {id:5, description: 'super project', name: 'hi oldfrench', is_private: false},
       {id:6, description: 'super project', name: 'project6', is_private: false},
-      {id:7, description: 'super project', name: 'project7', is_private: false}]
+      {id:7, description: 'super project', name: 'project7', is_private: false}];
+      this.visibleProjects = this.projects;
     },
     goTo(url){
       // window.location.href = url;
       window.open(url, '_blank');
+    },
+    searchProject(pattern) {
+      var filteredProjects =  this.projects.filter(function(project) {
+        if(project.name.includes(pattern)){
+          return project;
+        }
+      });
+      this.visibleProjects = filteredProjects;
     }
   }
 }

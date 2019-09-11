@@ -3,9 +3,8 @@
     <q-header elevated class="shadow-5 ">
       <q-toolbar>
         <q-btn flat @click="drawerLeft = !drawerLeft" round dense icon="menu" />
-        <q-img src="../statics/arboratorNano.png" style="height:20px; width:45px" />
-        <q-toolbar-title>
-          Arborator
+        <q-toolbar-title desktop-only>
+          <img  src="../statics/arborator.text.white.svg" width="130em"/>
         </q-toolbar-title>
         
         <q-space/>

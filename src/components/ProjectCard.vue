@@ -12,7 +12,7 @@
         </q-item-section>
         <q-item-section side>
             <q-icon v-show="project.is_private" name="lock" color="negative"></q-icon>
-            <q-icon v-show="!project.is_private" name="lock_open" color="positive"></q-icon>
+            <q-icon v-show="!project.is_private" name="public" color="positive"></q-icon>
         </q-item-section>
     </q-item> 
 </template>

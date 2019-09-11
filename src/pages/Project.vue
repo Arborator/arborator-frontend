@@ -37,10 +37,16 @@
 
                             <template v-slot:top="props">
                                 <q-btn-group flat >
-                                    <q-btn flat color="default" text-color="blue-grey-8" icon="create" >
-                                        <q-tooltip :delay="300" content-class="text-white bg-primary">Add new entry</q-tooltip>
+                                    <q-btn flat color="default" text-color="blue-grey-8" icon="cloud_upload" >
+                                        <q-tooltip :delay="300" content-class="text-white bg-primary">Add File</q-tooltip>
                                     </q-btn>
-                                    <q-btn v-show="table.selected.length<1" flat color="default" text-color="brown" icon="delete_forever" disabled>
+                                    <q-btn flat color="default" text-color="blue-grey-8" icon="person_add" >
+                                        <q-tooltip :delay="300" content-class="text-white bg-primary">Assign</q-tooltip>
+                                    </q-btn>
+                                    <q-btn flat  color="default" text-color="blue-grey-8" icon="cloud_download" :disabled="table.selected.length<1">
+                                        <q-tooltip :delay="300" content-class="text-white bg-primary">Export</q-tooltip>
+                                    </q-btn>
+                                    <q-btn v-show="table.selected.length<1" flat color="default" text-color="blue-grey-8" icon="delete_forever" disabled>
                                         <q-tooltip :delay="300" content-class="bg-white text-primary">Delete selected rows</q-tooltip>
                                     </q-btn>
                                     <q-btn v-show="table.selected.length!=0" :loading="table.loadingDelete" flat color="default" text-color="red" icon="delete_forever" >
@@ -68,26 +74,35 @@
                             </template>
 
                             <template v-slot:body="props">
+                                
                                 <q-tr :props="props">
                                     <q-td auto-width><q-toggle dense v-model="props.selected" /></q-td>
-                                    <q-td key="name" :props="props">{{ props.row.name }}</q-td>
+                                    <q-td key="name" :props="props"><q-btn outline color="white" text-color="black" dense
+                                    class="full-width" 
+                                    :to="'/projects/' + infos.name + '/' + props.row.name" 
+                                    icon-right="open_in_browser" no-caps>{{props.row.name}}</q-btn></q-td>
                                     <q-td key="sentences" :props="props">{{ props.row.sentences }}</q-td>
                                     <q-td key="tokens" :props="props">{{ props.row.tokens }}</q-td>
                                     <q-td key="sentenceLength" :props="props">{{ props.row.sentenceLength }}</q-td>
                                     <q-td key="annotators" :props="props">{{ props.row.annotators }}</q-td>
                                     <q-td key="validator" :props="props">{{ props.row.validators }}</q-td>
-                                    <q-td key="treesFrom" :props="props">{{ props.row.treesFrom }}</q-td>
+                                    <q-td key="treesFrom" :props="props">
+                                        <q-list dense>
+                                            <q-item v-for="source in props.row.treesFrom" :key="source" :props="source" >
+                                                <q-item-label caption>{{source}}</q-item-label>
+                                            </q-item>
+                                        </q-list>
+                                    </q-td>
                                     <q-td key="exo" :props="props">{{ props.row.exo }}</q-td>
                                 </q-tr>
+                                
                             </template>
 
                         </q-table>
                     </q-tab-panel>
 
                     <q-tab-panel name="assignments">
-                    With so much content to display at once, and often so little screen real-estate,
-                    Cards have fast become the design pattern of choice for many companies, including
-                    the likes of Google and Twitter.
+                        
                     </q-tab-panel>
                 </q-tab-panels>
                 </q-card-section>
@@ -97,6 +112,9 @@
 </template>
 
 <script>
+
+
+
 export default {
     name:'project',
     data(){
@@ -120,6 +138,9 @@ export default {
                     { name: 'text12', sentences: 80, tokens: 20, sentenceLength: 12.6, annotators: [], validator: 'Bernard Caron', treesFrom: ['parser', 'tella', 'j.D'], exo: 'percentage'}, 
                     { name: 'text13', sentences: 80, tokens: 20, sentenceLength: 12.6, annotators: [], validator: 'Bernard Caron', treesFrom: ['parser', 'tella', 'j.D'], exo: 'percentage'}, 
                     { name: 'text14', sentences: 80, tokens: 20, sentenceLength: 14.6, annotators: [], validator: 'Bernard Caron', treesFrom: ['parser', 'tella', 'j.D'], exo: 'percentage'}, 
+                ],
+                assignments: [
+                    { username: 'Jo', assignedTexts: [], modifiedTrees: 30 }
                 ]
             },
             table:{
@@ -158,6 +179,9 @@ export default {
         }
     },
     methods:{
+        goToRoute(props) {
+            this.$router.push('/projects/' + this.infos.name + '/samples')
+        },
         filterFields() {
             // to remove some fields from visiblecolumns select options
             var tempArray = this.table.fields.filter(function( obj ) {

@@ -1,7 +1,7 @@
 <template>
     <q-page>
         <div class="q-pa-md row q-gutter-md flex flex-center">
-            <q-card flat >
+            <q-card flat style="max-width: 100%">
                 <q-card-section>
                     <div class="text-h6 text-center">Project: {{infos.name}}</div>
                     <div class="text-subtitle2 text-center">by {{infos.creator}}</div>

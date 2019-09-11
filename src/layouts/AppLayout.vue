@@ -1,8 +1,8 @@
 <template>
   <q-layout view="lHr Lpr lFf">
-    <q-header elevated class="shadow-5 ">
+    <q-header  class=" bg-white">
       <q-toolbar>
-        <q-btn flat @click="drawerLeft = !drawerLeft" round dense icon="menu" />
+        <q-btn flat @click="drawerLeft = !drawerLeft" round dense icon="menu" color="primary" />
         <q-toolbar-title desktop-only >
           <q-btn flat to="/"><q-img basic alt="Arborator" src="../statics/arborator.text.white.svg" style="width:12vw"/></q-btn>
         </q-toolbar-title>
@@ -10,7 +10,7 @@
         <q-space/>
         
         <div class="q-gutter-sm row items-center no-wrap">
-          <q-btn-dropdown color="secondary" label="Log In" icon="account_circle">
+          <q-btn-dropdown color="secondary" outline label="Log In" icon="account_circle">
             <q-list>
               <q-item clickable v-close-popup to='/login/google'>
                 <q-item-section avatar>
@@ -40,8 +40,8 @@
 
     <q-page-container>
       <router-view />
-      <q-page-scroller position="bottom">
-        <q-btn fab icon="keyboard_arrow_up" color="red" />
+      <q-page-scroller position="bottom-right">
+        <q-btn fab icon="keyboard_arrow_up" color="secondary" />
       </q-page-scroller>
     </q-page-container>
 

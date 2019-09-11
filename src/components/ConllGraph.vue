@@ -1,5 +1,5 @@
 <template>
-    <conll id='conll'></conll>
+    <conll :id="id"></conll>
 </template>
 
 <script>
@@ -7,18 +7,19 @@ import Vue from 'vue'
 Vue.config.ignoredElements = ['conll'];
 export default {
     name:'conllGraph',
-    props: ['sample'],
+    props: ['conll', 'user', 'sentenceId'],
     data(){
-
+        return {
+            id: this.user+ this.sentenceId.replace(/\W/g, '')
+        }
     },
     mounted(){
-        console.log(this.sample)
-        this.start('#conll')
+        this.start(this.conll, this.id);
     },
     methods: {
-        start(id){
+        start(conllStr, id){
             var draft = new ArboratorDraft();
-            var svg = draft.getSvg(this.test, id);
+            var svg = draft.getSvg(conllStr, '#'+id);
         }
     }
 }

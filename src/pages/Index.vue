@@ -8,10 +8,10 @@
     <div class="q-pa-md row items-start q-gutter-md flex flex-center">
       <q-card flat>
         <q-card-section class="q-pa-md row items-start q-gutter-md">
-          <q-toolbar class="bg-primary text-white shadow-2 text-center">
+          <q-toolbar class=" shadow-2 text-center">
             <q-toolbar-title>
               Projects
-              <q-input filled bottom-slots v-model="search" label="Search Project" type="text" @keyup.enter="searchProject(search)" dark>
+              <q-input filled bottom-slots v-model="search" label="Search Project" type="text" @keyup.enter="searchProject(search)" >
                 <template v-slot:append>
                   <q-icon name="search" />
                 </template>

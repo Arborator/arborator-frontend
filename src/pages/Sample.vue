@@ -1,35 +1,8 @@
 <template>
     <q-page>
-        <div class="q-pa-md row q-gutter-md flex flex-center">
-            
-            <div v-for="sample in samples" :key="sample[Object.keys(sample)[0]]" :props="sample" :id="sample[Object.keys(sample)[0]]" >
-                <q-card  style="max-width:90vw">
-                    <q-card-section >
-                        <conll-graph :sample="sample"></conll-graph>
-                        <!-- <div id='youhou'></div> -->
-                        <!-- <conll-graph :props="sample"></conll-graph> -->
-                        <!-- {{Object.keys(sample)[0]}} -->
-                        <!-- <conll>{{sample.gold}}</conll> -->
-                        <!-- <q-tabs v-model="tab" class="text-teal" >
-                            <q-tab v-for="user in Object.keys(sample)" :key="user" :props="user" :label="user" :name="user" icon="person" />
-                        </q-tabs>
-                        <q-separator />
-
-                        <q-tab-panels v-model="tab" animated>
-                            <q-tab-panel v-for="user in Object.keys(sample)" :key="user" :props="user" :name="user">
-                                {{sample.user}}
-                            </q-tab-panel>
-                        </q-tab-panels> -->
-                        <!-- <div class="q-pa-md">
-    <div class="q-gutter-y-md" style="max-width: 600px">
-                        <q-tabs v-model="tab" dense class="bg-grey-2 text-teal" >
-                            <q-tab dense name="mail" />
-                        </q-tabs>
-    </div>
-                        </div> -->
-                    </q-card-section>
-                </q-card>
-                <q-separator/>
+        <div class="q-pa-md row q-gutter-md">
+            <div class="col-12" v-for="(sample, index) in samples" :key="sample[Object.keys(sample)[0]]" :props="sample" >
+                    <sentence-card :id="index" :sample="sample" :index="index" :sentenceId="index"></sentence-card>
             </div>
         </div>
     </q-page>
@@ -39,12 +12,12 @@
 
 import Vue from 'vue'
 Vue.config.ignoredElements = ['conll'];
-import ConllGraph from '../components/ConllGraph'
+import SentenceCard from '../components/SentenceCard'
 
 export default {
     name: 'sample',
     components: {
-        ConllGraph
+        SentenceCard
     },
     data(){
         return {
@@ -56,10 +29,16 @@ export default {
                 "1568208961.080147-315190_00001": {
                 "gold":
                     "1\tAlors\talors\tADV\t_\t_\t4\tmod\t_\t_\n2\teuh\teuh\tINTJ\t_\t_\t4\tdiscourse\t_\t_\n3\tj'\tje\tPRON\t_\t_\t4\tsubj\t_\t_\n4\tai\tavoir\tAUX\t_\t_\t0\troot\t_\t_\n5\tdécidé\tdécider\tVERB\t_\t_\t4\tcomp:aux\t_\t_\n6\tde\tde\tADP\t_\t_\t5\tcomp:pred\t_\t_\n7\traconter\traconter\tVERB\t_\t_\t6\tcomp\t_\t_\n8\tmes\tson\tDET\t_\t_\t9\tdet\t_\t_\n9\tpéripéties\tpéripétie\tNOUN\t_\t_\t7\tcomp:obj\t_\t_\n10\ten\ten\tADP\t_\t_\t9\tdep\t_\t_\n11\tvoiture\tvoiture\tNOUN\t_\t_\t10\tcomp\t_\t_\n12\t.\t_\tPUNCT\t_\t_\t4\tpunct\t_\t_\n"
+                ,"mate":
+                    "1\tAlors\talors\tADV\t_\t_\t4\tmod\t_\t_\n2\teuh\teuh\tINTJ\t_\t_\t4\tdiscourse\t_\t_\n3\tj'\tje\tPRON\t_\t_\t4\tsubj\t_\t_\n4\tai\tavoir\tAUX\t_\t_\t0\troot\t_\t_\n5\tdécidé\tdécider\tVERB\t_\t_\t4\tcomp:aux\t_\t_\n6\tde\tde\tADP\t_\t_\t5\tcomp:pred\t_\t_\n7\traconter\traconter\tVERB\t_\t_\t6\tcomp\t_\t_\n8\tmes\tson\tDET\t_\t_\t9\tdet\t_\t_\n9\tpéripéties\tpéripétie\tNOUN\t_\t_\t7\tcomp:obj\t_\t_\n10\ten\ten\tADP\t_\t_\t9\tdep\t_\t_\n11\tvoiture\tvoiture\tNOUN\t_\t_\t10\tcomp\t_\t_\n12\t.\t_\tPUNCT\t_\t_\t4\tpunct\t_\t_\n"
+ 
                 },
                 "1568208961.080147-315190_00002": {
                 "gold":
                     "1\tDonc\tdonc\tADV\t_\t_\t4\tmod:periph\t_\t_\n2\teuh\teuh\tINTJ\t_\t_\t4\tdiscourse\t_\t_\n3\tj'\tje\tPRON\t_\t_\t4\tsubj\t_\t_\n4\tai\tavoir\tAUX\t_\t_\t0\troot\t_\t_\n5\tfait\tfaire\tVERB\t_\t_\t4\tcomp:aux\t_\t_\n6\tla\tle\tDET\t_\t_\t7\tdet\t_\t_\n7\tconduite\tconduite\tNOUN\t_\t_\t5\tcomp:obj\t_\t_\n8\taccompagnée\taccompagner\tVERB\t_\t_\t7\tdep\t_\t_\n9\tau\tà+le\tADP\t_\t_\t5\tmod\t_\t_\n10\tlycée\tlycée\tNOUN\t_\t_\t9\tcomp\t_\t_\n11\t.\t_\tPUNCT\t_\t_\t4\tpunct\t_\t_\n"
+                ,"mate":
+                    "1\tAlors\talors\tADV\t_\t_\t4\tmod\t_\t_\n2\teuh\teuh\tINTJ\t_\t_\t4\tdiscourse\t_\t_\n3\tj'\tje\tPRON\t_\t_\t4\tsubj\t_\t_\n4\tai\tavoir\tAUX\t_\t_\t0\troot\t_\t_\n5\tdécidé\tdécider\tVERB\t_\t_\t4\tcomp:aux\t_\t_\n6\tde\tde\tADP\t_\t_\t5\tcomp:pred\t_\t_\n7\traconter\traconter\tVERB\t_\t_\t6\tcomp\t_\t_\n8\tmes\tson\tDET\t_\t_\t9\tdet\t_\t_\n9\tpéripéties\tpéripétie\tNOUN\t_\t_\t7\tcomp:obj\t_\t_\n10\ten\ten\tADP\t_\t_\t9\tdep\t_\t_\n11\tvoiture\tvoiture\tNOUN\t_\t_\t10\tcomp\t_\t_\n12\t.\t_\tPUNCT\t_\t_\t4\tpunct\t_\t_\n"
+ 
                 },
                 "1568208961.080147-315190_00003": {
                 "gold":
@@ -111,8 +90,8 @@ export default {
     },
     methods: {
         start(id){
-            var draft = new ArboratorDraft();
-            var svg = draft.getSvg(this.test, id);
+            // var draft = new ArboratorDraft();
+            // var svg = draft.getSvg(this.test, id);
         }
     }
 }

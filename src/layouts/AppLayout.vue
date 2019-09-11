@@ -1,10 +1,10 @@
 <template>
-  <q-layout view="lhh Lpr lFf">
+  <q-layout view="lHr Lpr lFf">
     <q-header elevated class="shadow-5 ">
       <q-toolbar>
         <q-btn flat @click="drawerLeft = !drawerLeft" round dense icon="menu" />
-        <q-toolbar-title desktop-only>
-          <img  src="../statics/arborator.text.white.svg" width="130em"/>
+        <q-toolbar-title desktop-only >
+          <q-btn flat to="/"><q-img basic alt="Arborator" src="../statics/arborator.text.white.svg" style="width:12vw"/></q-btn>
         </q-toolbar-title>
         
         <q-space/>
@@ -93,7 +93,7 @@ export default {
             icon: 'house',
             label: 'Home',
             separator: true,
-            to: '/home'
+            to: '/'
           },
           {
             icon: 'settings',

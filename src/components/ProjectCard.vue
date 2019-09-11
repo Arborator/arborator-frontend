@@ -1,5 +1,5 @@
 <template>
-    <q-item clickable>
+    <q-item clickable :to="'/projects/'+project.name">
         <q-item-section avatar>
           <q-avatar rounded color="primary" text-color="white" icon="next_week">
          </q-avatar>

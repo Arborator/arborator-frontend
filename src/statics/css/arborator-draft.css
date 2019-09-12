@@ -1,0 +1,121 @@
+.token {
+	font: 18px DejaVu Sans;
+	fill: black;
+	font-family:sans-serif;
+	--wordDistance:33;
+	text-align: center;
+} 
+
+.lemma {
+	font: 15px DejaVu Sans;
+	fill: black;
+	font-family:sans-serif;
+	text-align: center;
+	font-style: italic;
+} 
+
+.postag {
+	font: 11px DejaVu Sans;
+	fill: #E03737;
+	/* font-family:sans-serif; */
+	text-align: center;
+} 
+
+.deprel {
+	font: 12px Arial;
+	fill: #1d2ec1;
+	font-style: oblique;
+	font-family:sans-serif;
+	--funcCurveDist:3; /* distance between the function name and the curves highest point */
+} 
+
+.arrowhead {
+	fill: white;
+	stroke: black;
+	stroke-width: .8;
+}
+
+.curve {
+	stroke: black;
+	stroke-width: 1;
+	fill: none;
+	--startOffset: 8;
+	--tokDepDist: 15; /* distance between tokens and depdendency relation */
+	--depMinHeight: 15; /* minimum height for dependency */
+	--wordDistanceFactor: -1; /* distant words get higher curves. this factor fixes how much higher */
+}
+
+.conll {
+	display:none; /*toggles to inline*/
+	unicode-bidi: embed;
+	font-family: monospace;
+	white-space: pre;
+	margin-bottom: 0.6em;
+	border-bottom: 1px solid #aaa;
+	padding: 0.5em 0 0.17em 0;
+	tab-size: 12;
+	background-color: #fff ;
+	box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.26);
+}
+
+.sentencebox {
+	margin-bottom: 0.6em;
+	border-bottom: 1px solid #aaa;
+	padding: 0.5em 0 0.17em 0;
+	margin-top: 1em;
+}
+
+/* Button */
+.button {
+	display: inline-block;
+	position: relative;
+	width: 120px;
+	height: 32px;
+	line-height: 32px;
+	border-radius: 2px;
+	font-size: 0.9em;
+	background-color: #fff;
+	color: #646464;
+	cursor:pointer;
+  }
+  
+  .button > paper-ripple {
+	border-radius: 2px;
+	overflow: hidden;
+  }
+
+
+.button.raised {
+	transition: box-shadow 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+	transition-delay: 0.2s;
+	box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.26);
+  }
+
+  .button.raised:active {
+	box-shadow: 0 8px 17px 0 rgba(0, 0, 0, 0.2);
+	transition-delay: 0s;
+  }
+
+  .center {
+	text-align: center;
+  }
+
+  /* logo animation transitions */
+  .arboratorlogo {
+	transition: all 0.4s ease-in-out;
+	-webkit-transition: all 0.4s ease-in-out;
+  }
+
+  .arboratorlogo:hover {
+	transform: scale(1.1);
+    transition: all 0.2s ease-in-out;
+	-webkit-transition: all 0.2s ease-in-out;
+	opacity: .9;
+  }
+
+	.svgbox {
+		overflow-x: auto;
+	}
+
+
+	.pointer {cursor: pointer;}

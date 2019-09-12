@@ -1,18 +1,18 @@
 <template>
   <q-layout view="lHr Lpr lFf">
-    <q-header  class=" bg-white">
+    <q-header bordered class=" bg-white">
       <q-toolbar>
         <q-btn flat @click="drawerLeft = !drawerLeft" round dense icon="menu" color="primary" />
         <q-toolbar-title desktop-only >
-          <q-btn flat to="/"><q-img basic alt="Arborator" src="../statics/arborator.text.white.svg" style="width:12vw"/></q-btn>
+          <q-btn flat dense size="xl" square to="/"><img alt="Arborator" src="../statics/arborator.text.white.svg" style="width:11vw"/></q-btn>
         </q-toolbar-title>
-        
-        <q-space/>
+
+        <q-space />
         
         <div class="q-gutter-sm row items-center no-wrap">
           <q-btn-dropdown color="secondary" outline label="Log In" icon="account_circle">
             <q-list>
-              <q-item clickable v-close-popup to='/login/google'>
+              <q-item clickable v-close-popup @click="openURL('http://127.0.0.1:5000/login/google')">
                 <q-item-section avatar>
                   <q-icon name='fab fa-google'/>
                 </q-item-section>
@@ -29,7 +29,7 @@
               <q-tooltip :delay="300" content-class="bg-white text-primary">Not logged</q-tooltip>
             </q-avatar>
           </q-btn> -->
-          <q-btn flat dense class="text-white" color="primary" @click="$q.fullscreen.toggle()" :icon="$q.fullscreen.isActive ? 'fullscreen_exit' : 'fullscreen'"
+          <q-btn flat dense color="primary" @click="$q.fullscreen.toggle()" :icon="$q.fullscreen.isActive ? 'fullscreen_exit' : 'fullscreen'"
            :label="$q.fullscreen.isActive ? '' : ''">
             <q-tooltip :delay="300" content-class="bg-white text-primary">Fullscreen</q-tooltip>
           </q-btn>
@@ -53,7 +53,7 @@
 
     <q-drawer
         v-model="drawerLeft"
-        :width="180"
+        :width="200"
         :breakpoint="700"
         content-class="bg-primary"
         behavior="mobile"
@@ -88,6 +88,7 @@ export default {
     return {
       drawerLeft: false,
       isAdmin: true,
+      search: '',
       menuList: [
           {
             icon: 'house',

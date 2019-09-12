@@ -98,7 +98,7 @@ module.exports = function (ctx) {
       // port: 8080,
       open: true, // opens browser window automatically
       proxy: {
-        '/home': {
+        '/api': {
           target: '127.0.0.1:5000',
           ws: true,
           changeOrigin: true

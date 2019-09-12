@@ -1,13 +1,13 @@
 import axios from 'axios';
 
-const HOME = axios.create({
+const API = axios.create({
     baseURL: `/api`,
     timeout: 10000
   });
 
 export default {
     getProjects(){
-        return HOME.get('/projects');
+        return API.get('/projects');
     }
 
 }

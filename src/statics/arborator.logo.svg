@@ -36,7 +36,7 @@
      objecttolerance="10.0"
      borderopacity="1.0"
      bordercolor="#666666"
-     pagecolor="#ffffff"
+     pagecolor="#501d7d"
      id="base"
      inkscape:zoom="2.1159709"
      inkscape:cx="173.06413"
@@ -60,7 +60,7 @@ function startup(evt){
 	step=20;
 	size=80;
 	animate(0);
-	//blade.setAttribute(&quot;style&quot;,&quot;fill:#000000;&quot;)
+	//blade.setAttribute(&quot;style&quot;,&quot;fill:#dd137b;&quot;)
 	//+&quot;stroke-width:&quot;+((x%50)+100)+&quot;;&quot;);
 	//ptiplace.setAttribute(&quot;style&quot;,&quot;stroke-dasharray:&quot;+pdar+&quot;;&quot;);
 	//var pdar = x+&quot;,62,&quot;+(62-x)+&quot;,0&quot;;
@@ -82,15 +82,15 @@ function animate(x){
        id="style6">
 			
 			.str0 {stroke:#7B4178;stroke-width:3}
-			.str1 {stroke:#000000;stroke-width:56;stroke-dasharray:56 56}
-			.str2 {stroke:#000000;stroke-width:125;stroke-dasharray:125 125}
+			.str1 {stroke:#dd137b;stroke-width:56;stroke-dasharray:56 56}
+			.str2 {stroke:#dd137b;stroke-width:125;stroke-dasharray:125 125}
 			.fil2 {fill:none}
-			.fil1 {fill:#ffffff}
+			.fil1 {fill:#501d7d}
 			.fil0 {fill:#9AB086}
-			.fil3 {fill:#000000}
+			.fil3 {fill:#dd137b}
 			
 		</style></defs><path
-     style="fill:#ffffff;stroke-width:0.97150308"
+     style="fill:#501d7d;stroke-width:0.97150308"
      id="path13"
      d="M -737.21858,541.43296 -3698.36,1541.1095 c -261.3344,-190.4146 -424.5469,-433.2903 -424.5469,-661.5935 0,-685.88115 1252.2675,-1244.49544 2788.2139,-1244.49544 1534.97492,0 2787.2424,558.61429 2787.2424,1244.49544 0,685.8811 -1252.26748,1244.4954 -2787.2424,1244.4954 -239.9613,0 -490.6091,-19.4301 -718.9123,-43.7176 z"
      class="fil1"
@@ -98,7 +98,7 @@ function animate(x){
      inkscape:export-xdpi="25.709999"
      inkscape:export-ydpi="25.709999"
      inkscape:connector-curvature="0" /><path
-     style="fill:#000000;stroke:#000000;stroke-width:121.4378891;stroke-dasharray:121.43788821, 121.43788821"
+     style="fill:#dd137b;stroke:#dd137b;stroke-width:121.4378891;stroke-dasharray:121.43788821, 121.43788821"
      id="path15"
      d="m -1609.6284,-78.386028 c 165.1556,-89.378282 468.2645,-134.067422 794.68957,798.575558 325.45354,931.67137 -105.89388,784.97437 -391.51577,895.72577 -285.6219,110.7513 -346.8266,281.7359 -575.1298,-525.5832 -228.3032,-808.29047 -149.6115,-994.819073 171.956,-1168.718128 z"
      class="fil3 str2"
@@ -106,7 +106,7 @@ function animate(x){
      inkscape:export-xdpi="25.709999"
      inkscape:export-ydpi="25.709999"
      inkscape:connector-curvature="0" /><path
-     style="fill:#ffffff;stroke-width:0.97150308"
+     style="fill:#501d7d;stroke-width:0.97150308"
      id="path17"
      d="M -688.64342,492.8578 1023.145,791.10922 c 770.402,134.06743 -774.28792,1284.32698 -2309.2628,1284.32698 -239.9613,0 -490.6091,-19.43 -718.9123,-43.7176 z"
      class="fil1"

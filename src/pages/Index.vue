@@ -2,15 +2,15 @@
   <q-page >
 
     <div class="q-pa-md row q-gutter-md flex flex-center">
-      <object data="../statics/arborator.svg" type="image/svg+xml" width="300" height="150"></object>
+      <!-- <object data="../statics/arborator.logo.svg" type="image/svg+xml" width="100" ></object> -->
     </div>
 
     <div class="q-pa-md row items-start q-gutter-md flex flex-center">
       <q-card flat>
         <q-card-section class="q-pa-md row items-start q-gutter-md">
-          <q-toolbar class=" shadow-2 text-center">
+          <q-toolbar class="  text-center">
             <q-toolbar-title>
-              Projects
+              <span class="text-primary text-bold">Projects</span>
               <q-input filled bottom-slots v-model="search" label="Search Project" type="text" @keyup.enter="searchProject(search)" >
                 <template v-slot:append>
                   <q-icon name="search" />
@@ -29,7 +29,7 @@
       <q-card :class="hover ? 'bg-grey-2' : ''" class="clickable col-1 grid-style-transition shadow-7"
       @mouseover="hover = true" 
       @mouseleave="hover = false" 
-      @click="goTo('https://arborator.github.io/')"
+      @click="openURL('https://arborator.github.io/')"
       :style="hover ? 'transform: scale(0.95);' : ''"
       style="border-radius: 20px 20px 10px 10px">
         <q-card-section>
@@ -57,7 +57,7 @@
 </style>
 
 <script>
-
+import { openURL } from 'quasar'
 import api from '../boot/backend-api';
 import Store from '../store/index';
 import ProjectCard from '../components/ProjectCard.vue';

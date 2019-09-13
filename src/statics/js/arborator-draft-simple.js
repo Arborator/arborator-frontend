@@ -81,9 +81,13 @@ ArboratorDraft.prototype.emptyThenRefresh = function(content, reverse = false, t
 
 ArboratorDraft.prototype.getSvg = function(strConll, id){
 	var tree = conllNodesToTree(strConll);
-	console.log('tree final', tree);
+	// console.log('tree final', tree);
 	tree['svg'] = draw(tree.tree, id);
 	return tree;
+}
+
+ArboratorDraft.prototype.getTree = function(strConll){
+	return conllNodesToTree(strConll);
 }
 
 

@@ -81,25 +81,21 @@ export default {
   },
   methods:{
     getProjects(){
-      // api.getProjects()
-      // .then(response => { console.log(response); this.projects = response.data})
-      // .catch(error => { console.log(error); });
-      this.projects = [ {id:1, description: 'super project', name: 'project', is_private: false}, 
-      {id:2, description: 'super project', name: 'helloNaija', is_private: true}, 
-      {id:3, description: 'super project', name: 'helloBambara', is_private: false},
-      {id:4, description: 'super project', name: 'hiFrench', is_private: true},
-      {id:5, description: 'super project', name: 'hiOldfrench', is_private: false},
-      {id:6, description: 'super project', name: 'project6', is_private: false},
-      {id:7, description: 'super project', name: 'project7', is_private: false}];
-      this.visibleProjects = this.projects;
-    },
-    goTo(url){
-      // window.location.href = url;
-      window.open(url, '_blank');
+      api.getProjects()
+      .then(response => { console.log(response.data); this.projects = response.data; this.visibleProjects = response.data;})
+      .catch(error => { console.log(error); });
+      // this.projects = [ {id:1, description: 'super project', name: 'project', is_private: false}, 
+      // {id:2, description: 'super project', name: 'helloNaija', is_private: true}, 
+      // {id:3, description: 'super project', name: 'helloBambara', is_private: false},
+      // {id:4, description: 'super project', name: 'hiFrench', is_private: true},
+      // {id:5, description: 'super project', name: 'hiOldfrench', is_private: false},
+      // {id:6, description: 'super project', name: 'project6', is_private: false},
+      // {id:7, description: 'super project', name: 'project7', is_private: false}];
+      // this.visibleProjects = this.projects;
     },
     searchProject(pattern) {
       var filteredProjects =  this.projects.filter(function(project) {
-        if(project.name.includes(pattern)){
+        if(project.projectname.includes(pattern)){
           return project;
         }
       });

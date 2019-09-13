@@ -7,7 +7,13 @@ const API = axios.create({
 
 export default {
     getProjects(){
-        return API.get('/projects');
+        return API.get('home/projects');
+    },
+    getProjectInfos(name){
+        return API.get('projects/'+name);
+    },
+    getSampleContent(projectname, samplename){
+        return API.get('projects/'+projectname+'/sample/'+samplename);
     }
 
 }

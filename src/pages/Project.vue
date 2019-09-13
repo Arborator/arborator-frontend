@@ -17,10 +17,10 @@
                         <q-table
                             ref="textsTable"
                             class="my-sticky-header-table rounded-borders"
-                            :title="infos.name + ' has ' + infos.texts.length + ' texts and '+ totalSentences + ' sentences'"
-                            :data="infos.texts"
+                            :title="infos.project_name + ' has ' + infos.samples.length + ' texts and '+ infos.number_sentences + ' sentences'"
+                            :data="infos.samples"
                             :columns="table.fields"
-                            row-key="name"
+                            row-key="project_name"
                             :pagination.sync="table.pagination"
                             :loading="table.loading"
                             loading-label="loading"
@@ -77,10 +77,10 @@
                                 
                                 <q-tr :props="props">
                                     <q-td auto-width><q-toggle dense v-model="props.selected" /></q-td>
-                                    <q-td key="name" :props="props"><q-btn outline color="white" text-color="black" dense
+                                    <q-td key="projectname" :props="props"><q-btn outline color="white" text-color="black" dense
                                     class="full-width" 
-                                    :to="'/projects/' + infos.name + '/' + props.row.name" 
-                                    icon-right="open_in_browser" no-caps>{{props.row.name}}</q-btn></q-td>
+                                    :to="'/projects/' + infos.name + '/' + props.row.projectname" 
+                                    icon-right="open_in_browser" no-caps>{{props.row.projectname}}</q-btn></q-td>
                                     <q-td key="sentences" :props="props">{{ props.row.sentences }}</q-td>
                                     <q-td key="tokens" :props="props">{{ props.row.tokens }}</q-td>
                                     <q-td key="sentenceLength" :props="props">{{ props.row.sentenceLength }}</q-td>
@@ -113,39 +113,53 @@
 
 <script>
 
-
+import { openURL } from 'quasar'
+import api from '../boot/backend-api';
+import Store from '../store/index';
 
 export default {
-    name:'project',
+    props: ['name'],
     data(){
         return {
             tab: 'texts',
             infos: {
-                name: 'projectName',
+                name: this.name,
                 creator: 'admin',
-                texts: [ 
-                    { name: 'text1', sentences: 80, tokens: 20, sentenceLength: 12.6, annotators: [], validator: 'Bernard Caron', treesFrom: ['parser', 'tella', 'j.D'], exo: 'percentage'}, 
-                    { name: 'text2', sentences: 178, tokens: 20, sentenceLength: 12.6, annotators: [], validator: 'Bernard Caron', treesFrom: ['parser', 'tella', 'j.D'], exo: 'percentage'}, 
-                    { name: 'text3', sentences: 80, tokens: 54, sentenceLength: 12.6, annotators: [], validator: 'Kim Gerdes', treesFrom: ['parser', 'tella', 'j.D'], exo: 'percentage'}, 
-                    { name: 'text4', sentences: 80, tokens: 20, sentenceLength: 12.6, annotators: [], validator: 'Bernard Caron', treesFrom: ['parser', 'tella', 'j.D'], exo: 'percentage'}, 
-                    { name: 'text5', sentences: 80, tokens: 20, sentenceLength: 12.6, annotators: [], validator: 'Bernard Caron', treesFrom: ['parser', 'tella', 'j.D'], exo: 'percentage'}, 
-                    { name: 'text6', sentences: 80, tokens: 34, sentenceLength: 12.6, annotators: [], validator: 'Bernard Caron', treesFrom: ['parser', 'tella', 'j.D'], exo: 'percentage'}, 
-                    { name: 'text7', sentences: 32, tokens: 20, sentenceLength: 12.6, annotators: [], validator: 'Bernard Caron', treesFrom: ['parser', 'tella', 'j.D'], exo: 'percentage'}, 
-                    { name: 'text8', sentences: 80, tokens: 20, sentenceLength: 12.6, annotators: [], validator: 'Bernard Caron', treesFrom: ['parser', 'tella', 'j.D'], exo: 'percentage'}, 
-                    { name: 'text9', sentences: 80, tokens: 20, sentenceLength: 12.6, annotators: [], validator: 'Bernard Caron', treesFrom: ['parser', 'tella', 'j.D'], exo: 'percentage'}, 
-                    { name: 'text10', sentences: 4567, tokens: 400, sentenceLength: 12.6, annotators: [], validator: 'Bernard Caron', treesFrom: ['parser', 'tella', 'j.D'], exo: 'percentage'}, 
-                    { name: 'text11', sentences: 80, tokens: 20, sentenceLength: 16.6, annotators: [], validator: 'Bernard Caron', treesFrom: ['parser', 'tella', 'j.D'], exo: 'percentage'}, 
-                    { name: 'text12', sentences: 80, tokens: 20, sentenceLength: 12.6, annotators: [], validator: 'Bernard Caron', treesFrom: ['parser', 'tella', 'j.D'], exo: 'percentage'}, 
-                    { name: 'text13', sentences: 80, tokens: 20, sentenceLength: 12.6, annotators: [], validator: 'Bernard Caron', treesFrom: ['parser', 'tella', 'j.D'], exo: 'percentage'}, 
-                    { name: 'text14', sentences: 80, tokens: 20, sentenceLength: 14.6, annotators: [], validator: 'Bernard Caron', treesFrom: ['parser', 'tella', 'j.D'], exo: 'percentage'}, 
+                samples: [ 
+                    { projectname: 'P_ABJ_GWA_10_Steven.lifestory_PRO', sentences: 80, tokens: 20, sentenceLength: 12.6, annotators: [], validator: 'Bernard Caron', treesFrom: ['parser', 'tella', 'j.D'], exo: 'percentage'}, 
+                    { projectname: 'text2', sentences: 178, tokens: 20, sentenceLength: 12.6, annotators: [], validator: 'Bernard Caron', treesFrom: ['parser', 'tella', 'j.D'], exo: 'percentage'}, 
+                    { projectname: 'text3', sentences: 80, tokens: 54, sentenceLength: 12.6, annotators: [], validator: 'Kim Gerdes', treesFrom: ['parser', 'tella', 'j.D'], exo: 'percentage'}, 
+                    { projectname: 'text4', sentences: 80, tokens: 20, sentenceLength: 12.6, annotators: [], validator: 'Bernard Caron', treesFrom: ['parser', 'tella', 'j.D'], exo: 'percentage'}, 
+                    { projectname: 'text5', sentences: 80, tokens: 20, sentenceLength: 12.6, annotators: [], validator: 'Bernard Caron', treesFrom: ['parser', 'tella', 'j.D'], exo: 'percentage'}, 
+                    { projectname: 'text6', sentences: 80, tokens: 34, sentenceLength: 12.6, annotators: [], validator: 'Bernard Caron', treesFrom: ['parser', 'tella', 'j.D'], exo: 'percentage'}, 
+                    { projectname: 'text7', sentences: 32, tokens: 20, sentenceLength: 12.6, annotators: [], validator: 'Bernard Caron', treesFrom: ['parser', 'tella', 'j.D'], exo: 'percentage'}, 
+                    { projectname: 'text8', sentences: 80, tokens: 20, sentenceLength: 12.6, annotators: [], validator: 'Bernard Caron', treesFrom: ['parser', 'tella', 'j.D'], exo: 'percentage'}, 
+                    { projectname: 'text9', sentences: 80, tokens: 20, sentenceLength: 12.6, annotators: [], validator: 'Bernard Caron', treesFrom: ['parser', 'tella', 'j.D'], exo: 'percentage'}, 
+                    { projectname: 'text10', sentences: 4567, tokens: 400, sentenceLength: 12.6, annotators: [], validator: 'Bernard Caron', treesFrom: ['parser', 'tella', 'j.D'], exo: 'percentage'}, 
+                    { projectname: 'text11', sentences: 80, tokens: 20, sentenceLength: 16.6, annotators: [], validator: 'Bernard Caron', treesFrom: ['parser', 'tella', 'j.D'], exo: 'percentage'}, 
+                    { projectname: 'text12', sentences: 80, tokens: 20, sentenceLength: 12.6, annotators: [], validator: 'Bernard Caron', treesFrom: ['parser', 'tella', 'j.D'], exo: 'percentage'}, 
+                    { projectname: 'text13', sentences: 80, tokens: 20, sentenceLength: 12.6, annotators: [], validator: 'Bernard Caron', treesFrom: ['parser', 'tella', 'j.D'], exo: 'percentage'}, 
+                    { projectname: 'text14', sentences: 80, tokens: 20, sentenceLength: 14.6, annotators: [], validator: 'Bernard Caron', treesFrom: ['parser', 'tella', 'j.D'], exo: 'percentage'}, 
                 ],
                 assignments: [
                     { username: 'Jo', assignedTexts: [], modifiedTrees: 30 }
                 ]
             },
+            // infos: {
+            //     "project_name": "Naija",
+            //     "description": "this is a test project to fill the database",
+            //     "samples": [
+            //         "P_WAZP_07_Imonirhuas.Life.Story_PRO",
+            //         "P_ABJ_GWA_10_Steven.lifestory_PRO"
+            //     ],
+            //     "admins": [],
+            //     "guests": [],
+            //     "number_samples": 2,
+            //     "number_sentences": 342
+            // },
             table:{
                 fields: [
-                    { name: 'name', label: 'Text Name', sortable: true, field: 'name' },
+                    { name: 'projectname', label:'Name', sortable: true, field: 'projectname'},
                     { name: 'sentences', label: 'Nb Sentences', sortable: true, field: 'sentences' },
                     { name: 'tokens', label: 'Nb Tokens', sortable: true, field: 'tokens' },
                     { name: 'sentenceLength', label: 'Sentence Length', sortable: true, field: 'sentenceLength' },
@@ -153,9 +167,10 @@ export default {
                     { name: 'validator', label: 'Validator', sortable: true, field: 'validator' },
                     { name: 'treesFrom', label: 'Trees From', sortable: true, field: 'treesFrom' },
                     { name: 'exo', label: 'Exo', sortable: true, field: 'exo' }
+                    
                 
                 ],
-                visibleColumns: ['name', 'sentences', 'tokens', 'sentenceLength', 'annotators', 'validator', 'treesFrom', 'exo'],
+                visibleColumns: ['projectname', 'sentences', 'tokens', 'sentenceLength', 'annotators', 'validator', 'treesFrom', 'exo'],
                 filter: '',
                 selected: [],
                 loading: false,
@@ -171,12 +186,12 @@ export default {
         }
     },
     mounted(){
-        
+        // this.getProjectInfos()
     },
     computed: {
-        totalSentences: function() {
-            return this.infos.texts.reduce((acc, item) => acc + item.sentences, 0);
-        }
+        // totalSentences: function() {
+        //     return this.infos.texts.reduce((acc, item) => acc + item.sentences, 0);
+        // }
     },
     methods:{
         goToRoute(props) {
@@ -188,6 +203,13 @@ export default {
                 return obj.field !== 'syntInfo' && obj.field !== 'cat' && obj.field !== 'redistributions' ;
             });
             return tempArray;
+        },
+        getProjectInfos(){
+            api.getProjectInfos(this.name)
+            .then(response => { 
+                console.log(response.data)
+                this.infos = response.data;
+            }).catch(error => {console.log(error)});
         }
     }
 }

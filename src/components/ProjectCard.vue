@@ -39,7 +39,6 @@ export default {
             var clean = this.project.image.replace('b', '');
             clean = clean.replace(/^'/g,'');
             clean = clean.replace(/'$/g,'');
-            console.log(clean);
             return 'data:image/png;base64, '+clean;
         }        
     },

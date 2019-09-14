@@ -82,7 +82,7 @@ export default {
   methods:{
     getProjects(){
       api.getProjects()
-      .then(response => { console.log(response.data); this.projects = response.data; this.visibleProjects = response.data;})
+      .then(response => { this.projects = response.data; this.visibleProjects = response.data;})
       .catch(error => { console.log(error); });
       // this.projects = [ {id:1, description: 'super project', name: 'project', is_private: false}, 
       // {id:2, description: 'super project', name: 'helloNaija', is_private: true}, 

@@ -12,7 +12,8 @@
         <div class="q-gutter-sm row items-center no-wrap">
           <q-btn-dropdown color="secondary" outline label="Log In" icon="account_circle">
             <q-list>
-              <q-item clickable v-close-popup @click="openURL('http://127.0.0.1:5000/login/google')">
+              <!-- <q-item clickable v-close-popup @click="openURL('http://127.0.0.1:5000/login/google')"> -->
+              <q-item clickable v-close-popup @click="login('google')">
                 <q-item-section avatar>
                   <q-icon name='fab fa-google'/>
                 </q-item-section>
@@ -81,6 +82,8 @@
 
 <script>
 import { openURL } from 'quasar'
+import api from '../boot/backend-api';
+import Store from '../store/index';
 
 export default {
   name: 'TempLayout',
@@ -112,7 +115,14 @@ export default {
     }
   },
   methods: {
-    openURL
+    openURL,
+    login(provider){
+      api.auth(provider)
+      .then(response => {
+        console.log(response)
+      })
+      .catch(error => {console.log('error')})
+    }
   }
 }
 </script>

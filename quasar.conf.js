@@ -62,7 +62,8 @@ module.exports = function (ctx) {
         'QBar', 'QBanner', 'QImg',
         'QTab', 'QTabs', 'QTabPanels', 'QTabPanel', 'QExpansionItem',
         'QFab', 'QFabAction',
-        'QPageSticky', 'QScrollArea', 'QPageScroller'
+        'QPageSticky', 'QScrollArea', 'QPageScroller',
+        'QLinearProgress'
       ],
 
       directives: [

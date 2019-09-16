@@ -26,6 +26,9 @@ export default {
         //     headers: {'Accept': 'application/json', 'Content-Type': "application/x-www-form-urlencoded" }
         // }).then((res) => res.json())
         return AUTH.get(provider);
+    },
+    search( name, query){
+        return API.post('projects/'+name+'/search', query);
     }
 
 }

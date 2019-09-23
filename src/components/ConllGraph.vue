@@ -1,5 +1,6 @@
 <template>
-    <conll :id="id"></conll>
+    <!-- <svg :id="id"></svg> -->
+    <div v-html="svgContent"></div>
 </template>
 
 <script>
@@ -10,7 +11,8 @@ export default {
     props: ['conll', 'user', 'sentenceId'],
     data(){
         return {
-            id: this.user+ this.sentenceId.replace(/\W/g, '')
+            id: this.user+ this.sentenceId.replace(/\W/g, ''),
+            svgContent: ''
         }
     },
     mounted(){
@@ -18,8 +20,10 @@ export default {
     },
     methods: {
         start(conllStr, id){
+            console.log('conllStr conllGraph component', conllStr)
             var draft = new ArboratorDraft();
             var svg = draft.getSvg(conllStr, '#'+id);
+            this.svgContent = svg['svg'];
         }
     }
 }

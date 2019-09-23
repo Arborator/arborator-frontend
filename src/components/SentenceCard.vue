@@ -35,7 +35,9 @@ export default {
     },
     methods: {
         conllToTree(strTree){
+            console.log(44444)
             var draft = new ArboratorDraft();
+            console.log(5,draft)
             return draft.getTree(strTree);
         }
     }

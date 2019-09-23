@@ -68,7 +68,7 @@ export default {
         },
         getSampleContent(){
             api.getSampleContent(this.name, this.sample)
-            .then( response => { this.samples = response.data })
+            .then( response => { console.log(response.data); this.samples = response.data })
             .catch(error => {console.log(error)});
         },
         onSearch(){

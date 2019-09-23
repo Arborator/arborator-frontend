@@ -1,8 +1,9 @@
-.token {
-	font: 18px DejaVu Sans;
-	fill: black;
-	font-family:sans-serif;
+.t {
+/* 	font: 18px DejaVu Sans; */
+/* 	fill: black; */
+/* 	font-family:sans-serif; */
 	--wordDistance:33;
+	fill:black;
 	text-align: center;
 } 
 
@@ -12,13 +13,23 @@
 	font-family:sans-serif;
 	text-align: center;
 	font-style: italic;
+	--wordDistance:22;
+} 
+.gloss {
+	font: 15px DejaVu Sans;
+	fill: coral;
+	font-family:sans-serif;
+	text-align: center;
+	font-style: italic;
+	--wordDistance:11;
 } 
 
-.postag {
+.cat {
 	font: 11px DejaVu Sans;
 	fill: #E03737;
 	/* font-family:sans-serif; */
 	text-align: center;
+	--wordDistance:22;
 } 
 
 .deprel {
@@ -44,6 +55,16 @@
 	--depMinHeight: 15; /* minimum height for dependency */
 	--wordDistanceFactor: -1; /* distant words get higher curves. this factor fixes how much higher */
 }
+.dragcurve {
+	stroke: #dd137bff;
+	stroke-width: 1.5;
+	fill: none;
+}
+.draggov {
+		fill:#dd137bff;
+		text-align: center;
+	} 
+
 
 .conll {
 	display:none; /*toggles to inline*/
@@ -116,6 +137,3 @@
 	.svgbox {
 		overflow-x: auto;
 	}
-
-
-	.pointer {cursor: pointer;}

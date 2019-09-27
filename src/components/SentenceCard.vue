@@ -31,7 +31,6 @@ export default {
         }
     },
     mounted() {
-
     },
     methods: {
         conllToTree(strTree){

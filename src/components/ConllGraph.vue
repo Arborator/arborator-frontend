@@ -1,6 +1,6 @@
 <template>
     <!-- <svg :id="id"></svg> -->
-    <div v-html="svgContent"></div>
+    <div :id="id" v-html="svgContent"></div>
 </template>
 
 <script>

@@ -256,7 +256,11 @@ function drawsnap(idDiv, treedata, shownfeatures) {
 	// draws json tree on svg in div
 	var textstarty = 400;
 	var runningy = textstarty;
-	var s=Snap(600, 800);
+	// var s=Snap(600, 800);
+	log("IDDIIIIIIIV", idDiv);
+	// var s=Snap(idDiv);
+	var s=Snap(600,800);
+	s.attr("display", "none");
 	// s.text(10,10,'gael')
 	log('s =',s)
 	s.treedata = treedata;

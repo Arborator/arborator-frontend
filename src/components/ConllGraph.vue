@@ -1,6 +1,8 @@
 <template>
-    <!-- <svg :id="id"></svg> -->
-    <div :id="id" v-html="svgContent"></div>
+
+    <svg :id="id"></svg>
+
+    <!-- <div :id="id" v-html="svgContent"></div> -->
 </template>
 
 <script>
@@ -23,7 +25,9 @@ export default {
             console.log('conllStr conllGraph component', conllStr)
             var draft = new ArboratorDraft();
             var svg = draft.getSvg(conllStr, '#'+id);
-            this.svgContent = svg['svg'];
+            // this.svgContent = svg['svg'];
+            // $('#'+id).attr("display", "inline");
+            // console.log("selected", this.$refs[id]);
         }
     }
 }

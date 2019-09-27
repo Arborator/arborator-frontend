@@ -254,14 +254,17 @@ function getNewFunction(tree, oldFunction, newDep, newGov, add) {
 
 function drawsnap(idDiv, treedata, shownfeatures) {
 	// draws json tree on svg in div
-	var textstarty = 400;
+	var textstarty = 100;
 	var runningy = textstarty;
 	// var s=Snap(600, 800);
 	log("IDDIIIIIIIV", idDiv);
-	// var s=Snap(idDiv);
-	var s=Snap(600,800);
-	s.attr("display", "none");
+	var s=Snap(idDiv);
+	// var s=Snap(600,800);
+	// s.attr("id", idDiv.replace("#",""));
+	// s.attr("display", "none");
 	// s.text(10,10,'gael')
+	s.attr("width", "100%");
+	s.attr("height", "100%");
 	log('s =',s)
 	s.treedata = treedata;
 	var tree = treedata.tree;

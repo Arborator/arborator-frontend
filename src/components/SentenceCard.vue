@@ -9,7 +9,12 @@
 
             <q-tab-panels v-model="tab" animated>
                 <q-tab-panel v-for="(tree, user) in sample" :key="user" :props="tree" :name="user">
-                    <conll-graph :conll="tree" :user="user" :sentenceId="sentenceId"></conll-graph>
+                    <q-card  flat >
+                    <q-card-section class="scrollable" style="height: 200px;">
+                        <conll-graph :conll="tree" :user="user" :sentenceId="sentenceId"></conll-graph>
+                    </q-card-section>
+                    </q-card>
+
                 </q-tab-panel>
             </q-tab-panels>
         </q-card-section>
@@ -42,3 +47,9 @@ export default {
     }
 }
 </script>
+
+<style scoped>
+.scrollable {
+    overflow:scroll;
+}
+</style>

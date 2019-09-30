@@ -1,7 +1,7 @@
 <template>
     <q-card :id="index" style="max-width:90vw">
         <q-card-section>
-            <q-chip icon="bookmark" class="text-center" dense> {{index}} </q-chip>{{conllToTree(sample[Object.keys(sample)[0]]).sentence}}
+            <q-chip icon="bookmark" class="text-center" dense> {{index}} </q-chip>{{sentence}}
             <q-tabs v-model="tab" class="text-teal flex-center" dense>
                 <q-tab v-for="(tree, user) in sample" :key="user" :props="user" :label="user" :name="user" icon="person" />
             </q-tabs>
@@ -29,7 +29,7 @@ export default {
     components: {
         ConllGraph
     },
-    props: ['index', 'sample', 'sentenceId'],
+    props: ['index', 'sample', 'sentenceId', 'sentence'],
     data() {
         return {
             tab:''
@@ -38,10 +38,6 @@ export default {
     mounted() {
     },
     methods: {
-        conllToTree(strTree){
-            var draft = new ArboratorDraft();
-            return draft.getTree(strTree);
-        }
     }
 }
 </script>

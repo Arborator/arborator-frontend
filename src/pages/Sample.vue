@@ -2,8 +2,8 @@
     <q-page>
         <div class="q-pa-md row q-gutter-md">
             {{Object.keys(samples).length}} sentences
-            <div class="col-12" v-for="(sample, index) in samples" :key="sample[Object.keys(sample)[0]]" :props="sample" >
-                    <sentence-card :id="index" :sample="sample" :index="index" :sentenceId="index" ></sentence-card>
+            <div class="col-12" v-for="(sample, index) in samples" :key="index" :props="sample" >
+                    <sentence-card :id="index" :sample="sample.conlls" :index="index" :sentenceId="index" :sentence="sample.sentence" ></sentence-card>
             </div>
         </div>
 
@@ -113,7 +113,7 @@ pattern {
         },
         getSampleContent(){
             api.getSampleContent(this.name, this.sample)
-            .then( response => { console.log(response.data); this.samples = response.data })
+            .then( response => { this.samples = response.data })
             .catch(error => {console.log(error)});
         },
         onSearch(){

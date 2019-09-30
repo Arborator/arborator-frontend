@@ -27,9 +27,7 @@
                             <div class="col">
                             <q-input filled v-model="searchPattern" label="Search query" type="textarea" hint="Grew query syntax" lazy-rules :rules="[ val => val && val.length > 0 || 'Please type something']" />
                             <q-space />
-                            <!-- <q-btn-group> -->
-                                <q-btn color="primary" type="submit" label="Search" />
-                            <!-- </q-btn-group> -->
+                            <q-btn color="primary" type="submit" label="Search" />
                             </div>
                             <div class="col">
                                 <q-list bordered separator>
@@ -123,15 +121,16 @@ pattern {
             api.search(this.name, query)
             .then(response => { 
                 console.log(response);
-                this.samples.filter;
-                var allowed = Object.keys(response.data.matches);
-                console.log('allowed', allowed);
-                var keys = Object.keys(this.samples);
-                for(let i = 0; i < Object.keys(this.samples).length; i++){
-                    if(!allowed.includes(keys[i])){ 
-                        delete this.samples[keys[i]]; 
-                    }
-                }
+                // this.samples.filter;
+                // var allowed = Object.keys(response.data.matches);
+                // console.log('allowed', allowed);
+                // var keys = Object.keys(this.samples);
+                // for(let i = 0; i < Object.keys(this.samples).length; i++){
+                //     if(!allowed.includes(keys[i])){ 
+                //         delete this.samples[keys[i]]; 
+                //     }
+                // }
+
                 // const filtered = Object.keys(this.samples)
                 //     .filter(key => allowed.includes(key))
                 //     .reduce((obj, key) => {
@@ -140,6 +139,8 @@ pattern {
                 //     }, {});
                 // console.log('filtered', filtered);
                 // this.samples = filtered;
+
+                this.samples = response.data.trees;
             })
             .catch(error => { console.log(error) })
         },
@@ -151,4 +152,8 @@ pattern {
         }
     }
 }
+
+// {id:{user:conllStr}}
+
 </script>
+

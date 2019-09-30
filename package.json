@@ -13,6 +13,7 @@
     "@quasar/extras": "^1.0.0",
     "axios": "^0.18.1",
     "quasar": "^1.0.0",
+    "vue-cookies": "^1.5.13",
     "vue-i18n": "^8.0.0"
   },
   "devDependencies": {

@@ -20,6 +20,7 @@ export default {
   mounted() {
     var token = VueCookies.get('authomatic');
     console.log(token);
+    console.log(VueCookies.get("session"));
   },
   methods: {
     parseJwt: function (token) {

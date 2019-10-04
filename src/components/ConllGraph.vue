@@ -1,6 +1,8 @@
 <template>
-
+    <div>
+        {{content}}
     <svg :id="id"></svg>
+    </div>
 
     <!-- <div :id="id" v-html="svgContent"></div> -->
 </template>
@@ -14,7 +16,8 @@ export default {
     data(){
         return {
             id: this.user+ this.sentenceId.replace(/\W/g, ''),
-            svgContent: ''
+            svgContent: '',
+            content: 'nothing'
         }
     },
     mounted(){
@@ -25,9 +28,14 @@ export default {
             console.log('conllStr conllGraph component', conllStr)
             var draft = new ArboratorDraft();
             var svg = draft.getSvg(conllStr, '#'+id);
+            svg.gael = 17;
+            svg.doSmth = this.doSmth();
             // this.svgContent = svg['svg'];
             // $('#'+id).attr("display", "inline");
             // console.log("selected", this.$refs[id]);
+        },
+        doSmth(content) {
+            this.content = content;
         }
     }
 }

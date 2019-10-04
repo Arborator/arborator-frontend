@@ -109,6 +109,13 @@ ArboratorDraft.prototype.getTree = function(strConll){
 	return conllNodesToTree(strConll.trim());
 }
 
+ArboratorDraft.prototype.setRel = function(rel){
+	log('setRel START');
+	log(rel);
+	log('setRel END');
+} 
+ 
+
 // private functions
 
 
@@ -168,6 +175,9 @@ function dragging(dx, dy, posX, posY, event){
 var startdrag = function(xx,yy,e) {
 	// this.data('origTransform', this.transform().local );
 	dragrepl = this.clone();
+	log(777,this.paper.root.treedata);
+	this.paper.root.treedata.toggleRelDialog();
+	// log(888, rel)
 	dragrepl.attr({class:"draggov"});
 	this.attr({cursor: "move"})
 

@@ -100,12 +100,13 @@ module.exports = function (ctx) {
       open: true, // opens browser window automatically
       proxy: {
         '/api': {
-          target: 'https://127.0.0.1:5000',
+          target: 'https://localhost:5000',
           ws: true,
-          changeOrigin: true
+          changeOrigin: false,
+          secure: false
         },
         '/login': {
-          target: 'https://127.0.0.1:5000',
+          target: 'https://localhost:5000',
           ws: true,
           changeOrigin: true
         }

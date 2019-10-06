@@ -30,7 +30,7 @@
         </q-card-section>
 
         <q-card-section>
-            <v-select v-for="(relist, index) in options.relations" :key="relist" v-model="infos.relation[index]" :options="relist"></v-select>
+            <v-select v-for="(relist, index) in options.relations" :key="index" v-model="infos.relation[index]" :options="relist"></v-select>
             <q-btn class="primary" @click="sendSelectedRel()" label="Ok" />
         </q-card-section>
       </q-card>

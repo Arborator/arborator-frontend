@@ -30,8 +30,8 @@
         </q-card-section>
 
         <q-card-section>
-            <v-select v-for="(relist, index) in options.relations" :key="relist" v-model="infos.relation[index]" :options="relist"></v-select>
-            <q-btn v-close-popup class="primary" @click="sendSelectedRel()" label="Ok" />
+            <v-select v-for="(relist, index) in options.relations" :key="index" v-model="infos.relation[index]" :options="relist"></v-select>
+            <q-btn class="primary" @click="sendSelectedRel()" label="Ok" />
         </q-card-section>
       </q-card>
     </q-dialog>

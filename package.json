@@ -11,6 +11,7 @@
   },
   "dependencies": {
     "@quasar/extras": "^1.0.0",
+    "autoprefixer": "^9.6.2",
     "axios": "^0.18.1",
     "quasar": "^1.0.0",
     "trim-right": "^1.0.1",

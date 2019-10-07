@@ -10,7 +10,7 @@
             <q-tab-panels v-model="tab" animated>
                 <q-tab-panel v-for="(tree, user) in sample" :key="user" :props="tree" :name="user">
                     <q-card  flat >
-                    <q-card-section class="scrollable" style="height: 200px;">
+                    <q-card-section class="scrollable" style="height: 500px;">
                         <conll-graph :conll="tree" :user="user" :sentenceId="sentenceId"></conll-graph>
                     </q-card-section>
                     </q-card>

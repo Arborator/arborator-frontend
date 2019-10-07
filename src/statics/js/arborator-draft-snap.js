@@ -123,7 +123,7 @@ function refresh(content) {
 	// $('#svgwell').html('');
 	// $('#svgwell').append( $("<conll></conll>").attr('id', 'transformhere').text( content ) );
 	// var conll = d3.selectAll('#transformhere')['_groups'][0][0];
-	// console.log(content);
+	log("_____refresh \n content",content);
 	// drawConll(conll);
 	listOfConlls = content.trim().split(/\n\s*\n\s*\n*/);	
 	
@@ -148,9 +148,7 @@ function level(i,gi,tree, idgov2level) {
 				if (gii>=Math.min(i,gi) && gii<=Math.max(i,gi)) {
 					if (idgov2level[ii+'_'+gii]>0) intermlevs.push(idgov2level[ii+'_'+gii]+1);
 					else intermlevs.push(level(ii, gii, tree, idgov2level)+1);
-
 				}
-				
 			}
 	}
 	idgov2level[i+'_'+gi] = Math.max( ...intermlevs );
@@ -231,7 +229,7 @@ var stopdrag = function(e) {
 	dragcurve.remove();
 	dragarrowhead.remove();
 	
-	if ( (dragover>=0 && this.nr != undefined) || dragsun!=null) 
+	if (dragover!=this.nr &&( (dragover>=0 && this.nr != undefined) || dragsun!=null) )
 	{
 		nr = this.nr;
 		if (dragsun) {dragover = nr; nr=0; }
@@ -263,7 +261,9 @@ function getNewFunction(tree, oldFunction, newDep, newGov, add) {
 }
 
 function drawsnap(idDiv, treedata, shownfeatures) {
-	// draws json tree on svg in div
+	///////////////////////////////////
+	// draws json tree on svg in div //
+	///////////////////////////////////
 	var textstarty = 100;
 	var runningy = textstarty;
 	// var s=Snap(600, 800);
@@ -275,7 +275,15 @@ function drawsnap(idDiv, treedata, shownfeatures) {
 	// s.text(10,10,'gael')
 	s.attr("width", "100%");
 	s.attr("height", "100%");
-	log('s =',s)
+	// s.parent().attr("height", "45px")
+	// s.parent().parent().attr("height", "45px")
+	s.parent().parent().attr("style", "height:550px;");
+	// s.parent().attr("class", 'sentencebox');
+	s.parent().node.classList.add('sentencebox');
+	var leveldistance = parseInt(getComputedStyle(s.parent().node).getPropertyValue('--depLevelHeight'));
+
+	// log('*************levelheight',leveldistance,'s =',s, 45646454);
+
 	s.treedata = treedata;
 	var tree = treedata.tree;
 	// insertion of texts
@@ -289,11 +297,11 @@ function drawsnap(idDiv, treedata, shownfeatures) {
 		for (var nr in tree) {
 		// Object.keys(tree).forEach(function(nr) {
 			var word = tree[nr];
-			log(shofea, word[shofea])
+			// log(shofea, word[shofea])
 			// var sword = s.text(10*nr,10, 'hey')
-			log(xpositions[ind], ind)
+			// log(xpositions[ind], ind)
 			var sword = s.text(xpositions[ind], runningy, word[shofea]).attr({class:shofea});
-			log('epee',sword.getBBox())
+			// log('epee',sword.getBBox())
 			sword.wordDistance = parseInt(getComputedStyle(sword.node).getPropertyValue('--wordDistance'));
 			sword.nr = nr;
 			
@@ -327,7 +335,7 @@ function drawsnap(idDiv, treedata, shownfeatures) {
 			ind += 1;
 		});
 	}
-
+	log(66666)
 	var ind = 0;
 	
 	var idgov2level = {};
@@ -341,7 +349,10 @@ function drawsnap(idDiv, treedata, shownfeatures) {
 	});
 	var maxlevel = Math.max( ...levels);
 	var basey = textstarty-firstTextFontSize-2;
-	var leveldistance = Math.min(basey/maxlevel,maxLevelDistance); // take the min of the available height divided by the required levels and the maxLevelDistance
+	// var leveldistance = Math.min(basey/maxlevel,maxLevelDistance); // take the min of the available height divided by the required levels and the maxLevelDistance
+
+	log(7777)
+
 	// drawing the dependency relations
 	Object.keys(tree).forEach(function(nr) { // for each dependent
 		var word = tree[nr];
@@ -364,7 +375,9 @@ function drawsnap(idDiv, treedata, shownfeatures) {
 		}
 		ind += 1;
 	});
-
+	log(8888)
+	// s.attr("height", (maxlevel*100)+"px");
+	log(999,s.selectAll(""))
 	return s;
 
 }

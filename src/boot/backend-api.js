@@ -1,13 +1,15 @@
 import axios from 'axios';
+import VueCookies from 'vue-cookies';
+VueCookies.config('7d');
 
 const API = axios.create({
     baseURL: `/api`,
     timeout: 10000
-  });
+});
 
 const AUTH = axios.create({
-baseURL: `/login`,
-timeout: 10000
+    baseURL: `/login`,
+    timeout: 5000
 });
 
 export default {
@@ -26,6 +28,11 @@ export default {
         //     headers: {'Accept': 'application/json', 'Content-Type': "application/x-www-form-urlencoded" }
         // }).then((res) => res.json())
         return AUTH.get(provider);
+    },
+    whoAmI(){
+        var sessionId = VueCookies.get("session");
+        var session = {id: sessionId}
+        return AUTH.post('userinfos', session);
     },
     search( name, query){
         return API.post('projects/'+name+'/search', query);

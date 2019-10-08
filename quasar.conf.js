@@ -108,7 +108,8 @@ module.exports = function (ctx) {
         '/login': {
           target: 'https://localhost:5000',
           ws: true,
-          changeOrigin: true
+          changeOrigin: false,
+          secure: false
         }
       }
     },

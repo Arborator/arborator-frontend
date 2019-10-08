@@ -10,7 +10,7 @@
         <q-space />
         
         <div class="q-gutter-sm row items-center no-wrap">
-          <q-btn-dropdown color="secondary" outline label="Log In" icon="account_circle">
+          <q-btn-dropdown v-show="!store.getters.isLoggedIn" color="secondary" outline label="Log In" icon="account_circle">
             <q-list>
               <q-item clickable v-close-popup @click="openURL('https://127.0.0.1:5000/login/google')">
               <!-- <q-item clickable v-close-popup @click="login('google')"> -->
@@ -24,6 +24,15 @@
               </q-item>
             </q-list>
           </q-btn-dropdown>
+          <q-btn v-show="store.getters.isLoggedIn" round flat dense >
+            <q-avatar>
+              <q-icon v-show="store.getters.getUserInfos.avatar == ''" name="account_circle" />
+              <q-avatar :key="store.getters.getAvatarKey" v-show="store.getters.getUserInfos.picture_url != ''" color="default" text-color="white"   >
+                  <img :src="store.getters.getUserInfos.picture_url">
+              </q-avatar>
+              <q-tooltip :delay="300" content-class="bg-white text-primary">Logged as {{store.getters.getUserInfos.username}}</q-tooltip>
+            </q-avatar>
+          </q-btn>
           <!-- <q-btn round flat dense>
             <q-avatar>
               <q-icon name="fas fa-question-circle"/>
@@ -89,6 +98,7 @@ export default {
   name: 'TempLayout',
   data () {
     return {
+      store: Store,
       drawerLeft: false,
       isAdmin: true,
       search: '',

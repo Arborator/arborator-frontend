@@ -19,8 +19,18 @@ export default {
   },
   mounted() {
     var token = VueCookies.get('authomatic');
-    console.log(token);
-    console.log(VueCookies.get("session"));
+    var session = VueCookies.get("session");
+    if(token != null) console.log('token', token);
+    if(session != null) {
+      console.log('session', session);
+      // api.whoAmI().then(response =>{
+      //   console.log(response)} 
+      // ).catch(error => { console.log(error); });
+      this.store.dispatch("checkSession", {})
+        // .then(() => {
+        //   this.$router.push('/');
+        // })
+    }
   },
   methods: {
     parseJwt: function (token) {

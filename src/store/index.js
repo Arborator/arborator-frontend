@@ -77,6 +77,7 @@ export default new Vuex.Store({
         logout({commit}, {user}) {
             return new Promise((resolve, reject) => {
                 console.log("logging out user: " + user);
+                api.logout().then(response => {console.log(response);}).catch(error => { console.log(error);});
                 VueCookies.remove('session'); VueCookies.remove('remember_token');
                 commit('logout_success');
                 resolve({status: 'disconnected'});

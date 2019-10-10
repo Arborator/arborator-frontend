@@ -127,9 +127,7 @@ export default {
       .catch(error => {console.log(error)})
     },
     logout() {
-      this.store.dispatch("logout", { user: this.store.getters.getUserName}).then(() => {  
-        if(this.$route != '/') this.$router.push('/');  
-      })
+      this.store.dispatch("logout", { user: this.store.getters.getUserInfos.username}).then(() => {  this.$router.push('/').catch(error => {});  })
     },
   }
 }

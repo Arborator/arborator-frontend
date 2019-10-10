@@ -1,6 +1,8 @@
 // Configuration for your app
 // https://quasar.dev/quasar-cli/quasar-conf-js
 
+const source = "https://localhost:5000";
+
 module.exports = function (ctx) {
   return {
     // app boot file (/src/boot)
@@ -100,13 +102,19 @@ module.exports = function (ctx) {
       open: true, // opens browser window automatically
       proxy: {
         '/api': {
-          target: 'https://localhost:5000',
+          target: source,
           ws: true,
           changeOrigin: false,
           secure: false
         },
         '/login': {
-          target: 'https://localhost:5000',
+          target: source,
+          ws: true,
+          changeOrigin: false,
+          secure: false
+        },
+        '/logout': {
+          target: source,
           ws: true,
           changeOrigin: false,
           secure: false

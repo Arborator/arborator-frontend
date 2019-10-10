@@ -29,6 +29,9 @@ export default {
         // }).then((res) => res.json())
         return AUTH.get(provider);
     },
+    logout(){
+        return axios.get('/logout');
+    },
     whoAmI(){
         var sessionId = VueCookies.get("session");
         var session = {id: sessionId}

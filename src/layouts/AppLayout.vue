@@ -13,7 +13,6 @@
           <q-btn-dropdown v-show="!store.getters.isLoggedIn" color="secondary" outline label="Log In" icon="account_circle">
             <q-list>
               <q-item clickable v-close-popup @click="openURL('https://127.0.0.1:5000/login/google')">
-              <!-- <q-item clickable v-close-popup @click="login('google')"> -->
                 <q-item-section avatar>
                   <q-icon name='fab fa-google'/>
                 </q-item-section>
@@ -24,21 +23,15 @@
               </q-item>
             </q-list>
           </q-btn-dropdown>
-          <q-btn v-show="store.getters.isLoggedIn" round flat dense >
+          <q-btn v-show="store.getters.isLoggedIn" round flat dense @click="logout()" >
             <q-avatar>
               <q-icon v-show="store.getters.getUserInfos.avatar == ''" name="account_circle" />
-              <q-avatar :key="store.getters.getAvatarKey" v-show="store.getters.getUserInfos.picture_url != ''" color="default" text-color="white"   >
+              <q-avatar v-show="store.getters.getUserInfos.picture_url != ''" :key="store.getters.getAvatarKey" color="default" text-color="white"   >
                   <img :src="store.getters.getUserInfos.picture_url">
               </q-avatar>
               <q-tooltip :delay="300" content-class="bg-white text-primary">Logged as {{store.getters.getUserInfos.username}}</q-tooltip>
             </q-avatar>
           </q-btn>
-          <!-- <q-btn round flat dense>
-            <q-avatar>
-              <q-icon name="fas fa-question-circle"/>
-              <q-tooltip :delay="300" content-class="bg-white text-primary">Not logged</q-tooltip>
-            </q-avatar>
-          </q-btn> -->
           <q-btn flat dense color="primary" @click="$q.fullscreen.toggle()" :icon="$q.fullscreen.isActive ? 'fullscreen_exit' : 'fullscreen'"
            :label="$q.fullscreen.isActive ? '' : ''">
             <q-tooltip :delay="300" content-class="bg-white text-primary">Fullscreen</q-tooltip>
@@ -129,10 +122,15 @@ export default {
     login(provider){
       api.auth(provider)
       .then(response => {
-        console.log(response)
+        console.log(response);
       })
       .catch(error => {console.log(error)})
-    }
+    },
+    logout() {
+      this.store.dispatch("logout", { user: this.store.getters.getUserName}).then(() => {  
+        if(this.$route != '/') this.$router.push('/');  
+      })
+    },
   }
 }
 </script>

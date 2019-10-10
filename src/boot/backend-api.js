@@ -16,6 +16,9 @@ export default {
     getProjects(){
         return API.get('home/projects');
     },
+    getUsers(){
+        return API.get('admin/users');
+    },
     getProjectInfos(name){
         return API.get('projects/'+name);
     },

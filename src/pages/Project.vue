@@ -40,7 +40,7 @@
                                     <q-btn flat color="default" text-color="blue-grey-8" icon="cloud_upload" >
                                         <q-tooltip :delay="300" content-class="text-white bg-primary">Add File</q-tooltip>
                                     </q-btn>
-                                    <q-btn flat color="default" text-color="blue-grey-8" icon="person_add" >
+                                    <q-btn flat color="default" text-color="blue-grey-8" icon="person_add" :disabled="table.selected.length<1" @click="assignDial = true">
                                         <q-tooltip :delay="300" content-class="text-white bg-primary">Assign</q-tooltip>
                                     </q-btn>
                                     <q-btn flat  color="default" text-color="blue-grey-8" icon="cloud_download" :disabled="table.selected.length<1">
@@ -66,7 +66,7 @@
                                 <q-space />
 
                                 <q-select v-model="table.visibleColumns" multiple borderless dense options-dense :display-value="$q.lang.table.columns"
-                                emit-value map-options  :options="filterFields()"  option-value="name" style="min-width: 100px"  >
+                                emit-value map-options  :options="filterFields(table)"  option-value="name" style="min-width: 100px"  >
                                     <q-tooltip :delay="300" content-class="bg-white text-primary">Select visible columns</q-tooltip>
                                 </q-select>
 
@@ -107,6 +107,89 @@
                 </q-tab-panels>
                 </q-card-section>
             </q-card>
+
+
+
+            <q-dialog v-model="assignDial" persistent :maximized="maximizedToggle" transition-show="slide-up" transition-hide="slide-down" >
+                <q-card class="bg-blue-grey-1 text-black" style="max-width: 100vw;">
+                    <q-bar>
+                        <q-space />
+                        <q-btn dense flat icon="minimize" @click="maximizedToggle = false" :disable="!maximizedToggle">
+                            <q-tooltip v-if="maximizedToggle" content-class="bg-white text-primary">Minimize</q-tooltip>
+                        </q-btn>
+                        <q-btn dense flat icon="crop_square" @click="maximizedToggle = true" :disable="maximizedToggle">
+                            <q-tooltip v-if="!maximizedToggle" content-class="bg-white text-primary">Maximize</q-tooltip>
+                        </q-btn>
+                        <q-btn dense flat icon="close" v-close-popup>
+                            <q-tooltip content-class="bg-white text-primary">Close</q-tooltip>
+                        </q-btn>
+                    </q-bar>
+
+                    <q-card-section>
+                        <q-table
+                            ref="usersTable"
+                            class="my-sticky-header-table rounded-borders"
+                            title="Users"
+                            :data="assignTable.data"
+                            :columns="assignTable.fields"
+                            row-key="username"
+                            :pagination.sync="assignTable.pagination"
+                            :loading="assignTable.loading"
+                            loading-label="loading"
+                            :filter="assignTable.filter"
+                            binary-state-sort
+                            :visible-columns="assignTable.visibleColumns"
+                            selection="multiple"
+                            :selected.sync="assignTable.selected"
+                            dense
+                            table-header-class="text-primary"
+                            card-class="shadow-8"
+                            >
+
+                            <template v-slot:top="props">
+                                <q-btn-group flat >
+                                    <q-btn rounded push color="primary" label="validate" :disabled="assignTable.selected.length <1" >
+                                        <q-tooltip :delay="300" content-class="text-white bg-primary">Validate</q-tooltip>
+                                    </q-btn>
+                                </q-btn-group>
+
+                                <q-space />
+
+                                <q-input  dense debounce="300" v-model="assignTable.filter" placeholder="Search" text-color="blue-grey-8" >
+                                    <template v-slot:append>
+                                        <q-icon name="search" />
+                                    </template>
+                                    <q-tooltip :delay="300" content-class="bg-white text-primary">Search a user</q-tooltip>
+                                </q-input>
+                                
+                                <q-space />
+
+                                <q-select v-model="assignTable.visibleColumns" multiple borderless dense options-dense :display-value="$q.lang.table.columns"
+                                emit-value map-options  :options="filterFields(assignTable)"  option-value="name" style="min-width: 100px"  >
+                                    <q-tooltip :delay="300" content-class="bg-white text-primary">Select visible columns</q-tooltip>
+                                </q-select>
+
+                                <q-btn flat round dense text-color="blue-grey-8" :icon="props.inFullscreen ? 'fullscreen_exit' : 'fullscreen'"  @click="props.toggleFullscreen"  class="q-ml-md" />
+                            </template>
+
+                            <template v-slot:body="props">
+                                
+                                <q-tr :props="props">
+                                    <q-td auto-width><q-toggle dense v-model="props.selected" /></q-td>
+                                    <q-td key="picture_url" :props="props"><q-avatar><img :src="props.row.picture_url" /></q-avatar></q-td>
+                                    <q-td key="name" :props="props">{{props.row.username}}</q-td>
+                                    <q-td key="email" :props="props">{{ props.row.id }}</q-td>
+                                    <q-td key="super_admin" :props="props">{{ props.row.super_admin }}</q-td>
+                                    <q-td key="last_seen" :props="props">{{ props.row.last_seen }}</q-td>
+                                </q-tr>
+                                
+                            </template>
+
+                        </q-table>
+                    </q-card-section>
+                </q-card>
+            </q-dialog>
+
         </div>
     </q-page>
 </template>
@@ -122,42 +205,8 @@ export default {
     data(){
         return {
             tab: 'texts',
-            // infos: {
-            //     name: this.name,
-            //     creator: 'admin',
-            //     samples: [ 
-            //         { projectname: 'P_ABJ_GWA_10_Steven.lifestory_PRO', sentences: 80, tokens: 20, sentenceLength: 12.6, annotators: [], validator: 'Bernard Caron', treesFrom: ['parser', 'tella', 'j.D'], exo: 'percentage'}, 
-            //         { projectname: 'text2', sentences: 178, tokens: 20, sentenceLength: 12.6, annotators: [], validator: 'Bernard Caron', treesFrom: ['parser', 'tella', 'j.D'], exo: 'percentage'}, 
-            //         { projectname: 'text3', sentences: 80, tokens: 54, sentenceLength: 12.6, annotators: [], validator: 'Kim Gerdes', treesFrom: ['parser', 'tella', 'j.D'], exo: 'percentage'}, 
-            //         { projectname: 'text4', sentences: 80, tokens: 20, sentenceLength: 12.6, annotators: [], validator: 'Bernard Caron', treesFrom: ['parser', 'tella', 'j.D'], exo: 'percentage'}, 
-            //         { projectname: 'text5', sentences: 80, tokens: 20, sentenceLength: 12.6, annotators: [], validator: 'Bernard Caron', treesFrom: ['parser', 'tella', 'j.D'], exo: 'percentage'}, 
-            //         { projectname: 'text6', sentences: 80, tokens: 34, sentenceLength: 12.6, annotators: [], validator: 'Bernard Caron', treesFrom: ['parser', 'tella', 'j.D'], exo: 'percentage'}, 
-            //         { projectname: 'text7', sentences: 32, tokens: 20, sentenceLength: 12.6, annotators: [], validator: 'Bernard Caron', treesFrom: ['parser', 'tella', 'j.D'], exo: 'percentage'}, 
-            //         { projectname: 'text8', sentences: 80, tokens: 20, sentenceLength: 12.6, annotators: [], validator: 'Bernard Caron', treesFrom: ['parser', 'tella', 'j.D'], exo: 'percentage'}, 
-            //         { projectname: 'text9', sentences: 80, tokens: 20, sentenceLength: 12.6, annotators: [], validator: 'Bernard Caron', treesFrom: ['parser', 'tella', 'j.D'], exo: 'percentage'}, 
-            //         { projectname: 'text10', sentences: 4567, tokens: 400, sentenceLength: 12.6, annotators: [], validator: 'Bernard Caron', treesFrom: ['parser', 'tella', 'j.D'], exo: 'percentage'}, 
-            //         { projectname: 'text11', sentences: 80, tokens: 20, sentenceLength: 16.6, annotators: [], validator: 'Bernard Caron', treesFrom: ['parser', 'tella', 'j.D'], exo: 'percentage'}, 
-            //         { projectname: 'text12', sentences: 80, tokens: 20, sentenceLength: 12.6, annotators: [], validator: 'Bernard Caron', treesFrom: ['parser', 'tella', 'j.D'], exo: 'percentage'}, 
-            //         { projectname: 'text13', sentences: 80, tokens: 20, sentenceLength: 12.6, annotators: [], validator: 'Bernard Caron', treesFrom: ['parser', 'tella', 'j.D'], exo: 'percentage'}, 
-            //         { projectname: 'text14', sentences: 80, tokens: 20, sentenceLength: 14.6, annotators: [], validator: 'Bernard Caron', treesFrom: ['parser', 'tella', 'j.D'], exo: 'percentage'}, 
-            //     ],
-            //     assignments: [
-            //         { username: 'Jo', assignedTexts: [], modifiedTrees: 30 }
-            //     ]
-            // },
-            // infos: {
-            //     "project_name": "Naija",
-            //     "description": "this is a test project to fill the database",
-            //     "samples": [
-            //         "P_WAZP_07_Imonirhuas.Life.Story_PRO",
-            //         "P_ABJ_GWA_10_Steven.lifestory_PRO"
-            //     ],
-            //     "admins": [],
-            //     "guests": [],
-            //     "number_samples": 2,
-            //     "number_sentences": 342
-            // },
-            
+            assignDial: false,
+            maximizedToggle: true,
             infos: {
                 name: '',
                 is_private: false,
@@ -181,8 +230,6 @@ export default {
                     { name: 'validators', label: 'Validators', sortable: true, field: 'roles.validator' },
                     { name: 'treesFrom', label: 'Trees From', sortable: true, field: 'treesFrom' },
                     { name: 'exo', label: 'Exo', sortable: true, field: 'exo' }
-                    
-                
                 ],
                 visibleColumns: ['samplename', 'sentences', 'tokens', 'sentenceLength', 'annotators', 'validator', 'treesFrom', 'exo'],
                 filter: '',
@@ -196,11 +243,33 @@ export default {
                     // rowsNumber: this.infos.texts.length
                 },
                 loadingDelete: false
+            },
+            assignTable:{
+                data: [],
+                fields: [
+                    { name: 'picture_url', label: 'Avatar', field: 'picture_url' },
+                    { name: 'name', label: 'Name', field:'username', sortable: true },
+                    { name: 'email', label: 'Mail', field: 'id', sortable: true },
+                    { name: 'super_admin', label: 'Admin', field: 'super_admin', sortable: true },
+                    { name: 'last_seen', label: 'Last Seen', field: 'last_seen', sortable: true}
+                ],
+                visibleColumns: [ 'picture_url', 'name', 'email' ],
+                filter: '',
+                selected: [],
+                loading: false,
+                pagination: {
+                    sortBy: 'name',
+                    descending: false,
+                    page: 1,
+                    rowsPerPage: 10
+                },
+                loadingDelete: false
             }
         }
     },
     mounted(){
-        this.getProjectInfos()
+        this.getProjectInfos();
+        this.getUsers();
     },
     computed: {
         // totalSentences: function() {
@@ -211,19 +280,18 @@ export default {
         goToRoute(props) {
             this.$router.push('/projects/' + this.infos.name + '/samples')
         },
-        filterFields() {
+        filterFields(tableJson) {
             // to remove some fields from visiblecolumns select options
-            var tempArray = this.table.fields.filter(function( obj ) {
+            var tempArray = tableJson.fields.filter(function( obj ) {
                 return obj.field !== 'syntInfo' && obj.field !== 'cat' && obj.field !== 'redistributions' ;
             });
             return tempArray;
         },
         getProjectInfos(){
-            api.getProjectInfos(this.name)
-            .then(response => { 
-                console.log(response.data)
-                this.infos = response.data;
-            }).catch(error => {console.log(error)});
+            api.getProjectInfos(this.name).then(response => { console.log(response.data); this.infos = response.data; }).catch(error => {console.log(error)});
+        },
+        getUsers(){
+            api.getUsers().then( response => {  this.assignTable.data = response.data;  }).catch(error => { console.log(error); })
         }
     }
 }

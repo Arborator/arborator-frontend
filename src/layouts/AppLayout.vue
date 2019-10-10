@@ -23,14 +23,41 @@
               </q-item>
             </q-list>
           </q-btn-dropdown>
-          <q-btn v-show="store.getters.isLoggedIn" round flat dense @click="logout()" >
+          <q-btn v-show="store.getters.isLoggedIn" round flat dense color="purple"  >
             <q-avatar>
               <q-icon v-show="store.getters.getUserInfos.avatar == ''" name="account_circle" />
               <q-avatar v-show="store.getters.getUserInfos.picture_url != ''" :key="store.getters.getAvatarKey" color="default" text-color="white"   >
                   <img :src="store.getters.getUserInfos.picture_url">
               </q-avatar>
-              <q-tooltip :delay="300" content-class="bg-white text-primary">Logged as {{store.getters.getUserInfos.username}}</q-tooltip>
             </q-avatar>
+            
+            <q-menu transition-show="jump-down" transition-hide="jump-up">
+              <div class="row no-wrap q-pa-md">
+                <div class="column">
+                    <q-list>
+                      <q-item clickable v-ripple to="/settings">
+                        <q-item-section avatar> <q-icon name="settings" /> </q-item-section>
+                        <q-item-section> Settings </q-item-section>
+                      </q-item>
+                      <q-item v-show="store.getters.getUserInfos.super_admin" clickable v-ripple to="/admin">
+                        <q-item-section avatar> <q-icon name="vpn_key" /> </q-item-section>
+                        <q-item-section> Admin </q-item-section>
+                      </q-item>
+                    </q-list>
+                </div>
+
+                <q-separator vertical inset class="q-mx-lg" />
+
+                <div class="column items-center">
+                  <q-icon v-show="store.getters.getUserInfos.avatar == ''" name="account_circle" />
+                  <q-avatar v-show="store.getters.getUserInfos.picture_url != ''" :key="store.getters.getAvatarKey" color="default" text-color="white">
+                    <img :src="store.getters.getUserInfos.picture_url">
+                  </q-avatar>
+                  <div class="text-subtitle1 q-mt-md q-mb-xs">{{store.getters.getUserInfos.first_name}} {{store.getters.getUserInfos.family_name}}</div>
+                  <q-btn color="negative" label="Logout" size="sm" v-close-popup @click="logout()"/>
+                </div>
+              </div>
+            </q-menu>
           </q-btn>
           <q-btn flat dense color="primary" @click="$q.fullscreen.toggle()" :icon="$q.fullscreen.isActive ? 'fullscreen_exit' : 'fullscreen'"
            :label="$q.fullscreen.isActive ? '' : ''">
@@ -56,7 +83,7 @@
 
     <q-drawer
         v-model="drawerLeft"
-        :width="200"
+        :width="300"
         :breakpoint="700"
         content-class="bg-primary"
         behavior="mobile"
@@ -64,7 +91,7 @@
       <q-scroll-area class="fit">
         <q-list v-for="(menuItem, index) in menuList" :key="index">
 
-          <q-item v-show="isAdmin || menuItem.label!='Admin'" :to="menuItem.to" clickable :active="menuItem.label === 'Outbox'" v-ripple
+          <q-item v-show="store.getters.isLoggedIn || menuItem.public" :to="menuItem.to" clickable :active="menuItem.label === 'Outbox'" v-ripple
           class='text-white'>
             <q-item-section avatar>
               <q-icon :name="menuItem.icon" />
@@ -93,25 +120,28 @@ export default {
     return {
       store: Store,
       drawerLeft: false,
-      isAdmin: true,
+      isAdmin: false,
       search: '',
       menuList: [
           {
             icon: 'house',
             label: 'Home',
             separator: true,
+            public: true,
             to: '/'
           },
           {
             icon: 'settings',
             label: 'Settings',
             separator: false,
+            public: false,
             to: '/settings'
           },
           {
             icon: 'vpn_key',
             label: 'Admin',
             separator: false,
+            public: false,
             to: '/adminpanel'
           }
         ]

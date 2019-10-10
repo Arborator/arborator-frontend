@@ -6,7 +6,14 @@ const routes = [
     children: [
       { path: '', component: () => import('pages/Index.vue') },
       { path: '/projects/:name', component: () => import('pages/Project.vue'), props: true, name:'project' },
-      { path: '/projects/:name/:sample', component: () => import('pages/Sample.vue'), props: true }
+      { path: '/projects/:name/:sample', component: () => import('pages/Sample.vue'), props: true },
+      {
+        path: 'settings',
+        component: () => import('pages/Settings'),
+        meta: {
+          requiresAuth: true
+        }
+      },
     ]
   }
 ]

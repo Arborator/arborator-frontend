@@ -155,6 +155,8 @@
 
                                 <q-space />
 
+                                {{table.selected}}
+
                                 <q-input  dense debounce="300" v-model="assignTable.filter" placeholder="Search" text-color="blue-grey-8" >
                                     <template v-slot:append>
                                         <q-icon name="search" />

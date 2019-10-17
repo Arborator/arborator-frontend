@@ -12,13 +12,22 @@
         <div class="q-gutter-sm row items-center no-wrap">
           <q-btn-dropdown v-show="!store.getters.isLoggedIn" color="secondary" outline label="Log In" icon="account_circle">
             <q-list>
-              <q-item clickable v-close-popup @click="openURL('https://127.0.0.1:5000/login/google')">
+              <q-item clickable v-close-popup @click="openURL(store.getters.getSource + '/login/google')">
                 <q-item-section avatar>
                   <q-icon name='fab fa-google'/>
                 </q-item-section>
                 <q-item-section>
                   <q-item-label caption>Connect via</q-item-label>
                   <q-item-label>Google</q-item-label>
+                </q-item-section>
+              </q-item>
+              <q-item clickable v-close-popup @click="openURL(store.getters.getSource + '/login/github')">
+                <q-item-section avatar>
+                  <q-icon name='fab fa-github'/>
+                </q-item-section>
+                <q-item-section>
+                  <q-item-label caption>Connect via</q-item-label>
+                  <q-item-label>GitHub</q-item-label>
                 </q-item-section>
               </q-item>
             </q-list>
@@ -53,7 +62,7 @@
                   <q-avatar v-show="store.getters.getUserInfos.picture_url != ''" :key="store.getters.getAvatarKey" color="default" text-color="white">
                     <img :src="store.getters.getUserInfos.picture_url">
                   </q-avatar>
-                  <div class="text-subtitle1 q-mt-md q-mb-xs">{{store.getters.getUserInfos.first_name}} {{store.getters.getUserInfos.family_name}}</div>
+                  <div class="text-subtitle1 q-mt-md q-mb-xs">{{store.getters.getUserInfos.username}}</div>
                   <q-btn color="negative" label="Logout" size="sm" v-close-popup @click="logout()"/>
                 </div>
               </div>

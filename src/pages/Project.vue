@@ -37,8 +37,8 @@
 
                             <template v-slot:top="props">
                                 <q-btn-group flat >
-                                    <q-btn flat color="default" text-color="blue-grey-8" icon="cloud_upload" >
-                                        <q-tooltip :delay="300" content-class="text-white bg-primary">Add File</q-tooltip>
+                                    <q-btn flat color="default" text-color="blue-grey-8" icon="cloud_upload" @click="uploadDial = true">
+                                        <q-tooltip :delay="300" content-class="text-white bg-primary" >Add File</q-tooltip>
                                     </q-btn>
                                     <q-btn flat color="default" text-color="blue-grey-8" icon="person_add" :disabled="table.selected.length<1" @click="assignDial = true">
                                         <q-tooltip :delay="300" content-class="text-white bg-primary">Assign</q-tooltip>
@@ -107,8 +107,6 @@
                 </q-tab-panels>
                 </q-card-section>
             </q-card>
-
-
 
             <q-dialog v-model="assignDial" persistent :maximized="maximizedToggle" transition-show="slide-up" transition-hide="slide-down" >
                 <q-card class="bg-blue-grey-1 text-black" style="max-width: 100vw;">
@@ -192,6 +190,33 @@
                 </q-card>
             </q-dialog>
 
+            <q-dialog v-model="uploadDial" :maximized="maximizedUploadToggle" transition-show="fade" transition-hide="fade" >
+                <q-card style=" max-width: 100vw;">
+                    <q-bar>
+                        <q-space />
+                        <q-btn dense flat icon="minimize" @click="maximizedUploadToggle = false" :disable="!maximizedUploadToggle">
+                            <q-tooltip v-if="maximizedUploadToggle" content-class="bg-white text-primary">Minimize</q-tooltip>
+                        </q-btn>
+                        <q-btn dense flat icon="crop_square" @click="maximizedUploadToggle = true" :disable="maximizedUploadToggle">
+                            <q-tooltip v-if="!maximizedUploadToggle" content-class="bg-white text-primary">Maximize</q-tooltip>
+                        </q-btn>
+                        <q-btn dense flat icon="close" v-close-popup>
+                            <q-tooltip content-class="bg-white text-primary">Close</q-tooltip>
+                        </q-btn>
+                    </q-bar>
+
+                    <q-card-section>
+                        <div class="text-h6 text-blue-grey-8">Drap and Drop your file below</div>
+                    </q-card-section>
+                    
+                    <q-card-section >
+                        <q-uploader :url="$store.getters.getSource + '/api/projects/' + name +'/upload'" color="default" 
+                        label="Upload a conll file" style="max-width: 100%; max-height: 200px"  multiple accept=".conll,.conllu" with-credentials
+                        method="POST" field-name="file" :headers="[{name:'Authorization', value: 'Bearer '+this.$cookies.get('session')}]" />
+                    </q-card-section>
+                </q-card>
+            </q-dialog>
+
         </div>
     </q-page>
 </template>
@@ -209,6 +234,8 @@ export default {
             tab: 'texts',
             assignDial: false,
             maximizedToggle: true,
+            uploadDial: false,
+            maximizedUploadToggle: false,
             infos: {
                 name: '',
                 is_private: false,

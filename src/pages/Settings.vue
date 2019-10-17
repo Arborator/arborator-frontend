@@ -25,7 +25,7 @@
             <div class="col-md-1"></div>
             <div class="col-md-4 col-xs-12">
                 <q-card flat >
-                    <q-form   >
+                    <q-form>
                         <q-card-section>
                             <div class="text-h6 text-blue-grey-8">Personal Informations</div>
                         </q-card-section>

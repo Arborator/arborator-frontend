@@ -7,8 +7,6 @@
                     <div class="text-subtitle2 text-center">Admins: {{infos.admins}}</div>
                     <!-- <div class="tet-subtitle2 text-center">Selected: {{ JSON.stringify(table.selected) }}</div> -->
                     <div class="text-subtitle2 text-center">{{table.selected.length}}</div>
-                    <div>{{$store.getters.getSource + '/api/projects/' + name +'/upload'}}</div>
-                    <div>{{}}</div>
                 </q-card-section>
                 <q-card-section>
                 <!-- <q-tabs v-model="tab" class="text-primary">
@@ -208,13 +206,18 @@
                     </q-bar>
 
                     <q-card-section>
-                        <div class="text-h6 text-blue-grey-8">Drap and Drop your file below</div>
+                        <div class="text-h6 text-blue-grey-8">Select one or multiple conll files</div>
                     </q-card-section>
                     
                     <q-card-section > 
-                        <q-uploader :url="$store.getters.getSource + '/api/projects/' + name +'/upload'" color="default" 
-                        label="Upload a conll file" style="max-width: 100%; max-height: 200px"  multiple accept=".conll,.conllu" 
-                        method="POST" field-name="files" :headers="[{name:'Authorization', value: 'Bearer '+this.$cookies.get('session')}]" auto-upload hide-upload-btn @uploaded="getProjectInfos()" />
+                        <form @submit="upload()">
+                            <input type="file" class="form-control" @change="onFileChange" multiple/>
+                            <q-btn type="submit" :loading="submitting" label="upload" color="teal" class="q-mt-md">
+                                <template v-slot:loading>
+                                    <q-spinner-facebook/>
+                                </template>
+                            </q-btn>
+                        </form>
                     </q-card-section>
                 </q-card>
             </q-dialog>
@@ -275,7 +278,6 @@ export default {
                 },
                 loadingDelete: false
             },
-            selectedSamples: [],
             assignTable:{
                 data: [],
                 fields: [
@@ -296,7 +298,9 @@ export default {
                     rowsPerPage: 10
                 },
                 loadingDelete: false
-            }
+            },
+            submitting: false,
+            attachment: { name: null, file: null}
         }
     },
     mounted(){
@@ -323,18 +327,21 @@ export default {
             api.getProjectInfos(this.name).then(response => { console.log(response.data); this.infos = response.data; }).catch(error => {console.log(error)});
         },
         getUsers(){
-            api.getUsers().then( response => {  this.assignTable.data = response.data;  }).catch(error => { console.log(error); })
+            api.getUsers().then( response => {  this.assignTable.data = response.data;  }).catch(error => { console.log(error); });
         },
-        upload(files){
-            console.log('upload', files);
+        upload(){
+            var form = new FormData();
+            for(const file of this.attachment.file){ form.append('files',file); }
+            form.append('import_user',Store.getters.getUserInfos.username);
+            api.uploadSample(this.name, form).then( response => { this.attachment.file = []; this.getProjectInfos(); }).catch(error => {console.log(error);});
+        },
+        onFileChange(event) {
+            this.attachment.file = event.target.files;
         },
         deleteSamples(){
             for (const sample of this.table.selected) {
-                api.deleteSample(this.infos.name, sample.samplename).then( response => { this.infos = response.data; this.table.selected = []; } ).catch(error => { console.log(error); })
+                api.deleteSample(this.infos.name, sample.samplename).then( response => { this.infos = response.data; this.table.selected = []; } ).catch(error => { console.log(error); });
             }
-        },
-        afterUpload(){
-            console.log('uploaded !');
         }
     }
 }

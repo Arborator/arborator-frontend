@@ -1,4 +1,5 @@
 import axios from 'axios';
+axios.defaults.headers.post['Content-Type'] = 'multipart/form-data';
 import VueCookies from 'vue-cookies';
 VueCookies.config('7d');
 
@@ -30,6 +31,10 @@ export default {
     },
     deleteSample(projectname, samplename){
         return API.delete('projects/'+projectname+'/sample/'+samplename);
+    },
+    uploadSample(projectname, data){
+        console.log('data sent', data);
+        return API.post('projects/' + projectname +'/upload', data);
     },
     auth(provider){
         // return fetch('http://127.0.0.1:5000/login/'+provider, { mode: 'cors', method: 'GET', 

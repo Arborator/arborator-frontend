@@ -25,6 +25,12 @@ export default {
     getSampleContent(projectname, samplename){
         return API.get('projects/'+projectname+'/sample/'+samplename);
     },
+    deleteProject(projectname){
+        return API.delete('projects/'+projectname+'/delete');
+    },
+    deleteSample(projectname, samplename){
+        return API.delete('projects/'+projectname+'/sample/'+samplename);
+    },
     auth(provider){
         // return fetch('http://127.0.0.1:5000/login/'+provider, { mode: 'cors', method: 'GET', 
         //     //body: new URLSearchParams(data).toString(),

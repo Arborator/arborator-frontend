@@ -23,9 +23,9 @@ export default {
     if(token != null) console.log('token', token);
     if(session != null) {
       console.log('session', session);
-      // api.whoAmI().then(response =>{
-      //   console.log(response)} 
-      // ).catch(error => { console.log(error); });
+      api.whoAmI().then(response =>{
+        console.log('whoAmI', response)} 
+      ).catch(error => { console.log(error); });
       this.store.dispatch("checkSession", {})
         // .then(() => {
         //   this.$router.push('/');

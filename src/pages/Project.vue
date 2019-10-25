@@ -5,15 +5,19 @@
                 <q-card-section>
                     <div class="text-h6 text-center">Project: {{infos.name}}</div>
                     <div class="text-subtitle2 text-center">Admins: {{infos.admins}}</div>
+                    <!-- <div class="tet-subtitle2 text-center">Selected: {{ JSON.stringify(table.selected) }}</div> -->
+                    <div class="text-subtitle2 text-center">{{table.selected.length}}</div>
+                    <div>{{$store.getters.getSource + '/api/projects/' + name +'/upload'}}</div>
+                    <div>{{}}</div>
                 </q-card-section>
                 <q-card-section>
-                <q-tabs v-model="tab" class="text-primary">
+                <!-- <q-tabs v-model="tab" class="text-primary">
                     <q-tab label="Texts" name="texts" />
                     <q-tab label="Users" name="assignments" />
                 </q-tabs>
-                <q-separator />
-                <q-tab-panels v-model="tab" animated>
-                    <q-tab-panel name="texts">
+                <q-separator /> -->
+                <!-- <q-tab-panels v-model="tab" animated>
+                    <q-tab-panel name="texts"> -->
                         <q-table
                             ref="textsTable"
                             class="my-sticky-header-table rounded-borders"
@@ -29,10 +33,8 @@
                             :visible-columns="table.visibleColumns"
                             selection="multiple"
                             :selected.sync="table.selected"
-                            dense
                             table-header-class="text-primary"
                             card-class="shadow-8"
-                            
                             >
 
                             <template v-slot:top="props">
@@ -49,7 +51,7 @@
                                     <q-btn v-show="table.selected.length<1" flat color="default" text-color="blue-grey-8" icon="delete_forever" disabled>
                                         <q-tooltip :delay="300" content-class="bg-white text-primary">Delete selected rows</q-tooltip>
                                     </q-btn>
-                                    <q-btn v-show="table.selected.length!=0" :loading="table.loadingDelete" flat color="default" text-color="red" icon="delete_forever" >
+                                    <q-btn v-show="table.selected.length!=0" :loading="table.loadingDelete" flat color="default" text-color="red" icon="delete_forever" @click="deleteSamples()" >
                                         <q-tooltip :delay="300" content-class="bg-white text-primary">Delete selected rows</q-tooltip>
                                     </q-btn>
                                 </q-btn-group>
@@ -76,8 +78,8 @@
                             <template v-slot:body="props">
                                 
                                 <q-tr :props="props">
-                                    <q-td auto-width><q-toggle dense v-model="props.selected" /></q-td>
-                                    <q-td key="samplename" :props="props"><q-btn outline color="white" text-color="black" dense
+                                    <q-td auto-width><q-checkbox  v-model="props.selected" /></q-td>
+                                    <q-td key="samplename" :props="props"><q-btn outline color="white" text-color="black" 
                                     class="full-width" 
                                     :to="'/projects/' + infos.name + '/' + props.row.samplename" 
                                     icon-right="open_in_browser" no-caps>{{props.row.samplename}}</q-btn></q-td>
@@ -99,12 +101,12 @@
                             </template>
 
                         </q-table>
-                    </q-tab-panel>
+                    <!-- </q-tab-panel>
 
                     <q-tab-panel name="assignments">
                         
                     </q-tab-panel>
-                </q-tab-panels>
+                </q-tab-panels> -->
                 </q-card-section>
             </q-card>
 
@@ -209,10 +211,10 @@
                         <div class="text-h6 text-blue-grey-8">Drap and Drop your file below</div>
                     </q-card-section>
                     
-                    <q-card-section >
+                    <q-card-section > 
                         <q-uploader :url="$store.getters.getSource + '/api/projects/' + name +'/upload'" color="default" 
-                        label="Upload a conll file" style="max-width: 100%; max-height: 200px"  multiple accept=".conll,.conllu" with-credentials
-                        method="POST" field-name="file" :headers="[{name:'Authorization', value: 'Bearer '+this.$cookies.get('session')}]" />
+                        label="Upload a conll file" style="max-width: 100%; max-height: 200px"  multiple accept=".conll,.conllu" 
+                        method="POST" field-name="files" :headers="[{name:'Authorization', value: 'Bearer '+this.$cookies.get('session')}]" auto-upload hide-upload-btn @uploaded="getProjectInfos()" />
                     </q-card-section>
                 </q-card>
             </q-dialog>
@@ -260,7 +262,7 @@ export default {
                     { name: 'treesFrom', label: 'Trees From', sortable: true, field: 'treesFrom' },
                     { name: 'exo', label: 'Exo', sortable: true, field: 'exo' }
                 ],
-                visibleColumns: ['samplename', 'sentences', 'tokens', 'sentenceLength', 'annotators', 'validator', 'treesFrom', 'exo'],
+                visibleColumns: ['samplename', 'sentences', 'tokens', 'sentenceLength', 'annotators', 'validators', 'treesFrom', 'exo'],
                 filter: '',
                 selected: [],
                 loading: false,
@@ -273,6 +275,7 @@ export default {
                 },
                 loadingDelete: false
             },
+            selectedSamples: [],
             assignTable:{
                 data: [],
                 fields: [
@@ -321,6 +324,17 @@ export default {
         },
         getUsers(){
             api.getUsers().then( response => {  this.assignTable.data = response.data;  }).catch(error => { console.log(error); })
+        },
+        upload(files){
+            console.log('upload', files);
+        },
+        deleteSamples(){
+            for (const sample of this.table.selected) {
+                api.deleteSample(this.infos.name, sample.samplename).then( response => { this.infos = response.data; this.table.selected = []; } ).catch(error => { console.log(error); })
+            }
+        },
+        afterUpload(){
+            console.log('uploaded !');
         }
     }
 }

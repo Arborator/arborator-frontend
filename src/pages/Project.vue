@@ -19,10 +19,10 @@
                         <q-table
                             ref="textsTable"
                             class="my-sticky-header-table rounded-borders"
-                            :title="infos.name + ' has ' + infos.samples.length + ' texts and '+ infos.number_sentences + ' sentences'"
+                            title="Samples"
                             :data="infos.samples"
                             :columns="table.fields"
-                            row-key="project_name"
+                            row-key="samplename"
                             :pagination.sync="table.pagination"
                             :loading="table.loading"
                             loading-label="loading"
@@ -86,6 +86,8 @@
                                     <q-td key="sentenceLength" :props="props">{{ props.row.averageSentenceLength }}</q-td>
                                     <q-td key="annotators" :props="props">{{ props.row.roles.annotator }}</q-td>
                                     <q-td key="validators" :props="props">{{ props.row.roles.validator }}</q-td>
+                                    <q-td key="profs" :props="props">{{ props.row.roles.prof }}</q-td>
+                                    <q-td key="supervalidators" :props="props">{{ props.row.roles.supervalidator }}</q-td>
                                     <q-td key="treesFrom" :props="props">
                                         <q-list dense>
                                             <q-item v-for="source in props.row.treesFrom" :key="source" :props="source" >
@@ -212,7 +214,7 @@
                     <q-card-section > 
                         <form @submit="upload()">
                             <input type="file" class="form-control" @change="onFileChange" multiple/>
-                            <q-btn type="submit" :loading="submitting" label="upload" color="teal" class="q-mt-md">
+                            <q-btn type="submit" :loading="uploadSample.submitting" label="upload" color="teal" class="q-mt-md">
                                 <template v-slot:loading>
                                     <q-spinner-facebook/>
                                 </template>
@@ -241,6 +243,10 @@ export default {
             maximizedToggle: true,
             uploadDial: false,
             maximizedUploadToggle: false,
+            alerts: { 
+                'uploadsuccess': { color: 'positive', message: 'Upload success'},
+                'uploadfail': { color: 'negative', message: 'Upload failed', icon: 'report_problem' }
+            },
             infos: {
                 name: '',
                 is_private: false,
@@ -262,6 +268,8 @@ export default {
                     { name: 'sentenceLength', label: 'Sentence Length', sortable: true, field: 'averageSentenceLength' },
                     { name: 'annotators', label: 'Annotators', sortable: true, field: 'roles.annotator' },
                     { name: 'validators', label: 'Validators', sortable: true, field: 'roles.validator' },
+                    { name: 'profs', label: 'Profs', sortable: true, field: 'roles.prof' },
+                    { name: 'supervalidators', label: 'Super Validators', sortable: true, field: 'roles.supervalidator' },
                     { name: 'treesFrom', label: 'Trees From', sortable: true, field: 'treesFrom' },
                     { name: 'exo', label: 'Exo', sortable: true, field: 'exo' }
                 ],
@@ -299,8 +307,11 @@ export default {
                 },
                 loadingDelete: false
             },
-            submitting: false,
-            attachment: { name: null, file: null}
+            uploadSample: {
+                submitting: false,
+                attachment: { name: null, file: null}
+            }
+            
         }
     },
     mounted(){
@@ -331,17 +342,32 @@ export default {
         },
         upload(){
             var form = new FormData();
-            for(const file of this.attachment.file){ form.append('files',file); }
+            for(const file of this.uploadSample.attachment.file){ form.append('files',file); }
             form.append('import_user',Store.getters.getUserInfos.username);
-            api.uploadSample(this.name, form).then( response => { this.attachment.file = []; this.getProjectInfos(); }).catch(error => {console.log(error);});
+            api.uploadSample(this.name, form).then( response => { this.uploadSample.attachment.file = []; this.getProjectInfos(); this.uploadDial = false; }).catch(error => {console.log(error);});
         },
         onFileChange(event) {
-            this.attachment.file = event.target.files;
+            this.uploadSample.attachment.file = event.target.files;
         },
         deleteSamples(){
             for (const sample of this.table.selected) {
-                api.deleteSample(this.infos.name, sample.samplename).then( response => { this.infos = response.data; this.table.selected = []; } ).catch(error => { console.log(error); });
+                api.deleteSample(this.infos.name, sample.samplename).then( response => { this.infos = response.data; this.table.selected = []; this.showNotif('top-right', 'uploadsuccess');} ).catch(error => { console.log(error); this.showNotif('top-right', 'uploadfail'); });
             }
+        },
+        showNotif (position, alert) {
+            const { color, textColor, multiLine, icon, message, avatar, actions } = this.alerts[alert];
+            const buttonColor = color ? 'white' : void 0;
+            this.$q.notify({
+                color,
+                textColor,
+                icon: icon,
+                message,
+                position,
+                avatar,
+                multiLine,
+                actions: actions,
+                timeout: 2000
+            })
         }
     }
 }

@@ -65,10 +65,13 @@ export default new Vuex.Store({
                     })
             });
         },
+        setUser({commit}, {user}){
+            // commit('login_success', { userName: user.username});
+            commit('update_user', {user: user} );
+        },
         checkSession({commit}, {sessionid}){
             return new Promise((resolve, object) => {
                 api.whoAmI().then(response => {
-                        console.log('WhoAmI?', response);
                         commit('login_success', {});
                         commit('update_user', {user : response.data} );
                     }).catch(error => { console.log(error); });

@@ -14,7 +14,10 @@ export default {
   name: 'App',
   data () {
     return {
-      store: Store
+      store: Store,
+      alerts: {
+        'welcomeback': { color: 'accent', message: `Welcome back! `+this.$store.getters.getUserInfos.username, icon: 'mood'}
+      }
     }
   },
   mounted() {
@@ -22,11 +25,12 @@ export default {
     var session = VueCookies.get("session");
     if(token != null) console.log('token', token);
     if(session != null) {
-      console.log('session', session);
       api.whoAmI().then(response =>{
-        console.log('whoAmI', response)} 
-      ).catch(error => { console.log(error); });
-      this.store.dispatch("checkSession", {})
+        // this.$store.dispatch("setUser", response.data);
+        this.store.dispatch("checkSession", {});
+        this.showNotif('bottom', 'welcomeback' );
+      }).catch(error => { console.log(error); });
+      // this.store.dispatch("checkSession", {});
         // .then(() => {
         //   this.$router.push('/');
         // })
@@ -40,7 +44,22 @@ export default {
           return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
       }).join(''));
       return JSON.parse(jsonPayload);
-    }
+    },
+    showNotif (position, alert) {
+            const { color, textColor, multiLine, icon, message, avatar, actions } = this.alerts[alert];
+            const buttonColor = color ? 'white' : void 0;
+            this.$q.notify({
+                color,
+                textColor,
+                icon: icon,
+                message,
+                position,
+                avatar,
+                multiLine,
+                actions: actions,
+                timeout: 2000
+            })
+        }
   }
 }
 </script>

@@ -16,7 +16,7 @@ export default {
     return {
       store: Store,
       alerts: {
-        'welcomeback': { color: 'accent', message: `Welcome back! `+this.$store.getters.getUserInfos.username, icon: 'mood'}
+        'welcomeback': { color: 'accent', message: `Welcome back to Arborator!`, icon: 'mood'}
       }
     }
   },

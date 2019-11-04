@@ -43,7 +43,7 @@
                                     <q-btn flat color="default" text-color="blue-grey-8" icon="person_add" :disabled="table.selected.length<1" @click="assignDial = true">
                                         <q-tooltip :delay="300" content-class="text-white bg-primary">Assign</q-tooltip>
                                     </q-btn>
-                                    <q-btn flat  color="default" text-color="blue-grey-8" icon="cloud_download" :disabled="table.selected.length<1">
+                                    <q-btn flat  color="default" text-color="blue-grey-8" icon="cloud_download" :disabled="table.selected.length<1" @click="exportSamplesZip()">
                                         <q-tooltip :delay="300" content-class="text-white bg-primary">Export</q-tooltip>
                                     </q-btn>
                                     <q-btn v-show="table.selected.length<1" flat color="default" text-color="blue-grey-8" icon="delete_forever" disabled>
@@ -245,7 +245,9 @@ export default {
             maximizedUploadToggle: false,
             alerts: { 
                 'uploadsuccess': { color: 'positive', message: 'Upload success'},
-                'uploadfail': { color: 'negative', message: 'Upload failed', icon: 'report_problem' }
+                'uploadfail': { color: 'negative', message: 'Upload failed', icon: 'report_problem' },
+                'deletesuccess': { color: 'positive', message: 'Delete success'},
+                'deletefail': { color: 'negative', message: 'Delete failed', icon: 'report_problem'}
             },
             infos: {
                 name: '',
@@ -342,17 +344,24 @@ export default {
         },
         upload(){
             var form = new FormData();
+            this.uploadSample.submitting = true;
             for(const file of this.uploadSample.attachment.file){ form.append('files',file); }
             form.append('import_user',Store.getters.getUserInfos.username);
-            api.uploadSample(this.name, form).then( response => { this.uploadSample.attachment.file = []; this.getProjectInfos(); this.uploadDial = false; }).catch(error => {console.log(error);});
+            api.uploadSample(this.name, form).then( response => { this.uploadSample.attachment.file = []; this.getProjectInfos(); this.uploadDial = false; this.uploadSample.submitting = false; this.showNotif('top-right', 'uploadsuccess');})
+            .catch(error => {console.log(error); this.uploadSample.submitting = false; this.uploadDial = false;});
         },
         onFileChange(event) {
             this.uploadSample.attachment.file = event.target.files;
         },
         deleteSamples(){
             for (const sample of this.table.selected) {
-                api.deleteSample(this.infos.name, sample.samplename).then( response => { this.infos = response.data; this.table.selected = []; this.showNotif('top-right', 'uploadsuccess');} ).catch(error => { console.log(error); this.showNotif('top-right', 'uploadfail'); });
+                api.deleteSample(this.infos.name, sample.samplename).then( response => { this.infos = response.data; this.table.selected = []; this.showNotif('top-right', 'deletesuccess'); } ).catch(error => { console.log(error); this.showNotif('top-right', 'deletefail'); });
             }
+        },
+        exportSamplesZip(){
+            var samplenames = [];
+            for (const sample of this.table.selected) { samplenames.push(sample.samplename) }
+            api.exportSamplesZip(samplenames, this.name);
         },
         showNotif (position, alert) {
             const { color, textColor, multiLine, icon, message, avatar, actions } = this.alerts[alert];

@@ -12,39 +12,9 @@
         </q-page-sticky>
 
         <q-dialog v-model="searchDialog" seamless position="bottom" >
-            <q-card style="width: 100%">
-
-                <q-bar class="bg-primary text-white">
-                    <div class="text-weight-bold">Grew Matcher</div>
-                    <q-space />
-                    <q-btn flat dense icon="close" v-close-popup />
-                </q-bar>
-                
-                <q-card-section>
-                    <q-form @submit="onSearch" @reset="onResetSearch" class="q-gutter-md" >
-                    <div class="q-pa-md">
-                        <div class="row">
-                            <div class="col">
-                            <q-input filled v-model="searchPattern" label="Search query" type="textarea" hint="Grew query syntax" lazy-rules :rules="[ val => val && val.length > 0 || 'Please type something']" />
-                            <q-space />
-                            <q-btn color="primary" type="submit" label="Search" />
-                            </div>
-                            <div class="col">
-                                <q-list bordered separator>
-                                    <q-item v-for="query in queries" :key="query.name" clickable v-ripple @click="changeSearchPattern(query.pattern)">
-                                        <q-item-section>
-                                            {{query.name}}
-                                        </q-item-section>
-                                    </q-item>
-                                </q-list>
-                            </div>
-                        </div>
-                    </div>
-                    </q-form>
-                </q-card-section>
-                
-            </q-card>
+            <grew-request-card :parentOnSearch="onSearch" ></grew-request-card>
         </q-dialog>
+
     </q-page>
 </template>
 
@@ -55,11 +25,12 @@ Vue.config.ignoredElements = ['conll'];
 import { openURL } from 'quasar'
 import api from '../boot/backend-api';
 import Store from '../store/index';
-import SentenceCard from '../components/SentenceCard'
+import SentenceCard from '../components/SentenceCard';
+import GrewRequestCard from '../components/GrewRequestCard';
 
 export default {
     components: {
-        SentenceCard
+        SentenceCard, GrewRequestCard
     },
     props:['name', 'sample'],
     data(){
@@ -116,8 +87,8 @@ pattern {
             .then( response => { this.samples = response.data })
             .catch(error => {console.log(error)});
         },
-        onSearch(){
-            var query = { pattern: this.searchPattern };
+        onSearch(searchPattern){
+            var query = { pattern: searchPattern };
             api.search(this.name, query)
             .then(response => { 
                 console.log(response);
@@ -144,12 +115,7 @@ pattern {
             })
             .catch(error => { console.log(error) })
         },
-        changeSearchPattern(pattern) {
-            this.searchPattern = pattern;
-        },
-        onResetSearch(){
-            this.searchPattern = '';
-        }
+        closeSearchDialog(searchDialog){ searchDialog = this.searchDialog; }
     }
 }
 

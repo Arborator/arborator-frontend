@@ -110,6 +110,14 @@
                 </q-card-section>
             </q-card>
 
+            <q-page-sticky position="bottom">
+                <q-btn fab icon="search" color="primary" @click="searchDial = true"/>
+            </q-page-sticky>
+
+            <q-dialog v-model="searchDial" seamless position="bottom" >
+                <grew-request-card :parentOnSearch="onSearch" ></grew-request-card>
+            </q-dialog>
+
             <q-dialog v-model="assignDial" persistent :maximized="maximizedToggle" transition-show="slide-up" transition-hide="slide-down" >
                 <q-card class="bg-blue-grey-1 text-black" style="max-width: 100vw;">
                     <q-bar>
@@ -233,8 +241,12 @@
 import { openURL } from 'quasar'
 import api from '../boot/backend-api';
 import Store from '../store/index';
+import GrewRequestCard from '../components/GrewRequestCard';
 
 export default {
+    components: {
+        GrewRequestCard
+    },
     props: ['name'],
     data(){
         return {
@@ -242,6 +254,7 @@ export default {
             assignDial: false,
             maximizedToggle: true,
             uploadDial: false,
+            searchDial: false,
             maximizedUploadToggle: false,
             alerts: { 
                 'uploadsuccess': { color: 'positive', message: 'Upload success'},
@@ -361,7 +374,20 @@ export default {
         exportSamplesZip(){
             var samplenames = [];
             for (const sample of this.table.selected) { samplenames.push(sample.samplename) }
-            api.exportSamplesZip(samplenames, this.name);
+            api.exportSamplesZip(samplenames, this.name).then( response => {
+                const url = window.URL.createObjectURL(new Blob([response.data]));
+                const link = document.createElement('a');
+                link.href = url;
+                link.setAttribute('download', 'dump.zip');
+                document.body.appendChild(link);
+                link.click();
+                return [];
+            }).catch(error => {
+                return [];
+            });
+        },
+        onSearch(pattern){
+            console.log('on search for ', pattern);
         },
         showNotif (position, alert) {
             const { color, textColor, multiLine, icon, message, avatar, actions } = this.alerts[alert];

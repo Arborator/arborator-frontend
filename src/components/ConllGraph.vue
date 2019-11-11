@@ -1,6 +1,6 @@
 <template>
     <div class="sentencebox">
-      <svg :id="id"></svg>
+      <svg :id="id" :ref="id"></svg>
 
 
       <q-dialog
@@ -66,7 +66,13 @@ export default {
 		        cats:["ADJ", "ADP", "ADV", "AUX", "CCONJ", "DET", "INTJ", "NOUN", "NUM", "PART", "PRON", "PROPN", "PUNCT", "SCONJ", "VERB", "X"],
             },
             relDialog: false,
-            maximizedToggle: false
+            maximizedToggle: false,
+            snapInfos: {
+              s:null,
+              devid:null,
+              govid:null,
+              relation:''
+            }
             
         }
     },
@@ -98,6 +104,14 @@ export default {
         sendSelectedRel(){
             var relationStr = this.infos.relation.join("");
             this.draft.setRel(relationStr);
+        },
+        triggerRelationChange(s, depid, govid, relation){
+          // from snap
+          this.snapInfos = {s:s, depid:depid, govid:govid, relation:relation};
+          this.relDialog = !this.relDialog;
+        },
+        triggerChangeRel(){
+          this.draft.relationChanged(this.snapInfos.s, this.snapInfos.depid, this.snapInfos.govid, this.snapInfos.relation);
         }
     }
 }

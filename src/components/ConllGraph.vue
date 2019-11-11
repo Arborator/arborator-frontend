@@ -71,7 +71,8 @@ export default {
               s:null,
               devid:null,
               govid:null,
-              relation:''
+              relation:'',
+              relations: []
             }
             
         }
@@ -108,11 +109,14 @@ export default {
         },
         triggerRelationChange(s, depid, govid, relation){
           // from snap
-          this.snapInfos = {s:s, depid:depid, govid:govid, relation:relation};
+          var tmp = relation.split(':');
+          var tmp2 = tmp[1].split('@');
+          var rel1 = tmp[0]; var rel2 = ':'+tmp2[0]; var rel3 = '@'+tmp2[1];
+          this.snapInfos = {s:s, depid:depid, govid:govid, relation:relation, relations: [rel1, rel2, rel3]};
           this.relDialog = !this.relDialog;
         },
         triggerChangeRel(){
-          this.draft.relationChanged(this.snapInfos.s, this.snapInfos.depid, this.snapInfos.govid, this.snapInfos.relation);
+          this.draft.relationChanged(this.snapInfos.s, this.snapInfos.depid, this.snapInfos.govid, this.infos.relation.join(""));
         }
     }
 }

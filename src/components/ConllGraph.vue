@@ -7,11 +7,12 @@
         v-model="relDialog"
         persistent
         :maximized="maximizedToggle"
-        transition-show="slide-up"
-        transition-hide="slide-down"
+        transition-show="fade"
+        transition-hide="fade"
       >
-        <q-card class="bg-white text-black">
-          <q-bar>
+        <q-card class="bg-white text-black" style="width: 100%">
+          <q-bar class="bg-primary text-white">
+            <div class="text-weight-bold">Tag Window</div>
             <q-space />
 
             <q-btn dense flat icon="minimize" @click="maximizedToggle = false" :disable="!maximizedToggle">
@@ -26,13 +27,18 @@
           </q-bar>
 
           <q-card-section>
-            <div class="text-h6">Relation selection</div>
+            <div class="text-h6 text-primary">Relation selection</div>
           </q-card-section>
 
           <q-card-section>
-              <v-select v-for="(relist, index) in options.relations" :key="index" v-model="infos.relation[index]" :options="relist"></v-select>
-              <q-btn class="primary" @click="triggerChangeRel()" label="Ok" v-close-popup/>
+              <div class="q-pa-md row items-start q-gutter-md">
+                <v-select v-for="(relist, index) in options.relations" :key="index" v-model="infos.relation[index]" :options="relist"></v-select>
+              </div>
           </q-card-section>
+          <q-separator/>
+          <q-card-actions>
+            <q-btn color="primary" @click="triggerChangeRel()" label="Ok" v-close-popup/>
+          </q-card-actions>
         </q-card>
       </q-dialog>
 

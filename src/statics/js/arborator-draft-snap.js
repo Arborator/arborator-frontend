@@ -120,6 +120,10 @@ ArboratorDraft.prototype.relationChanged = function(s, depid, govid, relation){
 	relationChanged(s, depid, govid, relation);
 }
 
+ArboratorDraft.prototype.catChanged = function(s, depid, cat){
+	catChanged(s, depid, cat);
+}
+
 // private functions
 
 
@@ -239,15 +243,10 @@ var stopdrag = function(e) {
 		if (dragsun) {dragover = nr; nr=0; }
 		
 		oldRelation = Object.values(this.paper.root.treedata.tree[dragover]['gov'])[0]		
-		// newtree = getNewFunction(this.paper.root.treedata.tree, oldFunction, dragover, nr, (e.shiftKey || e.ctrlKey)) // todo: maybe include adding of secondary governor!!!
 
-		relationChanged(this.paper, nr, dragover, oldRelation )
-
-		// log("this",this,this.paper,this.paper.root)
-		// this.paper.root.treedata.tree = newtree;
-		// this.paper.clear();
-		// $("#"+this.paper.root.id).html("")
-		// refresh(this.paper.root.id, treeDataToConll(this.paper.root.treedata));
+		// relationChanged(this.paper, nr, dragover, oldRelation )
+		this.paper.root.treedata.triggerRelationChange(this.paper, this, nr, dragover, oldRelation);
+		
 		// $('#conllarea').text(	);
 	}
 	if(dragsun!=null) {dragsun.remove();dragsun=null}
@@ -255,40 +254,34 @@ var stopdrag = function(e) {
 }
 
 var categoryclick = function(e) {
-	// relationChanged(this.paper, this.nr, this.govid, this.relation+"kim" )
-	// this.paper.root.treedata.toggleRelDialog(); // TODO: doesn't work second time!
-	log("categoryclick",e,this)
-	// newtree = getNewFunction(this.paper.root.treedata.tree, this.relation, this.govid, this.nr, false)
+	log("categoryclick",e,this);
+	this.attr({class:"deprelselected"})
+	this.paper.root.treedata.triggerCategoryChange(this.paper, this, this.nr, this.cat); 
 }
 
 var relationclick = function(e) {
 	// relationChanged(this.paper, this.nr, this.govid, this.relation+"kim" )
-
-	this.paper.root.treedata.triggerRelationChange(this.paper, this.nr, this.govid, this.relation+"kim"); // TODO: doesn't work second time!
-	// log("relationclick",e,this)
-	// newtree = getNewFunction(this.paper.root.treedata.tree, this.relation, this.govid, this.nr, false)
-}
-
-function getNewFunction(tree, oldFunction, newDep, newGov, add) {
-	log("getNewFunction", oldFunction, newDep, newGov, add)
+	this.attr({class:"deprelselected"})
+	this.paper.root.treedata.triggerRelationChange(this.paper, this, this.nr, this.govid, this.relation); 
 	
-	newFunction = oldFunction // TODO: make menu!
-
-	if (add) tree[newDep]['gov'][newGov]=newFunction
-	else {tree[newDep]['gov']={};
-		tree[newDep]['gov'][newGov]=newFunction;
-		}	
-
-	log("tree[newDep]['gov']",tree[newDep]['gov'])
-	return tree
+	// log("relationclick",e,this)
 }
 
-function relationChanged(s, depid, govid, relation ) {
+function relationChanged(s, depid, govid, relation ) {  // todo: maybe include adding of secondary governor!!!
+	// called from ConllGraph.vue 
 	s.root.treedata.tree[depid]['gov']={}
 	s.root.treedata.tree[depid]['gov'][govid]=relation
 	s.paper.clear();
 	drawsnap(s.id, s.root.treedata, shownfeatures)
 }
+
+function catChanged(s, depid, cat ) {  
+	// called from ConllGraph.vue 
+	s.root.treedata.tree[depid]['cat']=cat;
+	s.paper.clear();
+	drawsnap(s.id, s.root.treedata, shownfeatures)
+}
+
 
 
 function drawsnap(idSVG, treedata, shownfeatures) {
@@ -323,8 +316,6 @@ function drawsnap(idSVG, treedata, shownfeatures) {
 		}
 	});
 	var maxlevel = Math.max(...levels);
-	// var firstTextFontSize = 12;//parseInt(getComputedStyle(allstexts[shownfeatures[0]][0].node).getPropertyValue('font-size'));
-	
 	// runningy = basey;
 	// log('*************levelheight',leveldistance,'s =',s, 45646454,s.parent(),s.parent().node);
 
@@ -352,10 +343,13 @@ function drawsnap(idSVG, treedata, shownfeatures) {
 			stexts.push(sword);
 			if (feati==0) {
 				sword.attr({cursor: "move", cursor: "grab"}).drag( dragging, startdrag, stopdrag); // dragging only the first line (normally the tokens)
+				
 				droppables.push(sword)
 			}
 			if (shofea == catFeatureName) {
 				sword.attr({cursor: "pointer"}).click( categoryclick );
+				sword.nr = nr;
+				sword.cat =  word[shofea];
 			}
 			
 			nextx = Math.max(xpositions[ind+1] || 0, xpositions[ind]+sword.getBBox().w + sword.wordDistance);

@@ -66,6 +66,10 @@
               <q-btn class="primary" @click="ondialoghide()" label="Cancel" v-close-popup style="width: 50%; margin-left: auto;margin-right: auto;" />
               <q-btn class="primary" @click="onchangecat()" label="Ok" v-close-popup style="width: 50%; margin-left: auto;margin-right: auto;" />
           </q-card-section>
+          <q-separator/>
+          <q-card-actions>
+            <q-btn color="primary" @click="triggerChangeRel()" label="Ok" v-close-popup/>
+          </q-card-actions>
         </q-card>
       </q-dialog>
 

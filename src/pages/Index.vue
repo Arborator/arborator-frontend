@@ -57,7 +57,7 @@
 </style>
 
 <script>
-import { openURL } from 'quasar'
+import { openURL } from 'quasar';
 import api from '../boot/backend-api';
 import Store from '../store/index';
 import ProjectCard from '../components/ProjectCard.vue';
@@ -80,6 +80,7 @@ export default {
     this.getProjects();
   },
   methods:{
+    openURL,
     getProjects(){
       api.getProjects()
       .then(response => { this.projects = response.data; this.visibleProjects = response.data;})

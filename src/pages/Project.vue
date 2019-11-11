@@ -1,5 +1,11 @@
 <template>
     <q-page>
+        <div class="q-pa-md q-gutter-sm">
+            <q-breadcrumbs>
+            <q-breadcrumbs-el icon="home" to="/" />
+            <q-breadcrumbs-el :label="name" icon="work" :to="'/projects/'+name" />
+            </q-breadcrumbs>
+        </div>
         <div class="q-pa-md row q-gutter-md flex flex-center">
             <q-card flat style="max-width: 100%">
                 <q-card-section>

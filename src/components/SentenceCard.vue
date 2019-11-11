@@ -1,5 +1,15 @@
 <template>
     <q-card :id="index" style="max-width:99vw">
+        <q-toolbar class="text-primary">
+            <q-btn flat round dense icon="save" :disable="!dirty" > <q-tooltip>Save this tree</q-tooltip> </q-btn>
+            <q-btn flat round dense icon="archive" ><q-tooltip>Export</q-tooltip></q-btn>
+            <q-btn flat round dense icon="undo" ><q-tooltip>Undo</q-tooltip></q-btn>
+            <q-btn flat round dense icon="redo" ><q-tooltip>Redo</q-tooltip></q-btn>
+            <q-toolbar-title>
+            </q-toolbar-title>
+
+            <q-btn flat round dense icon="more_vert" />
+        </q-toolbar>
         <q-card-section>
             <q-chip icon="bookmark" class="text-center" dense> {{index}} </q-chip>{{sentence}}
             <q-tabs v-model="tab" class="text-teal flex-center" dense>
@@ -32,7 +42,8 @@ export default {
     props: ['index', 'sample', 'sentenceId', 'sentence'],
     data() {
         return {
-            tab:''
+            tab:'',
+            dirty: true
         }
     },
     mounted() {

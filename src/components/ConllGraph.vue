@@ -109,9 +109,13 @@ export default {
         },
         triggerRelationChange(s, depid, govid, relation){
           // from snap
-          var tmp = relation.split(':');
-          var tmp2 = tmp[1].split('@');
-          var rel1 = tmp[0]; var rel2 = ':'+tmp2[0]; var rel3 = '@'+tmp2[1];
+          if(relation != null){
+            var tmp = relation.split(':');
+            if(tmp.length > 1) var tmp2 = tmp[1].split('@');
+            var rel1 = tmp[0]; 
+            var rel2 = ':'+tmp2[0]; 
+            if(tmp2.length > 1) var rel3 = '@'+tmp2[1];
+          }
           this.snapInfos = {s:s, depid:depid, govid:govid, relation:relation, relations: [rel1, rel2, rel3]};
           this.relDialog = !this.relDialog;
         },

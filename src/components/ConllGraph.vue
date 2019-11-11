@@ -109,14 +109,23 @@ export default {
         },
         triggerRelationChange(s, depid, govid, relation){
           // from snap
-          if(relation != null){
-            var tmp = relation.split(':');
-            if(tmp.length > 1) var tmp2 = tmp[1].split('@');
-            var rel1 = tmp[0]; 
-            var rel2 = ':'+tmp2[0]; 
-            if(tmp2.length > 1) var rel3 = '@'+tmp2[1];
+          var elements = relation.split(/[:@]/);
+          var chars = relation.split('');
+          var separators = [];
+          var listSeps = [':', '@'];
+          // for (var i = 0; i<chars.length ; i++){ 
+          //   // if(listSeps.includes(chars[i])) 
+          //   console.log('youhou', chars[i]);
+          //     // separators.push(chars[i]); 
+          // }
+          for (var i = 0; i<chars.length ; i++){ 
+            if(/[:@]/.test(chars[i])) 
+              separators.push(chars[i]); 
           }
-          this.snapInfos = {s:s, depid:depid, govid:govid, relation:relation, relations: [rel1, rel2, rel3]};
+          console.log(separators , 'separators');
+          var listRel = [];
+          for (var i = 0; i<elements.length; i++){ listRel.push(elements[i]); }
+          this.snapInfos = {s:s, depid:depid, govid:govid, relation:relation, relations: listRel};
           this.relDialog = !this.relDialog;
         },
         triggerChangeRel(){

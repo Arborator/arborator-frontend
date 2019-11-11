@@ -126,6 +126,7 @@ export default {
           var listRel = [];
           for (var i = 0; i<elements.length; i++){ listRel.push(elements[i]); }
           this.snapInfos = {s:s, depid:depid, govid:govid, relation:relation, relations: listRel};
+          this.infos.relation = listRel;
           this.relDialog = !this.relDialog;
         },
         triggerChangeRel(){

@@ -98,7 +98,7 @@ ArboratorDraft.prototype.emptyThenRefresh = function(content, reverse = false, t
 
 ArboratorDraft.prototype.getSvg = function(strConll, id){
 	log('strConll', strConll)
-	var treedata = conllNodesToTree(strConll);
+	var treedata = conllNodesToTree(strConll); // treedata is object: {tree:tree, uextra:sentencefeatures, sentence, svg:snap-object}
 	treedata['svg'] = drawsnap(id, treedata, shownfeatures);
 	// tree['svg'] = draw(tree.tree, id);
 	return treedata;
@@ -115,7 +115,10 @@ ArboratorDraft.prototype.setRel = function(rel){
 	log(rel);
 	log('setRel END');
 } 
- 
+
+ArboratorDraft.prototype.relationChanged = function(s, depid, govid, relation){
+	relationChanged(s, depid, govid, relation);
+}
 
 // private functions
 
@@ -235,13 +238,16 @@ var stopdrag = function(e) {
 		nr = this.nr;
 		if (dragsun) {dragover = nr; nr=0; }
 		
-		oldFunction = Object.values(this.paper.root.treedata.tree[dragover]['gov'])[0]		
-		newtree = getNewFunction(this.paper.root.treedata.tree, oldFunction, dragover, nr, (e.shiftKey || e.ctrlKey))
+		oldRelation = Object.values(this.paper.root.treedata.tree[dragover]['gov'])[0]		
+		// newtree = getNewFunction(this.paper.root.treedata.tree, oldFunction, dragover, nr, (e.shiftKey || e.ctrlKey)) // todo: maybe include adding of secondary governor!!!
+
+		relationChanged(this.paper, nr, dragover, oldRelation )
+
 		// log("this",this,this.paper,this.paper.root)
-		this.paper.root.treedata.tree = newtree;
-		this.paper.clear();
+		// this.paper.root.treedata.tree = newtree;
+		// this.paper.clear();
 		// $("#"+this.paper.root.id).html("")
-		refresh(this.paper.root.id, treeDataToConll(this.paper.root.treedata));
+		// refresh(this.paper.root.id, treeDataToConll(this.paper.root.treedata));
 		// $('#conllarea').text(	);
 	}
 	if(dragsun!=null) {dragsun.remove();dragsun=null}
@@ -249,16 +255,16 @@ var stopdrag = function(e) {
 }
 
 var categoryclick = function(e) {
-	relationChanged(this.paper, this.nr, this.govid, this.relation+"kim" )
+	// relationChanged(this.paper, this.nr, this.govid, this.relation+"kim" )
 	// this.paper.root.treedata.toggleRelDialog(); // TODO: doesn't work second time!
-	log("relationclick",e,this)
+	log("categoryclick",e,this)
 	// newtree = getNewFunction(this.paper.root.treedata.tree, this.relation, this.govid, this.nr, false)
 }
 
 var relationclick = function(e) {
 	// relationChanged(this.paper, this.nr, this.govid, this.relation+"kim" )
 
-	this.paper.root.treedata.triggerRelationChange(); // TODO: doesn't work second time!
+	this.paper.root.treedata.triggerRelationChange(this.paper, this.nr, this.govid, this.relation+"kim"); // TODO: doesn't work second time!
 	// log("relationclick",e,this)
 	// newtree = getNewFunction(this.paper.root.treedata.tree, this.relation, this.govid, this.nr, false)
 }
@@ -295,7 +301,6 @@ function drawsnap(idSVG, treedata, shownfeatures) {
 	
 	var s=Snap(document.getElementById(idSVG));
 	
-	// s.text(10,10,'gael')
 	// s.attr("width", "100%");
 	// s.attr("height", "100%");
 	// s.parent().attr("height", "45px")
@@ -348,6 +353,9 @@ function drawsnap(idSVG, treedata, shownfeatures) {
 			if (feati==0) {
 				sword.attr({cursor: "move", cursor: "grab"}).drag( dragging, startdrag, stopdrag); // dragging only the first line (normally the tokens)
 				droppables.push(sword)
+			}
+			if (shofea == catFeatureName) {
+				sword.attr({cursor: "pointer"}).click( categoryclick );
 			}
 			
 			nextx = Math.max(xpositions[ind+1] || 0, xpositions[ind]+sword.getBBox().w + sword.wordDistance);
@@ -420,18 +428,19 @@ function drawsnap(idSVG, treedata, shownfeatures) {
 				srel.nr = nr;
 				srel.govid = govid;
 				srel.relation = word["gov"][govid];
-				// if (govid==0) srel.attr({'y':  firstTextFontSize})
-				if (govid==0) srel.attr({'y':  textstarty})
+				if (govid==0) srel.attr({'y':  firstTextFontSize})
+				// if (govid==0) srel.attr({'y':  textstarty})
 				else srel.attr({'x':  xmidf - srel.getBBox().w/2});
 			}
 		}
 		ind += 1;
 	});
-	log(8888)
+
 	s.attr("height", (maxy2)+"px");
 	s.attr("width", (maxx2)+"px");
-	
 	s.attr("overflow", "auto");
+
+	log(8888,"drawsnap done")
 	return s;
 
 }
@@ -497,7 +506,9 @@ function treeDataToConll(treedata)
 }
 
 function conllNodesToTree(treeline) {
-	// reads a conll representation of a single tree TODO: replace jquery by d3
+	// reads a conll representation of a single tree 
+	// returns object: {tree:tree, uextra:sentencefeatures, sentence}
+	//TODO: replace jquery by d3
 	
 	var nodes = treeline.split('\n');
 	if(reverseMode)nodes.reverse();

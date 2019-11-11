@@ -1,40 +1,40 @@
 <template>
     <div class="sentencebox">
-    <svg :id="id"></svg>
+      <svg :id="id" :ref="id"></svg>
 
 
-    <q-dialog
-      v-model="relDialog"
-      persistent
-      :maximized="maximizedToggle"
-      transition-show="slide-up"
-      transition-hide="slide-down"
-    >
-      <q-card class="bg-white text-black">
-        <q-bar>
-          <q-space />
+      <q-dialog
+        v-model="relDialog"
+        persistent
+        :maximized="maximizedToggle"
+        transition-show="slide-up"
+        transition-hide="slide-down"
+      >
+        <q-card class="bg-white text-black">
+          <q-bar>
+            <q-space />
 
-          <q-btn dense flat icon="minimize" @click="maximizedToggle = false" :disable="!maximizedToggle">
-            <q-tooltip v-if="maximizedToggle" content-class="bg-white text-primary">Minimize</q-tooltip>
-          </q-btn>
-          <q-btn dense flat icon="crop_square" @click="maximizedToggle = true" :disable="maximizedToggle">
-            <q-tooltip v-if="!maximizedToggle" content-class="bg-white text-primary">Maximize</q-tooltip>
-          </q-btn>
-          <q-btn dense flat icon="close" v-close-popup>
-            <q-tooltip content-class="bg-white text-primary">Close</q-tooltip>
-          </q-btn>
-        </q-bar>
+            <q-btn dense flat icon="minimize" @click="maximizedToggle = false" :disable="!maximizedToggle">
+              <q-tooltip v-if="maximizedToggle" content-class="bg-white text-primary">Minimize</q-tooltip>
+            </q-btn>
+            <q-btn dense flat icon="crop_square" @click="maximizedToggle = true" :disable="maximizedToggle">
+              <q-tooltip v-if="!maximizedToggle" content-class="bg-white text-primary">Maximize</q-tooltip>
+            </q-btn>
+            <q-btn dense flat icon="close" v-close-popup>
+              <q-tooltip content-class="bg-white text-primary">Close</q-tooltip>
+            </q-btn>
+          </q-bar>
 
-        <q-card-section>
-          <div class="text-h6">Relation selection</div>
-        </q-card-section>
+          <q-card-section>
+            <div class="text-h6">Relation selection</div>
+          </q-card-section>
 
-        <q-card-section>
-            <v-select v-for="(relist, index) in options.relations" :key="index" v-model="infos.relation[index]" :options="relist"></v-select>
-            <q-btn class="primary" @click="sendSelectedRel()" label="Ok" />
-        </q-card-section>
-      </q-card>
-    </q-dialog>
+          <q-card-section>
+              <v-select v-for="(relist, index) in options.relations" :key="index" v-model="infos.relation[index]" :options="relist"></v-select>
+              <q-btn class="primary" @click="sendSelectedRel()" label="Ok" />
+          </q-card-section>
+        </q-card>
+      </q-dialog>
 
 
     </div>
@@ -66,8 +66,14 @@ export default {
 		        cats:["ADJ", "ADP", "ADV", "AUX", "CCONJ", "DET", "INTJ", "NOUN", "NUM", "PART", "PRON", "PROPN", "PUNCT", "SCONJ", "VERB", "X"],
             },
             relDialog: false,
-            maximizedToggle: false
-
+            maximizedToggle: false,
+            snapInfos: {
+              s:null,
+              devid:null,
+              govid:null,
+              relation:''
+            }
+            
         }
     },
     mounted(){
@@ -98,6 +104,14 @@ export default {
         sendSelectedRel(){
             var relationStr = this.infos.relation.join("");
             this.draft.setRel(relationStr);
+        },
+        triggerRelationChange(s, depid, govid, relation){
+          // from snap
+          this.snapInfos = {s:s, depid:depid, govid:govid, relation:relation};
+          this.relDialog = !this.relDialog;
+        },
+        triggerChangeRel(){
+          this.draft.relationChanged(this.snapInfos.s, this.snapInfos.depid, this.snapInfos.govid, this.snapInfos.relation);
         }
     }
 }

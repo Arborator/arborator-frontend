@@ -255,8 +255,10 @@ var stopdrag = function(e) {
 
 var categoryclick = function(e) {
 	log("categoryclick",e,this);
-	this.attr({class:"deprelselected"})
+	this.attr({class:"catselected"})
+	log("categoryclick2",e,this);
 	this.paper.root.treedata.triggerCategoryChange(this.paper, this, this.nr, this.cat); 
+	log("categoryclick3",e,this);
 }
 
 var relationclick = function(e) {

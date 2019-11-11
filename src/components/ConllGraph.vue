@@ -34,10 +34,10 @@
           </q-card-section>
           <!-- <q-bar> -->
             <q-space />
-            <q-card-section >
-              <q-btn class="primary" @click="ondialoghide()" label="Cancel" v-close-popup  style="width: 50%; margin-left: auto;margin-right: auto;" />
-              <q-btn class="primary" @click="onchangerel()" label="Ok" v-close-popup style="width: 50%; margin-left: auto;margin-right: auto;" />
-            </q-card-section>
+            <q-card-actions >
+              <q-btn @click="ondialoghide()" label="Cancel" v-close-popup  style="width: 45%; margin-left: auto;margin-right: auto;" />
+              <q-btn color="primary" @click="onchangerel()" label="Ok" v-close-popup style="width: 45%; margin-left: auto;margin-right: auto;" />
+            </q-card-actions>
           <!-- </q-bar> -->
         </q-card>
       </q-dialog>
@@ -58,17 +58,13 @@
                 label="Category"
                 style="width: 250px"
               />
-           
-                
-              <!-- <v-select v-for="(catlist, index) in options.cats" :key="index" v-model="infos.cat[index]" :options="catlist" style="float:left; display:inline;width:150px"></v-select> -->
             </q-card-section>
-            <q-card-section >
-              <q-btn class="primary" @click="ondialoghide()" label="Cancel" v-close-popup style="width: 50%; margin-left: auto;margin-right: auto;" />
-              <q-btn class="primary" @click="onchangecat()" label="Ok" v-close-popup style="width: 50%; margin-left: auto;margin-right: auto;" />
-          </q-card-section>
+         
           <q-separator/>
           <q-card-actions>
-            <q-btn color="primary" @click="triggerChangeRel()" label="Ok" v-close-popup/>
+            <q-btn @click="ondialoghide()" label="Cancel" v-close-popup style="width: 45%; margin-left: auto;margin-right: auto;" />
+            <q-btn color="primary" @click="onchangecat()" label="Ok" v-close-popup style="width: 45%; margin-left: auto;margin-right: auto;" />
+
           </q-card-actions>
         </q-card>
       </q-dialog>
@@ -151,7 +147,7 @@ export default {
         // },
         triggerRelationChange(s, snaprelation, depid, govid, relation){
           // called from snap
-          snaprelation.attr({class:"deprelselected"});
+          // snaprelation.attr({class:"deprelselected"});
           // relation="qsdwf:zsert@swxcv";
           const splitters = /[:@]/g  // à mettre comme paramètre
           var splitIndeces = [...relation.matchAll(splitters)].map(x => x.index)
@@ -169,12 +165,14 @@ export default {
         },
         triggerCategoryChange(s, snapcat, depid, category){
           // called from snap
-          snapcat.attr({class:"catselected"});
+          // snapcat.attr({class:"catselected"});
           // relation="qsdwf:zsert@swxcv";
-           
           this.snapInfos = {s:s, snapcat:snapcat, depid:depid, category:category};
           this.infos.category = category;
+          console.log("triggerCategoryChange1")
+
           this.catDialog = !this.catDialog;
+          console.log("triggerCategoryChange2")
         },
         onchangerel(){
           this.relDialog = !this.relDialog;

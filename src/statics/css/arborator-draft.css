@@ -37,6 +37,7 @@
 	fill: #1d2ec1;
 	font-style: oblique;
 	font-family:sans-serif;
+	cursor:pointer;
 	--funcCurveDist:3; /* distance between the function name and the curves highest point */
 } 
 
@@ -84,7 +85,7 @@
 	border-bottom: 1px solid #aaa;
 	padding: 0.5em 0 0.17em 0;
 	margin-top: 1em;
-	--depLevelHeight: 45; /* minimum height for dependency */
+	--depLevelHeight: 75; /* minimum height for dependency */
 }
 
 /* Button */

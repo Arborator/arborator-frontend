@@ -33,6 +33,7 @@ trees=[]; // list of tree objects
 uextras=[]; // list of comments. each comment is a hashtable position(=line)->comment TODO: add this to the display
 conlltrees=[]; // list of conll strings
 defaultCat="_"
+catFeatureName = 'cat'
 shownfeatures=["t", "cat", "lemma","gloss"]; // recomputed in readConll
 // progressiveLoading = true; // false to make it load all trees at once (may overload the browser)
 pngBtn = true;
@@ -228,7 +229,7 @@ var stopdrag = function(e) {
 	}
 	dragcurve.remove();
 	dragarrowhead.remove();
-	this.paper.root.treedata.toggleRelDialog(); // TODO: doesn't work second time!
+	
 	if (dragover!=this.nr &&( (dragover>=0 && this.nr != undefined) || dragsun!=null) )
 	{
 		nr = this.nr;
@@ -247,6 +248,21 @@ var stopdrag = function(e) {
 	dragover=-1;
 }
 
+var categoryclick = function(e) {
+	relationChanged(this.paper, this.nr, this.govid, this.relation+"kim" )
+	// this.paper.root.treedata.toggleRelDialog(); // TODO: doesn't work second time!
+	log("relationclick",e,this)
+	// newtree = getNewFunction(this.paper.root.treedata.tree, this.relation, this.govid, this.nr, false)
+}
+
+var relationclick = function(e) {
+	// relationChanged(this.paper, this.nr, this.govid, this.relation+"kim" )
+
+	this.paper.root.treedata.triggerRelationChange(); // TODO: doesn't work second time!
+	// log("relationclick",e,this)
+	// newtree = getNewFunction(this.paper.root.treedata.tree, this.relation, this.govid, this.nr, false)
+}
+
 function getNewFunction(tree, oldFunction, newDep, newGov, add) {
 	log("getNewFunction", oldFunction, newDep, newGov, add)
 	
@@ -254,12 +270,20 @@ function getNewFunction(tree, oldFunction, newDep, newGov, add) {
 
 	if (add) tree[newDep]['gov'][newGov]=newFunction
 	else {tree[newDep]['gov']={};
-	tree[newDep]['gov'][newGov]=newFunction;
-}
+		tree[newDep]['gov'][newGov]=newFunction;
+		}	
 
 	log("tree[newDep]['gov']",tree[newDep]['gov'])
 	return tree
 }
+
+function relationChanged(s, depid, govid, relation ) {
+	s.root.treedata.tree[depid]['gov']={}
+	s.root.treedata.tree[depid]['gov'][govid]=relation
+	s.paper.clear();
+	drawsnap(s.id, s.root.treedata, shownfeatures)
+}
+
 
 function drawsnap(idSVG, treedata, shownfeatures) {
 	///////////////////////////////////
@@ -276,7 +300,7 @@ function drawsnap(idSVG, treedata, shownfeatures) {
 	// s.attr("height", "100%");
 	// s.parent().attr("height", "45px")
 	// s.parent().parent().attr("height", "45px")
-	// s.parent().parent().attr("style", "height:550px;");
+	// s.parent().parent().attr("style", "height:550px;");	
 	// s.parent().attr("class", 'sentencebox');
 	// s.parent().node.classList.add('sentencebox');
 	var leveldistance = parseInt(getComputedStyle(s.parent().node).getPropertyValue('--depLevelHeight'));
@@ -392,7 +416,10 @@ function drawsnap(idSVG, treedata, shownfeatures) {
 				s.path(arrowhead(xmidpoints[ind],basey)).attr("class", "arrowhead");
 				var pbox = p.getBBox();
 				var xmidf = pbox.x+(pbox.w)/2;
-				var srel = s.text(xmidf, pbox.y-2, word["gov"][govid]).attr({class:"deprel"});
+				var srel = s.text(xmidf, pbox.y-2, word["gov"][govid]).attr({class:"deprel"}).click( relationclick );
+				srel.nr = nr;
+				srel.govid = govid;
+				srel.relation = word["gov"][govid];
 				// if (govid==0) srel.attr({'y':  firstTextFontSize})
 				if (govid==0) srel.attr({'y':  textstarty})
 				else srel.attr({'x':  xmidf - srel.getBBox().w/2});

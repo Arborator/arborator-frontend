@@ -119,7 +119,7 @@ ArboratorDraft.prototype.setRel = function(rel){
 // private functions
 
 
-function refresh(content) {
+function refresh(idSVG, content) {
 	// $('#svgwell').html('');
 	// $('#svgwell').append( $("<conll></conll>").attr('id', 'transformhere').text( content ) );
 	// var conll = d3.selectAll('#transformhere')['_groups'][0][0];
@@ -129,8 +129,8 @@ function refresh(content) {
 	
 	for (let singleConll of listOfConlls) { // for each conll tree at once, can block the browser
 		var treedata = conllNodesToTree(singleConll)
-		// console.log("refresh function",treedata);
-		drawsnap($("#svgwell"), treedata, shownfeatures)
+		console.log("refresh function",this);
+		drawsnap(idSVG, treedata, shownfeatures)
 		
 		}
 	return;
@@ -174,7 +174,7 @@ var startdrag = function(xx,yy,e) {
 	// this.data('origTransform', this.transform().local );
 	dragrepl = this.clone();
 	log(777,this.paper.root.treedata);
-	this.paper.root.treedata.toggleRelDialog();
+	
 	// log(888, rel)
 	dragrepl.attr({class:"draggov"});
 	this.attr({cursor: "move"})
@@ -219,7 +219,7 @@ var stopdrag = function(e) {
 				dragrepl.remove();
 			}
 		);
-	
+	// log(45654)
 	for (let dropa of droppables) 
 	{ 
 		dropa.unmouseover();
@@ -228,7 +228,7 @@ var stopdrag = function(e) {
 	}
 	dragcurve.remove();
 	dragarrowhead.remove();
-	
+	this.paper.root.treedata.toggleRelDialog(); // TODO: doesn't work second time!
 	if (dragover!=this.nr &&( (dragover>=0 && this.nr != undefined) || dragsun!=null) )
 	{
 		nr = this.nr;
@@ -236,10 +236,11 @@ var stopdrag = function(e) {
 		
 		oldFunction = Object.values(this.paper.root.treedata.tree[dragover]['gov'])[0]		
 		newtree = getNewFunction(this.paper.root.treedata.tree, oldFunction, dragover, nr, (e.shiftKey || e.ctrlKey))
-		// log("newtree",newtree)
+		// log("this",this,this.paper,this.paper.root)
 		this.paper.root.treedata.tree = newtree;
-		$("#svgwell").html("")
-		refresh( treeDataToConll(this.paper.root.treedata));
+		this.paper.clear();
+		// $("#"+this.paper.root.id).html("")
+		refresh(this.paper.root.id, treeDataToConll(this.paper.root.treedata));
 		// $('#conllarea').text(	);
 	}
 	if(dragsun!=null) {dragsun.remove();dragsun=null}
@@ -260,14 +261,15 @@ function getNewFunction(tree, oldFunction, newDep, newGov, add) {
 	return tree
 }
 
-function drawsnap(idDiv, treedata, shownfeatures) {
+function drawsnap(idSVG, treedata, shownfeatures) {
 	///////////////////////////////////
 	// draws json tree on svg in div //
 	///////////////////////////////////
-	var textstarty = 100;
+	var textgraphdistance = 10;
+	var textstarty = 10; // has to be bigger than arborator-draft.css deprel fontsize
 	var runningy = textstarty;
 	
-	var s=Snap(document.getElementById(idDiv));
+	var s=Snap(document.getElementById(idSVG));
 	
 	// s.text(10,10,'gael')
 	// s.attr("width", "100%");
@@ -278,12 +280,28 @@ function drawsnap(idDiv, treedata, shownfeatures) {
 	// s.parent().attr("class", 'sentencebox');
 	// s.parent().node.classList.add('sentencebox');
 	var leveldistance = parseInt(getComputedStyle(s.parent().node).getPropertyValue('--depLevelHeight'));
-
+	log("leveldistance",leveldistance)
+	var idgov2level = {};
+	var levels = [];
+	s.treedata = treedata;
+	s.id = idSVG;
+	var tree = treedata.tree;
+	// compute the max level
+	Object.keys(tree).forEach(function(nr) { // for each dependent
+		var word = tree[nr];
+		for (var govid in word["gov"]) { // for each governor
+			if (tree[govid]) levels.push(level(nr,govid,tree, idgov2level));
+		}
+	});
+	var maxlevel = Math.max(...levels);
+	// var firstTextFontSize = 12;//parseInt(getComputedStyle(allstexts[shownfeatures[0]][0].node).getPropertyValue('font-size'));
+	
+	// runningy = basey;
 	// log('*************levelheight',leveldistance,'s =',s, 45646454,s.parent(),s.parent().node);
 
-	s.treedata = treedata;
-	var tree = treedata.tree;
+	
 	// insertion of texts
+	log("maxlevel",maxlevel)
 	var xpositions = [0];
 	var allstexts = {};
 	var textgroup = s.group();
@@ -319,29 +337,19 @@ function drawsnap(idDiv, treedata, shownfeatures) {
 		feati += 1;
 	}
 
-	var idgov2level = {};
-	var levels = [];
-	// compute the max level
-	Object.keys(tree).forEach(function(nr) { // for each dependent
-		var word = tree[nr];
-		for (var govid in word["gov"]) { // for each governor
-			if (tree[govid]) levels.push(level(nr,govid,tree, idgov2level));
-		}
-	});
-	var maxlevel = Math.max(...levels);
-	var firstTextFontSize = parseInt(getComputedStyle(allstexts[shownfeatures[0]][0].node).getPropertyValue('font-size'));
-	var basey = textstarty-firstTextFontSize-2+maxlevel*leveldistance;
-	var movedownm = new Snap.Matrix()
-	movedownm.translate(0, maxlevel*leveldistance);
+	
+	// var movedownm = new Snap.Matrix()
+	// movedownm.translate(0, maxlevel*leveldistance);
 	// movedownm.translate(220, 220);
-	textgroup.transform(movedownm); 
+	// textgroup.transform(movedownm); 
 
 
-
+	
 	var xmidpoints = [];
 	var x2s = [];
+	var y2s = [];
 	
-	// readjusting the x position of texts
+	// readjusting the position of texts
 	for (let shofea of shownfeatures) { 
 		var ind = 0;
 		Object.keys(tree).forEach(function(nr) {
@@ -350,20 +358,23 @@ function drawsnap(idDiv, treedata, shownfeatures) {
 			xmidpoints.push(xmidpoint);
 			allstexts[shofea][ind].midx=xmidpoint;
 			allstexts[shofea][ind].attr({'x':  xmidpoint - allstexts[shofea][ind].getBBox().w/2});
+			allstexts[shofea][ind].attr({'y': allstexts[shofea][ind].getBBox().y2+(maxlevel)*leveldistance});
 			allstexts[shofea][ind].topy = allstexts[shofea][ind].getBBox().y;
 			x2s.push(allstexts[shofea][ind].getBBox().x2);
+			y2s.push(allstexts[shofea][ind].getBBox().y2);
 			ind += 1;
 		});
 	}
 	log(66666)
 	
 	var maxx2 = Math.max(...x2s);
-	
+	var maxy2 = Math.max(...y2s);
+	var basey = textstarty+(maxlevel)*leveldistance-textgraphdistance;
 	// var leveldistance = Math.min(basey/maxlevel,maxLevelDistance); // take the min of the available height divided by the required levels and the maxLevelDistance
 
 	log(7777,"maxlevel*leveldistance",maxlevel,leveldistance,maxlevel*leveldistance)
 	
-	
+	var firstTextFontSize = parseInt(getComputedStyle(allstexts[shownfeatures[0]][0].node).getPropertyValue('font-size'));
 	// drawing the dependency relations
 	var ind = 0;
 	Object.keys(tree).forEach(function(nr) { // for each dependent
@@ -374,26 +385,26 @@ function drawsnap(idDiv, treedata, shownfeatures) {
 				le = idgov2level[nr+'_'+govid]; // level(nr, govid, tree, idgov2level);
 				var controly = basey-le*leveldistance;
 				var tox = govid > ind ? xmidpoints[govid-1]-firstTextFontSize/2 : xmidpoints[govid-1]+firstTextFontSize/2;
+				// var tox = govid > ind ? xmidpoints[govid-1] : xmidpoints[govid-1];
 				if (govid>0) var path = "M"+xmidpoints[ind]+","+basey+" C"+xmidpoints[ind]+","+controly+" "+tox+","+controly+" "+tox+","+basey;
 				else var path = "M"+xmidpoints[ind]+","+(basey)+" L"+xmidpoints[ind]+","+"0 ";
 				var p = s.path(path).attr({class:"curve"});
-				// p.transform(movedownm);
-				s.path(arrowhead(xmidpoints[ind],basey)).attr("class", "arrowhead"); //.transform(movedownm);
+				s.path(arrowhead(xmidpoints[ind],basey)).attr("class", "arrowhead");
 				var pbox = p.getBBox();
 				var xmidf = pbox.x+(pbox.w)/2;
 				var srel = s.text(xmidf, pbox.y-2, word["gov"][govid]).attr({class:"deprel"});
-				if (govid==0) srel.attr({'y':  firstTextFontSize})
+				// if (govid==0) srel.attr({'y':  firstTextFontSize})
+				if (govid==0) srel.attr({'y':  textstarty})
 				else srel.attr({'x':  xmidf - srel.getBBox().w/2});
 			}
 		}
 		ind += 1;
 	});
 	log(8888)
-	s.attr("height", (maxlevel*100)+"px");
+	s.attr("height", (maxy2)+"px");
 	s.attr("width", (maxx2)+"px");
 	
-	s.attr("overflow", "scroll");
-	// log(999,s.selectAll(""))
+	s.attr("overflow", "auto");
 	return s;
 
 }

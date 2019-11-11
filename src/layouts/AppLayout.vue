@@ -78,13 +78,6 @@
     </q-header>
 
     <q-page-container>
-      <div class="q-pa-md q-gutter-sm">
-        <q-breadcrumbs>
-          <q-breadcrumbs-el icon="home" to="/" />
-          <q-breadcrumbs-el label="Projects" icon="widgets" to="/projects/*" />
-          <q-breadcrumbs-el label="Samples" icon="navigation" to="/projects/*/*" />
-        </q-breadcrumbs>
-      </div>
       <router-view />
       <q-page-scroller position="bottom-right">
         <q-btn fab icon="keyboard_arrow_up" color="secondary" />

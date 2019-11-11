@@ -1,5 +1,12 @@
 <template>
     <q-page>
+        <div class="q-pa-md q-gutter-sm">
+            <q-breadcrumbs>
+            <q-breadcrumbs-el icon="home" to="/" />
+            <q-breadcrumbs-el :label="name" icon="work" :to="'/projects/'+name" />
+            <q-breadcrumbs-el :label="sample" icon="assignment" :to="'/projects/'+name+'/'+sample" />
+            </q-breadcrumbs>
+        </div>
         <div class="q-pa-md row q-gutter-md">
             {{Object.keys(samples).length}} sentences
             <div class="col-12" v-for="(sample, index) in samples" :key="index" :props="sample" >

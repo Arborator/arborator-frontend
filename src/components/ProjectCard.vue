@@ -1,7 +1,7 @@
 <template>
     <q-item clickable @click="goTo('/projects/')" > <!-- :to="'/projects/'+project.projectname"> -->
         <q-item-section avatar>
-          <q-avatar v-show="imageEmpty" rounded color="primary" text-color="white" icon="next_week" />
+          <q-avatar v-show="imageEmpty" rounded color="primary" text-color="white" icon="work" />
           <q-avatar v-show="!imageEmpty" rounded color="primary" text-color="white" >
               <img :src="imageCleaned"/>
           </q-avatar>

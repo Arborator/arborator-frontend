@@ -1,5 +1,5 @@
 <template>
-    <div>
+    <div class="sentencebox">
     <svg :id="id"></svg>
 
 
@@ -55,7 +55,7 @@ export default {
     data(){
         return {
             draft: new ArboratorDraft(),
-            id: this.user+ this.sentenceId.replace(/\W/g, ''),
+            id: this.user+'_'+this.sentenceId.replace(/\W/g, ''),
             svgContent: '',
             infos: {
                 relation: [],
@@ -75,8 +75,8 @@ export default {
     },
     methods: {
         start(conllStr, id){
-            console.log('conllStr conllGraph component', conllStr)
-            var svg = this.draft.getSvg(conllStr, '#'+id);
+            console.log('conllStr conllGraph component', document.getElementById(id))
+            var svg = this.draft.getSvg(conllStr, id);
             svg.gael = 17;
             svg.toggleRelDialog  = this.toggleRelDialog;
             svg.selectRel = this.selectRel;

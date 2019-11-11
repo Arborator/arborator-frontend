@@ -266,30 +266,27 @@ function drawsnap(idDiv, treedata, shownfeatures) {
 	///////////////////////////////////
 	var textstarty = 100;
 	var runningy = textstarty;
-	// var s=Snap(600, 800);
-	log("IDDIIIIIIIV", idDiv);
-	var s=Snap(idDiv);
-	// var s=Snap(600,800);
-	// s.attr("id", idDiv.replace("#",""));
-	// s.attr("display", "none");
+	
+	var s=Snap(document.getElementById(idDiv));
+	
 	// s.text(10,10,'gael')
-	s.attr("width", "100%");
-	s.attr("height", "100%");
+	// s.attr("width", "100%");
+	// s.attr("height", "100%");
 	// s.parent().attr("height", "45px")
 	// s.parent().parent().attr("height", "45px")
-	s.parent().parent().attr("style", "height:550px;");
+	// s.parent().parent().attr("style", "height:550px;");
 	// s.parent().attr("class", 'sentencebox');
-	s.parent().node.classList.add('sentencebox');
+	// s.parent().node.classList.add('sentencebox');
 	var leveldistance = parseInt(getComputedStyle(s.parent().node).getPropertyValue('--depLevelHeight'));
 
-	// log('*************levelheight',leveldistance,'s =',s, 45646454);
+	// log('*************levelheight',leveldistance,'s =',s, 45646454,s.parent(),s.parent().node);
 
 	s.treedata = treedata;
 	var tree = treedata.tree;
 	// insertion of texts
 	var xpositions = [0];
 	var allstexts = {};
-	
+	var textgroup = s.group();
 	var feati = 0;
 	for (let shofea of shownfeatures) { 
 		stexts = [];
@@ -317,11 +314,33 @@ function drawsnap(idDiv, treedata, shownfeatures) {
 			ind += 1;
 		};
 		runningy += yWordDistance;
+		textgroup.add(stexts)
 		allstexts[shofea]=stexts;
 		feati += 1;
 	}
-	var xmidpoints = [];
+
+	var idgov2level = {};
+	var levels = [];
+	// compute the max level
+	Object.keys(tree).forEach(function(nr) { // for each dependent
+		var word = tree[nr];
+		for (var govid in word["gov"]) { // for each governor
+			if (tree[govid]) levels.push(level(nr,govid,tree, idgov2level));
+		}
+	});
+	var maxlevel = Math.max(...levels);
 	var firstTextFontSize = parseInt(getComputedStyle(allstexts[shownfeatures[0]][0].node).getPropertyValue('font-size'));
+	var basey = textstarty-firstTextFontSize-2+maxlevel*leveldistance;
+	var movedownm = new Snap.Matrix()
+	movedownm.translate(0, maxlevel*leveldistance);
+	// movedownm.translate(220, 220);
+	textgroup.transform(movedownm); 
+
+
+
+	var xmidpoints = [];
+	var x2s = [];
+	
 	// readjusting the x position of texts
 	for (let shofea of shownfeatures) { 
 		var ind = 0;
@@ -332,28 +351,21 @@ function drawsnap(idDiv, treedata, shownfeatures) {
 			allstexts[shofea][ind].midx=xmidpoint;
 			allstexts[shofea][ind].attr({'x':  xmidpoint - allstexts[shofea][ind].getBBox().w/2});
 			allstexts[shofea][ind].topy = allstexts[shofea][ind].getBBox().y;
+			x2s.push(allstexts[shofea][ind].getBBox().x2);
 			ind += 1;
 		});
 	}
 	log(66666)
-	var ind = 0;
 	
-	var idgov2level = {};
-	var levels = [];
-	// compute the max level
-	Object.keys(tree).forEach(function(nr) { // for each dependent
-		var word = tree[nr];
-		for (var govid in word["gov"]) { // for each governor
-			if (tree[govid]) levels.push(level(nr,govid,tree, idgov2level));
-		}
-	});
-	var maxlevel = Math.max( ...levels);
-	var basey = textstarty-firstTextFontSize-2;
+	var maxx2 = Math.max(...x2s);
+	
 	// var leveldistance = Math.min(basey/maxlevel,maxLevelDistance); // take the min of the available height divided by the required levels and the maxLevelDistance
 
-	log(7777)
-
+	log(7777,"maxlevel*leveldistance",maxlevel,leveldistance,maxlevel*leveldistance)
+	
+	
 	// drawing the dependency relations
+	var ind = 0;
 	Object.keys(tree).forEach(function(nr) { // for each dependent
 		var word = tree[nr];
 		for (var govid in word["gov"]) { // for each governor
@@ -363,9 +375,10 @@ function drawsnap(idDiv, treedata, shownfeatures) {
 				var controly = basey-le*leveldistance;
 				var tox = govid > ind ? xmidpoints[govid-1]-firstTextFontSize/2 : xmidpoints[govid-1]+firstTextFontSize/2;
 				if (govid>0) var path = "M"+xmidpoints[ind]+","+basey+" C"+xmidpoints[ind]+","+controly+" "+tox+","+controly+" "+tox+","+basey;
-				else var path = "M"+xmidpoints[ind]+","+(textstarty-firstTextFontSize-2)+" L"+xmidpoints[ind]+","+"0 ";
+				else var path = "M"+xmidpoints[ind]+","+(basey)+" L"+xmidpoints[ind]+","+"0 ";
 				var p = s.path(path).attr({class:"curve"});
-				s.path(arrowhead(xmidpoints[ind],textstarty-firstTextFontSize-2)).attr("class", "arrowhead");
+				// p.transform(movedownm);
+				s.path(arrowhead(xmidpoints[ind],basey)).attr("class", "arrowhead"); //.transform(movedownm);
 				var pbox = p.getBBox();
 				var xmidf = pbox.x+(pbox.w)/2;
 				var srel = s.text(xmidf, pbox.y-2, word["gov"][govid]).attr({class:"deprel"});
@@ -376,8 +389,11 @@ function drawsnap(idDiv, treedata, shownfeatures) {
 		ind += 1;
 	});
 	log(8888)
-	// s.attr("height", (maxlevel*100)+"px");
-	log(999,s.selectAll(""))
+	s.attr("height", (maxlevel*100)+"px");
+	s.attr("width", (maxx2)+"px");
+	
+	s.attr("overflow", "scroll");
+	// log(999,s.selectAll(""))
 	return s;
 
 }

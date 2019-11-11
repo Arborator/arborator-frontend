@@ -119,7 +119,7 @@
 </template>
 
 <script>
-import { openURL } from 'quasar'
+import { openURL } from 'quasar';
 import api from '../boot/backend-api';
 import Store from '../store/index';
 

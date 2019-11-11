@@ -31,7 +31,7 @@
 
           <q-card-section>
               <v-select v-for="(relist, index) in options.relations" :key="index" v-model="infos.relation[index]" :options="relist"></v-select>
-              <q-btn class="primary" @click="sendSelectedRel()" label="Ok" />
+              <q-btn class="primary" @click="triggerChangeRel()" label="Ok" v-close-popup/>
           </q-card-section>
         </q-card>
       </q-dialog>
@@ -87,6 +87,7 @@ export default {
             svg.toggleRelDialog  = this.toggleRelDialog;
             svg.selectRel = this.selectRel;
             svg.selectCat = this.selectCat;
+            svg.triggerRelationChange = this.triggerRelationChange;
             
             // this.svgContent = svg['svg'];
             // $('#'+id).attr("display", "inline");

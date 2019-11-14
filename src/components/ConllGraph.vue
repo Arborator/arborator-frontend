@@ -11,19 +11,11 @@
       >
       <!-- transition-hide="fade" -->
         <q-card class="bg-white text-black" style="height:300px">
-          <!-- <q-bar>
-            <q-space />
-
-            <q-btn dense flat icon="minimize" @click="maximizedToggle = false" :disable="!maximizedToggle">
-              <q-tooltip v-if="maximizedToggle" content-class="bg-white text-primary">Minimize</q-tooltip>
-            </q-btn>
-            <q-btn dense flat icon="crop_square" @click="maximizedToggle = true" :disable="maximizedToggle">
-              <q-tooltip v-if="!maximizedToggle" content-class="bg-white text-primary">Maximize</q-tooltip>
-            </q-btn>
-            <q-btn dense flat icon="close" v-close-popup>
-              <q-tooltip content-class="bg-white text-primary">Close</q-tooltip>
-            </q-btn>
-          </q-bar> -->
+          <q-bar class="bg-primary text-white">
+                <div class="text-weight-bold">Select a relation</div>
+                <q-space />
+                <q-btn flat dense icon="close" v-close-popup/>
+            </q-bar>
 
           <!-- <q-card-section>
             <div class="text-h6">Relation selection</div>
@@ -50,6 +42,11 @@
         @keyup.enter="onchangecat()"
       >
         <q-card class="bg-white text-black" style="height:300px">
+          <q-bar class="bg-primary text-white">
+              <div class="text-weight-bold">Select a category</div>
+              <q-space />
+              <q-btn flat dense icon="close" v-close-popup/>
+          </q-bar>
           <q-card-section style="height:200px">
             <q-select
                 filled

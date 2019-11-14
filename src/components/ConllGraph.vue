@@ -85,7 +85,7 @@ import 'vue-select/dist/vue-select.css';
 Vue.component('v-select', vSelect);
 export default {
     name:'conllGraph',
-    props: ['conll', 'user', 'sentenceId', 'parentSetCurrentSVGId'],
+    props: ['conll', 'user', 'sentenceId'],
     data(){
         return {
             draft: new ArboratorDraft(),
@@ -119,6 +119,7 @@ export default {
         this.start(this.conll, this.id);
     },
     methods: {
+        up(dirty, redo) { this.$emit('update-conll', {'draft': this.draft, 'svgid': this.id, 'dirty': dirty, 'redo': redo}); console.log('emit') },
         start(conllStr, id){
             console.log('conllStr conllGraph component', document.getElementById(id))
             var svg = this.draft.getSvg(conllStr, id);
@@ -128,7 +129,7 @@ export default {
             svg.selectCat = this.selectCat;
             svg.triggerRelationChange = this.triggerRelationChange;
             svg.triggerCategoryChange = this.triggerCategoryChange;
-            this.$emit('conllUpdate', {'draft': this.draft, 'svgid': this.id});
+            this.up(false, false);
         },
         toggleRelDialog() {
             this.relDialog = !this.relDialog;
@@ -176,15 +177,16 @@ export default {
           console.log("triggerCategoryChange2")
         },
         onchangerel(){
+          // this.up(true);
           this.relDialog = !this.relDialog;
           this.draft.relationChanged(this.snapInfos.s, this.snapInfos.depid, this.snapInfos.govid, this.infos.relation.join(""));
-          this.$emit('conllUpdate', {'draft': this.draft, 'svgid': this.id});
+          this.up(true);
         },
         onchangecat(){
           this.catDialog = !this.catDialog;
           console.log("çççç",this.snapInfos.depid, this.infos.category)
           this.draft.catChanged(this.snapInfos.s, this.snapInfos.depid, this.infos.category);
-          this.$emit('conllUpdate', {'draft': this.draft, 'svgid': this.id});
+          this.up(true);
         },
         ondialoghide(){
           if ('snaprelation' in this.snapInfos) this.snapInfos.snaprelation.attr({class:"deprel"});

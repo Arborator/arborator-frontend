@@ -1,11 +1,11 @@
 <template>
     <q-card :id="index" style="max-width:99vw">
         <q-toolbar class="text-primary">
-            <q-btn flat round dense icon="save" :disable="!dirty" @click="onSave()"> <q-tooltip>Save this tree</q-tooltip> </q-btn>
+            <q-btn flat round dense icon="save" :disable="!lastModified.dirty" @click="save()"> <q-tooltip>Save this tree</q-tooltip> </q-btn>
             <q-btn flat round dense icon="archive" ><q-tooltip>Export</q-tooltip></q-btn>
-            <q-btn flat round dense icon="undo" ><q-tooltip>Undo</q-tooltip></q-btn>
-            <q-btn flat round dense icon="redo" ><q-tooltip>Redo</q-tooltip></q-btn>
-            <q-toolbar-title>{{lastModified}}
+            <q-btn flat round dense icon="undo" :disable="!lastModified.dirty"><q-tooltip>Undo</q-tooltip></q-btn>
+            <q-btn flat round dense icon="redo" :disable="!lastModified.redo"><q-tooltip>Redo</q-tooltip></q-btn>
+            <q-toolbar-title>
             </q-toolbar-title>
 
             <q-btn flat round dense icon="more_vert" />
@@ -21,7 +21,7 @@
                 <q-tab-panel v-for="(tree, user) in sample" :key="user" :props="tree" :name="user">
                     <q-card  flat >
                     <q-card-section class="scrollable" >
-                        <conll-graph :conll="tree" :user="user" :sentenceId="sentenceId" :parentSetCurrentSVGId="setCurrentSVGId" @update="onConllGraphUpdate"></conll-graph>
+                        <conll-graph :conll="tree" :user="user" :sentenceId="sentenceId" @update-conll="onConllGraphUpdate($event)"></conll-graph>
                     </q-card-section>
                     </q-card>
 
@@ -43,24 +43,16 @@ export default {
     data() {
         return {
             tab:'',
-            dirty: true,
-            lastModified: {
-                svgId: '',
-                draft: ''
-            }
+            lastModified: { svgId: '',  draft: '', dirty: false, redo: false }
         }
     },
     mounted() {
     },
     methods: {
-        onSave(conll, username) {
-            console.log('projectname', this.projectname)
+        save(conll, username) {
             this.lastModified.draft.getConll();
         },
-        onConllGraphUpdate(payload) {
-            this.lastModified = payload;
-        },
-        setCurrentSVGId(svgId) { this.svgId = svgId; }
+        onConllGraphUpdate(payload) { this.lastModified = payload; }
     }
 }
 </script>

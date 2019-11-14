@@ -3,7 +3,7 @@
         <div class="q-pa-md q-gutter-sm">
             <q-breadcrumbs>
             <q-breadcrumbs-el icon="home" to="/" />
-            <q-breadcrumbs-el :label="name" icon="work" :to="'/projects/'+name" />
+            <q-breadcrumbs-el :label="projectname" icon="work" :to="'/projects/'+projectname" />
             </q-breadcrumbs>
         </div>
         <div class="q-pa-md row q-gutter-md flex flex-center">
@@ -253,7 +253,7 @@ export default {
     components: {
         GrewRequestCard
     },
-    props: ['name'],
+    props: ['projectname'],
     data(){
         return {
             tab: 'texts',
@@ -356,7 +356,7 @@ export default {
             return tempArray;
         },
         getProjectInfos(){
-            api.getProjectInfos(this.name).then(response => { console.log(response.data); this.infos = response.data; }).catch(error => {console.log(error)});
+            api.getProjectInfos(this.projectname).then(response => { console.log(response.data); this.infos = response.data; }).catch(error => {console.log(error)});
         },
         getUsers(){
             api.getUsers().then( response => {  this.assignTable.data = response.data;  }).catch(error => { console.log(error); });
@@ -366,7 +366,7 @@ export default {
             this.uploadSample.submitting = true;
             for(const file of this.uploadSample.attachment.file){ form.append('files',file); }
             form.append('import_user',Store.getters.getUserInfos.username);
-            api.uploadSample(this.name, form).then( response => { this.uploadSample.attachment.file = []; this.getProjectInfos(); this.uploadDial = false; this.uploadSample.submitting = false; this.showNotif('top-right', 'uploadsuccess');})
+            api.uploadSample(this.projectname, form).then( response => { this.uploadSample.attachment.file = []; this.getProjectInfos(); this.uploadDial = false; this.uploadSample.submitting = false; this.showNotif('top-right', 'uploadsuccess');})
             .catch(error => {console.log(error); this.uploadSample.submitting = false; this.uploadDial = false;});
         },
         onFileChange(event) {
@@ -380,7 +380,7 @@ export default {
         exportSamplesZip(){
             var samplenames = [];
             for (const sample of this.table.selected) { samplenames.push(sample.samplename) }
-            api.exportSamplesZip(samplenames, this.name).then( response => {
+            api.exportSamplesZip(samplenames, this.projectname).then( response => {
                 const url = window.URL.createObjectURL(new Blob([response.data]));
                 const link = document.createElement('a');
                 link.href = url;

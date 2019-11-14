@@ -85,7 +85,7 @@ import 'vue-select/dist/vue-select.css';
 Vue.component('v-select', vSelect);
 export default {
     name:'conllGraph',
-    props: ['conll', 'user', 'sentenceId'],
+    props: ['conll', 'user', 'sentenceId', 'parentSetCurrentSVGId'],
     data(){
         return {
             draft: new ArboratorDraft(),
@@ -128,6 +128,7 @@ export default {
             svg.selectCat = this.selectCat;
             svg.triggerRelationChange = this.triggerRelationChange;
             svg.triggerCategoryChange = this.triggerCategoryChange;
+            this.$emit('conllUpdate', {'draft': this.draft, 'svgid': this.id});
         },
         toggleRelDialog() {
             this.relDialog = !this.relDialog;
@@ -177,16 +178,23 @@ export default {
         onchangerel(){
           this.relDialog = !this.relDialog;
           this.draft.relationChanged(this.snapInfos.s, this.snapInfos.depid, this.snapInfos.govid, this.infos.relation.join(""));
+          this.$emit('conllUpdate', {'draft': this.draft, 'svgid': this.id});
         },
         onchangecat(){
           this.catDialog = !this.catDialog;
           console.log("çççç",this.snapInfos.depid, this.infos.category)
           this.draft.catChanged(this.snapInfos.s, this.snapInfos.depid, this.infos.category);
+          this.$emit('conllUpdate', {'draft': this.draft, 'svgid': this.id});
         },
         ondialoghide(){
           if ('snaprelation' in this.snapInfos) this.snapInfos.snaprelation.attr({class:"deprel"});
           if ('snapcat' in this.snapInfos) this.snapInfos.snapcat.attr({class:"cat"});
         }
+        // getConll(){
+        //   // TODO:
+        //   return this.draft.getConll();
+
+        // }
     }
 }
 

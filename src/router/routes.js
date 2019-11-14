@@ -5,8 +5,8 @@ const routes = [
     component: () => import('layouts/AppLayout.vue'),
     children: [
       { path: '', component: () => import('pages/Index.vue') },
-      { path: '/projects/:name', component: () => import('pages/Project.vue'), props: true, name:'project' },
-      { path: '/projects/:name/:sample', component: () => import('pages/Sample.vue'), props: true },
+      { path: '/projects/:projectname', component: () => import('pages/Project.vue'), props: true, name:'project' },
+      { path: '/projects/:projectname/:sample', component: () => import('pages/Sample.vue'), props: true },
       {
         path: 'settings',
         component: () => import('pages/Settings'),

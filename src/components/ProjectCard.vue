@@ -47,7 +47,7 @@ export default {
             this.$router.push({
                 name: 'project',
                 params: {
-                    name: this.project.projectname,
+                    projectname: this.project.projectname,
                     infos: this.project
                 }
             }) 

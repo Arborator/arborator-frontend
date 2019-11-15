@@ -55,8 +55,11 @@ export default {
         var session = {id: sessionId}
         return AUTH.post('userinfos', session);
     },
-    search( name, query){
-        return API.post('projects/'+name+'/search', query);
+    searchProject( projectname, query){
+        return API.post('projects/'+projectname+'/search', query);
+    },
+    searchSample( projectname, samplename, query) {
+        return API.post('projects/'+projectname+'/sample/'+samplename+'/search', query)
     }
 
 }

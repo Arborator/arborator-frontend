@@ -177,13 +177,13 @@ export default {
           // this.up(true);
           this.relDialog = !this.relDialog;
           this.draft.relationChanged(this.snapInfos.s, this.snapInfos.depid, this.snapInfos.govid, this.infos.relation.join(""));
-          this.up(true);
+          this.up(true, false);
         },
         onchangecat(){
           this.catDialog = !this.catDialog;
           console.log("çççç",this.snapInfos.depid, this.infos.category)
           this.draft.catChanged(this.snapInfos.s, this.snapInfos.depid, this.infos.category);
-          this.up(true);
+          this.up(true, false);
         },
         ondialoghide(){
           if ('snaprelation' in this.snapInfos) this.snapInfos.snaprelation.attr({class:"deprel"});

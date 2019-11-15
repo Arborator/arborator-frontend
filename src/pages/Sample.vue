@@ -96,7 +96,7 @@ pattern {
         },
         onSearch(searchPattern){
             var query = { pattern: searchPattern };
-            api.search(this.projectname, query)
+            api.searchSample(this.projectname, this.sample, query)
             .then(response => { 
                 console.log(response);
                 // this.samples.filter;

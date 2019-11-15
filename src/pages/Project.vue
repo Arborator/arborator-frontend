@@ -238,6 +238,10 @@
                 </q-card>
             </q-dialog>
 
+            <q-dialog v-model="resultSearchDial" maximized transition-show="fade" transition-hide="fade" >
+                <result-view :searchresults="resultSearch"></result-view>
+            </q-dialog>
+
         </div>
     </q-page>
 </template>
@@ -248,10 +252,11 @@ import { openURL } from 'quasar'
 import api from '../boot/backend-api';
 import Store from '../store/index';
 import GrewRequestCard from '../components/GrewRequestCard';
+import ResultView from '../components/ResultView';
 
 export default {
     components: {
-        GrewRequestCard
+        GrewRequestCard, ResultView
     },
     props: ['projectname'],
     data(){
@@ -262,6 +267,7 @@ export default {
             uploadDial: false,
             searchDial: false,
             maximizedUploadToggle: false,
+            resultSearchDial: false,
             alerts: { 
                 'uploadsuccess': { color: 'positive', message: 'Upload success'},
                 'uploadfail': { color: 'negative', message: 'Upload failed', icon: 'report_problem' },
@@ -331,7 +337,8 @@ export default {
             uploadSample: {
                 submitting: false,
                 attachment: { name: null, file: null}
-            }
+            },
+            resultSearch: {}
             
         }
     },
@@ -392,8 +399,14 @@ export default {
                 return [];
             });
         },
-        onSearch(pattern){
-            console.log('on search for ', pattern);
+        onSearch(searchPattern){
+            var query = { pattern: searchPattern };
+            api.searchProject(this.projectname, query)
+            .then(response => {
+                console.log(response);
+                this.resultSearchDial = true;
+                this.resultSearch = response.data.trees;
+            }).catch(error => {console.log(error);})
         },
         showNotif (position, alert) {
             const { color, textColor, multiLine, icon, message, avatar, actions } = this.alerts[alert];

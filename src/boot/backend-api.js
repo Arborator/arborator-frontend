@@ -5,7 +5,7 @@ VueCookies.config('7d');
 
 const API = axios.create({
     baseURL: `/api`,
-    timeout: 10000
+    timeout: 20000
 });
 
 const AUTH = axios.create({
@@ -60,6 +60,9 @@ export default {
     },
     searchSample( projectname, samplename, query) {
         return API.post('projects/'+projectname+'/sample/'+samplename+'/search', query)
-    }
+    },
+    saveTrees(projectname, samplename, data) {
+        return API.post('projects/' + projectname + '/sample/' + samplename+ '/saveTrees', data);
+    },
 
 }

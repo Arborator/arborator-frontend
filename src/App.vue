@@ -9,6 +9,7 @@ import { openURL } from 'quasar';
 import VueCookies from 'vue-cookies';
 import Store from './store/index';
 import api from './boot/backend-api';
+import EventBus from './event-bus.js';
 VueCookies.config('7d');
 
 export default {

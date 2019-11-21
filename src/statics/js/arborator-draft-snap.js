@@ -97,7 +97,7 @@ ArboratorDraft.prototype.emptyThenRefresh = function(content, reverse = false, t
 }
 
 ArboratorDraft.prototype.getSvg = function(strConll, id){
-	log('strConll', strConll)
+	log('strConll', strConll) // the one that we see
 	var treedata = conllNodesToTree(strConll); // treedata is object: {tree:tree, uextra:sentencefeatures, sentence, svg:snap-object}
 	treedata['svg'] = drawsnap(id, treedata, shownfeatures);
 	// tree['svg'] = draw(tree.tree, id);
@@ -106,7 +106,7 @@ ArboratorDraft.prototype.getSvg = function(strConll, id){
 
 ArboratorDraft.prototype.getTree = function(strConll){
 	log('getTree conll', strConll)
-	log( conllNodesToTree(strConll));
+	// log( conllNodesToTree(strConll));
 	return conllNodesToTree(strConll.trim());
 }
 
@@ -123,6 +123,18 @@ ArboratorDraft.prototype.relationChanged = function(s, depid, govid, relation){
 ArboratorDraft.prototype.catChanged = function(s, depid, cat){
 	catChanged(s, depid, cat);
 }
+
+ArboratorDraft.prototype.getConll = function (s, depid, cat) {
+		catChanged(s, depid, cat);
+}
+
+ArboratorDraft.prototype.treeDataToConll = function(treedata) {
+	var newconll=treeDataToConll(treedata);
+	console.log("the new conll", newconll);
+	return newconll;
+}
+
+
 
 // private functions
 
@@ -254,11 +266,11 @@ var stopdrag = function(e) {
 }
 
 var categoryclick = function(e) {
-	log("categoryclick",e,this);
+	// log("categoryclick",e,this);
 	this.attr({class:"catselected"})
-	log("categoryclick2",e,this);
+	// log("categoryclick2",e,this);
 	this.paper.root.treedata.triggerCategoryChange(this.paper, this, this.nr, this.cat); 
-	log("categoryclick3",e,this);
+	// log("categoryclick3",e,this);
 }
 
 var relationclick = function(e) {
@@ -278,10 +290,12 @@ function relationChanged(s, depid, govid, relation ) {  // todo: maybe include a
 }
 
 function catChanged(s, depid, cat ) {  
-	// called from ConllGraph.vue 
+	// called from ConllGraph.vue
+	// console.log("BEFORE", JSON.parse(JSON.stringify(s.root.treedata.tree)));
 	s.root.treedata.tree[depid]['cat']=cat;
 	s.paper.clear();
 	drawsnap(s.id, s.root.treedata, shownfeatures)
+	// return s.root.treedata.tree
 }
 
 
@@ -458,7 +472,9 @@ function treeDataToConll(treedata)
 {
 	// log(treedata.uextra[0])
 	conllstrs=treedata.uextra[0]
+	// conllstrs=[];
 	for (let nr in treedata.tree){
+
 		var node = treedata.tree[nr];
 		// log('_______________',node)
 		govs=node["gov"]||{};

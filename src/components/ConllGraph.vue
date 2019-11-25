@@ -78,7 +78,6 @@ import Vue from 'vue'
 Vue.config.ignoredElements = ['conll'];
 import vSelect from 'vue-select'
 import 'vue-select/dist/vue-select.css';
-import EventBus from '../event-bus.js';
 import api from '../boot/backend-api';
 
 Vue.component('v-select', vSelect);
@@ -118,18 +117,18 @@ export default {
     },
     mounted(){
         var svg=this.start(this.conll, this.id);
-        EventBus.$on('i-got-saved', sentence_id => {
-          // console.log("Inside ConllGraph, saved.");
-          this.onsave();
-        }
-        )},
+    },
     methods: {
         up(dirty, redo) {
           // console.log(svg.tree)
           // console.log("NOW"); // when I open a sentence, when I click on OK after editing a category or a relation;
           // console.log("gonna emit ", this.draft, this.id);
-          this.$emit('update-conll', {'draft': this.draft, 'svgid': this.id, 'dirty': dirty, 'redo': redo}); //emits to parent the id of the tree and a bunch of other stuff
-          // console.log('emit');
+          // console.log('conll', this.draft.getConll(this.snapInfos.s));
+          // console.log(this.snapInfos.s.treedata);
+          if(this.snapInfos.s != null){
+            this.$emit('update-conll', {'draft': this.draft, 'svgid': this.id, 'dirty': dirty, 'redo': redo, 
+            'conll': this.draft.getConll(this.snapInfos.s), 'user': this.user}); //emits to parent the id of the tree and a bunch of other stuff
+          }
           },
         start(conllStr, id){
             // document.getElementById(id) the 
@@ -202,24 +201,7 @@ export default {
         ondialoghide(){
           if ('snaprelation' in this.snapInfos) this.snapInfos.snaprelation.attr({class:"deprel"});
           if ('snapcat' in this.snapInfos) this.snapInfos.snapcat.attr({class:"cat"});
-        },
-
-        sendToGrew(conll) {
-          var data={"trees":[{"sent_id":this.$props.sentenceId, "conll":conll}], "user_id":this.$props.user}; // TODO : get rid of the user_id to save it under the current user
-          api.saveTrees(this.$props.projectname, this.$props.samplename, data).then(response => {console.log(response);}).catch(error => {console.log(error);});
-          
-        },
-        onsave() {
-          var newconll=this.draft.treeDataToConll(this.snapInfos.s.root.treedata); // treedata -> conll
-          this.sendToGrew(newconll); // sending the new conll to grew
-          this.up(false, false); // not dirty anymore
-
         }
-        // getConll(){
-        //   // TODO:
-        //   return this.draft.getConll();
-
-        // }
     }
 }
 

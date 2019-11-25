@@ -33,7 +33,6 @@ export default {
         return API.delete('projects/'+projectname+'/sample/'+samplename);
     },
     uploadSample(projectname, data){
-        console.log('data sent', data);
         return API.post('projects/' + projectname +'/upload', data);
     },
     exportSamplesZip(samplenames, projectname){

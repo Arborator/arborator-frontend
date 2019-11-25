@@ -35,10 +35,7 @@
 
 <script>
 import ConllGraph from './ConllGraph'
-import { type } from 'os'
-import EventBus from '../event-bus.js';
-
-// import { EventBus } from '../../.quasar/event-bus.js';
+import api from '../boot/backend-api';
 
 export default {
     name:'SentenceCard',
@@ -48,9 +45,12 @@ export default {
     props: ['index', 'sample', 'sentenceId', 'sentence', 'projectname', "samplename"],
     data() {
         return {
-            // bus: new Vue(),
             tab:'',
-            lastModified: { svgId: '',  draft: '', dirty: false, redo: false }
+            lastModified: { svgId: '',  draft: '', dirty: false, redo: false, conll: '', user: '' },
+            alerts: { 
+                'saveSuccess': { color: 'positive', message: 'Saved!'},
+                'saveFail': { color: 'negative', message: 'Oops, could not save...', icon: 'report_problem' },
+            }
         }
     },
     mounted() {
@@ -65,19 +65,34 @@ export default {
             // log("lastsvg", this.lastModified.svgId);
         },
         save() {
-            // console.log('ok');
-            // console.log("yolo", this.$props, this.$props.projectname, JSON.parse(JSON.stringify(this.$props.sample)));
-            EventBus.$emit('i-got-saved', this.$props.sentenceId);
-            
+            var data={"trees":[{"sent_id":this.$props.sentenceId, "conll":this.lastModified.conll}], "user_id":this.$store.getters.getUserInfos.username};
+            api.saveTrees(this.$props.projectname, this.$props.samplename, data).then(response => {
+                console.log(response)
+                if(response.status == 200){
+                    this.lastModified.dirty = false;
+                    this.showNotif('top', 'saveSuccess');
+                }
+
+            }).catch(error => {console.log(error); this.showNotif('top', 'saveFail');});
         },
         onConllGraphUpdate(payload) {
-            console.log("sentence card acting");
-            // console.log(payload);
-             // console.log("PAYLOAD", payload, payload.svgid);
-             this.lastModified = payload;
-             // console.log("PAYLOAD", this.lastModified, this.lastModified.svgid);
-            //  console.log("payload", payload);
-             }
+            this.lastModified = payload;
+        },
+        showNotif (position, alert) {
+            const { color, textColor, multiLine, icon, message, avatar, actions } = this.alerts[alert];
+            const buttonColor = color ? 'white' : void 0;
+            this.$q.notify({
+                color,
+                textColor,
+                icon: icon,
+                message,
+                position,
+                avatar,
+                multiLine,
+                actions: actions,
+                timeout: 2000
+            })
+        }
     }
 }
 </script>

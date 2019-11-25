@@ -124,8 +124,9 @@ ArboratorDraft.prototype.catChanged = function(s, depid, cat){
 	catChanged(s, depid, cat);
 }
 
-ArboratorDraft.prototype.getConll = function (s, depid, cat) {
-		catChanged(s, depid, cat);
+ArboratorDraft.prototype.getConll = function (s) {
+	// console.log("SSSSSSS", s)
+	return treeDataToConll(s.treedata)
 }
 
 ArboratorDraft.prototype.treeDataToConll = function(treedata) {

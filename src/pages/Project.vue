@@ -405,7 +405,7 @@ export default {
             .then(response => {
                 console.log(response);
                 this.resultSearchDial = true;
-                this.resultSearch = response.data.trees;
+                this.resultSearch = response.data;
             }).catch(error => {console.log(error);})
         },
         showNotif (position, alert) {

@@ -11,8 +11,8 @@
             <div class="q-pa-md row q-gutter-md">
                 <div class="col-12" v-for="(sample, index) in searchresults.trees" :key="index" :props="sample" >
                     {{sample}}
-                    {{searchresults.matches[index]}}
-                        <!-- <sentence-card :id="index" :sample="sample.conll" :index="index" :sentenceId="index" :sentence="sample.sentence" :projectname="projectname" ></sentence-card> -->
+                    <!-- {{searchresults.matches[index]}} -->
+                        <sentence-card :id="index" :sample="sample" :index="index" :sentenceId="index" :sentence="sample.sentence" :projectname="projectname" ></sentence-card>
                 </div>
             </div>
         </q-card-section>

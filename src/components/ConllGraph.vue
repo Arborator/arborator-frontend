@@ -86,7 +86,7 @@ Vue.component('v-select', vSelect);
 
 export default {
     name:'conllGraph',
-    props: ['conll', 'user', 'sentenceId', 'projectname', 'samplename'],
+    props: ['conll', 'user', 'sentenceId', 'projectname', 'samplename', 'matches'],
     data(){
         return {
             draft: new ArboratorDraft(),

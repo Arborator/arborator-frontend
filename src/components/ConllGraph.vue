@@ -159,7 +159,7 @@ export default {
         //     var relationStr = this.infos.relation.join("");
         //     this.draft.setRel(relationStr);
         // },
-        triggerRelationChange(s, snaprelation, depid, govid, relation){
+        triggerRelationChange(s, snaprelation, govid, depid, relation){
           // called from snap
           // snaprelation.attr({class:"deprelselected"});
           // relation="qsdwf:zsert@swxcv";
@@ -173,6 +173,7 @@ export default {
               lasti=i;
             }
           listRel.push(relation.substring(lasti)); 
+          console.log("here", depid, govid, relation);
           this.snapInfos = {s:s, snaprelation:snaprelation, depid:depid, govid:govid, relation:relation, relations: listRel};
           this.infos.relation = listRel;
           this.relDialog = !this.relDialog;

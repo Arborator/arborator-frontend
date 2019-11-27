@@ -9,18 +9,17 @@
 
             <q-toolbar-title>
             </q-toolbar-title>
-
             <q-btn flat round dense icon="more_vert" />
         </q-toolbar>
         <q-card-section>
             <q-chip icon="bookmark" class="text-center" dense> {{index}} </q-chip>{{sentence}}
             <q-tabs v-model="tab" class="text-teal flex-center" dense>
-                <q-tab v-for="(tree, user) in sample.conlls" :key="user" :props="user" :label="user" :name="user" icon="person" />
+                <q-tab v-for="(tree, user) in sample" :key="user" :props="user" :label="user" :name="user" icon="person" />
             </q-tabs>
             <q-separator />
 
             <q-tab-panels v-model="tab" animated>
-                <q-tab-panel v-for="(tree, user) in sample.conlls" :key="user" :props="tree" :name="user">
+                <q-tab-panel v-for="(tree, user) in sample" :key="user" :props="tree" :name="user">
                     <q-card  flat >
                     <q-card-section class="scrollable" >
                         <conll-graph :conll="tree" :user="user" :sentenceId="sentenceId" 

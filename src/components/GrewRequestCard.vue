@@ -68,8 +68,11 @@ pattern {
             ]
         }
     },
+    mounted(){
+        if (this.$store.getters.getLastGrewQuery.length > 0) this.searchPattern = this.$store.getters.getLastGrewQuery;
+    },
     methods: {
-        onSearch(){ this.parentOnSearch(this.searchPattern); },
+        onSearch(){ this.parentOnSearch(this.searchPattern); this.$store.commit('change_last_grew_query', this.searchPattern ); },
         changeSearchPattern(pattern) { this.searchPattern = pattern; },
         onResetSearch(){ this.searchPattern = ''; }
     }

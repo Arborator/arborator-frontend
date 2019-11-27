@@ -4,13 +4,13 @@
             <q-breadcrumbs>
             <q-breadcrumbs-el icon="home" to="/" />
             <q-breadcrumbs-el :label="projectname" icon="work" :to="'/projects/'+projectname" />
-            <q-breadcrumbs-el :label="sample" icon="assignment" :to="'/projects/'+projectname+'/'+sample" />
+            <q-breadcrumbs-el :label="samplename" icon="assignment" :to="'/projects/'+projectname+'/'+samplename" />
             </q-breadcrumbs>
         </div>
         <div class="q-pa-md row q-gutter-md">
             {{Object.keys(samples).length}} sentences
-            <div class="col-12" v-for="(sample_c, index) in samples" :key="index" :props="sample" >
-                    <sentence-card :id="index" :sample="sample_c.conlls" :index="index" :sentenceId="index" :sentence="sample_c.sentence" :samplename="sample" :projectname="projectname" ></sentence-card>
+            <div class="col-12" v-for="(sample, index) in samples" :key="index" :props="sample" >
+                    <sentence-card :id="index" :sample="sample.conlls" :index="index" :sentenceId="index" :sentence="sample.sentence" :samplename="samplename" :projectname="projectname" ></sentence-card>
             </div>
         </div>
 
@@ -39,7 +39,7 @@ export default {
     components: {
         SentenceCard, GrewRequestCard
     },
-    props:['projectname', 'sample'],
+    props:['projectname', 'samplename'],
     data(){
         return {
             svg: '',
@@ -90,13 +90,13 @@ pattern {
             // var svg = draft.getSvg(this.test, id);
         },
         getSampleContent(){
-            api.getSampleContent(this.projectname, this.sample)
+            api.getSampleContent(this.projectname, this.samplename)
             .then( response => { this.samples = response.data })
             .catch(error => {console.log(error)});
         },
         onSearch(searchPattern){
             var query = { pattern: searchPattern };
-            api.searchSample(this.projectname, this.sample, query)
+            api.searchSample(this.projectname, this.samplename, query)
             .then(response => { 
                 console.log(response);
                 // this.samples.filter;
@@ -118,7 +118,7 @@ pattern {
                 // console.log('filtered', filtered);
                 // this.samples = filtered;
 
-                this.samples = response.data.trees;
+                this.samples = response.data;
             })
             .catch(error => { console.log(error) })
         },

@@ -28,6 +28,7 @@ lemmaHeight = 0;
 maxLevelDistance = 33; // the maximum distance between one dependency relation and the next higher one
 posHeight = 0;
 svgDefaultHeight = 500;
+svgHeight = 0;
 el=10; // type of conll (10, 14, or 4), computed in conllNodesToTree
 trees=[]; // list of tree objects
 uextras=[]; // list of comments. each comment is a hashtable position(=line)->comment TODO: add this to the display
@@ -187,14 +188,14 @@ function dragging(dx, dy, posX, posY, event){
 	dragcurve.attr({d:path});
 	dragarrowhead.transform("translate("+dx+","+dy+")")
 	// log(dragsun)
-	if (y+dy<100) {if (dragsun==null) dragsun = this.paper.root.circle(x,0,77).attr("class", "dragcurve")}
+	if (y+dy<100) {if (dragsun==null) dragsun = this.paper.root.circle(x,0,svgHeight/4).attr("class", "dragcurve")}
 	else {if(dragsun!=null) {dragsun.remove();dragsun=null}}
 }
 
 var startdrag = function(xx,yy,e) {
 	// this.data('origTransform', this.transform().local );
 	dragrepl = this.clone();
-	log(777,this.paper.root.treedata);
+	// log(777,this.paper.root.treedata);
 	
 	// log(888, rel)
 	dragrepl.attr({class:"draggov"});
@@ -450,7 +451,7 @@ function drawsnap(idSVG, treedata, shownfeatures) {
 	s.attr("height", (maxy2)+"px");
 	s.attr("width", (maxx2)+"px");
 	s.attr("overflow", "auto");
-
+	svgHeight = s.attr('height').replace(/px/,'');
 	log(8888,"drawsnap done")
 	return s;
 

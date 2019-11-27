@@ -17,7 +17,8 @@ export default new Vuex.Store({
         user: {as_json: null, auth_provider: null, created_date: null, family_name: null, first_name: null, get_id: null, get_or_create: null, id: null, is_active: false, is_anonymous: true, is_authenticated: false, 
             last_seen: null, make_unique_nickname: null, make_valid_nickname: null, picture_url: null, query: null, query_class: null, super_admin: false, username: null},
         failedAccess: false,
-        avatarKey: 0
+        avatarKey: 0, 
+        lastGrewQuery: ''
     },
     mutations: {
         change_source(state, payload){
@@ -42,6 +43,9 @@ export default new Vuex.Store({
         },
         increment_avatar_key(state){
             state.avatarKey += 1;
+        },
+        change_last_grew_query(state, payload){
+            state.lastGrewQuery = payload;
         }
     },
     actions: {
@@ -104,6 +108,7 @@ export default new Vuex.Store({
         hasLoginErrored: state => state.loginError,
         getFailedAccess: state => state.failedAccess,
         getUserInfos: state => state.user,
-        getAvatarKey: state => state.avatarKey
+        getAvatarKey: state => state.avatarKey,
+        getLastGrewQuery: state => state.lastGrewQuery
     }
 })

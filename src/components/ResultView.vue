@@ -6,11 +6,10 @@
             <q-space />
             <q-btn flat dense icon="close" v-close-popup/>
         </q-bar>
-        
         <q-card-section > 
             <div class="q-pa-md row q-gutter-md">
                 <div class="col-12" v-for="(sample, index) in searchresults" :key="index" :props="sample" >
-                        <sentence-card :id="index" :sample="sample.conlls" :index="index" :sentenceId="index" :sentence="sample.sentence" :projectname="projectname" ></sentence-card>
+                        <sentence-card :id="index" :sample="sample.conlls" :matches="sample.matches" :index="index" :sentenceId="index" :sentence="sample.sentence" :projectname="projectname" ></sentence-card>
                 </div>
             </div>
         </q-card-section>

@@ -363,7 +363,9 @@ export default {
             return tempArray;
         },
         getProjectInfos(){
-            api.getProjectInfos(this.projectname).then(response => { console.log(response.data); this.infos = response.data; }).catch(error => {console.log(error)});
+            api.getProjectInfos(this.projectname).then(response => { 
+                // console.log(response.data);
+                 this.infos = response.data; }).catch(error => {console.log(error)});
         },
         getUsers(){
             api.getUsers().then( response => {  this.assignTable.data = response.data;  }).catch(error => { console.log(error); });

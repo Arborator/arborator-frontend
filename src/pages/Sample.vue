@@ -10,7 +10,7 @@
         <div class="q-pa-md row q-gutter-md">
             {{Object.keys(samples).length}} sentences
             <div class="col-12" v-for="(sample, index) in samples" :key="index" :props="sample" >
-                    <sentence-card :id="index" :sample="sample.conlls" :index="index" :sentenceId="index" :sentence="sample.sentence" :samplename="samplename" :projectname="projectname" ></sentence-card>
+                    <sentence-card :id="index" :sample="sample.conlls" :matches="sample.matches" :index="index" :sentenceId="index" :sentence="sample.sentence" :samplename="samplename" :projectname="projectname" ></sentence-card>
 
             </div>
         </div>

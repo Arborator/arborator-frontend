@@ -17,13 +17,15 @@
                 <q-tab v-for="(tree, user) in sample" :key="user" :props="user" :label="user" :name="user" icon="person" />
             </q-tabs>
             <q-separator />
-
+             <!-- xxx___________{{matches}} -->
             <q-tab-panels v-model="tab" animated>
+               
                 <q-tab-panel v-for="(tree, user) in sample" :key="user" :props="tree" :name="user">
                     <q-card  flat >
                     <q-card-section class="scrollable" >
+                        <!-- matches{{matches}}xxx -->
                         <conll-graph :conll="tree" :user="user" :sentenceId="sentenceId" 
-                            :samplename="samplename" :projectname="projectname" :matches="sample.matches" @update-conll="onConllGraphUpdate($event)"></conll-graph>
+                            :samplename="samplename" :projectname="projectname" :matches="matches" @update-conll="onConllGraphUpdate($event)"></conll-graph>
                     </q-card-section>
                     </q-card>
 
@@ -42,7 +44,7 @@ export default {
     components: {
         ConllGraph
     },
-    props: ['index', 'sample', 'sentenceId', 'sentence', 'projectname', "samplename"],
+    props: ['index', 'sample', 'sentenceId', 'sentence', 'projectname', "samplename", "matches"],
     data() {
         return {
             tab:'',
@@ -78,6 +80,7 @@ export default {
         onConllGraphUpdate(payload) {
             this.lastModified = payload;
         },
+      
         showNotif (position, alert) {
             const { color, textColor, multiLine, icon, message, avatar, actions } = this.alerts[alert];
             const buttonColor = color ? 'white' : void 0;

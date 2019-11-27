@@ -116,7 +116,7 @@ export default {
         }
     },
     mounted(){
-        var svg=this.start(this.conll, this.id);
+        var svg=this.start(this.conll, this.matches, this.id, this.user);
     },
     methods: {
         up(dirty, redo) {
@@ -130,10 +130,12 @@ export default {
             'conll': this.draft.getConll(this.snapInfos.s), 'user': this.user}); //emits to parent the id of the tree and a bunch of other stuff
           }
           },
-        start(conllStr, id){
+        start(conllStr, matches, id){
             // document.getElementById(id) the 
             //console.log('conllStr conllGraph component', document.getElementById(id))
-            var svg = this.draft.getSvg(conllStr, id); // here is the conllstr
+            if (this.user in matches) var usermatch = matches[this.user];
+            else var usermatch = {'nodes':[],'edges':[]};
+            var svg = this.draft.getSvg(conllStr, usermatch, id); // here is the conllstr
             svg.toggleRelDialog  = this.toggleRelDialog;
             svg.toggleCatDialog  = this.toggleCatDialog;
             svg.selectRel = this.selectRel; // update le svg avec les infos de this

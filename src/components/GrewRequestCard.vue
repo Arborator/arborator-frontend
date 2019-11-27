@@ -12,9 +12,10 @@
                 <div class="q-pa-md">
                     <div class="row">
                         <div class="col">
-                        <q-input filled v-model="searchPattern" label="Search query" type="textarea" hint="Grew query syntax" lazy-rules :rules="[ val => val && val.length > 0 || 'Please type something']" />
-                        <q-space />
-                        <q-btn color="primary" type="submit" label="Search" />
+                            <codemirror v-model="searchPattern" :options="cmOption"></codemirror>
+                            <!-- <q-input filled v-model="searchPattern" label="Search query" type="textarea" hint="Grew query syntax" lazy-rules :rules="[ val => val && val.length > 0 || 'Please type something']" /> -->
+                            <q-space />
+                            <q-btn color="primary" type="submit" label="Search" />
                         </div>
                         <div class="col">
                             <q-list bordered separator>
@@ -34,19 +35,120 @@
 </template>
 
 <script>
+import { codemirror } from 'vue-codemirror'
+import 'codemirror/lib/codemirror.css'
+import 'codemirror/theme/material-darker.css'
+import CodeMirror from 'codemirror'
+  CodeMirror.defineMode('grew', function(_config, parserConfig) {
+        var words = {
+	    'global': 'builtin',
+	    'pattern': 'builtin',
+	    'without': 'builtin',
+	};
+
+	function tokenBase(stream, state) {
+	    var ch = stream.next();
+
+	    if (ch === '"') {
+		state.tokenize = tokenString;
+		return state.tokenize(stream, state);
+	    }
+
+	    if (ch === '%' ) {
+		stream.skipToEnd();
+		return 'comment';
+	    }
+
+	    if (ch === '=' ) {
+                return 'quote';
+            }
+
+            if (ch === '<') {
+		if (stream.eat('>')) {
+                    return 'quote';
+                }
+            }
+
+	    if (ch === '-') {
+	    	var next_ch = stream.next();
+	    	if ((next_ch === '[') || (next_ch === ">")) {
+		    return 'quote';
+		}
+	    }
+
+            if (ch === ']') {
+		if (stream.eat('-') && stream.eat(">")) {
+                    return 'quote';
+                }
+            }
+
+
+
+	    if (/\d/.test(ch)) {
+		stream.eatWhile(/[\d]/);
+		if (stream.eat('.')) {
+		    stream.eatWhile(/[\d]/);
+		}
+		return 'number';
+	    }
+	    if ( /[+\-*&%=<>!?|]/.test(ch)) {
+		return 'operator';
+	    }
+	    stream.eatWhile(/\w/);
+	    var cur = stream.current();
+	    return words[cur] || 'variable';
+	}
+
+	function tokenString(stream, state) {
+	    var next, end = false, escaped = false;
+	    while ((next = stream.next()) != null) {
+		if (next === '"' && !escaped) {
+		    end = true;
+		    break;
+		}
+		escaped = !escaped && next === '\\';
+	    }
+	    if (end && !escaped) {
+		state.tokenize = tokenBase;
+	    }
+	    return 'string';
+	}
+
+	return {
+	    startState: function() {return {tokenize: tokenBase, commentLevel: 0};},
+	    token: function(stream, state) {
+		if (stream.eatSpace()) return null;
+		return state.tokenize(stream, state);
+	    },
+	    lineComment: "%"
+	};
+    
+  });
+
 export default {
+    components: { codemirror },
     name: 'GrewRequestCard',
     props: ['parentOnSearch'],
     data() {
         return {
             searchPattern: `% Search for a given word form
 pattern { N [form="Form_to_search"] }`,
+            cmOption: {
+                tabSize: 4,
+                styleActiveLine: true,
+                lineNumbers: true,
+                lineWrapping: true,
+                line: true,
+                mode: 'grew',
+                theme: 'material-darker'
+            },
             queries: [ 
-                {name:'POS query', pattern:`% Search for a token of a given upos
+                {name:'POS query', pattern:`
+% Search for a token of a given upos
 % Available tags: ADJ, ADP, ADV, AUX, CONJ, DET, INTJ, NOUN, NUM, PART, PRON, PROPN, PUNCT, SCONJ, SYM, VERB, X
-
 pattern { N [upos="NUM"] }`}, 
-                {name:'Form query', pattern:`% Search for a given word form
+                {name:'Form query', pattern:`
+% Search for a given word form
 pattern { N [form="Form_to_search"] }`},
                 {name:'Lemma query', pattern:`% Search for a given lemma (lemmatization is not available for all languages)
 

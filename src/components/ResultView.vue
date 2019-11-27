@@ -9,10 +9,7 @@
         
         <q-card-section > 
             <div class="q-pa-md row q-gutter-md">
-                <!-- xxxxx{{searchresults}} -->
                 <div class="col-12" v-for="(sample, index) in searchresults" :key="index" :props="sample" >
-                    {{sample}}
-                    <!-- {{searchresults.matches[index]}} -->
                         <sentence-card :id="index" :sample="sample.conlls" :index="index" :sentenceId="index" :sentence="sample.sentence" :projectname="projectname" ></sentence-card>
                 </div>
             </div>

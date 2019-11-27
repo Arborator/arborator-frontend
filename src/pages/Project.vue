@@ -239,7 +239,7 @@
             </q-dialog>
 
             <q-dialog v-model="resultSearchDial" maximized transition-show="fade" transition-hide="fade" >
-                <result-view :searchresults="resultSearch"></result-view>
+                <result-view :searchresults="resultSearch" :projectname="projectname"></result-view>
             </q-dialog>
 
         </div>

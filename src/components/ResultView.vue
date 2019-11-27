@@ -25,7 +25,7 @@
 import SentenceCard from './SentenceCard';
 export default {
     components: {SentenceCard},
-    props: ['searchresults'],
+    props: ['searchresults', 'projectname'],
     data(){
         return {
             samples: this.searchResults

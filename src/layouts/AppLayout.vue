@@ -86,7 +86,7 @@
 
 
     <q-footer bordered>
-      <q-item-label caption class="text-center text-grey-3">Made by XXX</q-item-label>
+      <q-item-label caption class="text-center text-grey-3">Made at Almanach, Inria</q-item-label>
     </q-footer>
 
 

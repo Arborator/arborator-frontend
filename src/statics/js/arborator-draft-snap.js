@@ -371,7 +371,7 @@ function drawsnap(idSVG, treedata, matches, shownfeatures) {
 				sword.cat =  word[shofea];
 			}
 			if (  matches.nodes.includes( nr.toString())) {
-				sword.attr({class:"catselected", fill:'green'})
+				sword.attr({class:"deprelselected"}).node.scrollIntoView()
 			}
 			nextx = Math.max(xpositions[ind+1] || 0, xpositions[ind]+sword.getBBox().w + sword.wordDistance);
 			// nextx = Math.max(xpositions[ind+1] || 0, 20 + sword.wordDistance);

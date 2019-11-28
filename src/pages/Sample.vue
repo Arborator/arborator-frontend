@@ -2,16 +2,16 @@
     <q-page>
         <div class="q-pa-md q-gutter-sm">
             <q-breadcrumbs>
-            <q-breadcrumbs-el icon="home" to="/" />
-            <q-breadcrumbs-el :label="projectname" icon="work" :to="'/projects/'+projectname" />
-            <q-breadcrumbs-el :label="samplename" icon="assignment" :to="'/projects/'+projectname+'/'+samplename" />
+                <q-breadcrumbs-el icon="home" to="/" />
+                <q-breadcrumbs-el :label="projectname" icon="work" :to="'/projects/'+projectname" />
+                <q-breadcrumbs-el :label="samplename" icon="assignment" :to="'/projects/'+projectname+'/'+samplename" />
             </q-breadcrumbs>
         </div>
+
         <div class="q-pa-md row q-gutter-md">
             {{Object.keys(samples).length}} sentences
             <div class="col-12" v-for="(sample, index) in samples" :key="index" :props="sample" >
                     <sentence-card :id="index" :sample="sample.conlls" :matches="sample.matches" :index="index" :sentenceId="index" :sentence="sample.sentence" :samplename="samplename" :projectname="projectname" ></sentence-card>
-
             </div>
         </div>
 
@@ -21,6 +21,10 @@
 
         <q-dialog v-model="searchDialog" seamless position="bottom" >
             <grew-request-card :parentOnSearch="onSearch" ></grew-request-card>
+        </q-dialog>
+
+        <q-dialog v-model="resultSearchDial" maximized transition-show="fade" transition-hide="fade" >
+            <result-view :searchresults="resultSearch" :projectname="projectname"></result-view>
         </q-dialog>
 
     </q-page>
@@ -35,10 +39,11 @@ import api from '../boot/backend-api';
 import Store from '../store/index';
 import SentenceCard from '../components/SentenceCard';
 import GrewRequestCard from '../components/GrewRequestCard';
+import ResultView from '../components/ResultView';
 
 export default {
     components: {
-        SentenceCard, GrewRequestCard
+        SentenceCard, GrewRequestCard, ResultView
     },
     props:['projectname', 'samplename'],
     data(){
@@ -48,6 +53,8 @@ export default {
             searchDialog: false,
             searchPattern: `% Search for a given word form
 pattern { N [form="Form_to_search"] }`,
+            resultSearchDial: false,
+            resultSearch: {},
             samples: {},
             queries: [ 
                 {name:'POS query', pattern:`% Search for a token of a given upos
@@ -82,7 +89,6 @@ pattern {
         }
     },
     mounted(){
-        // this.start('#youhou')
         this.getSampleContent();
     },
     methods: {
@@ -98,29 +104,7 @@ pattern {
         onSearch(searchPattern){
             var query = { pattern: searchPattern };
             api.searchSample(this.projectname, this.samplename, query)
-            .then(response => { 
-                console.log(response);
-                // this.samples.filter;
-                // var allowed = Object.keys(response.data.matches);
-                // console.log('allowed', allowed);
-                // var keys = Object.keys(this.samples);
-                // for(let i = 0; i < Object.keys(this.samples).length; i++){
-                //     if(!allowed.includes(keys[i])){ 
-                //         delete this.samples[keys[i]]; 
-                //     }
-                // }
-
-                // const filtered = Object.keys(this.samples)
-                //     .filter(key => allowed.includes(key))
-                //     .reduce((obj, key) => {
-                //         obj[key] = this.samples[key];
-                //         return obj;
-                //     }, {});
-                // console.log('filtered', filtered);
-                // this.samples = filtered;
-
-                this.samples = response.data;
-            })
+            .then(response => { this.resultSearch = response.data; this.resultSearchDial = true; })
             .catch(error => { console.log(error) })
         },
         closeSearchDialog(searchDialog){ searchDialog = this.searchDialog; }

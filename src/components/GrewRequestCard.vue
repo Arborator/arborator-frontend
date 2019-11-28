@@ -13,7 +13,6 @@
                     <div class="row">
                         <div class="col">
                             <codemirror v-model="searchPattern" :options="cmOption"></codemirror>
-                            <!-- <q-input filled v-model="searchPattern" label="Search query" type="textarea" hint="Grew query syntax" lazy-rules :rules="[ val => val && val.length > 0 || 'Please type something']" /> -->
                             <q-space />
                             <q-btn color="primary" type="submit" label="Search" />
                         </div>

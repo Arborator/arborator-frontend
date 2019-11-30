@@ -5,7 +5,7 @@ VueCookies.config('7d');
 
 const API = axios.create({
     baseURL: `/api`,
-    timeout: 20000
+    timeout: 50000
 });
 
 const AUTH = axios.create({

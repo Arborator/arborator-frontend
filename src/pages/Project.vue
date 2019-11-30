@@ -13,6 +13,7 @@
                     <div class="text-subtitle2 text-center">Admins: {{infos.admins}}</div>
                     <!-- <div class="tet-subtitle2 text-center">Selected: {{ JSON.stringify(table.selected) }}</div> -->
                     <div class="text-subtitle2 text-center">{{table.selected.length}}</div>
+                    <q-btn flat color="primary" label="test" @click="getRelationTable()"></q-btn>
                 </q-card-section>
                 <q-card-section>
                 <!-- <q-tabs v-model="tab" class="text-primary">
@@ -242,6 +243,10 @@
                 <result-view :searchresults="resultSearch" :projectname="projectname"></result-view>
             </q-dialog>
 
+            <q-dialog v-model="relationTableDial" maximized transition-show="fade" transition-hide="fade" >
+                <relation-table :edges="relationTableInfos"></relation-table>
+            </q-dialog>
+
         </div>
     </q-page>
 </template>
@@ -253,10 +258,11 @@ import api from '../boot/backend-api';
 import Store from '../store/index';
 import GrewRequestCard from '../components/GrewRequestCard';
 import ResultView from '../components/ResultView';
+import RelationTable from '../components/RelationTable';
 
 export default {
     components: {
-        GrewRequestCard, ResultView
+        GrewRequestCard, ResultView, RelationTable
     },
     props: ['projectname'],
     data(){
@@ -268,6 +274,7 @@ export default {
             searchDial: false,
             maximizedUploadToggle: false,
             resultSearchDial: false,
+            relationTableDial: false,
             alerts: { 
                 'uploadsuccess': { color: 'positive', message: 'Upload success'},
                 'uploadfail': { color: 'negative', message: 'Upload failed', icon: 'report_problem' },
@@ -338,7 +345,8 @@ export default {
                 submitting: false,
                 attachment: { name: null, file: null}
             },
-            resultSearch: {}
+            resultSearch: {},
+            relationTableInfos: {}
             
         }
     },
@@ -400,6 +408,12 @@ export default {
             }).catch(error => {
                 return [];
             });
+        },
+        getRelationTable() {
+            api.getRelationTable(this.projectname).then(response => {
+                this.relationTableInfos = response.data;
+                this.relationTableDial = true;
+            }).catch(error => {console.log(error);});
         },
         onSearch(searchPattern){
             var query = { pattern: searchPattern };

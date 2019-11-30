@@ -63,5 +63,8 @@ export default {
     saveTrees(projectname, samplename, data) {
         return API.post('projects/' + projectname + '/sample/' + samplename+ '/saveTrees', data);
     },
+    getRelationTable(projectname) {
+        return API.get('projects/' + projectname + '/relation_table/current_user');
+    }
 
 }

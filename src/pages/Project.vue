@@ -244,7 +244,7 @@
             </q-dialog>
 
             <q-dialog v-model="relationTableDial" maximized transition-show="fade" transition-hide="fade" >
-                <relation-table :edges="relationTableInfos"></relation-table>
+                <relation-table :edges="relationTableInfos" :projectname="projectname"></relation-table>
             </q-dialog>
 
         </div>

@@ -97,7 +97,7 @@ export default {
                 category: null
             },
             options: {
-                relations:[["subj", "comp", "vocative", "det", "dep", "mod", "conj", "cc", "parataxis", "fixed", "flat", "compound", "discourse", "dislocated", "goeswith", "orphan", "punct", "root"],[":aux",":caus",":cleft",":pred",":appos"],["@agent", "@appos", "@caus", "@expl", "@fixed", "@lvc","@pass", "@relcl", "@tense","@x"]],
+                relations:[["subj", "comp", "vocative", "det", "dep", "mod", "conj", "cc", "parataxis", "fixed", "flat", "compound", "discourse", "dislocated", "goeswith", "orphan", "punct", "root"],[":aux",":caus",":cleft",":pred",":appos", ":obj", ":obl"],["@agent", "@appos", "@caus", "@expl", "@fixed", "@lvc","@pass", "@relcl", "@tense","@x"]],
 		        cats:["ADJ", "ADP", "ADV", "AUX", "CCONJ", "DET", "INTJ", "NOUN", "NUM", "PART", "PRON", "PROPN", "PUNCT", "SCONJ", "VERB", "X"],
             },
             relDialog: false,

@@ -97,10 +97,10 @@ ArboratorDraft.prototype.emptyThenRefresh = function(content, reverse = false, t
 	empty().done( refresh( content ) );
 }
 
-ArboratorDraft.prototype.getSvg = function(strConll, matches, id){
-	// log('matches', matches) // the one that we see
+ArboratorDraft.prototype.getSvg = function(strConll, usermatches, id){
+	// log('usermatches', usermatches) // the one that we see
 	var treedata = conllNodesToTree(strConll); // treedata is object: {tree:tree, uextra:sentencefeatures, sentence, svg:snap-object}
-	treedata['svg'] = drawsnap(id, treedata, matches, shownfeatures);
+	treedata['svg'] = drawsnap(id, treedata, usermatches, shownfeatures);
 	// tree['svg'] = draw(tree.tree, id);
 	return treedata;
 }
@@ -152,7 +152,7 @@ function refresh(idSVG, content) {
 	for (let singleConll of listOfConlls) { // for each conll tree at once, can block the browser
 		var treedata = conllNodesToTree(singleConll)
 		console.log("refresh function",this);
-		drawsnap(idSVG, treedata, matches, shownfeatures)
+		drawsnap(idSVG, treedata, usermatches, shownfeatures)
 		
 		}
 	return;
@@ -288,7 +288,7 @@ function relationChanged(s, depid, govid, relation ) {  // todo: maybe include a
 	s.root.treedata.tree[depid]['gov']={}
 	s.root.treedata.tree[depid]['gov'][govid]=relation
 	s.paper.clear();
-	drawsnap(s.id, s.root.treedata, {}, shownfeatures)
+	drawsnap(s.id, s.root.treedata, {'nodes':[],'edges':[]}, shownfeatures)
 }
 
 function catChanged(s, depid, cat ) {  
@@ -296,13 +296,13 @@ function catChanged(s, depid, cat ) {
 	// console.log("BEFORE", JSON.parse(JSON.stringify(s.root.treedata.tree)));
 	s.root.treedata.tree[depid]['cat']=cat;
 	s.paper.clear();
-	drawsnap(s.id, s.root.treedata, {}, shownfeatures)
+	drawsnap(s.id, s.root.treedata, {'nodes':[],'edges':[]}, shownfeatures)
 	// return s.root.treedata.tree
 }
 
 
 
-function drawsnap(idSVG, treedata, matches, shownfeatures) {
+function drawsnap(idSVG, treedata, usermatches, shownfeatures) {
 	///////////////////////////////////
 	// draws json tree on svg in div //
 	///////////////////////////////////
@@ -321,7 +321,7 @@ function drawsnap(idSVG, treedata, matches, shownfeatures) {
 	// s.parent().node.classList.add('sentencebox');
 	var leveldistance = parseInt(getComputedStyle(s.parent().node).getPropertyValue('--depLevelHeight'));
 	log("leveldistance",leveldistance)
-	log("drawsnap matches",matches,matches.nodes === null, matches.nodes)
+	log("drawsnap usermatches",usermatches,usermatches.nodes === null, usermatches.nodes)
 	var idgov2level = {};
 	var levels = [];
 	s.treedata = treedata;
@@ -370,7 +370,7 @@ function drawsnap(idSVG, treedata, matches, shownfeatures) {
 				sword.nr = nr;
 				sword.cat =  word[shofea];
 			}
-			if (  matches.nodes.includes( nr.toString())) {
+			if (  usermatches.nodes.includes( nr.toString())) {
 				sword.attr({class:"deprelselected"}).node.scrollIntoView()
 			}
 			nextx = Math.max(xpositions[ind+1] || 0, xpositions[ind]+sword.getBBox().w + sword.wordDistance);

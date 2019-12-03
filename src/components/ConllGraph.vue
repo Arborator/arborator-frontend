@@ -133,7 +133,7 @@ export default {
           },
         start(conllStr, matches, id){
             // document.getElementById(id) the 
-            //console.log('conllStr conllGraph component', document.getElementById(id))
+            console.log('start matches', matches)
             if (this.user in matches) var usermatch = matches[this.user];
             else var usermatch = {'nodes':[],'edges':[]};
             var svg = this.draft.getSvg(conllStr, usermatch, id); // here is the conllstr

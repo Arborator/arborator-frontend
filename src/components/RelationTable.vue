@@ -54,7 +54,7 @@
             
         </q-card-section>
         <q-dialog v-model="visuTreeDial" maximized transition-show="fade" transition-hide="fade" >
-            <result-view :searchresults="selectedResults" :projectname="projectname"></result-view>
+            <result-view :searchresults="selectedResults" ></result-view>
         </q-dialog>
     </q-card>
 </template>
@@ -65,7 +65,7 @@ import dummydata from '../assets/data.json';
 
 export default {
     components: {ResultView},
-    props: ['edges', 'projectname'],
+    props: ['edges'],
     data(){
         return {
             currentEdge: '',

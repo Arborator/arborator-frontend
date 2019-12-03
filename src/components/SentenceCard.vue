@@ -24,8 +24,7 @@
                     <q-card  flat >
                     <q-card-section class="scrollable" >
                         <!-- matches{{matches}}xxx -->
-                        <conll-graph :conll="tree" :user="user" :sentenceId="sentenceId" 
-                            :samplename="samplename" :projectname="projectname" :matches="matches" @update-conll="onConllGraphUpdate($event)"></conll-graph>
+                        <conll-graph :conll="tree" :user="user" :sentenceId="sentenceId" :matches="matches" @update-conll="onConllGraphUpdate($event)"></conll-graph>
                     </q-card-section>
                     </q-card>
 
@@ -44,7 +43,7 @@ export default {
     components: {
         ConllGraph
     },
-    props: ['index', 'sample', 'sentenceId', 'sentence', 'projectname', "samplename", "matches"],
+    props: ['index', 'sample', 'sentenceId', 'sentence', "matches"],
     data() {
         return {
             tab:'',

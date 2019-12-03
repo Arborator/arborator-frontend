@@ -1,5 +1,6 @@
 <template>
     <div class="sentencebox">
+      {{$route.params}}
       <svg :id="id" :ref="id"></svg>
       
       
@@ -86,7 +87,7 @@ Vue.component('v-select', vSelect);
 
 export default {
     name:'conllGraph',
-    props: ['conll', 'user', 'sentenceId', 'projectname', 'samplename', 'matches'],
+    props: ['conll', 'user', 'sentenceId', 'matches'],
     data(){
         return {
             draft: new ArboratorDraft(),

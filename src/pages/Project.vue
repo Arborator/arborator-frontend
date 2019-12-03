@@ -3,7 +3,7 @@
         <div class="q-pa-md q-gutter-sm">
             <q-breadcrumbs>
             <q-breadcrumbs-el icon="home" to="/" />
-            <q-breadcrumbs-el :label="projectname" icon="work" :to="'/projects/'+projectname" />
+            <q-breadcrumbs-el :label="$route.params.projectname" icon="work" :to="'/projects/'+$route.params.projectname" />
             </q-breadcrumbs>
         </div>
         <div class="q-pa-md row q-gutter-md flex flex-center">
@@ -113,7 +113,7 @@
             </q-dialog>
 
             <q-dialog v-model="assignDial" persistent maximized transition-show="slide-up" transition-hide="slide-down" >
-                <user-table :projectname="projectname"></user-table>
+                <user-table :samples="table.selected" ></user-table>
             </q-dialog>
 
             <q-dialog v-model="uploadDial" :maximized="maximizedUploadToggle" transition-show="fade" transition-hide="fade" >
@@ -149,11 +149,11 @@
             </q-dialog>
 
             <q-dialog v-model="resultSearchDial" maximized transition-show="fade" transition-hide="fade" >
-                <result-view :searchresults="resultSearch" :projectname="projectname"></result-view>
+                <result-view :searchresults="resultSearch" ></result-view>
             </q-dialog>
 
             <q-dialog v-model="relationTableDial" maximized transition-show="fade" transition-hide="fade" >
-                <relation-table :edges="relationTableInfos" :projectname="projectname"></relation-table>
+                <relation-table :edges="relationTableInfos" ></relation-table>
             </q-dialog>
 
         </div>
@@ -174,7 +174,6 @@ export default {
     components: {
         GrewRequestCard, ResultView, RelationTable, UserTable
     },
-    props: ['projectname'],
     data(){
         return {
             tab: 'texts',
@@ -225,7 +224,6 @@ export default {
                     descending: false,
                     page: 1,
                     rowsPerPage: 10
-                    // rowsNumber: this.infos.texts.length
                 },
                 loadingDelete: false
             },
@@ -242,14 +240,10 @@ export default {
         this.getProjectInfos();
     },
     computed: {
-        // totalSentences: function() {
-        //     return this.infos.texts.reduce((acc, item) => acc + item.sentences, 0);
-        // }
+        routePath() { return this.$route.path; }
     },
     methods:{
-        goToRoute(props) {
-            this.$router.push('/projects/' + this.infos.name + '/samples')
-        },
+        goToRoute(props) { this.$router.push('/projects/' + this.infos.name + '/samples') },
         filterFields(tableJson) {
             // to remove some fields from visiblecolumns select options
             var tempArray = tableJson.fields.filter(function( obj ) {
@@ -257,22 +251,16 @@ export default {
             });
             return tempArray;
         },
-        getProjectInfos(){
-            api.getProjectInfos(this.projectname).then(response => { 
-                // console.log(response.data);
-                 this.infos = response.data; }).catch(error => {console.log(error)});
-        },
+        getProjectInfos(){ api.getProjectInfos(this.$route.params.projectname).then(response => { this.infos = response.data; }).catch(error => {console.log(error)}); },
         upload(){
             var form = new FormData();
             this.uploadSample.submitting = true;
             for(const file of this.uploadSample.attachment.file){ form.append('files',file); }
             form.append('import_user',Store.getters.getUserInfos.username);
-            api.uploadSample(this.projectname, form).then( response => { this.uploadSample.attachment.file = []; this.getProjectInfos(); this.uploadDial = false; this.uploadSample.submitting = false; this.showNotif('top-right', 'uploadsuccess');})
+            api.uploadSample(this.$route.params.projectname, form).then( response => { this.uploadSample.attachment.file = []; this.getProjectInfos(); this.uploadDial = false; this.uploadSample.submitting = false; this.showNotif('top-right', 'uploadsuccess');})
             .catch(error => {console.log(error); this.uploadSample.submitting = false; this.uploadDial = false;});
         },
-        onFileChange(event) {
-            this.uploadSample.attachment.file = event.target.files;
-        },
+        onFileChange(event) { this.uploadSample.attachment.file = event.target.files; },
         deleteSamples(){
             for (const sample of this.table.selected) {
                 api.deleteSample(this.infos.name, sample.samplename).then( response => { this.infos = response.data; this.table.selected = []; this.showNotif('top-right', 'deletesuccess'); } ).catch(error => { console.log(error); this.showNotif('top-right', 'deletefail'); });
@@ -281,7 +269,7 @@ export default {
         exportSamplesZip(){
             var samplenames = [];
             for (const sample of this.table.selected) { samplenames.push(sample.samplename) }
-            api.exportSamplesZip(samplenames, this.projectname).then( response => {
+            api.exportSamplesZip(samplenames, this.$route.params.projectname).then( response => {
                 const url = window.URL.createObjectURL(new Blob([response.data]));
                 const link = document.createElement('a');
                 link.href = url;
@@ -294,16 +282,15 @@ export default {
             });
         },
         getRelationTable() {
-            api.getRelationTable(this.projectname).then(response => {
+            api.getRelationTable(this.$route.params.projectname).then(response => {
                 this.relationTableInfos = response.data;
                 this.relationTableDial = true;
             }).catch(error => {console.log(error);});
         },
         onSearch(searchPattern){
             var query = { pattern: searchPattern };
-            api.searchProject(this.projectname, query)
+            api.searchProject(this.$route.params.projectname, query)
             .then(response => {
-                console.log(response);
                 this.resultSearchDial = true;
                 this.resultSearch = response.data;
             }).catch(error => {console.log(error);})

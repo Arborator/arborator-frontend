@@ -11,18 +11,8 @@
                 <q-card-section>
                     <div class="text-h6 text-center">Project: {{infos.name}}</div>
                     <div class="text-subtitle2 text-center">Admins: {{infos.admins}}</div>
-                    <!-- <div class="tet-subtitle2 text-center">Selected: {{ JSON.stringify(table.selected) }}</div> -->
-                    <div class="text-subtitle2 text-center">{{table.selected.length}}</div>
-                    <q-btn flat color="primary" label="test" @click="getRelationTable()"></q-btn>
                 </q-card-section>
                 <q-card-section>
-                <!-- <q-tabs v-model="tab" class="text-primary">
-                    <q-tab label="Texts" name="texts" />
-                    <q-tab label="Users" name="assignments" />
-                </q-tabs>
-                <q-separator /> -->
-                <!-- <q-tab-panels v-model="tab" animated>
-                    <q-tab-panel name="texts"> -->
                         <q-table
                             ref="textsTable"
                             class="my-sticky-header-table rounded-borders"
@@ -58,6 +48,9 @@
                                     </q-btn>
                                     <q-btn v-show="table.selected.length!=0" :loading="table.loadingDelete" flat color="default" text-color="red" icon="delete_forever" @click="deleteSamples()" >
                                         <q-tooltip :delay="300" content-class="bg-white text-primary">Delete selected rows</q-tooltip>
+                                    </q-btn>
+                                    <q-btn flat color="default" text-color="blue-grey-8" icon="table_chart" @click="getRelationTable()" >
+                                        <q-tooltip :delay="300" content-class="bg-white text-primary">Relation tables</q-tooltip>
                                     </q-btn>
                                 </q-btn-group>
 
@@ -108,12 +101,6 @@
                             </template>
 
                         </q-table>
-                    <!-- </q-tab-panel>
-
-                    <q-tab-panel name="assignments">
-                        
-                    </q-tab-panel>
-                </q-tab-panels> -->
                 </q-card-section>
             </q-card>
 
@@ -125,86 +112,8 @@
                 <grew-request-card :parentOnSearch="onSearch" ></grew-request-card>
             </q-dialog>
 
-            <q-dialog v-model="assignDial" persistent :maximized="maximizedToggle" transition-show="slide-up" transition-hide="slide-down" >
-                <q-card class="bg-blue-grey-1 text-black" style="max-width: 100vw;">
-                    <q-bar>
-                        <q-space />
-                        <q-btn dense flat icon="minimize" @click="maximizedToggle = false" :disable="!maximizedToggle">
-                            <q-tooltip v-if="maximizedToggle" content-class="bg-white text-primary">Minimize</q-tooltip>
-                        </q-btn>
-                        <q-btn dense flat icon="crop_square" @click="maximizedToggle = true" :disable="maximizedToggle">
-                            <q-tooltip v-if="!maximizedToggle" content-class="bg-white text-primary">Maximize</q-tooltip>
-                        </q-btn>
-                        <q-btn dense flat icon="close" v-close-popup>
-                            <q-tooltip content-class="bg-white text-primary">Close</q-tooltip>
-                        </q-btn>
-                    </q-bar>
-
-                    <q-card-section>
-                        <q-table
-                            ref="usersTable"
-                            class="my-sticky-header-table rounded-borders"
-                            title="Users"
-                            :data="assignTable.data"
-                            :columns="assignTable.fields"
-                            row-key="username"
-                            :pagination.sync="assignTable.pagination"
-                            :loading="assignTable.loading"
-                            loading-label="loading"
-                            :filter="assignTable.filter"
-                            binary-state-sort
-                            :visible-columns="assignTable.visibleColumns"
-                            selection="multiple"
-                            :selected.sync="assignTable.selected"
-                            dense
-                            table-header-class="text-primary"
-                            card-class="shadow-8"
-                            >
-
-                            <template v-slot:top="props">
-                                <q-btn-group flat >
-                                    <q-btn rounded push color="primary" label="validate" :disabled="assignTable.selected.length <1" >
-                                        <q-tooltip :delay="300" content-class="text-white bg-primary">Validate</q-tooltip>
-                                    </q-btn>
-                                </q-btn-group>
-
-                                <q-space />
-
-                                {{table.selected}}
-
-                                <q-input  dense debounce="300" v-model="assignTable.filter" placeholder="Search" text-color="blue-grey-8" >
-                                    <template v-slot:append>
-                                        <q-icon name="search" />
-                                    </template>
-                                    <q-tooltip :delay="300" content-class="bg-white text-primary">Search a user</q-tooltip>
-                                </q-input>
-                                
-                                <q-space />
-
-                                <q-select v-model="assignTable.visibleColumns" multiple borderless dense options-dense :display-value="$q.lang.table.columns"
-                                emit-value map-options  :options="filterFields(assignTable)"  option-value="name" style="min-width: 100px"  >
-                                    <q-tooltip :delay="300" content-class="bg-white text-primary">Select visible columns</q-tooltip>
-                                </q-select>
-
-                                <q-btn flat round dense text-color="blue-grey-8" :icon="props.inFullscreen ? 'fullscreen_exit' : 'fullscreen'"  @click="props.toggleFullscreen"  class="q-ml-md" />
-                            </template>
-
-                            <template v-slot:body="props">
-                                
-                                <q-tr :props="props">
-                                    <q-td auto-width><q-toggle dense v-model="props.selected" /></q-td>
-                                    <q-td key="picture_url" :props="props"><q-avatar><img :src="props.row.picture_url" /></q-avatar></q-td>
-                                    <q-td key="name" :props="props">{{props.row.username}}</q-td>
-                                    <q-td key="email" :props="props">{{ props.row.id }}</q-td>
-                                    <q-td key="super_admin" :props="props">{{ props.row.super_admin }}</q-td>
-                                    <q-td key="last_seen" :props="props">{{ props.row.last_seen }}</q-td>
-                                </q-tr>
-                                
-                            </template>
-
-                        </q-table>
-                    </q-card-section>
-                </q-card>
+            <q-dialog v-model="assignDial" persistent maximized transition-show="slide-up" transition-hide="slide-down" >
+                <user-table :projectname="projectname"></user-table>
             </q-dialog>
 
             <q-dialog v-model="uploadDial" :maximized="maximizedUploadToggle" transition-show="fade" transition-hide="fade" >
@@ -259,17 +168,17 @@ import Store from '../store/index';
 import GrewRequestCard from '../components/GrewRequestCard';
 import ResultView from '../components/ResultView';
 import RelationTable from '../components/RelationTable';
+import UserTable from '../components/UserTable';
 
 export default {
     components: {
-        GrewRequestCard, ResultView, RelationTable
+        GrewRequestCard, ResultView, RelationTable, UserTable
     },
     props: ['projectname'],
     data(){
         return {
             tab: 'texts',
             assignDial: false,
-            maximizedToggle: true,
             uploadDial: false,
             searchDial: false,
             maximizedUploadToggle: false,
@@ -320,27 +229,6 @@ export default {
                 },
                 loadingDelete: false
             },
-            assignTable:{
-                data: [],
-                fields: [
-                    { name: 'picture_url', label: 'Avatar', field: 'picture_url' },
-                    { name: 'name', label: 'Name', field:'username', sortable: true },
-                    { name: 'email', label: 'Mail', field: 'id', sortable: true },
-                    { name: 'super_admin', label: 'Admin', field: 'super_admin', sortable: true },
-                    { name: 'last_seen', label: 'Last Seen', field: 'last_seen', sortable: true}
-                ],
-                visibleColumns: [ 'picture_url', 'name', 'email' ],
-                filter: '',
-                selected: [],
-                loading: false,
-                pagination: {
-                    sortBy: 'name',
-                    descending: false,
-                    page: 1,
-                    rowsPerPage: 10
-                },
-                loadingDelete: false
-            },
             uploadSample: {
                 submitting: false,
                 attachment: { name: null, file: null}
@@ -352,7 +240,6 @@ export default {
     },
     mounted(){
         this.getProjectInfos();
-        this.getUsers();
     },
     computed: {
         // totalSentences: function() {
@@ -374,9 +261,6 @@ export default {
             api.getProjectInfos(this.projectname).then(response => { 
                 // console.log(response.data);
                  this.infos = response.data; }).catch(error => {console.log(error)});
-        },
-        getUsers(){
-            api.getUsers().then( response => {  this.assignTable.data = response.data;  }).catch(error => { console.log(error); });
         },
         upload(){
             var form = new FormData();

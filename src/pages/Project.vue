@@ -9,8 +9,13 @@
         <div class="q-pa-md row q-gutter-md flex flex-center">
             <q-card flat style="max-width: 100%">
                 <q-card-section>
-                    <div class="text-h6 text-center">Project: {{infos.name}}</div>
-                    <div class="text-subtitle2 text-center">Admins: {{infos.admins}}</div>
+                    <q-toolbar class="  text-center">
+                        <q-toolbar-title>
+                        <span class="text-primary text-bold">{{infos.name}}</span>
+                        </q-toolbar-title>
+                    </q-toolbar>
+                    <!-- <div class="text-h6 text-center">Project: {{infos.name}}</div>
+                    <div class="text-subtitle2 text-center">Admins: {{infos.admins}}</div> -->
                 </q-card-section>
                 <q-card-section>
                         <q-table
@@ -76,7 +81,7 @@
                             <template v-slot:body="props">
                                 
                                 <q-tr :props="props">
-                                    <q-td auto-width><q-checkbox  v-model="props.selected" /></q-td>
+                                    <q-td auto-width><q-toggle dense v-model="props.selected" /></q-td>
                                     <q-td key="samplename" :props="props"><q-btn outline color="white" text-color="black" 
                                     class="full-width" 
                                     :to="'/projects/' + infos.name + '/' + props.row.samplename" 
@@ -98,6 +103,20 @@
                                     <q-td key="exo" :props="props">{{ props.row.exo }}</q-td>
                                 </q-tr>
                                 
+                            </template>
+
+                            <template v-slot:no-data="props">
+                                <div class="q-pa-md">
+                                <div class="row">
+                                    <div v-show="table.loading" class="col-5 .offset-4"><q-circular-progress  indeterminate size="50px" :thickness="0.22" color="primary" track-color="grey-3" /></div>
+                                    <q-banner v-show="!table.loading" inline-actions class="text-white bg-negative">
+                                        Oops! No data to display...
+                                        <template v-slot:action>
+                                            <q-btn flat color="white" label="try again" @click="getProjectInfos();" />
+                                        </template>
+                                    </q-banner>
+                                </div>
+                                </div>
                             </template>
 
                         </q-table>
@@ -251,7 +270,7 @@ export default {
             });
             return tempArray;
         },
-        getProjectInfos(){ api.getProjectInfos(this.$route.params.projectname).then(response => { this.infos = response.data; }).catch(error => {console.log(error)}); },
+        getProjectInfos(){ this.table.loading = true; api.getProjectInfos(this.$route.params.projectname).then(response => { this.infos = response.data; this.table.loading = false;}).catch(error => {console.log(error); this.table.loading = false;}); },
         upload(){
             var form = new FormData();
             this.uploadSample.submitting = true;

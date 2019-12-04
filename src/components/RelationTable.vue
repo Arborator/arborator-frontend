@@ -121,7 +121,7 @@ export default {
         }
     }, 
     mounted(){
-        this.edges = dummydata;
+        this.edges = this.createTable();//dummydata;
         
     }
 }

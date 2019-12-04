@@ -66,7 +66,7 @@ module.exports = function (ctx) {
         'QFab', 'QFabAction',
         'QPageSticky', 'QScrollArea', 'QPageScroller',
         'QLinearProgress', 'QCheckbox', 'QSpinnerFacebook',
-        'QVirtualScroll'
+        'QVirtualScroll', 'QCircularProgress'
       ],
 
       directives: [

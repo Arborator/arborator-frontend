@@ -8,16 +8,16 @@
             </q-breadcrumbs>
         </div>
 
-        <div class="q-pa-md row q-gutter-md">
+        <div v-show="!loading" class="q-pa-md row q-gutter-md">
             <q-badge color="blue">{{sentenceCount}} sentences</q-badge>
-            <!-- <div class="col-12" v-for="(sample, index) in samples" :key="index" :props="sample" >
-                <sentence-card :id="index" :sample="sample" :index="index" :sentenceId="index" ></sentence-card>
-            </div> -->
             <q-virtual-scroll :items="this.samplesFrozen.list" style="max-height: 80vh; width:99vw" :virtual-scroll-slice-size="5" :virtual-scroll-item-size="200">
                 <template v-slot="{ item, index }">
                     <sentence-card :key="index" :id="item" :sample="samples[item]" :index="index" :sentenceId="item" ></sentence-card>
                 </template>
             </q-virtual-scroll>
+        </div>
+        <div v-show="loading" class="q-pa-md row justify-center">
+            <div v-show="loading" class="col"><q-circular-progress  indeterminate size="70px" :thickness="0.22" color="primary" track-color="grey-3" /></div>
         </div>
 
         <q-page-sticky position="bottom">
@@ -57,6 +57,7 @@ export default {
         return {
             svg: '',
             tab: 'gold',
+            loading: false,
             searchDialog: false,
             resultSearchDial: false,
             resultSearch: {},
@@ -72,9 +73,10 @@ export default {
     },
     methods: {
         getSampleContent(){
+            this.loading = true;
             api.getSampleContent(this.projectname, this.samplename)
-            .then( response => { this.samples = response.data; this.frozeSamples(); })
-            .catch(error => {console.log(error)});
+            .then( response => { this.samples = response.data; this.frozeSamples(); this.loading = false; })
+            .catch(error => {console.log(error); this.loading = false;});
         },
         onSearch(searchPattern){
             var query = { pattern: searchPattern };

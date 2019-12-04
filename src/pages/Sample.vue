@@ -1,15 +1,7 @@
 <template>
     <q-page>
-        <div class="q-pa-md q-gutter-sm">
-            <q-breadcrumbs>
-                <q-breadcrumbs-el icon="home" to="/" />
-                <q-breadcrumbs-el :label="projectname" icon="work" :to="'/projects/'+projectname" />
-                <q-breadcrumbs-el :label="samplename" icon="assignment" :to="'/projects/'+projectname+'/'+samplename" />
-            </q-breadcrumbs>
-        </div>
-
         <div v-show="!loading" class="q-pa-md row q-gutter-md">
-            <q-badge color="secondary">{{sentenceCount}} sentences</q-badge>
+            <q-badge color="primary">{{sentenceCount}} sentences</q-badge>
             <q-virtual-scroll :items="this.samplesFrozen.list" style="max-height: 80vh; width:99vw" :virtual-scroll-slice-size="5" :virtual-scroll-item-size="200">
                 <template v-slot="{ item, index }">
                     <sentence-card :key="index" :id="item" :sample="samples[item]" :index="index" :sentenceId="item" ></sentence-card>

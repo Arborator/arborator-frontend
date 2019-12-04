@@ -36,7 +36,7 @@
             <img src="../statics/arborator.quick.svg" width="100em" /> <q-badge align="top" color="positive">No login!</q-badge>
             <q-item-section>
                 <q-item-label lines="1"> </q-item-label>
-                <q-item-label caption lines="2">
+                <q-item-label caption lines="2" :class="$q.dark.isActive?'text-grey':''">
                   CoNLL files graphical editor
                 </q-item-label>
             </q-item-section>

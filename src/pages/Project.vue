@@ -1,11 +1,5 @@
 <template>
     <q-page>
-        <div class="q-pa-md q-gutter-sm">
-            <q-breadcrumbs>
-            <q-breadcrumbs-el icon="home" to="/" />
-            <q-breadcrumbs-el :label="$route.params.projectname" icon="work" :to="'/projects/'+$route.params.projectname" />
-            </q-breadcrumbs>
-        </div>
         <div class="q-pa-md row q-gutter-md flex flex-center">
             <q-card flat style="max-width: 100%">
                 <q-card-section>
@@ -20,7 +14,7 @@
                 <q-card-section>
                         <q-table
                             ref="textsTable"
-                            class="my-sticky-header-table rounded-borders"
+                            :class="($q.dark.isActive?'my-sticky-header-table-dark':'my-sticky-header-table' ) +  ' rounded-borders'"
                             title="Samples"
                             :data="infos.samples"
                             :columns="table.fields"
@@ -343,6 +337,21 @@ export default {
   .q-table__bottom,
   thead tr:first-child th /* bg color is important for th; just specify one */
     background-color $grey-1 /* #eeeeee */
+
+  thead tr:first-child th
+    position sticky
+    top 0
+    opacity 1
+    z-index 1
+.my-sticky-header-table-dark
+  /* max height is important */
+  .q-table__middle
+    max-height 70vh
+
+  .q-table__top,
+  .q-table__bottom,
+  thead tr:first-child th /* bg color is important for th; just specify one */
+    background-color $black-1 /* #eeeeee */
 
   thead tr:first-child th
     position sticky

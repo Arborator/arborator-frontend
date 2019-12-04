@@ -10,7 +10,7 @@
             <q-btn flat round dense icon="more_vert" />
         </q-toolbar>
         <q-card-section>
-            <q-chip icon="bookmark" class="text-center" dense> {{index}} </q-chip>{{sample.sentence}}
+            <q-chip icon="bookmark" class="text-center" dense> {{sentenceId}} </q-chip>{{sample.sentence}}
             <q-tabs v-model="tab" class="text-teal flex-center" dense>
                 <q-tab v-for="(tree, user) in sample.conlls" :key="user" :props="user" :label="user" :name="user" icon="person" />
             </q-tabs>
@@ -61,7 +61,7 @@ export default {
             // log("lastsvg", this.lastModified.svgId);
         },
         save() {
-            var data={"trees":[{"sent_id":this.$props.sentenceId, "conll":this.lastModified.conll}], "user_id":this.$store.getters.getUserInfos.username};
+            var data={"trees":[{"sent_id":this.sentenceId, "conll":this.lastModified.conll}], "user_id":this.$store.getters.getUserInfos.username};
             api.saveTrees(this.$route.params.projectname, this.$props.sample.samplename, data).then(response => {
                 if(response.status == 200){
                     this.lastModified.dirty = false;

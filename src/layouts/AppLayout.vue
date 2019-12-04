@@ -1,15 +1,22 @@
 <template>
-  <q-layout view="lHh Lpr lFf">
-    <q-header bordered class=" bg-white">
-      <q-toolbar>
-        <q-btn flat @click="drawerLeft = !drawerLeft" round dense icon="menu" color="primary" />
+  <q-layout view="hHh Lpr fFf">
+    <q-header bordered :class="$q.dark.isActive ? 'bg-primary' : 'bg-white' ">
+      <q-toolbar :class="$q.dark.isActive ? 'text-white' : 'text-primary'">
+        <q-btn flat @click="drawerLeft = !drawerLeft" round icon="menu"  />
         <q-toolbar-title desktop-only >
-          <q-btn flat dense size="xl" square to="/"><img alt="Arborator" src="../statics/arborator.text.white.svg" style="width:11vw"/></q-btn>
+          <q-btn flat dense size="xl" square to="/"><img alt="Arborator" :src="$q.dark.isActive ? '../statics/arborator.text.white.svg' : '../statics/arborator.text.primary.svg' " style="width:11vw"/></q-btn>
         </q-toolbar-title>
 
         <q-space />
+        <q-breadcrumbs :active-color="$q.dark.isActive?'white':'primary'" :class="$q.dark.isActive?'text-grey':'text-black'" style="max-height:20px;max-width:70vh;overflow:y;">
+            <q-breadcrumbs-el v-if="notHome" icon="home" to="/" />
+            <q-breadcrumbs-el v-if="$route.params.projectname != null" :label="$route.params.projectname" icon="work" :to="'/projects/'+$route.params.projectname" />
+            <q-breadcrumbs-el v-if="$route.params.samplename != null && $route.params.projectname != null" :label="$route.params.samplename" icon="assignment" :to="'/projects/'+$route.params.projectname+'/'+$route.params.samplename" />
+        </q-breadcrumbs>
+        <q-space />
         
         <div class="q-gutter-sm row items-center no-wrap">
+          <q-btn flat round @click="$q.dark.toggle()" :icon="$q.dark.isActive?'brightness_7':'brightness_2'"></q-btn>
           <q-btn-dropdown v-show="!store.getters.isLoggedIn" color="secondary" outline label="Log In" icon="account_circle">
             <q-list>
               <q-item clickable v-close-popup @click="openURL(store.getters.getSource + '/login/google')">
@@ -68,7 +75,7 @@
               </div>
             </q-menu>
           </q-btn>
-          <q-btn flat dense color="primary" @click="$q.fullscreen.toggle()" :icon="$q.fullscreen.isActive ? 'fullscreen_exit' : 'fullscreen'"
+          <q-btn flat dense @click="$q.fullscreen.toggle()" :icon="$q.fullscreen.isActive ? 'fullscreen_exit' : 'fullscreen'"
            :label="$q.fullscreen.isActive ? '' : ''">
             <q-tooltip :delay="300" content-class="bg-white text-primary">Fullscreen</q-tooltip>
           </q-btn>
@@ -96,19 +103,18 @@
         :breakpoint="400"
         content-class="bg-primary"
         dark
-        show-if-above
         bordered
       >
 
-      <q-img class="absolute-top" src="https://cdn.quasar.dev/img/material.png" style="height: 150px">
-          <div class="absolute-bottom bg-transparent">
-            <q-avatar size="56px" class="q-mb-sm">
-              <img :src="store.getters.getUserInfos.picture_url">
-            </q-avatar>
-            <div class="text-weight-bold">Razvan Stoenescu</div>
-            <div>@rstoenescu</div>
-          </div>
-        </q-img>
+      <q-img class="absolute-top" src="https://picsum.photos/200/300/?blur" style="height: 150px">
+        <div class="absolute-bottom bg-transparent">
+          <q-avatar size="56px" class="q-mb-sm">
+            <img :src="store.getters.getUserInfos.picture_url">
+          </q-avatar>
+          <div class="text-weight-bold">{{store.getters.getUserInfos.username}}</div>
+          <div>@{{store.getters.getUserInfos.username}}</div>
+        </div>
+      </q-img>
 
       <q-scroll-area style="height: calc(100% - 150px); margin-top: 150px; ">
         <q-list v-for="(menuItem, index) in menuList" :key="index" padding>
@@ -168,6 +174,9 @@ export default {
           }
         ]
     }
+  },
+  computed:{
+    notHome(){ return !Object.values(this.$route.params).every(o => o === null); } 
   },
   methods: {
     openURL,

@@ -1,6 +1,5 @@
 <template>
     <div class="sentencebox">
-      {{$route.params}}
       <svg :id="id" :ref="id"></svg>
       
       

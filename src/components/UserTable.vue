@@ -10,7 +10,6 @@
 		</q-bar>
 
 		<q-card-section>
-			samples: {{samples}}
 			<q-table
 				ref="usersTable"
 				class="my-sticky-header-table rounded-borders"

@@ -9,7 +9,8 @@
         <q-card-section > 
             <div class="q-pa-md row q-gutter-md">
                 <div class="col-12" v-for="(sample, index) in searchresults" :key="index" :props="sample" >
-                        <sentence-card :id="index" :sample="sample.conlls" :matches="sample.matches" :index="index" :sentenceId="index" :sentence="sample.sentence"  ></sentence-card>
+                    <!-- <sentence-card :id="index" :sample="sample.conlls" :matches="sample.matches" :index="index" :sentenceId="index" :sentence="sample.sentence"  ></sentence-card> -->
+                    <sentence-card :id="index" :sample="sample" :index="index" :sentenceId="index"  ></sentence-card>
                 </div>
             </div>
         </q-card-section>

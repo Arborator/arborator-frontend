@@ -1,5 +1,5 @@
 <template>
-    <q-card :id="index" style="max-width:99vw">
+    <q-card :id="index" >
         <q-toolbar class="text-primary">
             <q-btn flat round dense icon="save" :disable="!lastModified.dirty" @click="save()"> <q-tooltip>Save this tree</q-tooltip> </q-btn>
             <q-btn flat round dense icon="archive" ><q-tooltip>Export</q-tooltip></q-btn>
@@ -62,7 +62,6 @@ export default {
         },
         save() {
             var data={"trees":[{"sent_id":this.$props.sentenceId, "conll":this.lastModified.conll}], "user_id":this.$store.getters.getUserInfos.username};
-            console.log('sample', this.$props.sample);
             api.saveTrees(this.$route.params.projectname, this.$props.sample.samplename, data).then(response => {
                 if(response.status == 200){
                     this.lastModified.dirty = false;

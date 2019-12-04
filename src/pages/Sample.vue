@@ -9,10 +9,15 @@
         </div>
 
         <div class="q-pa-md row q-gutter-md">
-            {{Object.keys(samples).length}} sentences
-            <div class="col-12" v-for="(sample, index) in samples" :key="index" :props="sample" >
+            <q-badge color="blue">{{sentenceCount}} sentences</q-badge>
+            <!-- <div class="col-12" v-for="(sample, index) in samples" :key="index" :props="sample" >
                 <sentence-card :id="index" :sample="sample" :index="index" :sentenceId="index" ></sentence-card>
-            </div>
+            </div> -->
+            <q-virtual-scroll :items="this.samplesFrozen.list" style="max-height: 80vh; width:99vw" :virtual-scroll-slice-size="5" :virtual-scroll-item-size="200">
+                <template v-slot="{ item, index }">
+                    <sentence-card :key="index" :id="item" :sample="samples[item]" :index="index" :sentenceId="item" ></sentence-card>
+                </template>
+            </q-virtual-scroll>
         </div>
 
         <q-page-sticky position="bottom">
@@ -41,6 +46,8 @@ import SentenceCard from '../components/SentenceCard';
 import GrewRequestCard from '../components/GrewRequestCard';
 import ResultView from '../components/ResultView';
 
+var heavyList = []
+
 export default {
     components: {
         SentenceCard, GrewRequestCard, ResultView
@@ -51,54 +58,22 @@ export default {
             svg: '',
             tab: 'gold',
             searchDialog: false,
-            searchPattern: `% Search for a given word form
-pattern { N [form="Form_to_search"] }`,
             resultSearchDial: false,
             resultSearch: {},
             samples: {},
-            queries: [ 
-                {name:'POS query', pattern:`% Search for a token of a given upos
-% Available tags: ADJ, ADP, ADV, AUX, CONJ, DET, INTJ, NOUN, NUM, PART, PRON, PROPN, PUNCT, SCONJ, SYM, VERB, X
-
-pattern { N [upos="NUM"] }`}, 
-                {name:'Form query', pattern:`% Search for a given word form
-pattern { N [form="Form_to_search"] }`},
-                {name:'Lemma query', pattern:`% Search for a given lemma (lemmatization is not available for all languages)
-
-pattern { N [lemma="Lemma_to_search"] }`},
-                {name:'Dependency relation query', pattern:`% Search for a dependency relation
-% Available relations are:
-%   acl, acl:relcl, advcl, advmod, amod, appos, aux, aux:pass, case, cc, ccomp,
-%   compound, conj, cop, csubj, dep, det, discourse, obj, expl, iobj, mark,
-%   fixed, flat, neg, nmod, nmod:poss, nsubj, nsubj:pass, nummod, parataxis, punct, root, xcomp
-
-pattern { GOV -[advcl]-> DEP }`},
-                {name:'Relation and tags query', pattern:`% Search for a "det" dependency relation
-% such that the governor's tag is different from NOUN, PROPN and ADJ
-
-pattern {
-  GOV [upos <> NOUN|ADJ|PROPN];
-  GOV -[det]-> DEP;
-}`}
-            ]
+            samplesFrozen: {'list':[], 'indexes':{}}
         }
     },
     computed: {
-        contentSize () {
-        return this.moreContent ? 150 : 5
-        }
+        sentenceCount() {return Object.keys(this.samples).length}
     },
     mounted(){
         this.getSampleContent();
     },
     methods: {
-        start(id){
-            // var draft = new ArboratorDraft();
-            // var svg = draft.getSvg(this.test, id);
-        },
         getSampleContent(){
             api.getSampleContent(this.projectname, this.samplename)
-            .then( response => { this.samples = response.data })
+            .then( response => { this.samples = response.data; this.frozeSamples(); })
             .catch(error => {console.log(error)});
         },
         onSearch(searchPattern){
@@ -107,11 +82,16 @@ pattern {
             .then(response => { this.resultSearch = response.data; this.resultSearchDial = true; })
             .catch(error => { console.log(error) })
         },
-        closeSearchDialog(searchDialog){ searchDialog = this.searchDialog; }
+        closeSearchDialog(searchDialog){ searchDialog = this.searchDialog; },
+        frozeSamples() {
+            var index = 0; var listSamples = []; var index2sentId = {};
+            for(let sentId in this.samples){ listSamples.push(sentId); index2sentId[index] = sentId; index++;}
+            heavyList = listSamples;
+            Object.freeze(heavyList);
+            this.samplesFrozen = {'list': heavyList, 'indexes': index2sentId };
+        }
     }
 }
-
-// {id:{user:conllStr}}
 
 </script>
 

@@ -34,6 +34,8 @@
 </template>
 
 <script>
+
+import grewTemplates from '../assets/grew-templates.json';
 import { codemirror } from 'vue-codemirror'
 import 'codemirror/lib/codemirror.css'
 import 'codemirror/theme/material-darker.css'
@@ -141,32 +143,7 @@ pattern { N [form="Form_to_search"] }`,
                 mode: 'grew',
                 theme: 'material-darker'
             },
-            queries: [ 
-                {name:'POS query', pattern:`
-% Search for a token of a given upos
-% Available tags: ADJ, ADP, ADV, AUX, CONJ, DET, INTJ, NOUN, NUM, PART, PRON, PROPN, PUNCT, SCONJ, SYM, VERB, X
-pattern { N [upos="NUM"] }`}, 
-                {name:'Form query', pattern:`
-% Search for a given word form
-pattern { N [form="Form_to_search"] }`},
-                {name:'Lemma query', pattern:`% Search for a given lemma (lemmatization is not available for all languages)
-
-pattern { N [lemma="Lemma_to_search"] }`},
-                {name:'Dependency relation query', pattern:`% Search for a dependency relation
-% Available relations are:
-%   acl, acl:relcl, advcl, advmod, amod, appos, aux, aux:pass, case, cc, ccomp,
-%   compound, conj, cop, csubj, dep, det, discourse, obj, expl, iobj, mark,
-%   fixed, flat, neg, nmod, nmod:poss, nsubj, nsubj:pass, nummod, parataxis, punct, root, xcomp
-
-pattern { GOV -[advcl]-> DEP }`},
-                {name:'Relation and tags query', pattern:`% Search for a "det" dependency relation
-% such that the governor's tag is different from NOUN, PROPN and ADJ
-
-pattern {
-  GOV [upos <> NOUN|ADJ|PROPN];
-  GOV -[det]-> DEP;
-}`}
-            ]
+            queries: grewTemplates
         }
     },
     mounted(){

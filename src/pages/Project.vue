@@ -167,7 +167,7 @@
                 </q-card>
             </q-dialog>
 
-            <q-dialog v-model="resultSearchDial" maximized transition-show="fade" transition-hide="fade" >
+            <q-dialog v-model="resultSearchDial" transition-show="fade" transition-hide="fade" >
                 <result-view :searchresults="resultSearch" ></result-view>
             </q-dialog>
 

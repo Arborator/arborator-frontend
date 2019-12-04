@@ -9,7 +9,7 @@
         </div>
 
         <div v-show="!loading" class="q-pa-md row q-gutter-md">
-            <q-badge color="blue">{{sentenceCount}} sentences</q-badge>
+            <q-badge color="secondary">{{sentenceCount}} sentences</q-badge>
             <q-virtual-scroll :items="this.samplesFrozen.list" style="max-height: 80vh; width:99vw" :virtual-scroll-slice-size="5" :virtual-scroll-item-size="200">
                 <template v-slot="{ item, index }">
                     <sentence-card :key="index" :id="item" :sample="samples[item]" :index="index" :sentenceId="item" ></sentence-card>
@@ -17,7 +17,7 @@
             </q-virtual-scroll>
         </div>
         <div v-show="loading" class="q-pa-md row justify-center">
-            <div v-show="loading" class="col"><q-circular-progress  indeterminate size="70px" :thickness="0.22" color="primary" track-color="grey-3" /></div>
+            <div class="col"><q-circular-progress  indeterminate size="70px" :thickness="0.22" color="primary" track-color="grey-3" /></div>
         </div>
 
         <q-page-sticky position="bottom">
@@ -28,7 +28,7 @@
             <grew-request-card :parentOnSearch="onSearch" ></grew-request-card>
         </q-dialog>
 
-        <q-dialog v-model="resultSearchDial" maximized transition-show="fade" transition-hide="fade" >
+        <q-dialog v-model="resultSearchDial"  transition-show="fade" transition-hide="fade" >
             <result-view :searchresults="resultSearch"></result-view>
         </q-dialog>
 
@@ -75,7 +75,7 @@ export default {
         getSampleContent(){
             this.loading = true;
             api.getSampleContent(this.projectname, this.samplename)
-            .then( response => { this.samples = response.data; this.frozeSamples(); this.loading = false; })
+            .then( response => { this.samples = response.data; this.freezeSamples(); this.loading = false; })
             .catch(error => {console.log(error); this.loading = false;});
         },
         onSearch(searchPattern){
@@ -85,7 +85,7 @@ export default {
             .catch(error => { console.log(error) })
         },
         closeSearchDialog(searchDialog){ searchDialog = this.searchDialog; },
-        frozeSamples() {
+        freezeSamples() {
             var index = 0; var listSamples = []; var index2sentId = {};
             for(let sentId in this.samples){ listSamples.push(sentId); index2sentId[index] = sentId; index++;}
             heavyList = listSamples;

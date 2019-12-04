@@ -5,12 +5,23 @@
 </template>
 
 <script>
+import Vue from 'vue';
 import { openURL } from 'quasar';
 import VueCookies from 'vue-cookies';
 import Store from './store/index';
 import api from './boot/backend-api';
 // import EventBus from './event-bus.js';
 VueCookies.config('7d');
+
+import Storage from 'vue-ls';
+
+var options = {
+  namespace: 'vuejs__', // key prefix
+  name: 'ls', // name variable Vue.[ls] or this.[$ls],
+  storage: 'local', // storage name session, local, memory
+};
+
+Vue.use(Storage, options);
 
 export default {
   name: 'App',

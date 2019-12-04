@@ -40,6 +40,7 @@ import { codemirror } from 'vue-codemirror'
 import 'codemirror/lib/codemirror.css'
 import 'codemirror/theme/material-darker.css'
 import CodeMirror from 'codemirror'
+import store from '../store';
   CodeMirror.defineMode('grew', function(_config, parserConfig) {
         var words = {
 	    'global': 'builtin',
@@ -147,10 +148,11 @@ pattern { N [form="Form_to_search"] }`,
         }
     },
     mounted(){
+        if (this.$ls.get('grewHistory', '').length > 0) this.$store.commit('change_last_grew_query', this.$ls.get('grewHistory'));
         if (this.$store.getters.getLastGrewQuery.length > 0) this.searchPattern = this.$store.getters.getLastGrewQuery;
     },
     methods: {
-        onSearch(){ this.parentOnSearch(this.searchPattern); this.$store.commit('change_last_grew_query', this.searchPattern ); },
+        onSearch(){ this.parentOnSearch(this.searchPattern); this.$store.commit('change_last_grew_query', this.searchPattern ); this.$ls.set('grewHistory', this.searchPattern); },
         changeSearchPattern(pattern) { this.searchPattern = pattern; },
         onResetSearch(){ this.searchPattern = ''; }
     }

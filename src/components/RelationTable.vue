@@ -6,18 +6,15 @@
             <q-space />
             <q-btn flat dense icon="close" v-close-popup/>
         </q-bar>
-        <q-card-section >
-            <div class="row q-gutter-lg">
+        <q-card-section>
+            <div class="row q-gutter-lg" style="height: 80vh; width:90vw;">
                 <div class="col-2">
                     <q-toolbar class="  text-center">
                         <q-toolbar-title>
                         <span class="text-primary text-bold">Select an edge</span>
                         </q-toolbar-title>
                     </q-toolbar>
-                    <q-scroll-area
-                    visible 
-                    style="height: 80vh;"
-                    >
+                    <q-scroll-area visible style="height: 80vh;">
                     <q-list separator>
                         <q-item v-for="e in edgesList" :key="e" clickable v-ripple :active="e == currentEdge" active-class="bg-grey-4 text-primary text-bold">
                             <q-item-section @click="select(e)" >{{e}}</q-item-section>
@@ -100,8 +97,7 @@ export default {
                 for (let dep of keyset){
                     if(!this.edges[edge].hasOwnProperty(gov)) { row[dep] = {}; continue; }
                     if(!this.edges[edge][gov].hasOwnProperty(dep) )  { row[dep] = {}; continue; }
-                    row[dep] = this.edges[edge][gov][dep]; // A REMETTRE APREs
-                    // row[dep] = {'hi':'hi', 'ho': 'hi'}; // DUMMY RESULT
+                    row[dep] = this.edges[edge][gov][dep]; 
                 }
                 rows.push(row);
             }
@@ -109,6 +105,7 @@ export default {
             this.table.pagination.rowsNumber = rows.length;
         },
         select(edge){
+            console.log(JSON.stringify(this.edges[edge]));
             this.createTable(edge);
             this.currentEdge = edge;
         },
@@ -121,7 +118,7 @@ export default {
         }
     }, 
     mounted(){
-        this.edges = this.createTable();//dummydata;
+        this.edges = dummydata;
         
     }
 }

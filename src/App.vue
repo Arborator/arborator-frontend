@@ -15,12 +15,7 @@ VueCookies.config('7d');
 
 import Storage from 'vue-ls';
 
-var options = {
-  namespace: 'vuejs__', // key prefix
-  name: 'ls', // name variable Vue.[ls] or this.[$ls],
-  storage: 'local', // storage name session, local, memory
-};
-
+var options = { namespace: 'arboratorgrew__', name: 'ls', storage: 'local' };
 Vue.use(Storage, options);
 
 export default {

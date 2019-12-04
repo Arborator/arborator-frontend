@@ -1,5 +1,5 @@
 <template>
-  <q-layout view="lHr Lpr lFf">
+  <q-layout view="lHh Lpr lFf">
     <q-header bordered class=" bg-white">
       <q-toolbar>
         <q-btn flat @click="drawerLeft = !drawerLeft" round dense icon="menu" color="primary" />
@@ -92,13 +92,26 @@
 
     <q-drawer
         v-model="drawerLeft"
-        :width="300"
-        :breakpoint="700"
+        :width="200"
+        :breakpoint="400"
         content-class="bg-primary"
-        behavior="mobile"
+        dark
+        show-if-above
+        bordered
       >
-      <q-scroll-area class="fit">
-        <q-list v-for="(menuItem, index) in menuList" :key="index">
+
+      <q-img class="absolute-top" src="https://cdn.quasar.dev/img/material.png" style="height: 150px">
+          <div class="absolute-bottom bg-transparent">
+            <q-avatar size="56px" class="q-mb-sm">
+              <img :src="store.getters.getUserInfos.picture_url">
+            </q-avatar>
+            <div class="text-weight-bold">Razvan Stoenescu</div>
+            <div>@rstoenescu</div>
+          </div>
+        </q-img>
+
+      <q-scroll-area style="height: calc(100% - 150px); margin-top: 150px; ">
+        <q-list v-for="(menuItem, index) in menuList" :key="index" padding>
 
           <q-item v-show="store.getters.isLoggedIn || menuItem.public" :to="menuItem.to" clickable :active="menuItem.label === 'Outbox'" v-ripple
           class='text-white'>

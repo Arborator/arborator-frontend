@@ -8,7 +8,7 @@
     <div class="q-pa-md row items-start q-gutter-md flex flex-center">
       <q-card flat>
         <q-card-section class="q-pa-md row items-start q-gutter-md">
-          <q-toolbar class="  text-center">
+          <q-toolbar class="text-center">
             <q-toolbar-title>
               <span class="text-primary text-bold">Projects</span>
               <q-input filled bottom-slots v-model="search" label="Search Project" type="text" @keyup.enter="searchProject(search)" >

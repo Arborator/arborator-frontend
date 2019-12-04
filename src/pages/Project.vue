@@ -131,7 +131,7 @@
                 <grew-request-card :parentOnSearch="onSearch" ></grew-request-card>
             </q-dialog>
 
-            <q-dialog v-model="assignDial" persistent maximized transition-show="slide-up" transition-hide="slide-down" >
+            <q-dialog v-model="assignDial" persistent transition-show="slide-up" transition-hide="slide-down" >
                 <user-table :samples="table.selected" ></user-table>
             </q-dialog>
 
@@ -171,7 +171,7 @@
                 <result-view :searchresults="resultSearch" ></result-view>
             </q-dialog>
 
-            <q-dialog v-model="relationTableDial" maximized transition-show="fade" transition-hide="fade" >
+            <q-dialog v-model="relationTableDial" transition-show="fade" transition-hide="fade" >
                 <relation-table :edges="relationTableInfos" ></relation-table>
             </q-dialog>
 

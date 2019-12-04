@@ -1,6 +1,6 @@
 <template>
 	<q-card class="bg-blue-grey-1 text-black" style="max-width: 100vw;">
-		<q-bar  class="bg-primary text-white">
+		<q-bar class="bg-primary text-white">
 			<q-space />
 			<div class="text-weight-bold">User Assignment for {{$route.params.projectname}}</div>
 			<q-space />
@@ -28,6 +28,7 @@
 				dense
 				table-header-class="text-primary"
 				card-class="shadow-8"
+				style="height: 80vh; width:90vw"
 				>
 
 				<template v-slot:top="props">

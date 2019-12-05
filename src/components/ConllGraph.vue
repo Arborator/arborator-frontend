@@ -9,28 +9,21 @@
         @hide="ondialoghide()"
         @keyup.enter="onchangerel()"
       >
-      <!-- transition-hide="fade" -->
-        <q-card class="bg-white text-black" style="height:300px">
+        <q-card style="height:300px">
           <q-bar class="bg-primary text-white">
                 <div class="text-weight-bold">Select a relation</div>
                 <q-space />
                 <q-btn flat dense icon="close" v-close-popup/>
             </q-bar>
 
-          <!-- <q-card-section>
-            <div class="text-h6">Relation selection</div>
-          </q-card-section> -->
-
           <q-card-section style="height:200px">
-            <v-select v-for="(relist, index) in options.relations" :key="index" v-model="infos.relation[index]" :options="relist" style="float:left; display:inline;width:150px"></v-select>
+            <v-select v-for="(relist, index) in options.relations" :key="index" v-model="infos.relation[index]" :options="relist" style="float:left; display:inline;width:150px;"></v-select>
           </q-card-section>
-          <!-- <q-bar> -->
             <q-space />
             <q-card-actions >
               <q-btn @click="ondialoghide()" label="Cancel" v-close-popup  style="width: 45%; margin-left: auto;margin-right: auto;" />
               <q-btn color="primary" @click="onchangerel()" label="Ok" v-close-popup style="width: 45%; margin-left: auto;margin-right: auto;" />
             </q-card-actions>
-          <!-- </q-bar> -->
         </q-card>
       </q-dialog>
 
@@ -41,7 +34,7 @@
         @hide="ondialoghide()"
         @keyup.enter="onchangecat()"
       >
-        <q-card class="bg-white text-black" style="height:300px">
+        <q-card  style="height:300px">
           <q-bar class="bg-primary text-white">
               <div class="text-weight-bold">Select a category</div>
               <q-space />

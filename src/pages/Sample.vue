@@ -12,8 +12,8 @@
             <div class="col"><q-circular-progress  indeterminate size="70px" :thickness="0.22" color="primary" track-color="grey-3" /></div>
         </div>
 
-        <q-page-sticky :position="breakpoint?'bottom-right':'right'" :offset="breakpoint?[18, 18]:[18,70]">
-            <q-btn fab :icon="searchDial?'clear':'search'" color="primary" @click="searchDialog = !searchDialog"/>
+        <q-page-sticky :position="breakpoint?'bottom-right':'top-right'" :offset="breakpoint?[18, 18]:[18,70]">
+            <q-btn fab :icon="searchDialog?'clear':'search'" color="primary" @click="searchDialog = !searchDialog"/>
         </q-page-sticky>
 
         <q-dialog v-model="searchDialog" seamless position="right" >

@@ -5,11 +5,9 @@
                 <q-card-section>
                     <q-toolbar class="  text-center">
                         <q-toolbar-title>
-                        <span class="text-primary text-bold">{{infos.name}}</span>
+                        <span :class="($q.dark.isActive?'':'text-primary') + ' text-bold'">{{infos.name}}</span>
                         </q-toolbar-title>
                     </q-toolbar>
-                    <!-- <div class="text-h6 text-center">Project: {{infos.name}}</div>
-                    <div class="text-subtitle2 text-center">Admins: {{infos.admins}}</div> -->
                 </q-card-section>
                 <q-card-section>
                         <q-table
@@ -27,28 +25,28 @@
                             :visible-columns="table.visibleColumns"
                             selection="multiple"
                             :selected.sync="table.selected"
-                            table-header-class="text-primary"
+                            :table-header-class="$q.dark.isActive?'text-white':'text-primary'"
                             card-class="shadow-8"
                             >
 
                             <template v-slot:top="props">
                                 <q-btn-group flat >
-                                    <q-btn flat color="default" text-color="blue-grey-8" icon="cloud_upload" @click="uploadDial = true">
+                                    <q-btn flat color="default" :text-color="btnTopClass" icon="cloud_upload" @click="uploadDial = true">
                                         <q-tooltip :delay="300" content-class="text-white bg-primary" >Add File</q-tooltip>
                                     </q-btn>
-                                    <q-btn flat color="default" text-color="blue-grey-8" icon="person_add" :disabled="table.selected.length<1" @click="assignDial = true">
+                                    <q-btn flat color="default" :text-color="btnTopClass" icon="person_add" :disabled="table.selected.length<1" @click="assignDial = true">
                                         <q-tooltip :delay="300" content-class="text-white bg-primary">Assign</q-tooltip>
                                     </q-btn>
-                                    <q-btn flat  color="default" text-color="blue-grey-8" icon="cloud_download" :disabled="table.selected.length<1" @click="exportSamplesZip()">
+                                    <q-btn flat  color="default" :text-color="btnTopClass" icon="cloud_download" :disabled="table.selected.length<1" @click="exportSamplesZip()">
                                         <q-tooltip :delay="300" content-class="text-white bg-primary">Export</q-tooltip>
                                     </q-btn>
-                                    <q-btn v-show="table.selected.length<1" flat color="default" text-color="blue-grey-8" icon="delete_forever" disabled>
+                                    <q-btn v-show="table.selected.length<1" flat color="default" :text-color="btnTopClass" icon="delete_forever" disabled>
                                         <q-tooltip :delay="300" content-class="bg-white text-primary">Delete selected rows</q-tooltip>
                                     </q-btn>
                                     <q-btn v-show="table.selected.length!=0" :loading="table.loadingDelete" flat color="default" text-color="red" icon="delete_forever" @click="deleteSamples()" >
                                         <q-tooltip :delay="300" content-class="bg-white text-primary">Delete selected rows</q-tooltip>
                                     </q-btn>
-                                    <q-btn flat color="default" text-color="blue-grey-8" icon="table_chart" @click="getRelationTable()" >
+                                    <q-btn flat color="default" :text-color="btnTopClass" icon="table_chart" @click="getRelationTable()" >
                                         <q-tooltip :delay="300" content-class="bg-white text-primary">Relation tables</q-tooltip>
                                     </q-btn>
                                 </q-btn-group>
@@ -69,15 +67,14 @@
                                     <q-tooltip :delay="300" content-class="bg-white text-primary">Select visible columns</q-tooltip>
                                 </q-select>
 
-                                <q-btn flat round dense text-color="blue-grey-8" :icon="props.inFullscreen ? 'fullscreen_exit' : 'fullscreen'"  @click="props.toggleFullscreen"  class="q-ml-md" />
+                                <q-btn flat round dense :text-color="btnTopClass" :icon="props.inFullscreen ? 'fullscreen_exit' : 'fullscreen'"  @click="props.toggleFullscreen"  class="q-ml-md" />
                             </template>
 
                             <template v-slot:body="props">
                                 
                                 <q-tr :props="props">
                                     <q-td auto-width><q-toggle dense v-model="props.selected" /></q-td>
-                                    <q-td key="samplename" :props="props"><q-btn outline color="white" text-color="black" 
-                                    class="full-width" 
+                                    <q-td key="samplename" :props="props"><q-btn outline color="white" :text-color="$q.dark.isActive?'white':'black'" class="full-width" 
                                     :to="'/projects/' + infos.name + '/' + props.row.samplename" 
                                     icon-right="open_in_browser" no-caps>{{props.row.samplename}}</q-btn></q-td>
                                     <q-td key="sentences" :props="props">{{ props.row.sentences }}</q-td>
@@ -190,6 +187,7 @@ export default {
     data(){
         return {
             tab: 'texts',
+            btnTopClass: this.$q.dark.isActive?'white':'blue-grey-8',
             assignDial: false,
             uploadDial: false,
             searchDial: false,

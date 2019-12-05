@@ -1,6 +1,6 @@
 <template>
     <q-card :id="index" >
-        <q-toolbar class="text-primary">
+        <q-toolbar :class="$q.dark.isActive?'text-white':'text-primary'">
             <q-btn flat round dense icon="save" :disable="!lastModified.dirty" @click="save()"> <q-tooltip>Save this tree</q-tooltip> </q-btn>
             <q-btn flat round dense icon="archive" ><q-tooltip>Export</q-tooltip></q-btn>
             <q-btn flat round dense icon="undo" :disable="!lastModified.dirty" @click="undo()"><q-tooltip>Undo</q-tooltip></q-btn>
@@ -11,7 +11,7 @@
         </q-toolbar>
         <q-card-section>
             <q-chip icon="bookmark" class="text-center" dense> {{sentenceId}} </q-chip>{{sample.sentence}}
-            <q-tabs v-model="tab" class="text-teal flex-center" dense>
+            <q-tabs v-model="tab" :class="($q.dark.isActive?'text-grey':'text-primary') + ' shadow-2'" dense>
                 <q-tab v-for="(tree, user) in sample.conlls" :key="user" :props="user" :label="user" :name="user" icon="person" />
             </q-tabs>
             <q-separator />

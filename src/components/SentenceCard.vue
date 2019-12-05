@@ -15,7 +15,7 @@
                 <q-tab v-for="(tree, user) in sample.conlls" :key="user" :props="user" :label="user" :name="user" icon="person" />
             </q-tabs>
             <q-separator />
-            <q-tab-panels v-model="tab" animated>
+            <q-tab-panels v-model="tab" >
                
                 <q-tab-panel v-for="(tree, user) in sample.conlls" :key="user" :props="tree" :name="user">
                     <q-card  flat >

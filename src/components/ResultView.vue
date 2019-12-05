@@ -16,7 +16,7 @@
                 </q-virtual-scroll>
             </div>
             <div v-show="loading" class="q-pa-md row justify-center">
-                <div class="col"><q-circular-progress  indeterminate size="70px" :thickness="0.22" color="primary" track-color="grey-3" /></div>
+                <div class="col"><q-circular-progress  indeterminate size="70px" :thickness="0.22" color="primary" :track-color="$q.dark.isActive?'grey':'grey-3'" /></div>
             </div>
         </q-card-section>
     </q-card>

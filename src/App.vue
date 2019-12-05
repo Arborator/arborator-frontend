@@ -43,6 +43,7 @@ export default {
         //   this.$router.push('/');
         // })
     }
+    this.$q.dark.set(this.$ls.get('dm'));
   },
   methods: {
     parseJwt: function (token) {

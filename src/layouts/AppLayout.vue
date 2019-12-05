@@ -15,7 +15,7 @@
         <q-space />
         
         <div class="q-gutter-sm row items-center no-wrap">
-          <q-btn flat round @click="$q.dark.toggle()" :icon="$q.dark.isActive?'brightness_7':'brightness_2'"></q-btn>
+          <q-btn flat round @click="toggleDarkMode()" :icon="$q.dark.isActive?'brightness_7':'brightness_2'"></q-btn>
           <q-btn-dropdown v-show="!store.getters.isLoggedIn" color="secondary" outline label="Log In" icon="account_circle">
             <q-list>
               <q-item clickable v-close-popup @click="openURL(store.getters.getSource + '/login/google')">
@@ -179,6 +179,7 @@ export default {
   },
   methods: {
     openURL,
+    toggleDarkMode(){ this.$q.dark.toggle();this.$ls.set('dm', this.$q.dark.isActive); },
     login(provider){
       api.auth(provider)
       .then(response => {

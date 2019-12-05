@@ -3,18 +3,18 @@
         <div class="row">
             <div class="col-md-1"></div>
             <div class="col items-center">
-                <q-banner rounded class="bg-grey-3 ">
+                <q-banner rounded :class="$q.dark.isActive?'':'bg-grey-3' ">
                     <template v-slot:avatar>
                         <q-avatar :key="store.getters.getAvatarKey" color="default" text-color="white" size="100px"  >
                             <img :src="user.picture_url">
                         </q-avatar>
                     </template>
-                    <div class="row"><div class="col text-center text-weight-bold text-h4 text-blue-grey-10">{{user.first_name}} {{user.family_name}}</div></div>
+                    <div class="row"><div :class="'col text-center text-weight-bold text-h4 ' + ($q.dark.isActive?'':'text-blue-grey-10')">{{user.first_name}} {{user.family_name}}</div></div>
                     <div class="row">
-                        <div class="col text-center text-blue-grey-8">@{{user.username}}</div>
+                        <div :class="'col text-center ' + + ($q.dark.isActive?'':'text-blue-grey-8')">@{{user.username}}</div>
                     </div>
                     <div v-show="user.super_admin" class="row">
-                        <div class="col text-center text-blue-grey-8">Super Admin</div>
+                        <div :class="'col text-center ' + ($q.dark.isActive?'':'text-blue-grey-8')">Super Admin</div>
                     </div>
                 </q-banner>
             </div>

@@ -30,24 +30,24 @@
                             >
 
                             <template v-slot:top="props">
-                                <q-btn-group flat >
-                                    <q-btn flat color="default" :text-color="btnTopClass" icon="cloud_upload" @click="uploadDial = true">
+                                <q-btn-group flat>
+                                    <q-btn flat color="default"  icon="cloud_upload" @click="uploadDial = true">
                                         <q-tooltip :delay="300" content-class="text-white bg-primary" >Add File</q-tooltip>
                                     </q-btn>
-                                    <q-btn flat color="default" :text-color="btnTopClass" icon="person_add" :disabled="table.selected.length<1" @click="assignDial = true">
+                                    <q-btn flat color="default"  icon="person_add" :disabled="table.selected.length<1" @click="assignDial = true">
                                         <q-tooltip :delay="300" content-class="text-white bg-primary">Assign</q-tooltip>
                                     </q-btn>
-                                    <q-btn flat  color="default" :text-color="btnTopClass" icon="cloud_download" :disabled="table.selected.length<1" @click="exportSamplesZip()">
+                                    <q-btn flat  color="default"  icon="cloud_download" :disabled="table.selected.length<1" @click="exportSamplesZip()">
                                         <q-tooltip :delay="300" content-class="text-white bg-primary">Export</q-tooltip>
                                     </q-btn>
-                                    <q-btn v-show="table.selected.length<1" flat color="default" :text-color="btnTopClass" icon="delete_forever" disabled>
-                                        <q-tooltip :delay="300" content-class="bg-white text-primary">Delete selected rows</q-tooltip>
+                                    <q-btn v-show="table.selected.length<1" flat color="default"  icon="delete_forever" disabled>
+                                        <q-tooltip :delay="300" content-class="text-white bg-primary">Delete selected rows</q-tooltip>
                                     </q-btn>
                                     <q-btn v-show="table.selected.length!=0" :loading="table.loadingDelete" flat color="default" text-color="red" icon="delete_forever" @click="deleteSamples()" >
-                                        <q-tooltip :delay="300" content-class="bg-white text-primary">Delete selected rows</q-tooltip>
+                                        <q-tooltip :delay="300" content-class="text-white bg-primary">Delete selected rows</q-tooltip>
                                     </q-btn>
-                                    <q-btn flat color="default" :text-color="btnTopClass" icon="table_chart" @click="getRelationTable()" >
-                                        <q-tooltip :delay="300" content-class="bg-white text-primary">Relation tables</q-tooltip>
+                                    <q-btn flat color="default"  icon="table_chart" @click="getRelationTable()" >
+                                        <q-tooltip :delay="300" content-class="text-white bg-primary">Relation tables</q-tooltip>
                                     </q-btn>
                                 </q-btn-group>
 
@@ -57,17 +57,19 @@
                                     <template v-slot:append>
                                         <q-icon name="search" />
                                     </template>
-                                    <q-tooltip :delay="300" content-class="bg-white text-primary">Search a text</q-tooltip>
+                                    <q-tooltip :delay="300" content-class="text-white bg-primary">Search a text</q-tooltip>
                                 </q-input>
                                 
                                 <q-space />
 
                                 <q-select v-model="table.visibleColumns" multiple borderless dense options-dense :display-value="$q.lang.table.columns"
                                 emit-value map-options  :options="filterFields(table)"  option-value="name" style="min-width: 100px"  >
-                                    <q-tooltip :delay="300" content-class="bg-white text-primary">Select visible columns</q-tooltip>
+                                    <q-tooltip :delay="300" content-class="text-white bg-primary">Select visible columns</q-tooltip>
                                 </q-select>
 
-                                <q-btn flat round dense :text-color="btnTopClass" :icon="props.inFullscreen ? 'fullscreen_exit' : 'fullscreen'"  @click="props.toggleFullscreen"  class="q-ml-md" />
+                                <q-btn flat round dense  :icon="props.inFullscreen ? 'fullscreen_exit' : 'fullscreen'"  @click="props.toggleFullscreen"  class="q-ml-md" >
+                                    <q-tooltip :delay="300" content-class="text-white bg-primary">Fullscreen table</q-tooltip>
+                                </q-btn>
                             </template>
 
                             <template v-slot:body="props">
@@ -99,7 +101,7 @@
                             <template v-slot:no-data="props">
                                 <div class="q-pa-md">
                                 <div class="row">
-                                    <div v-show="table.loading" class="col-5 .offset-4"><q-circular-progress  indeterminate size="50px" :thickness="0.22" color="primary" track-color="grey-3" /></div>
+                                    <div v-show="table.loading" class="col-5 .offset-4"><q-circular-progress  indeterminate size="50px" :thickness="0.22" color="primary" :track-color="$q.dark.isActive?'grey':'grey-3'" /></div>
                                     <q-banner v-show="!table.loading" inline-actions class="text-white bg-negative">
                                         Oops! No data to display...
                                         <template v-slot:action>

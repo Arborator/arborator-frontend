@@ -1,5 +1,5 @@
 <template>
-    <q-item clickable @click="goTo('/projects/')" > <!-- :to="'/projects/'+project.projectname"> -->
+    <q-item clickable @click="goTo()" >
         <q-item-section avatar>
           <q-avatar v-show="imageEmpty" rounded color="primary" text-color="white" icon="work" />
           <q-avatar v-show="!imageEmpty" rounded color="primary" text-color="white" >
@@ -43,7 +43,7 @@ export default {
         }        
     },
     methods: {
-        goTo(path){
+        goTo(){
             this.$router.push({
                 name: 'project',
                 params: {

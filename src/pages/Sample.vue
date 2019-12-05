@@ -1,5 +1,5 @@
 <template>
-    <q-page>
+    <q-page :class="$q.dark.isActive?'bg-dark':'bg-grey-1'">
         <div v-show="!loading" class="q-pa-md row q-gutter-md">
             <q-badge color="primary">{{sentenceCount}} sentences</q-badge>
             <q-virtual-scroll :items="this.samplesFrozen.list" style="max-height: 80vh; width:99vw" :virtual-scroll-slice-size="5" :virtual-scroll-item-size="200">
@@ -12,8 +12,8 @@
             <div class="col"><q-circular-progress  indeterminate size="70px" :thickness="0.22" color="primary" track-color="grey-3" /></div>
         </div>
 
-        <q-page-sticky :position="breakpoint?'bottom-right':'right'" :offset="[18, 18]">
-            <q-btn fab icon="search" color="primary" @click="searchDialog = !searchDialog"/>
+        <q-page-sticky :position="breakpoint?'bottom-right':'right'" :offset="breakpoint?[18, 18]:[18,70]">
+            <q-btn fab :icon="searchDial?'clear':'search'" color="primary" @click="searchDialog = !searchDialog"/>
         </q-page-sticky>
 
         <q-dialog v-model="searchDialog" seamless position="right" >

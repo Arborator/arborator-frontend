@@ -1,9 +1,9 @@
 <template>
-  <q-page >
+  <q-page :class="$q.dark.isActive?'bg-dark':'bg-grey-1'">
 
-    <div class="q-pa-md row q-gutter-md flex flex-center">
-      <!-- <object data="../statics/arborator.logo.svg" type="image/svg+xml" width="100" ></object> -->
-    </div>
+    <!-- <div class="q-pa-md row q-gutter-md flex flex-center">
+      <object data="../statics/arborator.logo.svg" type="image/svg+xml" width="100" ></object>
+    </div> -->
 
     <div class="q-pa-md row items-start q-gutter-md flex flex-center">
       <q-card flat>

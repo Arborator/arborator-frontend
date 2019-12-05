@@ -1,5 +1,5 @@
 <template>
-        <q-card style="width: 100%">
+        <q-card style="width: 100%" :class="$q.dark.isActive?'bg-dark':'bg-grey-1'">
 
             <q-bar class="bg-primary text-white">
                 <div class="text-weight-bold">Grew Matcher</div>

@@ -15,7 +15,7 @@
         <q-space />
         
         <div class="q-gutter-sm row items-center no-wrap">
-          <q-btn flat round @click="toggleDarkMode()" :icon="$q.dark.isActive?'brightness_7':'brightness_2'"></q-btn>
+          <q-btn flat round @click="toggleDarkMode()"  :icon="$q.dark.isActive?'lightbulb':'brightness_2'"></q-btn>
           <q-btn-dropdown v-show="!store.getters.isLoggedIn" color="secondary" outline label="Log In" icon="account_circle">
             <q-list>
               <q-item clickable v-close-popup @click="openURL(store.getters.getSource + '/login/google')">
@@ -98,38 +98,25 @@
 
     <q-drawer
         v-model="drawerLeft"
-        :width="200"
-        :breakpoint="400"
-        content-class="bg-primary"
-        dark
-        bordered
+        :width="200" :breakpoint="400" :content-class="$q.dark.isActive?'bg-dark':'bg-white'"
+        :mini="miniState"  @mouseover="miniState = false"  @mouseout="miniState = true"
+        mini-to-overlay bordered
       >
 
-      <q-img class="absolute-top" src="https://picsum.photos/200/300/?blur" style="height: 150px">
-        <div class="absolute-bottom bg-transparent">
-          <q-avatar size="56px" class="q-mb-sm">
-            <img :src="store.getters.getUserInfos.picture_url">
-          </q-avatar>
-          <div class="text-weight-bold">{{store.getters.getUserInfos.username}}</div>
-          <div>@{{store.getters.getUserInfos.username}}</div>
-        </div>
-      </q-img>
+      <q-scroll-area  style="height: calc(100% - 0px); margin-top: 0px; ">
+        <q-list padding>
+          <div v-for="(menuItem, index) in menuList" :key="index">
+            <q-item  v-show="store.getters.isLoggedIn || menuItem.public" :to="menuItem.to" clickable :active="menuItem.label == $route.currentRoute" v-ripple>
+              <q-item-section avatar>
+                <q-icon :name="menuItem.icon" />
+              </q-item-section>
+              <q-item-section>
+                {{ menuItem.label }}
+              </q-item-section>
+            </q-item>
 
-      <q-scroll-area style="height: calc(100% - 150px); margin-top: 150px; ">
-        <q-list v-for="(menuItem, index) in menuList" :key="index" padding>
-
-          <q-item v-show="store.getters.isLoggedIn || menuItem.public" :to="menuItem.to" clickable :active="menuItem.label === 'Outbox'" v-ripple
-          class='text-white'>
-            <q-item-section avatar>
-              <q-icon :name="menuItem.icon" />
-            </q-item-section>
-            <q-item-section>
-              {{ menuItem.label }}
-            </q-item-section>
-          </q-item>
-
-          <q-separator v-if="menuItem.separator" />
-
+            <q-separator v-if="menuItem.separator" />
+          </div>
         </q-list>
       </q-scroll-area>
     </q-drawer>
@@ -146,7 +133,8 @@ export default {
   data () {
     return {
       store: Store,
-      drawerLeft: false,
+      drawerLeft: true,
+      miniState: true,
       isAdmin: false,
       search: '',
       menuList: [

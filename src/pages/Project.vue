@@ -1,5 +1,5 @@
 <template>
-    <q-page>
+    <q-page :class="$q.dark.isActive?'bg-dark':'bg-grey-1'">
         <div class="q-pa-md row q-gutter-md flex flex-center">
             <q-card flat style="max-width: 100%">
                 <q-card-section>
@@ -116,8 +116,8 @@
                 </q-card-section>
             </q-card>
 
-            <q-page-sticky :position="breakpoint?'bottom-right':'right'" :offset="[18, 18]">
-                <q-btn fab icon="search" color="primary" @click="searchDial = !searchDial"/>
+            <q-page-sticky :position="breakpoint?'bottom-right':'top-right'" :offset="breakpoint?[18, 18]:[18,70]">
+                <q-btn fab :icon="searchDial?'clear':'search'" color="primary" @click="searchDial = !searchDial"/>
             </q-page-sticky>
 
             <q-dialog v-model="searchDial" seamless position="right" >

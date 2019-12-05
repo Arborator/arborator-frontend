@@ -12,11 +12,11 @@
             <div class="col"><q-circular-progress  indeterminate size="70px" :thickness="0.22" color="primary" track-color="grey-3" /></div>
         </div>
 
-        <q-page-sticky position="bottom">
-            <q-btn fab icon="search" color="primary" @click="searchDialog = true"/>
+        <q-page-sticky :position="breakpoint?'bottom-right':'right'" :offset="[18, 18]">
+            <q-btn fab icon="search" color="primary" @click="searchDialog = !searchDialog"/>
         </q-page-sticky>
 
-        <q-dialog v-model="searchDialog" seamless position="bottom" >
+        <q-dialog v-model="searchDialog" seamless position="right" >
             <grew-request-card :parentOnSearch="onSearch" ></grew-request-card>
         </q-dialog>
 
@@ -54,16 +54,19 @@ export default {
             resultSearchDial: false,
             resultSearch: {},
             samples: {},
-            samplesFrozen: {'list':[], 'indexes':{}}
+            samplesFrozen: {'list':[], 'indexes':{}},
+            window: {width: 0,height: 0}
         }
     },
     computed: {
-        sentenceCount() {return Object.keys(this.samples).length}
+        sentenceCount() {return Object.keys(this.samples).length},
+        breakpoint(){ return this.window.width <= 400; } 
     },
-    mounted(){
-        this.getSampleContent();
-    },
+    created() { window.addEventListener('resize', this.handleResize); this.handleResize(); },
+    destroyed() { window.removeEventListener('resize', this.handleResize)},
+    mounted(){ this.getSampleContent(); },
     methods: {
+        handleResize() {this.window.width = window.innerWidth; this.window.height = window.innerHeight;},
         getSampleContent(){
             this.loading = true;
             api.getSampleContent(this.projectname, this.samplename)

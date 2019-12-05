@@ -57,7 +57,7 @@
                                     <template v-slot:append>
                                         <q-icon name="search" />
                                     </template>
-                                    <q-tooltip :delay="300" content-class="text-white bg-primary">Search a text</q-tooltip>
+                                    <q-tooltip :delay="300" content-class="text-white bg-primary">Search a sample</q-tooltip>
                                 </q-input>
                                 
                                 <q-space />
@@ -101,7 +101,7 @@
                             <template v-slot:no-data="props">
                                 <div class="q-pa-md">
                                 <div class="row">
-                                    <div v-show="table.loading" class="col-5 .offset-4"><q-circular-progress  indeterminate size="50px" :thickness="0.22" color="primary" :track-color="$q.dark.isActive?'grey':'grey-3'" /></div>
+                                    <div v-show="table.loading" class="col-5 offset-4"><q-circular-progress  indeterminate size="50px" :thickness="0.22" color="primary" :track-color="$q.dark.isActive?'grey':'grey-3'" /></div>
                                     <q-banner v-show="!table.loading" inline-actions class="text-white bg-negative">
                                         Oops! No data to display...
                                         <template v-slot:action>
@@ -116,11 +116,11 @@
                 </q-card-section>
             </q-card>
 
-            <q-page-sticky position="bottom">
-                <q-btn fab icon="search" color="primary" @click="searchDial = true"/>
+            <q-page-sticky :position="breakpoint?'bottom-right':'right'" :offset="[18, 18]">
+                <q-btn fab icon="search" color="primary" @click="searchDial = !searchDial"/>
             </q-page-sticky>
 
-            <q-dialog v-model="searchDial" seamless position="bottom" >
+            <q-dialog v-model="searchDial" seamless position="right" >
                 <grew-request-card :parentOnSearch="onSearch" ></grew-request-card>
             </q-dialog>
 
@@ -245,17 +245,21 @@ export default {
                 attachment: { name: null, file: null}
             },
             resultSearch: {},
-            relationTableInfos: {}
-            
+            relationTableInfos: {},
+            window: {width: 0, height: 0 }
         }
     },
+    created() { window.addEventListener('resize', this.handleResize); this.handleResize(); },
+    destroyed() { window.removeEventListener('resize', this.handleResize)},
     mounted(){
         this.getProjectInfos();
     },
     computed: {
-        routePath() { return this.$route.path; }
+        routePath() { return this.$route.path; },
+        breakpoint(){ return this.window.width <= 400; }
     },
     methods:{
+        handleResize() {this.window.width = window.innerWidth; this.window.height = window.innerHeight;},
         goToRoute(props) { this.$router.push('/projects/' + this.infos.name + '/samples') },
         filterFields(tableJson) {
             // to remove some fields from visiblecolumns select options

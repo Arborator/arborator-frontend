@@ -7,7 +7,7 @@
           <q-btn flat dense size="xl" square to="/"><img alt="Arborator" :src="$q.dark.isActive ? '../statics/arborator.text.white.svg' : '../statics/arborator.text.primary.svg' " style="width:11vw"/></q-btn>
         </q-toolbar-title>
 
-        <q-breadcrumbs :active-color="$q.dark.isActive?'white':'primary'" :class="$q.dark.isActive?'text-grey':'text-black'" style="max-height:20px;max-width:70vh;overflow:y;">
+        <q-breadcrumbs :active-color="$q.dark.isActive?'white':'primary'" :class="($q.dark.isActive?'text-grey':'text-black') + ' mobile-hide native-mobile-hide within-iframe-hide'" style="max-height:20px;max-width:70vh;overflow:y;">
             <q-breadcrumbs-el v-if="notHome" icon="home" to="/" />
             <q-breadcrumbs-el v-if="$route.params.projectname != null" :label="$route.params.projectname" icon="work" :to="'/projects/'+$route.params.projectname" />
             <q-breadcrumbs-el v-if="$route.params.samplename != null && $route.params.projectname != null" :label="$route.params.samplename" icon="assignment" :to="'/projects/'+$route.params.projectname+'/'+$route.params.samplename" />

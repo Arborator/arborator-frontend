@@ -35,12 +35,8 @@ export default {
             loading: false
         }
     },
-    computed: {
-        sentenceCount() {return Object.keys(this.searchresults).length}
-    },
-    mounted(){
-        this.freezeSamples();
-    },
+    computed: { sentenceCount() {return Object.keys(this.searchresults).length;}  },
+    mounted(){this.freezeSamples();},
     methods: {
         freezeSamples() {
             console.log('samples', this.searchresults);

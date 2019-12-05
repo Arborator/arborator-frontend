@@ -17,11 +17,11 @@
             </q-bar>
 
           <q-card-section style="height:200px">
-            <v-select v-for="(relist, index) in options.relations" :key="index" v-model="infos.relation[index]" :options="relist" style="float:left; display:inline;width:150px;"></v-select>
+            <v-select v-for="(relist, index) in options.relations" :key="index" v-model="infos.relation[index]" :options="relist" :class="$q.dark.isActive?'vs-dark':'vs-light'" style="float:left; display:inline;width:150px;"></v-select>
           </q-card-section>
             <q-space />
             <q-card-actions >
-              <q-btn @click="ondialoghide()" label="Cancel" v-close-popup  style="width: 45%; margin-left: auto;margin-right: auto;" />
+              <q-btn flat @click="ondialoghide()" label="Cancel" v-close-popup  style="width: 45%; margin-left: auto;margin-right: auto;" />
               <q-btn color="primary" @click="onchangerel()" label="Ok" v-close-popup style="width: 45%; margin-left: auto;margin-right: auto;" />
             </q-card-actions>
         </q-card>
@@ -52,7 +52,7 @@
          
           <q-separator/>
           <q-card-actions>
-            <q-btn @click="ondialoghide()" label="Cancel" v-close-popup style="width: 45%; margin-left: auto;margin-right: auto;" />
+            <q-btn flat @click="ondialoghide()" label="Cancel" v-close-popup style="width: 45%; margin-left: auto;margin-right: auto;" />
             <q-btn color="primary" @click="onchangecat()" label="Ok" v-close-popup style="width: 45%; margin-left: auto;margin-right: auto;" />
 
           </q-card-actions>
@@ -214,3 +214,35 @@ export default {
 // })
 
 </script>
+
+<style>
+.vs-dark .vs__search::placeholder,
+  .vs-dark .vs__dropdown-toggle,
+  .vs-dark .vs__dropdown-option,
+  .vs-dark .vs__dropdown-menu,
+  .vs-dark .vs__selected {
+    background: #343436;
+    border: none;
+    color: white;
+  }
+.vs-dark .vs__clear,
+.vs-dark .vs__open-indicator {
+  fill: #635e72;
+}
+.vs-dark .vs__dropdown-option--highlight { background: #501d7d; color:white; }
+
+.vs-light .vs__search::placeholder,
+  .vs-light .vs__dropdown-toggle,
+  .vs-light .vs__dropdown-option,
+  .vs-light .vs__dropdown-menu,
+  .vs-light .vs__selected {
+    background: #d0d0dd;
+    border: none;
+    color: rgb(14, 13, 13);
+  }
+.vs-light .vs__clear,
+.vs-light .vs__open-indicator {
+  fill: #73707c;
+}
+.vs-light .vs__dropdown-option--highlight { background: #501d7d; color:white; }
+</style>

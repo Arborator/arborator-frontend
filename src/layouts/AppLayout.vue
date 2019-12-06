@@ -133,7 +133,7 @@ export default {
   data () {
     return {
       store: Store,
-      drawerLeft: true,
+      drawerLeft: this.$q.platform.is.mobile?false:true,
       miniState: true,
       isAdmin: false,
       search: '',

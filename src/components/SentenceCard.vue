@@ -11,11 +11,11 @@
         </q-toolbar>
         <q-card-section>
             <q-chip icon="bookmark" class="text-center" :color="$q.dark.isActive?'primary':''" dense> {{sentenceId}} </q-chip>{{sampleData.sentence}}
-            <q-tabs v-model="tab" :class="($q.dark.isActive?'text-grey-5':'text-primary') + ' shadow-2'" dense>
-                <q-tab v-for="(tree, user) in sampleData.conlls" :key="user" :props="user" :label="user" :name="user" icon="person" />
+            <q-tabs v-model="tab" :class="($q.dark.isActive?'text-grey-5':'text-grey-8') + ' shadow-2'" dense active-color="accent" active-bg-color="grey-2">
+                <q-tab v-for="(tree, user) in sampleData.conlls" :key="user" :props="user" :label="user" :name="user" icon="person" no-caps :ripple="false" />
             </q-tabs>
             <q-separator />
-            <q-tab-panels v-model="tab" >
+            <q-tab-panels v-model="tab" keep-alive >
                
                 <q-tab-panel v-for="(tree, user) in sampleData.conlls" :key="user" :props="tree" :name="user">
                     <q-card  flat >

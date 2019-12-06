@@ -27,6 +27,9 @@
                             :selected.sync="table.selected"
                             :table-header-class="$q.dark.isActive?'text-white':'text-primary'"
                             card-class="shadow-8"
+                            virtual-scroll
+				            table-style="max-height:80vh"
+                            :rows-per-page-options="[0]"
                             >
 
                             <template v-slot:top="props">

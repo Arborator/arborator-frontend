@@ -1,5 +1,5 @@
 <template>
-	<q-card class="bg-blue-grey-1 text-black" style="max-width: 100vw;">
+	<q-card :class="$q.dark.isActive?'':'bg-blue-grey-1 text-black'" style="max-width: 100vw;">
 		<q-bar class="bg-primary text-white">
 			<q-space />
 			<div class="text-weight-bold">User Assignment for {{$route.params.projectname}}</div>
@@ -12,7 +12,7 @@
 		<q-card-section>
 			<q-table
 				ref="usersTable"
-				class="my-sticky-header-table rounded-borders"
+				class="dark rounded-borders"
 				title="Users"
 				:data="table.data"
 				:columns="table.fields"
@@ -29,6 +29,9 @@
 				table-header-class="text-primary"
 				card-class="shadow-8"
 				style="height: 80vh; width:90vw"
+				virtual-scroll
+				table-style="max-height:80vh"
+				:rows-per-page-options="[0]"
 				>
 
 				<template v-slot:top="props">

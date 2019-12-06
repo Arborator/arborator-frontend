@@ -11,7 +11,7 @@
         </q-toolbar>
         <q-card-section>
             <q-chip icon="bookmark" class="text-center" :color="$q.dark.isActive?'primary':''" dense> {{sentenceId}} </q-chip>{{sampleData.sentence}}
-            <q-tabs v-model="tab" :class="($q.dark.isActive?'text-grey-5':'text-grey-8') + ' shadow-2'" dense active-color="accent" :active-bg-color="$q.dark.isActive?'grey-5':'grey-2'">
+            <q-tabs v-model="tab" :class="($q.dark.isActive?'text-grey-5':'text-grey-8') + ' shadow-2'" dense :active-color="$q.dark.isActive?'info':'accent'" :active-bg-color="$q.dark.isActive?'':'grey-2'">
                 <q-tab v-for="(tree, user) in sampleData.conlls" :key="user" :props="user" :label="user" :name="user" icon="person" no-caps :ripple="false" />
             </q-tabs>
             <q-separator />
@@ -19,7 +19,7 @@
                
                 <q-tab-panel v-for="(tree, user) in sampleData.conlls" :key="user" :props="tree" :name="user">
                     <q-card  flat >
-                        <q-card-section :class="($q.dark.isActive?'bg-grey-6':'') + ' scrollable'" >
+                        <q-card-section :class="($q.dark.isActive?'':'') + ' scrollable'" >
                             <conll-graph :conll="tree" :user="user" :sentenceId="sentenceId" :matches="sampleData.matches" @update-conll="onConllGraphUpdate($event)"></conll-graph>
                         </q-card-section>
                     </q-card>

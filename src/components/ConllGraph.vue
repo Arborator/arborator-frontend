@@ -1,6 +1,6 @@
 <template>
     <div class="sentencebox">
-      <svg :id="id" :ref="id"></svg>
+      <svg :id="id" :ref="id" :class="$q.dark.isActive?'dark':''"></svg>
 
       <q-dialog        
         v-model="relDialog"

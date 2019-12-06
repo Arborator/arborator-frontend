@@ -29,7 +29,7 @@
       <q-card :class="hover ? 'bg-grey-2' : ''" class="clickable col-1 grid-style-transition shadow-7"
       @mouseover="hover = true" 
       @mouseleave="hover = false" 
-      @click="openURL('https://arborator.github.io/')"
+      @click="openURL('https://arborator.github.io/draft')"
       :style="hover ? 'transform: scale(0.95);' : ''"
       style="border-radius: 20px 20px 10px 10px">
         <q-card-section>

@@ -10,17 +10,17 @@
             <q-btn flat round dense icon="more_vert" />
         </q-toolbar>
         <q-card-section>
-            <q-chip icon="bookmark" class="text-center" dense> {{sentenceId}} </q-chip>{{sample.sentence}}
+            <q-chip icon="bookmark" class="text-center" dense> {{sentenceId}} </q-chip>{{sampleData.sentence}}
             <q-tabs v-model="tab" :class="($q.dark.isActive?'text-grey':'text-primary') + ' shadow-2'" dense>
-                <q-tab v-for="(tree, user) in sample.conlls" :key="user" :props="user" :label="user" :name="user" icon="person" />
+                <q-tab v-for="(tree, user) in sampleData.conlls" :key="user" :props="user" :label="user" :name="user" icon="person" />
             </q-tabs>
             <q-separator />
             <q-tab-panels v-model="tab" >
                
-                <q-tab-panel v-for="(tree, user) in sample.conlls" :key="user" :props="tree" :name="user">
+                <q-tab-panel v-for="(tree, user) in sampleData.conlls" :key="user" :props="tree" :name="user">
                     <q-card  flat >
                         <q-card-section class="scrollable" >
-                            <conll-graph :conll="tree" :user="user" :sentenceId="sentenceId" :matches="sample.matches" @update-conll="onConllGraphUpdate($event)"></conll-graph>
+                            <conll-graph :conll="tree" :user="user" :sentenceId="sentenceId" :matches="sampleData.matches" @update-conll="onConllGraphUpdate($event)"></conll-graph>
                         </q-card-section>
                     </q-card>
                 </q-tab-panel>
@@ -42,6 +42,7 @@ export default {
     data() {
         return {
             tab:'',
+            sampleData: this.$props.sample,
             lastModified: { svgId: '',  draft: '', dirty: false, redo: false, conll: '', user: '' },
             alerts: { 
                 'saveSuccess': { color: 'positive', message: 'Saved!'},
@@ -66,6 +67,8 @@ export default {
                 if(response.status == 200){
                     this.lastModified.dirty = false;
                     this.showNotif('top', 'saveSuccess');
+                    this.sampleData.conlls[this.$store.getters.getUserInfos.username] = this.lastModified.conll; this.$forceUpdate();
+                    this.tab = this.$store.getters.getUserInfos.username;
                 }
             }).catch(error => {console.log(error); this.showNotif('top', 'saveFail');});
         },

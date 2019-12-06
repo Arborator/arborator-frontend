@@ -1,8 +1,7 @@
 <template>
     <div class="sentencebox">
       <svg :id="id" :ref="id"></svg>
-      
-      
+
       <q-dialog        
         v-model="relDialog"
         :maximized="maximizedToggle"
@@ -85,6 +84,7 @@ export default {
             draft: new ArboratorDraft(),
             id: this.user+'_'+this.sentenceId.replace(/\W/g, ''),
             svgContent: '',
+            loading: true,
             infos: {
                 relation: [],
                 category: null
@@ -129,6 +129,7 @@ export default {
             if (this.user in matches) var usermatch = matches[this.user];
             else var usermatch = {'nodes':[],'edges':[]};
             var svg = this.draft.getSvg(conllStr, usermatch, id); // here is the conllstr
+            this.loading = false;
             svg.toggleRelDialog  = this.toggleRelDialog;
             svg.toggleCatDialog  = this.toggleCatDialog;
             svg.selectRel = this.selectRel; // update le svg avec les infos de this

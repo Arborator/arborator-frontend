@@ -99,7 +99,7 @@ ArboratorDraft.prototype.emptyThenRefresh = function(content, reverse = false, t
 
 ArboratorDraft.prototype.getSvg = function(strConll, usermatches, id){
 	// log('usermatches', usermatches) // the one that we see
-	var treedata = conllNodesToTree(strConll); // treedata is object: {tree:tree, uextra:sentencefeatures, sentence, svg:snap-object}
+	var treedata = conllNodesToTree(strConll.trim()); // treedata is object: {tree:tree, uextra:sentencefeatures, sentence, svg:snap-object}
 	treedata['svg'] = drawsnap(id, treedata, usermatches, shownfeatures);
 	// tree['svg'] = draw(tree.tree, id);
 	return treedata;

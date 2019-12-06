@@ -11,7 +11,7 @@
         </q-toolbar>
         <q-card-section>
             <q-chip icon="bookmark" class="text-center" :color="$q.dark.isActive?'primary':''" dense> {{sentenceId}} </q-chip>{{sampleData.sentence}}
-            <q-tabs v-model="tab" :class="($q.dark.isActive?'text-grey-5':'text-grey-8') + ' shadow-2'" dense active-color="accent" active-bg-color="grey-2">
+            <q-tabs v-model="tab" :class="($q.dark.isActive?'text-grey-5':'text-grey-8') + ' shadow-2'" dense active-color="accent" :active-bg-color="$q.dark.isActive?'grey-5':'grey-2'">
                 <q-tab v-for="(tree, user) in sampleData.conlls" :key="user" :props="user" :label="user" :name="user" icon="person" no-caps :ripple="false" />
             </q-tabs>
             <q-separator />

@@ -278,7 +278,7 @@ var categoryclick = function(e) {
 var relationclick = function(e) {
 	// relationChanged(this.paper, this.nr, this.govid, this.relation+"kim" )
 	this.attr({class:"deprelselected"})
-	this.paper.root.treedata.triggerRelationChange(this.paper, this, this.nr, this.govid, this.relation); 
+	// this.paper.root.treedata.triggerRelationChange(this.paper, this, this.nr, this.govid, this.relation); 
 	
 	// log("relationclick",e,this)
 }

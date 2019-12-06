@@ -10,8 +10,8 @@
             <q-btn flat round dense icon="more_vert" />
         </q-toolbar>
         <q-card-section>
-            <q-chip icon="bookmark" class="text-center" dense> {{sentenceId}} </q-chip>{{sampleData.sentence}}
-            <q-tabs v-model="tab" :class="($q.dark.isActive?'text-grey':'text-primary') + ' shadow-2'" dense>
+            <q-chip icon="bookmark" class="text-center" :color="$q.dark.isActive?'primary':''" dense> {{sentenceId}} </q-chip>{{sampleData.sentence}}
+            <q-tabs v-model="tab" :class="($q.dark.isActive?'text-grey-5':'text-primary') + ' shadow-2'" dense>
                 <q-tab v-for="(tree, user) in sampleData.conlls" :key="user" :props="user" :label="user" :name="user" icon="person" />
             </q-tabs>
             <q-separator />
@@ -19,7 +19,7 @@
                
                 <q-tab-panel v-for="(tree, user) in sampleData.conlls" :key="user" :props="tree" :name="user">
                     <q-card  flat >
-                        <q-card-section class="scrollable" >
+                        <q-card-section :class="($q.dark.isActive?'bg-grey-6':'') + ' scrollable'" >
                             <conll-graph :conll="tree" :user="user" :sentenceId="sentenceId" :matches="sampleData.matches" @update-conll="onConllGraphUpdate($event)"></conll-graph>
                         </q-card-section>
                     </q-card>

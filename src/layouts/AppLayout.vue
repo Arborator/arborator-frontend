@@ -106,6 +106,7 @@
       <q-scroll-area  style="height: calc(100% - 0px); margin-top: 0px; ">
         <q-list padding>
           <div v-for="(menuItem, index) in menuList" :key="index">
+
             <q-item  v-show="store.getters.isLoggedIn || menuItem.public" :to="menuItem.to" clickable :active="menuItem.label == $route.currentRoute" v-ripple>
               <q-item-section avatar>
                 <q-icon :name="menuItem.icon" />
@@ -115,7 +116,7 @@
               </q-item-section>
             </q-item>
 
-            <q-separator v-if="menuItem.separator" />
+            <q-separator v-if="menuItem.separator" spaced/>
           </div>
         </q-list>
       </q-scroll-area>
@@ -141,23 +142,34 @@ export default {
           {
             icon: 'house',
             label: 'Home',
+            separator: false,
+            public: true,
+            to: '/#',
+            bottom: false
+          },
+          {
+            icon: 'library_books',
+            label: 'Projects',
             separator: true,
             public: true,
-            to: '/'
+            to: '/projects',
+            bottom: false
           },
           {
             icon: 'settings',
             label: 'Settings',
             separator: false,
             public: false,
-            to: '/settings'
+            to: '/settings',
+            bottom: true
           },
           {
             icon: 'vpn_key',
             label: 'Admin',
             separator: false,
             public: false,
-            to: '/adminpanel'
+            to: '/adminpanel',
+            bottom: false
           }
         ]
     }

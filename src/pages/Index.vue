@@ -1,28 +1,76 @@
 <template>
   <q-page :class="$q.dark.isActive?'bg-dark':'bg-grey-1'">
 
-    <!-- <div class="q-pa-md row q-gutter-md flex flex-center">
-      <object data="../statics/arborator.logo.svg" type="image/svg+xml" width="100" ></object>
-    </div> -->
-
-    <div class="q-pa-md row items-start q-gutter-md flex flex-center">
+    <div class="q-pa-md q-gutter-sm">
       <q-card flat>
-        <q-card-section class="q-pa-md row items-start q-gutter-md">
-          <q-toolbar class="text-center">
-            <q-toolbar-title>
-              <span :class="($q.dark.isActive?'':'text-primary') + ' text-bold'">Projects</span>
-              <q-input filled bottom-slots v-model="search" label="Search Project" type="text" @keyup.enter="searchProject(search)" >
-                <template v-slot:append>
-                  <q-icon name="search" />
-                </template>
-              </q-input>
-            </q-toolbar-title>
-          </q-toolbar>
-          <q-list style="width:100%" bordered>
-            <project-card v-for="project in visibleProjects" :props="project" :key="project.id"></project-card>
-          </q-list>
+        <q-card-section >
+          <div :class="$q.dark.isActive?'text-grey-1':'text-blue-grey-8'" class="text-h4 text-center ">Welcome to ArboratorGrew!</div>
         </q-card-section>
+
+        <q-card-section class="text-center" :class="$q.dark.isActive?'text-grey-1':'text-blue-grey-8'">
+        {{lorem}}
+        </q-card-section>
+
+        <q-card-actions align="around">
+          <q-btn push to="/projects" color="accent" >Access Treebanks</q-btn>
+          <q-btn flat :class="$q.dark.isActive?'text-grey-1':'text-blue-grey-8'">Naija</q-btn>
+        </q-card-actions>
+
       </q-card>
+
+    <q-card flat>
+      <q-card-section >
+        <div class="text-h4 text-center" :class="$q.dark.isActive?'text-grey-1':'text-blue-grey-8'">Features</div>
+      </q-card-section>
+
+      <q-card-section >
+        <q-carousel
+          v-model="slide"
+          transition-prev="jump-right"
+          transition-next="jump-left"
+          swipeable
+          animated
+          :control-color="$q.dark.isActive?'white':'blue-grey-8'"
+          navigation
+          infinite
+          autoplay
+          padding
+          arrows
+          height="300px"
+          :class="$q.dark.isActive?'bg-grey-10 text-white':'text-blue-grey-8'" class=" rounded-borders"
+        >
+          <q-carousel-slide name="style" class="column no-wrap flex-center">
+            <q-icon name="style" size="56px" />
+            <div class="q-mt-md text-center">
+              {{ lorem }}
+            </div>
+          </q-carousel-slide>
+          <q-carousel-slide name="tv" class="column no-wrap flex-center">
+            <q-icon name="live_tv" size="56px" />
+            <div class="q-mt-md text-center">
+              {{ lorem }}
+            </div>
+          </q-carousel-slide>
+          <q-carousel-slide name="layers" class="column no-wrap flex-center">
+            <q-icon name="layers" size="56px" />
+            <div class="q-mt-md text-center">
+              {{ lorem }}
+            </div>
+          </q-carousel-slide>
+          <q-carousel-slide name="map" class="column no-wrap flex-center">
+            <q-icon name="terrain" size="56px" />
+            <div class="q-mt-md text-center">
+              {{ lorem }}
+            </div>
+          </q-carousel-slide>
+        </q-carousel>
+      </q-card-section>
+
+      <q-card-section class="text-justify">
+        <p v-for="n in 20" :key="n"><span v-for="i in 5" :key="i"> {{lorem}} </span></p>
+      </q-card-section>
+    </q-card>
+
     </div>
 
     <q-page-sticky position="bottom-right" :offset="[18, 18]">
@@ -70,26 +118,15 @@ export default {
   data() {
     return {
       lorem: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.',
-      projects: [],
-      visibleProjects: [],
       hover: false,
-      search: ''
+      search: '',
+      slide: 'style',
     }
   },
   mounted(){
-    this.getProjects();
   },
   methods:{
-    openURL,
-    getProjects(){ api.getProjects().then(response => { this.projects = response.data; this.visibleProjects = response.data;}).catch(error => { console.log(error); }); },
-    searchProject(pattern) {
-      var filteredProjects =  this.projects.filter(function(project) {
-        if(project.projectname.includes(pattern)){
-          return project;
-        }
-      });
-      this.visibleProjects = filteredProjects;
-    }
+    openURL
   }
 }
 </script>

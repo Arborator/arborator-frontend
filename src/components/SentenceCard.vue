@@ -61,7 +61,29 @@ export default {
             // log(this.$props); // index, projectname, sample...
             // log("lastsvg", this.lastModified.svgId);
         },
+        // save() {
+        //     console.log(this.lastModified.conll);
+        //     var timestamp = Date.now();
+        //     console.log("time", timestamp);
+        //     this.lastModified.conll = this.lastModified.conll.replace(/# timestamp = \d+\.\d+\n/, "# timestamp = "+timestamp+"\n");
+        //     console.log("after", this.lastModified.conll);
+        //     this.lastModified.conll = this.lastModified.conll.replace(/# user_id = \d+\.\d+\n/, "# user_id = "+this.$store.getters.getUserInfos.username+"\n");
+        //     // console.log("after", this.lastModified.conll);
+        //     var data={"trees":[{"sent_id":this.$props.sentenceId, "conll":this.lastModified.conll}], "user_id":this.$store.getters.getUserInfos.username};
+        //     console.log(data);
+        //     api.saveTrees(this.$route.params.projectname, this.$props.sample.samplename, data).then(response => {
+        //         if(response.status == 200){
+        //             this.lastModified.dirty = false;
+        //             this.showNotif('top', 'saveSuccess');
+        //         }
+        //     }).catch(error => {console.log(error); this.showNotif('top', 'saveFail');});
+        // }
         save() {
+            // console.log("before", this.lastModified.conll);
+            var timestamp = Date.now();
+            this.lastModified.conll = this.lastModified.conll.replace(/# timestamp = \d+\.\d+\n/, "# timestamp = "+timestamp+"\n");
+            this.lastModified.conll = this.lastModified.conll.replace(/# user_id = .+\n/, "# user_id = "+this.$store.getters.getUserInfos.username+"\n");
+            // console.log("after", this.lastModified.conll);
             var data={"trees":[{"sent_id":this.sentenceId, "conll":this.lastModified.conll}], "user_id":this.$store.getters.getUserInfos.username};
             api.saveTrees(this.$route.params.projectname, this.$props.sample.samplename, data).then(response => {
                 if(response.status == 200){

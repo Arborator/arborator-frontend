@@ -54,6 +54,12 @@ export default {
         var session = {id: sessionId}
         return AUTH.post('userinfos', session);
     },
+    createProject(data){
+        return API.post('projects/create', data)
+    },
+    createInitializedProject( projectName, data ){
+        return API.post('projects/'+projectName+'/create/upload', data);
+    },
     searchProject( projectname, query){
         return API.post('projects/'+projectname+'/search', query);
     },

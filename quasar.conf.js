@@ -66,7 +66,8 @@ module.exports = function (ctx) {
         'QFab', 'QFabAction',
         'QPageSticky', 'QScrollArea', 'QPageScroller',
         'QLinearProgress', 'QCheckbox', 'QSpinnerFacebook',
-        'QVirtualScroll', 'QCircularProgress', 'QCarousel', 'QCarouselControl', 'QCarouselSlide'
+        'QVirtualScroll', 'QCircularProgress', 'QCarousel', 'QCarouselControl', 'QCarouselSlide',
+        'QPopupProxy'
       ],
 
       directives: [
@@ -81,7 +82,10 @@ module.exports = function (ctx) {
         'AppVisibility',
         'AppFullscreen',
         'BottomSheet'
-      ]
+      ],
+      config: {
+        notify: { position: 'top-right', timeout:2000, color:'positive' }
+      }
     },
 
     supportIE: true,

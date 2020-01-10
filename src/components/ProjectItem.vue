@@ -1,5 +1,15 @@
 <template>
     <q-item clickable @click="goTo()" >
+        <q-popup-proxy transition-show="flip-up" transition-hide="flip-down" context-menu>
+            <q-list>
+                <q-item clickable>
+                <q-item-section>Delete Project</q-item-section>
+                <q-item-section side>
+                    <q-icon name="delete_forever" color="negative"/>
+                </q-item-section>
+                </q-item>
+            </q-list>
+        </q-popup-proxy>
         <q-item-section avatar>
           <q-avatar v-show="imageEmpty" rounded color="primary" text-color="white" icon="work" />
           <q-avatar v-show="!imageEmpty" rounded color="primary" text-color="white" >
@@ -29,7 +39,8 @@ export default {
     },
     computed: {
         imageEmpty(){
-            if(this.project.image == "b''") {return true;}
+            if(this.project.image == null){ this.project.image = "b''";}
+            if(this.project.image == "b''" ) {return true;}
             else if(this.project.image.length < 1) {return true;}
             else{
                 return false;

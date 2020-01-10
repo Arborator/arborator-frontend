@@ -1,6 +1,16 @@
 <template>
     <q-card :class="(hover ? 'shadow-12' : '')" class="clickable my-card grid-style-transition shadow-2 "
       @mouseover="hover = true" @mouseleave="hover = false" @click="goTo()" :style="hover ? 'transform: scale(0.95);' : ''">
+        <q-popup-proxy transition-show="flip-up" transition-hide="flip-down" context-menu>
+            <q-list>
+                <q-item clickable>
+                <q-item-section>Delete Project</q-item-section>
+                <q-item-section side>
+                    <q-icon name="delete_forever" color="negative"/>
+                </q-item-section>
+                </q-item>
+            </q-list>
+        </q-popup-proxy>
         <q-img :src="imageEmpty?'https://picsum.photos/200/100':imageCleaned" basic >
             <div class="absolute-bottom text-h6">
                 <q-icon v-show="project.is_private" name="lock" color="negative" size="lg"></q-icon>

@@ -9,7 +9,7 @@
       <q-card flat>
         <q-card-section class="q-pa-md row items-start q-gutter-md">
           <q-toolbar class="text-center">
-              <q-btn color="primary" round dense icon="add">
+              <q-btn color="primary" round dense icon="add" @click="creaProjectDial = true">
                 <q-tooltip :delay="300" content-class="text-white bg-primary">Create a new project</q-tooltip>
               </q-btn>
               <q-toolbar-title :class="($q.dark.isActive?'':'text-primary') + ' text-bold'">
@@ -51,6 +51,10 @@
         </q-card-section>
       </q-card>
     </div>
+
+    <q-dialog v-model="creaProjectDial" transition-show="fade" transition-hide="fade">
+      <crea-project-card :parentGetProjects="getProjects"></crea-project-card>
+    </q-dialog>
     
   </q-page>
 </template>
@@ -71,10 +75,11 @@ import api from '../boot/backend-api';
 import Store from '../store/index';
 import ProjectCard from '../components/ProjectCard.vue';
 import ProjectItem from '../components/ProjectItem.vue';
+import CreaProjectCard from '../components/CreaProjectCard.vue';
 
 export default {
   components: {
-    ProjectCard, ProjectItem
+    ProjectCard, ProjectItem, CreaProjectCard
   },
   name: 'ProjectHub',
   data() {
@@ -84,7 +89,8 @@ export default {
       visibleProjects: [],
       hover: false,
       search: '',
-      listMode: true
+      listMode: true,
+      creaProjectDial: false
     }
   },
   mounted(){
@@ -93,7 +99,7 @@ export default {
   },
   methods:{
     openURL,
-    getProjects(){ api.getProjects().then(response => { this.projects = response.data; this.visibleProjects = response.data;}).catch(error => { console.log(error); }); },
+    getProjects(){ console.log('getProjects hub'); api.getProjects().then(response => { this.projects = response.data; this.visibleProjects = response.data;}).catch(error => { console.log(error); }); },
     searchProject(pattern) {
       var filteredProjects =  this.projects.filter(function(project) {
         if(project.projectname.includes(pattern)){

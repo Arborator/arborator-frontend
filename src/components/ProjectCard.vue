@@ -3,7 +3,7 @@
       @mouseover="hover = true" @mouseleave="hover = false" @click="goTo()" :style="hover ? 'transform: scale(0.95);' : ''">
         <q-popup-proxy transition-show="flip-up" transition-hide="flip-down" context-menu>
             <q-list>
-                <q-item clickable>
+                <q-item clickable @click="deleteProject()">
                 <q-item-section>Delete Project</q-item-section>
                 <q-item-section side>
                     <q-icon name="delete_forever" color="negative"/>
@@ -29,7 +29,7 @@
 
 <script>
 export default {
-    props: ['props'],
+    props: ['props', 'parentDeleteProject'],
     data() {
         return {
             project: this.props,
@@ -38,6 +38,7 @@ export default {
     },
     computed: {
         imageEmpty(){
+            if(this.project.image == null){ this.project.image = "b''";}
             if(this.project.image == "b''") {return true;}
             else if(this.project.image.length < 1) {return true;}
             else{
@@ -60,7 +61,8 @@ export default {
                     infos: this.project
                 }
             }) 
-        }
+        },
+        deleteProject(){ this.$props.parentDeleteProject(this.project.projectname); }
     }
 }
 </script>

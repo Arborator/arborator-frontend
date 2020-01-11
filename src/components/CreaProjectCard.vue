@@ -20,8 +20,10 @@
 
 			<q-form @submit="onSubmit" @reset="onReset" class="q-gutter-md">
 				<q-input filled	v-model="projectName" label="Project name" lazy-rules :rules="[ val => val && val.length > 0 || 'Please type something']"/>
+				<q-input filled	v-model="description" label="Description" />
+				<q-toggle v-model="isPrivate" label="Private?" />
 				<div>
-					<q-btn type="submit" :loading="submitting" label="create" color="primary" class="q-mt-md" />
+					<q-btn type="submit" :loading="submitting" label="create" color="primary" class="q-mt-md" v-close-popup/>
 					<q-btn label="Reset" type="reset" color="primary" flat class="q-ml-sm" />
 				</div>
 			</q-form>
@@ -41,6 +43,8 @@ export default {
 		return {
 			submitting: false,
 			projectName: '',
+			description: '',
+			isPrivate: false,
 			attachment: { name: null, file: null}
 		}
 	},
@@ -60,7 +64,9 @@ export default {
             this.submitting = true;
 			form.append('import_user',this.$store.getters.getUserInfos.username);
 			form.append('project_name',this.projectName);
-            api.createProject(form).then( response => { this.attachment.file = []; this.$props.parentGetProjects(); this.submitting = false; this.$q.notify({message: `${this.projectName} uploaded and created.`})})
+			form.append('description', this.description);
+			form.append('private', this.isPrivate);
+            api.createProject(form).then( response => { this.attachment.file = []; this.$props.parentGetProjects(); this.submitting = false; this.$q.notify({message: `${this.projectName} uploaded and created.`}); })
             .catch(error => {console.log(error); this.$q.notify({message: `${error}`,color: 'negative', position:'bottom'}); this.submitting = false; });
 		},
 		onReset(){

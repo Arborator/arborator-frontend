@@ -2,7 +2,7 @@
     <q-item clickable @click="goTo()" >
         <q-popup-proxy transition-show="flip-up" transition-hide="flip-down" context-menu>
             <q-list>
-                <q-item clickable>
+                <q-item clickable @click="deleteProject()">
                 <q-item-section>Delete Project</q-item-section>
                 <q-item-section side>
                     <q-icon name="delete_forever" color="negative"/>
@@ -30,8 +30,9 @@
 </template>
 
 <script>
+import api from '../boot/backend-api.js';
 export default {
-    props: ['props'],
+    props: ['props', 'parentDeleteProject'],
     data() {
         return {
             project: this.props
@@ -42,9 +43,7 @@ export default {
             if(this.project.image == null){ this.project.image = "b''";}
             if(this.project.image == "b''" ) {return true;}
             else if(this.project.image.length < 1) {return true;}
-            else{
-                return false;
-            }
+            else{ return false; }
         },
         imageCleaned(){
             var clean = this.project.image.replace('b', '');
@@ -62,7 +61,8 @@ export default {
                     infos: this.project
                 }
             }) 
-        }
+        },
+        deleteProject(){ this.$props.parentDeleteProject(this.project.projectname); }
     }
 }
 </script>

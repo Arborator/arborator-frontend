@@ -10,6 +10,7 @@
 		</q-bar>
 
 		<q-card-section>
+			{{samples}}
 			<q-table
 				ref="usersTable"
 				class="dark rounded-borders"
@@ -64,7 +65,7 @@
 					
 					<q-tr :props="props">
 						<q-td auto-width><q-toggle dense v-model="props.selected" /></q-td>
-						<q-td key="picture_url" :props="props"><q-avatar><img :src="props.row.picture_url" /></q-avatar></q-td>
+						<q-td key="picture_url" :props="props"><q-avatar size="24px"><img :src="props.row.picture_url" /></q-avatar></q-td>
 						<q-td key="name" :props="props">{{props.row.username}}</q-td>
 						<q-td key="email" :props="props">{{ props.row.id }}</q-td>
 						<q-td key="super_admin" :props="props">{{ props.row.super_admin }}</q-td>
@@ -94,7 +95,7 @@ export default {
 					{ name: 'super_admin', label: 'Admin', field: 'super_admin', sortable: true },
 					{ name: 'last_seen', label: 'Last Seen', field: 'last_seen', sortable: true}
 				],
-				visibleColumns: [ 'picture_url', 'name', 'email' ],
+				visibleColumns: [ 'picture_url', 'name' ],
 				filter: '',
 				selected: [],
 				loading: false,
@@ -111,7 +112,11 @@ export default {
 			var tempArray = tableJson.fields.filter(function( obj ) { return obj.field !== 'syntInfo' && obj.field !== 'cat' && obj.field !== 'redistributions' ; });
 			return tempArray;
 		},
-		getUsers(){ api.getUsers().then( response => {  this.table.data = response.data;  }).catch(error => { console.log(error); }); }
+		getUsers(){ api.getUsers().then( response => {  
+			this.table.data = response.data;  
+			
+
+		}).catch(error => { console.log(error); this.$q.notify({message:`${error}`, color:'negative', position:'bottom'}); }); }
 	}
 }
 </script>

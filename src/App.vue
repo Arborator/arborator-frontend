@@ -18,6 +18,9 @@ import Storage from 'vue-ls';
 var options = { namespace: 'arboratorgrew__', name: 'ls', storage: 'local' };
 Vue.use(Storage, options);
 
+import VoerroTagsInput from '@voerro/vue-tagsinput';
+Vue.component('tags-input', VoerroTagsInput);
+
 export default {
   name: 'App',
   data () {

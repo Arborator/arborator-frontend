@@ -35,6 +35,38 @@ export default {
     uploadSample(projectname, data){
         return API.post('projects/' + projectname +'/upload', data);
     },
+    addSampleAnnotator(username, projectname, samplename){
+        let data = {'username':username, 'projectname':projectname, 'samplename':samplename};
+        return API.post('projects/sample/annotator/add', data);
+    },
+    removeSampleAnnotator(username, projectname, samplename){
+        let data = {'username':username, 'projectname':projectname, 'samplename':samplename};
+        return API.post('projects/sample/annotator/remove', data);
+    },
+    addSampleValidator(username, projectname, samplename){
+        let data = {'username':username, 'projectname':projectname, 'samplename':samplename};
+        return API.post('projects/sample/validator/add', data);
+    },
+    removeSampleValidator(username, projectname, samplename){
+        let data = {'username':username, 'projectname':projectname, 'samplename':samplename};
+        return API.post('projects/sample/validator/remove', data);
+    },
+    addSampleSuperValidator(username, projectname, samplename){
+        let data = {'username':username, 'projectname':projectname, 'samplename':samplename};
+        return API.post('projects/sample/supervalidator/add', data);
+    },
+    removeSampleSuperValidator(username, projectname, samplename){
+        let data = {'username':username, 'projectname':projectname, 'samplename':samplename};
+        return API.post('projects/sample/supervalidator/remove', data);
+    },
+    addSampleProf(username, projectname, samplename){
+        let data = {'username':username, 'projectname':projectname, 'samplename':samplename};
+        return API.post('projects/sample/prof/add', data);
+    },
+    removeSampleProf(username, projectname, samplename){
+        let data = {'username':username, 'projectname':projectname, 'samplename':samplename};
+        return API.post('projects/sample/prof/remove', data);
+    },
     exportSamplesZip(samplenames, projectname){
         let data = { 'samples': samplenames };
         return API.post('projects/'+projectname+'/export/zip', data, {responseType: 'arraybuffer'});

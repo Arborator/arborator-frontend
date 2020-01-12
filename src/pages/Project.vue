@@ -1,7 +1,7 @@
 <template>
     <q-page :class="$q.dark.isActive?'bg-dark':'bg-grey-1'">
         <div class="q-pa-md row q-gutter-md flex flex-center">
-            <q-card flat style="max-width: 100%">
+            <q-card flat style="max-width: 100%;">
                 <q-card-section>
                     <q-toolbar class="  text-center">
                         <q-toolbar-title>
@@ -30,7 +30,23 @@
                             virtual-scroll
 				            table-style="max-height:80vh"
                             :rows-per-page-options="[0]"
+                            :key="tableKey"
+                            
                             >
+
+                            <template v-slot:no-data="props">
+                                <div class="q-pa-md">
+                                <div class="row">
+                                    <div v-show="table.loading" class="col-5 offset-4"><q-circular-progress  indeterminate size="50px" :thickness="0.22" color="primary" :track-color="$q.dark.isActive?'grey':'grey-3'" /></div>
+                                    <q-banner v-show="!table.loading" inline-actions class="text-white bg-negative">
+                                        Oops! No data to display...
+                                        <template v-slot:action>
+                                            <q-btn flat color="white" label="try again" @click="getProjectInfos();" />
+                                        </template>
+                                    </q-banner>
+                                </div>
+                                </div>
+                            </template>
 
                             <template v-slot:top="props">
                                 <q-btn-group flat>
@@ -85,10 +101,22 @@
                                     <q-td key="sentences" :props="props">{{ props.row.sentences }}</q-td>
                                     <q-td key="tokens" :props="props">{{ props.row.tokens }}</q-td>
                                     <q-td key="sentenceLength" :props="props">{{ props.row.averageSentenceLength }}</q-td>
-                                    <q-td key="annotators" :props="props">{{ props.row.roles.annotator }}</q-td>
-                                    <q-td key="validators" :props="props">{{ props.row.roles.validator }}</q-td>
-                                    <q-td key="profs" :props="props">{{ props.row.roles.prof }}</q-td>
-                                    <q-td key="supervalidators" :props="props">{{ props.row.roles.supervalidator }}</q-td>
+                                    <!-- <q-td key="annotators" :props="props">{{ props.row.roles.annotator }}</q-td> -->
+                                    <q-td key="annotators" :props="props">
+                                        <tags-input @tag-added="addAnnotator"  @focus="setTagContext(props.row)" :element-id="props.row.samplename + 'annotatortag'" v-model="props.row.roles.annotator" :existing-tags="possiblesUsers" :typeahead="true" typeahead-style="badges" :typeahead-hide-discard="true" placeholder="add user" :only-existing-tags="true" :typeahead-always-show="false"></tags-input>
+                                    </q-td>
+                                    <!-- <q-td key="validators" :props="props">{{ props.row.roles.validator }}</q-td> -->
+                                    <q-td key="validators" :props="props">
+                                        <tags-input @tag-added="addValidator"  @focus="setTagContext(props.row)" :element-id="props.row.samplename + 'validatortag'" v-model="props.row.roles.validator" :existing-tags="possiblesUsers" :typeahead="true" typeahead-style="badges" :typeahead-hide-discard="true" placeholder="add user" :only-existing-tags="true" :typeahead-always-show="false"></tags-input>
+                                    </q-td>
+                                    <!-- <q-td key="profs" :props="props">{{ props.row.roles.prof }}</q-td> -->
+                                    <q-td key="profs" :props="props">
+                                        <tags-input @tag-added="addProf"  @focus="setTagContext(props.row)" :element-id="props.row.samplename + 'proftag'" v-model="props.row.roles.prof" :existing-tags="possiblesUsers" :typeahead="true" typeahead-style="badges" :typeahead-hide-discard="true" placeholder="add user" :only-existing-tags="true" :typeahead-always-show="false"></tags-input>
+                                    </q-td>
+                                    <!-- <q-td key="supervalidators" :props="props">{{ props.row.roles.supervalidator }}</q-td> -->
+                                    <q-td key="supervalidators" :props="props">
+                                        <tags-input @tag-added="addSuperValidator"  @focus="setTagContext(props.row)" :element-id="props.row.samplename + 'supervalidatortag'" v-model="props.row.roles.supervalidator" :existing-tags="possiblesUsers" :typeahead="true" typeahead-style="badges" :typeahead-hide-discard="true" placeholder="add user" :only-existing-tags="true" :typeahead-always-show="false"></tags-input>
+                                    </q-td>
                                     <q-td key="treesFrom" :props="props">
                                         <q-list dense>
                                             <q-item v-for="source in props.row.treesFrom" :key="source" :props="source" >
@@ -101,19 +129,7 @@
                                 
                             </template>
 
-                            <template v-slot:no-data="props">
-                                <div class="q-pa-md">
-                                <div class="row">
-                                    <div v-show="table.loading" class="col-5 offset-4"><q-circular-progress  indeterminate size="50px" :thickness="0.22" color="primary" :track-color="$q.dark.isActive?'grey':'grey-3'" /></div>
-                                    <q-banner v-show="!table.loading" inline-actions class="text-white bg-negative">
-                                        Oops! No data to display...
-                                        <template v-slot:action>
-                                            <q-btn flat color="white" label="try again" @click="getProjectInfos();" />
-                                        </template>
-                                    </q-banner>
-                                </div>
-                                </div>
-                            </template>
+                            
 
                         </q-table>
                 </q-card-section>
@@ -250,13 +266,17 @@ export default {
             },
             resultSearch: {},
             relationTableInfos: {},
-            window: {width: 0, height: 0 }
+            window: {width: 0, height: 0 },
+            possiblesUsers: [],
+            tagContext: {},
+            tableKey: 0
         }
     },
     created() { window.addEventListener('resize', this.handleResize); this.handleResize(); },
     destroyed() { window.removeEventListener('resize', this.handleResize)},
     mounted(){
         this.getProjectInfos();
+        this.getUsers();
     },
     computed: {
         routePath() { return this.$route.path; },
@@ -272,7 +292,10 @@ export default {
             });
             return tempArray;
         },
-        getProjectInfos(){ this.table.loading = true; api.getProjectInfos(this.$route.params.projectname).then(response => { this.infos = response.data; this.table.loading = false;}).catch(error => {console.log(error); this.table.loading = false;}); },
+        getProjectInfos(){ this.table.loading = true; api.getProjectInfos(this.$route.params.projectname).then(response => { console.log(response.data); this.infos = response.data; this.table.loading = false;}).catch(error => {console.log(error); this.table.loading = false;}); },
+        getUsers(){ api.getUsers().then( response => {  
+            for(let name of response.data.map(a => a.username)){ this.possiblesUsers.push( {key:name, value:name} ); }
+		}).catch(error => { console.log(error); this.$q.notify({message:`${error}`, color:'negative', position:'bottom'}); }); },
         upload(){
             var form = new FormData();
             this.uploadSample.submitting = true;
@@ -322,6 +345,24 @@ export default {
                 this.resultSearch = response.data;
             }).catch(error => {console.log(error);})
         },
+        addAnnotator(slug){ 
+            let samplename = this.tagContext.samplename;
+            api.addSampleAnnotator(slug.value, this.$route.params.projectname, samplename).then(response => {
+                // for(let [i, sample] of this.infos.samples.entries()){ 
+                //     if(sample.samplename == samplename ){ this.infos.samples[i] = response.data } 
+                // }
+                // // this.tableKey++;
+                // // this.$refs.textsTable.requestServerInteraction(this.table.pagination);
+            }) 
+        },
+        removeAnnotator(slug){ api.removeSampleAnnotator(slug.value, this.$route.params.projectname, this.tagContext.samplename); },
+        addValidator(slug){ api.addSampleValidator(slug.value, this.$route.params.projectname, this.tagContext.samplename).then(response => {console.log(response.data);}) },
+        removeValidator(slug){ api.removeSampleValidator(slug.value, this.$route.params.projectname, this.tagContext.samplename); },
+        addSuperValidator(slug){ api.addSampleSuperValidator(slug.value, this.$route.params.projectname, this.tagContext.samplename); },
+        removeSuperValidator(slug){ api.removeSampleSuperValidator(slug.value, this.$route.params.projectname, this.tagContext.samplename); },
+        addProf(slug){ api.addSampleProf(slug.value, this.$route.params.projectname, this.tagContext.samplename); },
+        removeProf(slug){ api.removeSampleProf(slug.value, this.$route.params.projectname, this.tagContext.samplename); },
+        setTagContext(props){ this.tagContext = props; },
         showNotif (position, alert) {
             const { color, textColor, multiLine, icon, message, avatar, actions } = this.alerts[alert];
             const buttonColor = color ? 'white' : void 0;
@@ -346,6 +387,7 @@ export default {
   /* max height is important */
   .q-table__middle
     max-height 70vh
+    min-height 20vh
 
   .q-table__top,
   .q-table__bottom,
@@ -356,11 +398,12 @@ export default {
     position sticky
     top 0
     opacity 1
-    z-index 1
+    z-index 2
 .my-sticky-header-table-dark
   /* max height is important */
   .q-table__middle
     max-height 70vh
+    min-height 20vh
 
   .q-table__top,
   .q-table__bottom,
@@ -371,5 +414,5 @@ export default {
     position sticky
     top 0
     opacity 1
-    z-index 1
+    z-index 2
 </style>

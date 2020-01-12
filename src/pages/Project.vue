@@ -40,7 +40,7 @@
                                     <q-btn flat color="default"  icon="person_add" :disabled="table.selected.length<1" @click="assignDial = true">
                                         <q-tooltip :delay="300" content-class="text-white bg-primary">Assign</q-tooltip>
                                     </q-btn>
-                                    <q-btn flat  color="default"  icon="cloud_download" :disabled="table.selected.length<1" @click="exportSamplesZip()">
+                                    <q-btn flat  color="default"  icon="cloud_download" :disabled="table.selected.length<1" @click="exportSamplesZip()" :loading="table.exporting">
                                         <q-tooltip :delay="300" content-class="text-white bg-primary">Export</q-tooltip>
                                     </q-btn>
                                     <q-btn v-show="table.selected.length<1" flat color="default"  icon="delete_forever" disabled>
@@ -241,7 +241,8 @@ export default {
                     page: 1,
                     rowsPerPage: 10
                 },
-                loadingDelete: false
+                loadingDelete: false,
+                exporting: false
             },
             uploadSample: {
                 submitting: false,
@@ -287,17 +288,23 @@ export default {
             }
         },
         exportSamplesZip(){
+            this.table.exporting = true;
             var samplenames = [];
             for (const sample of this.table.selected) { samplenames.push(sample.samplename) }
             api.exportSamplesZip(samplenames, this.$route.params.projectname).then( response => {
-                const url = window.URL.createObjectURL(new Blob([response.data]));
+                const url = window.URL.createObjectURL(new Blob([response.data], { type: "application/zip" }));
                 const link = document.createElement('a');
                 link.href = url;
-                link.setAttribute('download', 'dump.zip');
+                link.setAttribute('download', 'dump_'+this.$route.params.projectname+'.zip');
                 document.body.appendChild(link);
                 link.click();
+                document.body.removeChild(link);
+                this.table.exporting = false;
+                this.$q.notify({message:`Files downloaded`});
                 return [];
             }).catch(error => {
+                this.table.exporting = false;
+                this.$q.notify({message:`${error}`, color:'negative'});
                 return [];
             });
         },

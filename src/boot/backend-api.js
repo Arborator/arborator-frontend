@@ -37,7 +37,7 @@ export default {
     },
     exportSamplesZip(samplenames, projectname){
         let data = { 'samples': samplenames };
-        return API.post('projects/'+projectname+'/export/zip', data);
+        return API.post('projects/'+projectname+'/export/zip', data, {responseType: 'arraybuffer'});
     },
     auth(provider){
         // return fetch('http://127.0.0.1:5000/login/'+provider, { mode: 'cors', method: 'GET', 

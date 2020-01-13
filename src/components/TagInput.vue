@@ -192,6 +192,11 @@ export default {
             type: Function,
             default: () => true
         },
+
+        tagContext: {
+            type: Object,
+            default: () => {}
+        }
     },
 
     data() {
@@ -391,9 +396,32 @@ export default {
 
                 // Emit events
                 this.$nextTick(() => {
-                    this.$emit('tag-added', tag);
+                    this.$emit('tag-added', tag, this.$props.tagContext);
                     this.$emit('tags-updated');
                 });
+            }
+        },
+
+        /**
+         * Add/Select a tag. do not trigger event as it is used on init
+         * 
+         * @param tag
+         * @returns void | Boolean
+         */
+        addTagInit(tag) {
+            if (!this.beforeAddingTag(tag)) {
+                return false;
+            }
+
+            // Check if the limit has been reached
+            if (this.limit > 0 && this.tags.length >= this.limit) {
+                this.$emit('limit-reached');
+                return false;
+            }
+
+            // Attach the tag if it hasn't been attached yet
+            if (!this.tagSelected(tag)) {
+                this.tags.push(tag);
             }
         },
 
@@ -425,7 +453,7 @@ export default {
 
             // Emit events
             this.$nextTick(() => {
-                this.$emit('tag-removed', tag);
+                this.$emit('tag-removed', tag, this.$props.tagContext);
                 this.$emit('tags-updated');
 
                 if (this.typeaheadAlwaysShow) {
@@ -571,7 +599,8 @@ export default {
                 this.clearTags();
 
                 for (let tag of tags) {
-                    this.addTag(tag);
+                    // this.addTag(tag);
+                    this.addTagInit(tag);
                 }
             } else {
                 if (this.tags.length == 0) {

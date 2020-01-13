@@ -31,7 +31,7 @@
 				            table-style="max-height:80vh"
                             :rows-per-page-options="[0]"
                             :key="tableKey"
-                            
+                            @request="getProjectInfos"
                             >
 
                             <template v-slot:no-data="props">
@@ -102,20 +102,23 @@
                                     <q-td key="tokens" :props="props">{{ props.row.tokens }}</q-td>
                                     <q-td key="sentenceLength" :props="props">{{ props.row.averageSentenceLength }}</q-td>
                                     <!-- <q-td key="annotators" :props="props">{{ props.row.roles.annotator }}</q-td> -->
-                                    <q-td key="annotators" :props="props">
+                                    <!-- <q-td key="annotators" :props="props">
                                         <tag-input @tag-added="addAnnotator"  @focus="setTagContext(props.row)" :element-id="props.row.samplename + 'annotatortag'" v-model="props.row.roles.annotator" :existing-tags="possiblesUsers" :typeahead="true" typeahead-style="badges" :typeahead-hide-discard="true" placeholder="add user" :only-existing-tags="true" :typeahead-always-show="false"></tag-input>
+                                    </q-td> -->
+                                    <q-td key="annotators" :props="props">
+                                        <tag-input @tag-added="addAnnotator" @tag-removed="removeAnnotator" :tag-context="props.row" :element-id="props.row.samplename + 'annotatortag'" v-model="props.row.roles.annotator" :existing-tags="possiblesUsers" :typeahead="true" typeahead-style="badges" :typeahead-hide-discard="true" placeholder="add user" :only-existing-tags="true" :typeahead-always-show="false" ></tag-input>
                                     </q-td>
                                     <!-- <q-td key="validators" :props="props">{{ props.row.roles.validator }}</q-td> -->
                                     <q-td key="validators" :props="props">
-                                        <tag-input @tag-added="addValidator"  @focus="setTagContext(props.row)" :element-id="props.row.samplename + 'validatortag'" v-model="props.row.roles.validator" :existing-tags="possiblesUsers" :typeahead="true" typeahead-style="badges" :typeahead-hide-discard="true" placeholder="add user" :only-existing-tags="true" :typeahead-always-show="false"></tag-input>
+                                        <tag-input @tag-added="addValidator"  @tag-removed="removeValidator" :tag-context="props.row" :element-id="props.row.samplename + 'validatortag'" v-model="props.row.roles.validator" :existing-tags="possiblesUsers" :typeahead="true" typeahead-style="badges" :typeahead-hide-discard="true" placeholder="add user" :only-existing-tags="true" :typeahead-always-show="false"></tag-input>
                                     </q-td>
                                     <!-- <q-td key="profs" :props="props">{{ props.row.roles.prof }}</q-td> -->
                                     <q-td key="profs" :props="props">
-                                        <tag-input @tag-added="addProf"  @focus="setTagContext(props.row)" :element-id="props.row.samplename + 'proftag'" v-model="props.row.roles.prof" :existing-tags="possiblesUsers" :typeahead="true" typeahead-style="badges" :typeahead-hide-discard="true" placeholder="add user" :only-existing-tags="true" :typeahead-always-show="false"></tag-input>
+                                        <tag-input @tag-added="addProf"  @tag-removed="removeProf" :tag-context="props.row" :element-id="props.row.samplename + 'proftag'" v-model="props.row.roles.prof" :existing-tags="possiblesUsers" :typeahead="true" typeahead-style="badges" :typeahead-hide-discard="true" placeholder="add user" :only-existing-tags="true" :typeahead-always-show="false"></tag-input>
                                     </q-td>
                                     <!-- <q-td key="supervalidators" :props="props">{{ props.row.roles.supervalidator }}</q-td> -->
                                     <q-td key="supervalidators" :props="props">
-                                        <tag-input @tag-added="addSuperValidator"  @focus="setTagContext(props.row)" :element-id="props.row.samplename + 'supervalidatortag'" v-model="props.row.roles.supervalidator" :existing-tags="possiblesUsers" :typeahead="true" typeahead-style="badges" :typeahead-hide-discard="true" placeholder="add user" :only-existing-tags="true" :typeahead-always-show="false"></tag-input>
+                                        <tag-input @tag-added="addSuperValidator"  @tag-removed="removeSuperValidator" :tag-context="props.row" :element-id="props.row.samplename + 'supervalidatortag'" v-model="props.row.roles.supervalidator" :existing-tags="possiblesUsers" :typeahead="true" typeahead-style="badges" :typeahead-hide-discard="true" placeholder="add user" :only-existing-tags="true" :typeahead-always-show="false"></tag-input>
                                     </q-td>
                                     <q-td key="treesFrom" :props="props">
                                         <q-list dense>
@@ -346,24 +349,31 @@ export default {
                 this.resultSearch = response.data;
             }).catch(error => {console.log(error);})
         },
-        addAnnotator(slug){ 
-            let samplename = this.tagContext.samplename;
-            api.addSampleAnnotator(slug.value, this.$route.params.projectname, samplename).then(response => {
-                // for(let [i, sample] of this.infos.samples.entries()){ 
-                //     if(sample.samplename == samplename ){ this.infos.samples[i] = response.data } 
-                // }
-                // // this.tableKey++;
-                // // this.$refs.textsTable.requestServerInteraction(this.table.pagination);
+        /**
+         * Used to update tags and table view based on response
+         * @param response : the response from backend
+         * @param samplename : the sample name to find
+         */
+        updateTags(response, samplename){
+            for(let [i, sample] of this.infos.samples.entries()){ if(sample.samplename == samplename ){ this.infos.samples[i] = response.data; } }
+            this.tableKey++;
+            // this.$refs.textsTable.requestServerInteraction(this.table.pagination);
+        },
+        addAnnotator(slug, context){ 
+            api.addSampleAnnotator(slug.value, this.$route.params.projectname, context.samplename).then(response => { this.updateTags(response, context.samplename); }) 
+        },
+        removeAnnotator(slug, context){ 
+            api.removeSampleAnnotator(slug.value, this.$route.params.projectname, context.samplename).then(response => {
+                console.log(response.data);
+                this.updateTags(response, context.samplename);
             }) 
         },
-        removeAnnotator(slug){ api.removeSampleAnnotator(slug.value, this.$route.params.projectname, this.tagContext.samplename); },
-        addValidator(slug){ api.addSampleValidator(slug.value, this.$route.params.projectname, this.tagContext.samplename).then(response => {console.log(response.data);}) },
-        removeValidator(slug){ api.removeSampleValidator(slug.value, this.$route.params.projectname, this.tagContext.samplename); },
-        addSuperValidator(slug){ api.addSampleSuperValidator(slug.value, this.$route.params.projectname, this.tagContext.samplename); },
-        removeSuperValidator(slug){ api.removeSampleSuperValidator(slug.value, this.$route.params.projectname, this.tagContext.samplename); },
-        addProf(slug){ api.addSampleProf(slug.value, this.$route.params.projectname, this.tagContext.samplename); },
-        removeProf(slug){ api.removeSampleProf(slug.value, this.$route.params.projectname, this.tagContext.samplename); },
-        setTagContext(props){ this.tagContext = props; },
+        addValidator(slug, context){ api.addSampleValidator(slug.value, this.$route.params.projectname, context.samplename).then(response => { this.updateTags(response, context.samplename); }) },
+        removeValidator(slug, context){ api.removeSampleValidator(slug.value, this.$route.params.projectname, context.samplename).then(response => { this.updateTags(response, context.samplename); }) },
+        addSuperValidator(slug, context){ api.addSampleSuperValidator(slug.value, this.$route.params.projectname, context.samplename).then(response => { this.updateTags(response, context.samplename); }) },
+        removeSuperValidator(slug, context){ api.removeSampleSuperValidator(slug.value, this.$route.params.projectname, context.samplename).then(response => { this.updateTags(response, context.samplename); }) },
+        addProf(slug, context){ api.addSampleProf(slug.value, this.$route.params.projectname, context.samplename).then(response => { this.updateTags(response, context.samplename); }) },
+        removeProf(slug, context){ api.removeSampleProf(slug.value, this.$route.params.projectname, context.samplename).then(response => { this.updateTags(response, context.samplename); }) },
         showNotif (position, alert) {
             const { color, textColor, multiLine, icon, message, avatar, actions } = this.alerts[alert];
             const buttonColor = color ? 'white' : void 0;

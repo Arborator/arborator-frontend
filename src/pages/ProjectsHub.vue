@@ -33,18 +33,18 @@
         <q-card-section v-if="!listMode" style="width: 90vw; height:60vh;">
           <q-virtual-scroll v-if="$q.platform.is.mobile" :items="visibleProjects" style="max-height: 60vh; width:80vw"  :virtual-scroll-slice-size="5" :virtual-scroll-item-size="200">
             <template v-slot="{ item, index }">
-              <project-card style="max-width: 80vw" :props="item" :parentDeleteProject="deleteProject" :key="item.id"></project-card>
+              <project-card style="max-width: 80vw" :props="item" :parentDeleteProject="deleteProject" :parentProjectSettings="showProjectSettings" :key="item.id"></project-card>
             </template>
           </q-virtual-scroll>
           <div v-if="!$q.platform.is.mobile" class="q-pa-md row items-start q-gutter-md">
-            <project-card style="max-width: 250px" v-for="project in visibleProjects" :props="project" :parentDeleteProject="deleteProject" :key="project.id"></project-card>
+            <project-card style="max-width: 250px" v-for="project in visibleProjects" :props="project" :parentDeleteProject="deleteProject" :parentProjectSettings="showProjectSettings" :key="project.id"></project-card>
           </div>
         </q-card-section>
         <q-card-section v-if="listMode" style="width: 90vw; height:60vh;">
           <q-list style="width:100%" bordered>
             <q-virtual-scroll :items="visibleProjects" style="max-height: 60vh;width:100%;"  :virtual-scroll-slice-size="5" :virtual-scroll-item-size="200">
               <template v-slot="{ item, index }">
-                <project-item  :props="item" :parentDeleteProject="deleteProject" :key="item.id"></project-item>
+                <project-item  :props="item" :parentDeleteProject="deleteProject" :parentProjectSettings="showProjectSettings" :key="item.id"></project-item>
               </template>
             </q-virtual-scroll>
           </q-list>
@@ -54,6 +54,10 @@
 
     <q-dialog v-model="creaProjectDial" transition-show="fade" transition-hide="fade">
       <crea-project-card :parentGetProjects="getProjects"></crea-project-card>
+    </q-dialog>
+
+    <q-dialog v-model="projectSettingsDial" persistent transition-show="slide-up" transition-hide="slide-down">
+      <project-settings-view :projectname="projectnameTarget" ></project-settings-view>
     </q-dialog>
     
   </q-page>
@@ -76,10 +80,11 @@ import Store from '../store/index';
 import ProjectCard from '../components/ProjectCard.vue';
 import ProjectItem from '../components/ProjectItem.vue';
 import CreaProjectCard from '../components/CreaProjectCard.vue';
+import ProjectSettingsView from '../components/ProjectSettingsView.vue';
 
 export default {
   components: {
-    ProjectCard, ProjectItem, CreaProjectCard
+    ProjectCard, ProjectItem, CreaProjectCard, ProjectSettingsView
   },
   name: 'ProjectHub',
   data() {
@@ -90,7 +95,9 @@ export default {
       hover: false,
       search: '',
       listMode: true,
-      creaProjectDial: false
+      creaProjectDial: false,
+      projectSettingsDial: false,
+      projectnameTarget: ''
     }
   },
   mounted(){
@@ -111,6 +118,10 @@ export default {
     toggleProjectView(){
       this.listMode = !this.listMode;
       this.$ls.set('project_view', this.listMode);
+    },
+    showProjectSettings(projectName){
+      this.projectnameTarget = projectName;
+      this.projectSettingsDial = true;
     },
     deleteProject(projectName){
       api.deleteProject(projectName).then(response => {

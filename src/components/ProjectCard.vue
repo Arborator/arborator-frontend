@@ -3,11 +3,17 @@
       @mouseover="hover = true" @mouseleave="hover = false" @click="goTo()" :style="hover ? 'transform: scale(0.95);' : ''">
         <q-popup-proxy transition-show="flip-up" transition-hide="flip-down" context-menu>
             <q-list>
+                <q-item clickable @click="projectSettings()">
+                    <q-item-section>Settings</q-item-section>
+                    <q-item-section side>
+                        <q-icon name="settings" />
+                    </q-item-section>
+                </q-item>
                 <q-item clickable @click="deleteProject()">
-                <q-item-section>Delete Project</q-item-section>
-                <q-item-section side>
-                    <q-icon name="delete_forever" color="negative"/>
-                </q-item-section>
+                    <q-item-section>Delete Project</q-item-section>
+                    <q-item-section side>
+                        <q-icon name="delete_forever" color="negative"/>
+                    </q-item-section>
                 </q-item>
             </q-list>
         </q-popup-proxy>
@@ -29,7 +35,7 @@
 
 <script>
 export default {
-    props: ['props', 'parentDeleteProject'],
+    props: ['props', 'parentDeleteProject', 'parentProjectSettings'],
     data() {
         return {
             project: this.props,
@@ -62,6 +68,7 @@ export default {
                 }
             }) 
         },
+        projectSettings(){ this.$props.parentProjectSettings(this.project.projectname); },
         deleteProject(){ this.$props.parentDeleteProject(this.project.projectname); }
     }
 }

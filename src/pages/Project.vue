@@ -101,22 +101,15 @@
                                     <q-td key="sentences" :props="props">{{ props.row.sentences }}</q-td>
                                     <q-td key="tokens" :props="props">{{ props.row.tokens }}</q-td>
                                     <q-td key="sentenceLength" :props="props">{{ props.row.averageSentenceLength }}</q-td>
-                                    <!-- <q-td key="annotators" :props="props">{{ props.row.roles.annotator }}</q-td> -->
-                                    <!-- <q-td key="annotators" :props="props">
-                                        <tag-input @tag-added="addAnnotator"  @focus="setTagContext(props.row)" :element-id="props.row.samplename + 'annotatortag'" v-model="props.row.roles.annotator" :existing-tags="possiblesUsers" :typeahead="true" typeahead-style="badges" :typeahead-hide-discard="true" placeholder="add user" :only-existing-tags="true" :typeahead-always-show="false"></tag-input>
-                                    </q-td> -->
                                     <q-td key="annotators" :props="props">
                                         <tag-input @tag-added="addAnnotator" @tag-removed="removeAnnotator" :tag-context="props.row" :element-id="props.row.samplename + 'annotatortag'" v-model="props.row.roles.annotator" :existing-tags="possiblesUsers" :typeahead="true" typeahead-style="badges" :typeahead-hide-discard="true" placeholder="add user" :only-existing-tags="true" :typeahead-always-show="false" ></tag-input>
                                     </q-td>
-                                    <!-- <q-td key="validators" :props="props">{{ props.row.roles.validator }}</q-td> -->
                                     <q-td key="validators" :props="props">
                                         <tag-input @tag-added="addValidator"  @tag-removed="removeValidator" :tag-context="props.row" :element-id="props.row.samplename + 'validatortag'" v-model="props.row.roles.validator" :existing-tags="possiblesUsers" :typeahead="true" typeahead-style="badges" :typeahead-hide-discard="true" placeholder="add user" :only-existing-tags="true" :typeahead-always-show="false"></tag-input>
                                     </q-td>
-                                    <!-- <q-td key="profs" :props="props">{{ props.row.roles.prof }}</q-td> -->
                                     <q-td key="profs" :props="props">
                                         <tag-input @tag-added="addProf"  @tag-removed="removeProf" :tag-context="props.row" :element-id="props.row.samplename + 'proftag'" v-model="props.row.roles.prof" :existing-tags="possiblesUsers" :typeahead="true" typeahead-style="badges" :typeahead-hide-discard="true" placeholder="add user" :only-existing-tags="true" :typeahead-always-show="false"></tag-input>
                                     </q-td>
-                                    <!-- <q-td key="supervalidators" :props="props">{{ props.row.roles.supervalidator }}</q-td> -->
                                     <q-td key="supervalidators" :props="props">
                                         <tag-input @tag-added="addSuperValidator"  @tag-removed="removeSuperValidator" :tag-context="props.row" :element-id="props.row.samplename + 'supervalidatortag'" v-model="props.row.roles.supervalidator" :existing-tags="possiblesUsers" :typeahead="true" typeahead-style="badges" :typeahead-hide-discard="true" placeholder="add user" :only-existing-tags="true" :typeahead-always-show="false"></tag-input>
                                     </q-td>

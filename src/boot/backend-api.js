@@ -23,6 +23,9 @@ export default {
     getProjectInfos(name){
         return API.get('projects/'+name);
     },
+    getProjectSettings(name){
+        return API.get('projects/'+name+'/settings/infos');
+    },
     getSampleContent(projectname, samplename){
         return API.get('projects/'+projectname+'/sample/'+samplename);
     },

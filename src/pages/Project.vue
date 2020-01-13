@@ -103,19 +103,19 @@
                                     <q-td key="sentenceLength" :props="props">{{ props.row.averageSentenceLength }}</q-td>
                                     <!-- <q-td key="annotators" :props="props">{{ props.row.roles.annotator }}</q-td> -->
                                     <q-td key="annotators" :props="props">
-                                        <tags-input @tag-added="addAnnotator"  @focus="setTagContext(props.row)" :element-id="props.row.samplename + 'annotatortag'" v-model="props.row.roles.annotator" :existing-tags="possiblesUsers" :typeahead="true" typeahead-style="badges" :typeahead-hide-discard="true" placeholder="add user" :only-existing-tags="true" :typeahead-always-show="false"></tags-input>
+                                        <tag-input @tag-added="addAnnotator"  @focus="setTagContext(props.row)" :element-id="props.row.samplename + 'annotatortag'" v-model="props.row.roles.annotator" :existing-tags="possiblesUsers" :typeahead="true" typeahead-style="badges" :typeahead-hide-discard="true" placeholder="add user" :only-existing-tags="true" :typeahead-always-show="false"></tag-input>
                                     </q-td>
                                     <!-- <q-td key="validators" :props="props">{{ props.row.roles.validator }}</q-td> -->
                                     <q-td key="validators" :props="props">
-                                        <tags-input @tag-added="addValidator"  @focus="setTagContext(props.row)" :element-id="props.row.samplename + 'validatortag'" v-model="props.row.roles.validator" :existing-tags="possiblesUsers" :typeahead="true" typeahead-style="badges" :typeahead-hide-discard="true" placeholder="add user" :only-existing-tags="true" :typeahead-always-show="false"></tags-input>
+                                        <tag-input @tag-added="addValidator"  @focus="setTagContext(props.row)" :element-id="props.row.samplename + 'validatortag'" v-model="props.row.roles.validator" :existing-tags="possiblesUsers" :typeahead="true" typeahead-style="badges" :typeahead-hide-discard="true" placeholder="add user" :only-existing-tags="true" :typeahead-always-show="false"></tag-input>
                                     </q-td>
                                     <!-- <q-td key="profs" :props="props">{{ props.row.roles.prof }}</q-td> -->
                                     <q-td key="profs" :props="props">
-                                        <tags-input @tag-added="addProf"  @focus="setTagContext(props.row)" :element-id="props.row.samplename + 'proftag'" v-model="props.row.roles.prof" :existing-tags="possiblesUsers" :typeahead="true" typeahead-style="badges" :typeahead-hide-discard="true" placeholder="add user" :only-existing-tags="true" :typeahead-always-show="false"></tags-input>
+                                        <tag-input @tag-added="addProf"  @focus="setTagContext(props.row)" :element-id="props.row.samplename + 'proftag'" v-model="props.row.roles.prof" :existing-tags="possiblesUsers" :typeahead="true" typeahead-style="badges" :typeahead-hide-discard="true" placeholder="add user" :only-existing-tags="true" :typeahead-always-show="false"></tag-input>
                                     </q-td>
                                     <!-- <q-td key="supervalidators" :props="props">{{ props.row.roles.supervalidator }}</q-td> -->
                                     <q-td key="supervalidators" :props="props">
-                                        <tags-input @tag-added="addSuperValidator"  @focus="setTagContext(props.row)" :element-id="props.row.samplename + 'supervalidatortag'" v-model="props.row.roles.supervalidator" :existing-tags="possiblesUsers" :typeahead="true" typeahead-style="badges" :typeahead-hide-discard="true" placeholder="add user" :only-existing-tags="true" :typeahead-always-show="false"></tags-input>
+                                        <tag-input @tag-added="addSuperValidator"  @focus="setTagContext(props.row)" :element-id="props.row.samplename + 'supervalidatortag'" v-model="props.row.roles.supervalidator" :existing-tags="possiblesUsers" :typeahead="true" typeahead-style="badges" :typeahead-hide-discard="true" placeholder="add user" :only-existing-tags="true" :typeahead-always-show="false"></tag-input>
                                     </q-td>
                                     <q-td key="treesFrom" :props="props">
                                         <q-list dense>
@@ -200,10 +200,11 @@ import GrewRequestCard from '../components/GrewRequestCard';
 import ResultView from '../components/ResultView';
 import RelationTable from '../components/RelationTable';
 import UserTable from '../components/UserTable';
+import TagInput from '../components/TagInput';
 
 export default {
     components: {
-        GrewRequestCard, ResultView, RelationTable, UserTable
+        GrewRequestCard, ResultView, RelationTable, UserTable, TagInput
     },
     data(){
         return {

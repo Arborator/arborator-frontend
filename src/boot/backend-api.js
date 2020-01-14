@@ -4,12 +4,12 @@ import VueCookies from 'vue-cookies';
 VueCookies.config('7d');
 
 const API = axios.create({
-    baseURL: `https://arborapi.ilpga.fr:443/api`,
+    baseURL: `/api`,
     timeout: 50000
 });
 
 const AUTH = axios.create({
-    baseURL: `https://arborapi.ilpga.fr:443/login`,
+    baseURL: `/login`,
     timeout: 5000
 });
 

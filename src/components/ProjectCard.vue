@@ -17,7 +17,7 @@
                 </q-item>
             </q-list>
         </q-popup-proxy>
-        <q-img :src="imageEmpty?'https://picsum.photos/200/100':imageCleaned" basic >
+        <q-img :ratio="16/9" :src="imageEmpty?'../statics/project.jpg':imageCleaned" basic >
             <div class="absolute-bottom text-h6">
                 <q-icon v-show="project.is_private" name="lock" color="negative" size="lg"></q-icon>
                 <q-icon v-show="!project.is_private" name="public" color="positive" size="lg"></q-icon>

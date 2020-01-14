@@ -56,8 +56,8 @@
       <crea-project-card :parentGetProjects="getProjects"></crea-project-card>
     </q-dialog>
 
-    <q-dialog v-model="projectSettingsDial" persistent transition-show="slide-up" transition-hide="slide-down">
-      <project-settings-view :projectname="projectnameTarget" ></project-settings-view>
+    <q-dialog v-model="projectSettingsDial" persistent transition-show="slide-up" transition-hide="slide-down" >
+      <project-settings-view :projectname="projectnameTarget" style="width:90vw"></project-settings-view>
     </q-dialog>
     
   </q-page>

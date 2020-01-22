@@ -21,11 +21,11 @@
 
 // xWordDistance = 20;
 yWordDistance = 20;
-
+leveldistance = 33; // to be overrulled by the css definition
 // global variables:
 fontSize = 0; // computed from css value for .token in arborator-draft.css
 lemmaHeight = 0;
-maxLevelDistance = 33; // the maximum distance between one dependency relation and the next higher one
+// maxLevelDistance = 33; // the maximum distance between one dependency relation and the next higher one
 posHeight = 0;
 svgDefaultHeight = 500;
 svgHeight = 0;
@@ -153,7 +153,6 @@ function refresh(idSVG, content) {
 		var treedata = conllNodesToTree(singleConll)
 		console.log("refresh function",this);
 		drawsnap(idSVG, treedata, usermatches, shownfeatures)
-		
 		}
 	return;
 }
@@ -180,24 +179,20 @@ function level(i,gi,tree, idgov2level) {
 
 
 function dragging(dx, dy, posX, posY, event){
-	// log("onmove",posX, posY,this,dx, dy, posX, posY, event,"translate("+posX+","+posY+")")
+	// log("onmove",dx, dy, posX, posY,this, event,"translate("+posX+","+posY+")")
 	this.transform("translate("+(dx-15)+","+(dy-30)+")").attr({"class":"gloss"});
 	x=this.midx;
 	y=this.topy;
 	var path = "M"+x+","+y+" C"+x+","+(y-Math.abs(dx)/2)+" "+(x+dx)+","+(y-Math.abs(dx)/2)+" "+(x+dx)+","+(y+dy);
 	dragcurve.attr({d:path});
 	dragarrowhead.transform("translate("+dx+","+dy+")")
-	// log(dragsun)
-	if (y+dy<100) {if (dragsun==null) dragsun = this.paper.root.circle(x,0,svgHeight/4).attr("class", "dragcurve")}
+	if (y+dy<leveldistance/2 && Math.abs(dx)<leveldistance/2) {if (dragsun==null) dragsun = this.paper.root.circle(x,0,leveldistance/2).attr("class", "dragcurve")}
 	else {if(dragsun!=null) {dragsun.remove();dragsun=null}}
 }
 
 var startdrag = function(xx,yy,e) {
 	// this.data('origTransform', this.transform().local );
 	dragrepl = this.clone();
-	// log(777,this.paper.root.treedata);
-	
-	// log(888, rel)
 	dragrepl.attr({class:"draggov"});
 	this.attr({cursor: "move"})
 
@@ -254,15 +249,13 @@ var stopdrag = function(e) {
 	{
 		nr = this.nr;
 		if (dragsun) {dragover = nr; nr=0; }
-		
 		oldRelation = Object.values(this.paper.root.treedata.tree[dragover]['gov'])[0]		
-
 		// relationChanged(this.paper, nr, dragover, oldRelation )
 		this.paper.root.treedata.triggerRelationChange(this.paper, this, nr, dragover, oldRelation);
 		
 		// $('#conllarea').text(	);
 	}
-	if(dragsun!=null) {dragsun.remove();dragsun=null}
+	if(dragsun!=null) {dragsun.remove(); dragsun=null}
 	dragover=-1;
 }
 
@@ -277,9 +270,9 @@ var categoryclick = function(e) {
 var relationclick = function(e) {
 	// relationChanged(this.paper, this.nr, this.govid, this.relation+"kim" )
 	this.attr({class:"deprelselected"})
-	// this.paper.root.treedata.triggerRelationChange(this.paper, this, this.nr, this.govid, this.relation); 
+	this.paper.root.treedata.triggerRelationChange(this.paper, this, this.govid, this.nr, this.relation); 
 	
-	// log("relationclick",e,this)
+	log("relationclick",e,this)
 }
 
 function relationChanged(s, depid, govid, relation ) {  // todo: maybe include adding of secondary governor!!!
@@ -314,7 +307,7 @@ function drawsnap(idSVG, treedata, usermatches, shownfeatures) {
 	var textstarty = 10; // has to be bigger than arborator-draft.css deprel fontsize
 	var runningy = textstarty;
 	var s=Snap(document.getElementById(idSVG));
-	var leveldistance = parseInt(getComputedStyle(s.parent().node).getPropertyValue('--depLevelHeight'));
+	leveldistance = parseInt(getComputedStyle(s.parent().node).getPropertyValue('--depLevelHeight'));
 	var idgov2level = {};
 	var levels = [];
 	s.treedata = treedata;
@@ -335,10 +328,11 @@ function drawsnap(idSVG, treedata, usermatches, shownfeatures) {
 			sword.nr = nr;
 			stexts.push(sword);
 			if (feati==0) { // tokens
-				sword.attr({cursor: "move", cursor: "grab"}).drag( dragging, startdrag, stopdrag); // dragging only the first line (normally the tokens)
+				sword.attr({cursor: "move", cursor: "grab"}).drag(dragging, startdrag, stopdrag); // dragging only the first line (normally the tokens)
 				droppables.push(sword);
 				for (var govid in tree[nr]["gov"]) { // computation of tree depth. for each governor...
 					if (tree[govid]) levels.push(level(nr, govid, tree, idgov2level));
+					else levels.push(2); // minimum height 2 for root relations
 				}
 			}
 			if (shofea == catFeatureName) { // categories
@@ -365,7 +359,7 @@ function drawsnap(idSVG, treedata, usermatches, shownfeatures) {
 	var firstTextFontSize = parseInt(getComputedStyle(allstexts[shownfeatures[0]][0].node).getPropertyValue('font-size'));
 
 	// readjusting the position of texts
-	for (let shofea of shownfeatures) { 
+	for (let shofea of shownfeatures) {
 		var ind = 0;
 		for (var nr in tree) {
 			var xmidpoint = xpositions[ind]+(xpositions[ind+1]-xpositions[ind])/2;

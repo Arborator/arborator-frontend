@@ -119,13 +119,16 @@ export default {
           // console.log('conll', this.draft.getConll(this.snapInfos.s));
           // console.log(this.snapInfos.s.treedata);
           if(this.snapInfos.s != null){
-            this.$emit('update-conll', {'draft': this.draft, 'svgid': this.id, 'dirty': dirty, 'redo': redo, 
-            'conll': this.draft.getConll(this.snapInfos.s), 'user': this.user}); //emits to parent the id of the tree and a bunch of other stuff
+            this.$emit('update-conll', {'draft': this.draft, 'svgid': this.id, 
+            'dirty': dirty, 
+            'redo': redo, 
+            'conll': this.draft.getConll(this.snapInfos.s), 
+            'user': this.user}); //emits to parent the id of the tree and a bunch of other stuff
           }
           },
         start(conllStr, matches, id){
             // document.getElementById(id) the 
-            console.log('start matches', matches)
+            // console.log('start matches', matches)
             if (this.user in matches) var usermatch = matches[this.user];
             else var usermatch = {'nodes':[],'edges':[]};
             var svg = this.draft.getSvg(conllStr, usermatch, id); // here is the conllstr
@@ -169,7 +172,7 @@ export default {
               lasti=i;
             }
           listRel.push(relation.substring(lasti)); 
-          console.log("here", depid, govid, relation);
+          // console.log("here", depid, govid, relation);
           this.snapInfos = {s:s, snaprelation:snaprelation, depid:depid, govid:govid, relation:relation, relations: listRel};
           this.infos.relation = listRel;
           this.relDialog = !this.relDialog;

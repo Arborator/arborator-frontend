@@ -106,7 +106,7 @@ ArboratorDraft.prototype.getSvg = function(strConll, usermatches, id){
 }
 
 ArboratorDraft.prototype.getTree = function(strConll){
-	log('getTree conll', strConll)
+	// log('getTree conll', strConll)
 	// log( conllNodesToTree(strConll));
 	return conllNodesToTree(strConll.trim());
 }
@@ -272,7 +272,7 @@ var relationclick = function(e) {
 	this.attr({class:"deprelselected"})
 	this.paper.root.treedata.triggerRelationChange(this.paper, this, this.govid, this.nr, this.relation); 
 	
-	log("relationclick",e,this)
+	// log("relationclick",e,this)
 }
 
 function relationChanged(s, depid, govid, relation ) {  // todo: maybe include adding of secondary governor!!!
@@ -303,7 +303,7 @@ function drawsnap(idSVG, treedata, usermatches, shownfeatures) {
 	// shownfeatures todo!!!
 	///////////////////////////////////
 	var textgraphdistance = 10;
-	log(999,usermatches)
+	// log(999,usermatches)
 	var textstarty = 10; // has to be bigger than arborator-draft.css deprel fontsize
 	var runningy = textstarty;
 	var s=Snap(document.getElementById(idSVG));
@@ -426,8 +426,7 @@ function arrowhead(x,y) {
 
 function treeDataToConll(treedata)
 {
-	// log(treedata.uextra[0])
-	conllstrs=treedata.uextra[0]
+	conllstrs=treedata.uextra[0].slice();
 	// conllstrs=[];
 	for (let nr in treedata.tree){
 
@@ -481,7 +480,7 @@ function conllNodesToTree(treeline) {
 	if(reverseMode) nodes.reverse();
 	// nodes = nodes.reverse();
 	var tree={};
-	var uextra={};
+	var uextra={}; // node position to comments starting with #. normally only uextra[0] is relevant
 	var lastid=0;
 	var skipuntil=0;
 	var words=[]
@@ -542,15 +541,15 @@ function conllNodesToTree(treeline) {
 						}
 					}
 				}
-				else if (tokids.length == 2){
+				else if (tokids.length == 2){ // n-m type multi-word encoding
 					skipuntil = parseInt(tokids[1])
 					words.push(elements[conlls[el]["t"]]);
 					if (!(lastid in uextra)) uextra[lastid]=[];
-					uextra[lastid].push(nodeline)
+					uextra[lastid].push(nodeline);
 				}
 				else {
 					if (!(lastid in uextra)) uextra[lastid]=[];
-					uextra[lastid].push(nodeline)
+					uextra[lastid].push(nodeline);
 				}
 			}
 			gov = elements[conlls[el]["gov"]];

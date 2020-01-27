@@ -79,15 +79,19 @@ export default {
         //     }).catch(error => {console.log(error); this.showNotif('top', 'saveFail');});
         // }
         save() {
-            // console.log("before", this.lastModified.conll);
+            
             var timestamp = Date.now();
-            this.lastModified.conll = this.lastModified.conll.replace(/# timestamp = \d+\.\d+\n/, "# timestamp = "+timestamp+"\n");
+            console.log("timestamp", timestamp);
             this.lastModified.conll = this.lastModified.conll.replace(/# user_id = .+\n/, "# user_id = "+this.$store.getters.getUserInfos.username+"\n");
-            // console.log("after", this.lastModified.conll);
+            this.lastModified.conll = this.lastModified.conll.replace(/# timestamp = \d+(\.\d*)?\n/, "# timestamp = "+timestamp+"\n");
+            console.log("after", this.lastModified.conll);
             var data={"trees":[{"sent_id":this.sentenceId, "conll":this.lastModified.conll}], "user_id":this.$store.getters.getUserInfos.username};
+            // console.log("data", data);
             api.saveTrees(this.$route.params.projectname, this.$props.sample.samplename, data).then(response => {
                 if(response.status == 200){
                     this.lastModified.dirty = false;
+                    console.log("status", this.lastModified.dirty);
+                    console.log("user", this.$store.getters.getUserInfos.username);
                     this.showNotif('top', 'saveSuccess');
                     this.sampleData.conlls[this.$store.getters.getUserInfos.username] = this.lastModified.conll; this.$forceUpdate();
                     this.tab = this.$store.getters.getUserInfos.username;
@@ -95,6 +99,7 @@ export default {
             }).catch(error => {console.log(error); this.showNotif('top', 'saveFail');});
         },
         onConllGraphUpdate(payload) {
+            console.log("payload", payload);
             this.lastModified = payload;
         },
       

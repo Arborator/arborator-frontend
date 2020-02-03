@@ -1,5 +1,5 @@
 <template>
-	<q-card :class="$q.dark.isActive?'':'bg-blue-grey-1 text-black'" style="width: 100vw;">
+	<q-card :class="$q.dark.isActive?'':'bg-blue-grey-1 text-black'" class="full">
 		<q-bar class="bg-primary text-white">
 			<q-space />
 			<div class="text-weight-bold">Settings</div>
@@ -28,24 +28,26 @@
 		<q-card-section class="q-pa-md row items-start q-gutter-md">
 			<q-card>
 				<q-card-section>
-					<div class="text-h6">Admins</div>
+					<div class="text-h6">Admins <q-btn flat round icon="add" color="primary" @click="addAdminDial = true"></q-btn></div>
 				</q-card-section>
 				<q-card-section>
 					<q-list bordered separator>
-						<q-item v-for="admin in infos.admins" :key="admin" clickable v-ripple>
+						<q-item v-for="admin in infos.admins" :key="admin" clickable v-ripple @click="removeAdmin(admin)">
 							<q-item-section>{{admin}}</q-item-section>
+							<q-item-section side><q-btn dense round flat icon="remove" color="negative" @click="removeAdmin(admin)"></q-btn></q-item-section>
 						</q-item>
 					</q-list>
 				</q-card-section>
 			</q-card>
 			<q-card>
 				<q-card-section>
-					<div class="text-h6">Guests</div>
+					<div class="text-h6">Guests <q-btn flat round icon="add" color="primary" @click="addGuestDial = true"></q-btn></div>
 				</q-card-section>
 				<q-card-section>
 					<q-list bordered separator>
-						<q-item v-for="guest in infos.guests" :key="guest" clickable v-ripple>
+						<q-item v-for="guest in infos.guests" :key="guest" clickable v-ripple @click="removeGuest(guest)">
 							<q-item-section>{{guest}}</q-item-section>
+							<q-item-section side><q-btn dense flat icon="remove" color="negative" @click="removeGuest(guest)"></q-btn></q-item-section>
 						</q-item>
 					</q-list>
 				</q-card-section>
@@ -54,6 +56,8 @@
 		<q-card-section>
 			<codemirror v-model="config" :options="cmOption"></codemirror>
 		</q-card-section>
+		<q-dialog v-model="addAdminDial" transition-show="fade" transition-hide="fade">  <user-select-table :parentCallback="addAdmin"></user-select-table>   </q-dialog>
+		<q-dialog v-model="addGuestDial" transition-show="fade" transition-hide="fade">  <user-select-table :parentCallback="addGuest"></user-select-table>   </q-dialog>
 	</q-card>
 </template>
 
@@ -63,11 +67,14 @@ import 'codemirror/mode/python/python.js';
 import 'codemirror/lib/codemirror.css';
 import 'codemirror/theme/material-darker.css';
 import api from '../boot/backend-api.js';
+import UserSelectTable from '../components/UserSelectTable.vue';
 export default {
-	components: { codemirror },
+	components: { codemirror, UserSelectTable },
 	props: ['projectname'],
 	data(){
 		return{
+			addAdminDial: false,
+			addGuestDial: false,
 			infos: {},
 			config: `[configuration]
 url			=	http://arborator.ilpga.fr/   # don't forget the trailing slash!
@@ -193,8 +200,23 @@ attris = {"t":		{"font": '18px "Arial"', "text-anchor":'start',"fill": '#000',"c
     },
 	methods:{
 		getProjectInfos(){
-			api.getProjectSettings(this.$props.projectname).then(response => {this.infos = response.data;}).catch(error => {console.log(error); this.$q.notify({message: `${error}`, color:'negative', position: 'bottom'});})
-		}
+			api.getProjectSettings(this.$props.projectname).then(response => {console.log(JSON.stringify(response.data));this.infos = response.data;}).catch(error => {console.log(error); this.$q.notify({message: `${error}`, color:'negative', position: 'bottom'});})
+		},
+		addAdmin(selected){
+			api.setProjectUserRole(this.$props.projectname, 'admin', selected[0].id).then(response => {this.infos = response.data}).catch(error => {console.log(error);});
+		},
+		removeAdmin(userid){ 
+			api.removeProjectUserRole(this.$props.projectname, 'admin', userid).then( response => { this.infos = response.data;} ).catch(error => {console.log(error);});
+		},
+		addGuest(selected){ api.setProjectUserRole(this.$props.projectname, 'guest', selected[0].id).then(response=> {this.infos = response.data;}).catch(error => {console.log(error);});  },
+		removeGuest(userid){ api.removeProjectUserRole(this.$props.projectname, 'guest', userid).then( response => { this.infos = response.data;} ).catch(error => {console.log(error);});  }
 	}
 }
 </script>
+
+<style scoped>
+.full {
+	width: 90vw;
+	min-width: 90vw;
+}
+</style>

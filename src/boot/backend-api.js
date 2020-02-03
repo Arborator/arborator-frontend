@@ -26,6 +26,14 @@ export default {
     getProjectSettings(name){
         return API.get('projects/'+name+'/settings/infos');
     },
+    setProjectUserRole(projectname, targetrole, userid){
+        let data = {'user_id':userid};
+        return API.post('projects/'+projectname+'/'+targetrole+'/add', data);
+    },
+    removeProjectUserRole(projectname, targetrole, userid){
+        let data = {'user_id':userid};
+        return API.post('projects/'+projectname+'/'+targetrole+'/remove', data);
+    },
     getSampleContent(projectname, samplename){
         return API.get('projects/'+projectname+'/sample/'+samplename);
     },

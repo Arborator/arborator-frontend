@@ -1,5 +1,5 @@
 <template>
-    <q-card :class="(hover ? 'shadow-12' : '')" class="clickable my-card grid-style-transition shadow-2 "
+    <q-card v-show="visible" :class="(hover ? 'shadow-12' : '')" class="clickable my-card grid-style-transition shadow-2 "
       @mouseover="hover = true" @mouseleave="hover = false" @click="goTo()" :style="hover ? 'transform: scale(0.95);' : ''">
         <q-popup-proxy transition-show="flip-up" transition-hide="flip-down" context-menu>
             <q-list>
@@ -56,7 +56,15 @@ export default {
             clean = clean.replace(/^'/g,'');
             clean = clean.replace(/'$/g,'');
             return 'data:image/png;base64, '+clean;
-        }        
+        },
+        visible(){
+            if(!this.project.is_private){ return true; }
+            else{
+                if(this.project.admins.includes(this.$store.getters.getUserInfos.id)){ return true; }
+                else if(this.project.guests.includes(this.$store.getters.getUserInfos.id)){ return true; }
+                else { return false; }
+            }
+        }      
     },
     methods: {
         goTo(){

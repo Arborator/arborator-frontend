@@ -162,15 +162,15 @@ export default {
             public: false,
             to: '/settings',
             bottom: true
-          },
-          {
-            icon: 'vpn_key',
-            label: 'Admin',
-            separator: false,
-            public: false,
-            to: '/adminpanel',
-            bottom: false
           }
+          // {
+          //   icon: 'vpn_key',
+          //   label: 'Admin',
+          //   separator: false,
+          //   public: false,
+          //   to: '/adminpanel',
+          //   bottom: false
+          // }
         ]
     }
   },

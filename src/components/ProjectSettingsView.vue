@@ -8,9 +8,8 @@
 				<q-tooltip content-class="bg-white text-primary">Close</q-tooltip>
 			</q-btn>
 		</q-bar>
-		<q-card-section>
-			<!-- <div class="text-h6">{{infos.name}}</div> -->
-			<q-banner rounded >
+		<q-card-section class="q-pa-md row q-gutter-md">
+			<q-banner rounded class="col-md-4 offset-md-4">
 					<q-img :ratio="16/9" :src="imageEmpty?'../statics/project.jpg':imageCleaned" basic >
 						<div class="absolute-bottom text-h6">
 							<q-icon v-show="infos.is_private" name="lock" color="negative" size="lg"></q-icon>
@@ -20,13 +19,13 @@
 					</q-img>
 
 				<template v-slot:action>
-					<q-btn flat label="Change Image" />
-					<q-btn flat label="Change Name" />
+					<!-- <q-btn flat label="Change Image" />
+					<q-btn flat label="Change Name" /> -->
 				</template>
 			</q-banner>
 		</q-card-section>
 		<q-card-section class="q-pa-md row items-start q-gutter-md">
-			<q-card>
+			<q-card class="col">
 				<q-card-section>
 					<div class="text-h6">Admins <q-btn flat round icon="add" color="primary" @click="addAdminDial = true"></q-btn></div>
 				</q-card-section>
@@ -39,7 +38,7 @@
 					</q-list>
 				</q-card-section>
 			</q-card>
-			<q-card>
+			<q-card class="col">
 				<q-card-section>
 					<div class="text-h6">Guests <q-btn flat round icon="add" color="primary" @click="addGuestDial = true"></q-btn></div>
 				</q-card-section>
@@ -47,7 +46,7 @@
 					<q-list bordered separator>
 						<q-item v-for="guest in infos.guests" :key="guest" clickable v-ripple @click="removeGuest(guest)">
 							<q-item-section>{{guest}}</q-item-section>
-							<q-item-section side><q-btn dense flat icon="remove" color="negative" @click="removeGuest(guest)"></q-btn></q-item-section>
+							<q-item-section side><q-btn dense round flat icon="remove" color="negative" @click="removeGuest(guest)"></q-btn></q-item-section>
 						</q-item>
 					</q-list>
 				</q-card-section>
@@ -200,7 +199,7 @@ attris = {"t":		{"font": '18px "Arial"', "text-anchor":'start',"fill": '#000',"c
     },
 	methods:{
 		getProjectInfos(){
-			api.getProjectSettings(this.$props.projectname).then(response => {console.log(JSON.stringify(response.data));this.infos = response.data;}).catch(error => {console.log(error); this.$q.notify({message: `${error}`, color:'negative', position: 'bottom'});})
+			api.getProjectSettings(this.$props.projectname).then(response => {this.infos = response.data;}).catch(error => {console.log(error); this.$q.notify({message: `${error}`, color:'negative', position: 'bottom'});})
 		},
 		addAdmin(selected){
 			api.setProjectUserRole(this.$props.projectname, 'admin', selected[0].id).then(response => {this.infos = response.data}).catch(error => {console.log(error);});

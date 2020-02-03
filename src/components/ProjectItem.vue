@@ -1,5 +1,5 @@
 <template>
-    <q-item clickable @click="goTo()" >
+    <q-item v-show="visible" clickable @click="goTo()" >
         <q-popup-proxy transition-show="flip-up" transition-hide="flip-down" context-menu>
             <q-list>
                 <q-item clickable @click="projectSettings()">
@@ -56,6 +56,14 @@ export default {
             clean = clean.replace(/^'/g,'');
             clean = clean.replace(/'$/g,'');
             return 'data:image/png;base64, '+clean;
+        },
+        visible(){
+            if(!this.project.is_private){ return true; }
+            else{
+                if(this.project.admins.includes(this.$store.getters.getUserInfos.id)){ return true; }
+                else if(this.project.guests.includes(this.$store.getters.getUserInfos.id)){ return true; }
+                else { return false; }
+            }
         }        
     },
     methods: {

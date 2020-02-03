@@ -106,7 +106,7 @@ export default {
   },
   methods:{
     openURL,
-    getProjects(){ console.log('getProjects hub'); api.getProjects().then(response => { this.projects = response.data; this.visibleProjects = response.data;}).catch(error => { console.log(error); }); },
+    getProjects(){ console.log('getProjects hub'); api.getProjects().then(response => { console.log(response.data); this.projects = response.data; this.visibleProjects = response.data;}).catch(error => { console.log(error); }); },
     searchProject(pattern) {
       var filteredProjects =  this.projects.filter(function(project) {
         if(project.projectname.includes(pattern)){

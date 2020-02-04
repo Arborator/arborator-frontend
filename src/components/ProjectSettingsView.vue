@@ -199,16 +199,16 @@ attris = {"t":		{"font": '18px "Arial"', "text-anchor":'start',"fill": '#000',"c
     },
 	methods:{
 		getProjectInfos(){
-			api.getProjectSettings(this.$props.projectname).then(response => {this.infos = response.data;}).catch(error => {console.log(error); this.$q.notify({message: `${error}`, color:'negative', position: 'bottom'});})
+			api.getProjectSettings(this.$props.projectname).then(response => {this.infos = response.data;}).catch(error => {this.$store.dispatch("notifyError", {error: error}); this.$q.notify({message: `${error}`, color:'negative', position: 'bottom'});})
 		},
 		addAdmin(selected){
-			api.setProjectUserRole(this.$props.projectname, 'admin', selected[0].id).then(response => {this.infos = response.data}).catch(error => {console.log(error);});
+			api.setProjectUserRole(this.$props.projectname, 'admin', selected[0].id).then(response => {this.infos = response.data}).catch(error => {this.$store.dispatch("notifyError", {error: error})});
 		},
 		removeAdmin(userid){ 
-			api.removeProjectUserRole(this.$props.projectname, 'admin', userid).then( response => { this.infos = response.data;} ).catch(error => {console.log(error);});
+			api.removeProjectUserRole(this.$props.projectname, 'admin', userid).then( response => { this.infos = response.data;} ).catch(error => {this.$store.dispatch("notifyError", {error: error})});
 		},
-		addGuest(selected){ api.setProjectUserRole(this.$props.projectname, 'guest', selected[0].id).then(response=> {this.infos = response.data;}).catch(error => {console.log(error);});  },
-		removeGuest(userid){ api.removeProjectUserRole(this.$props.projectname, 'guest', userid).then( response => { this.infos = response.data;} ).catch(error => {console.log(error);});  }
+		addGuest(selected){ api.setProjectUserRole(this.$props.projectname, 'guest', selected[0].id).then(response=> {this.infos = response.data;}).catch(error => {this.$store.dispatch("notifyError", {error: error})});  },
+		removeGuest(userid){ api.removeProjectUserRole(this.$props.projectname, 'guest', userid).then( response => { this.infos = response.data;} ).catch(error => {this.$store.dispatch("notifyError", {error: error})});  }
 	}
 }
 </script>

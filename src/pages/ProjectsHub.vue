@@ -106,7 +106,7 @@ export default {
   },
   methods:{
     openURL,
-    getProjects(){ console.log('getProjects hub'); api.getProjects().then(response => { console.log(response.data); this.projects = response.data; this.visibleProjects = response.data;}).catch(error => { console.log(error); }); },
+    getProjects(){ api.getProjects().then(response => { this.projects = response.data; this.visibleProjects = response.data;}).catch(error => { this.$store.dispatch("notifyError", {error: error}); }); },
     searchProject(pattern) {
       var filteredProjects =  this.projects.filter(function(project) {
         if(project.projectname.includes(pattern)){
@@ -126,7 +126,7 @@ export default {
     deleteProject(projectName){
       api.deleteProject(projectName).then(response => {
         this.$q.notify({message:`Project ${projectName} deleted`}); this.getProjects();
-      }).catch(error => {console.log(error); this.$q.notify({message: `${error}`,color: 'negative', position:'bottom'}); });
+      }).catch(error => {this.$store.dispatch("notifyError", {error: error}); });
     }
   }
 }

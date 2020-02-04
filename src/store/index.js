@@ -8,6 +8,8 @@ import VueCookies from 'vue-cookies';
 VueCookies.config('7d');
 Vue.use(VueCookies);
 
+import { Notify } from 'quasar'
+
 
 export default new Vuex.Store({
     state: {
@@ -99,6 +101,14 @@ export default new Vuex.Store({
         },
         updateUser({commit}, {user}) {
             commit('update_user', { user: user });
+        },
+        notifyError({commit}, {error}){
+            console.log(error.response.statusText, error.response.status);
+            var msg;
+            if(error.response.status == 403){ msg = `You do not have the permissions for this action. Please contact the administrator.`;  }
+            else if(error.response.status == 401){ msg == `Please log in to do any further action.`;}
+            else { msg = error.response.statusText + ' error ' + error.response.status; }
+            Notify.create({message: msg, position: 'top-right', color: 'negative'});
         }
 
     },

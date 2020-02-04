@@ -71,13 +71,13 @@ export default {
             this.loading = true;
             api.getSampleContent(this.projectname, this.samplename)
             .then( response => { this.samples = response.data; this.freezeSamples(); this.loading = false; })
-            .catch(error => {console.log(error); this.loading = false;});
+            .catch(error => {this.$store.dispatch("notifyError", {error: error}); this.loading = false;});
         },
         onSearch(searchPattern){
             var query = { pattern: searchPattern };
             api.searchSample(this.projectname, this.samplename, query)
             .then(response => { this.resultSearch = response.data; this.resultSearchDial = true; })
-            .catch(error => { console.log(error) })
+            .catch(error => {this.$store.dispatch("notifyError", {error: error}); })
         },
         closeSearchDialog(searchDialog){ searchDialog = this.searchDialog; },
         freezeSamples() {

@@ -181,14 +181,10 @@ export default {
     openURL,
     toggleDarkMode(){ this.$q.dark.toggle();this.$ls.set('dm', this.$q.dark.isActive); },
     login(provider){
-      api.auth(provider)
-      .then(response => {
-        console.log(response);
-      })
-      .catch(error => {console.log(error)})
+      api.auth(provider).then(response => { }).catch(error => {this.$store.dispatch("notifyError", {error: error});})
     },
     logout() {
-      this.store.dispatch("logout", { user: this.store.getters.getUserInfos.username}).then(() => {  this.$router.push('/').catch(error => {});  })
+      this.store.dispatch("logout", { user: this.store.getters.getUserInfos.username}).then(() => {  this.$router.push('/').catch(error => {});  }).catch(error => {  this.$store.dispatch("notifyError", {error: error});  });
     },
   }
 }

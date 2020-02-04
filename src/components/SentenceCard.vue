@@ -2,7 +2,7 @@
     <q-card :id="index" >
         <q-toolbar :class="$q.dark.isActive?'text-white':'text-primary'">
             <q-btn flat round dense icon="save" :disable="!lastModified.dirty" @click="save()"> <q-tooltip>Save this tree</q-tooltip> </q-btn>
-            <q-btn flat round dense icon="archive" ><q-tooltip>Export</q-tooltip></q-btn>
+            <!-- <q-btn flat round dense icon="archive" ><q-tooltip>Export</q-tooltip></q-btn> -->
             <q-btn flat round dense icon="undo" :disable="!lastModified.dirty" @click="undo()"><q-tooltip>Undo</q-tooltip></q-btn>
             <q-btn flat round dense icon="redo" :disable="!lastModified.redo"><q-tooltip>Redo</q-tooltip></q-btn>
             <q-toolbar-title>
@@ -96,10 +96,9 @@ export default {
                     this.sampleData.conlls[this.$store.getters.getUserInfos.username] = this.lastModified.conll; this.$forceUpdate();
                     this.tab = this.$store.getters.getUserInfos.username;
                 }
-            }).catch(error => {console.log(error); this.showNotif('top', 'saveFail');});
+            }).catch(error => {  this.$store.dispatch("notifyError", {error: error}); });
         },
         onConllGraphUpdate(payload) {
-            console.log("payload", payload);
             this.lastModified = payload;
         },
       

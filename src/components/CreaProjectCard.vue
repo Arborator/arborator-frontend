@@ -56,7 +56,7 @@ export default {
             for(const file of this.attachment.file){ form.append('files',file); }
             form.append('import_user',this.$store.getters.getUserInfos.username);
             api.createInitializedProject(this.projectName, form).then( response => { this.attachment.file = []; this.$props.parentGetProjects(); this.submitting = false; this.$q.notify({message: `${this.projectName} uploaded and created.`,color: 'positive'})})
-            .catch(error => {console.log(error); this.$q.notify({message: `${error}`,color: 'negative', position:'bottom'}); this.submitting = false; });
+            .catch(error => {this.$store.dispatch("notifyError", {error: error}); this.submitting = false; });
 		},
 		onSubmit(){
 			this.submitting = true;
@@ -67,7 +67,7 @@ export default {
 			form.append('description', this.description);
 			form.append('private', this.isPrivate);
             api.createProject(form).then( response => { this.attachment.file = []; this.$props.parentGetProjects(); this.submitting = false; this.$q.notify({message: `${this.projectName} uploaded and created.`}); })
-            .catch(error => {console.log(error); this.$q.notify({message: `${error}`,color: 'negative', position:'bottom'}); this.submitting = false; });
+            .catch(error => {this.$store.dispatch("notifyError", {error: error}); this.submitting = false; });
 		},
 		onReset(){
 

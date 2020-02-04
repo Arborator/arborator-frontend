@@ -38,7 +38,7 @@ export default {
         // this.$store.dispatch("setUser", response.data);
         this.store.dispatch("checkSession", {});
         this.showNotif('bottom', 'welcomeback' );
-      }).catch(error => { console.log(error); });
+      }).catch(error => { this.$store.dispatch("notifyError", {error: error}); });
       // this.store.dispatch("checkSession", {});
         // .then(() => {
         //   this.$router.push('/');

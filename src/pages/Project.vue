@@ -50,24 +50,25 @@
 
                             <template v-slot:top="props">
                                 <q-btn-group flat>
-                                    <q-btn flat color="default"  icon="cloud_upload" @click="uploadDial = true">
+                                    <q-btn flat color="default"  icon="cloud_upload" @click="uploadDial = true" :disable="!guest && !admin">
                                         <q-tooltip :delay="300" content-class="text-white bg-primary" >Add File</q-tooltip>
                                     </q-btn>
-                                    <q-btn flat color="default"  icon="person_add" :disabled="table.selected.length<1" @click="assignDial = true">
+                                    <!-- <q-btn flat color="default"  icon="person_add" :disabled="table.selected.length<1" @click="assignDial = true">
                                         <q-tooltip :delay="300" content-class="text-white bg-primary">Assign</q-tooltip>
-                                    </q-btn>
-                                    <q-btn flat  color="default"  icon="cloud_download" :disabled="table.selected.length<1" @click="exportSamplesZip()" :loading="table.exporting">
+                                    </q-btn> -->
+                                    <q-btn flat  color="default"  icon="cloud_download" :disabled="table.selected.length<1" @click="exportSamplesZip()" :loading="table.exporting" :disable="!guest && !admin">
                                         <q-tooltip :delay="300" content-class="text-white bg-primary">Export</q-tooltip>
                                     </q-btn>
                                     <q-btn v-show="table.selected.length<1" flat color="default"  icon="delete_forever" disabled>
                                         <q-tooltip :delay="300" content-class="text-white bg-primary">Delete selected rows</q-tooltip>
                                     </q-btn>
-                                    <q-btn v-show="table.selected.length!=0" :loading="table.loadingDelete" flat color="default" text-color="red" icon="delete_forever" @click="deleteSamples()" >
+                                    <q-btn v-show="table.selected.length!=0" :loading="table.loadingDelete" flat color="default" text-color="red" icon="delete_forever" @click="deleteSamples()" :disable="!guest && !admin">
                                         <q-tooltip :delay="300" content-class="text-white bg-primary">Delete selected rows</q-tooltip>
                                     </q-btn>
-                                    <q-btn flat color="default"  icon="table_chart" @click="getRelationTable()" >
+                                    <!-- Removed before fixed -->
+                                    <!-- <q-btn flat color="default"  icon="table_chart" @click="getRelationTable()" >
                                         <q-tooltip :delay="300" content-class="text-white bg-primary">Relation tables</q-tooltip>
-                                    </q-btn>
+                                    </q-btn> -->
                                 </q-btn-group>
 
                                 <q-space />
@@ -277,7 +278,9 @@ export default {
     },
     computed: {
         routePath() { return this.$route.path; },
-        breakpoint(){ return this.window.width <= 400; }
+        breakpoint(){ return this.window.width <= 400; },
+        guest(){ return this.infos.guests.includes(this.$store.getters.getUserInfos.id); },
+        admin(){ return this.infos.admins.includes(this.$store.getters.getUserInfos.id); }
     },
     methods:{
         handleResize() {this.window.width = window.innerWidth; this.window.height = window.innerHeight;},
@@ -289,22 +292,23 @@ export default {
             });
             return tempArray;
         },
-        getProjectInfos(){ this.table.loading = true; api.getProjectInfos(this.$route.params.projectname).then(response => { console.log(response.data); this.infos = response.data; this.table.loading = false;}).catch(error => {console.log(error); this.table.loading = false;}); },
+        getProjectInfos(){ this.table.loading = true; api.getProjectInfos(this.$route.params.projectname).then(response => { this.infos = response.data; this.table.loading = false;}).catch(error => {this.$store.dispatch("notifyError", {error: error}); this.table.loading = false;}); },
         getUsers(){ api.getUsers().then( response => {  
-            for(let name of response.data.map(a => a.username)){ this.possiblesUsers.push( {key:name, value:name} ); }
-		}).catch(error => { console.log(error); this.$q.notify({message:`${error}`, color:'negative', position:'bottom'}); }); },
+                for(let name of response.data.map(a => a.username)){ this.possiblesUsers.push( {key:name, value:name} ); }
+            }).catch(error => {  this.$store.dispatch("notifyError", {error: error}) });
+        },
         upload(){
             var form = new FormData();
             this.uploadSample.submitting = true;
             for(const file of this.uploadSample.attachment.file){ form.append('files',file); }
             form.append('import_user',Store.getters.getUserInfos.username);
             api.uploadSample(this.$route.params.projectname, form).then( response => { this.uploadSample.attachment.file = []; this.getProjectInfos(); this.uploadDial = false; this.uploadSample.submitting = false; this.showNotif('top-right', 'uploadsuccess');})
-            .catch(error => {console.log(error); this.uploadSample.submitting = false; this.uploadDial = false;});
+            .catch(error => { this.uploadSample.submitting = false; this.uploadDial = false; this.$store.dispatch("notifyError", {error: error}); });
         },
         onFileChange(event) { this.uploadSample.attachment.file = event.target.files; },
         deleteSamples(){
             for (const sample of this.table.selected) {
-                api.deleteSample(this.infos.name, sample.samplename).then( response => { this.infos = response.data; this.table.selected = []; this.showNotif('top-right', 'deletesuccess'); } ).catch(error => { console.log(error); this.showNotif('top-right', 'deletefail'); });
+                api.deleteSample(this.infos.name, sample.samplename).then( response => { this.infos = response.data; this.table.selected = []; this.showNotif('top-right', 'deletesuccess'); } ).catch(error => {  this.$store.dispatch("notifyError", {error: error})  });
             }
         },
         exportSamplesZip(){
@@ -324,7 +328,8 @@ export default {
                 return [];
             }).catch(error => {
                 this.table.exporting = false;
-                this.$q.notify({message:`${error}`, color:'negative'});
+                // this.$q.notify({message:`${error}`, color:'negative'});
+                this.$store.dispatch("notifyError", {error: error});
                 return [];
             });
         },
@@ -332,7 +337,7 @@ export default {
             api.getRelationTable(this.$route.params.projectname).then(response => {
                 this.relationTableInfos = response.data;
                 this.relationTableDial = true;
-            }).catch(error => {console.log(error);});
+            }).catch(error => {  this.$store.dispatch("notifyError", {error: error}) });
         },
         onSearch(searchPattern){
             var query = { pattern: searchPattern };
@@ -340,7 +345,7 @@ export default {
             .then(response => {
                 this.resultSearchDial = true;
                 this.resultSearch = response.data;
-            }).catch(error => {console.log(error);})
+            }).catch(error => {  this.$store.dispatch("notifyError", {error: error})  });
         },
         /**
          * Used to update tags and table view based on response
@@ -353,13 +358,13 @@ export default {
             // this.$refs.textsTable.requestServerInteraction(this.table.pagination);
         },
         addAnnotator(slug, context){ 
-            api.addSampleAnnotator(slug.value, this.$route.params.projectname, context.samplename).then(response => { this.updateTags(response, context.samplename); }) 
+            api.addSampleAnnotator(slug.value, this.$route.params.projectname, context.samplename).then(response => { this.updateTags(response, context.samplename); }).catch(error => { console.log(error.response.status); this.$store.dispatch("notifyError", {error: error})  });
         },
         removeAnnotator(slug, context){ 
             api.removeSampleAnnotator(slug.value, this.$route.params.projectname, context.samplename).then(response => {
                 console.log(response.data);
                 this.updateTags(response, context.samplename);
-            }) 
+            }).catch(error => {  this.$store.dispatch("notifyError", {error: error})  });
         },
         addValidator(slug, context){ api.addSampleValidator(slug.value, this.$route.params.projectname, context.samplename).then(response => { this.updateTags(response, context.samplename); }) },
         removeValidator(slug, context){ api.removeSampleValidator(slug.value, this.$route.params.projectname, context.samplename).then(response => { this.updateTags(response, context.samplename); }) },

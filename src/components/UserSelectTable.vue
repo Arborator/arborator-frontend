@@ -111,7 +111,7 @@ export default {
 			var tempArray = tableJson.fields.filter(function( obj ) { return obj.field !== 'syntInfo' && obj.field !== 'cat' && obj.field !== 'redistributions' ; });
 			return tempArray;
 		},
-		getUsers(){ api.getUsers().then( response => { this.table.data = response.data; }).catch(error => { console.log(error); this.$q.notify({message:`${error}`, color:'negative', position:'bottom'}); }); }
+		getUsers(){ api.getUsers().then( response => { this.table.data = response.data; }).catch(error => { this.$store.dispatch("notifyError", {error: error}); }); }
 	}
 }
 </script>

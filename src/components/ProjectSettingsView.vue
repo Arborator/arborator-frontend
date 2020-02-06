@@ -27,36 +27,124 @@
 		<q-card-section class="q-pa-md row items-start q-gutter-md">
 			<q-card class="col">
 				<q-card-section>
-					<div class="text-h6">Admins <q-btn flat round icon="add" color="primary" @click="addAdminDial = true"></q-btn></div>
+					<div class="text-h6 text-center">Admins <q-btn v-show="admin" flat round icon="add" color="primary" @click="addAdminDial = true"></q-btn></div>
 				</q-card-section>
 				<q-card-section>
-					<q-list bordered separator>
+					<q-list bordered separator class="list-size">
 						<q-item v-for="admin in infos.admins" :key="admin" clickable v-ripple @click="removeAdmin(admin)">
 							<q-item-section>{{admin}}</q-item-section>
-							<q-item-section side><q-btn dense round flat icon="remove" color="negative" @click="removeAdmin(admin)"></q-btn></q-item-section>
+							<q-item-section side><q-btn v-show="admin" dense round flat icon="remove" color="negative" @click="removeAdmin(admin)"></q-btn></q-item-section>
 						</q-item>
 					</q-list>
 				</q-card-section>
 			</q-card>
-			<q-card class="col">
+			<q-card class="col full-height">
 				<q-card-section>
-					<div class="text-h6">Guests <q-btn flat round icon="add" color="primary" @click="addGuestDial = true"></q-btn></div>
+					<div class="text-h6 text-center">Guests <q-btn v-show="admin" flat round icon="add" color="primary" @click="addGuestDial = true"></q-btn></div>
 				</q-card-section>
-				<q-card-section>
-					<q-list bordered separator>
+				<q-card-section >
+					<q-list bordered separator class="list-size">
 						<q-item v-for="guest in infos.guests" :key="guest" clickable v-ripple @click="removeGuest(guest)">
 							<q-item-section>{{guest}}</q-item-section>
-							<q-item-section side><q-btn dense round flat icon="remove" color="negative" @click="removeGuest(guest)"></q-btn></q-item-section>
+							<q-item-section side><q-btn v-show="admin" dense round flat icon="remove" color="negative" @click="removeGuest(guest)"></q-btn></q-item-section>
 						</q-item>
 					</q-list>
 				</q-card-section>
 			</q-card>
 		</q-card-section>
-		<q-card-section>
-			<codemirror v-model="config" :options="cmOption"></codemirror>
+		<q-card-section class="q-pa-md row items-start ">
+			<q-card class="full-width">
+				<q-card-section><div class="text-h6 text-center">Relations SubLabels (to form a deprel)</div></q-card-section>
+				<q-card-section class="row q-gutter-md q-pa-md">
+					<div class="col" v-for="(listrel, index) in infos.labels" :key="index">
+						<q-btn flat square icon="add" color="primary" class="full-width" @click="addLabelDial = true; stockid = listrel.id;">Add Label</q-btn>
+						<q-btn flat square icon="remove" color="negative" class="full-width" @click="removeLabelColumn(listrel.id)">Remove Column</q-btn>
+						<q-virtual-scroll  style="max-height: 150px;" :virtual-scroll-slice-size="5" :virtual-scroll-item-size="10" :items="listrel.labels" bordered separator>
+							<template v-slot="{ item, index }">
+							<q-item	:key="index" dense>
+								<q-item-section>
+								<q-item-label>
+									<q-chip dense>
+										<q-avatar color="secondary" text-color="white">{{index}}</q-avatar>
+										{{item.value}}
+									</q-chip>
+								</q-item-label>
+								</q-item-section>
+								<q-item-section side><q-btn v-show="admin" dense round flat icon="remove" color="negative" @click="removeLabel(item)"></q-btn></q-item-section>
+							</q-item>
+							</template>
+						</q-virtual-scroll>
+					</div>
+					<div class="col">
+						<q-btn flat color="primary" icon="add" label="" class="full-width full-height" @click="addLabelColumn()"></q-btn>
+					</div>
+				</q-card-section>
+			</q-card>
 		</q-card-section>
+		<q-card-section class="q-pa-md row items-start ">
+			<q-card class="full-width">
+				<q-card-section><div class="text-h6 text-center">Categories (POS tags)</div></q-card-section>
+				<q-card-section class="row q-gutter-md q-pa-md">
+					<div class="col">
+						<q-btn flat square icon="add" color="primary" class="full-width" @click="addCatDial = true">Add Cat</q-btn>
+						<q-virtual-scroll  style="max-height: 150px;" :virtual-scroll-slice-size="5" :virtual-scroll-item-size="10" :items="infos.cats" bordered separator>
+							<template v-slot="{ item, index }">
+							<q-item	:key="index" dense>
+								<q-item-section>
+								<q-item-label>
+									<q-chip dense>
+										<q-avatar color="secondary" text-color="white">{{index}}</q-avatar>
+										{{item}}
+									</q-chip>
+								</q-item-label>
+								</q-item-section>
+								<q-item-section side><q-btn v-show="admin" dense round flat icon="remove" color="negative" @click="removeCat(item)"></q-btn></q-item-section>
+							</q-item>
+							</template>
+						</q-virtual-scroll>
+					</div>
+				</q-card-section>
+			</q-card>
+		</q-card-section>
+		<!-- <q-card-section>
+			<codemirror v-model="config" :options="cmOption"></codemirror>
+		</q-card-section> -->
 		<q-dialog v-model="addAdminDial" transition-show="fade" transition-hide="fade">  <user-select-table :parentCallback="addAdmin"></user-select-table>   </q-dialog>
 		<q-dialog v-model="addGuestDial" transition-show="fade" transition-hide="fade">  <user-select-table :parentCallback="addGuest"></user-select-table>   </q-dialog>
+		<q-dialog v-model="addCatDial">
+			<q-card>
+				<q-bar class="bg-primary text-white">
+					<q-space />
+					<div class="text-weight-bold">Add a Category</div>
+					<q-space />
+					<q-btn flat dense icon="close" v-close-popup/>
+				</q-bar>
+				<q-card-section > 
+					<q-input bottom-slots v-model="entryCat" label="Cat (Part-of-Speech)" counter dense>
+						<template v-slot:after>
+						<q-btn round color="primary" icon="add" @click="addCat()" v-close-popup/>
+						</template>
+					</q-input>
+				</q-card-section>
+			</q-card>
+		</q-dialog>
+		<q-dialog v-model="addLabelDial">
+			<q-card>
+				<q-bar class="bg-primary text-white">
+					<q-space />
+					<div class="text-weight-bold">Add a Label</div>
+					<q-space />
+					<q-btn flat dense icon="close" v-close-popup/>
+				</q-bar>
+				<q-card-section > 
+					<q-input bottom-slots v-model="entryLabel" label="Label Part (for deprel)" counter dense>
+						<template v-slot:after>
+						<q-btn round color="primary" icon="add" @click="addLabel()" v-close-popup/>
+						</template>
+					</q-input>
+				</q-card-section>
+			</q-card>
+		</q-dialog>
 	</q-card>
 </template>
 
@@ -74,7 +162,14 @@ export default {
 		return{
 			addAdminDial: false,
 			addGuestDial: false,
-			infos: {},
+			addLabelDial: false,
+			addCatDial: false,
+			entryCat: '',
+			entryLabel: '',
+			stockid: '',
+			infos: {admins:[], guests:[], labels:[], cats:[]},
+			// relations: [["subj", "comp", "vocative", "det", "dep", "mod", "conj", "cc", "parataxis", "fixed", "flat", "compound", "discourse", "dislocated", "goeswith", "orphan", "punct", "root"],[":aux",":caus",":cleft",":pred",":appos"],["@comp","@mod","@subj","@dep","@det"]],
+			// cats: ["ADJ", "ADP", "ADV", "AUX", "CCONJ", "DET", "INTJ", "NOUN", "NUM", "PART", "PRON", "PROPN", "PUNCT", "SCONJ", "VERB", "X"],
 			config: `[configuration]
 url			=	http://arborator.ilpga.fr/   # don't forget the trailing slash!
 functionsfilename 		=	functions.config
@@ -195,20 +290,22 @@ attris = {"t":		{"font": '18px "Arial"', "text-anchor":'start',"fill": '#000',"c
             clean = clean.replace(/^'/g,'');
             clean = clean.replace(/'$/g,'');
             return 'data:image/png;base64, '+clean;
-        }        
+		},
+		guest(){ return this.infos.guests.includes(this.$store.getters.getUserInfos.id); },
+        admin(){ return this.infos.admins.includes(this.$store.getters.getUserInfos.id); }        
     },
 	methods:{
-		getProjectInfos(){
-			api.getProjectSettings(this.$props.projectname).then(response => {this.infos = response.data;}).catch(error => {this.$store.dispatch("notifyError", {error: error}); this.$q.notify({message: `${error}`, color:'negative', position: 'bottom'});})
-		},
-		addAdmin(selected){
-			api.setProjectUserRole(this.$props.projectname, 'admin', selected[0].id).then(response => {this.infos = response.data}).catch(error => {this.$store.dispatch("notifyError", {error: error})});
-		},
-		removeAdmin(userid){ 
-			api.removeProjectUserRole(this.$props.projectname, 'admin', userid).then( response => { this.infos = response.data;} ).catch(error => {this.$store.dispatch("notifyError", {error: error})});
-		},
+		getProjectInfos(){ api.getProjectSettings(this.$props.projectname).then(response => {console.log(response.data); this.infos = response.data;}).catch(error => {this.$store.dispatch("notifyError", {error: error}); this.$q.notify({message: `${error}`, color:'negative', position: 'bottom'});}) },
+		addAdmin(selected){ api.setProjectUserRole(this.$props.projectname, 'admin', selected[0].id).then(response => {this.infos = response.data}).catch(error => {this.$store.dispatch("notifyError", {error: error})});  },
+		removeAdmin(userid){ api.removeProjectUserRole(this.$props.projectname, 'admin', userid).then( response => { this.infos = response.data;} ).catch(error => {this.$store.dispatch("notifyError", {error: error})});  },
 		addGuest(selected){ api.setProjectUserRole(this.$props.projectname, 'guest', selected[0].id).then(response=> {this.infos = response.data;}).catch(error => {this.$store.dispatch("notifyError", {error: error})});  },
-		removeGuest(userid){ api.removeProjectUserRole(this.$props.projectname, 'guest', userid).then( response => { this.infos = response.data;} ).catch(error => {this.$store.dispatch("notifyError", {error: error})});  }
+		removeGuest(userid){ api.removeProjectUserRole(this.$props.projectname, 'guest', userid).then( response => { this.infos = response.data;} ).catch(error => {this.$store.dispatch("notifyError", {error: error})});  },
+		addLabel(){  api.addProjectStockLabel(this.$props.projectname, this.stockid, this.entryLabel).then(response => { this.infos.labels = response.data; }).catch(error => { this.$store.dispatch("notifyError", {error: error}); })  },
+		removeLabel(item){ api.removeProjectStockLabel(this.$props.projectname, item.id, item.stock_id, item.value).then(response => { console.log(response.data); this.infos.labels = response.data; }).catch(error => { this.$store.dispatch("notifyError", {error: error}); })  },
+		addLabelColumn(){ api.addProjectStock(this.$props.projectname).then(response => { this.infos.labels = response.data; }).catch(error => { this.$store.dispatch("notifyError", {error: error}); })  },
+		removeLabelColumn(stockid){ api.removeProjectStock(this.$props.projectname, stockid).then(response => { this.infos.labels = response.data; }).catch(error => { this.$store.dispatch("notifyError", {error: error}); })  },
+		addCat(){ api.addProjectCatLabel(this.$props.projectname, this.entryCat).then(response => { this.infos.cats = response.data; }).catch(error => { this.$store.dispatch("notifyError", {error: error}); }) },
+		removeCat(cat){ api.removeProjectCatLabel(this.$props.projectname, cat).then(response => { this.infos.cats = response.data; }).catch(error => { this.$store.dispatch("notifyError", {error: error}); })}
 	}
 }
 </script>
@@ -217,5 +314,8 @@ attris = {"t":		{"font": '18px "Arial"', "text-anchor":'start',"fill": '#000',"c
 .full {
 	width: 90vw;
 	min-width: 90vw;
+}
+.list-size {
+	height: 150px;
 }
 </style>

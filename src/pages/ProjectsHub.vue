@@ -30,6 +30,21 @@
             </q-toolbar-title>
           </q-toolbar>
         </q-card-section>
+        <q-card-section v-if="loadingProjects" class="row q-pa-md items-start q-gutter-md" style="width: 90vw; height:60vh;" >
+            <q-card style="max-width: 250px; width:250px" v-for="i in skelNumber" :key="i">
+              <q-skeleton height="150px" square />
+              <q-item>
+                <q-item-section>
+                  <q-item-label>
+                    <q-skeleton type="text" />
+                  </q-item-label>
+                  <q-item-label caption>
+                    <q-skeleton type="text" />
+                  </q-item-label>
+                </q-item-section>
+              </q-item>
+            </q-card>
+        </q-card-section>
         <q-card-section v-if="!listMode" style="width: 90vw; height:60vh;">
           <q-virtual-scroll v-if="$q.platform.is.mobile" :items="visibleProjects" style="max-height: 60vh; width:80vw"  :virtual-scroll-slice-size="5" :virtual-scroll-item-size="200">
             <template v-slot="{ item, index }">
@@ -97,7 +112,9 @@ export default {
       listMode: true,
       creaProjectDial: false,
       projectSettingsDial: false,
-      projectnameTarget: ''
+      projectnameTarget: '',
+      loadingProjects: true,
+      skelNumber: [...Array(5).keys()]
     }
   },
   mounted(){
@@ -106,7 +123,7 @@ export default {
   },
   methods:{
     openURL,
-    getProjects(){ api.getProjects().then(response => { this.projects = response.data; this.visibleProjects = response.data;}).catch(error => { this.$store.dispatch("notifyError", {error: error}); }); },
+    getProjects(){ this.loadingProjects = true; api.getProjects().then(response => { this.projects = response.data; this.visibleProjects = response.data; this.loadingProjects = false;}).catch(error => { this.$store.dispatch("notifyError", {error: error}); this.loadingProjects = false;}); },
     searchProject(pattern) {
       var filteredProjects =  this.projects.filter(function(project) {
         if(project.projectname.includes(pattern)){

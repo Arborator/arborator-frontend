@@ -38,11 +38,21 @@
                                 <div class="q-pa-md">
                                 <div class="row">
                                     <div v-show="table.loading" class="col-5 offset-4"><q-circular-progress  indeterminate size="50px" :thickness="0.22" color="primary" :track-color="$q.dark.isActive?'grey':'grey-3'" /></div>
-                                    <q-banner v-show="!table.loading" inline-actions class="text-white bg-negative">
+                                    <q-banner v-show="!table.loading && !initLoad" inline-actions class="text-white bg-negative">
                                         Oops! No data to display...
                                         <template v-slot:action>
                                             <q-btn flat color="white" label="try again" @click="getProjectInfos();" />
                                         </template>
+                                    </q-banner>
+                                    <q-banner v-show="!table.loading && initLoad" inline-actions class="text-white bg-accent">
+                                        No sample yet. This project is empty, please upload some conll files.
+                                        <div class="q-pa-md column items-start q-gutter-y-md">
+                                            <q-file dark v-model="uploadSample.attachment.file" label="Pick files" outlined  use-chips clearable :loading="uploadSample.submitting" multiple style="max-width: 400px">
+                                            <template v-slot:after >
+                                                <q-btn color="primary" dense icon="cloud_upload" round @click="upload()" :loading="uploadSample.submitting" :disable="uploadSample.attachment.file == null"/>
+                                            </template>
+                                            </q-file>
+                                        </div>
                                     </q-banner>
                                 </div>
                                 </div>
@@ -164,14 +174,11 @@
                     </q-card-section>
                     
                     <q-card-section > 
-                        <form @submit="upload()">
-                            <input type="file" class="form-control" @change="onFileChange" multiple/>
-                            <q-btn type="submit" :loading="uploadSample.submitting" label="upload" color="teal" class="q-mt-md">
-                                <template v-slot:loading>
-                                    <q-spinner-facebook/>
-                                </template>
-                            </q-btn>
-                        </form>
+                        <q-file v-model="uploadSample.attachment.file" label="Pick files" outlined  use-chips clearable :loading="uploadSample.submitting" multiple style="max-width: 400px">
+                            <template v-slot:after >
+                                <q-btn color="primary" dense icon="cloud_upload" round @click="upload()" :loading="uploadSample.submitting" :disable="uploadSample.attachment.file == null"/>
+                            </template>
+                        </q-file>
                     </q-card-section>
                 </q-card>
             </q-dialog>
@@ -245,7 +252,7 @@ export default {
                     { name: 'treesFrom', label: 'Trees From', sortable: true, field: 'treesFrom' },
                     { name: 'exo', label: 'Exo', sortable: true, field: 'exo' }
                 ],
-                visibleColumns: ['samplename', 'sentences', 'tokens', 'sentenceLength', 'annotators', 'validators', 'treesFrom', 'exo'],
+                visibleColumns: ['samplename', 'sentences', 'tokens', 'sentenceLength', 'annotators', 'validators', 'treesFrom'],
                 filter: '',
                 selected: [],
                 loading: false,
@@ -267,7 +274,8 @@ export default {
             window: {width: 0, height: 0 },
             possiblesUsers: [],
             tagContext: {},
-            tableKey: 0
+            tableKey: 0,
+            initLoad: false
         }
     },
     created() { window.addEventListener('resize', this.handleResize); this.handleResize(); },
@@ -292,7 +300,7 @@ export default {
             });
             return tempArray;
         },
-        getProjectInfos(){ this.table.loading = true; api.getProjectInfos(this.$route.params.projectname).then(response => { this.infos = response.data; this.table.loading = false;}).catch(error => {this.$store.dispatch("notifyError", {error: error}); this.table.loading = false;}); },
+        getProjectInfos(){ this.table.loading = true; api.getProjectInfos(this.$route.params.projectname).then(response => { this.infos = response.data; this.initLoad = true; this.table.loading = false;}).catch(error => {this.$store.dispatch("notifyError", {error: error}); this.table.loading = false;}); },
         getUsers(){ api.getUsers().then( response => {  
                 for(let name of response.data.map(a => a.username)){ this.possiblesUsers.push( {key:name, value:name} ); }
             }).catch(error => {  this.$store.dispatch("notifyError", {error: error}) });

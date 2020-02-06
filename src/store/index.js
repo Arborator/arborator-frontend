@@ -20,7 +20,8 @@ export default new Vuex.Store({
             last_seen: null, make_unique_nickname: null, make_valid_nickname: null, picture_url: null, query: null, query_class: null, super_admin: false, username: null},
         failedAccess: false,
         avatarKey: 0, 
-        lastGrewQuery: ''
+        lastGrewQuery: '',
+        projectConfig: {cats: [], labels: []}
     },
     mutations: {
         change_source(state, payload){
@@ -48,6 +49,10 @@ export default new Vuex.Store({
         },
         change_last_grew_query(state, payload){
             state.lastGrewQuery = payload;
+        },
+        set_project_config(state, payload){
+            state.projectConfig.cats = payload.cats;
+            state.projectConfig.labels = payload.labels
         }
     },
     actions: {
@@ -119,6 +124,7 @@ export default new Vuex.Store({
         getFailedAccess: state => state.failedAccess,
         getUserInfos: state => state.user,
         getAvatarKey: state => state.avatarKey,
-        getLastGrewQuery: state => state.lastGrewQuery
+        getLastGrewQuery: state => state.lastGrewQuery,
+        getProjectConfig: state => state.projectConfig
     }
 })

@@ -64,8 +64,14 @@ export default {
     },
     created() { window.addEventListener('resize', this.handleResize); this.handleResize(); },
     destroyed() { window.removeEventListener('resize', this.handleResize)},
-    mounted(){ this.getSampleContent(); },
+    mounted(){ 
+        this.getSampleContent(); 
+        this.getProjectConfig();
+    },
     methods: {
+        getProjectConfig(){
+            api.getProjectSettings(this.$route.params.projectname).then(response => { this.$store.commit('set_project_config', response.data); }).catch(error => { this.$store.dispatch("notifyError", {error: error}); });
+        },
         handleResize() {this.window.width = window.innerWidth; this.window.height = window.innerHeight;},
         getSampleContent(){
             this.loading = true;

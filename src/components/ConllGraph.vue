@@ -91,7 +91,7 @@ export default {
             },
             options: {
                 relations:[["subj", "comp", "vocative", "det", "dep", "mod", "conj", "cc", "parataxis", "fixed", "flat", "compound", "discourse", "dislocated", "goeswith", "orphan", "punct", "root"],[":aux",":caus",":cleft",":pred",":appos", ":obj", ":obl"],["@agent", "@appos", "@caus", "@expl", "@fixed", "@lvc","@pass", "@relcl", "@tense","@x"]],
-		        cats:["ADJ", "ADP", "ADV", "AUX", "CCONJ", "DET", "INTJ", "NOUN", "NUM", "PART", "PRON", "PROPN", "PUNCT", "SCONJ", "VERB", "X"],
+		            cats:["ADJ", "ADP", "ADV", "AUX", "CCONJ", "DET", "INTJ", "NOUN", "NUM", "PART", "PRON", "PROPN", "PUNCT", "SCONJ", "VERB", "X"]
             },
             relDialog: false,
             catDialog: false,
@@ -110,8 +110,25 @@ export default {
     },
     mounted(){
         var svg=this.start(this.conll, this.matches, this.id, this.user);
+        this.getProjectConfig();
     },
     methods: {
+        /**
+         * replace the default labels and cats by the ones in the config if list not empty
+         */
+        getProjectConfig(){
+          var conf = this.$store.getters.getProjectConfig;
+          if(conf.cats.length > 1){ this.options.cats = conf.cats; }
+          if(conf.labels.length > 1){ 
+            var strStocks = [];
+            for(let stock of conf.labels){  
+              var strStockLabels = [];
+              for(let label of stock.labels){ strStockLabels.push(label.value); }
+              strStocks.push( strStockLabels );
+            }
+            this.options.relations = strStocks; 
+          }
+        },
         up(dirty, redo) {
           // console.log(svg.tree)
           // console.log("NOW"); // when I open a sentence, when I click on OK after editing a category or a relation;

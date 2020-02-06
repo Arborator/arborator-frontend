@@ -36,7 +36,10 @@ export default {
         }
     },
     computed: { sentenceCount() {return Object.keys(this.searchresults).length;}  },
-    mounted(){this.freezeSamples();},
+    mounted(){
+        this.freezeSamples();
+        this.getProjectConfig();
+    },
     methods: {
         freezeSamples() {
             console.log('samples', this.searchresults);
@@ -45,7 +48,10 @@ export default {
             heavyList = listSamples;
             Object.freeze(heavyList);
             this.samplesFrozen = {'list': heavyList, 'indexes': index2sentId };
-        }
+        },
+        getProjectConfig(){
+            api.getProjectSettings(this.$route.params.projectname).then(response => { this.$store.commit('set_project_config', response.data); }).catch(error => { this.$store.dispatch("notifyError", {error: error}); });
+        },
     }
 }
 </script>

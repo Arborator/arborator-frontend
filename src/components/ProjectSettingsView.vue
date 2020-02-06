@@ -31,7 +31,7 @@
 				</q-card-section>
 				<q-card-section>
 					<q-list bordered separator class="list-size">
-						<q-item v-for="admin in infos.admins" :key="admin" clickable v-ripple @click="removeAdmin(admin)">
+						<q-item v-for="admin in infos.admins" :key="admin" clickable v-ripple >
 							<q-item-section>{{admin}}</q-item-section>
 							<q-item-section side><q-btn v-show="admin" dense round flat icon="remove" color="negative" @click="removeAdmin(admin)"></q-btn></q-item-section>
 						</q-item>
@@ -57,8 +57,10 @@
 				<q-card-section><div class="text-h6 text-center">Relations SubLabels (to form a deprel)</div></q-card-section>
 				<q-card-section class="row q-gutter-md q-pa-md">
 					<div class="col" v-for="(listrel, index) in infos.labels" :key="index">
-						<q-btn flat square icon="add" color="primary" class="full-width" @click="addLabelDial = true; stockid = listrel.id;">Add Label</q-btn>
-						<q-btn flat square icon="remove" color="negative" class="full-width" @click="removeLabelColumn(listrel.id)">Remove Column</q-btn>
+						<q-btn-group spread flat>
+							<q-btn flat square icon="add" color="primary" @click="addLabelDial = true; stockid = listrel.id;">Add Label</q-btn>
+							<q-btn flat square icon="remove" color="negative"  @click="removeLabelColumn(listrel.id)">Remove Column</q-btn>
+						</q-btn-group>
 						<q-virtual-scroll  style="max-height: 150px;" :virtual-scroll-slice-size="5" :virtual-scroll-item-size="10" :items="listrel.labels" bordered separator>
 							<template v-slot="{ item, index }">
 							<q-item	:key="index" dense>
@@ -292,16 +294,16 @@ attris = {"t":		{"font": '18px "Arial"', "text-anchor":'start',"fill": '#000',"c
             return 'data:image/png;base64, '+clean;
 		},
 		guest(){ return this.infos.guests.includes(this.$store.getters.getUserInfos.id); },
-        admin(){ return this.infos.admins.includes(this.$store.getters.getUserInfos.id); }        
+        admin(){ return this.infos.admins.includes(this.$store.getters.getUserInfos.id) || this.$store.getters.getUserInfos.super_admin; }        
     },
 	methods:{
-		getProjectInfos(){ api.getProjectSettings(this.$props.projectname).then(response => {console.log(response.data); this.infos = response.data;}).catch(error => {this.$store.dispatch("notifyError", {error: error}); this.$q.notify({message: `${error}`, color:'negative', position: 'bottom'});}) },
+		getProjectInfos(){ api.getProjectSettings(this.$props.projectname).then(response => {this.infos = response.data;}).catch(error => {this.$store.dispatch("notifyError", {error: error}); this.$q.notify({message: `${error}`, color:'negative', position: 'bottom'});}) },
 		addAdmin(selected){ api.setProjectUserRole(this.$props.projectname, 'admin', selected[0].id).then(response => {this.infos = response.data}).catch(error => {this.$store.dispatch("notifyError", {error: error})});  },
 		removeAdmin(userid){ api.removeProjectUserRole(this.$props.projectname, 'admin', userid).then( response => { this.infos = response.data;} ).catch(error => {this.$store.dispatch("notifyError", {error: error})});  },
 		addGuest(selected){ api.setProjectUserRole(this.$props.projectname, 'guest', selected[0].id).then(response=> {this.infos = response.data;}).catch(error => {this.$store.dispatch("notifyError", {error: error})});  },
 		removeGuest(userid){ api.removeProjectUserRole(this.$props.projectname, 'guest', userid).then( response => { this.infos = response.data;} ).catch(error => {this.$store.dispatch("notifyError", {error: error})});  },
 		addLabel(){  api.addProjectStockLabel(this.$props.projectname, this.stockid, this.entryLabel).then(response => { this.infos.labels = response.data; }).catch(error => { this.$store.dispatch("notifyError", {error: error}); })  },
-		removeLabel(item){ api.removeProjectStockLabel(this.$props.projectname, item.id, item.stock_id, item.value).then(response => { console.log(response.data); this.infos.labels = response.data; }).catch(error => { this.$store.dispatch("notifyError", {error: error}); })  },
+		removeLabel(item){ api.removeProjectStockLabel(this.$props.projectname, item.id, item.stock_id, item.value).then(response => { this.infos.labels = response.data; }).catch(error => { this.$store.dispatch("notifyError", {error: error}); })  },
 		addLabelColumn(){ api.addProjectStock(this.$props.projectname).then(response => { this.infos.labels = response.data; }).catch(error => { this.$store.dispatch("notifyError", {error: error}); })  },
 		removeLabelColumn(stockid){ api.removeProjectStock(this.$props.projectname, stockid).then(response => { this.infos.labels = response.data; }).catch(error => { this.$store.dispatch("notifyError", {error: error}); })  },
 		addCat(){ api.addProjectCatLabel(this.$props.projectname, this.entryCat).then(response => { this.infos.cats = response.data; }).catch(error => { this.$store.dispatch("notifyError", {error: error}); }) },

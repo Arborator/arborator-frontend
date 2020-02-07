@@ -9,6 +9,7 @@
 
         <q-breadcrumbs :active-color="$q.dark.isActive?'white':'primary'" :class="($q.dark.isActive?'text-grey':'text-black') + ' mobile-hide native-mobile-hide within-iframe-hide gt-xs'" style="max-height:20px;max-width:70vh;overflow:y;">
             <q-breadcrumbs-el v-if="notHome" icon="home" to="/" />
+            <q-breadcrumbs-el v-if="$route.path.startsWith('/projects/')" icon="view_module" to="/projects" />
             <q-breadcrumbs-el v-if="$route.params.projectname != null" :label="$route.params.projectname" icon="work" :to="'/projects/'+$route.params.projectname" />
             <q-breadcrumbs-el v-if="$route.params.samplename != null && $route.params.projectname != null" :label="$route.params.samplename" icon="assignment" :to="'/projects/'+$route.params.projectname+'/'+$route.params.samplename" />
         </q-breadcrumbs>

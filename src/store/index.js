@@ -21,7 +21,7 @@ export default new Vuex.Store({
         failedAccess: false,
         avatarKey: 0, 
         lastGrewQuery: '',
-        projectConfig: {cats: [], labels: []}
+        projectConfig: {cats: [], labels: [], is_open: false, show_all_trees: true}
     },
     mutations: {
         change_source(state, payload){
@@ -52,7 +52,9 @@ export default new Vuex.Store({
         },
         set_project_config(state, payload){
             state.projectConfig.cats = payload.cats;
-            state.projectConfig.labels = payload.labels
+            state.projectConfig.labels = payload.labels;
+            state.projectConfig.is_open = payload.is_open;
+            state.projectConfig.show_all_trees = payload.show_all_trees;
         }
     },
     actions: {

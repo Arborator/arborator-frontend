@@ -22,6 +22,8 @@
 				<q-input filled	v-model="projectName" label="Project name" lazy-rules :rules="[ val => val && val.length > 0 || 'Please type something']"/>
 				<q-input filled	v-model="description" label="Description" />
 				<q-toggle v-model="isPrivate" label="Private?" />
+				<q-toggle v-model="isOpen" label="Open Project?" />
+				<q-toggle v-model="showAllTrees" label="Show All Trees?" />
 				<div>
 					<q-btn type="submit" :loading="submitting" label="create" color="primary" class="q-mt-md" v-close-popup/>
 					<q-btn label="Reset" type="reset" color="primary" flat class="q-ml-sm" />
@@ -45,6 +47,8 @@ export default {
 			projectName: '',
 			description: '',
 			isPrivate: false,
+			isOpen: false,
+			showAllTrees: true,
 			attachment: { name: null, file: null}
 		}
 	},
@@ -66,6 +70,8 @@ export default {
 			form.append('project_name',this.projectName);
 			form.append('description', this.description);
 			form.append('private', this.isPrivate);
+			form.append('is_open', this.isOpen);
+			form.append('show_all_trees', this.showAllTrees);
             api.createProject(form).then( response => { this.attachment.file = []; this.$props.parentGetProjects(); this.submitting = false; this.$q.notify({message: `${this.projectName} uploaded and created.`}); })
             .catch(error => {this.$store.dispatch("notifyError", {error: error}); this.submitting = false; });
 		},

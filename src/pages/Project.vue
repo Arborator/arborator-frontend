@@ -45,8 +45,8 @@
                                         </template>
                                     </q-banner>
                                     <q-banner v-show="!table.loading && initLoad" inline-actions class="text-white bg-accent">
-                                        No sample yet. This project is empty, please upload some conll files.
-                                        <div class="q-pa-md column items-start q-gutter-y-md">
+                                        No sample yet. This project is empty, please upload some conll files. <span v-show="!admin">Ask an administrator to add files</span>
+                                        <div v-show="admin" class="q-pa-md column items-start q-gutter-y-md">
                                             <q-file dark v-model="uploadSample.attachment.file" label="Pick files" outlined  use-chips clearable :loading="uploadSample.submitting" multiple style="max-width: 400px">
                                             <template v-slot:after >
                                                 <q-btn color="primary" dense icon="cloud_upload" round @click="upload()" :loading="uploadSample.submitting" :disable="uploadSample.attachment.file == null"/>
@@ -60,7 +60,7 @@
 
                             <template v-slot:top="props">
                                 <q-btn-group flat>
-                                    <q-btn flat color="default"  icon="cloud_upload" @click="uploadDial = true" :disable="!guest && !admin">
+                                    <q-btn flat color="default"  icon="cloud_upload" @click="uploadDial = true" :disable="!admin">
                                         <q-tooltip :delay="300" content-class="text-white bg-primary" >Add File</q-tooltip>
                                     </q-btn>
                                     <!-- <q-btn flat color="default"  icon="person_add" :disabled="table.selected.length<1" @click="assignDial = true">
@@ -72,7 +72,7 @@
                                     <q-btn v-show="table.selected.length<1" flat color="default"  icon="delete_forever" disabled>
                                         <q-tooltip :delay="300" content-class="text-white bg-primary">Delete selected rows</q-tooltip>
                                     </q-btn>
-                                    <q-btn v-show="table.selected.length!=0" :loading="table.loadingDelete" flat color="default" text-color="red" icon="delete_forever" @click="deleteSamples()" :disable="!guest && !admin">
+                                    <q-btn v-show="table.selected.length!=0" :loading="table.loadingDelete" flat color="default" text-color="red" icon="delete_forever" @click="deleteSamples()" :disable="!admin">
                                         <q-tooltip :delay="300" content-class="text-white bg-primary">Delete selected rows</q-tooltip>
                                     </q-btn>
                                     <!-- Removed before fixed -->
@@ -120,9 +120,6 @@
                                     </q-td>
                                     <q-td key="profs" :props="props">
                                         <tag-input @tag-added="addProf"  @tag-removed="removeProf" :tag-context="props.row" :element-id="props.row.samplename + 'proftag'" v-model="props.row.roles.prof" :existing-tags="possiblesUsers" :typeahead="true" typeahead-style="badges" :typeahead-hide-discard="true" placeholder="add user" :only-existing-tags="true" :typeahead-always-show="false"></tag-input>
-                                    </q-td>
-                                    <q-td key="supervalidators" :props="props">
-                                        <tag-input @tag-added="addSuperValidator"  @tag-removed="removeSuperValidator" :tag-context="props.row" :element-id="props.row.samplename + 'supervalidatortag'" v-model="props.row.roles.supervalidator" :existing-tags="possiblesUsers" :typeahead="true" typeahead-style="badges" :typeahead-hide-discard="true" placeholder="add user" :only-existing-tags="true" :typeahead-always-show="false"></tag-input>
                                     </q-td>
                                     <q-td key="treesFrom" :props="props">
                                         <q-list dense>
@@ -248,7 +245,6 @@ export default {
                     { name: 'annotators', label: 'Annotators', sortable: true, field: 'roles.annotator' },
                     { name: 'validators', label: 'Validators', sortable: true, field: 'roles.validator' },
                     { name: 'profs', label: 'Profs', sortable: true, field: 'roles.prof' },
-                    { name: 'supervalidators', label: 'Super Validators', sortable: true, field: 'roles.supervalidator' },
                     { name: 'treesFrom', label: 'Trees From', sortable: true, field: 'treesFrom' },
                     { name: 'exo', label: 'Exo', sortable: true, field: 'exo' }
                 ],

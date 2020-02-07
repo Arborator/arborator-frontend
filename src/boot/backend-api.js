@@ -66,35 +66,41 @@ export default {
     },
     addSampleAnnotator(username, projectname, samplename){
         let data = {'username':username, 'projectname':projectname, 'samplename':samplename};
-        return API.post('projects/sample/annotator/add', data);
+        return API.post('projects/'+projectname+'/sample/annotator/add', data);
     },
     removeSampleAnnotator(username, projectname, samplename){
         let data = {'username':username, 'projectname':projectname, 'samplename':samplename};
-        return API.post('projects/sample/annotator/remove', data);
+        return API.post('projects/'+projectname+'/sample/annotator/remove', data);
     },
     addSampleValidator(username, projectname, samplename){
         let data = {'username':username, 'projectname':projectname, 'samplename':samplename};
-        return API.post('projects/sample/validator/add', data);
+        return API.post('projects/'+projectname+'/sample/validator/add', data);
     },
     removeSampleValidator(username, projectname, samplename){
         let data = {'username':username, 'projectname':projectname, 'samplename':samplename};
-        return API.post('projects/sample/validator/remove', data);
+        return API.post('projects/'+projectname+'/sample/validator/remove', data);
     },
     addSampleSuperValidator(username, projectname, samplename){
         let data = {'username':username, 'projectname':projectname, 'samplename':samplename};
-        return API.post('projects/sample/supervalidator/add', data);
+        return API.post('projects/'+projectname+'/sample/supervalidator/add', data);
     },
     removeSampleSuperValidator(username, projectname, samplename){
         let data = {'username':username, 'projectname':projectname, 'samplename':samplename};
-        return API.post('projects/sample/supervalidator/remove', data);
+        return API.post('projects/'+projectname+'/sample/supervalidator/remove', data);
     },
     addSampleProf(username, projectname, samplename){
         let data = {'username':username, 'projectname':projectname, 'samplename':samplename};
-        return API.post('projects/sample/prof/add', data);
+        return API.post('projects/'+projectname+'/sample/prof/add', data);
     },
     removeSampleProf(username, projectname, samplename){
         let data = {'username':username, 'projectname':projectname, 'samplename':samplename};
-        return API.post('projects/sample/prof/remove', data);
+        return API.post('projects/'+projectname+'/sample/prof/remove', data);
+    },
+    modifyOpenProject(projectname, value){
+        return API.post('projects/'+projectname+'/openproject', {'value':value});
+    },
+    modifyShowAllTrees(projectname, value){
+        return API.post('projects/'+projectname+'/showalltrees', {'value':value});
     },
     exportSamplesZip(samplenames, projectname){
         let data = { 'samples': samplenames };

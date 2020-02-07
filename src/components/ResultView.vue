@@ -24,6 +24,7 @@
 </template>
 
 <script>
+import api from '../boot/backend-api';
 import SentenceCard from './SentenceCard';
 var heavyList = [];
 export default {

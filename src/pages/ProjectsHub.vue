@@ -30,7 +30,7 @@
             </q-toolbar-title>
           </q-toolbar>
         </q-card-section>
-        <q-card-section v-if="loadingProjects" class="row q-pa-md items-start q-gutter-md" style="width: 90vw; height:60vh;" >
+        <q-card-section v-if="initLoading" class="row q-pa-md items-start q-gutter-md" style="width: 90vw; height:60vh;" >
             <q-card style="max-width: 250px; width:250px" v-for="i in skelNumber" :key="i">
               <q-skeleton height="150px" square />
               <q-item>
@@ -113,17 +113,19 @@ export default {
       creaProjectDial: false,
       projectSettingsDial: false,
       projectnameTarget: '',
+      initLoading: false,
       loadingProjects: true,
       skelNumber: [...Array(5).keys()]
     }
   },
   mounted(){
+    this.initLoading = true;
     this.listMode = this.$ls.get('project_view', false);
     this.getProjects();
   },
   methods:{
     openURL,
-    getProjects(){ this.loadingProjects = true; api.getProjects().then(response => { this.projects = response.data; this.visibleProjects = response.data; this.loadingProjects = false;}).catch(error => { this.$store.dispatch("notifyError", {error: error}); this.loadingProjects = false;}); },
+    getProjects(){ this.loadingProjects = true; api.getProjects().then(response => { this.projects = response.data; this.visibleProjects = response.data; this.loadingProjects = false; this.initLoading = false;}).catch(error => { this.$store.dispatch("notifyError", {error: error}); this.loadingProjects = false;}); },
     searchProject(pattern) {
       var filteredProjects =  this.projects.filter(function(project) {
         if(project.projectname.includes(pattern)){

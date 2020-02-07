@@ -3,8 +3,8 @@
         <q-toolbar :class="$q.dark.isActive?'text-white':'text-primary'">
             <q-btn flat round dense icon="save" :disable="!lastModified.dirty" @click="save()"> <q-tooltip>Save this tree</q-tooltip> </q-btn>
             <!-- <q-btn flat round dense icon="archive" ><q-tooltip>Export</q-tooltip></q-btn> -->
-            <q-btn flat round dense icon="undo" :disable="!lastModified.dirty" @click="undo()"><q-tooltip>Undo</q-tooltip></q-btn>
-            <q-btn flat round dense icon="redo" :disable="!lastModified.redo"><q-tooltip>Redo</q-tooltip></q-btn>
+            <!-- <q-btn flat round dense icon="undo" :disable="!lastModified.dirty" @click="undo()"><q-tooltip>Undo</q-tooltip></q-btn>
+            <q-btn flat round dense icon="redo" :disable="!lastModified.redo"><q-tooltip>Redo</q-tooltip></q-btn> -->
             <q-toolbar-title>
             </q-toolbar-title>
             <q-btn flat round dense icon="more_vert" />
@@ -48,6 +48,13 @@ export default {
                 'saveSuccess': { color: 'positive', message: 'Saved!'},
                 'saveFail': { color: 'negative', message: 'Oops, could not save...', icon: 'report_problem' },
             }
+        }
+    },
+    computed: {
+        cannotSave(){  
+            let dirty = this.lastModified.dirty;
+            let open = this.$store.getters.projectConfig.is_open;
+            return !dirty || !open;
         }
     },
     mounted() {

@@ -20,6 +20,9 @@ export default {
     getUsers(){
         return API.get('admin/users');
     },
+    getUsersTreeFrom(projectname){
+        return API.get('projects/'+projectname+'/treesfrom');
+    },
     getProjectInfos(name){
         return API.get('projects/'+name);
     },
@@ -44,6 +47,14 @@ export default {
     removeProjectStockLabel(projectname, id, stockid, label){
         return API.post('projects/'+projectname+'/config/label/delete', {'labelid': id,'stockid':stockid, 'label':label});
     },
+    saveTxtCats(projectname, txtCats){
+        let data = {'cats':txtCats};
+        return API.post('projects/'+projectname+'/config/txtcats', data);
+    },
+    saveTxtLabels(projectname, txtLabels){
+        let data = {'labels':txtLabels};
+        return API.post('projects/'+projectname+'/config/txtlabels', data);
+    },
     setProjectUserRole(projectname, targetrole, userid){
         let data = {'user_id':userid};
         return API.post('projects/'+projectname+'/'+targetrole+'/add', data);
@@ -51,6 +62,14 @@ export default {
     removeProjectUserRole(projectname, targetrole, userid){
         let data = {'user_id':userid};
         return API.post('projects/'+projectname+'/'+targetrole+'/remove', data);
+    },
+    addDefaultUserTree(projectname, userid){
+        let data = {'user_id':userid};
+        return API.post('projects/'+projectname+'/defaultusertrees/add', data);
+    },
+    removeDefaultUserTree(projectname, dutid){
+        let data = {'dut_id':dutid};
+        return API.post('projects/'+projectname+'/defaultusertrees/remove', data);
     },
     getSampleContent(projectname, samplename){
         return API.get('projects/'+projectname+'/sample/'+samplename);

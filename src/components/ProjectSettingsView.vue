@@ -8,7 +8,7 @@
 				<q-tooltip content-class="bg-white text-primary">Close</q-tooltip>
 			</q-btn>
 		</q-bar>
-		<q-card-section class="q-pa-md row q-gutter-md">
+		<q-card-section class="q-pa-md row q-gutter-md"> 
 			<q-banner rounded class="col-md-4 offset-md-4">
 					<q-img :ratio="16/9" :src="imageEmpty?'../statics/project.jpg':imageCleaned" basic >
 						<div class="absolute-bottom text-h6">
@@ -25,26 +25,41 @@
 			</q-banner>
 		</q-card-section>
 		<q-card-section class="q-pa-md row items-start q-gutter-md">
-			<q-list>
-				<q-item tag="label" v-ripple>
-					<q-item-section>
-					<q-item-label>All trees visible?</q-item-label>
-					<q-item-label caption>If true, annotators will be able to see others' trees</q-item-label>
-					</q-item-section>
-					<q-item-section avatar>
-					<q-toggle size="xl" color="blue" v-model="infos.show_all_trees" checked-icon="check" unchecked-icon="clear" @input="changeShowAllTrees()" />
-					</q-item-section>
-				</q-item>
-				<q-item tag="label" v-ripple>
-					<q-item-section>
-					<q-item-label>Open project?</q-item-label>
-					<q-item-label caption>If true, anyone can edit samples</q-item-label>
-					</q-item-section>
-					<q-item-section avatar>
-					<q-toggle size="xl" color="green" v-model="infos.is_open" checked-icon="check" unchecked-icon="clear" @input="changeOpenProject()" />
-					</q-item-section>
-				</q-item>
-			</q-list>
+			<q-card class="col">
+				<q-list>
+					<q-item tag="label" v-ripple>
+						<q-item-section>
+						<q-item-label>All trees visible?</q-item-label>
+						<q-item-label caption>If true, annotators will be able to see others' trees</q-item-label>
+						</q-item-section>
+						<q-item-section avatar>
+						<q-toggle size="xl" color="blue" v-model="infos.show_all_trees" checked-icon="check" unchecked-icon="clear" @input="changeShowAllTrees()" />
+						</q-item-section>
+					</q-item>
+					<q-item tag="label" v-ripple>
+						<q-item-section>
+						<q-item-label>Open project?</q-item-label>
+						<q-item-label caption>If true, anyone can edit samples</q-item-label>
+						</q-item-section>
+						<q-item-section avatar>
+						<q-toggle size="xl" color="green" v-model="infos.is_open" checked-icon="check" unchecked-icon="clear" @input="changeOpenProject()" />
+						</q-item-section>
+					</q-item>
+				</q-list>
+			</q-card>
+			<q-card class="col">
+				<q-card-section>
+					<div class="text-h6 text-center">Default User Tree <q-btn v-show="admin" flat round icon="add" color="primary" @click="addDefaultUserTreeDial = true"></q-btn></div>
+				</q-card-section>
+				<q-card-section >
+					<q-list bordered separator class="list-size">
+						<q-item v-for="dut in infos.default_user_trees" :key="dut.id" clickable v-ripple >
+							<q-item-section>{{dut.user_id}}</q-item-section>
+							<q-item-section side><q-btn v-show="admin" dense round flat icon="remove" color="negative" @click="removeDefaultUserTree(dut.id)"></q-btn></q-item-section>
+						</q-item>
+					</q-list>
+				</q-card-section>
+			</q-card>
 		</q-card-section>
 		<q-card-section class="q-pa-md row items-start q-gutter-md">
 			<q-card class="col">
@@ -77,6 +92,12 @@
 		<q-card-section class="q-pa-md row items-start ">
 			<q-card class="full-width">
 				<q-card-section><div class="text-h6 text-center">Relations SubLabels (to form a deprel)</div></q-card-section>
+				<q-card-section>
+					<q-expansion-item expand-separator icon="edit" label="Advanced Insertion" caption="Manually insert a batch of deprel using a text format">
+						<q-btn icon="save" color="primary" class="full-width" flat label="save textual values" @click="saveTextLabels()"></q-btn>
+	  					<codemirror v-model="txtLabels" :options="cmOption"></codemirror>
+					</q-expansion-item>
+				</q-card-section>
 				<q-card-section class="row q-gutter-md q-pa-md">
 					<div class="col" v-for="(listrel, index) in infos.labels" :key="index">
 						<q-btn-group spread flat>
@@ -108,6 +129,12 @@
 		<q-card-section class="q-pa-md row items-start ">
 			<q-card class="full-width">
 				<q-card-section><div class="text-h6 text-center">Categories (POS tags)</div></q-card-section>
+				<q-card-section>
+					<q-expansion-item expand-separator icon="edit" label="Advanced Insertion" caption="Manually insert a batch of tags using a text format">
+						<q-btn icon="save" color="primary" class="full-width" flat label="save textual values" @click="saveTextCats()"></q-btn>
+	  					<codemirror v-model="txtCats" :options="cmOption"></codemirror>
+					</q-expansion-item>
+				</q-card-section>
 				<q-card-section class="row q-gutter-md q-pa-md">
 					<div class="col">
 						<q-btn flat square icon="add" color="primary" class="full-width" @click="addCatDial = true">Add Cat</q-btn>
@@ -130,11 +157,12 @@
 				</q-card-section>
 			</q-card>
 		</q-card-section>
-		<q-card-section>
+		<!-- <q-card-section>
 			<codemirror v-model="config" :options="cmOption"></codemirror>
-		</q-card-section>
-		<q-dialog v-model="addAdminDial" transition-show="fade" transition-hide="fade">  <user-select-table :parentCallback="addAdmin"></user-select-table>   </q-dialog>
-		<q-dialog v-model="addGuestDial" transition-show="fade" transition-hide="fade">  <user-select-table :parentCallback="addGuest"></user-select-table>   </q-dialog>
+		</q-card-section> -->
+		<q-dialog v-model="addAdminDial" transition-show="fade" transition-hide="fade">  <user-select-table :parentCallback="addAdmin" :general="true"></user-select-table>   </q-dialog>
+		<q-dialog v-model="addGuestDial" transition-show="fade" transition-hide="fade">  <user-select-table :parentCallback="addGuest" :general="true"></user-select-table>   </q-dialog>
+		<q-dialog v-model="addDefaultUserTreeDial" transition-show="fade" transition-hide="fade">  <user-select-table :parentCallback="addDefaultUserTree" :general="false" :projectname="$props.projectname"></user-select-table>   </q-dialog>
 		<q-dialog v-model="addCatDial">
 			<q-card>
 				<q-bar class="bg-primary text-white">
@@ -180,6 +208,7 @@ import 'codemirror/theme/material-darker.css';
 import api from '../boot/backend-api.js';
 import UserSelectTable from '../components/UserSelectTable.vue';
 export default {
+	name: 'project-settings-view',
 	components: { codemirror, UserSelectTable },
 	props: ['projectname'],
 	data(){
@@ -188,10 +217,16 @@ export default {
 			addGuestDial: false,
 			addLabelDial: false,
 			addCatDial: false,
+			addDefaultUserTreeDial: false,
 			entryCat: '',
 			entryLabel: '',
 			stockid: '',
 			infos: {admins:[], guests:[], labels:[], cats:[]},
+			txtCats: `# please drop your categories here in a comma separated format. For instance:
+VER,DET,NOMcom`,
+			txtLabels: `# please drop your labels here in a comma separated format with one column per line. For instance:
+subj,comp,vocative
+:aux,:caus,:cleft`,
 			// relations: [["subj", "comp", "vocative", "det", "dep", "mod", "conj", "cc", "parataxis", "fixed", "flat", "compound", "discourse", "dislocated", "goeswith", "orphan", "punct", "root"],[":aux",":caus",":cleft",":pred",":appos"],["@comp","@mod","@subj","@dep","@det"]],
 			// cats: ["ADJ", "ADP", "ADV", "AUX", "CCONJ", "DET", "INTJ", "NOUN", "NUM", "PART", "PRON", "PROPN", "PUNCT", "SCONJ", "VERB", "X"],
 			config: `[configuration]
@@ -316,7 +351,7 @@ attris = {"t":		{"font": '18px "Arial"', "text-anchor":'start',"fill": '#000',"c
             return 'data:image/png;base64, '+clean;
 		},
 		guest(){ return this.infos.guests.includes(this.$store.getters.getUserInfos.id); },
-        admin(){ return this.infos.admins.includes(this.$store.getters.getUserInfos.id) || this.$store.getters.getUserInfos.super_admin; }        
+		admin(){ return this.infos.admins.includes(this.$store.getters.getUserInfos.id) || this.$store.getters.getUserInfos.super_admin; }   
     },
 	methods:{
 		getProjectInfos(){ api.getProjectSettings(this.$props.projectname).then(response => {this.infos = response.data; }).catch(error => {this.$store.dispatch("notifyError", {error: error}); this.$q.notify({message: `${error}`, color:'negative', position: 'bottom'});}) },
@@ -330,8 +365,20 @@ attris = {"t":		{"font": '18px "Arial"', "text-anchor":'start',"fill": '#000',"c
 		removeLabelColumn(stockid){ api.removeProjectStock(this.$props.projectname, stockid).then(response => {this.$q.notify({message:`Change saved!`}); this.infos.labels = response.data; }).catch(error => { this.$store.dispatch("notifyError", {error: error}); })  },
 		addCat(){ api.addProjectCatLabel(this.$props.projectname, this.entryCat).then(response => {this.$q.notify({message:`Change saved!`}); this.infos.cats = response.data; }).catch(error => { this.$store.dispatch("notifyError", {error: error}); }) },
 		removeCat(cat){ api.removeProjectCatLabel(this.$props.projectname, cat).then(response => {this.$q.notify({message:`Change saved!`}); this.infos.cats = response.data; }).catch(error => { this.$store.dispatch("notifyError", {error: error}); })},
+
+		addDefaultUserTree(selected){ api.addDefaultUserTree(this.$props.projectname, selected[0].id).then(response => {this.$q.notify({message:`Change saved!`}); this.infos = response.data;}).catch(error => {this.$store.dispatch("notifyError", {error: error})});  },
+		removeDefaultUserTree(dutid){ api.removeDefaultUserTree(this.$props.projectname, dutid).then( response => {this.$q.notify({message:`Change saved!`}); this.infos = response.data;} ).catch(error => {this.$store.dispatch("notifyError", {error: error})});  },
+		
+
 		changeShowAllTrees(){ api.modifyShowAllTrees(this.$props.projectname, this.infos.show_all_trees).then(response => {this.$q.notify({message:'Change saved!'}); this.infos = response.data; }).catch(error => { this.$store.dispatch("notifyError", {error: error}); }) },
-		changeOpenProject(){ api.modifyOpenProject(this.$props.projectname, this.infos.is_open).then(response => {this.$q.notify({message:`Change saved!`}); this.infos = response.data; }).catch(error => { this.$store.dispatch("notifyError", {error: error}); }) }
+		changeOpenProject(){ api.modifyOpenProject(this.$props.projectname, this.infos.is_open).then(response => {this.$q.notify({message:`Change saved!`}); this.infos = response.data; }).catch(error => { this.$store.dispatch("notifyError", {error: error}); }) },
+
+		saveTextCats(){ 
+			api.saveTxtCats(this.$props.projectname, this.txtCats).then(response => { this.$q.notify({message:`Change saved!`}); this.infos.cats = response.data;}).catch(error => { this.$store.dispatch("notifyError", {error: error}); }); 
+		},
+		saveTextLabels(){ 
+			api.saveTxtLabels(this.$props.projectname, this.txtLabels).then(response => { console.log(JSON.stringify(response.data)); this.$q.notify({message:`Change saved!`}); this.infos.labels = response.data;}).catch(error => { this.$store.dispatch("notifyError", {error: error}); }); 
+		}
 	}
 }
 </script>
@@ -343,5 +390,8 @@ attris = {"t":		{"font": '18px "Arial"', "text-anchor":'start',"fill": '#000',"c
 }
 .list-size {
 	height: 150px;
+}
+.cm-height {
+	height: 50px;
 }
 </style>

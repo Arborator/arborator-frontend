@@ -5,7 +5,7 @@
                 <q-card-section>
                     <q-toolbar class="  text-center">
                         <q-toolbar-title>
-                        <span :class="($q.dark.isActive?'':'text-primary') + ' text-bold'">{{infos.name}}</span>
+                        <span :class="($q.dark.isActive?'':'text-primary') + ' text-bold'">{{infos.name}}</span> <q-btn v-if="$store.getters.getUserInfos.super_admin || admin" flat round color="primary" icon="settings" @click="projectSettingsDial=true"></q-btn>
                         </q-toolbar-title>
                     </q-toolbar>
                 </q-card-section>
@@ -188,6 +188,10 @@
                 <relation-table :edges="relationTableInfos" ></relation-table>
             </q-dialog>
 
+            <q-dialog v-model="projectSettingsDial" transition-show="slide-up" transition-hide="slide-down" >
+                <project-settings-view :projectname="$route.params.projectname" style="width:90vw"></project-settings-view>
+            </q-dialog>
+
         </div>
     </q-page>
 </template>
@@ -202,10 +206,11 @@ import ResultView from '../components/ResultView';
 import RelationTable from '../components/RelationTable';
 import UserTable from '../components/UserTable';
 import TagInput from '../components/TagInput';
+import ProjectSettingsView from '../components/ProjectSettingsView.vue';
 
 export default {
     components: {
-        GrewRequestCard, ResultView, RelationTable, UserTable, TagInput
+        GrewRequestCard, ResultView, RelationTable, UserTable, TagInput, ProjectSettingsView
     },
     data(){
         return {
@@ -214,6 +219,7 @@ export default {
             assignDial: false,
             uploadDial: false,
             searchDial: false,
+            projectSettingsDial: false,
             maximizedUploadToggle: false,
             resultSearchDial: false,
             relationTableDial: false,
@@ -248,7 +254,7 @@ export default {
                     { name: 'treesFrom', label: 'Trees From', sortable: true, field: 'treesFrom' },
                     { name: 'exo', label: 'Exo', sortable: true, field: 'exo' }
                 ],
-                visibleColumns: ['samplename', 'sentences', 'tokens', 'sentenceLength', 'annotators', 'validators', 'treesFrom'],
+                visibleColumns: ['samplename', 'sentenceLength', 'annotators', 'validators', 'treesFrom'],
                 filter: '',
                 selected: [],
                 loading: false,
@@ -357,21 +363,20 @@ export default {
          * @param samplename : the sample name to find
          */
         updateTags(response, samplename){
-            for(let [i, sample] of this.infos.samples.entries()){ if(sample.samplename == samplename ){ this.infos.samples[i] = response.data; } }
+            for(let [i, sample] of this.infos.samples.entries()){ if(sample.samplename == samplename ){ this.infos.samples[i]["roles"] = response.data["roles"]; } }
             this.tableKey++;
             // this.$refs.textsTable.requestServerInteraction(this.table.pagination);
         },
         addAnnotator(slug, context){ 
-            api.addSampleAnnotator(slug.value, this.$route.params.projectname, context.samplename).then(response => { this.updateTags(response, context.samplename); }).catch(error => { console.log(error.response.status); this.$store.dispatch("notifyError", {error: error})  });
+            api.addSampleAnnotator(slug.value, this.$route.params.projectname, context.samplename).then(response => { this.updateTags(response, context.samplename); this.$q.notify({message:`Change saved!`});}).catch(error => { console.log(error.response.status); this.$store.dispatch("notifyError", {error: error})  });
         },
         removeAnnotator(slug, context){ 
             api.removeSampleAnnotator(slug.value, this.$route.params.projectname, context.samplename).then(response => {
-                console.log(response.data);
-                this.updateTags(response, context.samplename);
+                this.updateTags(response, context.samplename); this.$q.notify({message:`Change saved!`});
             }).catch(error => {  this.$store.dispatch("notifyError", {error: error})  });
         },
-        addValidator(slug, context){ api.addSampleValidator(slug.value, this.$route.params.projectname, context.samplename).then(response => { this.updateTags(response, context.samplename); }) },
-        removeValidator(slug, context){ api.removeSampleValidator(slug.value, this.$route.params.projectname, context.samplename).then(response => { this.updateTags(response, context.samplename); }) },
+        addValidator(slug, context){ api.addSampleValidator(slug.value, this.$route.params.projectname, context.samplename).then(response => { this.updateTags(response, context.samplename); this.$q.notify({message:`Change saved!`}); }) },
+        removeValidator(slug, context){ api.removeSampleValidator(slug.value, this.$route.params.projectname, context.samplename).then(response => { this.updateTags(response, context.samplename); this.$q.notify({message:`Change saved!`}); }) },
         addSuperValidator(slug, context){ api.addSampleSuperValidator(slug.value, this.$route.params.projectname, context.samplename).then(response => { this.updateTags(response, context.samplename); }) },
         removeSuperValidator(slug, context){ api.removeSampleSuperValidator(slug.value, this.$route.params.projectname, context.samplename).then(response => { this.updateTags(response, context.samplename); }) },
         addProf(slug, context){ api.addSampleProf(slug.value, this.$route.params.projectname, context.samplename).then(response => { this.updateTags(response, context.samplename); }) },

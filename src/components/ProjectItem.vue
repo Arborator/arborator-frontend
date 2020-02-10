@@ -62,6 +62,7 @@ export default {
             else{
                 if(this.project.admins.includes(this.$store.getters.getUserInfos.id)){ return true; }
                 else if(this.project.guests.includes(this.$store.getters.getUserInfos.id)){ return true; }
+                else if(this.$store.getters.getUserInfos.super_admin) { return true; }
                 else { return false; }
             }
         }        

@@ -10,6 +10,13 @@
 		</q-bar>
 
 		<q-card-section>
+			<q-form @submit="parentCallback([{id:customName}])" class="q-gutter-md" >
+				<q-input bottom-slots v-model="customName" label="Custom Name (robot type: example 'parser1')" counter dense>
+					<template v-slot:before>
+						<q-btn color="primary" type="submit" label="validate" v-close-popup/>
+					</template>
+				</q-input>
+			</q-form>
 			<q-table
 				ref="usersTable"
 				class="dark rounded-borders"
@@ -82,7 +89,7 @@
 import api from '../boot/backend-api';
 
 export default {
-	props: ['parentCallback'],
+	props: ['parentCallback', 'general', 'projectname', 'robot'],
 	data(){
 		return {
 			table:{
@@ -99,19 +106,22 @@ export default {
 				selected: [],
 				loading: false,
 				pagination: { sortBy: 'name', descending: false, page: 1, rowsPerPage: 10 },
-				loadingDelete: false
+				loadingDelete: false,
+				customName: ''
 			}
 		}
 	},
 	mounted(){
-		this.getUsers();
+		if(this.$props.general){this.getUsers();}
+		else{ this.getUsersTreeFrom(); }
 	},
 	methods: {
 		filterFields(tableJson) {
 			var tempArray = tableJson.fields.filter(function( obj ) { return obj.field !== 'syntInfo' && obj.field !== 'cat' && obj.field !== 'redistributions' ; });
 			return tempArray;
 		},
-		getUsers(){ api.getUsers().then( response => { this.table.data = response.data; }).catch(error => { this.$store.dispatch("notifyError", {error: error}); }); }
+		getUsers(){ api.getUsers().then( response => { this.table.data = response.data; }).catch(error => { this.$store.dispatch("notifyError", {error: error}); }); },
+		getUsersTreeFrom(){ api.getUsersTreeFrom(this.$props.projectname).then( response => { this.table.data = response.data; }).catch(error => { this.$store.dispatch("notifyError", {error: error}); }); }
 	}
 }
 </script>

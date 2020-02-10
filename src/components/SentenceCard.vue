@@ -16,7 +16,6 @@
             </q-tabs>
             <q-separator />
             <q-tab-panels v-model="tab" keep-alive >
-               
                 <q-tab-panel v-for="(tree, user) in sampleData.conlls" :key="user" :props="tree" :name="user">
                     <q-card  flat >
                         <q-card-section :class="($q.dark.isActive?'':'') + ' scrollable'" >

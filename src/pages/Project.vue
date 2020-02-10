@@ -47,6 +47,8 @@
                                     <q-banner v-show="!table.loading && initLoad" inline-actions class="text-white bg-accent">
                                         No sample yet. This project is empty, please upload some conll files. <span v-show="!admin">Ask an administrator to add files</span>
                                         <div v-show="admin" class="q-pa-md column items-start q-gutter-y-md">
+                                            <q-toggle v-model="robot.active" checked-icon="check" color="warning" label="Choose a custom import name?" unchecked-icon="clear"/>
+                                            <q-input dark v-show="robot.active" v-model="robot.name" label="Custom Name for non real user import" />
                                             <q-file dark v-model="uploadSample.attachment.file" label="Pick files" outlined  use-chips clearable :loading="uploadSample.submitting" multiple style="max-width: 400px">
                                             <template v-slot:after >
                                                 <q-btn color="primary" dense icon="cloud_upload" round @click="upload()" :loading="uploadSample.submitting" :disable="uploadSample.attachment.file == null"/>
@@ -170,6 +172,11 @@
                         <div class="text-h6 text-blue-grey-8">Select one or multiple conll files</div>
                     </q-card-section>
                     
+                    <q-card-section>
+                        <q-toggle v-model="robot.active" checked-icon="check" color="warning" label="Choose a custom import name?" unchecked-icon="clear"/>
+                        <q-input v-show="robot.active" v-model="robot.name" label="Custom Name for non real user import" />
+                    </q-card-section>
+
                     <q-card-section > 
                         <q-file v-model="uploadSample.attachment.file" label="Pick files" outlined  use-chips clearable :loading="uploadSample.submitting" multiple style="max-width: 400px">
                             <template v-slot:after >
@@ -277,7 +284,8 @@ export default {
             possiblesUsers: [],
             tagContext: {},
             tableKey: 0,
-            initLoad: false
+            initLoad: false,
+            robot: {active:false, name:'parser'}
         }
     },
     created() { window.addEventListener('resize', this.handleResize); this.handleResize(); },
@@ -309,6 +317,8 @@ export default {
         },
         upload(){
             var form = new FormData();
+            form.append('robotname', this.robot.name);
+            form.append('robot', this.robot.active);
             this.uploadSample.submitting = true;
             for(const file of this.uploadSample.attachment.file){ form.append('files',file); }
             form.append('import_user',Store.getters.getUserInfos.username);

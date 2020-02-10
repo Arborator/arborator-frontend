@@ -63,8 +63,8 @@ export default {
         let data = {'user_id':userid};
         return API.post('projects/'+projectname+'/'+targetrole+'/remove', data);
     },
-    addDefaultUserTree(projectname, userid){
-        let data = {'user_id':userid};
+    addDefaultUserTree(projectname, user){
+        let data = {'user':JSON.stringify(user)};
         return API.post('projects/'+projectname+'/defaultusertrees/add', data);
     },
     removeDefaultUserTree(projectname, dutid){

@@ -54,7 +54,7 @@
 				<q-card-section >
 					<q-list bordered separator class="list-size">
 						<q-item v-for="dut in infos.default_user_trees" :key="dut.id" clickable v-ripple >
-							<q-item-section>{{dut.user_id}}</q-item-section>
+							<q-item-section>{{dut.username}}</q-item-section>
 							<q-item-section side><q-btn v-show="admin" dense round flat icon="remove" color="negative" @click="removeDefaultUserTree(dut.id)"></q-btn></q-item-section>
 						</q-item>
 					</q-list>
@@ -366,7 +366,7 @@ attris = {"t":		{"font": '18px "Arial"', "text-anchor":'start',"fill": '#000',"c
 		addCat(){ api.addProjectCatLabel(this.$props.projectname, this.entryCat).then(response => {this.$q.notify({message:`Change saved!`}); this.infos.cats = response.data; }).catch(error => { this.$store.dispatch("notifyError", {error: error}); }) },
 		removeCat(cat){ api.removeProjectCatLabel(this.$props.projectname, cat).then(response => {this.$q.notify({message:`Change saved!`}); this.infos.cats = response.data; }).catch(error => { this.$store.dispatch("notifyError", {error: error}); })},
 
-		addDefaultUserTree(selected){ api.addDefaultUserTree(this.$props.projectname, selected[0].id).then(response => {this.$q.notify({message:`Change saved!`}); this.infos = response.data;}).catch(error => {this.$store.dispatch("notifyError", {error: error})});  },
+		addDefaultUserTree(selected){ api.addDefaultUserTree(this.$props.projectname, selected[0]).then(response => {this.$q.notify({message:`Change saved!`}); this.infos = response.data;}).catch(error => {this.$store.dispatch("notifyError", {error: error})});  },
 		removeDefaultUserTree(dutid){ api.removeDefaultUserTree(this.$props.projectname, dutid).then( response => {this.$q.notify({message:`Change saved!`}); this.infos = response.data;} ).catch(error => {this.$store.dispatch("notifyError", {error: error})});  },
 		
 

@@ -10,13 +10,13 @@
 		</q-bar>
 
 		<q-card-section>
-			<q-form @submit="parentCallback([{id:customName}])" class="q-gutter-md" >
+			<!-- <q-form @submit="parentCallback([{id:customName}])" class="q-gutter-md" >
 				<q-input bottom-slots v-model="customName" label="Custom Name (robot type: example 'parser1')" counter dense>
 					<template v-slot:before>
 						<q-btn color="primary" type="submit" label="validate" v-close-popup/>
 					</template>
 				</q-input>
-			</q-form>
+			</q-form> -->
 			<q-table
 				ref="usersTable"
 				class="dark rounded-borders"
@@ -106,8 +106,7 @@ export default {
 				selected: [],
 				loading: false,
 				pagination: { sortBy: 'name', descending: false, page: 1, rowsPerPage: 10 },
-				loadingDelete: false,
-				customName: ''
+				loadingDelete: false
 			}
 		}
 	},

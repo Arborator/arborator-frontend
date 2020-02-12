@@ -19,7 +19,7 @@
           <q-btn flat round @click="toggleDarkMode()"  :icon="$q.dark.isActive?'lightbulb':'brightness_2'"></q-btn>
           <q-btn-dropdown v-show="!store.getters.isLoggedIn" color="secondary" outline label="Log In" icon="account_circle">
             <q-list>
-              <q-item clickable v-close-popup @click="openURL(store.getters.getSource + '/login/google')">
+              <q-item clickable v-close-popup @click="tologin(store.getters.getSource + '/login/google')">
                 <q-item-section avatar>
                   <q-icon name='fab fa-google'/>
                 </q-item-section>
@@ -28,7 +28,7 @@
                   <q-item-label>Google</q-item-label>
                 </q-item-section>
               </q-item>
-              <q-item clickable v-close-popup @click="openURL(store.getters.getSource + '/login/github')">
+              <q-item clickable v-close-popup @click="tologin(store.getters.getSource + '/login/github')">
                 <q-item-section avatar>
                   <q-icon name='fab fa-github'/>
                 </q-item-section>
@@ -183,6 +183,13 @@ export default {
     toggleDarkMode(){ this.$q.dark.toggle();this.$ls.set('dm', this.$q.dark.isActive); },
     login(provider){
       api.auth(provider).then(response => { }).catch(error => {this.$store.dispatch("notifyError", {error: error});})
+    },
+    tologin(url){
+      window.location.assign(url);
+      // console.log(this.store.getters.getSource + '/login/google'); openURL(this.store.getters.getSource + '/login/google');
+      // window.location.href = 'https://arborapi.ilpga.fr:8888/login/google';
+      // window.location.assign("https://arborapi.ilpga.fr:8888/login/google");
+      // window.location.assign("https://profiterole-almanach-ui.paris.inria.fr:8888/");
     },
     logout() {
       this.store.dispatch("logout", { user: this.store.getters.getUserInfos.username}).then(() => {  this.$router.push('/').catch(error => {});  }).catch(error => {  this.$store.dispatch("notifyError", {error: error});  });

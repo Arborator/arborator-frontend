@@ -21,9 +21,9 @@
 			<q-form @submit="onSubmit" @reset="onReset" class="q-gutter-md">
 				<q-input filled	v-model="projectName" label="Project name" lazy-rules :rules="[ val => val && val.length > 0 || 'Please type something']"/>
 				<q-input filled	v-model="description" label="Description" />
-				<q-toggle v-model="isPrivate" label="Private?" />
-				<q-toggle v-model="isOpen" label="Open Project?" />
-				<q-toggle v-model="showAllTrees" label="Show All Trees?" />
+				<q-toggle v-model="isPrivate" label="Private" />
+				<q-toggle v-model="isOpen" label="Open Project" />
+				<q-toggle v-model="showAllTrees" label="Show All Trees" />
 				<div>
 					<q-btn type="submit" :loading="submitting" label="create" color="primary" class="q-mt-md" v-close-popup/>
 					<q-btn label="Reset" type="reset" color="primary" flat class="q-ml-sm" />

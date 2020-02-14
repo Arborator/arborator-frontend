@@ -7,14 +7,14 @@
           <div :class="$q.dark.isActive?'text-grey-1':'text-blue-grey-8'" class="text-h4 text-center ">Welcome to ArboratorGrew!</div>
         </q-card-section>
 
-        <q-card-section class="text-center" :class="$q.dark.isActive?'text-grey-1':'text-blue-grey-8'">
-        {{presentation}}
-        </q-card-section>
-
         <q-card-actions align="around">
           <q-btn push to="/projects" color="accent" >Access Treebanks</q-btn>
           <q-btn flat :class="$q.dark.isActive?'text-grey-1':'text-blue-grey-8'">Naija</q-btn>
         </q-card-actions>
+
+        <q-card-section class="text-center text-justify" :class="$q.dark.isActive?'text-grey-1':'text-blue-grey-8'">
+        {{presentation}}
+        </q-card-section>
 
       </q-card>
 

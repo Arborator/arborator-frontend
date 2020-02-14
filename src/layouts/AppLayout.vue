@@ -93,7 +93,7 @@
 
 
     <q-footer bordered>
-      <q-item-label caption class="text-center text-grey-3">Made at Almanach, Inria</q-item-label>
+      <q-item-label caption class="text-center text-grey-3">Made at Almanach, Inria. v0.9.0 (20200214)</q-item-label>
     </q-footer>
 
 

@@ -5,7 +5,7 @@
                 <q-card-section>
                     <q-toolbar class="  text-center">
                         <q-toolbar-title>
-                        <span :class="($q.dark.isActive?'':'text-primary') + ' text-bold'">{{infos.name}}</span> <q-btn v-if="$store.getters.getUserInfos.super_admin || admin" flat round color="primary" icon="settings" @click="projectSettingsDial=true"></q-btn>
+                        <span :class="($q.dark.isActive?'':'text-primary') + ' text-bold'">{{infos.name}}</span> <q-btn v-if="$store.getters.getUserInfos.super_admin || admin" flat round :color="$q.dark.isActive?'':'primary'" icon="settings" @click="projectSettingsDial=true"></q-btn>
                         </q-toolbar-title>
                     </q-toolbar>
                 </q-card-section>
@@ -113,7 +113,6 @@
                                     icon-right="open_in_browser" no-caps>{{props.row.samplename}}</q-btn></q-td>
                                     <q-td key="sentences" :props="props">{{ props.row.sentences }}</q-td>
                                     <q-td key="tokens" :props="props">{{ props.row.tokens }}</q-td>
-                                    <q-td key="sentenceLength" :props="props">{{ props.row.averageSentenceLength }}</q-td>
                                     <q-td key="annotators" :props="props">
                                         <tag-input @tag-added="addAnnotator" @tag-removed="removeAnnotator" :tag-context="props.row" :element-id="props.row.samplename + 'annotatortag'" v-model="props.row.roles.annotator" :existing-tags="possiblesUsers" :typeahead="true" typeahead-style="badges" :typeahead-hide-discard="true" placeholder="add user" :only-existing-tags="true" :typeahead-always-show="false" ></tag-input>
                                     </q-td>
@@ -254,14 +253,13 @@ export default {
                     { name: 'samplename', label:'Name', sortable: true, field: 'samplename'},
                     { name: 'sentences', label: 'Nb Sentences', sortable: true, field: 'sentences' },
                     { name: 'tokens', label: 'Nb Tokens', sortable: true, field: 'number_tokens' },
-                    { name: 'sentenceLength', label: 'Sentence Length', sortable: true, field: 'averageSentenceLength' },
                     { name: 'annotators', label: 'Annotators', sortable: true, field: 'roles.annotator' },
                     { name: 'validators', label: 'Validators', sortable: true, field: 'roles.validator' },
                     { name: 'profs', label: 'Profs', sortable: true, field: 'roles.prof' },
                     { name: 'treesFrom', label: 'Trees From', sortable: true, field: 'treesFrom' },
                     { name: 'exo', label: 'Exo', sortable: true, field: 'exo' }
                 ],
-                visibleColumns: ['samplename', 'sentenceLength', 'annotators', 'validators', 'treesFrom'],
+                visibleColumns: ['samplename', 'annotators', 'validators', 'treesFrom'],
                 filter: '',
                 selected: [],
                 loading: false,

@@ -376,13 +376,22 @@ export default {
          * @param response : the response from backend
          * @param samplename : the sample name to find
          */
-        updateTags(response, samplename){
+        updateTags(response, samplename, target){
             for(let [i, sample] of this.infos.samples.entries()){ if(sample.samplename == samplename ){ this.infos.samples[i]["roles"] = response.data["roles"]; } }
             this.tableKey++;
             // this.$refs.textsTable.requestServerInteraction(this.table.pagination);
         },
+        reverseTags(value, samplename, target){
+            for(let [i, sample] of this.infos.samples.entries()){ 
+                if(sample.samplename == samplename ){ 
+                    var res = this.infos.samples[i]["roles"][target].filter(name => name.key != value);
+                    this.infos.samples[i]["roles"][target] = res;
+                }
+            }
+            this.tableKey++;
+        },
         addAnnotator(slug, context){ 
-            api.addSampleAnnotator(slug.value, this.$route.params.projectname, context.samplename).then(response => { this.updateTags(response, context.samplename); this.$q.notify({message:`Change saved!`});}).catch(error => { console.log(error.response.status); this.$store.dispatch("notifyError", {error: error})  });
+            api.addSampleAnnotator(slug.value, this.$route.params.projectname, context.samplename).then(response => { this.updateTags(response, context.samplename); this.$q.notify({message:`Change saved!`});}).catch(error => { console.log(error.response.status); this.reverseTags(slug.value, context.samplename, 'annotator'); this.$store.dispatch("notifyError", {error: error})  });
         },
         removeAnnotator(slug, context){ 
             api.removeSampleAnnotator(slug.value, this.$route.params.projectname, context.samplename).then(response => {

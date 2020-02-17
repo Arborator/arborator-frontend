@@ -19,17 +19,33 @@
 					</q-img>
 
 				<template v-slot:action>
-					<!-- <q-btn flat label="Change Image" />
-					<q-btn flat label="Change Name" /> -->
+					<q-file v-model="uploadImage.image" label="Change Image" borderless standout filled use-chips clearable :loading="uploadImage.submitting" >
+						<template v-slot:after >
+							<q-btn color="primary" icon="cloud_upload" round @click="uploadProjectImage()" :loading="uploadImage.submitting" :disable="uploadImage.image == null" accept=".jpg, image/*"/>
+						</template>
+					</q-file>
 				</template>
 			</q-banner>
+		</q-card-section>
+		<q-card-section>
+			<q-input v-model="infos.description" style="height: 100px;" label="Description" filled clearable type="textarea"/>
+			<q-btn color="primary" @click="changeDescription()" label="save description" icon="save" dense flat ></q-btn>
 		</q-card-section>
 		<q-card-section class="q-pa-sm row items-start q-gutter-md">
 			<q-card class="col col-sm-12">
 				<q-list>
 					<q-item tag="label" v-ripple>
 						<q-item-section>
-						<q-item-label>All trees visible?</q-item-label>
+						<q-item-label>Private</q-item-label>
+						<q-item-label caption>If true, only you and super admins will be able to see the project</q-item-label>
+						</q-item-section>
+						<q-item-section avatar>
+						<q-toggle  color="blue" v-model="infos.is_private" checked-icon="check" unchecked-icon="clear" @input="changeIsPrivate()" />
+						</q-item-section>
+					</q-item>
+					<q-item tag="label" v-ripple>
+						<q-item-section>
+						<q-item-label>All trees visible</q-item-label>
 						<q-item-label caption>If true, annotators will be able to see others' trees</q-item-label>
 						</q-item-section>
 						<q-item-section avatar>
@@ -38,7 +54,7 @@
 					</q-item>
 					<q-item tag="label" v-ripple>
 						<q-item-section>
-						<q-item-label>Open project?</q-item-label>
+						<q-item-label>Open project</q-item-label>
 						<q-item-label caption>If true, anyone can edit samples</q-item-label>
 						</q-item-section>
 						<q-item-section avatar>
@@ -228,7 +244,8 @@ export default {
 			entryCat: '',
 			entryLabel: '',
 			stockid: '',
-			infos: {admins:[], guests:[], labels:[], cats:[]},
+			uploadImage: {image: null, submitting: false},
+			infos: {admins:[], guests:[], labels:[], cats:[], description: ''},
 			txtCats: `# please drop your categories here in a comma separated format. For instance:
 VER,DET,NOMcom`,
 			txtLabels: `# please drop your labels here in a comma separated format with one column per line. For instance:
@@ -268,7 +285,7 @@ subj,comp,vocative
 		admin(){ return this.infos.admins.includes(this.$store.getters.getUserInfos.id) || this.$store.getters.getUserInfos.super_admin; }   
     },
 	methods:{
-		getProjectInfos(){ api.getProjectSettings(this.$props.projectname).then(response => {this.infos = response.data; }).catch(error => {this.$store.dispatch("notifyError", {error: error}); this.$q.notify({message: `${error}`, color:'negative', position: 'bottom'});}) },
+		getProjectInfos(){ api.getProjectSettings(this.$props.projectname).then(response => {console.log(response.data); this.infos = response.data; }).catch(error => {this.$store.dispatch("notifyError", {error: error}); this.$q.notify({message: `${error}`, color:'negative', position: 'bottom'});}) },
 		addAdmin(selected){ api.setProjectUserRole(this.$props.projectname, 'admin', selected[0].id).then(response => {this.$q.notify({message:`Change saved!`}); this.infos = response.data}).catch(error => {this.$store.dispatch("notifyError", {error: error})});  },
 		removeAdmin(userid){ api.removeProjectUserRole(this.$props.projectname, 'admin', userid).then( response => {this.$q.notify({message:`Change saved!`}); this.infos = response.data;} ).catch(error => {this.$store.dispatch("notifyError", {error: error})});  },
 		addGuest(selected){ api.setProjectUserRole(this.$props.projectname, 'guest', selected[0].id).then(response=> {this.$q.notify({message:`Change saved!`});this.infos = response.data;}).catch(error => {this.$store.dispatch("notifyError", {error: error})});  },
@@ -288,6 +305,20 @@ subj,comp,vocative
 
 		changeShowAllTrees(){ api.modifyShowAllTrees(this.$props.projectname, this.infos.show_all_trees).then(response => {this.$q.notify({message:'Change saved!'}); this.infos = response.data; }).catch(error => { this.$store.dispatch("notifyError", {error: error}); }) },
 		changeOpenProject(){ api.modifyOpenProject(this.$props.projectname, this.infos.is_open).then(response => {this.$q.notify({message:`Change saved!`}); this.infos = response.data; }).catch(error => { this.$store.dispatch("notifyError", {error: error}); }) },
+		changeIsPrivate(){ api.modifyPrivate(this.$props.projectname, this.infos.is_private).then(response => {this.$q.notify({message:`Change saved!`}); this.infos = response.data; }).catch(error => { this.$store.dispatch("notifyError", {error: error}); }) },
+		changeDescription(){ api.modifyDescription(this.$props.projectname, this.infos.description).then(response => {this.$q.notify({message:`Change saved!`}); this.infos = response.data; }).catch(error => { this.$store.dispatch("notifyError", {error: error}); }) },
+		uploadProjectImage(){ 
+			this.uploadImage.submitting = true;
+			var form = new FormData();
+			form.append('files', this.uploadImage.image);
+			// for(const file of this.uploadImage.image){ form.append('files',file); }
+			api.uploadProjectImage(this.$props.projectname, form).then(response => {
+				this.uploadImage.submitting = false;
+				this.uploadImage.image = null;
+				this.$q.notify({message:`Uploaded image saved!`}); this.infos = response.data; 
+			}).catch(error => { this.$store.dispatch("notifyError", {error: error});  this.uploadImage.submitting = false;}); 
+		},
+
 
 		saveTextCats(){ 
 			api.saveTxtCats(this.$props.projectname, this.txtCats).then(response => { this.$q.notify({message:`Change saved!`}); this.infos.cats = response.data;}).catch(error => { this.$store.dispatch("notifyError", {error: error}); }); 

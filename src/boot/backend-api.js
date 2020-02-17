@@ -121,6 +121,15 @@ export default {
     modifyShowAllTrees(projectname, value){
         return API.post('projects/'+projectname+'/showalltrees', {'value':value});
     },
+    modifyPrivate(projectname, value){
+        return API.post('projects/'+projectname+'/private', {'value':value});
+    },
+    modifyDescription(projectname, value){
+        return API.post('projects/'+projectname+'/description', {'value':value});
+    },
+    uploadProjectImage(projectname, form){
+        return API.post('projects/'+projectname+'/image', form);
+    },
     exportSamplesZip(samplenames, projectname){
         let data = { 'samples': samplenames };
         return API.post('projects/'+projectname+'/export/zip', data, {responseType: 'arraybuffer'});

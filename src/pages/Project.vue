@@ -74,7 +74,7 @@
                                     <q-btn v-show="table.selected.length<1" flat color="default"  icon="delete_forever" disabled>
                                         <q-tooltip :delay="300" content-class="text-white bg-primary">Delete selected rows</q-tooltip>
                                     </q-btn>
-                                    <q-btn v-show="table.selected.length!=0" :loading="table.loadingDelete" flat color="default" text-color="red" icon="delete_forever" @click="deleteSamples()" :disable="!admin">
+                                    <q-btn v-show="table.selected.length!=0" :loading="table.loadingDelete" flat color="default" text-color="red" icon="delete_forever" @click="triggerConfirm(deleteSamples)" :disable="!admin">
                                         <q-tooltip :delay="300" content-class="text-white bg-primary">Delete selected rows</q-tooltip>
                                     </q-btn>
                                     <!-- Removed before fixed -->
@@ -198,6 +198,8 @@
                 <project-settings-view :projectname="$route.params.projectname" style="width:90vw"></project-settings-view>
             </q-dialog>
 
+            <q-dialog v-model="confirmActionDial"> <confirm-action :parentAction="confirmActionCallback" :arg1="confirmActionArg1"></confirm-action> </q-dialog>
+
         </div>
     </q-page>
 </template>
@@ -213,10 +215,11 @@ import RelationTable from '../components/RelationTable';
 import UserTable from '../components/UserTable';
 import TagInput from '../components/TagInput';
 import ProjectSettingsView from '../components/ProjectSettingsView.vue';
+import ConfirmAction from '../components/ConfirmAction';
 
 export default {
     components: {
-        GrewRequestCard, ResultView, RelationTable, UserTable, TagInput, ProjectSettingsView
+        GrewRequestCard, ResultView, RelationTable, UserTable, TagInput, ProjectSettingsView, ConfirmAction
     },
     data(){
         return {
@@ -229,6 +232,9 @@ export default {
             maximizedUploadToggle: false,
             resultSearchDial: false,
             relationTableDial: false,
+            confirmActionDial: false,
+            confirmActionCallback: null,
+            confirmActionArg1: '',
             alerts: { 
                 'uploadsuccess': { color: 'positive', message: 'Upload success'},
                 'uploadfail': { color: 'negative', message: 'Upload failed', icon: 'report_problem' },
@@ -389,6 +395,11 @@ export default {
         removeSuperValidator(slug, context){ api.removeSampleSuperValidator(slug.value, this.$route.params.projectname, context.samplename).then(response => { this.updateTags(response, context.samplename); }) },
         addProf(slug, context){ api.addSampleProf(slug.value, this.$route.params.projectname, context.samplename).then(response => { this.updateTags(response, context.samplename); }) },
         removeProf(slug, context){ api.removeSampleProf(slug.value, this.$route.params.projectname, context.samplename).then(response => { this.updateTags(response, context.samplename); }) },
+        triggerConfirm(method, arg){
+			this.confirmActionDial = true;
+			this.confirmActionCallback = method;
+			this.confirmActionArg1 = arg;
+		},
         showNotif (position, alert) {
             const { color, textColor, multiLine, icon, message, avatar, actions } = this.alerts[alert];
             const buttonColor = color ? 'white' : void 0;

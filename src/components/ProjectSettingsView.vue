@@ -55,7 +55,7 @@
 					<q-list bordered separator class="list-size">
 						<q-item v-for="dut in infos.default_user_trees" :key="dut.id" clickable v-ripple >
 							<q-item-section>{{dut.username}}</q-item-section>
-							<q-item-section side><q-btn v-show="admin" dense round flat icon="remove" :color="$q.dark.isActive?'red-13':'negative'" @click="removeDefaultUserTree(dut.id)"></q-btn></q-item-section>
+							<q-item-section side><q-btn v-show="admin" dense round flat icon="remove" :color="$q.dark.isActive?'red-13':'negative'" @click="triggerConfirm(removeDefaultUserTree, dut.id)" ></q-btn></q-item-section>
 						</q-item>
 					</q-list>
 				</q-card-section>
@@ -70,7 +70,7 @@
 					<q-list bordered separator class="list-size">
 						<q-item v-for="admin in infos.admins" :key="admin" clickable v-ripple >
 							<q-item-section>{{admin}}</q-item-section>
-							<q-item-section side><q-btn v-show="admin" dense round flat icon="remove" :color="$q.dark.isActive?'red-13':'negative'" @click="removeAdmin(admin)"></q-btn></q-item-section>
+							<q-item-section side><q-btn v-show="admin" dense round flat icon="remove" :color="$q.dark.isActive?'red-13':'negative'" @click="triggerConfirm(removeAdmin, admin)"></q-btn></q-item-section>
 						</q-item>
 					</q-list>
 				</q-card-section>
@@ -81,9 +81,9 @@
 				</q-card-section>
 				<q-card-section >
 					<q-list bordered separator class="list-size">
-						<q-item v-for="guest in infos.guests" :key="guest" clickable v-ripple @click="removeGuest(guest)">
+						<q-item v-for="guest in infos.guests" :key="guest" clickable v-ripple >
 							<q-item-section>{{guest}}</q-item-section>
-							<q-item-section side><q-btn v-show="admin" dense round flat icon="remove" :color="$q.dark.isActive?'red-13':'negative'" @click="removeGuest(guest)"></q-btn></q-item-section>
+							<q-item-section side><q-btn v-show="admin" dense round flat icon="remove" :color="$q.dark.isActive?'red-13':'negative'" @click="triggerConfirm(removeGuest, guest)"></q-btn></q-item-section>
 						</q-item>
 					</q-list>
 				</q-card-section>
@@ -94,7 +94,7 @@
 				<q-card-section><div class="text-h6 text-center">Relations SubLabels (to form a deprel)</div></q-card-section>
 				<q-card-section>
 					<q-expansion-item expand-separator icon="edit" label="Advanced Insertion" caption="Manually insert a batch of deprel using a text format">
-						<q-btn icon="save" :color="$q.dark.isActive?'purple-12':'primary'" class="full-width" flat label="save textual values" @click="saveTextLabels()"></q-btn>
+						<q-btn icon="save" :color="$q.dark.isActive?'purple-12':'primary'" class="full-width" flat label="save textual values" @click="triggerConfirm(saveTextLabels)" ></q-btn>
 	  					<codemirror v-model="txtLabels" :options="cmOption"></codemirror>
 					</q-expansion-item>
 				</q-card-section>
@@ -102,7 +102,7 @@
 					<div class="col-md-4 col-xs-12 col-sm-12" v-for="(listrel, index) in infos.labels" :key="index">
 						<q-btn-group spread flat>
 							<q-btn flat square icon="add" :color="$q.dark.isActive?'purple-12':'primary'" @click="addLabelDial = true; stockid = listrel.id;">Label</q-btn>
-							<q-btn flat square icon="remove" :color="$q.dark.isActive?'red-13':'negative'"  @click="removeLabelColumn(listrel.id)">Column</q-btn>
+							<q-btn flat square icon="remove" :color="$q.dark.isActive?'red-13':'negative'"  @click="triggerConfirm(removeLabelColumn, listrel.id)" >Column</q-btn>
 						</q-btn-group>
 						<q-virtual-scroll  style="max-height: 150px;" :virtual-scroll-slice-size="5" :virtual-scroll-item-size="10" :items="listrel.labels" bordered separator>
 							<template v-slot="{ item, index }">
@@ -115,7 +115,6 @@
 									</q-chip>
 								</q-item-label>
 								</q-item-section>
-								<!-- <q-item-section side><q-btn v-show="admin" dense round flat icon="remove" :color="$q.dark.isActive?'red-13':'negative'" @click="removeLabel(item)"></q-btn></q-item-section> -->
 								<q-item-section side><q-btn v-show="admin" dense round flat icon="remove" :color="$q.dark.isActive?'red-13':'negative'" @click="triggerConfirm(removeLabel, item)"></q-btn></q-item-section>
 
 							</q-item>
@@ -133,7 +132,7 @@
 				<q-card-section><div class="text-h6 text-center">Categories (POS tags)</div></q-card-section>
 				<q-card-section>
 					<q-expansion-item expand-separator icon="edit" label="Advanced Insertion" caption="Manually insert a batch of tags using a text format">
-						<q-btn icon="save" :color="$q.dark.isActive?'purple-12':'primary'" class="full-width" flat label="save textual values" @click="saveTextCats()"></q-btn>
+						<q-btn icon="save" :color="$q.dark.isActive?'purple-12':'primary'" class="full-width" flat label="save textual values" @click="triggerConfirm(saveTextCats)"></q-btn>
 	  					<codemirror v-model="txtCats" :options="cmOption"></codemirror>
 					</q-expansion-item>
 				</q-card-section>
@@ -151,7 +150,6 @@
 									</q-chip>
 								</q-item-label>
 								</q-item-section>
-								<!-- <q-item-section side><q-btn v-show="admin" dense round flat icon="remove" :color="$q.dark.isActive?'red-13':'negative'" @click="removeCat(item)"></q-btn></q-item-section> -->
 								<q-item-section side><q-btn v-show="admin" dense round flat icon="remove" :color="$q.dark.isActive?'red-13':'negative'" @click="triggerConfirm(removeCat, item)"></q-btn></q-item-section>
 							</q-item>
 							</template>
@@ -224,7 +222,7 @@ export default {
 			addLabelDial: false,
 			addCatDial: false,
 			addDefaultUserTreeDial: false,
-			confirmActionDial: true,
+			confirmActionDial: false,
 			confirmActionCallback: null,
 			confirmActionArg1: '',
 			entryCat: '',

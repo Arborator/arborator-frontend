@@ -10,7 +10,7 @@
                                 <q-icon name="settings" />
                             </q-item-section>
                         </q-item>
-                        <q-item clickable @click="deleteProject()">
+                        <q-item clickable @click="triggerConfirm(deleteProject)">
                             <q-item-section>Delete Project</q-item-section>
                             <q-item-section side>
                                 <q-icon name="delete_forever" color="negative"/>
@@ -36,16 +36,23 @@
             <q-icon v-show="project.is_private" name="lock" color="negative"></q-icon>
             <q-icon v-show="!project.is_private" name="public" color="positive"></q-icon>
         </q-item-section>
+
+        <q-dialog v-model="confirmActionDial"> <confirm-action :parentAction="confirmActionCallback" :arg1="confirmActionArg1"></confirm-action> </q-dialog>
     </q-item> 
 </template>
 
 <script>
 import api from '../boot/backend-api.js';
+import ConfirmAction from '../components/ConfirmAction';
 export default {
+    components: {ConfirmAction},
     props: ['props', 'parentDeleteProject', 'parentProjectSettings'],
     data() {
         return {
-            project: this.props
+            project: this.props,
+            confirmActionDial: false,
+            confirmActionCallback: null,
+            confirmActionArg1: ''
         }
     },
     computed: {
@@ -82,7 +89,12 @@ export default {
             }) 
         },
         projectSettings(){ this.$props.parentProjectSettings(this.project.projectname); },
-        deleteProject(){ this.$props.parentDeleteProject(this.project.projectname); }
+        deleteProject(){ this.$props.parentDeleteProject(this.project.projectname); },
+        triggerConfirm(method, arg){
+			this.confirmActionDial = true;
+			this.confirmActionCallback = method;
+			this.confirmActionArg1 = arg;
+		}
     }
 }
 </script>

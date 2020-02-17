@@ -74,6 +74,8 @@
     <q-dialog v-model="projectSettingsDial" transition-show="slide-up" transition-hide="slide-down" >
       <project-settings-view :projectname="projectnameTarget" style="width:90vw"></project-settings-view>
     </q-dialog>
+
+    <q-dialog v-model="confirmActionDial"> <confirm-action :parentAction="confirmActionCallback" :arg1="confirmActionArg1"></confirm-action> </q-dialog>
     
   </q-page>
 </template>
@@ -96,10 +98,11 @@ import ProjectCard from '../components/ProjectCard.vue';
 import ProjectItem from '../components/ProjectItem.vue';
 import CreaProjectCard from '../components/CreaProjectCard.vue';
 import ProjectSettingsView from '../components/ProjectSettingsView.vue';
+import ConfirmAction from '../components/ConfirmAction';
 
 export default {
   components: {
-    ProjectCard, ProjectItem, CreaProjectCard, ProjectSettingsView
+    ProjectCard, ProjectItem, CreaProjectCard, ProjectSettingsView, ConfirmAction
   },
   name: 'ProjectHub',
   data() {
@@ -115,7 +118,10 @@ export default {
       projectnameTarget: '',
       initLoading: false,
       loadingProjects: true,
-      skelNumber: [...Array(5).keys()]
+      skelNumber: [...Array(5).keys()],
+      confirmActionDial: false,
+      confirmActionCallback: null,
+      confirmActionArg1: ''
     }
   },
   mounted(){
@@ -146,7 +152,12 @@ export default {
       api.deleteProject(projectName).then(response => {
         this.$q.notify({message:`Project ${projectName} deleted`}); this.getProjects();
       }).catch(error => {this.$store.dispatch("notifyError", {error: error}); });
-    }
+    },
+    triggerConfirm(method, arg){
+			this.confirmActionDial = true;
+			this.confirmActionCallback = method;
+			this.confirmActionArg1 = arg;
+		},
   }
 }
 </script>

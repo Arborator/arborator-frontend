@@ -21,7 +21,7 @@
             <q-space />
             <q-card-actions >
               <q-btn flat @click="ondialoghide()" label="Cancel" v-close-popup  style="width: 45%; margin-left: auto;margin-right: auto;" />
-              <q-btn color="primary" @click="onchangerel()" label="Ok" v-close-popup style="width: 45%; margin-left: auto;margin-right: auto;" />
+              <q-btn color="primary" @click="onchangerel()" label="Ok" v-close-popup style="width: 45%; margin-left: auto;margin-right: auto;" :disabled="emptyDeprel"/>
             </q-card-actions>
         </q-card>
       </q-dialog>
@@ -52,7 +52,7 @@
           <q-separator/>
           <q-card-actions>
             <q-btn flat @click="ondialoghide()" label="Cancel" v-close-popup style="width: 45%; margin-left: auto;margin-right: auto;" />
-            <q-btn color="primary" @click="onchangecat()" label="Ok" v-close-popup style="width: 45%; margin-left: auto;margin-right: auto;" />
+            <q-btn color="primary" @click="onchangecat()" label="Ok" v-close-popup style="width: 45%; margin-left: auto;margin-right: auto;" :disabled="emptyCat" />
 
           </q-card-actions>
         </q-card>
@@ -107,6 +107,10 @@ export default {
               category:null
             }            
         }
+    },
+    computed: {
+      emptyCat(){ return this.infos.category == null || this.infos.category == ''; },
+      emptyDeprel(){ return this.infos.relation.flat().length < 1 ; }
     },
     mounted(){
         var svg=this.start(this.conll, this.matches, this.id, this.user);
@@ -206,9 +210,11 @@ export default {
           // console.log("triggerCategoryChange2")
         },
         onchangerel(){
-          this.relDialog = !this.relDialog;
-          this.draft.relationChanged(this.snapInfos.s, this.snapInfos.depid, this.snapInfos.govid, this.infos.relation.join(""));
-          this.up(true, false);
+          if(this.infos.relation.join("") != ''){
+            this.relDialog = !this.relDialog;
+            this.draft.relationChanged(this.snapInfos.s, this.snapInfos.depid, this.snapInfos.govid, this.infos.relation.join(""));
+            this.up(true, false);
+          }
         },
         onchangecat(){
           this.catDialog = !this.catDialog;

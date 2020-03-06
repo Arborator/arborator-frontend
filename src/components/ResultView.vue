@@ -43,7 +43,7 @@ export default {
     },
     methods: {
         freezeSamples() {
-            console.log('samples', this.searchresults);
+            console.log('samples to freeze', JSON.stringify(this.searchresults) );
             var index = 0; var listSamples = []; var index2sentId = {};
             for(let sentId in this.searchresults){ listSamples.push(sentId); index2sentId[index] = sentId; index++;}
             heavyList = listSamples;

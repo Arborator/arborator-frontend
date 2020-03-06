@@ -68,7 +68,7 @@
                                     <!-- <q-btn flat color="default"  icon="person_add" :disabled="table.selected.length<1" @click="assignDial = true">
                                         <q-tooltip :delay="300" content-class="text-white bg-primary">Assign</q-tooltip>
                                     </q-btn> -->
-                                    <q-btn flat  color="default"  icon="cloud_download" :disabled="table.selected.length<1" @click="exportSamplesZip()" :loading="table.exporting" :disable="!guest && !admin">
+                                    <q-btn flat  color="default"  icon="cloud_download" @click="exportSamplesZip()" :loading="table.exporting" :disable="(!guest && !admin) || table.selected.length<1">
                                         <q-tooltip :delay="300" content-class="text-white bg-primary">Export</q-tooltip>
                                     </q-btn>
                                     <q-btn v-show="table.selected.length<1" flat color="default"  icon="delete_forever" disabled>

@@ -76,7 +76,7 @@ export default {
         getSampleContent(){
             this.loading = true;
             api.getSampleContent(this.projectname, this.samplename)
-            .then( response => { console.log("samples", response.data[Object.keys(response.data)[0]]); this.samples = response.data; this.freezeSamples(); this.loading = false; })
+            .then( response => { console.log("samples (sample view)", response.data[Object.keys(response.data)[0]]); this.samples = response.data; this.freezeSamples(); this.loading = false; })
             .catch(error => {this.$store.dispatch("notifyError", {error: error}); this.loading = false;});
         },
         onSearch(searchPattern){

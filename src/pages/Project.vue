@@ -265,7 +265,7 @@ export default {
                     { name: 'treesFrom', label: 'Trees From', sortable: true, field: 'treesFrom' },
                     { name: 'exo', label: 'Exo', sortable: true, field: 'exo' }
                 ],
-                visibleColumns: ['samplename', 'annotators', 'validators', 'treesFrom'],
+                visibleColumns: ['samplename', 'annotators', 'validators', 'treesFrom', 'tokens', 'sentences'],
                 filter: '',
                 selected: [],
                 loading: false,
@@ -302,7 +302,8 @@ export default {
         routePath() { return this.$route.path; },
         breakpoint(){ return this.window.width <= 400; },
         guest(){ return this.infos.guests.includes(this.$store.getters.getUserInfos.id); },
-        admin(){ return this.infos.admins.includes(this.$store.getters.getUserInfos.id); }
+        admin(){ return this.infos.admins.includes(this.$store.getters.getUserInfos.id); },
+        noselect(){ return this.table.selected.length < 1;}
     },
     methods:{
         handleResize() {this.window.width = window.innerWidth; this.window.height = window.innerHeight;},

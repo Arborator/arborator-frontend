@@ -6,7 +6,7 @@
         v-model="relDialog"
         :maximized="maximizedToggle"
         @hide="ondialoghide()"
-        @keyup.enter="onchangerel()"
+        @keyup.enter="onchangerel(false)"
       >
         <q-card style="height:300px">
           <q-bar class="bg-primary text-white">
@@ -20,8 +20,11 @@
           </q-card-section>
             <q-space />
             <q-card-actions >
-              <q-btn flat @click="ondialoghide()" label="Cancel" v-close-popup  style="width: 45%; margin-left: auto;margin-right: auto;" />
-              <q-btn color="primary" @click="onchangerel()" label="Ok" v-close-popup style="width: 45%; margin-left: auto;margin-right: auto;" :disabled="emptyDeprel"/>
+              <q-btn flat @click="ondialoghide()" label="Cancel" v-close-popup  style="width: 35%; margin-left: auto; margin-right: auto;" />
+              <q-btn flat @click="onchangerel(true)" label="+" v-close-popup  style="width: 15%; margin-left: auto; margin-right: auto;">
+                <q-tooltip >Add as extended relation</q-tooltip>
+              </q-btn>
+              <q-btn color="primary" @click="onchangerel(false)" label="Ok" v-close-popup style="width: 35%; margin-left: auto;margin-right: auto;" :disabled="emptyDeprel"/>
             </q-card-actions>
         </q-card>
       </q-dialog>
@@ -60,6 +63,92 @@
 
 
 
+
+
+
+
+
+
+       <q-dialog        
+        v-model="featureDialog"
+        :maximized="maximizedToggle"
+        @hide="ondialoghide()"
+        @keyup.enter="onchangefeature()"
+        >
+        <q-card  style="height:300px">
+          <q-bar class="bg-primary text-white">
+              <div class="text-weight-bold">Select a category</div>
+              <q-space />
+              <q-btn flat dense icon="close" v-close-popup/>
+          </q-bar>
+
+            <!-- <q-table
+              title="Features"
+              :data="options.featl"
+              :featcolumns="featcolumns"
+              row-key="name"
+              binary-state-sort
+            >
+              <template v-slot:body="options.featl">
+                <q-tr :ofeat="options.featl">
+                  <q-td key="a" :ofeat="options.featl">
+                    {{ ofeat.row.a }}
+                    <q-popup-edit v-model="options.featl.row.name">
+                      <q-input v-model="options.featl.row.name" dense autofocus counter />
+                    </q-popup-edit>
+                  </q-td>
+                  <q-td key="v" :ofeat="options.featl">
+                    {{ ofeat.row.v }}
+                    <q-popup-edit v-model="ofeat.row.v" title="change attribute" buttons>
+                      <q-input type="textarea" v-model="ofeat.row.v" dense autofocus />
+                    </q-popup-edit>
+                  </q-td>
+                </q-tr>
+              </template>
+            </q-table> -->
+
+
+
+        <!-- <q-card-section style="height:200px"> 
+            <v-select v-for="(value, name) in options.featl" :key="name" v-model="infos.featl[name]" :options="featl" :class="$q.dark.isActive?'vs-dark':'vs-light'" style="float:left; display:inline;width:150px;"></v-select>
+          </q-card-section>
+
+          <q-card-section style="height:200px">
+            <q-select
+                filled
+                v-model="infos.category"
+                :options="options.cats"
+                label="Category"
+                style="width: 250px"
+              />
+            </q-card-section> -->
+         
+          <q-separator/>
+          <q-card-actions>
+            <q-btn flat @click="ondialoghide()" label="Cancel" v-close-popup style="width: 45%; margin-left: auto;margin-right: auto;" />
+            <q-btn color="primary" @click="onchangefeature()" label="Ok" v-close-popup style="width: 45%; margin-left: auto;margin-right: auto;" :disabled="emptyCat" />
+
+          </q-card-actions>
+        </q-card>
+      </q-dialog>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     </div>
 
     <!-- <div :id="id" v-html="svgContent"></div> -->
@@ -87,7 +176,9 @@ export default {
             loading: true,
             infos: {
                 relation: [],
-                category: null
+                category: null,
+                feats: {},
+                misc: {}
             },
             options: {
                 relations:[["subj", "comp", "vocative", "det", "dep", "mod", "conj", "cc", "parataxis", "fixed", "flat", "compound", "discourse", "dislocated", "goeswith", "orphan", "punct", "root"],[":aux",":caus",":cleft",":pred",":appos", ":obj", ":obl"],["@agent", "@appos", "@caus", "@expl", "@fixed", "@lvc","@pass", "@relcl", "@tense","@x"]],
@@ -95,6 +186,7 @@ export default {
             },
             relDialog: false,
             catDialog: false,
+            featureDialog: false,
             maximizedToggle: false,
             snapInfos: {
               s:null,
@@ -104,8 +196,23 @@ export default {
               govid:null,
               relation:'',
               relations: [],
+              feats: {},
+              misc: {},
               category:null
-            }            
+            },
+            featcolumns: [
+              {
+                name: 'name',
+                required: true,
+                label: 'Features',
+                align: 'left',
+                field: row => row.name,
+                format: val => `${val}`,
+                sortable: true
+              },
+              { name: 'a', align: 'center', label: 'attribute', field: 'attribute', sortable: true },
+              { name: 'v', label: 'value', field: 'value', sortable: true }
+            ]         
         }
     },
     computed: {
@@ -152,22 +259,28 @@ export default {
             // console.log('start matches', matches)
             if (this.user in matches) var usermatch = matches[this.user];
             else var usermatch = {'nodes':[],'edges':[]};
-            var svg = this.draft.getSvg(conllStr, usermatch, id); // here is the conllstr
+            var shownfeatures=["form", "upos", "lemma", "gloss"]; // TODO: à mettre dans le store
+            var svg = this.draft.getSvg(conllStr, usermatch, id, shownfeatures); // here is the conllstr
             this.loading = false;
             svg.toggleRelDialog  = this.toggleRelDialog;
             svg.toggleCatDialog  = this.toggleCatDialog;
+            svg.toggleFeatureDialog  = this.toggleFeatureDialog;
             svg.selectRel = this.selectRel; // update le svg avec les infos de this
             svg.selectCat = this.selectCat;
             svg.triggerRelationChange = this.triggerRelationChange;
             svg.triggerCategoryChange = this.triggerCategoryChange;
+            svg.triggerFeatureChange = this.triggerFeatureChange;
             this.up(false, false);
             return svg
         },
         toggleRelDialog() {
             this.relDialog = !this.relDialog;
         },
-         toggleCatDialog() {
+        toggleCatDialog() {
             this.catDialog = !this.catDialog;
+        },
+        toggleFeatureDialog() {
+            this.featureDialog = !this.featureDialog;
         },
         selectRel(currentRelation) {
             this.infos.relation = content;
@@ -184,6 +297,7 @@ export default {
           // snaprelation.attr({class:"deprelselected"});
           // relation="qsdwf:zsert@swxcv";
           const splitters = /[:@]/g  // à mettre comme paramètre
+          if (relation=="_") relation="";
           var splitIndeces = [...relation.matchAll(splitters)].map(x => x.index)
           var listRel = [];
           var lasti = 0
@@ -209,16 +323,40 @@ export default {
           this.catDialog = !this.catDialog;
           // console.log("triggerCategoryChange2")
         },
-        onchangerel(){
-          if(this.infos.relation.join("") != ''){
+        triggerFeatureChange(s, snapcat, depid, feats, misc){
+          // called from snap
+          // snapcat.attr({class:"catselected"});
+          // relation="qsdwf:zsert@swxcv";
+          console.log(444,feats);
+          var featl = [];
+          for (let a in feats) { featl.push({'a':a, 'v':feats[a]})}
+          console.log(featl)
+          this.snapInfos = {s:s, snapcat:snapcat, depid:depid, featl:featl, misc:misc};
+          this.infos.featl = featl;
+          // console.log("triggerCategoryChange1")
+
+          this.featureDialog = !this.featureDialog;
+          console.log("triggerFeatureChange end")
+        },
+        onchangerel(addasextended){
+          // if(this.infos.relation.join("") != ''){
             this.relDialog = !this.relDialog;
-            this.draft.relationChanged(this.snapInfos.s, this.snapInfos.depid, this.snapInfos.govid, this.infos.relation.join(""));
+            this.draft.relationChanged(this.snapInfos.s, 
+              this.snapInfos.depid, 
+              this.snapInfos.govid, 
+              this.infos.relation.join(""), 
+              addasextended);
             this.up(true, false);
-          }
+          // }
         },
         onchangecat(){
           this.catDialog = !this.catDialog;
           this.draft.catChanged(this.snapInfos.s, this.snapInfos.depid, this.infos.category);
+          this.up(true, false);
+        },
+        onchangefeature(){
+          this.featureDialog = !this.featureDialog;
+          this.draft.featureChanged(this.snapInfos.s, this.snapInfos.depid, this.infos.category);
           this.up(true, false);
         },
         ondialoghide(){

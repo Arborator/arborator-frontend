@@ -102,7 +102,8 @@ export default {
                     this.sampleData.conlls[this.$store.getters.getUserInfos.username] = this.lastModified.conll; this.$forceUpdate();
                     this.tab = this.$store.getters.getUserInfos.username;
                 }
-            }).catch(error => {  this.$store.dispatch("notifyError", {error: error}); });
+            }).catch(error => { 
+                this.$store.dispatch("notifyError", {error: error}); });
         },
         onConllGraphUpdate(payload) {
             this.lastModified = payload;

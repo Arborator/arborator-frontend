@@ -1,4 +1,4 @@
-.t {
+.form {
 /* 	font: 18px DejaVu Sans; */
 /* 	fill: black; */
 /* 	font-family:sans-serif; */
@@ -7,7 +7,7 @@
 	text-align: center;
 } 
 
-.dark .t {
+.dark .form {
 	/* 	font: 18px DejaVu Sans; */
 	/* 	fill: black; */
 	/* 	font-family:sans-serif; */
@@ -52,23 +52,24 @@
 	--wordDistance:11;
 } 
 
-.cat {
+.upos {
 	font: 11px DejaVu Sans;
 	fill: #E03737;
 	text-align: center;
 	--wordDistance:22;
 } 
 
-.catselected {
+.uposselected {
 	font: 11px DejaVu Sans;
 	fill: #dd137bff;
 	font-weight: bold;
 	text-align: center;
 } 
 
+
 .deprel {
 	font: 12px Arial;
-	fill: #1d2ec1;
+	fill: #501d7d;
 	font-style: oblique;
 	font-family:sans-serif;
 	cursor:pointer;
@@ -84,8 +85,18 @@
 	--funcCurveDist:3; /* distance between the function name and the curves highest point */
 }
 
+
+.xdeprel {
+	fill: #21ba45;
+} 
+
+.xdep {
+	stroke: #21ba45;
+	fill: none;
+} 
+
 .deprelselected {
-	fill: #dd137bff;
+	fill: #dd137b;
 	/* font-weight: bold; */
 } 
 

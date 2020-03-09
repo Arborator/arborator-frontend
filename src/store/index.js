@@ -111,12 +111,13 @@ export default new Vuex.Store({
             commit('update_user', { user: user });
         },
         notifyError({commit}, {error}){
-            console.log(error.response.statusText, error.response.status);
+            var caption="";
+            if (error.response.data.message) caption=error.response.data.message;
             var msg;
-            if(error.response.status == 403){ msg = `You do not have the permissions for this action. Please contact the administrator.`;  }
-            else if(error.response.status == 401){ msg == `Please log in to do any further action.`;}
+            if(error.response.status == 403){ msg = `Hey you! You do not have the permissions for this action. Please contact the administrator.`;  }
+            else if(error.response.status == 401){ msg == `Hey you! Please log in to do any further action.`;}
             else { msg = error.response.statusText + ' error ' + error.response.status; }
-            Notify.create({message: msg, position: 'top-right', color: 'negative'});
+            Notify.create({message: msg, position: 'top-right', color: 'negative', icon:'warning', caption:caption});
         }
 
     },

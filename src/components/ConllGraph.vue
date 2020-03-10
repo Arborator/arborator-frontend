@@ -75,37 +75,40 @@
         @hide="ondialoghide()"
         @keyup.enter="onchangefeature()"
         >
-        <q-card  style="height:300px">
+        <q-card  style="height:70vh">
           <q-bar class="bg-primary text-white">
               <div class="text-weight-bold">Select a category</div>
               <q-space />
               <q-btn flat dense icon="close" v-close-popup/>
           </q-bar>
 
-            <!-- <q-table
+          <q-card-section>
+            <q-table
               title="Features"
-              :data="options.featl"
-              :featcolumns="featcolumns"
+              :data="featTable.featl"
+              :columns="featTable.featcolumns"
               row-key="name"
               binary-state-sort
             >
-              <template v-slot:body="options.featl">
-                <q-tr :ofeat="options.featl">
-                  <q-td key="a" :ofeat="options.featl">
-                    {{ ofeat.row.a }}
-                    <q-popup-edit v-model="options.featl.row.name">
-                      <q-input v-model="options.featl.row.name" dense autofocus counter />
+
+              <template v-slot:body="props">
+                <q-tr :props="props">
+                  <q-td key="a" :props="props">
+                    {{ props.row.a }}
+                    <q-popup-edit v-model="props.row.a" title="Update Attribute" buttons>
+                      <q-input v-model="props.row.a" dense autofocus counter />
                     </q-popup-edit>
                   </q-td>
-                  <q-td key="v" :ofeat="options.featl">
-                    {{ ofeat.row.v }}
-                    <q-popup-edit v-model="ofeat.row.v" title="change attribute" buttons>
-                      <q-input type="textarea" v-model="ofeat.row.v" dense autofocus />
+                  <q-td key="v" :props="props">
+                    {{ props.row.v }}
+                    <q-popup-edit v-model="props.row.v" title="Update Value" buttons>
+                      <q-input v-model="props.row.v" dense autofocus />
                     </q-popup-edit>
                   </q-td>
                 </q-tr>
               </template>
-            </q-table> -->
+            </q-table>
+          </q-card-section>
 
 
 
@@ -124,10 +127,9 @@
             </q-card-section> -->
          
           <q-separator/>
-          <q-card-actions>
+          <q-card-actions align="around">
             <q-btn flat @click="ondialoghide()" label="Cancel" v-close-popup style="width: 45%; margin-left: auto;margin-right: auto;" />
             <q-btn color="primary" @click="onchangefeature()" label="Ok" v-close-popup style="width: 45%; margin-left: auto;margin-right: auto;" :disabled="emptyCat" />
-
           </q-card-actions>
         </q-card>
       </q-dialog>
@@ -200,19 +202,22 @@ export default {
               misc: {},
               category:null
             },
-            featcolumns: [
-              {
-                name: 'name',
-                required: true,
-                label: 'Features',
-                align: 'left',
-                field: row => row.name,
-                format: val => `${val}`,
-                sortable: true
-              },
-              { name: 'a', align: 'center', label: 'attribute', field: 'attribute', sortable: true },
-              { name: 'v', label: 'value', field: 'value', sortable: true }
-            ]         
+            featTable: {
+              featl: [],
+              featcolumns: [
+                // {
+                //   name: 'name',
+                //   required: true,
+                //   label: 'Features',
+                //   align: 'left',
+                //   field: row => row.name,
+                //   format: val => `${val}`,
+                //   sortable: true
+                // },
+                { name: 'a', align: 'center', label: 'Attribute', field: 'a', sortable: true },
+                { name: 'v', label: 'Value', field: 'v', sortable: true }
+              ]
+            }         
         }
     },
     computed: {
@@ -329,10 +334,11 @@ export default {
           // relation="qsdwf:zsert@swxcv";
           console.log(444,feats);
           var featl = [];
-          for (let a in feats) { featl.push({'a':a, 'v':feats[a]})}
+          for (let a in feats) { featl.push({'name':a+feats[a], 'a':a, 'v':feats[a]})}
           console.log(featl)
           this.snapInfos = {s:s, snapcat:snapcat, depid:depid, featl:featl, misc:misc};
-          this.infos.featl = featl;
+          // this.infos.featl = featl;
+          this.featTable.featl = featl;
           // console.log("triggerCategoryChange1")
 
           this.featureDialog = !this.featureDialog;

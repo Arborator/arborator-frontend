@@ -10,10 +10,10 @@
     "test": "echo \"No test specified\" && exit 0"
   },
   "dependencies": {
-    "@quasar/extras": "^1.5.1",
+    "@quasar/extras": "^1.6.0",
     "autoprefixer": "^9.6.2",
     "axios": "^0.18.1",
-    "quasar": "^1.8.5",
+    "quasar": "^1.9.9",
     "trim-right": "^1.0.1",
     "vue-codemirror": "^4.0.6",
     "vue-cookies": "^1.5.13",
@@ -22,7 +22,7 @@
     "vue-select": "^3.2.0"
   },
   "devDependencies": {
-    "@quasar/app": "^1.5.3"
+    "@quasar/app": "^1.6.0"
   },
   "engines": {
     "node": ">= 8.9.0",

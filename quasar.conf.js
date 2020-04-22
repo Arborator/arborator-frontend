@@ -1,7 +1,7 @@
 // Configuration for your app
 // https://quasar.dev/quasar-cli/quasar-conf-js
 
-const source = "https://localhost:5000";
+const source = "https://127.0.0.1:5000";
 // const source = "https://arborapi.ilpga.fr:8888";
 
 module.exports = function (ctx) {
@@ -92,6 +92,13 @@ module.exports = function (ctx) {
     supportIE: true,
 
     build: {
+      env: ctx.dev
+        ? { // so on dev we'll have
+          API: JSON.stringify('https://127.0.0.1:5000')
+        }
+        : { // and on build (production):
+          API: JSON.stringify('https://arborapi.ilpga.fr:8888')
+        },
       scopeHoisting: true,
       // vueRouterMode: 'history',
       // vueCompiler: true,

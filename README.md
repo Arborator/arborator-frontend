@@ -18,5 +18,22 @@ quasar dev
 quasar build
 ```
 
+### Deploy a New Version
+
+1.  Connect as Arborator (ssh arborator@arborapi.xxx.fr), then:
+```
+cd arborator-frontend
+git pull origin master
+rm -R dist
+quasar build
+```
+
+2. Connect as root (ssh root@arborapi.xxx.fr), then:
+```
+service nginx restart
+```
+
+3. Profit. (Clean your browser cache if necessary to see the new version)
+
 ### Customize the configuration
 See [Configuring quasar.conf.js](https://quasar.dev/quasar-cli/quasar-conf-js).

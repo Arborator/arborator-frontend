@@ -172,6 +172,12 @@ export default {
     },
     getRelationTable(projectname) {
         return API.get('projects/' + projectname + '/relation_table/current_user');
+    },
+    commit(projectname, samplename) {
+        return API.post('projects/' + projectname + '/sample/' + samplename + '/commit');
+    },
+    pull(projectname, samplename) {
+        return API.get('projects/' + projectname + '/sample/' + samplename + '/pull');
     }
 
 }

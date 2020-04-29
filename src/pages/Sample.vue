@@ -2,6 +2,8 @@
     <q-page :class="$q.dark.isActive?'bg-dark':'bg-grey-1'">
         <div v-show="!loading" class="q-pa-md row q-gutter-md">
             <q-badge color="primary">{{sentenceCount}} sentences</q-badge>
+            <q-btn push color="primary" label="Commit" @click="commit()"/>
+            <q-btn push color="primary" label="Pull" @click="pullSample()"/>
             <q-virtual-scroll :items="this.samplesFrozen.list" style="max-height: 80vh; width:99vw" :virtual-scroll-slice-size="5" :virtual-scroll-item-size="200">
                 <template v-slot="{ item, index }">
                     <sentence-card :key="index" :id="item" :sample="samples[item]" :index="index" :sentenceId="item" ></sentence-card>
@@ -86,6 +88,16 @@ export default {
             .catch(error => {this.$store.dispatch("notifyError", {error: error}); })
         },
         closeSearchDialog(searchDialog){ searchDialog = this.searchDialog; },
+        commit() {
+            api.commit(this.projectname, this.samplename)
+            .then(response => {console.log("wooohoo");})
+            .catch(error => {this.$store.dispatch("notifyError", {error: error}); })
+            },
+        pullSample() {
+        api.pull(this.projectname, this.samplename)
+        .then(response => {console.log("wooohoo");})
+        .catch(error => {this.$store.dispatch("notifyError", {error: error}); })
+            },
         freezeSamples() {
             var index = 0; var listSamples = []; var index2sentId = {};
             for(let sentId in this.samples){ listSamples.push(sentId); index2sentId[index] = sentId; index++;}

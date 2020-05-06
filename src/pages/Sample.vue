@@ -2,8 +2,8 @@
     <q-page :class="$q.dark.isActive?'bg-dark':'bg-grey-1'">
         <div v-show="!loading" class="q-pa-md row q-gutter-md">
             <q-badge color="primary">{{sentenceCount}} sentences</q-badge>
-            <q-btn push color="primary" label="Commit" @click="commit()"/>
-            <q-btn push color="primary" label="Pull" @click="pullSample()"/>
+            <q-btn push color="primary" :disable="!LoggedWithGithub" label="Commit" @click="commit()"/>
+            <q-btn push color="primary" :disable="!LoggedWithGithub" label="Pull" @click="pullSample()"/>
             <q-virtual-scroll :items="this.samplesFrozen.list" style="max-height: 80vh; width:99vw" :virtual-scroll-slice-size="5" :virtual-scroll-item-size="200">
                 <template v-slot="{ item, index }">
                     <sentence-card :key="index" :id="item" :sample="samples[item]" :index="index" :sentenceId="item" ></sentence-card>
@@ -62,7 +62,11 @@ export default {
     },
     computed: {
         sentenceCount() {return Object.keys(this.samples).length},
-        breakpoint(){ return this.window.width <= 400; } 
+        breakpoint(){ return this.window.width <= 400; },
+        LoggedWithGithub() {
+            var authProvider = this.$store.getters.getUserInfos.auth_provider;
+            return authProvider == 4
+        }, 
     },
     created() { window.addEventListener('resize', this.handleResize); this.handleResize(); },
     destroyed() { window.removeEventListener('resize', this.handleResize)},

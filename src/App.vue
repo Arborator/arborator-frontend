@@ -25,7 +25,10 @@ export default {
     return {
       store: Store,
       alerts: {
-        'welcomeback': { color: 'accent', message: `Welcome back to Arborator!`, icon: 'mood'}
+        'welcomeback': { color: 'primary', 
+                        message: `Welcome back to Arborator!`,         
+                        progress: true,
+                        icon: 'mood'}
       }
     }
   },
@@ -37,7 +40,7 @@ export default {
       api.whoAmI().then(response =>{
         // this.$store.dispatch("setUser", response.data);
         this.store.dispatch("checkSession", {});
-        this.showNotif('bottom', 'welcomeback' );
+        this.showNotif('bottom-right', 'welcomeback' );
       }).catch(error => { this.$store.dispatch("notifyError", {error: error}); });
       // this.store.dispatch("checkSession", {});
         // .then(() => {
@@ -56,7 +59,7 @@ export default {
       return JSON.parse(jsonPayload);
     },
     showNotif (position, alert) {
-            const { color, textColor, multiLine, icon, message, avatar, actions } = this.alerts[alert];
+            const { color, textColor, multiLine, icon, message, avatar, actions, progress } = this.alerts[alert];
             const buttonColor = color ? 'white' : void 0;
             this.$q.notify({
                 color,
@@ -67,6 +70,7 @@ export default {
                 avatar,
                 multiLine,
                 actions: actions,
+                progress: progress,
                 timeout: 2000
             })
         }

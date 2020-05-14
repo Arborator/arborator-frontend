@@ -19,7 +19,7 @@
 
 // var drag = d3.drag();
 
-// xWordDistance = 20;
+xWordDistance = 10; // only used as default if CSS incomplete
 yWordDistance = 20;
 leveldistance = 33; // to be overrulled by the css definition
 // global variables:
@@ -32,39 +32,46 @@ svgDefaultHeight = 500;
 svgHeight = 0;
 el=10; // type of conll (10, 14, or 4), computed in conllToTree
 trees=[]; // list of tree objects
-sentenceFeaturess=[]; // list of comments. each comment is a hashtable position(=line)->comment TODO: add this to the display
 conlltrees=[]; // list of conll strings
 defaultCat="_"
 
+shownfeatures=["form", "UPOS", "LEMMA"]; // redefined in readConll
 
 
 // formFeatureName = 'form'
-// catFeatureName = 'upos'
+// catFeatureName = 'UPOS'
 
 // UD config:
-morphoSynt= ['Abbr', 'AbsErgDatNumber', 'AbsErgDatPerson', 'AbsErgDatPolite', 'AdpType', 'AdvType', 'Animacy', 
-	'Aspect', 'Case', 'Clusivity', 'ConjType', 'Definite', 'Degree', 'Echo', 'ErgDatGender', 'Evident', 'Foreign', 
-	'Gender', 'Hyph', 'Mood', 'NameType', 'NounClass', 'NounType', 'NumForm', 'NumType', 'NumValue', 'Number', 
-	'PartType', 'Person', 'Polarity', 'Polite', 'Poss', 'PossGender', 'PossNumber', 'PossPerson', 'PossedNumber', 
-	'Prefix', 'PrepCase', 'PronType', 'PunctSide', 'PunctType', 'Reflex', 'Style', 'Subcat', 'Tense', 'Typo', 
-	'VerbForm', 'VerbType', 'Voice']
-specialFeatures=['form', "lemma", 'upos', "tag2", "xpos", "ehead", 
-					"id", "index", "head", "kids", "deprel", "deps", "span"]
+// morphoSynt= ['Abbr', 'AbsErgDatNumber', 'AbsErgDatPerson', 'AbsErgDatPolite', 'AdpType', 'AdvType', 'Animacy', 
+// 	'Aspect', 'Case', 'Clusivity', 'ConjType', 'Definite', 'Degree', 'Echo', 'ErgDatGender', 'Evident', 'Foreign', 
+// 	'Gender', 'Hyph', 'Mood', 'NameType', 'NounClass', 'NounType', 'NumForm', 'NumType', 'NumValue', 'Number', 
+// 	'PartType', 'Person', 'Polarity', 'Polite', 'Poss', 'PossGender', 'PossNumber', 'PossPerson', 'PossedNumber', 
+// 	'Prefix', 'PrepCase', 'PronType', 'PunctSide', 'PunctType', 'Reflex', 'Style', 'Subcat', 'Tense', 'Typo', 
+// 	'VerbForm', 'VerbType', 'Voice']
+// specialFeatures=['form', "LEMMA", 'UPOS', "tag2", "XPOS", "ehead", 
+// 					"id", "index", "HEAD", "kids", "DEPREL", "DEPS", "span"]
 
-shownfeatures=["form", "upos", "lemma"]; // redefined in readConll
 // progressiveLoading = true; // false to make it load all trees at once (may overload the browser)
-pngBtn = true;
-svgBtn = true;
+// pngBtn = true;
+// svgBtn = true;
 reverseMode = false; // set true for right to left conll
-conlls = {	
-	10: 	{"id": 0, 'form':1, "lemma": 2, 'upos': 3, "xpos":4, "feats":5, 
-				"head":6, "deprel":7, "deps":8, "misc":9}, 
-	14: 	{"id": 0, 'form':1, "lemma": 3, 'upos': 5, "head":9, "deprel":11}, 
-	4: 	{'form':0, "lemma": 0, 'upos': 1, "head":2, "deprel":3} 
-}
-isFirefox = navigator.userAgent.toLowerCase().indexOf('firefox') > -1; // needed for bezier bounding box bug
 
-currentS = null;
+
+
+conlls = {	
+	10: 	{"ID": 0, "FORM":1, "LEMMA": 2, "UPOS": 3, "XPOS":4, "FEATS":5, "HEAD":6, "DEPREL":7, "DEPS":8, "MISC":9}, 
+	14: 	{"ID": 0, "FORM":1, "LEMMA": 3, "UPOS": 5, "HEAD":9, "DEPREL":11}, 
+	4: 		{"FORM":0, "LEMMA": 0, "UPOS": 1, "HEAD":2, "DEPREL":3} 
+}
+
+// conlls = {	
+// 	10: 	{"id": 0, 'form':1, "LEMMA": 2, 'UPOS': 3, "XPOS":4, "FEATS":5, 
+// 				"HEAD":6, "DEPREL":7, "DEPS":8, "MISC":9}, 
+// 	14: 	{"id": 0, 'form':1, "LEMMA": 3, 'UPOS': 5, "HEAD":9, "DEPREL":11}, 
+// 	4: 	{'form':0, "LEMMA": 0, 'UPOS': 1, "HEAD":2, "DEPREL":3} 
+// }
+
+// currentS = null;
 // drag & drop stuff:
 droppables =[];
 dragrepl = null;
@@ -72,7 +79,7 @@ dragcurve = null;
 dragarrowhead = null;
 dragsun = null;
 draheader = -1;
-const dragclickthreshold = 100; //ms
+const dragclickthreshold = 400; //ms
 dragclicktime = 0;
 // const delta = 6;
 // let dragclickstartX;
@@ -84,9 +91,6 @@ log = console.log.bind(console);
 // TODO: add lemmas and pos!!!
 lemmaColor = '#006400';
 posColor = '#9e04de';
-
-// base 64 logo of arborator for the link image
-base64Logo = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADQAAAAXCAYAAABEQGxzAAAABHNCSVQICAgIfAhkiAAAAAlwSFlzAAABtQAAAbUBnmWvHAAAABl0RVh0U29mdHdhcmUAd3d3Lmlua3NjYXBlLm9yZ5vuPBoAAANXSURBVFiFtZhLbA1RGMd/59x7e5XeVrXU45aF9ztCLEQ3gojMwkZiJ7GYRDALhAUJa/FIZjk7EYKWCIMQG0qIx4JIQyREqxWP1uNyH729MxYzreu29zF3xj85mznf+X///8x3Zr4zwrZtqoWqaDXALKClggHwqYLx3jD1wWo1Ca+GVEWbAmwGFGAjECsWK22oyQkyYRsPWRLAbcAEbhim/tmLvooMqYq2HMeAAqwGZLk18USINb1RGjKSn1GLmpzgzOLfXrQBWMBjHHOmYerPyy0oakhVtGbgALANaPWioiEj2fGijmguT5mweThjkGdTsyTDlhe6fPQA54Fjhql/HStglCFV0WLAPmAvJcqpGOKJEOvej2P6r9CouZy0uT47TVdT1ittIRLASeCEYeqJ/Il/SkdVtJVAF3CEKswA1A0Kpv0ebQYgZAnaeqIs7A9XQ52PGI7GLlfzCEYMqYq2FegE4n4ytSRDiBLbsjEtaUyX3YKVIg50utoB15CqaBuBC0Ct3wxNqbGfTj7mDUSY9aN8XIWoBS64Hgj1PR1oBm5RZYkVYlDaLO6PlIyZkJV8q7Vf9dTnJAHcREAA66+du3laAvuBaQGQArDsS6TsN0cA44ZEDJgUVF4cD/sl0BYgKVfmphioLf1a7qvLca81PSPIvC7aJLAsSMZJaWk1pmVRR9+jFh3zkwwF9l74B0sk8C4AIgu4C+y2RHamgINjBaXDNu0LkiQj1fePZfAyDFwFllax2AIeABeBS4apfxyeeNd8uLVQck7A5Xkp+suUo090hoFTwE4q26A2jol2oMMw9b4icWeB9cCi4Qs3Z6forh/yJ7c0PgLHhW3bwx3CHWDiGIE28BDnSXQYpt5blloI8bbp0BNgJcD9eIb78Uxgyoto3GSY+u2RXk5VtFU4phrcgEf8NfHBa4a3kw8dwRZHXzZnMeekgpM+Gilgu2Hq7VDQnKqKthpYC7Qbpt7jJ8vryQdj3Q2i9/L8ZCwn/DCVxAdgi2Hqz4YveD7gVYpdm/dsBXkxK/8Lf9Fu+78YUhVtBfAECKxhc+H9POQXqqK14HzbgujRgjuxVgNV0SI4dT3FB42vfwq+T1oF2AC8ABqBeneMd4eFI/Yb8AXoA7qBNwT41+cPAlA7a3SX2xoAAAAASUVORK5CYII=';
 
 svgIdIndex = 0;
 
@@ -104,7 +108,7 @@ this.ArboratorDraft = function(visuMode = 0, reverse = false) {
 ArboratorDraft.prototype.getSvg = function(strConll, usermatches, id, shof){
 	shownfeatures=shof
 	// log('usermatches', usermatches) // the one that we see
-	var treedata = conllToTree(strConll.trim()); // treedata is object: {tree:tree, sentenceFeatures:sentencefeatures, sentence, svg:snap-object}
+	var treedata = conllToTree(strConll.trim()); // treedata is object: {tree:tree, META:META, sentence, svg:snap-object}
 	treedata['svg'] = drawsnap(id, treedata, usermatches, shownfeatures);
 	return treedata;
 }
@@ -113,11 +117,11 @@ ArboratorDraft.prototype.getTree = function(strConll){
 	return conllToTree(strConll.trim());
 }
 
-ArboratorDraft.prototype.setRel = function(rel){
-	log('setRel START');
-	log(rel);
-	log('setRel END');
-} 
+// ArboratorDraft.prototype.setRel = function(rel){
+// 	log('setRel START');
+// 	log(rel);
+// 	log('setRel END');
+// } 
 
 ArboratorDraft.prototype.relationChanged = function(s, depid, headid, relation, addasextended){
 	relationChanged(s, depid, headid, relation, addasextended);
@@ -127,8 +131,12 @@ ArboratorDraft.prototype.catChanged = function(s, depid, cat){
 	catChanged(s, depid, cat);
 }
 
-ArboratorDraft.prototype.featureChanged = function(s, depid, cat){
-	featureChanged(s, depid, cat);
+ArboratorDraft.prototype.featureChanged = function(s, depid, feats, misc){
+	featureChanged(s, depid, feats, misc);
+}
+
+ArboratorDraft.prototype.metaChanged = function(s, metas){
+	metaChanged(s, metas);
 }
 
 ArboratorDraft.prototype.getConll = function (s) {
@@ -138,8 +146,14 @@ ArboratorDraft.prototype.getConll = function (s) {
 
 ArboratorDraft.prototype.treeDataToConll = function(treedata) {
 	var newconll=treeDataToConll(treedata);
-	console.log("the new conll", newconll);
+	// console.log("the new conll", newconll);
 	return newconll;
+}
+
+ArboratorDraft.prototype.replaceNodes = function(s, treedata, idsequence, headid, newtokens) {
+	var newtreedata=replaceNodes(s, treedata, idsequence, headid, newtokens);
+	// console.log("the newtreedata", newtreedata);
+	return newtreedata;
 }
 
 
@@ -151,13 +165,13 @@ function refresh(idSVG, content) {
 	// $('#svgwell').html('');
 	// $('#svgwell').append( $("<conll></conll>").attr('id', 'transformhere').text( content ) );
 	// var conll = d3.selectAll('#transformhere')['_groups'][0][0];
-	log("_____refresh \n content",content);
+	// log("_____refresh \n content",content);
 	// drawConll(conll);
 	listOfConlls = content.trim().split(/\n\s*\n\s*\n*/);	
 	
 	for (let singleConll of listOfConlls) { // for each conll tree at once, can block the browser
 		var treedata = conllToTree(singleConll)
-		console.log("refresh function",this);
+		// console.log("refresh function",this);
 		drawsnap(idSVG, treedata, usermatches, shownfeatures)
 		}
 	return;
@@ -171,9 +185,9 @@ function getlevel(i,gi,tree, idhead2level) {
 	if (gi==0) return 0; // governor is root
 	var intermlevs = [1];
 	for (var ii = Math.min(i,gi)+1; ii < Math.max(i,gi); ii++) { // relation longer than one
-		if (tree[ii]) var giis = [tree[ii]["head"]];
+		if (tree[ii]) var giis = [tree[ii]["HEAD"]];
 		else var giis = []
-		giis = giis.concat(Object.keys(tree[ii]["deps"]));
+		giis = giis.concat(Object.keys(tree[ii]["DEPS"]));
 		for (let gii of giis) {
 			if (gii>=Math.min(i,gi) && gii<=Math.max(i,gi)) {
 				if (idhead2level[ii+'_'+gii]>0) intermlevs.push(idhead2level[ii+'_'+gii]+1);
@@ -189,7 +203,7 @@ function getlevel(i,gi,tree, idhead2level) {
 
 function dragging(dx, dy, posX, posY, event){
 	// log("onmove",dx, dy, posX, posY,this, event,"translate("+posX+","+posY+")")
-	this.transform("translate("+(dx-15)+","+(dy-30)+")").attr({"class":"gloss"});
+	this.transform("translate("+(dx-15)+","+(dy-30)+")").attr({"class":"glossy"});
 	var x=this.midx;
 	var y=this.topy;
 	var cy = y+dy-Math.abs(dx)/2;
@@ -204,7 +218,7 @@ function dragging(dx, dy, posX, posY, event){
 var startdrag = function(xx,yy,e) {
 	// this.data('origTransform', this.transform().local );
 	dragclicktime = new Date().getTime();
-	log("-----------", this.attr("x"));
+	// log("-----------startdrag", this.attr("x"));
 	dragrepl = this.clone();
 	dragrepl.attr({class:"draghead"});
 	this.attr({cursor: "move"});
@@ -223,13 +237,13 @@ var startdrag = function(xx,yy,e) {
 				dropa.mouseover(
 					function() {
 						// console.log("Over the word", this.nr);
-						dropa.attr({"class":"gloss"});
+						dropa.attr({"class":"glossy"});
 						draheader = this.nr
 					});
 				dropa.mouseout(
 					function() {
 						// console.log("out from the word", this.nr);
-						dropa.attr({"class":'form'});
+						dropa.attr({"class":'FORM'});
 						draheader = -1
 					});
 				dropa.attr({cursor: "move"});
@@ -240,13 +254,19 @@ var startdrag = function(xx,yy,e) {
 
 var stopdrag = function(e) {
 	if(new Date().getTime() < dragclicktime + dragclickthreshold) {
-		log("ccccclick", this);
-		this.paper.root.treedata.triggerFeatureChange(this.paper, this, this.nr, this.feats, this.misc); 
+		// log("ccccclick",this.paper.root.treedata.tree[this.nr]) //, this.paper.root.treedata.tree);
+		this.paper.root.treedata.openFeatureDialog(
+			this.paper, 
+			this, 
+			this.paper.root.treedata.tree[this.nr]['FORM'], 
+			this.nr, 
+			this.feats, 
+			this.misc); 
 	}
 	this.animate({transform: "translate("+0+","+0+")"}, 300, mina.easein,
 		function()
 			{
-				this.attr({"class":'form'});
+				this.attr({"class":'FORM'});
 				dragrepl.remove();
 			}
 		);
@@ -254,7 +274,7 @@ var stopdrag = function(e) {
 	{ 
 		dropa.unmouseover();
 		dropa.unmouseout();
-		dropa.attr({cursor: "move", cursor: "grab", "class":'form'})
+		dropa.attr({cursor: "move", cursor: "grab", "class":'FORM'})
 	}
 	dragcurve.remove();
 	dragarrowhead.remove();
@@ -263,8 +283,16 @@ var stopdrag = function(e) {
 	{
 		nr = this.nr;
 		if (dragsun) {draheader = nr; nr=0;}
-		var oldRelation = this.paper.root.treedata.tree[draheader]['deprel'];	
-		this.paper.root.treedata.triggerRelationChange(this.paper, this, nr, draheader, oldRelation);
+		var oldRelation = this.paper.root.treedata.tree[draheader]['DEPREL'];	
+		this.paper.root.treedata.openRelationDialog(
+			this.paper, 
+			this, 
+			nr, 
+			draheader, 
+			(nr)?this.paper.root.treedata.tree[nr]['FORM']:'the root node', 
+			this.paper.root.treedata.tree[draheader]['FORM'],
+			oldRelation,
+			e.ctrlKey);
 	}
 	if(dragsun!=null) {dragsun.remove(); dragsun=null}
 	draheader=-1;
@@ -272,44 +300,37 @@ var stopdrag = function(e) {
 
 var categoryclick = function(e) {
 	// log("categoryclick",e,this);
-	this.attr({class:"catselected"})
+	this.attr({class:"CATselected"})
 	// log("categoryclick2",e,this);
-	this.paper.root.treedata.triggerCategoryChange(this.paper, this, this.nr, this.cat); 
+	this.paper.root.treedata.openCategoryDialog(this.paper, this, this.paper.root.treedata.tree[this.nr]['FORM'], this.nr, this.cat); 
 	// log("categoryclick3",e,this);
 }
 
 var relationclick = function(e) {
-	// relationChanged(this.paper, this.nr, this.headid, this.relation+"kim" )
-	// log("relationclickrelationclickrelationclick")
-	this.attr({class:"deprelselected"})
-	this.paper.root.treedata.triggerRelationChange(this.paper, this, this.headid, this.nr, this.relation); 
-	
-	// log("relationclick",e,this)
+	this.attr({class:"DEPRELselected"})
+	this.paper.root.treedata.openRelationDialog(
+		this.paper, 
+		this, 
+		this.headid, 
+		this.nr, 
+		(this.headid)?this.paper.root.treedata.tree[this.headid]['FORM']:'the root node', 
+		this.paper.root.treedata.tree[this.nr]['FORM'], 
+		this.relation, 
+		e.ctrlKey); 
 }
-
-// var featureclick = function(e) {
-// 	// relationChanged(this.paper, this.nr, this.headid, this.relation+"kim" )
-// 	log("featureclickfeatureclickfeatureclickfeatureclick")
-// 	this.attr({class:"deprelselected"})
-// 	// this.paper.root.treedata.triggerRelationChange(this.paper, this, this.headid, this.nr, this.relation); 
-	
-// 	// log("relationclick",e,this)
-// }
-
-
 
 function relationChanged(s, depid, headid, relation, addasextended) {  // todo: maybe include adding of secondary governor!!!
 	// called from ConllGraph.vue
 	
 	if (addasextended)
 	{
-		if (relation.trim()=="") delete s.root.treedata.tree[depid]['deps'][headid];
-		else s.root.treedata.tree[depid]['deps'][headid]=relation;
+		if (relation.trim()=="") delete s.root.treedata.tree[depid]['DEPS'][headid];
+		else s.root.treedata.tree[depid]['DEPS'][headid]=relation;
 	}
 	else {
 		if (relation.trim()=="") {headid="_",relation="_"}
-		s.root.treedata.tree[depid]['head']=headid;
-		s.root.treedata.tree[depid]['deprel']=relation;
+		s.root.treedata.tree[depid]['HEAD']=headid;
+		s.root.treedata.tree[depid]['DEPREL']=relation;
 	}
 	s.paper.clear();
 	drawsnap(s.id, s.root.treedata, {'nodes':[],'edges':[]}, shownfeatures)
@@ -318,32 +339,42 @@ function relationChanged(s, depid, headid, relation, addasextended) {  // todo: 
 function catChanged(s, depid, cat ) {  
 	// called from ConllGraph.vue
 	// console.log("BEFORE", JSON.parse(JSON.stringify(s.root.treedata.tree)));
-	s.root.treedata.tree[depid]['upos']=cat;
+	s.root.treedata.tree[depid]['UPOS']=cat;
 	s.paper.clear();
 	drawsnap(s.id, s.root.treedata, {'nodes':[],'edges':[]}, shownfeatures)
 	// return s.root.treedata.tree
 }
-function featureChanged(s, depid, cat ) {  
+function featureChanged(s, depid, feats, misc ) {  
 	// called from ConllGraph.vue
-	console.log("featureChanged", JSON.parse(JSON.stringify(s.root.treedata.tree)));
-	// s.root.treedata.tree[depid]['upos']=cat;
-	// s.paper.clear();
-	// drawsnap(s.id, s.root.treedata, {'nodes':[],'edges':[]}, shownfeatures)
-	// return s.root.treedata.tree
+	// log("draft featureChanged", JSON.parse(JSON.stringify(s.root.treedata.tree)));
+	s.root.treedata.tree[depid]['FEATS']=feats;
+	s.root.treedata.tree[depid]['MISC']=misc;
+	s.paper.clear();
+	drawsnap(s.id, s.root.treedata, {'nodes':[],'edges':[]}, shownfeatures)
+	return s.root.treedata.tree
 }
-
+function metaChanged(s, metas ) {  
+	// called from ConllGraph.vue
+	// log("draft metaChanged", s.root.treedata.META);
+	// console.log(metas)
+	// s.root.treedata.tree[depid]['FEATS']=feats;
+	// s.root.treedata.tree[depid]['MISC']=misc;
+	s.paper.clear();
+	drawsnap(s.id, s.root.treedata, {'nodes':[],'edges':[]}, shownfeatures)
+	return s.root.treedata.tree
+}
 
 function drawsnap(idSVG, treedata, usermatches, shownfeatures) {
 	///////////////////////////////////
 	// draws json tree on svg in div //
 	// idSVG is of pre-existing svg
-	// treedata is an object containing .tree (relevant here), but also sentence and sentenceFeatures with one line per sentence feature: [ "# user_id = Marine", "# elan_id = P_WAZK_07_34 P_WAZK_07_35", … ]
+	// treedata is an object containing .tree (relevant here), but also sentence and META with one line per sentence feature: [ "# user_id = Marine", "# elan_id = P_WAZK_07_34 P_WAZK_07_35", … ]
 	// usermatches is of the form edges: Array [], nodes: 20, 21]
 	// shownfeatures todo!!!
 	///////////////////////////////////
 	var textgraphdistance = 10;
-	log(999,treedata,999,shownfeatures)
-	var textstarty = 10; // has to be bigger than arborator-draft.css deprel fontsize
+	// log(999,treedata,999,shownfeatures)
+	var textstarty = 10; // has to be bigger than arborator-draft.css DEPREL fontsize
 	var runningy = textstarty;
 	var s=Snap(document.getElementById(idSVG));
 	droppables = [];
@@ -363,33 +394,33 @@ function drawsnap(idSVG, treedata, usermatches, shownfeatures) {
 		ind = 0;
 		for (var nr in tree) {
 			var word = tree[nr];
-			var sword = s.text(xpositions[ind], runningy, word[shofea]).attr({class:shofea});
-			
+			var sword = s.text(xpositions[ind], runningy, shofea.split('.').reduce((value,el) => value[el], word)).attr({class:shofea.replace('.', '-')});
 			sword.nr = nr;
-			sword.feats = word.feats;
+			sword.form = word[shofea];
+			sword.feats = word.FEATS;
+			sword.misc = word.MISC;
 			stexts.push(sword);
 			if (feati==0) { // tokens
 				sword.attr({cursor: "move", cursor: "grab"}).drag(dragging, startdrag, stopdrag); // dragging only the first line (normally the tokens)
-				
 				droppables.push(sword);
-				if (word["head"]!=0) levels.push(getlevel(nr, word["head"], tree, idhead2level))
+				if (word["HEAD"]!=0) levels.push(getlevel(nr, word["HEAD"], tree, idhead2level))
 				else levels.push(2); // minimum height 2 for root relations
-				for (var headid in word["deps"]) { // computation of tree depth. for each governor...
+				for (var headid in word["DEPS"]) { // computation of tree depth. for each governor...
 					if (tree[headid]) levels.push(getlevel(nr, headid, tree, idhead2level));
 					// log(6666,idhead2level)	
 				}
-				// log('levels',levels)
+				
+				
 			}
-			if (shofea == 'upos') { // categories
+			if (shofea == 'UPOS') { // categories
 				sword.attr({cursor: "pointer"}).click( categoryclick );
-				sword.nr = nr;
 				sword.cat =  word[shofea];
 			}
 			if ( usermatches.nodes.includes( nr.toString()) ) { // highlight matches
-				sword.attr({class:"deprelselected"}).node.scrollIntoView()
+				sword.attr({class:"DEPRELselected"}).node.scrollIntoView()
 			}
 			sword.wordDistance = parseInt(getComputedStyle(sword.node).getPropertyValue('--wordDistance'));
-			// log('sword.wordDistance',sword.wordDistance)
+			if (!sword.wordDistance) {sword.wordDistance=xWordDistance;log('check your CSS for',shofea)}
 			nextx = Math.max(xpositions[ind+1] || 0, xpositions[ind]+sword.getBBox().w + sword.wordDistance);
 			xpositions[ind+1]=nextx;
 			// log("@@@@",shofea,ind+1,nextx,xpositions[ind+1] || 0, xpositions[ind+1], xpositions)
@@ -400,20 +431,21 @@ function drawsnap(idSVG, treedata, usermatches, shownfeatures) {
 		allstexts[shofea]=stexts;
 		feati += 1;
 	}
+	
 	var maxlevel = Math.max(...levels);	
 	var xmidpoints = [];
 	var x2s = []; // right edge of all shown features
 	var y2s = []; // bottom of all shown features
 	var basey = textstarty+(maxlevel)*leveldistance-textgraphdistance;
 	var firstTextFontSize = parseInt(getComputedStyle(allstexts[shownfeatures[0]][0].node).getPropertyValue('font-size'));
-
+	
 	// readjusting the position of texts
 	for (let shofea of shownfeatures) {
 		var ind = 0;
 		for (var nr in tree) {
 			
 			var xmidpoint = xpositions[ind]+(xpositions[ind+1]-xpositions[ind])/2;
-			// log(444,shofea,ind,allstexts[shofea][ind])
+			// log(444,xmidpoint,shofea,ind,allstexts[shofea][ind])
 			xmidpoints.push(xmidpoint);
 			allstexts[shofea][ind].midx=xmidpoint;
 			allstexts[shofea][ind].attr({'x':  xmidpoint - allstexts[shofea][ind].getBBox().w/2});
@@ -424,20 +456,22 @@ function drawsnap(idSVG, treedata, usermatches, shownfeatures) {
 			ind += 1;
 		};
 	}
+	
 	// drawing the dependency relations
 	var ind = 0;
 	for (var nr in tree) {
 		var word = tree[nr];
-		drawRelation(word["head"], word["deprel"], null, null, 0, tree, idhead2level, nr, basey, ind, 
+		drawRelation(word["HEAD"], word["DEPREL"], null, null, 0, tree, idhead2level, nr, basey, ind, 
 			xmidpoints, firstTextFontSize, s, arrowhead, word, relationclick);
 		var gap=0
-		for (var headid in word["deps"]) { // for each governor of extended dependency
+		for (var headid in word["DEPS"]) { // for each governor of extended dependency
 			gap=gap+arrowheadsize
-			drawRelation(headid, word["deps"][headid], "xdep", "xdeprel", gap, tree, idhead2level, nr, basey, ind, 
+			drawRelation(headid, word["DEPS"][headid], "xdep", "xdeprel", gap, tree, idhead2level, nr, basey, ind, 
 				xmidpoints, firstTextFontSize, s, arrowhead, word, relationclick);
 		}
 		ind += 1;
 	};
+	
 	// computing the total size of the graph
 	var maxx2 = Math.max(...x2s);
 	var maxy2 = Math.max(...y2s);
@@ -450,14 +484,15 @@ function drawsnap(idSVG, treedata, usermatches, shownfeatures) {
 
 
 function drawRelation(headid, relation, xdep, xdeprel, gap, tree, idhead2level, nr, basey, 
-	ind, xmidpoints, firstTextFontSize, 
-	s, arrowhead, word, relationclick) {
-
+		ind, xmidpoints, firstTextFontSize, 
+		s, arrowhead, word, relationclick) {
+			
 	if (headid in tree || headid == 0) // only existing governors
 	{
 		var xbasey = basey-gap;
 		le = idhead2level[nr + '_' + headid];
 		var controly = basey - le * leveldistance;
+		if(xdep) controly-=leveldistance/4;
 		var tox = headid > ind ? xmidpoints[headid - 1] - firstTextFontSize / 2 : xmidpoints[headid - 1] + firstTextFontSize / 2;
 		var xmi = xmidpoints[ind];
 
@@ -469,7 +504,7 @@ function drawRelation(headid, relation, xdep, xdeprel, gap, tree, idhead2level, 
 		var ah = s.path(arrowhead(xmi, xbasey)).attr("class", "arrowhead");
 		var pbox = p.getBBox();
 		var xmidf = pbox.x + (pbox.w) / 2;
-		var srel = s.text(xmidf, pbox.y - 2, relation).attr({ class: "deprel" }).click(relationclick);
+		var srel = s.text(xmidf, pbox.y - 2, relation).attr({ class: "DEPREL" }).click(relationclick);
 		if(xdep) 
 		{	
 			srel.attr({ class: xdeprel });
@@ -500,46 +535,103 @@ function arrowhead(x,y) {
 }
 
 
-
-
 function treeDataToConll(treedata) {
-	// constructs a conll string from the current treedata
-	log('treeDataToConll',treedata)
+	// constructs a conllu string from the current treedata
+	// log('treeDataToConll',treedata)
 	var conlines=[];
-	for (let a in treedata.sentenceFeatures){
-		var v = treedata.sentenceFeatures[a];
+	for (let a in treedata.META){
+		var v = treedata.META[a];
 		if (v!=null) conlines.push("# "+a+" = "+v); // +'\n'
 		else conlines.push("# "+a)
 	}
-	// conlines=treedata.sentenceFeatures[0].slice();
-	// conlines=[];
-	// log('conllstr',conlines)
 	for (let nr in treedata.tree){
 		var node = treedata.tree[nr];
 		conlines.push(
 			[
 				nr,
-				(node['form']||'_'),
-				(node['lemma']||'_'),
-				(node['upos']||'_'),
-				(node['xpos']||'_'),
-				makeFeaturestring(node['feats'], '=', '|'),
-				(node['head'] == parseInt(node['head']) ? node['head'] : '_' ),
-				(node['deprel']||'_'),
-				makeFeaturestring(node['deps'], ':', '|'), 
-				makeFeaturestring(node['misc'], '=', '|')
+				(node['FORM']||'_'),
+				(node['LEMMA']||'_'),
+				(node['UPOS']||'_'),
+				(node['XPOS']||'_'),
+				makeFeaturestring(node['FEATS'], '=', '|'),
+				(node['HEAD'] == parseInt(node['HEAD']) ? node['HEAD'] : '_' ),
+				(node['DEPREL']||'_'),
+				makeFeaturestring(node['DEPS'], ':', '|'), 
+				makeFeaturestring(node['MISC'], '=', '|')
 			].join("\t"))
 	};
 	conllstr=conlines.join("\n")
 	// log(454565546456,'conllstr',conllstr)
 	return conllstr
-
-
 }
+
+
+function replaceNodes(s, treedata, idsequence, headid, newtokens) {
+	var id2newid = {0:0};
+	for (let id in treedata.tree) {
+		id=parseInt(id);
+		if (id < idsequence[0]) id2newid[id]=id;
+		else if (idsequence.includes(id)) {
+			if (idsequence.indexOf(id)<newtokens.length) id2newid[id]=id;
+			else id2newid[id]=headid;
+		}
+		else id2newid[id]=id+newtokens.length-idsequence.length;
+	}
+	var newtree={}
+	for (let id in treedata.tree) {
+		id=parseInt(id);
+		if (idsequence.includes(id) && idsequence.indexOf(id)>=newtokens.length) continue;
+		var node = treedata.tree[id];
+		node.ID = id2newid[id];
+		node.HEAD=id2newid[node.HEAD]
+		newdeps={}
+		for (let gid in node.DEPS) newdeps[id2newid[gid]]=node.DEPS[gid]
+		node.DEPS=newdeps
+		if (idsequence.includes(id)){
+			node.FORM = newtokens[idsequence.indexOf(id)];
+		}
+		newtree[id2newid[id]]=node;
+	}
+	// now the case where more tokens were inserted than replaced:
+	var basenode = treedata.tree[id2newid[idsequence[idsequence.length-1]]]
+	for (var i = idsequence.length; i < newtokens.length; ++i) {
+		let newnode = JSON.parse(JSON.stringify(basenode));
+		newnode.ID = idsequence[0]+i;
+		newnode.FORM = newtokens[i];
+		newnode.HEAD = 0;
+		newnode.DEPREL = 'root';
+		newnode.DEPS = {};
+		if(newnode.MISC.Gloss) newnode.MISC.Gloss=newnode.FORM
+		newtree[idsequence[0]+i] = newnode;
+	}
+	if (!Object.keys(newtree).length) return treedata; // forbid to erase entire tree
+	treedata.tree = newtree;
+	var toks = Object.values(treedata.tree).map(({ FORM }) => FORM)
+    var spa = Object.values(treedata.tree).map(({ MISC }) => ('SpaceAfter' in MISC && MISC.SpaceAfter=='No')?0:1)
+	var sentence = ""
+	for (var i = 0; i < toks.length; ++i) sentence+=toks[i]+((spa[i])?' ':'');
+	treedata.META.text = sentence;
+	treedata.sentence = sentence;
+	s.paper.clear();
+	drawsnap(s.id, treedata, {'nodes':[],'edges':[]}, shownfeatures)
+	return treedata;
+}
+
+
+
+
+
+
+
+// conlls = {	
+// 	10: 	{"ID": 0, "FORM":1, "LEMMA": 2, "UPOS": 3, "XPOS":4, "FEATS":5, "HEAD":6, "DEPREL":7, "DEPS":8, "MISC":9}, 
+// 	14: 	{"ID": 0, "FORM":1, "LEMMA": 3, "UPOS": 5, "HEAD":9, "DEPREL":11}, 
+// 	4: 		{"FORM":0, "LEMMA": 0, "UPOS": 1, "HEAD":2, "DEPREL":3} 
+// }
 
 function conllToTree(treeline) {
 	// takes a conll representation of a single tree as input
-	// returns object: {tree:tree, sentenceFeatures:sentencefeatures, sentence}
+	// returns object: {tree:tree, META:META, sentence:sentence}
 
 	// treeline = "# text Er arbeitet fürs FBI (deutsch etwa: „Bundesamt für Ermittlung“).\n"+treeline
 	// log("treeline",treeline)
@@ -547,8 +639,9 @@ function conllToTree(treeline) {
 	if(reverseMode) nodes.reverse();
 	// nodes = nodes.reverse();
 	var tree={};
-	var sentenceFeatures={}; // sentence features before the actual conll
+	var META={}; // sentence features before the actual conll
 	var addLines={}; // node position to additional line
+	var uextra={}; // todo: check this for reconstruction of conllu
 	var lastid=0;
 	var skipuntil=0;
 	var words=[]
@@ -556,11 +649,11 @@ function conllToTree(treeline) {
 	{ // for each conll line:
 		// var nodeline=$.trim(nodeline);
 		nodeline=nodeline.trim().replace(/^[\s\uFEFF\xA0]+|[\s\uFEFF\xA0]+$/g, '');
-		if (nodeline.charAt(0) == "#") 
+		if (nodeline.charAt(0) == "#") // META
 		{
 			var [a,v] = nodeline.substring(1).trim().split("=")
 			if (v!=null) var [a,v]=[a.trim(),v.trim()]
-			sentenceFeatures[a]=v
+			META[a]=v
 			return true;
 		}
 		var elements = nodeline.split('\t');
@@ -568,68 +661,70 @@ function conllToTree(treeline) {
 		if(el > 1)
 		{
 			if (!(el in conlls) && el>10) el=10;
-			if (el > 4) id=elements[conlls[el]["id"]];
-			else if (elements[conlls[el]['form']] != "_") id++;
-			var t=elements[conlls[el]['form']];
-			// log(777,elements,'form',conlls[el],t)
+			if (el > 4) id=elements[conlls[el]["ID"]];
+			else if (elements[conlls[el]['FORM']] != "_") id++;
+			var form=elements[conlls[el]['FORM']];
 			var tokids=id.split("-")
 			if (tokids.length == 1) { // simple token
 				tree[id]={};
-				tree[id]["id"]=id;
-				tree[id]['form']=t;
-				tree[id]["lemma"]=elements[conlls[el]["lemma"]];
-				tree[id]['upos']=elements[conlls[el]['upos']];
-				tree[id]['head']=parseInt(elements[conlls[el]['head']]);
-				tree[id]['deprel']=elements[conlls[el]['deprel']];
-				tree[id]["feats"]={};
-				tree[id]["deps"]={};	
-				tree[id]["misc"]={};
+				tree[id]["ID"]=id;
+				tree[id]['FORM']=form;
+				tree[id]["LEMMA"]=elements[conlls[el]["LEMMA"]];
+				tree[id]['UPOS']=elements[conlls[el]['UPOS']];
+				tree[id]['HEAD']=parseInt(elements[conlls[el]['HEAD']]);
+				tree[id]['DEPREL']=elements[conlls[el]['DEPREL']];
+				tree[id]["FEATS"]={};
+				tree[id]["DEPS"]={};	
+				tree[id]["MISC"]={};
 
-				if (id>skipuntil) words.push(t);
+				if (id>skipuntil) words.push(form);
 				if (el==10) {
 					
-					tree[id]["xpos"] =elements[conlls[el]["xpos"]];
-					tree[id]["feats"] =	analyzeFeaturestring(elements[conlls[el]["feats"]], '=', '|');
-					tree[id]["deps"] =	analyzeFeaturestring(elements[conlls[el]["deps"]], ':', '|');
-					tree[id]["misc"] =	analyzeFeaturestring(elements[conlls[el]["misc"]], '=', '|');
+					tree[id]["XPOS"] =elements[conlls[el]["XPOS"]];
+					tree[id]["FEATS"] =	analyzeFeaturestring(elements[conlls[el]["FEATS"]], '=', '|');
+					tree[id]["DEPS"] =	analyzeFeaturestring(elements[conlls[el]["DEPS"]], ':', '|');
+					tree[id]["MISC"] =	analyzeFeaturestring(elements[conlls[el]["MISC"]], '=', '|');
 
 				}
-				else if (tokids.length == 2){ // n-m type multi-word encoding
-					skipuntil = parseInt(tokids[1])
-					words.push(elements[conlls[el]['form']]);
-					if (!(lastid in uextra)) uextra[lastid]=[];
-					uextra[lastid].push(nodeline);
-				}
-				else {
-					if (!(lastid in uextra)) uextra[lastid]=[];
-					uextra[lastid].push(nodeline);
-				}
 			}
-			else  { // bizarre token id
-				if (!(lastid in addLines)) addLines[lastid]=[];
-				addLines[lastid].push(nodeline);
-				if (tokids.length == 2){ // n-m type multi-word encoding
-					skipuntil = parseInt(tokids[1])
-					words.push(elements[conlls[el]['form']]);
-				}
-				tree[id]['head']=parseInt(elements[conlls[el]['head']]); // todo: think about this
-				tree[id]['deprel']=elements[conlls[el]['deprel']];
+			else if (tokids.length == 2){ // n-m type multi-word encoding
+				skipuntil = parseInt(tokids[1])
+				words.push(elements[conlls[el]['FORM']]);
+				if (!(lastid in uextra)) uextra[lastid]=[];
+				uextra[lastid].push(nodeline);
 			}
-			
-			lastid=id;
+			else {
+				if (!(lastid in uextra)) uextra[lastid]=[];
+				uextra[lastid].push(nodeline);
+			}
 		}//end if el >1
+		else  { // bizarre line
+			if (!(lastid in addLines)) addLines[lastid]=[];
+			addLines[lastid].push(nodeline);
+			if (tokids.length == 2){ // n-m type multi-word encoding
+				skipuntil = parseInt(tokids[1])
+				words.push(elements[conlls[el]['FORM']]);
+			}
+			tree[id]['HEAD']=parseInt(elements[conlls[el]['HEAD']]); // todo: think about this
+			tree[id]['DEPREL']=elements[conlls[el]['DEPREL']];
+		}
+			
+		lastid=id;
+		
 	});	
 	var sentence = [];
-	if ("text" in sentenceFeatures) return {tree:tree, sentenceFeatures:sentenceFeatures, sentence:sentenceFeatures["text"]};
+	// console.log(456456,Object.keys(tree),'*****',tree[1].MISC)
+	if ("text" in META) return {tree:tree, META:META, sentence:META["text"]};
 	// got to contstruct the sentence
 	words.forEach(function (word, i) {
 		sentence.push(word);
-		if (!("NoSpaceAfter" in tree[i+1]["misc"] && tree[i+1]["misc"]=="No" )) sentence.push(" ");
+		if (!("NoSpaceAfter" in tree[i+1]["MISC"] && tree[i+1]["MISC"]=="No" )) sentence.push(" ");
 		// if(!reverseMode){
 		// 	if (i+1 in tree && !(("NoSpaceAfter" in tree[i+1]) && tree[i+1]["NoSpaceAfter"]==false)) sentence.push(" ");
 		// } else{ sentence.push(word); }
 	});
-	return {tree:tree, sentenceFeatures:sentenceFeatures, sentence:sentence.join('')};
+	
+	return {tree:tree, META:META, sentence:sentence.join('')};
 }
 
 function analyzeFeaturestring(featstr, eq, spl) {

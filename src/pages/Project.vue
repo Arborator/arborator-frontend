@@ -5,7 +5,7 @@
                 <q-card-section>
                     <q-toolbar class="  text-center">
                         <q-toolbar-title>
-                        <span :class="($q.dark.isActive?'':'text-primary') + ' text-bold'">{{infos.name}}</span> <q-btn v-if="$store.getters.getUserInfos.super_admin || admin" flat round :color="$q.dark.isActive?'':'primary'" icon="settings" @click="projectSettingsDial=true"></q-btn>
+                        <span :class="($q.dark.isActive?'':'text-primary') + ' text-bold'">{{infos.name}}{{relationTableInfos}}</span> <q-btn v-if="$store.getters.getUserInfos.super_admin || admin" flat round :color="$q.dark.isActive?'':'primary'" icon="settings" @click="projectSettingsDial=true"></q-btn>
                         </q-toolbar-title>
                     </q-toolbar>
                 </q-card-section>
@@ -290,6 +290,9 @@ export default {
             tableKey: 0,
             initLoad: false,
             robot: {active:false, name:'parser'}
+            
+
+
         }
     },
     created() { window.addEventListener('resize', this.handleResize); this.handleResize(); },

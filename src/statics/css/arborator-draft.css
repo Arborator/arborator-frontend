@@ -1,4 +1,4 @@
-.form {
+.FORM {
 /* 	font: 18px DejaVu Sans; */
 /* 	fill: black; */
 /* 	font-family:sans-serif; */
@@ -7,7 +7,7 @@
 	text-align: center;
 } 
 
-.dark .form {
+.dark .FORM {
 	/* 	font: 18px DejaVu Sans; */
 	/* 	fill: black; */
 	/* 	font-family:sans-serif; */
@@ -16,7 +16,7 @@
 		text-align: center;
 	} 
 
-.lemma {
+.LEMMA {
 	font: 15px DejaVu Sans;
 	fill: black;
 	font-family:sans-serif;
@@ -25,7 +25,7 @@
 	--wordDistance:22;
 } 
 
-.dark .lemma {
+.dark .LEMMA {
 	font: 15px DejaVu Sans;
 	fill: rgb(238, 232, 232);
 	font-family:sans-serif;
@@ -34,32 +34,24 @@
 	--wordDistance:22;
 } 
 
-.gloss {
+.MISC-Gloss {
 	font: 15px DejaVu Sans;
-	fill: coral;
+	fill: rgb(124, 96, 86);
 	font-family:sans-serif;
 	text-align: center;
 	font-style: italic;
 	--wordDistance:11;
 } 
 
-.gloss {
-	font: 15px DejaVu Sans;
-	fill: coral;
-	font-family:sans-serif;
-	text-align: center;
-	font-style: italic;
-	--wordDistance:11;
-} 
 
-.upos {
+.UPOS {
 	font: 11px DejaVu Sans;
-	fill: #E03737;
+	fill: rgb(80, 29, 125);
 	text-align: center;
 	--wordDistance:22;
 } 
 
-.uposselected {
+.UPOSselected {
 	font: 11px DejaVu Sans;
 	fill: #dd137bff;
 	font-weight: bold;
@@ -67,7 +59,7 @@
 } 
 
 
-.deprel {
+.DEPREL {
 	font: 12px Arial;
 	fill: #501d7d;
 	font-style: oblique;
@@ -76,7 +68,7 @@
 	--funcCurveDist:3; /* distance between the function name and the curves highest point */
 } 
 
-.dark .deprel {
+.dark .DEPREL {
 	font: 12px Arial;
 	fill: #aab3ff;
 	font-style: oblique;
@@ -84,6 +76,15 @@
 	cursor:pointer;
 	--funcCurveDist:3; /* distance between the function name and the curves highest point */
 }
+
+.glossy {
+	font: 15px DejaVu Sans;
+	fill: coral;
+	font-family:sans-serif;
+	text-align: center;
+	font-style: italic;
+	--wordDistance:11;
+} 
 
 
 .xdeprel {
@@ -95,7 +96,7 @@
 	fill: none;
 } 
 
-.deprelselected {
+.DEPRELselected {
 	fill: #dd137b;
 	/* font-weight: bold; */
 } 

@@ -251,8 +251,6 @@ VER,DET,NOMcom`,
 			txtLabels: `# please drop your labels here in a comma separated format with one column per line. For instance:
 subj,comp,vocative
 :aux,:caus,:cleft`,
-			// relations: [["subj", "comp", "vocative", "det", "dep", "mod", "conj", "cc", "parataxis", "fixed", "flat", "compound", "discourse", "dislocated", "goeswith", "orphan", "punct", "root"],[":aux",":caus",":cleft",":pred",":appos"],["@comp","@mod","@subj","@dep","@det"]],
-			// cats: ["ADJ", "ADP", "ADV", "AUX", "CCONJ", "DET", "INTJ", "NOUN", "NUM", "PART", "PRON", "PROPN", "PUNCT", "SCONJ", "VERB", "X"],
 			config: ``,
 			cmOption: {
                 tabSize: 4,
@@ -262,7 +260,7 @@ subj,comp,vocative
                 line: true,
                 mode: 'python',
                 theme: 'material-darker'
-            }
+			}
 		}
 	},
 	mounted(){
@@ -285,7 +283,14 @@ subj,comp,vocative
 		admin(){ return this.infos.admins.includes(this.$store.getters.getUserInfos.id) || this.$store.getters.getUserInfos.super_admin; }   
     },
 	methods:{
-		getProjectInfos(){ api.getProjectSettings(this.$props.projectname).then(response => {console.log(response.data); this.infos = response.data; }).catch(error => {this.$store.dispatch("notifyError", {error: error}); this.$q.notify({message: `${error}`, color:'negative', position: 'bottom'});}) },
+		getProjectInfos(){ api.getProjectSettings(this.$props.projectname).then(response => {
+			console.log(response.data); 
+			this.infos = response.data; }).catch(error => {
+				this.$store.dispatch("notifyError", {error: error}); 
+				this.$q.notify({message: `${error}`, color:'negative', position: 'bottom'});}) },
+
+
+
 		addAdmin(selected){ api.setProjectUserRole(this.$props.projectname, 'admin', selected[0].id).then(response => {this.$q.notify({message:`Change saved!`}); this.infos = response.data}).catch(error => {this.$store.dispatch("notifyError", {error: error})});  },
 		removeAdmin(userid){ api.removeProjectUserRole(this.$props.projectname, 'admin', userid).then( response => {this.$q.notify({message:`Change saved!`}); this.infos = response.data;} ).catch(error => {this.$store.dispatch("notifyError", {error: error})});  },
 		addGuest(selected){ api.setProjectUserRole(this.$props.projectname, 'guest', selected[0].id).then(response=> {this.$q.notify({message:`Change saved!`});this.infos = response.data;}).catch(error => {this.$store.dispatch("notifyError", {error: error})});  },

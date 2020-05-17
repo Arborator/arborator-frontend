@@ -8,6 +8,8 @@ const routes = [
       { path: '/projects', component: () => import('pages/ProjectsHub.vue') },
       { path: '/projects/:projectname', component: () => import('pages/Project.vue'), props: true, name:'project' },
       { path: '/projects/:projectname/:samplename', component: () => import('pages/Sample.vue'), props: true },
+      { path: '/projects/:projectname/:samplename/:nr', component: () => import('pages/Sample.vue'), props: true },
+      { path: '/projects/:projectname/:samplename/:nr/:user', component: () => import('pages/Sample.vue'), props: true },
       {
         path: 'settings',
         component: () => import('pages/Settings'),

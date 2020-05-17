@@ -5,7 +5,7 @@
                 <q-card-section>
                     <q-toolbar class="  text-center">
                         <q-toolbar-title>
-                        <span :class="($q.dark.isActive?'':'text-primary') + ' text-bold'">{{infos.name}}{{relationTableInfos}}</span> <q-btn v-if="$store.getters.getUserInfos.super_admin || admin" flat round :color="$q.dark.isActive?'':'primary'" icon="settings" @click="projectSettingsDial=true"></q-btn>
+                        <span :class="($q.dark.isActive?'':'text-primary') + ' text-bold'">{{infos.name}}</span> <q-btn v-if="super_admin || admin" flat round :color="$q.dark.isActive?'':'primary'" icon="settings" @click="projectSettingsDial=true"></q-btn>
                         </q-toolbar-title>
                     </q-toolbar>
                 </q-card-section>
@@ -62,21 +62,71 @@
 
                             <template v-slot:top="props">
                                 <q-btn-group flat>
-                                    <q-btn flat color="default"  icon="cloud_upload" @click="uploadDial = true" :disable="!admin">
+                                    
+                                    <q-btn flat color="default"  icon="cloud_upload" @click="uploadDial = true" :disable="!(super_admin || admin)">
                                         <q-tooltip :delay="300" content-class="text-white bg-primary" >Add File</q-tooltip>
                                     </q-btn>
                                     <!-- <q-btn flat color="default"  icon="person_add" :disabled="table.selected.length<1" @click="assignDial = true">
                                         <q-tooltip :delay="300" content-class="text-white bg-primary">Assign</q-tooltip>
                                     </q-btn> -->
-                                    <q-btn flat  color="default"  icon="cloud_download" @click="exportSamplesZip()" :loading="table.exporting" :disable="(!guest && !admin) || table.selected.length<1">
+                                    <q-btn flat  color="default"  icon="cloud_download" @click="exportSamplesZip()" :loading="table.exporting" :disable="(!guest && !admin && !super_admin) || table.selected.length<1">
                                         <q-tooltip :delay="300" content-class="text-white bg-primary">Export</q-tooltip>
                                     </q-btn>
                                     <q-btn v-show="table.selected.length<1" flat color="default"  icon="delete_forever" disabled>
                                         <q-tooltip :delay="300" content-class="text-white bg-primary">Delete selected rows</q-tooltip>
                                     </q-btn>
-                                    <q-btn v-show="table.selected.length!=0" :loading="table.loadingDelete" flat color="default" text-color="red" icon="delete_forever" @click="triggerConfirm(deleteSamples)" :disable="!admin">
-                                        <q-tooltip :delay="300" content-class="text-white bg-primary">Delete selected rows</q-tooltip>
+                                    <q-btn v-show="table.selected.length!=0" :loading="table.loadingDelete" flat color="default" text-color="red" icon="delete_forever" @click="triggerConfirm(deleteSamples)" :disable="!admin && !super_admin">
+                                        <q-tooltip :delay="300" content-class="text-white bg-primary">Delete selected samples</q-tooltip>
                                     </q-btn>
+
+                                    <!-- ion-logo-github -->
+                                    <q-btn-dropdown v-if="LoggedWithGithub" :disable="table.selected.length<1" icon="ion-md-git-commit"  flat dense> <q-tooltip>Commit and push the selected samples to GitHub</q-tooltip>
+                                        <q-list>
+                                        <q-item clickable v-close-popup @click="commit()">
+                                        <q-item-section>
+                                            <q-item-label>Push only my trees of the selected samples</q-item-label>
+                                        </q-item-section>
+                                        </q-item>
+
+                                        <q-item clickable v-close-popup @click="commit()">
+                                        <q-item-section>
+                                            <q-item-label>Push my trees of the selected samples, filled up with the most recent trees</q-item-label>
+                                        </q-item-section>
+                                        </q-item>
+
+                                        <q-item v-if="admin || super_admin" clickable v-close-popup @click="commit()">
+                                        <q-item-section>
+                                            <q-item-label>Push all trees of the selected samples</q-item-label>
+                                        </q-item-section>
+                                        </q-item>
+
+                                        </q-list>
+                                    </q-btn-dropdown>
+
+                                    <q-btn-dropdown v-if="LoggedWithGithub" :disable="false" icon="ion-md-git-pull-request"  flat dense> <q-tooltip>Pull from GitHub</q-tooltip>
+                                        <q-list>
+                                        <q-item clickable v-close-popup @click="pullSample()" :disable="table.selected.length<1" >
+                                        <q-item-section>
+                                            <q-item-label>Replace my trees from the selected samples with the ones from GitHub</q-item-label>
+                                        </q-item-section>
+                                        </q-item>
+
+                                        <q-item v-if="admin || super_admin" clickable v-close-popup @click="pullSample()" :disable="table.selected.length<1" >
+                                        <q-item-section>
+                                            <q-item-label>Replace all trees from the selected samples with the ones from GitHubs</q-item-label>
+                                        </q-item-section>
+                                        </q-item>
+
+                                        <q-item v-if="admin || super_admin" clickable v-close-popup @click="pullSample()">
+                                        <q-item-section>
+                                            <q-item-label>Replace all trees with the ones from GitHubs</q-item-label>
+                                        </q-item-section>
+                                        </q-item>
+
+                                        </q-list>
+                                    </q-btn-dropdown>
+
+
                                     <!-- Removed before fixed -->
                                     <!-- <q-btn flat color="default"  icon="table_chart" @click="getRelationTable()" >
                                         <q-tooltip :delay="300" content-class="text-white bg-primary">Relation tables</q-tooltip>
@@ -114,13 +164,28 @@
                                     <q-td key="sentences" :props="props">{{ props.row.sentences }}</q-td>
                                     <q-td key="tokens" :props="props">{{ props.row.tokens }}</q-td>
                                     <q-td key="annotators" :props="props">
-                                        <tag-input @tag-added="addAnnotator" @tag-removed="removeAnnotator" :tag-context="props.row" :element-id="props.row.samplename + 'annotatortag'" v-model="props.row.roles.annotator" :existing-tags="possiblesUsers" :typeahead="true" typeahead-style="badges" :typeahead-hide-discard="true" placeholder="add user" :only-existing-tags="true" :typeahead-always-show="false" ></tag-input>
+                                        <tag-input v-if="admin || super_admin" @tag-added="addAnnotator" @tag-removed="removeAnnotator" :tag-context="props.row" :element-id="props.row.samplename + 'annotatortag'" v-model="props.row.roles.annotator" :existing-tags="possiblesUsers" :typeahead="true" typeahead-style="badges" :typeahead-hide-discard="true" placeholder="add user" :only-existing-tags="true" :typeahead-always-show="false" ></tag-input>
+                                        <q-list v-else dense>
+                                            <q-item v-for="source in props.row.roles.annotator" :key="source" :props="source" >
+                                                <q-item-label caption>{{source.value}}</q-item-label>
+                                            </q-item>
+                                        </q-list>
                                     </q-td>
                                     <q-td key="validators" :props="props">
-                                        <tag-input @tag-added="addValidator"  @tag-removed="removeValidator" :tag-context="props.row" :element-id="props.row.samplename + 'validatortag'" v-model="props.row.roles.validator" :existing-tags="possiblesUsers" :typeahead="true" typeahead-style="badges" :typeahead-hide-discard="true" placeholder="add user" :only-existing-tags="true" :typeahead-always-show="false"></tag-input>
+                                        <tag-input v-if="admin || super_admin" @tag-added="addValidator"  @tag-removed="removeValidator" :tag-context="props.row" :element-id="props.row.samplename + 'validatortag'" v-model="props.row.roles.validator" :existing-tags="possiblesUsers" :typeahead="true" typeahead-style="badges" :typeahead-hide-discard="true" placeholder="add user" :only-existing-tags="true" :typeahead-always-show="false"></tag-input>
+                                        <q-list v-else dense>
+                                            <q-item v-for="source in props.row.roles.validator" :key="source" :props="source" >
+                                                <q-item-label caption>{{source.value}}</q-item-label>
+                                            </q-item>
+                                        </q-list>
                                     </q-td>
                                     <q-td key="profs" :props="props">
-                                        <tag-input @tag-added="addProf"  @tag-removed="removeProf" :tag-context="props.row" :element-id="props.row.samplename + 'proftag'" v-model="props.row.roles.prof" :existing-tags="possiblesUsers" :typeahead="true" typeahead-style="badges" :typeahead-hide-discard="true" placeholder="add user" :only-existing-tags="true" :typeahead-always-show="false"></tag-input>
+                                        <tag-input v-if="admin || super_admin" @tag-added="addProf"  @tag-removed="removeProf" :tag-context="props.row" :element-id="props.row.samplename + 'proftag'" v-model="props.row.roles.prof" :existing-tags="possiblesUsers" :typeahead="true" typeahead-style="badges" :typeahead-hide-discard="true" placeholder="add user" :only-existing-tags="true" :typeahead-always-show="false"></tag-input>
+                                        <q-list v-else dense>
+                                            <q-item v-for="source in props.row.roles.prof" :key="source" :props="source" >
+                                                <q-item-label caption>{{source.value}}</q-item-label>
+                                            </q-item>
+                                        </q-list>
                                     </q-td>
                                     <q-td key="treesFrom" :props="props">
                                         <q-list dense>
@@ -199,6 +264,9 @@
             </q-dialog>
 
             <q-dialog v-model="confirmActionDial"> <confirm-action :parentAction="confirmActionCallback" :arg1="confirmActionArg1"></confirm-action> </q-dialog>
+
+
+
 
         </div>
     </q-page>
@@ -306,7 +374,14 @@ export default {
         breakpoint(){ return this.window.width <= 400; },
         guest(){ return this.infos.guests.includes(this.$store.getters.getUserInfos.id); },
         admin(){ return this.infos.admins.includes(this.$store.getters.getUserInfos.id); },
-        noselect(){ return this.table.selected.length < 1;}
+        super_admin(){ return this.$store.getters.getUserInfos.super_admin; },
+
+        
+        noselect(){ return this.table.selected.length < 1;},
+        LoggedWithGithub() {
+            var authProvider = this.$store.getters.getUserInfos.auth_provider;
+            return authProvider == 4
+        }, 
     },
     methods:{
         handleResize() {this.window.width = window.innerWidth; this.window.height = window.innerHeight;},

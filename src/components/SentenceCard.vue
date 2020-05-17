@@ -1,19 +1,19 @@
 <template>
     <q-card :id="index" >
-        <q-toolbar :class="$q.dark.isActive?'text-white':'text-primary'">
-            <q-btn flat round dense icon="save" :disable="!lastModified.dirty" @click="save()"> <q-tooltip>Save this tree</q-tooltip> </q-btn>
-            <q-btn flat round dense icon="list" :disable="tab==''" @click="openMetaDialog()"> <q-tooltip>Edit this tree's metadata</q-tooltip> </q-btn>
+        <!-- <q-toolbar :class="$q.dark.isActive?'text-white':'text-primary'"> -->
+            <!-- <q-btn flat round dense icon="save" :disable="!lastModified.dirty" @click="save()"> <q-tooltip>Save this tree</q-tooltip> </q-btn>
+            <q-btn flat round dense icon="list" :disable="tab==''" @click="openMetaDialog()"> <q-tooltip>Edit this tree's metadata</q-tooltip> </q-btn> -->
             <!-- <q-btn flat round dense icon="archive" ><q-tooltip>Export</q-tooltip></q-btn> -->
             <!-- <q-btn flat round dense icon="undo" :disable="!lastModified.dirty" @click="undo()"><q-tooltip>Undo</q-tooltip></q-btn>
             <q-btn flat round dense icon="redo" :disable="!lastModified.redo"><q-tooltip>Redo</q-tooltip></q-btn> -->
             <!-- <q-toolbar-title>
             </q-toolbar-title> -->
-            <q-btn flat round dense icon="more_vert" />
-        </q-toolbar>
+            <!-- <q-btn flat round dense icon="more_vert" /> -->
+        <!-- </q-toolbar> -->
         <q-card-section>
             <div class="row items-center">
                 <!-- icon="textsms"  -->
-                <q-chip class="text-center" style="max-width:20%" :color="$q.dark.isActive?'primary':''" dense> {{sentenceId}} </q-chip>&nbsp;&nbsp;&nbsp;
+                <span class="text-grey">{{index+1}}</span> <q-chip class="text-center" style="max-width:20%" :color="$q.dark.isActive?'primary':''" dense> {{sentenceId}} </q-chip>&nbsp;&nbsp;&nbsp;
                 <template>
                     <q-input 
                     style="width:70%"
@@ -29,15 +29,41 @@
                         </template>
                     </q-input>
                 </template>
+                <q-space/>
+                 <q-btn flat round dense icon="save" :disable="!lastModified.dirty" @click="save()"> <q-tooltip>Save this tree</q-tooltip> </q-btn>
+            <q-btn flat round dense icon="list" :disable="tab==''" @click="openMetaDialog()"> <q-tooltip>Edit this tree's metadata</q-tooltip> </q-btn>
+                
+            <q-btn-dropdown :disable="tab==''" icon="more_vert"  flat dense> <q-tooltip>More</q-tooltip>
+                <q-list>
+                <q-item clickable v-close-popup @click="pullSample()">
+                <q-item-section>
+                    <q-item-label>Get direct link to this tree (todo)</q-item-label>
+                </q-item-section>
+                </q-item>
+
+                <q-item clickable v-close-popup @click="pullSample()">
+                <q-item-section>
+                    <q-item-label>Get CoNLL-U of this tree (todo)</q-item-label>
+                </q-item-section>
+                </q-item>
+
+                 <q-item clickable v-close-popup @click="pullSample()">
+                <q-item-section>
+                    <q-item-label>Get SVG of this tree (todo)</q-item-label>
+                </q-item-section>
+                </q-item>
+
+                </q-list>
+            </q-btn-dropdown>
+            <!-- <q-btn flat round dense icon="more_vert" /> -->
             </div>
-<!-- @blur="ttupdated"  @keyup.enter="ttupdated" @input="tthas_changed"      @blur="ttselect"      @focus="ttfocus"           @select="ttselect"-->
-<!-- {{sampleData.sentence}} -->
+            
             <q-tabs v-model="tab" :class="($q.dark.isActive?'text-grey-5':'text-grey-8') + ' shadow-2'" dense :active-color="$q.dark.isActive?'info':'accent'" :active-bg-color="$q.dark.isActive?'':'grey-2'">
-                <q-tab v-for="(tree, user) in sampleData.conlls" :key="user" :props="user" :label="user" :name="user" icon="person" no-caps :ripple="false" />
+                <q-tab v-for="(tree, user) in sampleData.conlls" :key="user" :props="user" :label="user" :name="user" icon="person" no-caps :ripple="false" :ref="'tab'+user"/>
             </q-tabs>
             <q-separator />
             <q-tab-panels v-model="tab" keep-alive >
-                <q-tab-panel v-for="(tree, user) in sampleData.conlls" :key="user" :props="tree" :name="user">
+                <q-tab-panel v-for="(tree, user) in sampleData.conlls" :key="user" :props="tree" :name="user" >
                     <q-card  flat >
                         <q-card-section :class="($q.dark.isActive?'':'') + ' scrollable'" >
                             <conll-graph
@@ -45,7 +71,8 @@
                                 :conll="tree" 
                                 :user="user" 
                                 :sentenceId="sentenceId" 
-                                :matches="sampleData.matches" 
+                                :matches="sampleData.matches"
+                                :id="'conllGraph'+user"
                                 @update-conll="onConllGraphUpdate($event)"
                                 @sentence-changed="sentenceUpdate($event)"
                                 @meta-changed="metaUpdate($event)"
@@ -84,7 +111,8 @@ export default {
             },
             changed: false,
             shownmetanames: [],
-            shownmetas:{}
+            shownmetas: {},
+            view: null
         }
     },
 
@@ -99,14 +127,14 @@ export default {
     },
     mounted() {
         this.shownmetanames = this.$store.getters.getProjectConfig.shownmeta;
+        // console.log('scmounted',this.$refs.conllGraph)
     },
     methods: {
-
        
         ttselect(event) {
-            // console.log('--------selected:',event.srcElement.value.substring(event.srcElement.selectionStart,event.srcElement.selectionEnd))
+            // triggered if some letters of the sentence are selected
             if ('conllGraph' in this.$refs) var cg = this.$refs.conllGraph.filter(c => c.user == this.tab)[0];
-            if (cg) cg.openTokenDialog(
+            if (cg) cg.openTokenDialog( // if the user's conllGraph is open:
                 event.srcElement.selectionStart,
                 event.srcElement.selectionEnd,
                 event.srcElement.value.substring(event.srcElement.selectionStart,event.srcElement.selectionEnd) 
@@ -161,6 +189,7 @@ export default {
                 this.$store.dispatch("notifyError", {error: error}); });
         },
         onConllGraphUpdate(payload) {
+            // called from the ConllGraph
             // console.log('!!!!!!onConllGraphUpdate',payload)
             this.lastModified = payload;
         },
@@ -168,13 +197,30 @@ export default {
             this.sampleData.sentence = sentence;
         },
         metaUpdate(metas) {
-            console.log(this.shownmetanames,metas,)
+            // console.log(this.shownmetanames,metas,)
             this.shownmetas = Object.keys(metas).filter(m => this.shownmetanames.includes(m)).map( m => ({'a':m,'v':metas[m]}));
-            console.log(this.shownmetas)
+            // console.log(this.shownmetas)
         },
         openMetaDialog() {
             // "this.tab" contains the user name, calls the openMetaDialog function in ConllGraph.vue
             this.$refs.conllGraph.filter(c => c.user == this.tab)[0].openMetaDialog();    
+        },
+        autoopen(user) {
+            // called from Sample.vue to open specific tree
+            if('tab'+user in this.$refs){
+                var usertab = this.$refs['tab'+user][0];
+                // console.log('autoopen',usertab,user+'_'+(parseInt(this.index)+1))
+                usertab.__activate();
+                setTimeout( () => {
+                 document.getElementById('conllGraph'+user).scrollIntoView({behavior: "smooth", block: "center", inline: "nearest"});
+                }, 1000)
+            }
+            else {
+                var t = Object.keys(this.$refs).filter(c => c.includes('tab') )[0];
+                if (t!=undefined && t.length>3) this.autoopen(t.substring(3))
+            }
+            
+ 
         },
         showNotif (position, alert) {
             const { color, textColor, multiLine, icon, message, avatar, actions } = this.alerts[alert];

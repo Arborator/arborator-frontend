@@ -18,7 +18,7 @@ module.exports = function (ctx) {
     ],
 
     extras: [
-      // 'ionicons-v4',
+      'ionicons-v4',
       // 'mdi-v3',
       'fontawesome-v5',
       // 'eva-icons',
@@ -90,6 +90,7 @@ module.exports = function (ctx) {
     },
 
     supportIE: true,
+//     supportIE: false,
 
     build: {
       env: ctx.dev

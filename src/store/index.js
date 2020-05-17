@@ -118,7 +118,8 @@ export default new Vuex.Store({
             state.projectConfig.is_open = payload.is_open;
             state.projectConfig.show_all_trees = payload.show_all_trees;
 
-            console.log(1234444444, '// todo as soon as api gets the information', payload, !("annotationFeatures" in payload)) 
+            console.log(1234444444, '// todo as soon as api gets the information');
+            // , payload, !("annotationFeatures" in payload)) 
         }
     },
     actions: {

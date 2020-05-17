@@ -40,7 +40,7 @@ export default {
       api.whoAmI().then(response =>{
         // this.$store.dispatch("setUser", response.data);
         this.store.dispatch("checkSession", {});
-        this.showNotif('bottom-right', 'welcomeback' );
+        // this.showNotif('bottom-right', 'welcomeback' );
       }).catch(error => { this.$store.dispatch("notifyError", {error: error}); });
       // this.store.dispatch("checkSession", {});
         // .then(() => {

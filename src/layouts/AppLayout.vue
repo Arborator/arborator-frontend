@@ -1,21 +1,33 @@
 <template>
   <q-layout view="hHh Lpr fFf">
-    <q-header bordered :class="$q.dark.isActive ? 'bg-primary' : 'bg-white' ">
-      <q-toolbar :class="$q.dark.isActive ? 'text-white' : 'text-primary'">
-        <q-btn flat @click="drawerLeft = !drawerLeft" round icon="menu"  />
-        <q-toolbar-title desktop-only >
-          <q-btn flat dense size="xl" square to="/"><img alt="Arborator" :src="$q.dark.isActive ? '../statics/arborator.text.white.svg' : '../statics/arborator.text.primary.svg' " style="width:11vw"/></q-btn>
-        </q-toolbar-title>
+    <q-header :class="$q.dark.isActive?'bg-dark':'bg-white'">
+      <q-bar :class="$q.dark.isActive?'bg-dark':'bg-white text-black'"> 
+        <!-- class="bg-white text-black" -->
+          <!--   :class="$q.dark.isActive ? 'text-white' : 'text-primary'" -->
+          
+          <q-btn flat @click="drawerLeft = !drawerLeft" round icon="menu"  />
+          <a href="/">
+          <div class="q-btn__content text-center col items-center q-anchor--skip row">
+            <img v-if="$q.dark.isActive" alt="Arborator" src="../statics/arborator.grew.white.svg" style="height: 2.3vw;">
+            <img v-else alt="Arborator" src="../statics/arborator.grew.svg" style="height: 2.3vw;">
+          </div>
+          </a>
+          <!-- <q-icon v-if="$q.dark.isActive" to="/" name="img:../statics/arborator.grew.white.svg"  size="14.75rem" /> -->
+          <!-- this would be nice, but it blocks a strange square below: <q-icon v-else to="/" name="img:../statics/arborator.grew.svg" size="14.75rem" />    -->
 
-        <q-breadcrumbs :active-color="$q.dark.isActive?'white':'primary'" :class="($q.dark.isActive?'text-grey':'text-black') + ' mobile-hide native-mobile-hide within-iframe-hide gt-xs'" style="max-height:20px;max-width:70vh;overflow:y;">
+          <!-- todo: to= not working style="height:155%;"   style="height:100%;overflow:y;" width:100%; text-align: left; size="4.75rem"-->
+          <q-space />
+
+          <q-breadcrumbs :active-color="$q.dark.isActive?'white':'primary'" :class="($q.dark.isActive?'text-grey':'text-black') + ' mobile-hide native-mobile-hide within-iframe-hide gt-xs'" style="max-height:20px;max-width:70vh;overflow:y;">
             <q-breadcrumbs-el v-if="notHome" icon="home" to="/" />
             <q-breadcrumbs-el v-if="$route.path.startsWith('/projects/')" icon="view_module" to="/projects" />
             <q-breadcrumbs-el v-if="$route.params.projectname != null" :label="$route.params.projectname" icon="work" :to="'/projects/'+$route.params.projectname" />
             <q-breadcrumbs-el v-if="$route.params.samplename != null && $route.params.projectname != null" :label="$route.params.samplename" icon="assignment" :to="'/projects/'+$route.params.projectname+'/'+$route.params.samplename" />
-        </q-breadcrumbs>
-        <q-space />
-        
-        <div class="q-gutter-sm row items-center no-wrap">
+          </q-breadcrumbs>
+          
+          <q-space />
+
+          <div class="q-gutter-sm row items-center no-wrap"  size="4rem">
           <q-btn flat round @click="toggleDarkMode()"  :icon="$q.dark.isActive?'lightbulb':'brightness_2'"></q-btn>
           <q-btn-dropdown v-show="!store.getters.isLoggedIn" color="secondary" outline label="Log In" icon="account_circle">
             <q-list>
@@ -40,9 +52,9 @@
             </q-list>
           </q-btn-dropdown>
           <q-btn v-show="store.getters.isLoggedIn" round flat dense color="purple"  >
-            <q-avatar>
+            <q-avatar >
               <q-icon v-show="store.getters.getUserInfos.avatar == ''" name="account_circle" />
-              <q-avatar v-show="store.getters.getUserInfos.picture_url != ''" :key="store.getters.getAvatarKey" color="default" text-color="white"   >
+              <q-avatar v-show="store.getters.getUserInfos.picture_url != ''" :key="store.getters.getAvatarKey" color="default" text-color="white"  size="xs"  >
                   <img :src="store.getters.getUserInfos.picture_url">
               </q-avatar>
             </q-avatar>
@@ -81,23 +93,45 @@
           </q-btn>
         </div>
 
-      </q-toolbar>
+    
+
+      </q-bar>
+
+      <!-- <q-toolbar :class="$q.dark.isActive ? 'text-white' : 'text-primary'">
+        <q-btn flat @click="drawerLeft = !drawerLeft" round icon="menu"  />
+        <q-toolbar-title desktop-only >
+          <q-btn flat dense size="xl" square to="/" ><img alt="Arborator" :src="$q.dark.isActive ? '../statics/arborator.text.white.svg' : '../statics/arborator.grew.svg' " style="height:2.5vw"/></q-btn>
+        </q-toolbar-title>
+
+        <q-breadcrumbs :active-color="$q.dark.isActive?'white':'primary'" :class="($q.dark.isActive?'text-grey':'text-black') + ' mobile-hide native-mobile-hide within-iframe-hide gt-xs'" style="max-height:20px;max-width:70vh;overflow:y;">
+            <q-breadcrumbs-el v-if="notHome" icon="home" to="/" />
+            <q-breadcrumbs-el v-if="$route.path.startsWith('/projects/')" icon="view_module" to="/projects" />
+            <q-breadcrumbs-el v-if="$route.params.projectname != null" :label="$route.params.projectname" icon="work" :to="'/projects/'+$route.params.projectname" />
+            <q-breadcrumbs-el v-if="$route.params.samplename != null && $route.params.projectname != null" :label="$route.params.samplename" icon="assignment" :to="'/projects/'+$route.params.projectname+'/'+$route.params.samplename" />
+        </q-breadcrumbs>
+        <q-space />
+        
+        
+
+      </q-toolbar> -->
     </q-header>
 
     <q-page-container>
       <router-view />
-      <q-page-scroller position="bottom-right">
+      <!-- <q-page-scroller position="bottom-right">
         <q-btn fab icon="keyboard_arrow_up" color="secondary" />
-      </q-page-scroller>
+      </q-page-scroller> -->
     </q-page-container>
 
-
     <q-footer >
-      <q-item-label caption class="text-center text-grey-3">Made at
+      <q-item-label caption class="text-center text-grey-3">
+        Made with <q-icon name="favorite" style="font-size:22px;color: #dd137b;height:18px;vertical-align:text-bottom"/> in 
+        <img aria-hidden="true" role="presentation" src="../statics/paris.svg" class="" style="color: #dd137b;height:18px;">
+         at
         <a href="https://team.inria.fr/almanach" target="_blank">
           <img aria-hidden="true" role="presentation" src="../statics/almanachInria.svg" class="" style="height:18px;">
         </a>
-       v0.9.0 (20200214)</q-item-label>
+       v1.0 beta (20200515)</q-item-label>
     </q-footer>
 
 
@@ -139,7 +173,7 @@ export default {
   data () {
     return {
       store: Store,
-      drawerLeft: this.$q.platform.is.mobile?false:true,
+      drawerLeft: false, //this.$q.platform.is.mobile?false:true,
       miniState: true,
       isAdmin: false,
       search: '',

@@ -131,12 +131,13 @@
         <div class="text-subtitle2">And modify the search results directly in the Web interface</div>
       </q-card-section>
       <q-separator  inset />
+         
       <q-card-section>
         A good treebank is a lot about curation, about finding the problems and correcting them coherently.
-        With Arborator-Grew, there is no more back and forth between different websites or twisting your mind with complex greps in CoNLL files. Well, you got to learn the <a href="https://universaldependencies.org/">
+        With Arborator-Grew, there is no more back and forth between different websites or twisting your mind with complex greps in CoNLL files. Well, you got to learn the <a href="http://grew.fr//">
        <q-icon name="img:../statics/grew.svg"  size="xl" />
        <q-tooltip content-class="bg-accent" content-style="font-size: 16px" >
-          Universal Dependencies: The amazing collaborative treebank annotation project providing 150 treebanks in 90 languages
+          The grew graph grammar
         </q-tooltip>
        </a> syntax, but that's a breeze with all the great examples and tutorials provided.
       </q-card-section>
@@ -173,14 +174,18 @@
         <div class="text-subtitle2">as in free beer and as in in free speech</div>
       </q-card-section>
       <q-separator  inset />
-       <q-card-section>
-         Head over to  <a href="https://github.com/Arborator" target="_blank">
-       <q-icon name="fab fa-github"  size="lg" />
-       <q-tooltip content-class="bg-accent" content-style="font-size: 16px" >
-          our GitHub page 
-        </q-tooltip>
-       </a> to have a look and grab the code.<br>
-        Get involved give us feedback on the <a href="https://github.com/Arborator/arborator-frontend/issues">issue page of this Arborator front-end</a>.
+       <q-card-section>  
+         Head over to 
+          <!-- <q-btn type="a" href="https://github.com/Arborator" flat round color="primary" icon="fab fa-github" size="lg" target="_blank" > -->
+              <q-btn type="a" href="https://github.com/Arborator" target="_blank" icon="fab fa-github" flat round  color="primary"  size="lg" ripple="false" >
+       <!-- <q-icon name="fab fa-github" /> -->
+              <q-tooltip content-class="bg-accent" content-style="font-size: 16px" >
+                our GitHub page
+              </q-tooltip>
+          </q-btn>
+        <!-- <a href="https://github.com/Arborator" target="_blank">our GitHub page </a>  -->
+        to have a look and grab the code.<br>
+        Get involved give us feedback on the <a href="https://github.com/Arborator/arborator-frontend/issues" target="_blank">issue page of this Arborator front-end</a>.
         <br>A guide to install Arborator-Grew on your own server will be provided here...
       </q-card-section>
     </q-card>
@@ -347,7 +352,14 @@
 
 .grid-style-transition
   transition transform .28s, background-color .28s
-
+.btn:focus {
+  outline: none;
+  box-shadow: none;
+}
+.btn {
+  outline: none;
+  box-shadow: none;
+}
 </style>
 
 <script>

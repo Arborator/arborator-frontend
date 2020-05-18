@@ -128,9 +128,9 @@
 
 
                                     <!-- Removed before fixed -->
-                                    <!-- <q-btn flat color="default"  icon="table_chart" @click="getRelationTable()" >
+                                    <q-btn flat color="default"  icon="table_chart" @click="getRelationTable()" >
                                         <q-tooltip :delay="300" content-class="text-white bg-primary">Relation tables</q-tooltip>
-                                    </q-btn> -->
+                                    </q-btn>
                                 </q-btn-group>
 
                                 <q-space />

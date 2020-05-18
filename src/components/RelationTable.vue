@@ -58,7 +58,7 @@
 
 <script>
 import ResultView from '../components/ResultView.vue';
-import dummydata from '../assets/data.json';
+// import dummydata from '../assets/data.json';
 
 export default {
     components: {ResultView},
@@ -118,7 +118,8 @@ export default {
         }
     }, 
     mounted(){
-        this.edges = dummydata;
+        // this.edges = dummydata;
+        this.edges = this.createTable();
         
     }
 }

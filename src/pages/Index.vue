@@ -8,8 +8,8 @@
             <svg
                 xmlns:svg="http://www.w3.org/2000/svg"
                 xml:space="preserve"
-                width="450px"
-                height="300px"
+                width="300px"
+                height="150px"
                 style="shape-rendering:geometricPrecision; text-rendering:geometricPrecision; image-rendering:optimizeQuality"
                 viewBox="-4202 0 6866 4734"
               >
@@ -80,9 +80,9 @@
 
 
 
-    <h2 class="text-primary text-bold text-center " style="margin-bottom:20px" color="primary">
+    <h4 class="text-primary text-bold text-center " style="margin-bottom:20px" color="primary">
       Treebank Annotation for Human Beings
-    </h2>
+    </h4>
 
       <p class="text-center ">
        <q-btn push to="/projects" color="primary" no-caps >Access Treebanks</q-btn>

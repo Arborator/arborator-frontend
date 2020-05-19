@@ -9,7 +9,7 @@
       <q-card flat>
         <q-card-section class="q-pa-md row items-start q-gutter-md">
           <q-toolbar class="text-center">
-              <q-btn color="primary" round dense icon="add" @click="creaProjectDial = true">
+              <q-btn id="createproject" color="primary" round dense icon="add" @click="creaProjectDial = true">
                 <q-tooltip :delay="300" content-class="text-white bg-primary">Create a new project</q-tooltip>
               </q-btn>
               <q-toolbar-title :class="($q.dark.isActive?'':'text-primary') + ' text-bold'">

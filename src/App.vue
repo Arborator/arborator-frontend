@@ -47,7 +47,11 @@ export default {
         //   this.$router.push('/');
         // })
     }
-    this.$q.dark.set(this.$ls.get('dm'));
+    try {
+      this.$q.dark.set(this.$ls.get('dm'));
+    } catch (error) {
+      console.log('ls not found');
+    }
   },
   methods: {
     parseJwt: function (token) {

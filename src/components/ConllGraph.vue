@@ -65,7 +65,7 @@
               <q-btn flat dense icon="close" v-close-popup/>
           </q-bar>
           <q-card-section style="height:200px">
-            <q-select
+            <q-select id="catselect"
                 filled
                 v-model="infos.category"
                 :options="options.annof.UPOS"
@@ -76,7 +76,7 @@
           <q-separator/>
           <q-card-actions>
             <q-btn flat @click="ondialoghide()" label="Cancel" v-close-popup style="width: 45%; margin-left: auto;margin-right: auto;" />
-            <q-btn color="primary" @click="onchangecat()" label="Ok" v-close-popup style="width: 45%; margin-left: auto;margin-right: auto;" :disabled="emptyCat" />
+            <q-btn id="catselectvalidate" color="primary" @click="onchangecat()" label="Ok" v-close-popup style="width: 45%; margin-left: auto;margin-right: auto;" :disabled="emptyCat" />
           </q-card-actions>
         </q-card>
       </q-dialog>

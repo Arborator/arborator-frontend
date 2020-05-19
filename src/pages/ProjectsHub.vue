@@ -110,6 +110,7 @@ export default {
       lorem: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.',
       projects: [],
       visibleProjects: [],
+      projectDifference: false,
       hover: false,
       search: '',
       listMode: true,
@@ -131,7 +132,13 @@ export default {
   },
   methods:{
     openURL,
-    getProjects(){ this.loadingProjects = true; api.getProjects().then(response => { this.projects = response.data; this.visibleProjects = response.data; this.loadingProjects = false; this.initLoading = false; console.log(response);}).catch(error => { this.$store.dispatch("notifyError", {error: error}); this.loadingProjects = false;}); },
+    getProjects(){ 
+      this.loadingProjects = true; 
+      api.getProjects().then(response => { 
+        this.projects = response.data.projects; this.visibleProjects = response.data.projects; this.projectDifference = response.data.difference; this.loadingProjects = false; this.initLoading = false;
+        if(this.$store.getters.getUserInfos.super_admin){ this.$q.notify({message:`Projects from Grew and Arborator are different!`, type:'warning'}); }
+      }).catch(error => { this.$store.dispatch("notifyError", {error: error}); this.loadingProjects = false;}); 
+    },
     searchProject(pattern) {
       var filteredProjects =  this.projects.filter(function(project) {
         if(project.projectname.includes(pattern)){

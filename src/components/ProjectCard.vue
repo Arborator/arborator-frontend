@@ -29,9 +29,13 @@
             </div>
         </q-img>
         <q-card-section>
-            <q-item>
+            <q-item class="justify-around q-px-md">
                 <q-item-label>{{project.description}}</q-item-label>
             </q-item>
+
+            <q-card-actions vertical class="justify-around q-px-md">
+                <q-badge :color="($q.dark.isActive?'grey':'secondary')"> {{project.number_samples}} samples </q-badge>
+            </q-card-actions>
         </q-card-section>
 
         <q-dialog v-model="confirmActionDial"> <confirm-action :parentAction="confirmActionCallback" :arg1="confirmActionArg1"></confirm-action> </q-dialog>

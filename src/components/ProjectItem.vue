@@ -33,6 +33,9 @@
             </q-item-label>
         </q-item-section>
         <q-item-section side>
+            <q-badge :color="($q.dark.isActive?'grey':'secondary')"> {{project.number_samples}} samples </q-badge>
+        </q-item-section>
+        <q-item-section side>
             <q-icon v-show="project.is_private" name="lock" color="negative"></q-icon>
             <q-icon v-show="!project.is_private" name="public" color="positive"></q-icon>
         </q-item-section>

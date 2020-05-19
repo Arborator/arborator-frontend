@@ -103,14 +103,14 @@
       <q-card-section>
         <p>
        Just drag a word on the other to make a dependency relation. Just click on a word to change its features. Just choose the words to make them tokens. The dependency set, the tagset, and the feature set are fully configurable. We provide ready-made configurations for 
-       <a href="https://surfacesyntacticud.github.io">
+       <a href="https://surfacesyntacticud.github.io" target="_blank">
        <q-icon name="img:../statics/sud.svg"  size="md" />
        <q-tooltip content-class="bg-accent" content-style="font-size: 16px" >
           SUD: The surface-syntactic, distribution-based version of Universal Dependencies
         </q-tooltip>
        </a>
        and 
-       <a href="https://universaldependencies.org/">
+       <a href="https://universaldependencies.org/" target="_blank">
        <q-icon name="img:../statics/ud.svg"  size="sm" />
        <q-tooltip content-class="bg-accent" content-style="font-size: 16px" >
           Universal Dependencies: The amazing collaborative treebank annotation project providing 150 treebanks in 90 languages
@@ -128,14 +128,13 @@
       ></q-parallax>
       <q-card-section>
         <div class="text-h5 text-primary text-bold">Search with a powerful graph grammar</div>
-        <div class="text-subtitle2">And modify the search results directly in the Web interface</div>
+        <div class="text-subtitle2">Modify the search results directly in the Web interface</div>
       </q-card-section>
       <q-separator  inset />
          
       <q-card-section>
         A good treebank is a lot about curation, about finding the problems and correcting them coherently.
-        With Arborator-Grew, there is no more back and forth between different websites or twisting your mind with complex greps in CoNLL files. Well, you got to learn the <a href="http://grew.fr//">
-       <q-icon name="img:../statics/grew.svg"  size="xl" />
+        With Arborator-Grew, there is no more back and forth between different websites or twisting your mind with complex greps in CoNLL files. Well, you got to learn the <a href="http://grew.fr//" target="_blank">       <q-icon name="img:../statics/grew.svg"  size="xl" />
        <q-tooltip content-class="bg-accent" content-style="font-size: 16px" >
           The grew graph grammar
         </q-tooltip>
@@ -186,7 +185,7 @@
         <!-- <a href="https://github.com/Arborator" target="_blank">our GitHub page </a>  -->
         to have a look and grab the code.<br>
         Get involved give us feedback on the <a href="https://github.com/Arborator/arborator-frontend/issues" target="_blank">issue page of this Arborator front-end</a>.
-        <br>A guide to install Arborator-Grew on your own server will be provided here...
+        <br>A guide to install Arborator-Grew on your own server will be provided here shortly...
       </q-card-section>
     </q-card>
   </div>
@@ -211,8 +210,8 @@
       <q-separator  inset />
       <q-card-section>
         <p>
-          Arborator is a widely used collaborative graphical online dependency treebank annotation tool. Grew is a tool for graph querying and rewriting specialized in structures needed in NLP, i.e. syntactic and semantic dependency trees and graphs. Grew also has an online version, <a href="http://match.grew.fr/">Grew-match</a>, where all Universal Dependencies treebanks in their classical, deep and surface-syntactic flavors can be queried. Arborator-Grew is a complete redevelopment and modernization of Arborator, replacing its own internal database storage by a new Grew API, which adds a powerful query tool to Arborator's existing treebank creation and correction features. This includes complex access control for parallel expert and crowd-sourced annotation, tree comparison visualization, and various exercise modes for teaching and training of annotators. Arborator-Grew opens up new paths of collectively creating, updating, maintaining, and curating syntactic treebanks and semantic graph banks.
-       </p>
+          Arborator is a widely used collaborative graphical online dependency treebank annotation tool. 
+          Grew is a tool for graph querying and rewriting specialized in structures needed in NLP, i.e. syntactic and semantic dependency trees and graphs. Grew also has an online version, <a href="http://match.grew.fr/" target="_blank">Grew-match</a>, where all Universal Dependencies treebanks in their classical, deep and surface-syntactic flavors can be queried. Arborator-Grew is a complete redevelopment and modernization of Arborator, replacing its own internal database storage by a new Grew API, which adds a powerful query tool to Arborator's existing treebank creation and correction features. This includes complex access control for parallel expert and crowd-sourced annotation, tree comparison visualization, and various exercise modes for teaching and training of annotators. Arborator-Grew opens up new paths of collectively creating, updating, maintaining, and curating syntactic treebanks and semantic graph banks.       </p>
     
       </q-card-section>
       
@@ -228,7 +227,7 @@
       </q-card-section>
       <q-separator  inset />
       <q-card-section>
-        <a href="http://www.lrec-conf.org/proceedings/lrec2020/pdf/2020.lrec-1.651.pdf">
+        <a href="http://www.lrec-conf.org/proceedings/lrec2020/pdf/2020.lrec-1.651.pdf"  target="_blank">
         Gaël Guibon, Marine Courtin, Kim Gerdes, Bruno Guillaume. When Collaborative Treebank Curation Meets Graph Grammars: Arborator With a Grew Back-End Actes de LREC 2020.
         </a>
 
@@ -265,7 +264,7 @@
       <div class="q-gutter-lg">
       <q-card-section>
 
-         <q-card :class="hoverdraft ? 'bg-grey-2' : ''" class="clickable col-1 grid-style-transition shadow-7"
+         <q-card :class="hoverdraft ? 'bg-grey-2' : 'hover'" class="clickable col-1 grid-style-transition shadow-7"
             @mouseover="hoverdraft = true" 
             @mouseleave="hoverdraft = false" 
             @click="openURL('https://arborator.github.io/draft')"
@@ -284,6 +283,8 @@
                   </q-item-section>
               </q-card-section>
             </q-card>
+                       <br/>
+
 <q-space/>
           <q-separator  inset />
           <q-card :class="hoverquick ? 'bg-grey-2' : ''" class="clickable col-1 grid-style-transition shadow-7"
@@ -298,6 +299,20 @@
             <q-card-section>
               CoNLL files graphical editor
             </q-card-section>   
+          </q-card>
+           <br/>
+
+
+           <q-card :class="hoverlegacy ? 'bg-grey-2' : ''" class="clickable col-1 grid-style-transition shadow-7"
+            @mouseover="hoverlegacy = true" 
+            @mouseleave="hoverlegacy = false" 
+            @click="openURL('https://arborator.ilpga.fr/')"
+            :style="hoverlegacy ? 'transform: scale(0.95);' : 'hover'"
+            >
+            <q-card-section>
+              The legacy Arborator is still running here 
+            </q-card-section>
+             
           </q-card>
       </q-card-section>
        </div>
@@ -348,6 +363,8 @@
 }
 .clickable:hoverdraft {
   cursor:pointer;
+}.clickable:hoverlegacy {
+  cursor:pointer;
 }
 
 .grid-style-transition
@@ -381,6 +398,7 @@ export default {
       `,
       hoverdraft: false,
       hoverquick: false,
+      hoverlegacy: false,
       search: '',
       slide: 'style',
       animatex:0,

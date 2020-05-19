@@ -82,19 +82,19 @@
                                     <!-- ion-logo-github -->
                                     <q-btn-dropdown v-if="LoggedWithGithub" :disable="table.selected.length<1" icon="ion-md-git-commit"  flat dense> <q-tooltip>Commit and push the selected samples to GitHub</q-tooltip>
                                         <q-list>
-                                        <q-item clickable v-close-popup @click="commit()">
+                                        <q-item clickable v-close-popup @click="commit('user')">
                                         <q-item-section>
                                             <q-item-label>Push only my trees of the selected samples</q-item-label>
                                         </q-item-section>
                                         </q-item>
 
-                                        <q-item clickable v-close-popup @click="commit()">
+                                        <q-item clickable v-close-popup @click="commit('user_recent')">
                                         <q-item-section>
                                             <q-item-label>Push my trees of the selected samples, filled up with the most recent trees</q-item-label>
                                         </q-item-section>
                                         </q-item>
 
-                                        <q-item v-if="admin || super_admin" clickable v-close-popup @click="commit()">
+                                        <q-item v-if="admin || super_admin" clickable v-close-popup @click="commit('all')">
                                         <q-item-section>
                                             <q-item-label>Push all trees of the selected samples</q-item-label>
                                         </q-item-section>
@@ -413,6 +413,15 @@ export default {
             for (const sample of this.table.selected) {
                 api.deleteSample(this.infos.name, sample.samplename).then( response => { this.infos = response.data; this.table.selected = []; this.showNotif('top-right', 'deletesuccess'); } ).catch(error => {  this.$store.dispatch("notifyError", {error: error})  });
             }
+        },
+        commit(type) {
+            var x = [];
+            for (const sample of this.table.selected) { x.push(sample.samplename) }
+            var data = { samplenames: x, commit_type:type};
+            console.log(data);
+            api.commit(this.$route.params.projectname, data)
+            .then(response => {console.log("wooohoo");})
+            .catch(error => {this.$store.dispatch("notifyError", {error: error}); })
         },
         exportSamplesZip(){
             this.table.exporting = true;

@@ -124,11 +124,11 @@ export default {
             .catch(error => {this.$store.dispatch("notifyError", {error: error}); })
         },
         closeSearchDialog(searchDialog){ searchDialog = this.searchDialog; },
-        commit() {
-            api.commit(this.projectname, this.samplename)
-            .then(response => {console.log("wooohoo");})
-            .catch(error => {this.$store.dispatch("notifyError", {error: error}); })
-            },
+        // commit() {
+        //     api.commit(this.projectname, this.samplename)
+        //     .then(response => {console.log("wooohoo");})
+        //     .catch(error => {this.$store.dispatch("notifyError", {error: error}); })
+        //     },
         pullSample() {
         api.pull(this.projectname, this.samplename)
         .then(response => {console.log("wooohoo");})

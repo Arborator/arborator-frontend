@@ -3,7 +3,7 @@
 
 
 
-      <q-responsive :ratio="1" name='movingarborator'>
+      <!-- <q-responsive :ratio="1" name='movingarborator'> -->
         <div class="text-white flex flex-center ">
             <svg
                 xmlns:svg="http://www.w3.org/2000/svg"
@@ -76,7 +76,7 @@
                                 class="fil1" />
             </svg>
           </div>
-      </q-responsive> 
+      <!-- </q-responsive>  -->
 
 
 

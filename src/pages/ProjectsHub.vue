@@ -131,7 +131,7 @@ export default {
   },
   methods:{
     openURL,
-    getProjects(){ this.loadingProjects = true; api.getProjects().then(response => { this.projects = response.data; this.visibleProjects = response.data; this.loadingProjects = false; this.initLoading = false;}).catch(error => { this.$store.dispatch("notifyError", {error: error}); this.loadingProjects = false;}); },
+    getProjects(){ this.loadingProjects = true; api.getProjects().then(response => { this.projects = response.data; this.visibleProjects = response.data; this.loadingProjects = false; this.initLoading = false; console.log(response);}).catch(error => { this.$store.dispatch("notifyError", {error: error}); this.loadingProjects = false;}); },
     searchProject(pattern) {
       var filteredProjects =  this.projects.filter(function(project) {
         if(project.projectname.includes(pattern)){

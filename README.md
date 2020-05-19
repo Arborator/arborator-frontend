@@ -12,6 +12,14 @@ npm install
 quasar dev
 ```
 
+### Test the interface
+
+(may be necessary to do ```npm install``` first)
+
+```bash
+npm run test:e2e
+```
+
 
 ### Build the app for production
 ```bash

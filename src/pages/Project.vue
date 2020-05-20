@@ -6,14 +6,12 @@
                     <q-toolbar class="  text-center">
                         <q-toolbar-title>
                             <span :class="($q.dark.isActive?'':'text-primary') + ' text-bold'">{{infos.name}}</span> 
-                            <q-btn v-if="super_admin || admin" flat round :color="$q.dark.isActive?'':'primary'" icon="settings" @click="projectSettingsDial=true"></q-btn>
-
-                            
-<!-- 
-
-                             <q-btn flat color="default"  icon="table_chart" @click="getRelationTable()" >
-                                        <q-tooltip :delay="300" content-class="text-white bg-primary">Relation tables</q-tooltip>
-                                    </q-btn> -->
+                            <q-btn v-if="super_admin || admin" flat round :color="$q.dark.isActive?'':'primary'" icon="settings" @click="projectSettingsDial=true">
+                                <q-tooltip :delay="300" content-class="text-white bg-primary" >Modify project settings</q-tooltip>
+                            </q-btn>
+                            <q-btn v-else flat round :color="$q.dark.isActive?'':'primary'" icon="settings" @click="simpleProjectInfoDialog=true">
+                                <q-tooltip :delay="300" content-class="text-white bg-primary" >View admininstrator information</q-tooltip>
+                            </q-btn>
                         </q-toolbar-title>
                     </q-toolbar>
                 </q-card-section>
@@ -73,18 +71,21 @@
                                     
                                     <q-btn v-if="admin || super_admin" flat color="default"  icon="cloud_upload" @click="uploadDial = true" >
                                         <q-tooltip v-if="(super_admin || admin)" :delay="300" content-class="text-white bg-primary" >Add CoNLL files as new samples</q-tooltip>
-                                        <!-- <q-tooltip :delay="300" content-class="text-white bg-primary" >Add CoNLL files as new samples<br>Only avaible to administrators of the project</q-tooltip> -->
                                     </q-btn>
-                                    <!-- <q-btn flat color="default"  icon="person_add" :disabled="table.selected.length<1" @click="assignDial = true">
-                                        <q-tooltip :delay="300" content-class="text-white bg-primary">Assign</q-tooltip>
-                                    </q-btn> -->
-                                    <q-btn flat  color="default"  icon="cloud_download" @click="exportSamplesZip()" :loading="table.exporting" :disable="(!guest && !admin && !super_admin) || table.selected.length<1">
-                                        <q-tooltip :delay="300" content-class="text-white bg-primary">Export selected samples</q-tooltip>
+                                    
+                                    <div>
+                                        <q-btn flat  color="default"  icon="cloud_download" @click="exportSamplesZip()" :loading="table.exporting" :disable="(!infos.is_open && !guest && !admin && !super_admin) || table.selected.length<1">
+                                        </q-btn>
+                                        <q-tooltip v-if="table.selected.length<1" :delay="300" content-class="text-white bg-primary">Select the samples you want to export</q-tooltip>
+                                        <q-tooltip v-else :delay="300" content-class="text-white bg-primary">Export selected samples</q-tooltip>
+                                    </div>
+
+                                    <q-btn v-if="admin || super_admin" v-show="table.selected.length<1" flat color="default"  icon="delete_forever" disable>
+                                         <q-tooltip v-if="table.selected.length<1" :delay="300" content-class="text-white bg-primary">Select the samples you want to delete</q-tooltip>
+                                        <q-tooltip v-else :delay="300" content-class="text-white bg-primary">Delete selected samples</q-tooltip>
                                     </q-btn>
-                                    <q-btn v-show="table.selected.length<1" flat color="default"  icon="delete_forever" disabled>
-                                        <q-tooltip :delay="300" content-class="text-white bg-primary">Delete selected samples</q-tooltip>
-                                    </q-btn>
-                                    <q-btn v-show="table.selected.length!=0" :loading="table.loadingDelete" flat color="default" text-color="red" icon="delete_forever" @click="triggerConfirm(deleteSamples)" :disable="!admin && !super_admin">
+                                
+                                    <q-btn  v-if="admin || super_admin" v-show="table.selected.length!=0" :loading="table.loadingDelete" flat color="default" text-color="red" icon="delete_forever" @click="triggerConfirm(deleteSamples)" :disable="!admin && !super_admin">
                                         <q-tooltip :delay="300" content-class="text-white bg-primary">Delete selected samples</q-tooltip>
                                     </q-btn>
 
@@ -303,6 +304,29 @@
                 <project-settings-view :projectname="$route.params.projectname" style="width:90vw"></project-settings-view>
             </q-dialog>
 
+            <q-dialog v-model="simpleProjectInfoDialog">
+                <q-card style="width: 300px">
+                    <q-card-section>
+                    <div class="text-h6">Project Information</div>
+                    </q-card-section>
+
+                    <q-card-section class="q-pt-none">
+                        <div v-if="infos.admins.length>1">Contact these project administrators if you need access or further information:</div>
+                        <div v-else>Contact the project administrator if you need access or further information:</div>
+                    </q-card-section>
+                    <q-card-section>
+                        <q-list >
+                            <q-item v-for="admin in infos.admins" :key="admin"  >
+                                <q-item-label caption>{{admin}}</q-item-label>
+                            </q-item>
+                        </q-list>
+                    </q-card-section>
+                    <q-card-actions align="right" class="bg-white text-teal">
+                        <q-btn flat label="OK" v-close-popup />
+                    </q-card-actions>
+                </q-card>
+            </q-dialog>
+
             <q-dialog v-model="confirmActionDial"> <confirm-action :parentAction="confirmActionCallback" :arg1="confirmActionArg1"></confirm-action> </q-dialog>
 
 
@@ -338,6 +362,7 @@ export default {
             searchDialog: false,
             reltablebuttons: false,
             projectSettingsDial: false,
+            simpleProjectInfoDialog: false,
             maximizedUploadToggle: false,
             resultSearchDialog: false,
             relationTableDial: false,
@@ -353,6 +378,7 @@ export default {
             infos: {
                 name: '',
                 is_private: false,
+                is_open: false,
                 description: '',
                 image: '',
                 samples: [],
@@ -409,7 +435,8 @@ export default {
     mounted(){
         this.getProjectInfos();
         this.getUsers();
-        document.title = this.$route.params.samplename+" 🌳 Arborator-Grew 🌳 Sample of the "+this.$route.params.projectname+" project";    },
+        document.title = this.$route.params.samplename+" 🌳 Arborator-Grew 🌳 Sample of the "+this.$route.params.projectname+" project";    
+        },
     computed: {
         routePath() { return this.$route.path; },
         breakpoint(){ return this.window.width <= 400; },
@@ -433,7 +460,6 @@ export default {
     },
     methods:{
 
-        qqq(x) {console.log('___',x); this.reltablebuttons=false},
         handleResize() {this.window.width = window.innerWidth; this.window.height = window.innerHeight;},
         goToRoute(props) { this.$router.push('/projects/' + this.infos.name + '/samples') },
         filterFields(tableJson) {
@@ -443,7 +469,15 @@ export default {
             });
             return tempArray;
         },
-        getProjectInfos(){ this.table.loading = true; api.getProjectInfos(this.$route.params.projectname).then(response => { this.infos = response.data; this.initLoad = true; this.table.loading = false;document.title = this.$route.params.projectname+" 🌳 Arborator-Grew 🌳 Project with "+this.infos.number_sentences+" sentences in "+this.infos.samples.length+" samples"}).catch(error => {this.$store.dispatch("notifyError", {error: error}); this.table.loading = false;}); },
+        getProjectInfos(){ 
+            this.table.loading = true; 
+            api.getProjectInfos(this.$route.params.projectname).then(response => 
+                { 
+                    this.infos = response.data; this.initLoad = true; 
+                    this.table.loading = false;
+                    document.title = this.$route.params.projectname+" 🌳 Arborator-Grew 🌳 Project with "+this.infos.number_sentences+" sentences in "+this.infos.samples.length+" samples";
+                    // console.log('ààà',this.infos.admins)
+                }).catch(error => {this.$store.dispatch("notifyError", {error: error}); this.table.loading = false;}); },
         getUsers(){ api.getUsers().then( response => {  
                 for(let name of response.data.map(a => a.username)){ this.possiblesUsers.push( {key:name, value:name} ); }
             }).catch(error => {  this.$store.dispatch("notifyError", {error: error}) });

@@ -13,7 +13,10 @@
         <q-card-section>
             <div class="row items-center">
                 <!-- icon="textsms"  -->
-                <span class="text-grey">{{index+1}}</span> <q-chip class="text-center" style="max-width:20%" :color="$q.dark.isActive?'primary':''" dense> {{sentenceId}} </q-chip>&nbsp;&nbsp;&nbsp;
+                <span class="text-grey">{{index+1}}</span>
+                <q-chip class="text-center" :color="$q.dark.isActive?'primary':''" dense> 
+                    {{sentenceId}} 
+                </q-chip>&nbsp;&nbsp;&nbsp;
                 <template>
                     <q-input 
                     style="width:70%"

@@ -29,10 +29,10 @@ export default {
     getUsersTreeFrom(projectname){
         return API.get('projects/'+projectname+'/treesfrom');
     },
-    getProjectInfos(name){
+    getProjectInfos(name){ // this one is slow, asks grew
         return API.get('projects/'+name);
     },
-    getProjectSettings(name){
+    getProjectSettings(name){ // this one is fast, only flask, also some more information, such as is_open
         return API.get('projects/'+name+'/settings/infos');
     },
     addProjectCatLabel(projectname, cat){

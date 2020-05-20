@@ -71,15 +71,15 @@
                             <template v-slot:top="props">
                                 <q-btn-group flat>
                                     
-                                    <q-btn flat color="default"  icon="cloud_upload" @click="uploadDial = true" :disable="!(super_admin || admin)">
+                                    <q-btn v-if="admin || super_admin" flat color="default"  icon="cloud_upload" @click="uploadDial = true" >
                                         <q-tooltip v-if="(super_admin || admin)" :delay="300" content-class="text-white bg-primary" >Add CoNLL files as new samples</q-tooltip>
-                                        <q-tooltip :delay="300" content-class="text-white bg-primary" >Add CoNLL files as new samples<br>Only avaible to administrators of the project</q-tooltip>
+                                        <!-- <q-tooltip :delay="300" content-class="text-white bg-primary" >Add CoNLL files as new samples<br>Only avaible to administrators of the project</q-tooltip> -->
                                     </q-btn>
                                     <!-- <q-btn flat color="default"  icon="person_add" :disabled="table.selected.length<1" @click="assignDial = true">
                                         <q-tooltip :delay="300" content-class="text-white bg-primary">Assign</q-tooltip>
                                     </q-btn> -->
                                     <q-btn flat  color="default"  icon="cloud_download" @click="exportSamplesZip()" :loading="table.exporting" :disable="(!guest && !admin && !super_admin) || table.selected.length<1">
-                                        <q-tooltip :delay="300" content-class="text-white bg-primary">Export</q-tooltip>
+                                        <q-tooltip :delay="300" content-class="text-white bg-primary">Export selected samples</q-tooltip>
                                     </q-btn>
                                     <q-btn v-show="table.selected.length<1" flat color="default"  icon="delete_forever" disabled>
                                         <q-tooltip :delay="300" content-class="text-white bg-primary">Delete selected samples</q-tooltip>

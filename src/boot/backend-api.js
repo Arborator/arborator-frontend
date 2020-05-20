@@ -170,8 +170,8 @@ export default {
     saveTrees(projectname, samplename, data) {
         return API.post('projects/' + projectname + '/sample/' + samplename+ '/saveTrees', data);
     },
-    getRelationTable(projectname) {
-        return API.get('projects/' + projectname + '/relation_table/current_user');
+    getRelationTable(projectname, data) {
+        return API.post('projects/' + projectname + '/relation_table', data);
     },
     commit(projectname, data) {
         return API.post('projects/' + projectname + '/commit', data);

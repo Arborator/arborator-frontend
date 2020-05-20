@@ -220,14 +220,14 @@
 
             <q-page-sticky :position="breakpoint?'bottom-right':'top-right'" :offset="breakpoint?[18, 88]:[18,140]">
                     <q-btn-group push flat rounded v-if="reltablebuttons">
-                    <q-btn @click="getRelationTable()" push color="primary" no-caps>
+                    <q-btn @click="getRelationTable('user')" push color="primary" no-caps>
                         <q-tooltip content-class="bg-primary" content-style="font-size: 16px" >
                             View only my trees
                         </q-tooltip>
                         <q-avatar v-if="isLoggedIn" size="1.2rem"><img :src="avatar"></q-avatar>
                         <q-icon v-else name="account_circle" /> 
                     </q-btn>
-                    <q-btn @click="getRelationTable()" push color="primary" no-caps>
+                    <q-btn @click="getRelationTable('user_recent')" push color="primary" no-caps>
                         <q-tooltip content-class="bg-primary" content-style="font-size: 16px" >
                             View my trees, filled up with the most recent trees
                         </q-tooltip>
@@ -235,7 +235,7 @@
                         <q-icon v-else name="account_circle" /> 
                         <div>+</div>
                     </q-btn>
-                    <q-btn @click="getRelationTable()" push icon="ion-md-globe"  color="primary" no-caps v-if="admin || super_admin">
+                    <q-btn @click="getRelationTable('all')" push icon="ion-md-globe"  color="primary" no-caps v-if="admin || super_admin">
                         <q-tooltip content-class="bg-primary" content-style="font-size: 16px" >
                             View all trees
                         </q-tooltip>
@@ -495,8 +495,11 @@ export default {
                 return [];
             });
         },
-        getRelationTable() {
-            api.getRelationTable(this.$route.params.projectname).then(response => {
+        getRelationTable(type) {
+            // var data = { table_type:type};
+            // console.log(type, data);
+            var data = {table_type:type};
+            api.getRelationTable(this.$route.params.projectname, data).then(response => {
                 this.relationTableInfos = response.data;
                 this.relationTableDial = true;
             }).catch(error => {  this.$store.dispatch("notifyError", {error: error}) });

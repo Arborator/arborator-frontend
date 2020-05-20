@@ -179,7 +179,7 @@ export default new Vuex.Store({
             if (error.response.data.message) caption=error.response.data.message;
             var msg;
             if(error.response.status == 403){ msg = `Hey you! You do not have the permissions for this action. Please contact the administrator.`;  }
-            else if(error.response.status == 401){ msg == `Hey you! Please log in to do any further action.`;}
+            else if(error.response.status == 401){ msg == `Hey you! Please log in to do any further actions of that type.`;}
             else { msg = error.response.statusText + ' error ' + error.response.status; }
             Notify.create({message: msg, position: 'top-right', color: 'negative', icon:'warning', caption:caption});
         }

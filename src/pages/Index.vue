@@ -176,8 +176,8 @@
        <q-card-section>  
          Head over to 
           <!-- <q-btn type="a" href="https://github.com/Arborator" flat round color="primary" icon="fab fa-github" size="lg" target="_blank" > -->
-              <q-btn type="a" href="https://github.com/Arborator" target="_blank" icon="fab fa-github" flat round  color="primary"  size="lg" ripple="false" >
-       <!-- <q-icon name="fab fa-github" /> -->
+              <q-btn type="a" href="https://github.com/Arborator" target="_blank" icon="fab fa-github" flat round  color="primary"  size="lg" >
+       <!-- <q-icon name="fab fa-github"  ripple=false /> -->
               <q-tooltip content-class="bg-accent" content-style="font-size: 16px" >
                 our GitHub page
               </q-tooltip>

@@ -1,5 +1,6 @@
 
-const routes = [
+const routes = 
+[
   {
     path: '/',
     component: () => import('src/layouts/AppLayout.vue'),

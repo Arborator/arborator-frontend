@@ -29,8 +29,7 @@
         </q-dialog>
 
         <q-dialog v-model="resultSearchDial" transition-show="fade" transition-hide="fade" >
-            <result-view :searchresults="resultSearch"></result-view>
-        </q-dialog>
+            <result-view :searchresults="resultSearch" :totalsents="sentenceCount" searchscope="sample" ></result-view>        </q-dialog>
 
     </q-page>
 </template>
@@ -79,7 +78,7 @@ export default {
     mounted(){ 
         this.getSampleContent(); 
         this.getProjectConfig();
-       
+        document.title = this.$route.params.samplename+" 🌳 Arborator-Grew 🌳 Sample of the "+this.$route.params.projectname+" project";
     },
     methods: {
         getProjectConfig(){

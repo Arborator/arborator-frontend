@@ -252,7 +252,7 @@
             </q-dialog>
 
             <q-dialog v-model="resultSearchDial" transition-show="fade" transition-hide="fade" >
-                <result-view :searchresults="resultSearch" ></result-view>
+                <result-view :searchresults="resultSearch" :totalsents="infos.number_sentences" searchscope="sample" ></result-view>
             </q-dialog>
 
             <q-dialog v-model="relationTableDial" transition-show="fade" transition-hide="fade" >
@@ -368,7 +368,7 @@ export default {
     mounted(){
         this.getProjectInfos();
         this.getUsers();
-    },
+        document.title = this.$route.params.samplename+" 🌳 Arborator-Grew 🌳 Sample of the "+this.$route.params.projectname+" project";    },
     computed: {
         routePath() { return this.$route.path; },
         breakpoint(){ return this.window.width <= 400; },
@@ -393,7 +393,7 @@ export default {
             });
             return tempArray;
         },
-        getProjectInfos(){ this.table.loading = true; api.getProjectInfos(this.$route.params.projectname).then(response => { this.infos = response.data; this.initLoad = true; this.table.loading = false;}).catch(error => {this.$store.dispatch("notifyError", {error: error}); this.table.loading = false;}); },
+        getProjectInfos(){ this.table.loading = true; api.getProjectInfos(this.$route.params.projectname).then(response => { this.infos = response.data; this.initLoad = true; this.table.loading = false;document.title = this.$route.params.projectname+" 🌳 Arborator-Grew 🌳 Project with "+this.infos.number_sentences+" sentences in "+this.infos.samples.length+" samples"}).catch(error => {this.$store.dispatch("notifyError", {error: error}); this.table.loading = false;}); },
         getUsers(){ api.getUsers().then( response => {  
                 for(let name of response.data.map(a => a.username)){ this.possiblesUsers.push( {key:name, value:name} ); }
             }).catch(error => {  this.$store.dispatch("notifyError", {error: error}) });

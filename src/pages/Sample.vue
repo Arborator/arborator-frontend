@@ -32,7 +32,7 @@
                 </q-btn>
             </q-page-sticky>
 
-            <q-page-sticky :position="breakpoint?'bottom-right':'top-right'" :offset="breakpoint?[18, 88]:[18,140]">
+            <q-page-sticky :position="breakpoint?'bottom-right':'top-right'" :offset="breakpoint?[18, 88]:[18,140]" style="z-index:999">
                     <q-btn-group push flat rounded v-if="reltablebuttons">
                     <q-btn @click="getRelationTable()" push color="primary" no-caps>
                         <q-tooltip content-class="bg-primary" content-style="font-size: 16px" >

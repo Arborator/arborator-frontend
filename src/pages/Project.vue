@@ -5,7 +5,15 @@
                 <q-card-section>
                     <q-toolbar class="  text-center">
                         <q-toolbar-title>
-                        <span :class="($q.dark.isActive?'':'text-primary') + ' text-bold'">{{infos.name}}</span> <q-btn v-if="super_admin || admin" flat round :color="$q.dark.isActive?'':'primary'" icon="settings" @click="projectSettingsDial=true"></q-btn>
+                            <span :class="($q.dark.isActive?'':'text-primary') + ' text-bold'">{{infos.name}}</span> 
+                            <q-btn v-if="super_admin || admin" flat round :color="$q.dark.isActive?'':'primary'" icon="settings" @click="projectSettingsDial=true"></q-btn>
+
+                            
+<!-- 
+
+                             <q-btn flat color="default"  icon="table_chart" @click="getRelationTable()" >
+                                        <q-tooltip :delay="300" content-class="text-white bg-primary">Relation tables</q-tooltip>
+                                    </q-btn> -->
                         </q-toolbar-title>
                     </q-toolbar>
                 </q-card-section>
@@ -80,7 +88,7 @@
                                     </q-btn>
 
                                     <!-- ion-logo-github -->
-                                    <q-btn-dropdown v-if="LoggedWithGithub" :disable="table.selected.length<1" icon="ion-md-git-commit"  flat dense> <q-tooltip>Commit and push the selected samples to GitHub</q-tooltip>
+                                    <q-btn-dropdown v-if="loggedWithGithub" :disable="table.selected.length<1" icon="ion-md-git-commit"  flat dense> <q-tooltip>Commit and push the selected samples to GitHub</q-tooltip>
                                         <q-list>
                                         <q-item clickable v-close-popup @click="commit('user')">
                                         <q-item-section>
@@ -103,7 +111,7 @@
                                         </q-list>
                                     </q-btn-dropdown>
 
-                                    <q-btn-dropdown v-if="LoggedWithGithub" :disable="false" icon="ion-md-git-pull-request"  flat dense> <q-tooltip>Pull from GitHub</q-tooltip>
+                                    <q-btn-dropdown v-if="loggedWithGithub" :disable="false" icon="ion-md-git-pull-request"  flat dense> <q-tooltip>Pull from GitHub</q-tooltip>
                                         <q-list>
                                         <q-item clickable v-close-popup @click="pullSample()" :disable="table.selected.length<1" >
                                         <q-item-section>
@@ -126,11 +134,6 @@
                                         </q-list>
                                     </q-btn-dropdown>
 
-
-                                    <!-- Removed before fixed -->
-                                    <q-btn flat color="default"  icon="table_chart" @click="getRelationTable()" >
-                                        <q-tooltip :delay="300" content-class="text-white bg-primary">Relation tables</q-tooltip>
-                                    </q-btn>
                                 </q-btn-group>
 
                                 <q-space />
@@ -204,12 +207,48 @@
                         </q-table>
                 </q-card-section>
             </q-card>
+         
 
             <q-page-sticky :position="breakpoint?'bottom-right':'top-right'" :offset="breakpoint?[18, 18]:[18,70]">
-                <q-btn fab :icon="searchDial?'clear':'search'" color="primary" @click="searchDial = !searchDial"/>
+                <q-btn size="20px" round @click="searchDialog = !searchDialog" color="primary" icon="img:../statics/g.svg" >
+                    <q-tooltip content-class="bg-primary" content-style="font-size: 16px" >
+                         Search with Grew in the whole project
+                    </q-tooltip>
+                </q-btn>
             </q-page-sticky>
 
-            <q-dialog v-model="searchDial" seamless position="right" >
+            <q-page-sticky :position="breakpoint?'bottom-right':'top-right'" :offset="breakpoint?[18, 88]:[18,140]">
+                    <q-btn-group push flat rounded v-if="reltablebuttons">
+                    <q-btn @click="getRelationTable()" push color="primary" no-caps>
+                        <q-tooltip content-class="bg-primary" content-style="font-size: 16px" >
+                            View only my trees
+                        </q-tooltip>
+                        <q-avatar v-if="isLoggedIn" size="1.2rem"><img :src="avatar"></q-avatar>
+                        <q-icon v-else name="account_circle" /> 
+                    </q-btn>
+                    <q-btn @click="getRelationTable()" push color="primary" no-caps>
+                        <q-tooltip content-class="bg-primary" content-style="font-size: 16px" >
+                            View my trees, filled up with the most recent trees
+                        </q-tooltip>
+                        <q-avatar v-if="isLoggedIn" size="1.2rem"><img :src="avatar"></q-avatar>
+                        <q-icon v-else name="account_circle" /> 
+                        <div>+</div>
+                    </q-btn>
+                    <q-btn @click="getRelationTable()" push icon="ion-md-globe"  color="primary" no-caps v-if="admin || super_admin">
+                        <q-tooltip content-class="bg-primary" content-style="font-size: 16px" >
+                            View all trees
+                        </q-tooltip>
+                    </q-btn>
+                </q-btn-group>
+                <q-btn size="20px" round @click="reltablebuttons = !reltablebuttons;" color="primary text-green" icon="ion-md-grid" >
+                    <q-tooltip content-class="bg-primary" content-style="font-size: 16px" >
+                        Get Relation Tables
+                    </q-tooltip>
+                </q-btn>
+            </q-page-sticky>
+          
+
+            <q-dialog v-model="searchDialog" seamless position="right" >
                 <grew-request-card :parentOnSearch="onSearch" ></grew-request-card>
             </q-dialog>
 
@@ -251,7 +290,7 @@
                 </q-card>
             </q-dialog>
 
-            <q-dialog v-model="resultSearchDial" transition-show="fade" transition-hide="fade" >
+            <q-dialog v-model="resultSearchDialog" transition-show="fade" transition-hide="fade" >
                 <result-view :searchresults="resultSearch" :totalsents="infos.number_sentences" searchscope="sample" ></result-view>
             </q-dialog>
 
@@ -295,10 +334,11 @@ export default {
             btnTopClass: this.$q.dark.isActive?'white':'blue-grey-8',
             assignDial: false,
             uploadDial: false,
-            searchDial: false,
+            searchDialog: false,
+            reltablebuttons: false,
             projectSettingsDial: false,
             maximizedUploadToggle: false,
-            resultSearchDial: false,
+            resultSearchDialog: false,
             relationTableDial: false,
             confirmActionDial: false,
             confirmActionCallback: null,
@@ -378,12 +418,21 @@ export default {
 
         
         noselect(){ return this.table.selected.length < 1;},
-        LoggedWithGithub() {
+        loggedWithGithub() {
             var authProvider = this.$store.getters.getUserInfos.auth_provider;
             return authProvider == 4
         }, 
+        isLoggedIn() {
+            return this.$store.getters.isLoggedIn;
+        }, 
+        avatar() {
+            if (this.$store.getters.getUserInfos.picture_url) return this.$store.getters.getUserInfos.picture_url
+            return "perm_identity";
+        }, 
     },
     methods:{
+
+        qqq(x) {console.log('___',x); this.reltablebuttons=false},
         handleResize() {this.window.width = window.innerWidth; this.window.height = window.innerHeight;},
         goToRoute(props) { this.$router.push('/projects/' + this.infos.name + '/samples') },
         filterFields(tableJson) {
@@ -455,7 +504,7 @@ export default {
             var query = { pattern: searchPattern };
             api.searchProject(this.$route.params.projectname, query)
             .then(response => {
-                this.resultSearchDial = true;
+                this.resultSearchDialog = true;
                 this.resultSearch = response.data;
             }).catch(error => {  this.$store.dispatch("notifyError", {error: error})  });
         },

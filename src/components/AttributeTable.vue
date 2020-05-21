@@ -55,6 +55,7 @@
               v-model.number="props.row.v"
               type="number"
               filled
+              dense
               use-input
               @input="oninput(props.row)"
               :rules="[val => !!val || 'Field is required']"
@@ -63,6 +64,7 @@
               v-else-if="computeValueType(props.row)=='String'"
               v-model.number="props.row.v"
               filled
+              dense
               @input="oninput(props.row)"
               :rules="[val => !!val || 'Field is required']"
             />
@@ -70,6 +72,7 @@
             <q-select
               v-else-if="openFeatures=='true'"
               filled
+              dense
               v-model="props.row.v"
               use-input
               
@@ -83,6 +86,7 @@
             <q-select
             v-else
               filled
+              dense
               clearable
               v-model="props.row.v"
               

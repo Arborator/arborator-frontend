@@ -131,8 +131,8 @@ ArboratorDraft.prototype.catChanged = function(s, depid, cat){
 	catChanged(s, depid, cat);
 }
 
-ArboratorDraft.prototype.featureChanged = function(s, depid, feats, misc){
-	featureChanged(s, depid, feats, misc);
+ArboratorDraft.prototype.featureChanged = function(s, depid, lemma, feats, misc){
+	featureChanged(s, depid, lemma, feats, misc);
 }
 
 ArboratorDraft.prototype.metaChanged = function(s, metas){
@@ -259,6 +259,7 @@ var stopdrag = function(e) {
 			this.paper, 
 			this, 
 			this.paper.root.treedata.tree[this.nr]['FORM'], 
+			this.paper.root.treedata.tree[this.nr]['LEMMA'], 
 			this.nr, 
 			this.feats, 
 			this.misc); 
@@ -344,9 +345,10 @@ function catChanged(s, depid, cat ) {
 	drawsnap(s.id, s.root.treedata, {'nodes':[],'edges':[]}, shownfeatures)
 	// return s.root.treedata.tree
 }
-function featureChanged(s, depid, feats, misc ) {  
+function featureChanged(s, depid, lemma, feats, misc ) {  
 	// called from ConllGraph.vue
 	// log("draft featureChanged", JSON.parse(JSON.stringify(s.root.treedata.tree)));
+	s.root.treedata.tree[depid]['LEMMA']=lemma;
 	s.root.treedata.tree[depid]['FEATS']=feats;
 	s.root.treedata.tree[depid]['MISC']=misc;
 	s.paper.clear();

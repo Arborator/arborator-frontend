@@ -47,7 +47,7 @@ export default {
 			projectName: '',
 			description: '',
 			isPrivate: false,
-			isOpen: false,
+			isOpen: true,
 			showAllTrees: true,
 			attachment: { name: null, file: null}
 		}

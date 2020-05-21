@@ -76,7 +76,7 @@
         :maximized="maximizedToggle"
         >
         <!-- @hide="ondialoghide()" @keyup.enter="onFeatureDialogOk()" @keyup.enter="ononefeaturemodified()"-->
-        <q-card  style="height:70vh">
+        <q-card  style="height:90vh">
           <q-bar class="bg-primary text-white">
               <div class="text-weight-bold">
                 Features of "{{infos.currentword}}"
@@ -102,6 +102,15 @@
           modifiable=true
           title="Miscellaneous Features"
           @feature-changed="informFeatureChanged()"
+          /><q-separator/>
+        <attribute-table 
+          :featdata="featTable.lemma" 
+          :columns="featTable.columns"
+          :featOptions="options.lemmaoptions" 
+          openFeatures=false
+          modifiable=false
+          title="Lemma"
+          @feature-changed="informFeatureChanged()"
           />
           <q-separator/>
           <q-card-actions align="around">
@@ -116,7 +125,7 @@
         v-model="metaDialog"
         :maximized="maximizedToggle"
         >
-        <q-card  style="height:90vh; width:90vh">
+        <q-card  style="height:110vh; width:110vh">
           <q-bar class="bg-primary text-white">
               <div class="text-weight-bold">
                 Metadata of this sentence
@@ -223,7 +232,8 @@ export default {
                 splitregex:"",
                 relav:[],
                 currentoptions: [],
-                extendedrel: false
+                extendedrel: false,
+                lemmaoptions:[{'name':'Lemma','values':'String'}]
             },
             model: null,
 
@@ -250,6 +260,7 @@ export default {
             featTable: {
               featl: [],
               miscl: [],
+              lemma: [],
               columns: [
                 { name: 'a', align: 'center', label: 'Attribute', field: 'a', sortable: true, style: "width: 33%" },
                 { name: 'v', label: 'Value', field: 'v', sortable: true, },
@@ -270,7 +281,8 @@ export default {
         // precompute to check for changes quickly:
         this.options.annofFEATS = this.options.annof.FEATS.reduce(function(obj, r) {if (r.values) obj[r.name] = r.values; return obj;}, {});
         this.options.annofMISC = this.options.annof.MISC.reduce(function(obj, r) {if (r.values) obj[r.name] = r.values; return obj;}, {});
-        // console.log(989898,this.options.annofFEATS["Mood"])
+        // console.log(989898,this.options.annof.MISC)
+
         this.options.splitregex = new RegExp('['+this.options.annof.DEPREL.map(({ join }) => join).join('')+']', 'g') // = /[:@]/g  
     },
     methods: {
@@ -418,7 +430,7 @@ export default {
           // console.log('fun',fun,this.featTable.featl, this.featTable.miscl)
 
         },
-        openFeatureDialog(paper, svgtoken, wordform, depid, snapfeats, snapmisc){
+        openFeatureDialog(paper, svgtoken, wordform, lemma, depid, snapfeats, snapmisc){
           // called from snap
           // console.log(444,svgtoken, wordform, snapfeats);
           this.someFeatureChanged=false;
@@ -428,18 +440,21 @@ export default {
           // console.log("conllGraph openFeatureDialog this.featTable.featl", this.featTable.featl) 'name':a+snapmisc[a], 
           this.featTable.miscl = [];
           for (let a in snapmisc) { this.featTable.miscl.push({'a':a, 'v':snapmisc[a]})}
-          this.snapInfos = {paper:paper, svgtoken:svgtoken, depid:depid, feats:this.featTable.featl, misc:this.featTable.miscl};
+          this.featTable.lemma = [{'a':'Lemma', 'v':lemma}];
+          this.snapInfos = {paper:paper, svgtoken:svgtoken, depid:depid, feats:this.featTable.featl, misc:this.featTable.miscl, lemma:this.featTable.lemma};
           this.featureDialog = !this.featureDialog;
           // console.log("openFeatureDialog end")
         },
         onFeatureDialogOk(){
           // this.featureDialog = !this.featureDialog;
+          // console.log(9898,this.featTable.lemma.reduce(function(obj, r) {if (r.v) obj[r.a] = r.v; return obj;}, {})["Lemma"])
           if (this.someFeatureChanged) {
             this.draft.featureChanged(
                               this.snapInfos.paper, 
                               this.snapInfos.depid, 
+                              this.featTable.lemma.reduce(function(obj, r) {if (r.v) obj[r.a] = r.v; return obj;}, {})["Lemma"], 
                               this.featTable.featl.reduce(function(obj, r) {if (r.v) obj[r.a] = r.v; return obj;}, {}), 
-                              this.featTable.miscl.reduce(function(obj, r) {if (r.v) obj[r.a] = r.v; return obj;}, {})
+                              this.featTable.miscl.reduce(function(obj, r) {if (r.v) obj[r.a] = r.v; return obj;}, {}),
                               );
           }
           this.snapInfos.paper=this.treedata.svg // useful?

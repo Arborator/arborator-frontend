@@ -421,6 +421,9 @@ function drawsnap(idSVG, treedata, usermatches, shownfeatures) {
 			if ( usermatches.nodes.includes( nr.toString()) ) { // highlight matches
 				sword.attr({class:"DEPRELselected"}).node.scrollIntoView()
 			}
+			if ('highlight' in word.MISC) {
+				sword.node.style.fill = word.MISC['highlight'];
+			}
 			sword.wordDistance = parseInt(getComputedStyle(sword.node).getPropertyValue('--wordDistance'));
 			if (!sword.wordDistance) {sword.wordDistance=xWordDistance;log('check your CSS for',shofea)}
 			nextx = Math.max(xpositions[ind+1] || 0, xpositions[ind]+sword.getBBox().w + sword.wordDistance);

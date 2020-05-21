@@ -489,8 +489,16 @@ export default {
             this.uploadSample.submitting = true;
             for(const file of this.uploadSample.attachment.file){ form.append('files',file); }
             form.append('import_user',Store.getters.getUserInfos.username);
-            api.uploadSample(this.$route.params.projectname, form).then( response => { this.uploadSample.attachment.file = []; this.getProjectInfos(); this.uploadDial = false; this.uploadSample.submitting = false; this.showNotif('top-right', 'uploadsuccess');})
-            .catch(error => { this.uploadSample.submitting = false; this.uploadDial = false; this.$store.dispatch("notifyError", {error: error}); });
+            api.uploadSample(this.$route.params.projectname, form).then( response => { 
+                this.uploadSample.attachment.file = []; 
+                this.getProjectInfos(); 
+                this.uploadDial = false; 
+                this.uploadSample.submitting = false; 
+                this.showNotif('top-right', 'uploadsuccess');})
+                .catch(error => { 
+                    this.uploadSample.submitting = false; 
+                    this.uploadDial = false; 
+                    this.$store.dispatch("notifyError", {error: error}); });
         },
         onFileChange(event) { this.uploadSample.attachment.file = event.target.files; },
         deleteSamples(){

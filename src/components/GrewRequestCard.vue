@@ -7,17 +7,17 @@
                 <q-btn flat dense icon="close" v-close-popup/>
             </q-bar>
             
-            <q-card-section>
+            <q-card-section style="width:80vw;">
                 <q-form @submit="onSearch" @reset="onResetSearch" class="q-gutter-md" >
-                <div class="q-pa-md">
+                <div class="q-pa-xs">
                     <div class="row">
-                        <div class="col">
+                        <div class="col-10" >
                             <codemirror v-model="searchPattern" :options="cmOption"></codemirror>
                             <q-space />
                             <q-btn color="primary" type="submit" label="Search" />
                         </div>
-                        <div class="col">
-                            <q-list bordered separator>
+                        <div class="col-2" >
+                            <q-list bordered separator >
                                 <q-item v-for="query in queries" :key="query.name" clickable v-ripple @click="changeSearchPattern(query.pattern)">
                                     <q-item-section>
                                         {{query.name}}
@@ -38,7 +38,7 @@
 import grewTemplates from '../assets/grew-templates.json';
 import { codemirror } from 'vue-codemirror'
 import 'codemirror/lib/codemirror.css'
-import 'codemirror/theme/material-darker.css'
+// import 'codemirror/theme/material.css'
 import CodeMirror from 'codemirror'
 import store from '../store';
   CodeMirror.defineMode('grew', function(_config, parserConfig) {
@@ -142,7 +142,7 @@ pattern { N [form="Form_to_search"] }`,
                 lineWrapping: true,
                 line: true,
                 mode: 'grew',
-                theme: 'material-darker'
+                theme: 'default'
             },
             queries: grewTemplates
         }

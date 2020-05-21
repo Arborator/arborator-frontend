@@ -11,41 +11,29 @@
       <!-- @keyup.enter="onchangerel(false)" -->
         <q-card >
           <q-bar class="bg-primary text-white">
-                <div class="text-weight-bold">
-                  Select a relation going from "{{infos.currentword}}" to "{{infos.currentdepword}}"
-                </div>
-                <q-space />
-                <q-btn flat dense icon="close" v-close-popup/>
-            </q-bar>
-          <attribute-table 
-          :featdata="options.relav" 
-          :columns="featTable.columns"
-          :featOptions="options.currentoptions"  
-          openFeatures=false
-          modifiable=false
-          title="Dependency relation"
-          @feature-changed="informFeatureChanged()"
-          prepend=true
-          />
-          <!-- <q-card-section style="height:200px">
-            <v-select v-for="(relist, index) in options.relations" 
-              :key="index" 
-              v-model="infos.relation[index]" 
-              :options="relist" 
-              :class="$q.dark.isActive?'vs-dark':'vs-light'" 
-              style="float:left; display:inline;width:150px;">
-            </v-select>
-          </q-card-section> -->
+            <div class="text-weight-bold">
+              Select a relation going from "{{infos.currentword}}" to "{{infos.currentdepword}}"
+            </div>
             <q-space />
-            <q-card-actions >
-              <q-btn flat @click="ondialoghide()" label="Cancel" v-close-popup  style="width: 35%; margin-left: auto; margin-right: auto;" />
-              <!-- <q-btn flat @click="onchangerel(true)" label="+" v-close-popup  style="width: 15%; margin-left: auto; margin-right: auto;"> -->
-                <!-- <q-tooltip >Add as extended relation</q-tooltip> -->
-              <!-- </q-btn> -->
-              <q-space />
-              <q-btn color="primary" @click="onchangerel(options.extendedrel)" label="Ok" v-close-popup style="width: 35%; margin-left: auto;margin-right: auto;" />
-              <!-- :disabled="!someFeatureChanged" -->
-            </q-card-actions>
+            <q-btn flat dense icon="close" v-close-popup/>
+          </q-bar>
+          <attribute-table 
+            :featdata="options.relav" 
+            :columns="featTable.columns"
+            :featOptions="options.currentoptions"  
+            openFeatures=false
+            modifiable=false
+            title="Dependency relation"
+            @feature-changed="informFeatureChanged()"
+            prepend=true
+          />
+          <q-space />
+          <q-card-actions >
+            <q-btn flat @click="ondialoghide()" label="Cancel" v-close-popup  style="width: 35%; margin-left: auto; margin-right: auto;" />
+            <q-space />
+            <q-btn color="primary" @click="onchangerel(options.extendedrel)" label="Ok" v-close-popup style="width: 35%; margin-left: auto;margin-right: auto;" />
+            <!-- :disabled="!someFeatureChanged" -->
+          </q-card-actions>
         </q-card>
       </q-dialog>
 

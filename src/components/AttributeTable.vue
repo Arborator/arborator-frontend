@@ -83,11 +83,13 @@
             <q-select
             v-else
               filled
+              clearable
               v-model="props.row.v"
-              fill-input
+              
               :options="computeValueOptions(props.row)"
               @input="oninput(props.row)"
-            >
+            > 
+            <!-- removed fill-input to allow to erase functions -->
             <template v-if='prepend!=undefined' v-slot:prepend>{{props.row.join}}</template>
             </q-select>
           </q-td>
@@ -131,7 +133,7 @@ export default {
   mounted() {
     // var svg=this.start(this.conll, this.matches, this.id, this.user);
     // console.log('featdata',this.featdata)
-    // console.log('prepend',this.prepend)
+    console.log('prepend',this.prepend)
   },
   methods: {
 
@@ -170,7 +172,7 @@ export default {
       else return "String" // if (vs==["String"]) or unknown
      },
     oninput(row) {
-      // console.log('oninput this.featdata',this.featdata)
+      console.log('oninput this.featdata',this.featdata)
       this.$emit("feature-changed");
     
     },

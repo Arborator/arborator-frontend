@@ -198,7 +198,6 @@
                 v-model="conllContent" 
                 :options="cmOption" 
                 class="CodeMirror" 
-                ref="codemi"
                 @focus="codefocus"
                 />
                 <!-- </codemirror> -->
@@ -278,7 +277,6 @@ export default {
     data(){
         return {
             draft: new ArboratorDraft(),
-            codemi: false,
             id: this.user+'_'+this.sentenceId.replace(/\W/g, ''),
             svgContent: '',
             conllContent: '',
@@ -581,17 +579,18 @@ export default {
           this.conllDialog = !this.conllDialog;
           this.conllContent = this.draft.getConll(this.snap.treedata);
           this.currentConllContent = this.conllContent;
-          // console.log(this.$refs.codemi)
           
         },
         onConllDialogOk() {
-            console.log('555',this.conllContent);
+            // console.log('555',this.conllContent);
             try {
                 this.snap.treedata.s.paper.clear()
                 this.start(this.conllContent, {'nodes':[],'edges':[]}, this.id);
                 this.up(true, false);
             } catch (error) {
               console.error(error);
+              error.caption = "Take a little time to learn the CoNLL-U conventions"
+              this.$store.dispatch("notifyError", {error: error});
               this.snap.treedata.s.paper.clear()
               this.start( this.currentConllContent, {'nodes':[],'edges':[]}, this.id);
               this.up(false, false);

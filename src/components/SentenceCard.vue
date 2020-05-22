@@ -38,21 +38,30 @@
             <q-btn-dropdown :disable="tab==''" icon="more_vert"  flat dense> <q-tooltip>More</q-tooltip>
                 <q-list>
                 <q-item clickable v-close-popup >
-                <q-item-section>
-                    <q-item-label>Get direct link to this tree (todo)</q-item-label>
-                </q-item-section>
+                    <q-item-section avatar>
+                        <q-avatar icon="ion-md-link" color="primary" text-color="white" />
+                    </q-item-section>
+                    <q-item-section>
+                        <q-item-label>Get direct link to this tree (todo)</q-item-label>
+                    </q-item-section>
                 </q-item>
 
                 <q-item clickable v-close-popup @click="showconll()">
-                <q-item-section>
-                    <q-item-label>Get CoNLL-U of this tree</q-item-label>
-                </q-item-section>
+                    <q-item-section avatar>
+                        <q-avatar icon="list" color="primary" text-color="white" />
+                    </q-item-section>
+                    <q-item-section>
+                        <q-item-label>Get CoNLL-U of this tree</q-item-label>
+                    </q-item-section>
                 </q-item>
 
-                 <q-item clickable v-close-popup >
-                <q-item-section>
-                    <q-item-label>Get SVG of this tree (todo)</q-item-label>
-                </q-item-section>
+                <q-item clickable v-close-popup  @click="getSVG()">
+                    <q-item-section avatar>
+                        <q-avatar icon="ion-md-color-palette" color="primary" text-color="white" />
+                    </q-item-section>
+                    <q-item-section>
+                        <q-item-label>Get SVG of this tree</q-item-label>
+                    </q-item-section>
                 </q-item>
 
                 </q-list>
@@ -138,6 +147,113 @@ export default {
         showconll() {
             if ('conllGraph' in this.$refs) var cg = this.$refs.conllGraph.filter(c => c.user == this.tab)[0];
             if (cg) cg.openConllDialog();
+        },
+        getSVG() { // todo: instead of this long string, read the actual css file and put it there.
+            var svg = this.graphInfo.conllGraph.snap.treedata.s.toString();
+            var style=`<style> 
+<![CDATA[  
+   .curve {
+	stroke: black;
+	stroke-width: 1;
+	fill: none;
+}
+.dark .curve {
+	stroke: rgb(248, 244, 244);
+	stroke-width: 1;
+	fill: none;	
+}
+.arrowhead {
+	fill: white;
+	stroke: black;
+	stroke-width: .8;
+}
+.FORM {
+	fill:black;
+	text-align: center;
+} 
+.dark .FORM {
+		fill:rgb(255, 255, 255);
+		text-align: center;
+	}
+.LEMMA {
+	font: 15px DejaVu Sans;
+	fill: black;
+	font-family:sans-serif;
+	text-align: center;
+	font-style: italic;
+} 
+.dark .LEMMA {
+	font: 15px DejaVu Sans;
+	fill: rgb(238, 232, 232);
+	font-family:sans-serif;
+	text-align: center;
+	font-style: italic;
+} 
+.MISC-Gloss {
+	font: 15px DejaVu Sans;
+	fill: rgb(124, 96, 86);
+	font-family:sans-serif;
+	text-align: center;
+	font-style: italic;
+} 
+.UPOS {
+	font: 11px DejaVu Sans;
+	fill: rgb(80, 29, 125);
+	text-align: center;
+} 
+.UPOSselected {
+	font: 11px DejaVu Sans;
+	fill: #dd137bff;
+	font-weight: bold;
+	text-align: center;
+} 
+.DEPREL {
+	font: 12px Arial;
+	fill: #501d7d;
+	font-style: oblique;
+	font-family:sans-serif;
+	cursor:pointer;
+	--funcCurveDist:3; /* distance between the function name and the curves highest point */
+} 
+.dark .DEPREL {
+	font: 12px Arial;
+	fill: #aab3ff;
+	font-style: oblique;
+	font-family:sans-serif;
+	cursor:pointer;
+	--funcCurveDist:3; /* distance between the function name and the curves highest point */
+}
+    ]]>  
+</style> `
+
+
+            svg = svg.replace(/<desc>Created with Snap<\/desc>/g, "<desc>Created with Snap on Arborator</desc>");
+            svg = svg.replace(/>/g, ">\n");
+            // console.log('svg',svg)
+            svg = svg.replace(/(<svg.*>)/, "$1\n"+style);
+//             console.log('svg',svg)
+// return;
+            const url = window.URL.createObjectURL(new Blob([svg], { type: "image/svg+xml" }));
+                const link = document.createElement('a');
+                link.href = url;
+                link.setAttribute('download', this.sentenceId+'.svg');
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+                // this.table.exporting = false;
+                this.$q.notify({message:`Files downloaded`});
+
+
+
+
+
+        console.log(456465465456)
+
+
+
+
+
+
         },
         ttselect(event) {
             // triggered if some letters of the sentence are selected

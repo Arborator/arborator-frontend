@@ -14,7 +14,7 @@
                         <div class="col-10" >
                             <codemirror v-model="searchPattern" :options="cmOption"></codemirror>
                             <q-space />
-                            <q-btn color="primary" type="submit" label="Search" />
+                            <q-btn color="primary" type="submit" label="Search" no-caps />
                         </div>
                         <div class="col-2" >
                             <q-list bordered separator >

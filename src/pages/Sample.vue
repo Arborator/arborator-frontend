@@ -62,7 +62,7 @@
                 </q-btn>
             </q-page-sticky>
 
-        <q-dialog v-model="searchDialog" seamless position="right" >
+        <q-dialog v-model="searchDialog" seamless position="right"  full-width>
             <grew-request-card :parentOnSearch="onSearch" ></grew-request-card>
         </q-dialog>
 

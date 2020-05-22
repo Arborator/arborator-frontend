@@ -1,11 +1,11 @@
 <template>
     <q-card :id="index" >
         <!-- <q-toolbar :class="$q.dark.isActive?'text-white':'text-primary'"> -->
-            <!-- <q-btn flat round dense icon="save" :disable="!lastModified.dirty" @click="save()"> <q-tooltip>Save this tree</q-tooltip> </q-btn>
+            <!-- <q-btn flat round dense icon="save" :disable="!graphInfo.dirty" @click="save()"> <q-tooltip>Save this tree</q-tooltip> </q-btn>
             <q-btn flat round dense icon="list" :disable="tab==''" @click="openMetaDialog()"> <q-tooltip>Edit this tree's metadata</q-tooltip> </q-btn> -->
             <!-- <q-btn flat round dense icon="archive" ><q-tooltip>Export</q-tooltip></q-btn> -->
-            <!-- <q-btn flat round dense icon="undo" :disable="!lastModified.dirty" @click="undo()"><q-tooltip>Undo</q-tooltip></q-btn>
-            <q-btn flat round dense icon="redo" :disable="!lastModified.redo"><q-tooltip>Redo</q-tooltip></q-btn> -->
+            <!-- <q-btn flat round dense icon="undo" :disable="!graphInfo.dirty" @click="undo()"><q-tooltip>Undo</q-tooltip></q-btn>
+            <q-btn flat round dense icon="redo" :disable="!graphInfo.redo"><q-tooltip>Redo</q-tooltip></q-btn> -->
             <!-- <q-toolbar-title>
             </q-toolbar-title> -->
             <!-- <q-btn flat round dense icon="more_vert" /> -->
@@ -32,7 +32,7 @@
                     </q-input>
                 </template>
                 <q-space/>
-                 <q-btn flat round dense icon="save" :disable="!lastModified.dirty" @click="save()"> <q-tooltip>Save this tree</q-tooltip> </q-btn>
+                 <q-btn flat round dense icon="save" :disable="!graphInfo.dirty" @click="save()"> <q-tooltip>Save this tree</q-tooltip> </q-btn>
             <q-btn flat round dense icon="list" :disable="tab==''" @click="openMetaDialog()"> <q-tooltip>Edit this tree's metadata</q-tooltip> </q-btn>
                 
             <q-btn-dropdown :disable="tab==''" icon="more_vert"  flat dense> <q-tooltip>More</q-tooltip>
@@ -45,7 +45,7 @@
 
                 <q-item clickable v-close-popup @click="showconll()">
                 <q-item-section>
-                    <q-item-label>Get CoNLL-U of this tree (todo)</q-item-label>
+                    <q-item-label>Get CoNLL-U of this tree</q-item-label>
                 </q-item-section>
                 </q-item>
 
@@ -107,8 +107,8 @@ export default {
         return {
             tab:'',
             sampleData: this.$props.sample,
-            // lastModified: { svgId: '',  draft: '', dirty: false, redo: false, conll: '', user: '' },
-            lastModified: { conllGraph: null, dirty: false, redo: false, user: '' },
+            // graphInfo: { svgId: '',  draft: '', dirty: false, redo: false, conll: '', user: '' },
+            graphInfo: { conllGraph: null, dirty: false, redo: false, user: '' },
             alerts: { 
                 'saveSuccess': { color: 'positive', message: 'Saved!'},
                 'saveFail': { color: 'negative', message: 'Oops, could not save...', icon: 'report_problem' },
@@ -125,7 +125,7 @@ export default {
 
     computed: {
         cannotSave(){  
-            let dirty = this.lastModified.dirty;
+            let dirty = this.graphInfo.dirty;
             let open = this.$store.getters.projectConfig.is_open;
             return !dirty || !open;
         }
@@ -153,15 +153,15 @@ export default {
             // log("sentenceid", this.$props.sentenceId);
             // log("dirty user");
             // // log(this.data); // undefined
-            // // log(this.lastModified);
+            // // log(this.graphInfo);
             // log(this.$props); // index, projectname, sample...
-            // log("lastsvg", this.lastModified.svgId);
+            // log("lastsvg", this.graphInfo.svgId);
         },
        
         save() {
             var timestamp = Date.now();
             // console.log("timestamp", timestamp);
-            var conll = this.lastModified.conllGraph.draft.getConll(this.lastModified.conllGraph.snap.treedata);
+            var conll = this.graphInfo.conllGraph.draft.getConll(this.graphInfo.conllGraph.snap.treedata);
             conll = conll.replace(/# user_id = .+\n/, "# user_id = "+this.$store.getters.getUserInfos.username+"\n");
             conll = conll.replace(/# timestamp = \d+(\.\d*)?\n/, "# timestamp = "+timestamp+"\n");
             // console.log("after", conll);
@@ -169,8 +169,8 @@ export default {
             // console.log("data", data);
             api.saveTrees(this.$route.params.projectname, this.$props.sample.samplename, data).then(response => {
                 if(response.status == 200){
-                    this.lastModified.dirty = false;
-                    // console.log("status", this.lastModified.dirty);
+                    this.graphInfo.dirty = false;
+                    // console.log("status", this.graphInfo.dirty);
                     // console.log("user", this.$store.getters.getUserInfos.username);
                     this.showNotif('top', 'saveSuccess');
                     this.sampleData.conlls[this.$store.getters.getUserInfos.username] = conll; 
@@ -182,17 +182,11 @@ export default {
         },
         onConllGraphUpdate(payload) {
             // called from the ConllGraph
-            // console.log('!!!!!!onConllGraphUpdate',payload)
-            this.lastModified = payload;
+            this.graphInfo = payload;
         },
-        // sentenceUpdate(sentence) {
-        //     this.sampleData.sentence = sentence;
-        // },
         metaUpdate(metas) {
-            // console.log(1111,this.shownmetanames,metas,)
             this.shownmetas = Object.keys(metas).filter(m => this.shownmetanames.includes(m)).map( m => ({'a':m,'v':metas[m]}));
             if (metas.text) this.sampleData.sentence = metas.text;
-            // console.log(this.shownmetas)
         },
         openMetaDialog() {
             // "this.tab" contains the user name, calls the openMetaDialog function in ConllGraph.vue
@@ -202,7 +196,6 @@ export default {
             // called from Sample.vue to open specific tree
             if('tab'+user in this.$refs){
                 var usertab = this.$refs['tab'+user][0];
-                // console.log('autoopen',usertab,user+'_'+(parseInt(this.index)+1))
                 usertab.__activate();
                 setTimeout( () => {
                  document.getElementById('conllGraph'+user).scrollIntoView({behavior: "smooth", block: "center", inline: "nearest"});
@@ -213,7 +206,6 @@ export default {
                 if (t!=undefined && t.length>3) this.autoopen(t.substring(3))
             }
             
- 
         },
         showNotif (position, alert) {
             const { color, textColor, multiLine, icon, message, avatar, actions } = this.alerts[alert];

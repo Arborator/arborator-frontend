@@ -183,32 +183,39 @@
         </q-card>
       </q-dialog>
 
-    <q-dialog v-model="conllDialog" full-width >
-      <q-card  full-height>
-        <!-- style="max-width: 300px" style="height:90vh; width:90vh"-->
-            <!-- <div class="q-pa-md" > style="height:200px" -->
-              <q-card-section >
-              <div class="col-10" >
-                            <codemirror v-model="conllContent" :options="cmOption" class="CodeMirror"></codemirror>
- 
-                            <!-- <q-space />
-                            <q-btn color="primary" type="submit" label="Search" no-caps /> -->
-                </div>
-                <!-- <q-input full-height
-                v-model="conllContent"
-                filled
-                type="textarea"
-                /> -->
-            <!-- </div>    -->
-             </q-card-section >
-            <!-- <q-separator/> -->
-          <!-- <q-card-actions align="around">
-            <q-btn flat  label="Cancel" v-close-popup style="width: 45%; margin-left: auto;margin-right: auto;" />
-            <q-btn color="primary" @click="onTokenDialogOk()" label="Ok" v-close-popup style="width: 45%; margin-left: auto;margin-right: auto;"  /> 
-          </q-card-actions>   -->
-        
-       </q-card>
-    </q-dialog>
+
+      <q-dialog v-model="conllDialog" full-width>
+        <q-layout view="Lhh lpR fff" container class="bg-white">
+          <q-header class="bg-primary">
+            <q-toolbar>
+              <q-toolbar-title>CoNLL of {{sentenceId}}</q-toolbar-title>
+              <q-btn flat v-close-popup round dense icon="close" />
+            </q-toolbar>
+          </q-header>
+          <q-page-container >
+            <q-page >
+              <codemirror 
+                v-model="conllContent" 
+                :options="cmOption" 
+                class="CodeMirror" 
+                ref="codemi"
+                @focus="codefocus"
+                />
+                <!-- </codemirror> -->
+               <!-- @input="codechange($event)"  ($event)-->
+            </q-page>
+          </q-page-container>
+           <q-footer >
+            <q-toolbar inset>
+              <!-- <q-toolbar-title>Footer</q-toolbar-title> --><q-space/>
+              <q-btn flat no-caps label="Cancel" v-close-popup  />
+              <q-btn color="primary" @click="onConllDialogOk()" label="Ok" v-close-popup :disabled="currentConllContent == conllContent"/> 
+            </q-toolbar>
+          </q-footer>
+        </q-layout>
+      </q-dialog>
+
+    
     </div>
 
     <!-- <div :id="id" v-html="svgContent"></div> -->
@@ -229,7 +236,6 @@ CodeMirror.defineMode('tsv', function(_config, parserConfig) {
        
 	function tokenBase(stream, state) {
 	    var ch = stream.next();
-
 	    if (ch === '#' ) {
 		stream.skipToEnd();
 		return 'comment';
@@ -272,9 +278,11 @@ export default {
     data(){
         return {
             draft: new ArboratorDraft(),
+            codemi: false,
             id: this.user+'_'+this.sentenceId.replace(/\W/g, ''),
             svgContent: '',
             conllContent: '',
+            currentConllContent: '',
             conllDialog: false,
             loading: true,
             snap: { // graph specific stuff
@@ -332,6 +340,7 @@ export default {
                 lineWrapping: true,
                 line: true,
                 mode: 'tsv',
+                
                 theme: 'default'
             },
         }
@@ -386,7 +395,12 @@ export default {
             for (let a in this.snap.treedata.META) { this.snap.metal.push({ 'a':a, 'v':this.snap.treedata.META[a]})}
             this.$emit("meta-changed", this.snap.treedata.META); // so that the sentenceCard can show the meta feature such as text and text_en
         },
-    
+
+        codefocus(cm,ev) {
+          // console.log('ev', cm,ev);
+          cm.refresh();
+          cm.execCommand('selectAll');
+        },
        
         openRelationDialog(s, snaprelation, govid, depid, govwordform, depwordform, relation, ctrlkey){
           // called from snap
@@ -565,7 +579,24 @@ export default {
         },
         openConllDialog(){
           this.conllDialog = !this.conllDialog;
-          this.conllContent = this.draft.getConll(this.snap.treedata)
+          this.conllContent = this.draft.getConll(this.snap.treedata);
+          this.currentConllContent = this.conllContent;
+          // console.log(this.$refs.codemi)
+          
+        },
+        onConllDialogOk() {
+            console.log('555',this.conllContent);
+            try {
+                this.snap.treedata.s.paper.clear()
+                this.start(this.conllContent, {'nodes':[],'edges':[]}, this.id);
+                this.up(true, false);
+            } catch (error) {
+              console.error(error);
+              this.snap.treedata.s.paper.clear()
+              this.start( this.currentConllContent, {'nodes':[],'edges':[]}, this.id);
+              this.up(false, false);
+            }
+           
         }
     }
 }
@@ -575,8 +606,9 @@ export default {
 
 <style>
   .CodeMirror {
-  border: 3px solid rgb(238, 238, 238);
+  border: 1px solid rgb(238, 238, 238);
   height: auto;
+  height: 100%
 }
 .vs-dark .vs__search::placeholder,
   .vs-dark .vs__dropdown-toggle,

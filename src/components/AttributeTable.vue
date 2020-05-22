@@ -137,7 +137,7 @@ export default {
   mounted() {
     // var svg=this.start(this.conll, this.matches, this.id, this.user);
     // console.log('featdata',this.featdata)
-    console.log('prepend',this.prepend)
+    // console.log('prepend',this.prepend)
   },
   methods: {
 

@@ -105,11 +105,11 @@ this.ArboratorDraft = function(visuMode = 0, reverse = false) {
 // 	empty().done( refresh( content ) );
 // }
 
-ArboratorDraft.prototype.getSvg = function(strConll, usermatches, id, shof){
+ArboratorDraft.prototype.drawit = function(strConll, usermatches, id, shof){
 	shownfeatures=shof
 	// log('usermatches', usermatches) // the one that we see
-	var treedata = conllToTree(strConll.trim()); // treedata is object: {tree:tree, META:META, sentence, svg:snap-object}
-	treedata['svg'] = drawsnap(id, treedata, usermatches, shownfeatures);
+	var treedata = conllToTree(strConll.trim()); // treedata is object: {tree:tree, META:META, svg:snap-object}
+	treedata.s = drawsnap(id, treedata, usermatches, shownfeatures);
 	return treedata;
 }
 
@@ -123,20 +123,20 @@ ArboratorDraft.prototype.getTree = function(strConll){
 // 	log('setRel END');
 // } 
 
-ArboratorDraft.prototype.relationChanged = function(s, depid, headid, relation, addasextended){
-	relationChanged(s, depid, headid, relation, addasextended);
+ArboratorDraft.prototype.relationChanged = function(treedata, depid, headid, relation, addasextended){
+	return relationChanged(treedata, depid, headid, relation, addasextended);
 }
 
-ArboratorDraft.prototype.catChanged = function(s, depid, cat){
-	catChanged(s, depid, cat);
+ArboratorDraft.prototype.catChanged = function(treedata, depid, cat){
+	return catChanged(treedata, depid, cat);
 }
 
-ArboratorDraft.prototype.featureChanged = function(s, depid, lemma, feats, misc){
-	featureChanged(s, depid, lemma, feats, misc);
+ArboratorDraft.prototype.featureChanged = function(treedata, depid, lemma, feats, misc){
+	return featureChanged(treedata, depid, lemma, feats, misc);
 }
 
-ArboratorDraft.prototype.metaChanged = function(s, metas){
-	metaChanged(s, metas);
+ArboratorDraft.prototype.metaChanged = function(treedata, metas){
+	return metaChanged(treedata, metas);
 }
 
 ArboratorDraft.prototype.getConll = function (treedata) {
@@ -162,21 +162,21 @@ ArboratorDraft.prototype.replaceNodes = function(s, treedata, idsequence, headid
 // private functions
 
 
-function refresh(idSVG, content) {
-	// $('#svgwell').html('');
-	// $('#svgwell').append( $("<conll></conll>").attr('id', 'transformhere').text( content ) );
-	// var conll = d3.selectAll('#transformhere')['_groups'][0][0];
-	// log("_____refresh \n content",content);
-	// drawConll(conll);
-	listOfConlls = content.trim().split(/\n\s*\n\s*\n*/);	
+// function refresh(idSVG, content) {
+// 	// $('#svgwell').html('');
+// 	// $('#svgwell').append( $("<conll></conll>").attr('id', 'transformhere').text( content ) );
+// 	// var conll = d3.selectAll('#transformhere')['_groups'][0][0];
+// 	// log("_____refresh \n content",content);
+// 	// drawConll(conll);
+// 	listOfConlls = content.trim().split(/\n\s*\n\s*\n*/);	
 	
-	for (let singleConll of listOfConlls) { // for each conll tree at once, can block the browser
-		var treedata = conllToTree(singleConll)
-		// console.log("refresh function",this);
-		drawsnap(idSVG, treedata, usermatches, shownfeatures)
-		}
-	return;
-}
+// 	for (let singleConll of listOfConlls) { // for each conll tree at once, can block the browser
+// 		var treedata = conllToTree(singleConll)
+// 		// console.log("refresh function",this);
+// 		drawsnap(idSVG, treedata, usermatches, shownfeatures)
+// 		}
+// 	return;
+// }
 
 function getlevel(i,gi,tree, idhead2level) {
 	// recursive function determining the level of a dependency relation
@@ -194,7 +194,6 @@ function getlevel(i,gi,tree, idhead2level) {
 				if (idhead2level[ii+'_'+gii]>0) intermlevs.push(idhead2level[ii+'_'+gii]+1);
 				else intermlevs.push(getlevel(ii, gii, tree, idhead2level)+1);
 			}
-			
 		}
 	}
 	idhead2level[i+'_'+gi] = Math.max( ...intermlevs );
@@ -255,7 +254,7 @@ var startdrag = function(xx,yy,e) {
 
 var stopdrag = function(e) {
 	if(new Date().getTime() < dragclicktime + dragclickthreshold) {
-		// log("ccccclick",this.paper.root.treedata.tree[this.nr]) //, this.paper.root.treedata.tree);
+		// log("ccccclick",this.paper.root.treedata.tree[this.nr]) //, this.paper.root.treedata.tree); 
 		this.paper.root.treedata.openFeatureDialog(
 			this.paper, 
 			this, 
@@ -301,11 +300,8 @@ var stopdrag = function(e) {
 }
 
 var categoryclick = function(e) {
-	// log("categoryclick",e,this);
-	this.attr({class:"CATselected"})
-	// log("categoryclick2",e,this);
-	this.paper.root.treedata.openCategoryDialog(this.paper, this, this.paper.root.treedata.tree[this.nr]['FORM'], this.nr, this.cat); 
-	// log("categoryclick3",e,this);
+	this.attr({class:"UPOSselected"})
+	this.paper.root.treedata.openCategoryDialog(this.paper, this, this.paper.root.treedata.tree[this.nr]['FORM'], this.nr, this.upos); 
 }
 
 var relationclick = function(e) {
@@ -321,51 +317,51 @@ var relationclick = function(e) {
 		e.ctrlKey); 
 }
 
-function relationChanged(s, depid, headid, relation, addasextended) {  // todo: maybe include adding of secondary governor!!!
+function relationChanged(treedata, depid, headid, relation, addasextended) {  // todo: maybe include adding of secondary governor!!!
 	// called from ConllGraph.vue
 	
 	if (addasextended)
 	{
-		if (relation.trim()=="") delete s.root.treedata.tree[depid]['DEPS'][headid];
-		else s.root.treedata.tree[depid]['DEPS'][headid]=relation;
+		if (relation.trim()=="") delete treedata.tree[depid]['DEPS'][headid];
+		else treedata.tree[depid]['DEPS'][headid]=relation;
 	}
 	else {
 		if (relation.trim()=="") {headid="_",relation="_"}
-		s.root.treedata.tree[depid]['HEAD']=headid;
-		s.root.treedata.tree[depid]['DEPREL']=relation;
+		treedata.tree[depid]['HEAD']=headid;
+		treedata.tree[depid]['DEPREL']=relation;
 	}
-	s.paper.clear();
-	drawsnap(s.id, s.root.treedata, {'nodes':[],'edges':[]}, shownfeatures)
-	return s.root.treedata
+	treedata.s.paper.clear();
+	treedata.s = drawsnap(treedata.s.id, treedata, {'nodes':[],'edges':[]}, shownfeatures)
+	return treedata
 }
 
-function catChanged(s, depid, cat ) {  
+function catChanged(treedata, depid, cat ) {  
 	// called from ConllGraph.vue
 	// console.log("BEFORE", JSON.parse(JSON.stringify(s.root.treedata.tree)));
-	s.root.treedata.tree[depid]['UPOS']=cat;
-	s.paper.clear();
-	drawsnap(s.id, s.root.treedata, {'nodes':[],'edges':[]}, shownfeatures)
-	return s.root.treedata
+	treedata.tree[depid]['UPOS']=cat;
+	treedata.s.paper.clear();
+	treedata.s = drawsnap(treedata.s.id, treedata, {'nodes':[],'edges':[]}, shownfeatures)
+	return treedata
 }
-function featureChanged(s, depid, lemma, feats, misc ) {  
+function featureChanged(treedata, depid, lemma, feats, misc ) {  
 	// called from ConllGraph.vue
 	// log("draft featureChanged", JSON.parse(JSON.stringify(s.root.treedata.tree)));
-	s.root.treedata.tree[depid]['LEMMA']=lemma;
-	s.root.treedata.tree[depid]['FEATS']=feats;
-	s.root.treedata.tree[depid]['MISC']=misc;
-	s.paper.clear();
-	drawsnap(s.id, s.root.treedata, {'nodes':[],'edges':[]}, shownfeatures)
-	return s.root.treedata
+	treedata.tree[depid]['LEMMA']=lemma;
+	treedata.tree[depid]['FEATS']=feats;
+	treedata.tree[depid]['MISC']=misc;
+	treedata.s.paper.clear();
+	treedata.s = drawsnap(treedata.s.id, treedata, {'nodes':[],'edges':[]}, shownfeatures)
+	return treedata
 }
-function metaChanged(s, metas ) {  
+function metaChanged(treedata, metas ) {  
 	// called from ConllGraph.vue
-	// log("draft metaChanged", s.root.treedata.META);
-	// console.log(metas)
-	// s.root.treedata.tree[depid]['FEATS']=feats;
-	// s.root.treedata.tree[depid]['MISC']=misc;
-	s.paper.clear();
-	drawsnap(s.id, s.root.treedata, {'nodes':[],'edges':[]}, shownfeatures)
-	return s.root.treedata
+	metas.text = treeToSentence(treedata.tree)
+	treedata.META=metas;
+	
+	// can metadata influence how the graph is drawn? if yes, but this back:
+	treedata.s.paper.clear();
+	treedata.s = drawsnap(treedata.s.id, treedata, {'nodes':[],'edges':[]}, shownfeatures)
+	return treedata
 }
 
 function drawsnap(idSVG, treedata, usermatches, shownfeatures) {
@@ -418,7 +414,7 @@ function drawsnap(idSVG, treedata, usermatches, shownfeatures) {
 			}
 			if (shofea == 'UPOS') { // categories
 				sword.attr({cursor: "pointer"}).click( categoryclick );
-				sword.cat =  word[shofea];
+				sword.upos =  word[shofea];
 			}
 			if ( usermatches.nodes.includes( nr.toString()) ) { // highlight matches
 				sword.attr({class:"DEPRELselected"}).node.scrollIntoView()
@@ -569,12 +565,11 @@ function treeDataToConll(treedata) {
 			].join("\t"))
 	};
 	conllstr=conlines.join("\n")
-	// log(454565546456,'conllstr',conllstr)
 	return conllstr
 }
 
 
-function replaceNodes(s, treedata, idsequence, headid, newtokens) {
+function replaceNodes(treedata, idsequence, headid, newtokens) {
 	var id2newid = {0:0};
 	for (let id in treedata.tree) {
 		id=parseInt(id);
@@ -614,18 +609,21 @@ function replaceNodes(s, treedata, idsequence, headid, newtokens) {
 	}
 	if (!Object.keys(newtree).length) return treedata; // forbid to erase entire tree
 	treedata.tree = newtree;
-	var toks = Object.values(treedata.tree).map(({ FORM }) => FORM)
-    var spa = Object.values(treedata.tree).map(({ MISC }) => ('SpaceAfter' in MISC && MISC.SpaceAfter=='No')?0:1)
-	var sentence = ""
-	for (var i = 0; i < toks.length; ++i) sentence+=toks[i]+((spa[i])?' ':'');
-	treedata.META.text = sentence;
-	treedata.sentence = sentence;
-	s.paper.clear();
-	drawsnap(s.id, treedata, {'nodes':[],'edges':[]}, shownfeatures)
+	
+	treedata.META.text = treeToSentence(treedata.tree);
+	treedata.s.paper.clear();
+	treedata.s = drawsnap(treedata.s.id, treedata, {'nodes':[],'edges':[]}, shownfeatures)
 	return treedata;
 }
 
 
+function treeToSentence(tree) {
+	var toks = Object.values(tree).map(({ FORM }) => FORM)
+    var spa = Object.values(tree).map(({ MISC }) => ('SpaceAfter' in MISC && MISC.SpaceAfter=='No')?0:1)
+	var sentence = ""
+	for (var i = 0; i < toks.length; ++i) sentence+=toks[i]+((spa[i])?' ':'');
+	return sentence;
+}
 
 
 
@@ -639,7 +637,7 @@ function replaceNodes(s, treedata, idsequence, headid, newtokens) {
 
 function conllToTree(treeline) {
 	// takes a conll representation of a single tree as input
-	// returns object: {tree:tree, META:META, sentence:sentence}
+	// returns object: {tree:tree, META:META}
 
 	// treeline = "# text Er arbeitet fürs FBI (deutsch etwa: „Bundesamt für Ermittlung“).\n"+treeline
 	// log("treeline",treeline)
@@ -720,10 +718,11 @@ function conllToTree(treeline) {
 		lastid=id;
 		
 	});	
-	var sentence = [];
-	// console.log(456456,Object.keys(tree),'*****',tree[1].MISC)
-	if ("text" in META) return {tree:tree, META:META, sentence:META["text"]};
+	
+	// now always correcting the META.text feature. if this is not desired, uncomment this line:
+	// if ("text" in META) return {tree:tree, META:META};
 	// got to contstruct the sentence
+	var sentence = [];
 	words.forEach(function (word, i) {
 		sentence.push(word);
 		if (!("NoSpaceAfter" in tree[i+1]["MISC"] && tree[i+1]["MISC"]=="No" )) sentence.push(" ");
@@ -731,8 +730,8 @@ function conllToTree(treeline) {
 		// 	if (i+1 in tree && !(("NoSpaceAfter" in tree[i+1]) && tree[i+1]["NoSpaceAfter"]==false)) sentence.push(" ");
 		// } else{ sentence.push(word); }
 	});
-	
-	return {tree:tree, META:META, sentence:sentence.join('')};
+	META['text'] = sentence.join('')
+	return {tree:tree, META:META};
 }
 
 function analyzeFeaturestring(featstr, eq, spl) {

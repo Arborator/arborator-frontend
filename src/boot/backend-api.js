@@ -87,6 +87,7 @@ export default {
         return API.delete('projects/'+projectname+'/sample/'+samplename);
     },
     uploadSample(projectname, data){
+        console.log(data);
         return API.post('projects/' + projectname +'/upload', data);
     },
     addSampleAnnotator(username, projectname, samplename){

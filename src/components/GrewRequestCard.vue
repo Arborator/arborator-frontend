@@ -142,7 +142,7 @@ pattern { N [form="Form_to_search"] }`,
                 lineWrapping: true,
                 line: true,
                 mode: 'grew',
-                theme: 'default'
+                theme: (this.$q.dark.isActive?'material-darker':'default')
             },
             queries: grewTemplates
         }

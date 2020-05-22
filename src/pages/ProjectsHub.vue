@@ -20,7 +20,7 @@
           <q-toolbar class="text-center">
             <q-toolbar-title>
               <!-- <span :class="($q.dark.isActive?'':'text-primary') + ' text-bold'">Projects</span> -->
-              <q-input filled bottom-slots v-model="search" label="Search Project" type="text" @keyup.enter="searchProject(search)" >
+              <q-input filled bottom-slots v-model="search" label="Search Project" type="text" @input="searchProject(search)" @keyup.enter="searchProject(search)" >
                 <template v-slot:append>
                   <q-icon name="search" />
                 </template>
@@ -139,7 +139,7 @@ export default {
     },
     searchProject(pattern) {
       var filteredProjects =  this.projects.filter(function(project) {
-        if(project.projectname.includes(pattern)){
+        if(project.projectname.toLowerCase().includes(pattern.toLowerCase())){
           return project;
         }
       });

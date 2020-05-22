@@ -255,13 +255,13 @@ CodeMirror.defineMode('tsv', function(_config, parserConfig) {
 	return {
 	    startState: function() {return {tokenize: tokenBase, commentLevel: 0};},
 	    token: function(stream, state) {
-		if (stream.eatSpace()) return null;
-		return state.tokenize(stream, state);
-	    },
+        if (stream.eatSpace()) return null;
+        return state.tokenize(stream, state);
+          },
 	    lineComment: "#"
 	};
     
-  });
+  }); // end codemirror
 
 export default {
     name:'conllGraph',
@@ -273,7 +273,6 @@ export default {
         return {
             draft: new ArboratorDraft(),
             id: this.user+'_'+this.sentenceId.replace(/\W/g, ''),
-            
             svgContent: '',
             conllContent: '',
             conllDialog: false,
@@ -307,9 +306,7 @@ export default {
                 extendedrel: false,
                 lemmaoptions:[{'name':'Lemma','values':'String'}]
             },
-
-
-             featTable: {
+            featTable: {
               featl: [],
               miscl: [],
               lemma: [],
@@ -320,33 +317,15 @@ export default {
               ]
             },
             someFeatureChanged: false,
-
-
             model: null,
-
-            // filterOptions: ['select attribute first'],
             relDialog: false,
             catDialog: false,
             featureDialog: false,
             metaDialog: false,
             tokenDialog: false,
             maximizedToggle: false,
-            // snapInfos: {
-            //   paper:null,
-            //   svgtoken:'',
-            //   snaprelation:null,
-            //   snapcat:null,
-            //   depid:null,
-            //   govid:null,
-            //   relation:'',
-            //   // relations: [],
-            //   // feats: {},
-            //   // misc: {},
-            //   category:null
-            // },
-           
             
-             cmOption: {
+            cmOption: {
                 tabSize: 8,
                 styleActiveLine: true,
                 // lineNumbers: true,
@@ -358,21 +337,13 @@ export default {
         }
     },
     computed: {
-      emptyCat() {return false},
-        // { console.log('this.snap.category',this.snap.category)
-        // return this.snap.category == null || this.snap.category == ''; },
-      // emptyDeprel() { return this.snap.relation.flat().length < 1 ; }
     },
     mounted(){
         this.getProjectConfig();
-        // this.snap.treedata =
         this.start(this.conll, this.matches, this.id, this.user);
-        
         // precompute to check for changes quickly:
         this.options.annofFEATS = this.options.annof.FEATS.reduce(function(obj, r) {if (r.values) obj[r.name] = r.values; return obj;}, {});
         this.options.annofMISC = this.options.annof.MISC.reduce(function(obj, r) {if (r.values) obj[r.name] = r.values; return obj;}, {});
-        // console.log(989898,this.options.annof.MISC)
-        // this.openConllDialog()
         this.options.splitregex = new RegExp('['+this.options.annof.DEPREL.map(({ join }) => join).join('')+']', 'g') // = /[:@]/g  
     },
     methods: {
@@ -381,16 +352,6 @@ export default {
          */
         getProjectConfig(){
           var conf = this.$store.getters.getProjectConfig;
-          // if(conf.cats.length > 1){ this.options.cats = conf.cats; }
-          // if(conf.labels.length > 1){ 
-          //   var strStocks = [];
-          //   for(let stock of conf.labels){  
-          //     var strStockLabels = [];
-          //     for(let label of stock.labels){ strStockLabels.push(label.value); }
-          //     strStocks.push( strStockLabels );
-          //   }
-          //   this.options.relations = strStocks; 
-          // }
           this.options.annof = conf.annotationFeatures;
           this.options.shownfeatures = conf.shownfeatures;
           this.options.shownmeta = conf.shownmeta;
@@ -412,21 +373,11 @@ export default {
             }
           },
         start(conllStr, matches, id){
-            // document.getElementById(id) the 
-            // console.log('start matches') //, this.options.universalFeatures['Aspect'])
             if (this.user in matches) var usermatch = matches[this.user];
             else var usermatch = {'nodes':[],'edges':[]};
-            // var shownfeatures=["FORM", "UPOS", "LEMMA", "MISC.Gloss"]; // TODO: à mettre dans le store
-
             this.snap.treedata = this.draft.drawit(conllStr, usermatch, id, this.options.shownfeatures); // here it happens
-            
             this.loading = false;
             // give the draft access to these functions:
-            // treedata.toggleRelDialog  = this.toggleRelDialog;
-            // treedata.toggleCatDialog  = this.toggleCatDialog;
-            // treedata.toggleFeatureDialog  = this.toggleFeatureDialog;
-            // treedata.selectRel = this.selectRel; // update le svg avec les infos de this
-            // treedata.selectCat = this.selectCat;
             this.snap.treedata.openRelationDialog = this.openRelationDialog;
             this.snap.treedata.openCategoryDialog = this.openCategoryDialog;
             this.snap.treedata.openFeatureDialog = this.openFeatureDialog;
@@ -435,24 +386,7 @@ export default {
             for (let a in this.snap.treedata.META) { this.snap.metal.push({ 'a':a, 'v':this.snap.treedata.META[a]})}
             this.$emit("meta-changed", this.snap.treedata.META); // so that the sentenceCard can show the meta feature such as text and text_en
         },
-        // toggleRelDialog() {
-        //     this.relDialog = !this.relDialog;
-        // },
-        // toggleCatDialog() {
-        //     this.catDialog = !this.catDialog;
-        // },
-        // toggleFeatureDialog() {
-        //     this.featureDialog = !this.featureDialog;
-        // },
-        // toggleMetaDialog() {
-        //     this.metaDialog = !this.metaDialog;
-        // },
-        // selectRel(currentRelation) {
-        //     this.snap.relation = content;
-        // },
-        // selectCat(content) {
-        //     this.snap.category = content;
-        // },
+    
        
         openRelationDialog(s, snaprelation, govid, depid, govwordform, depwordform, relation, ctrlkey){
           // called from snap
@@ -476,7 +410,6 @@ export default {
                      }
                 }
           // console.log(45646,this.options.relav)
-          // this.snapInfos = {paper:paper, snaprelation:snaprelation, depid:depid, govid:govid, relation:relation}
           this.snap.depid = depid;
           this.snap.govid = govid;
           this.snap.relation = relation;
@@ -489,7 +422,6 @@ export default {
         onchangerel(addasextended){
             this.relDialog = !this.relDialog;
             this.snap.treedata = this.draft.relationChanged(
-              // this.snapInfos.paper, 
               this.snap.treedata,
               this.snap.depid, 
               this.snap.govid, 
@@ -500,8 +432,6 @@ export default {
       
         openCategoryDialog(paper, snapcat, wordform, depid, category){
           // called from snap
-          // this.snapInfos = {paper:paper, snapcat:snapcat, depid:depid, category:category};
-          console.log(11111, depid)
           this.snap.currentcategory = category;
           this.snap.category = category;
           this.snap.currentword = wordform;
@@ -510,17 +440,14 @@ export default {
           this.catDialog = !this.catDialog;
         },
         onchangecat(){
-          console.log(78787,this.snap.treedata.tree,  this.snap.depid, this.snap.category)
-          // ,this.snap.treedata.s)
           this.catDialog = !this.catDialog;
           this.snap.treedata = this.draft.catChanged(this.snap.treedata, this.snap.depid, this.snap.category);
           this.snap.snapcat = null;
           this.up(true, false);
         },
     
-     
-
-        openMetaDialog(){          
+        openMetaDialog(){   
+          // called from sentenceCard       
           this.metaDialog = !this.metaDialog;
         },
         onMetaDialogOk(){
@@ -535,42 +462,34 @@ export default {
           // console.log('fun',fun,this.featTable.featl, this.featTable.miscl)
           this.$emit("meta-changed", this.snap.treedata.META);
         },
+
         openFeatureDialog(paper, snaptoken, wordform, lemma, depid, snapfeats, snapmisc){
           // called from snap
-          // console.log(444,svgtoken, wordform, snapfeats);
           this.someFeatureChanged=false;
           this.snap.currentword=wordform;
           this.featTable.featl = [];
           for (let a in snapfeats) { this.featTable.featl.push({ 'a':a, 'v':snapfeats[a]})}
-          // console.log("conllGraph openFeatureDialog this.featTable.featl", this.featTable.featl) 'name':a+snapmisc[a], 
           this.featTable.miscl = [];
           for (let a in snapmisc) { this.featTable.miscl.push({'a':a, 'v':snapmisc[a]})}
           this.featTable.lemma = [{'a':'Lemma', 'v':lemma}];
-          // this.snapInfos = {paper:paper, svgtoken:svgtoken, depid:depid, feats:this.featTable.featl, misc:this.featTable.miscl, lemma:this.featTable.lemma};
           this.snap.snaptoken = snaptoken;
           this.snap.depid = depid;
           this.snap.snaptoken = snaptoken;
-          
           this.featureDialog = !this.featureDialog;
-          // console.log("openFeatureDialog end")
         },
         onFeatureDialogOk(){
-          // this.featureDialog = !this.featureDialog;
-          console.log(9898,this.snap.treedata.s)
           if (this.someFeatureChanged) {
              this.snap.treedata = this.draft.featureChanged(
-                              this.snap.treedata, //.paper, 
+                              this.snap.treedata,
                               this.snap.depid, 
                               this.featTable.lemma.reduce(function(obj, r) {if (r.v) obj[r.a] = r.v; return obj;}, {})["Lemma"], 
                               this.featTable.featl.reduce(function(obj, r) {if (r.v) obj[r.a] = r.v; return obj;}, {}), 
                               this.featTable.miscl.reduce(function(obj, r) {if (r.v) obj[r.a] = r.v; return obj;}, {}),
                               );
           }
-          // this.snapInfos.paper=this.snap.treedata.svg // useful?
           this.up(true, false);
           var fun = this.featureUpdateNeeded();
           if (fun) {console.log('the conf.annotationFeatures should be updated via a flask function')} // TODO!
-          // console.log('fun',fun,this.featTable.featl, this.featTable.miscl)
         },
         featureUpdateNeeded(){
           for(let r of this.featTable.featl){ 
@@ -598,10 +517,8 @@ export default {
           if (this.snap.snapcat) {this.snap.snapcat.attr({class:"UPOS"});this.snap.snapcat=null;}
         },
 
-
         openTokenDialog(b,e,t){
-          // begin index, end index, selected token
-
+          // begin index, end index, selected token of text field in sentenceCard
           while(t[t.length-1]==" "){t=t.substring(0,t.length-1 );--e}
           while(t[0]==" "){t=t.substring(1 );b++}
           var toks = Object.values(this.snap.treedata.tree).map(({ FORM }) => FORM)
@@ -635,8 +552,6 @@ export default {
           }
         },
         onTokenDialogOk(){
-          // replaceNodes(treedata, idsequence, headid, newtokens)
-          // console.log('--',this.snap.tokl)
           this.tokenDialog = !this.tokenDialog;
           var ttokl = this.snap.tokl.map(({ v }) => v).filter(x => x.trim().length>0)
           var treedata = this.draft.replaceNodes(

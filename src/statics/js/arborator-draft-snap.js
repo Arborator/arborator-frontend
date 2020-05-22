@@ -216,17 +216,13 @@ function dragging(dx, dy, posX, posY, event){
 }
 
 var startdrag = function(xx,yy,e) {
-	// this.data('origTransform', this.transform().local );
 	dragclicktime = new Date().getTime();
-	// log("-----------startdrag", this.attr("x"));
 	dragrepl = this.clone();
 	dragrepl.attr({class:"draghead"});
 	this.attr({cursor: "move"});
 	x=this.midx;
 	y=this.topy;
-	// 
 	var path = "M"+x+","+y+" C"+x+","+(y-1)+" "+(x+1)+","+(y-1)+" "+(x+1)+","+y;
-	// log("path",path)
 	dragcurve = this.paper.root.path(path).attr({class:"dragcurve"});
 	dragarrowhead = this.paper.root.path(arrowhead(x,y)).attr("class", "dragcurve");
 	
@@ -640,7 +636,6 @@ function conllToTree(treeline) {
 	// returns object: {tree:tree, META:META}
 
 	// treeline = "# text Er arbeitet fürs FBI (deutsch etwa: „Bundesamt für Ermittlung“).\n"+treeline
-	// log("treeline",treeline)
 	var nodes = treeline.split('\n');
 	if(reverseMode) nodes.reverse();
 	// nodes = nodes.reverse();
@@ -653,7 +648,6 @@ function conllToTree(treeline) {
 	var words=[]
 	nodes.forEach(function (nodeline, id) 
 	{ // for each conll line:
-		// var nodeline=$.trim(nodeline);
 		nodeline=nodeline.trim().replace(/^[\s\uFEFF\xA0]+|[\s\uFEFF\xA0]+$/g, '');
 		if (nodeline.charAt(0) == "#") // META
 		{

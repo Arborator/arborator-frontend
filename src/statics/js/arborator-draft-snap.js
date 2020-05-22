@@ -139,14 +139,15 @@ ArboratorDraft.prototype.metaChanged = function(s, metas){
 	metaChanged(s, metas);
 }
 
-ArboratorDraft.prototype.getConll = function (s) {
-	// console.log("getConll s", s)
-	return treeDataToConll(s.treedata)
+ArboratorDraft.prototype.getConll = function (treedata) {
+	// console.log("getConll treedata", treedata)
+	return treeDataToConll(treedata)
 }
 
 ArboratorDraft.prototype.treeDataToConll = function(treedata) {
+	console.log("treeDataToConll treedata", treedata)
 	var newconll=treeDataToConll(treedata);
-	// console.log("the new conll", newconll);
+	console.log("the new conll", newconll);
 	return newconll;
 }
 
@@ -335,6 +336,7 @@ function relationChanged(s, depid, headid, relation, addasextended) {  // todo: 
 	}
 	s.paper.clear();
 	drawsnap(s.id, s.root.treedata, {'nodes':[],'edges':[]}, shownfeatures)
+	return s.root.treedata
 }
 
 function catChanged(s, depid, cat ) {  
@@ -343,7 +345,7 @@ function catChanged(s, depid, cat ) {
 	s.root.treedata.tree[depid]['UPOS']=cat;
 	s.paper.clear();
 	drawsnap(s.id, s.root.treedata, {'nodes':[],'edges':[]}, shownfeatures)
-	// return s.root.treedata.tree
+	return s.root.treedata
 }
 function featureChanged(s, depid, lemma, feats, misc ) {  
 	// called from ConllGraph.vue
@@ -353,7 +355,7 @@ function featureChanged(s, depid, lemma, feats, misc ) {
 	s.root.treedata.tree[depid]['MISC']=misc;
 	s.paper.clear();
 	drawsnap(s.id, s.root.treedata, {'nodes':[],'edges':[]}, shownfeatures)
-	return s.root.treedata.tree
+	return s.root.treedata
 }
 function metaChanged(s, metas ) {  
 	// called from ConllGraph.vue
@@ -363,7 +365,7 @@ function metaChanged(s, metas ) {
 	// s.root.treedata.tree[depid]['MISC']=misc;
 	s.paper.clear();
 	drawsnap(s.id, s.root.treedata, {'nodes':[],'edges':[]}, shownfeatures)
-	return s.root.treedata.tree
+	return s.root.treedata
 }
 
 function drawsnap(idSVG, treedata, usermatches, shownfeatures) {
@@ -543,6 +545,7 @@ function arrowhead(x,y) {
 function treeDataToConll(treedata) {
 	// constructs a conllu string from the current treedata
 	// log('treeDataToConll',treedata)
+	if (!treedata) return ''
 	var conlines=[];
 	for (let a in treedata.META){
 		var v = treedata.META[a];

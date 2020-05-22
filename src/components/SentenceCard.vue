@@ -91,15 +91,6 @@
             </q-list>
         </q-card-section>
 
-    <q-dialog v-model="conllcontent" transition-show="fade" transition-hide="fade" >
-            <div class="q-pa-md" style="max-width: 300px">
-                <q-input
-                v-model="conllcontent"
-                filled
-                type="textarea"
-                />
-            </div>     
-        </q-dialog>
 
     </q-card>
  
@@ -128,7 +119,6 @@ export default {
             shownmetanames: [],
             shownmetas: {},
             view: null,
-            conllcontent: false,
 
         }
     },

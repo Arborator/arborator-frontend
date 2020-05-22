@@ -85,7 +85,9 @@ export default {
     methods: {
         createTable(edge){
             var keyset = new Set();
-            for( let gov of Object.keys(this.edges[edge])){ keyset.add(gov); for( let dep of Object.keys(this.edges[edge][gov]) ) keyset.add(dep); }
+            for( let gov of Object.keys(this.edges[edge])){ 
+                keyset.add(gov); for( let dep of Object.keys(this.edges[edge][gov]) ) keyset.add(dep); 
+                }
             // construct fields
             let fields = [{ name: 'gov', label: row => 'Governor: ' + row.gov, 'field': row => row.gov}];
             for ( let key of keyset ){ fields.push( { name: key, align: 'center', label: key, field: key} ); }

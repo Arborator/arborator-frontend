@@ -182,6 +182,32 @@
         </q-card>
       </q-dialog>
 
+    <q-dialog v-model="conllDialog" full-width >
+      <q-card  full-height>
+        <!-- style="max-width: 300px" style="height:90vh; width:90vh"-->
+            <!-- <div class="q-pa-md" > style="height:200px" -->
+              <q-card-section >
+              <div class="col-10" >
+                            <codemirror v-model="conllContent" :options="cmOption" class="CodeMirror"></codemirror>
+ 
+                            <!-- <q-space />
+                            <q-btn color="primary" type="submit" label="Search" no-caps /> -->
+                </div>
+                <!-- <q-input full-height
+                v-model="conllContent"
+                filled
+                type="textarea"
+                /> -->
+            <!-- </div>    -->
+             </q-card-section >
+            <!-- <q-separator/> -->
+          <!-- <q-card-actions align="around">
+            <q-btn flat  label="Cancel" v-close-popup style="width: 45%; margin-left: auto;margin-right: auto;" />
+            <q-btn color="primary" @click="onTokenDialogOk()" label="Ok" v-close-popup style="width: 45%; margin-left: auto;margin-right: auto;"  /> 
+          </q-card-actions>   -->
+        
+       </q-card>
+    </q-dialog>
     </div>
 
     <!-- <div :id="id" v-html="svgContent"></div> -->
@@ -189,20 +215,57 @@
 
 <script>
 
+
 import Vue from 'vue'
+// import 'vue-select/dist/vue-select.css';
+
 import AttributeTable from './AttributeTable'
 Vue.config.ignoredElements = ['conll'];
-// import vSelect from 'vue-select'
-import 'vue-select/dist/vue-select.css';
-// import api from '../boot/backend-api';
+import { codemirror } from 'vue-codemirror'
+import CodeMirror from 'codemirror'
 
-// Vue.component('v-select', vSelect);
+CodeMirror.defineMode('tsv', function(_config, parserConfig) {
+       
+	function tokenBase(stream, state) {
+	    var ch = stream.next();
 
+	    if (ch === '#' ) {
+		stream.skipToEnd();
+		return 'comment';
+	    }
+
+	    if (/\d/.test(ch)) {
+		stream.eatWhile(/[\d]/);
+		if (stream.eat('.')) {
+		    stream.eatWhile(/[\d]/);
+		}
+		return 'number';
+	    }
+	    if ( /[+\-*&%=<>!?|:]/.test(ch)) {
+		return 'operator';
+	    }
+	    stream.eatWhile(/\w/);
+	    var cur = stream.current();
+	    return 'variable';
+	}
+
+	// function tokenString(stream, state) {	}
+
+	return {
+	    startState: function() {return {tokenize: tokenBase, commentLevel: 0};},
+	    token: function(stream, state) {
+		if (stream.eatSpace()) return null;
+		return state.tokenize(stream, state);
+	    },
+	    lineComment: "#"
+	};
+    
+  });
 
 export default {
     name:'conllGraph',
     components: {
-        AttributeTable
+        AttributeTable, codemirror
     },
     props: ['conll', 'user', 'sentenceId', 'matches'],
     data(){
@@ -211,6 +274,8 @@ export default {
             id: this.user+'_'+this.sentenceId.replace(/\W/g, ''),
             treedata:false,
             svgContent: '',
+            conllContent: '',
+            conllDialog: false,
             loading: true,
             infos: {
                 currentword: 'some word',
@@ -267,7 +332,17 @@ export default {
                 { name: 'actions', label: 'Actions', field: '', align:'center', style: 'width: 8%' }
               ]
             },
-            someFeatureChanged: false    
+            someFeatureChanged: false,
+            
+             cmOption: {
+                tabSize: 8,
+                styleActiveLine: true,
+                // lineNumbers: true,
+                lineWrapping: true,
+                line: true,
+                mode: 'tsv',
+                theme: 'default'
+            },
         }
     },
     computed: {
@@ -282,7 +357,7 @@ export default {
         this.options.annofFEATS = this.options.annof.FEATS.reduce(function(obj, r) {if (r.values) obj[r.name] = r.values; return obj;}, {});
         this.options.annofMISC = this.options.annof.MISC.reduce(function(obj, r) {if (r.values) obj[r.name] = r.values; return obj;}, {});
         // console.log(989898,this.options.annof.MISC)
-
+        this.openConllDialog()
         this.options.splitregex = new RegExp('['+this.options.annof.DEPREL.map(({ join }) => join).join('')+']', 'g') // = /[:@]/g  
     },
     methods: {
@@ -338,12 +413,10 @@ export default {
             treedata.openCategoryDialog = this.openCategoryDialog;
             treedata.openFeatureDialog = this.openFeatureDialog;
             this.up(false, false);
-            // console.log(svg)
-
             this.infos.metal=[];
             for (let a in treedata.META) { this.infos.metal.push({ 'a':a, 'v':treedata.META[a]})}
             this.$emit("meta-changed", treedata.META);
-            // this.openMetaDialog()
+            
             return treedata
         },
         toggleRelDialog() {
@@ -419,7 +492,7 @@ export default {
           this.metaDialog = !this.metaDialog;
         },
         onMetaDialogOk(){
-          this.draft.metaChanged(
+          this.treedata.tree = this.draft.metaChanged(
                               this.treedata.svg, 
                               this.infos.metal.reduce(function(obj, r) {if (r.v) obj[r.a] = r.v; return obj;}, {})
                               );
@@ -449,7 +522,7 @@ export default {
           // this.featureDialog = !this.featureDialog;
           // console.log(9898,this.featTable.lemma.reduce(function(obj, r) {if (r.v) obj[r.a] = r.v; return obj;}, {})["Lemma"])
           if (this.someFeatureChanged) {
-            this.draft.featureChanged(
+             this.treedata.tree = this.draft.featureChanged(
                               this.snapInfos.paper, 
                               this.snapInfos.depid, 
                               this.featTable.lemma.reduce(function(obj, r) {if (r.v) obj[r.a] = r.v; return obj;}, {})["Lemma"], 
@@ -543,8 +616,8 @@ export default {
           this.up(true, false);
         },
         openConllDialog(){
-          console.log(123,'openConllDialog',this.treedata)
-          console.log(this.snapInfos.paper, this.draft.getConll(this.treedata))
+          this.conllDialog = !this.conllDialog;
+          this.conllContent = this.draft.getConll(this.treedata)
         }
     }
 }
@@ -564,6 +637,10 @@ export default {
 </script>
 
 <style>
+  .CodeMirror {
+  border: 3px solid rgb(238, 238, 238);
+  height: auto;
+}
 .vs-dark .vs__search::placeholder,
   .vs-dark .vs__dropdown-toggle,
   .vs-dark .vs__dropdown-option,

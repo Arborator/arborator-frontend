@@ -1,6 +1,6 @@
 {
 	"name": "Arborator-Grew",
-	"version": "1.0 beta",
+	"version": "1.0.0",
 	"description": "Quasar Vue Frontend for Arborator-Grew",
 	"productName": "Arborator-Grew",
 	"cordovaId": "ilpga.arborator",

@@ -357,7 +357,7 @@ export default {
         this.options.annofFEATS = this.options.annof.FEATS.reduce(function(obj, r) {if (r.values) obj[r.name] = r.values; return obj;}, {});
         this.options.annofMISC = this.options.annof.MISC.reduce(function(obj, r) {if (r.values) obj[r.name] = r.values; return obj;}, {});
         // console.log(989898,this.options.annof.MISC)
-        this.openConllDialog()
+        // this.openConllDialog()
         this.options.splitregex = new RegExp('['+this.options.annof.DEPREL.map(({ join }) => join).join('')+']', 'g') // = /[:@]/g  
     },
     methods: {

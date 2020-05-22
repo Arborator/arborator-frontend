@@ -574,7 +574,8 @@ export default {
             this.tableKey++;
         },
         addAnnotator(slug, context){ 
-            api.addSampleAnnotator(slug.value, this.$route.params.projectname, context.samplename).then(response => { this.updateTags(response, context.samplename); this.$q.notify({message:`Change saved!`});}).catch(error => { console.log(error.response.status); this.reverseTags(slug.value, context.samplename, 'annotator'); this.$store.dispatch("notifyError", {error: error})  });
+            api.addSampleAnnotator(slug.value, this.$route.params.projectname, context.samplename).then(response => { this.updateTags(response, context.samplename); this.$q.notify({message:`Change saved!`});}).catch(error => { 
+                this.reverseTags(slug.value, context.samplename, 'annotator'); this.$store.dispatch("notifyError", {error: error})  });
         },
         removeAnnotator(slug, context){ 
             api.removeSampleAnnotator(slug.value, this.$route.params.projectname, context.samplename).then(response => {

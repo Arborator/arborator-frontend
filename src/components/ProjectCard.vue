@@ -21,7 +21,7 @@
                 </q-card-section>
             </q-card>
         </q-popup-proxy>
-        <q-img :ratio="16/9" :src="imageEmpty?'../statics/project.jpg':imageCleaned" basic >
+        <q-img :ratio="16/9" :src="imageEmpty?'../statics/images/project.jpg':imageCleaned" basic >
             <div class="absolute-bottom text-h6">
                 <q-icon v-show="project.is_private" name="lock" color="negative" size="lg"></q-icon>
                 <q-icon v-show="!project.is_private" name="public" color="positive" size="lg"></q-icon>

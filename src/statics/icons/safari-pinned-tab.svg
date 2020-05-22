@@ -7,46 +7,21 @@
     xmlns:svg="http://www.w3.org/2000/svg"
     xmlns="http://www.w3.org/2000/svg"
     xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
-    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
     xml:space="preserve"
     width="500px"
     height="500px"
     style="shape-rendering:geometricPrecision; text-rendering:geometricPrecision; image-rendering:optimizeQuality"
     viewBox="-4202 0 6866 4734"
-    id="svg2"
-    
-    onload="startup(evt)"
-    
-    sodipodi:version="0.32"
-    inkscape:version="0.45"
-    sodipodi:docname="arborator.svg"
+    id="svg2"    onload="startup(evt)"    sodipodi:version="0.32"    sodipodi:docname="arborator.svg"
     sodipodi:docbase="/home/kim/Desktop"
-    inkscape:output_extension="org.inkscape.output.svg.inkscape"><sodipodi:namedview
-										inkscape:window-height="694"
-										inkscape:window-width="1012"
-										inkscape:pageshadow="2"
-										inkscape:pageopacity="0.0"
-										guidetolerance="10.0"
+><sodipodi:namedview										guidetolerance="10.0"
 										gridtolerance="10.0"
 										objecttolerance="10.0"
 										borderopacity="1.0"
 										bordercolor="#666666"
 										pagecolor="#ffffff"
-										id="base"
-										inkscape:zoom="0.964"
-										inkscape:cx="250"
-										inkscape:cy="249.48133"
-										inkscape:window-x="6"
-										inkscape:window-y="22"
-										inkscape:current-layer="svg2" />
-										
-
-<script>
-<![CDATA[
-
-function startup(evt){
-
-	blade=document.getElementById("path15");
+										id="base" /><script>
+<![CDATA[function startup(evt){	blade=document.getElementById("path15");
 	//ptiplace=document.getElementById("path11");
 	step=20;
 	size=80;
@@ -55,55 +30,23 @@ function startup(evt){
 	//+"stroke-width:"+((x%50)+100)+";");
 	//ptiplace.setAttribute("style","stroke-dasharray:"+pdar+";");
 	//var pdar = x+",62,"+(62-x)+",0";
-}
-
-function animate(x){
-	
-	if (x<size) var dar = x+","+size+","+(size-x)+",0";
+}function animate(x){	if (x<size) var dar = x+","+size+","+(size-x)+",0";
 	else var dar = 0 +"," + (x%size)+","+size+","+(size-x%size);
 	blade.setAttribute("style","stroke-dasharray:"+dar+";")
 	x=(x+step)%(2*size);
-	window.setTimeout("animate("+x+")",40);
-	
-}
+	window.setTimeout("animate("+x+")",40);}
 //]]>
-</script>
-
-
-
-
-	<defs
+</script>	<defs
 	     id="defs4">
 		<style
 		      type="text/css"
-		      id="style6">
-			
-			.str0 {stroke:#7B4178;stroke-width:3}
+		      id="style6">			.str0 {stroke:#7B4178;stroke-width:3}
 			.str1 {stroke:#DD137B;stroke-width:56;stroke-dasharray:56 56}
 			.str2 {stroke:#DD137B;stroke-width:125;stroke-dasharray:125 125}
 			.fil2 {fill:none}
 			.fil1 {fill:#654B6D}
 			.fil0 {fill:#9AB086}
-			.fil3 {fill:#DD137B}
-			
-		</style>
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-	</defs>
+			.fil3 {fill:#DD137B}		</style>	</defs>
 	<path
 	     style="fill:#654b6d"
 	     id="path13"

@@ -25,7 +25,7 @@
         </q-page-sticky> -->
 
         <q-page-sticky :position="breakpoint?'bottom-right':'top-right'" :offset="breakpoint?[18, 18]:[18,70]">
-                <q-btn size="20px" round @click="searchDialog = !searchDialog" color="primary" icon="img:../statics/g.svg" >
+                <q-btn size="20px" round @click="searchDialog = !searchDialog" color="primary" icon="img:../statics/svg/g.svg" >
                     <q-tooltip content-class="bg-primary" content-style="font-size: 16px" >
                          Search with Grew in this sample
                     </q-tooltip>

@@ -1,9 +1,5 @@
 <template>
-  <q-page :class="$q.dark.isActive?'bg-dark':'bg-grey-1'">
-
-
-
-      <!-- <q-responsive :ratio="1" name='movingarborator'> -->
+  <q-page :class="$q.dark.isActive?'bg-dark':'bg-grey-1'">      <!-- <q-responsive :ratio="1" name='movingarborator'> -->
         <div class="text-white flex flex-center ">
             <svg
                 xmlns:svg="http://www.w3.org/2000/svg"
@@ -76,79 +72,57 @@
                                 class="fil1" />
             </svg>
           </div>
-      <!-- </q-responsive>  -->
-
-
-
-    <h4 class="text-primary text-bold text-center " style="margin-bottom:20px" color="primary">
+      <!-- </q-responsive>  -->    <h4 class="text-primary text-bold text-center " style="margin-bottom:20px" color="primary">
       Treebank Annotation for Human Beings
-    </h4>
-
-      <p class="text-center ">
+    </h4>      <p class="text-center ">
        <q-btn id="accesstreebank" push to="/projects" color="primary" no-caps >Access Treebanks</q-btn>
-      </p>
-
-<div class="q-pa-md row q-gutter-lg justify-evenly" >
+      </p><div class="q-pa-md row q-gutter-lg justify-evenly" >
     <q-card style=" width: 100%; max-width: 20vw">
       <q-parallax
-        src="../statics/dependency.svg"
+        src="../statics/svg/dependency.svg"
         :height="260"
-      ></q-parallax>
-
-      <q-card-section>
+      ></q-parallax>      <q-card-section>
         <div class="text-h5 text-primary text-bold">A collaborative annotation tool for treebank development</div>
         <div class="text-subtitle2">An easy to use graphic annotation interface makes it annotation the best part of a linguist's day.</div>
       </q-card-section>
       <q-separator  inset />
       <q-card-section>
         <p>
-       Just drag a word on the other to make a dependency relation. Just click on a word to change its features. Just choose the words to make them tokens. The dependency set, the tagset, and the feature set are fully configurable. We provide ready-made configurations for 
-       <a href="https://surfacesyntacticud.github.io" target="_blank">
-       <q-icon name="img:../statics/sud.svg"  size="md" />
+       Just drag a word on the other to make a dependency relation. Just click on a word to change its features. Just choose the words to make them tokens. The dependency set, the tagset, and the feature set are fully configurable. We provide ready-made configurations for       <a href="https://surfacesyntacticud.github.io" target="_blank">
+       <q-icon name="img:../statics/svg/sud.svg"  size="md" />
        <q-tooltip content-class="bg-accent" content-style="font-size: 16px" >
           SUD: The surface-syntactic, distribution-based version of Universal Dependencies
         </q-tooltip>
        </a>
-       and 
-       <a href="https://universaldependencies.org/" target="_blank">
-       <q-icon name="img:../statics/ud.svg"  size="sm" />
+       and       <a href="https://universaldependencies.org/" target="_blank">
+       <q-icon name="img:../statics/svg/ud.svg"  size="sm" />
        <q-tooltip content-class="bg-accent" content-style="font-size: 16px" >
           Universal Dependencies: The amazing collaborative treebank annotation project providing 150 treebanks in 90 languages
         </q-tooltip>
        </a>.
-       </p>
-    
-      </q-card-section>
-      
-    </q-card>
+       </p>      </q-card-section>    </q-card>
     <q-card style=" width: 100%; max-width: 20vw">
       <q-parallax
-        src="../statics/grew.front.svg"
+        src="../statics/svg/grew.front.svg"
         :height="260"
       ></q-parallax>
       <q-card-section>
         <div class="text-h5 text-primary text-bold">Search with a powerful graph grammar</div>
         <div class="text-subtitle2">Modify the search results directly in the Web interface</div>
       </q-card-section>
-      <q-separator  inset />
-         
-      <q-card-section>
+      <q-separator  inset />      <q-card-section>
         A good treebank is a lot about curation, about finding the problems and correcting them coherently.
-        With Arborator-Grew, there is no more back and forth between different websites or twisting your mind with complex greps in CoNLL files. Well, you got to learn the <a href="http://grew.fr//" target="_blank">       <q-icon name="img:../statics/grew.svg"  size="xl" />
+        With Arborator-Grew, there is no more back and forth between different websites or twisting your mind with complex greps in CoNLL files. Well, you got to learn the <a href="http://grew.fr//" target="_blank">       <q-icon name="img:../statics/svg/grew.svg"  size="xl" />
        <q-tooltip content-class="bg-accent" content-style="font-size: 16px" >
           The grew graph grammar
         </q-tooltip>
        </a> syntax, but that's a breeze with all the great examples and tutorials provided.
-      </q-card-section>
-
-    </q-card>
+      </q-card-section>    </q-card>
     <q-card style=" width: 100%; max-width: 20vw">
       <q-parallax
-        src="../statics/small.niko-photos-tGTVxeOr_Rs-unsplash.jpg"
+        src="../statics/images/small.niko-photos-tGTVxeOr_Rs-unsplash.jpg"
         :height="260"
-      ></q-parallax>
-
-      <q-card-section>
+      ></q-parallax>      <q-card-section>
         <div class="text-h5 text-primary text-bold">Together with others you can build beautiful treebanks</div>
         <div class="text-subtitle2">Social login makes Arborator-Grew a hazzle free tool</div>
       </q-card-section>
@@ -160,22 +134,16 @@
       <p class="text-center ">Try it all out on our
        <q-btn push to="/projects/Playground/en_gum-sud-dev/665" color="primary" no-caps>Playground</q-btn>
       </p>
-    </q-card>
-
-    <q-card style=" width: 100%; max-width: 20vw">
+    </q-card>    <q-card style=" width: 100%; max-width: 20vw">
       <q-parallax
-        src="../statics/sourcecode.png"
+        src="../statics/images/sourcecode.png"
         :height="260"
-      ></q-parallax>
-
-      <q-card-section>
+      ></q-parallax>      <q-card-section>
         <div class="text-h5 text-primary text-bold">Source code and access to this Web page are completely free</div>
         <div class="text-subtitle2">as in free beer and as in in free speech</div>
       </q-card-section>
       <q-separator  inset />
-       <q-card-section>  
-         Head over to 
-          <!-- <q-btn type="a" href="https://github.com/Arborator" flat round color="primary" icon="fab fa-github" size="lg" target="_blank" > -->
+       <q-card-section>         Head over to          <!-- <q-btn type="a" href="https://github.com/Arborator" flat round color="primary" icon="fab fa-github" size="lg" target="_blank" > -->
               <q-btn type="a" href="https://github.com/Arborator" target="_blank" icon="fab fa-github" flat round  color="primary"  size="lg" >
        <!-- <q-icon name="fab fa-github"  ripple=false /> -->
               <q-tooltip content-class="bg-accent" content-style="font-size: 16px" >
@@ -188,37 +156,23 @@
         <br>A guide to install Arborator-Grew on your own server will be provided here shortly...
       </q-card-section>
     </q-card>
-  </div>
-
-  <br/><br/><br/>
-  <q-separator  inset />
-
-<br/><br/><br/>
-
-
-<div class="q-pa-md row q-gutter-lg justify-evenly" >
+  </div>  <br/><br/><br/>
+  <q-separator  inset /><br/><br/><br/><div class="q-pa-md row q-gutter-lg justify-evenly" >
     <q-card style=" width: 100%; max-width: 30vw">
       <q-parallax
-        src="../statics/arborator.grew.superposed.svg"
+        src="../statics/svg/arborator.grew.superposed.svg"
         :height="260"
-      ></q-parallax>
-
-      <q-card-section>
+      ></q-parallax>      <q-card-section>
         <div class="text-h5 text-primary text-bold">Our story</div>
         <div class="text-subtitle2">Arborator-Grew combines the features of two preexisting tools: Arborator and Grew.</div>
       </q-card-section>
       <q-separator  inset />
       <q-card-section>
         <p>
-          Arborator is a widely used collaborative graphical online dependency treebank annotation tool. 
-          Grew is a tool for graph querying and rewriting specialized in structures needed in NLP, i.e. syntactic and semantic dependency trees and graphs. Grew also has an online version, <a href="http://match.grew.fr/" target="_blank">Grew-match</a>, where all Universal Dependencies treebanks in their classical, deep and surface-syntactic flavors can be queried. Arborator-Grew is a complete redevelopment and modernization of Arborator, replacing its own internal database storage by a new Grew API, which adds a powerful query tool to Arborator's existing treebank creation and correction features. This includes complex access control for parallel expert and crowd-sourced annotation, tree comparison visualization, and various exercise modes for teaching and training of annotators. Arborator-Grew opens up new paths of collectively creating, updating, maintaining, and curating syntactic treebanks and semantic graph banks.       </p>
-    
-      </q-card-section>
-      
-    </q-card>
+          Arborator is a widely used collaborative graphical online dependency treebank annotation tool.          Grew is a tool for graph querying and rewriting specialized in structures needed in NLP, i.e. syntactic and semantic dependency trees and graphs. Grew also has an online version, <a href="http://match.grew.fr/" target="_blank">Grew-match</a>, where all Universal Dependencies treebanks in their classical, deep and surface-syntactic flavors can be queried. Arborator-Grew is a complete redevelopment and modernization of Arborator, replacing its own internal database storage by a new Grew API, which adds a powerful query tool to Arborator's existing treebank creation and correction features. This includes complex access control for parallel expert and crowd-sourced annotation, tree comparison visualization, and various exercise modes for teaching and training of annotators. Arborator-Grew opens up new paths of collectively creating, updating, maintaining, and curating syntactic treebanks and semantic graph banks.       </p>      </q-card-section>    </q-card>
     <q-card style=" width: 100%; max-width: 30vw">
       <q-parallax
-        src="../statics/annie-spratt-_dAnK9GJvdY-unsplash.jpg"
+        src="../statics/images/annie-spratt-_dAnK9GJvdY-unsplash.jpg"
         :height="260"
       ></q-parallax>
       <q-card-section>
@@ -229,11 +183,7 @@
       <q-card-section>
         <a href="http://www.lrec-conf.org/proceedings/lrec2020/pdf/2020.lrec-1.651.pdf"  target="_blank">
         Gaël Guibon, Marine Courtin, Kim Gerdes, Bruno Guillaume. When Collaborative Treebank Curation Meets Graph Grammars: Arborator With a Grew Back-End Actes de LREC 2020.
-        </a>
-
-      <q-separator  inset />
-
-    @InProceedings{guibon-EtAl:2020:LREC,
+        </a>      <q-separator  inset />    @InProceedings{guibon-EtAl:2020:LREC,
       author    = {Guibon, Gaël  and  Courtin, Marine  and  Gerdes, Kim  and  Guillaume, Bruno},
       title     = {When Collaborative Treebank Curation Meets Graph Grammars},
       booktitle      = {Proceedings of The 12th Language Resources and Evaluation Conference},
@@ -244,37 +194,25 @@
       pages     = {5293--5302},
     ,
       url       = {https://www.aclweb.org/anthology/2020.lrec-1.651}
-    }
-
-      </q-card-section>
-
-    </q-card>
-
-    <q-card style=" width: 100%; max-width: 30vw" >
+    }      </q-card-section>    </q-card>    <q-card style=" width: 100%; max-width: 30vw" >
       <q-parallax
-        src="../statics/julie-molliver-Z3vFp7szCAY-unsplash.jpg"
+        src="../statics/images/julie-molliver-Z3vFp7szCAY-unsplash.jpg"
         :height="260"
-      ></q-parallax>
-
-      <q-card-section>
+      ></q-parallax>      <q-card-section>
         <div class="text-h5 text-primary text-bold">Some other tools</div>
         <div class="text-subtitle2">in the Arborator series</div>
       </q-card-section>
       <q-separator  inset />
       <div class="q-gutter-lg">
-      <q-card-section>
-
-         <q-card :class="hoverdraft ? 'bg-grey-2' : 'hover'" class="clickable col-1 grid-style-transition shadow-7"
-            @mouseover="hoverdraft = true" 
-            @mouseleave="hoverdraft = false" 
-            @click="openURL('https://arborator.github.io/draft')"
+      <q-card-section>         <q-card :class="hoverdraft ? 'bg-grey-2' : 'hover'" class="clickable col-1 grid-style-transition shadow-7"
+            @mouseover="hoverdraft = true"            @mouseleave="hoverdraft = false"            @click="openURL('https://arborator.github.io/draft')"
             :style="hoverdraft ? 'transform: scale(0.95);' : ''"
             >
             <q-card-section>
              If you just want to look at a CoNLL file quickly, check out this:
              </q-card-section>
               <q-card-section>
-                  <img src="../statics/arborator.quick.svg" width="100em" /> <q-badge align="top" color="positive">No login!</q-badge>
+                  <img src="../statics/svg/arborator.quick.svg" width="100em" /> <q-badge align="top" color="positive">No login!</q-badge>
                   <q-item-section>
                       <q-item-label lines="1"> </q-item-label>
                       <q-item-label caption lines="2" :class="$q.dark.isActive?'text-grey':''">
@@ -283,49 +221,30 @@
                   </q-item-section>
               </q-card-section>
             </q-card>
-                       <br/>
-
-<q-space/>
+                       <br/><q-space/>
           <q-separator  inset />
           <q-card :class="hoverquick ? 'bg-grey-2' : ''" class="clickable col-1 grid-style-transition shadow-7"
-            @mouseover="hoverquick = true" 
-            @mouseleave="hoverquick = false" 
-            @click="openURL('https://arborator.ilpga.fr/q.cgi')"
+            @mouseover="hoverquick = true"            @mouseleave="hoverquick = false"            @click="openURL('https://arborator.ilpga.fr/q.cgi')"
             :style="hoverquick ? 'transform: scale(0.95);' : ''"
             >
             <q-card-section>
-              For quick graphical modification of a CoNLL file: 
-            </q-card-section>
+              For quick graphical modification of a CoNLL file:            </q-card-section>
             <q-card-section>
               CoNLL files graphical editor
-            </q-card-section>   
-          </q-card>
-           <br/>
-
-
-           <q-card :class="hoverlegacy ? 'bg-grey-2' : ''" class="clickable col-1 grid-style-transition shadow-7"
-            @mouseover="hoverlegacy = true" 
-            @mouseleave="hoverlegacy = false" 
-            @click="openURL('https://arborator.ilpga.fr/')"
+            </q-card-section>          </q-card>
+           <br/>           <q-card :class="hoverlegacy ? 'bg-grey-2' : ''" class="clickable col-1 grid-style-transition shadow-7"
+            @mouseover="hoverlegacy = true"            @mouseleave="hoverlegacy = false"            @click="openURL('https://arborator.ilpga.fr/')"
             :style="hoverlegacy ? 'transform: scale(0.95);' : 'hover'"
             >
             <q-card-section>
-              The legacy Arborator is still running here 
-            </q-card-section>
-             
-          </q-card>
+              The legacy Arborator is still running here            </q-card-section>          </q-card>
       </q-card-section>
-       </div>
-     
-    </q-card>
-<!-- 
-    <q-card style=" width: 100%; max-width: 20vw">
+       </div>    </q-card>
+<!--    <q-card style=" width: 100%; max-width: 20vw">
       <q-parallax
-        src="../statics/sourcecode.png"
+        src="../statics/images/sourcecode.png"
         :height="260"
-      ></q-parallax>
-
-      <q-card-section>
+      ></q-parallax>      <q-card-section>
         <div class="text-h5 text-primary text-bold">Source code and access to this Web page are completely free</div>
         <div class="text-subtitle2">as in free beer and as in in free speech</div>
       </q-card-section>
@@ -334,30 +253,15 @@
          Head over to  <a href="https://github.com/Arborator" target="_blank">
        <q-icon name="fab fa-github"  size="lg" />
        <q-tooltip content-class="bg-accent" content-style="font-size: 16px" >
-          our GitHub page 
-        </q-tooltip>
+          our GitHub page        </q-tooltip>
        </a> to have a look and grab the code.<br>
         Get involved give us feedback on the <a href="https://github.com/Arborator/arborator-frontend/issues">issue page of this Arborator front-end</a>.
         <br>A guide to install Arborator-Grew on your own server will be provided here...
       </q-card-section>
     </q-card> -->
-  </div>
-
-
-
-
-
-
-
-<!-- 
-
-    <q-page-sticky position="bottom-right" :offset="[18, 18]">
-     
-    </q-page-sticky> -->
+  </div><!--    <q-page-sticky position="bottom-right" :offset="[18, 18]">    </q-page-sticky> -->
   </q-page>
-</template>
-
-<style scoped lang="stylus">
+</template><style scoped lang="stylus">
 .clickable:hoverquick {
   cursor:pointer;
 }
@@ -365,9 +269,7 @@
   cursor:pointer;
 }.clickable:hoverlegacy {
   cursor:pointer;
-}
-
-.grid-style-transition
+}.grid-style-transition
   transition transform .28s, background-color .28s
 .btn:focus {
   outline: none;
@@ -377,15 +279,11 @@
   outline: none;
   box-shadow: none;
 }
-</style>
-
-<script>
+</style><script>
 import { openURL } from 'quasar';
 import api from '../boot/backend-api';
 import Store from '../store/index';
-import ProjectCard from '../components/ProjectCard.vue';
-
-export default {
+import ProjectCard from '../components/ProjectCard.vue';export default {
   components: {
     ProjectCard
   },
@@ -402,18 +300,11 @@ export default {
       search: '',
       slide: 'style',
       animatex:0,
-      step:20, 
-      size:80, 
-      blade:null
+      step:20,      size:80,      blade:null
     }
   },
-  mounted(){
-    
-    this.blade=document.getElementById("path15");
-    this.animate();
-
-
-  },
+  mounted(){    this.blade=document.getElementById("path15");
+    this.animate();  },
   methods:{
       openURL,
       animate(){

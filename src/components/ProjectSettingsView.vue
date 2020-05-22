@@ -10,7 +10,7 @@
 		</q-bar>
 		<q-card-section class="q-pa-sm row q-gutter-md"> 
 			<q-banner rounded class="col-md-4 offset-md-4 col-xs-12 col-sm-12">
-					<q-img :ratio="16/9" :src="imageEmpty?'../statics/project.jpg':imageCleaned" basic >
+					<q-img :ratio="16/9" :src="imageEmpty?'../statics/images/project.jpg':imageCleaned" basic >
 						<div class="absolute-bottom text-h6">
 							<q-icon v-show="infos.is_private" name="lock" :color="$q.dark.isActive?'red-13':'negative'" size="lg"></q-icon>
 							<q-icon v-show="!infos.is_private" name="public" color="positive" size="lg"></q-icon>

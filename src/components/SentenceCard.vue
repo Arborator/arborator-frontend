@@ -38,19 +38,19 @@
                 
             <q-btn-dropdown :disable="tab==''" icon="more_vert"  flat dense> <q-tooltip>More</q-tooltip>
                 <q-list>
-                <q-item clickable v-close-popup @click="pullSample()">
+                <q-item clickable v-close-popup >
                 <q-item-section>
                     <q-item-label>Get direct link to this tree (todo)</q-item-label>
                 </q-item-section>
                 </q-item>
 
-                <q-item clickable v-close-popup @click="pullSample()">
+                <q-item clickable v-close-popup @click="getconll()">
                 <q-item-section>
                     <q-item-label>Get CoNLL-U of this tree (todo)</q-item-label>
                 </q-item-section>
                 </q-item>
 
-                 <q-item clickable v-close-popup @click="pullSample()">
+                 <q-item clickable v-close-popup >
                 <q-item-section>
                     <q-item-label>Get SVG of this tree (todo)</q-item-label>
                 </q-item-section>
@@ -90,7 +90,19 @@
                 </q-item>
             </q-list>
         </q-card-section>
+
+    <q-dialog v-model="conllcontent" transition-show="fade" transition-hide="fade" >
+            <div class="q-pa-md" style="max-width: 300px">
+                <q-input
+                v-model="conllcontent"
+                filled
+                type="textarea"
+                />
+            </div>     
+        </q-dialog>
+
     </q-card>
+ 
 </template>
 
 <script>
@@ -115,7 +127,9 @@ export default {
             changed: false,
             shownmetanames: [],
             shownmetas: {},
-            view: null
+            view: null,
+            conllcontent: false,
+
         }
     },
 
@@ -133,7 +147,10 @@ export default {
         // console.log('scmounted',this.$refs.conllGraph)
     },
     methods: {
-       
+        getconll() {
+            if ('conllGraph' in this.$refs) var cg = this.$refs.conllGraph.filter(c => c.user == this.tab)[0];
+            if (cg) cg.openConllDialog();
+        },
         ttselect(event) {
             // triggered if some letters of the sentence are selected
             if ('conllGraph' in this.$refs) var cg = this.$refs.conllGraph.filter(c => c.user == this.tab)[0];

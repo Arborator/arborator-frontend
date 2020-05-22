@@ -541,6 +541,10 @@ export default {
           this.$emit("sentence-changed", treedata.sentence);
           this.snapInfos.paper=this.treedata.svg // useful?
           this.up(true, false);
+        },
+        openConllDialog(){
+          console.log(123,'openConllDialog',this.treedata)
+          console.log(this.snapInfos.paper, this.draft.getConll(this.treedata))
         }
     }
 }

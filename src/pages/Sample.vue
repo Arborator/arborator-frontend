@@ -67,8 +67,10 @@
         </q-dialog>
 
         <q-dialog v-model="resultSearchDialog" transition-show="fade" transition-hide="fade" >
-            <result-view :searchresults="resultSearch" :totalsents="sentenceCount" searchscope="sample" ></result-view>        </q-dialog>
+            <result-view :searchresults="resultSearch" :totalsents="sentenceCount" searchscope="sample" ></result-view>        
+        </q-dialog>
 
+       
     </q-page>
 </template>
 

@@ -168,7 +168,7 @@ export default {
                 }).catch(error => {this.$store.dispatch("notifyError", {error: error}); this.loading = false;});
         },
         scrolala(){
-            // console.log("***scrolala") && this.$route.params.user!=undefined
+            // console.log("***scrolala", this.$route.params.user) //&& this.$route.params.user!=undefined
              if (!this.loading && this.$refs && this.$refs.virtualListRef && this.$route.params.nr!=undefined  && parseInt(this.$route.params.nr)<=this.samplesFrozen.list.length)
                     {
                         var id = parseInt(this.$route.params.nr)-1;
@@ -181,9 +181,7 @@ export default {
             this.intri--;
             if (!this.intri) clearInterval(this.intr);
         },
-        ooo(){
-          console.log('click');   // ,this.$refs['sc555']
-        },
+        
         onSearch(searchPattern){
             var query = { pattern: searchPattern };
             api.searchSample(this.projectname, this.samplename, query)

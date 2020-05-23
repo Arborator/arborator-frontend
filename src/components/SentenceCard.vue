@@ -1,8 +1,6 @@
 <template>
     <q-card :id="index" >
         <!-- <q-toolbar :class="$q.dark.isActive?'text-white':'text-primary'"> -->
-            <!-- <q-btn flat round dense icon="save" :disable="!graphInfo.dirty" @click="save()"> <q-tooltip>Save this tree</q-tooltip> </q-btn>
-            <q-btn flat round dense icon="list" :disable="tab==''" @click="openMetaDialog()"> <q-tooltip>Edit this tree's metadata</q-tooltip> </q-btn> -->
             <!-- <q-btn flat round dense icon="archive" ><q-tooltip>Export</q-tooltip></q-btn> -->
             <!-- <q-btn flat round dense icon="undo" :disable="!graphInfo.dirty" @click="undo()"><q-tooltip>Undo</q-tooltip></q-btn>
             <q-btn flat round dense icon="redo" :disable="!graphInfo.redo"><q-tooltip>Redo</q-tooltip></q-btn> -->
@@ -33,11 +31,11 @@
                 </template>
                 <q-space/>
                  <q-btn flat round dense icon="save" :disable="!graphInfo.dirty" @click="save()"> <q-tooltip>Save this tree</q-tooltip> </q-btn>
-            <q-btn flat round dense icon="list" :disable="tab==''" @click="openMetaDialog()"> <q-tooltip>Edit this tree's metadata</q-tooltip> </q-btn>
+            <q-btn flat round dense icon="post_add" :disable="tab==''" @click="openMetaDialog()"> <q-tooltip>Edit this tree's metadata</q-tooltip> </q-btn>
                 
             <q-btn-dropdown :disable="tab==''" icon="more_vert"  flat dense> <q-tooltip>More</q-tooltip>
                 <q-list>
-                <q-item clickable v-close-popup >
+                <q-item clickable v-close-popup @click="getlink()">
                     <q-item-section avatar>
                         <q-avatar icon="ion-md-link" color="primary" text-color="white" />
                     </q-item-section>
@@ -48,7 +46,7 @@
 
                 <q-item clickable v-close-popup @click="showconll()">
                     <q-item-section avatar>
-                        <q-avatar icon="list" color="primary" text-color="white" />
+                        <q-avatar icon="format_list_numbered" color="primary" text-color="white" />
                     </q-item-section>
                     <q-item-section>
                         <q-item-label>Get CoNLL-U of this tree</q-item-label>
@@ -67,7 +65,22 @@
                 </q-list>
             </q-btn-dropdown>
             </div>
-            
+
+            <div class="full-width row  justify-end  ">
+                    <q-input 
+                        ref='linkinput'
+                        dense 
+                        v-show="sentenceLink.length!=0" 
+                        class="col-4  self-stretch   "
+                        :value="sentenceLink"
+                    >
+                        <template v-slot:prepend>
+                            <q-icon name="ion-md-link" />
+                        </template>
+                    </q-input>  
+            </div>
+
+
             <q-tabs v-model="tab" :class="($q.dark.isActive?'text-grey-5':'text-grey-8') + ' shadow-2'" dense :active-color="$q.dark.isActive?'info':'accent'" :active-bg-color="$q.dark.isActive?'':'grey-2'">
                 <q-tab v-for="(tree, user) in sampleData.conlls" :key="user" :props="user" :label="user" :name="user" icon="person" no-caps :ripple="false" :ref="'tab'+user"/>
             </q-tabs>
@@ -126,7 +139,7 @@ export default {
             shownmetanames: [],
             shownmetas: {},
             view: null,
-
+            sentenceLink: ''
         }
     },
 
@@ -144,6 +157,10 @@ export default {
         // console.log('scmounted',this.$refs.conllGraph)
     },
     methods: {
+        getlink() {
+            this.sentenceLink = window.location.href.split('/projects/'+this.$route.params.projectname)[0]+'/projects/'+this.$route.params.projectname+'/'+this.sample.samplename+'/'+(this.index+1)+'/'+this.graphInfo.user
+            setTimeout(()=>{this.$refs.linkinput.select()}, 500)
+        },
         showconll() {
             if ('conllGraph' in this.$refs) var cg = this.$refs.conllGraph.filter(c => c.user == this.tab)[0];
             if (cg) cg.openConllDialog();
@@ -226,34 +243,18 @@ export default {
     ]]>  
 </style> `
 
-
             svg = svg.replace(/<desc>Created with Snap<\/desc>/g, "<desc>Created with Snap on Arborator</desc>");
             svg = svg.replace(/>/g, ">\n");
-            // console.log('svg',svg)
             svg = svg.replace(/(<svg.*>)/, "$1\n"+style);
-//             console.log('svg',svg)
-// return;
             const url = window.URL.createObjectURL(new Blob([svg], { type: "image/svg+xml" }));
-                const link = document.createElement('a');
-                link.href = url;
-                link.setAttribute('download', this.sentenceId+'.svg');
-                document.body.appendChild(link);
-                link.click();
-                document.body.removeChild(link);
-                // this.table.exporting = false;
-                this.$q.notify({message:`Files downloaded`});
-
-
-
-
-
-        console.log(456465465456)
-
-
-
-
-
-
+            const link = document.createElement('a');
+            link.href = url;
+            link.setAttribute('download', this.sentenceId+'.svg');
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            // this.table.exporting = false;
+            this.$q.notify({message:`Files downloaded`});
         },
         ttselect(event) {
             // triggered if some letters of the sentence are selected

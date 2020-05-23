@@ -154,12 +154,11 @@ export default {
     },
     mounted() {
         this.shownmetanames = this.$store.getters.getProjectConfig.shownmeta;
-        // console.log('scmounted',this.$refs.conllGraph)
     },
     methods: {
         getlink() {
             this.sentenceLink = window.location.href.split('/projects/'+this.$route.params.projectname)[0]+'/projects/'+this.$route.params.projectname+'/'+this.sample.samplename+'/'+(this.index+1)+'/'+this.graphInfo.user
-            setTimeout(()=>{this.$refs.linkinput.select()}, 500)
+            setTimeout(()=>{this.$refs.linkinput.select();document.execCommand('copy') }, 500)
         },
         showconll() {
             if ('conllGraph' in this.$refs) var cg = this.$refs.conllGraph.filter(c => c.user == this.tab)[0];

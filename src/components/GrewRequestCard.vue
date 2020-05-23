@@ -11,10 +11,11 @@
                 <q-form @submit="onSearch" @reset="onResetSearch" class="q-gutter-md" >
                 <div class="q-pa-xs">
                     <div class="row">
+                        
                         <div class="col-10" >
                             <codemirror v-model="searchPattern" :options="cmOption"></codemirror>
                             <q-space />
-                            <q-btn color="primary" type="submit" label="Search" no-caps />
+                            
                         </div>
                         <div class="col-2" >
                             <q-list bordered separator >
@@ -26,6 +27,27 @@
                             </q-list>
                         </div>
                     </div>
+
+                    <div class="row">
+                        <div class="full-width row  justify-start  ">
+
+                            <q-btn color="primary" type="submit" label="Search" no-caps />
+                            <q-space/>
+                            <q-btn icon="ion-md-link" @click="getgrewlink"/>
+                            <q-space/>
+                            <q-input 
+                                ref='grewlinkinput'
+                                dense 
+                                v-show="grewlink.length!=0" 
+                                class="col-10 self-stretch   "
+                                :value="grewlink"
+                            >
+                                <template v-slot:prepend>
+                                    <q-icon name="ion-md-link" />
+                                </template>
+                            </q-input>  
+                            </div>
+                        </div>
                 </div>
                 </q-form>
             </q-card-section>
@@ -130,7 +152,7 @@ import store from '../store';
 export default {
     components: { codemirror },
     name: 'GrewRequestCard',
-    props: ['parentOnSearch'],
+    props: ['parentOnSearch', 'grewquery'],
     data() {
         return {
             searchPattern: `% Search for a given word form
@@ -144,17 +166,108 @@ pattern { N [form="Form_to_search"] }`,
                 mode: 'grew',
                 theme: (this.$q.dark.isActive?'material-darker':'default')
             },
-            queries: grewTemplates
+            queries: grewTemplates,
+            grewlink: '',
         }
     },
     mounted(){
         if (this.$ls.get('grewHistory', '').length > 0) this.$store.commit('change_last_grew_query', this.$ls.get('grewHistory'));
         if (this.$store.getters.getLastGrewQuery.length > 0) this.searchPattern = this.$store.getters.getLastGrewQuery;
+        this.checkgrewquery();
     },
     methods: {
         onSearch(){ this.parentOnSearch(this.searchPattern); this.$store.commit('change_last_grew_query', this.searchPattern ); this.$ls.set('grewHistory', this.searchPattern); },
         changeSearchPattern(pattern) { this.searchPattern = pattern; },
-        onResetSearch(){ this.searchPattern = ''; }
+        onResetSearch(){ this.searchPattern = ''; },
+        getgrewlink(){
+                var z = this.zip(this.searchPattern)
+                this.grewlink = window.location.href.split('?')[0]+'?q='+z;
+                setTimeout(()=>{this.$refs.grewlinkinput.select();document.execCommand('copy') }, 500)
+        },
+        checkgrewquery(){
+            if (this.grewquery.length>0) {
+                
+                var customquery = this.unzip(this.grewquery)
+                this.queries = this.queries.filter(c => c.name != "custom query");
+                this.queries.unshift({"name":"custom query", "pattern":customquery})
+                this.changeSearchPattern(customquery);
+                this.onSearch();
+            }
+        },
+        // Apply LZW-compression to a string and return base64 compressed string.
+        zip (s) {
+            try {
+                var dict = {}
+                var data = (s + '').split('')
+                var out = []
+                var currChar
+                var phrase = data[0]
+                var code = 256
+                for (var i = 1; i < data.length; i++) {
+                currChar = data[i]
+                if (dict[phrase + currChar] != null) {
+                    phrase += currChar
+                } else {
+                    out.push(phrase.length > 1 ? dict[phrase] : phrase.charCodeAt(0))
+                    dict[phrase + currChar] = code
+                    code++
+                    phrase = currChar
+                }
+                }
+                out.push(phrase.length > 1 ? dict[phrase] : phrase.charCodeAt(0))
+                for (var j = 0; j < out.length; j++) {
+                out[j] = String.fromCharCode(out[j])
+                }
+                return this.utoa(out.join(''))
+            } catch (e) {
+                console.log('Failed to zip string return empty string', e)
+                return ''
+            }
+            },
+
+// Decompress an LZW-encoded base64 string
+        unzip (base64ZippedString) {
+            try {
+                var s = this.atou(base64ZippedString)
+                var dict = {}
+                var data = (s + '').split('')
+                var currChar = data[0]
+                var oldPhrase = currChar
+                var out = [currChar]
+                var code = 256
+                var phrase
+                for (var i = 1; i < data.length; i++) {
+                var currCode = data[i].charCodeAt(0)
+                if (currCode < 256) {
+                    phrase = data[i]
+                } else {
+                    phrase = dict[currCode] ? dict[currCode] : oldPhrase + currChar
+                }
+                out.push(phrase)
+                currChar = phrase.charAt(0)
+                dict[code] = oldPhrase + currChar
+                code++
+                oldPhrase = phrase
+                }
+                return out.join('')
+            } catch (e) {
+                console.log('Failed to unzip string return empty string', e)
+                return ''
+            }
+        },
+        // ucs-2 string to base64 encoded ascii
+        utoa (str) {
+            return window.btoa(unescape(encodeURIComponent(str)))
+        },
+        // base64 encoded ascii to ucs-2 string
+        atou (str) {
+            return decodeURIComponent(escape(window.atob(str)))
+        }
+
+
+
+
+
     }
 }
 </script>

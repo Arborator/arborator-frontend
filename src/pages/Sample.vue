@@ -63,7 +63,7 @@
             </q-page-sticky>
 
         <q-dialog v-model="searchDialog" seamless position="right"  full-width>
-            <grew-request-card :parentOnSearch="onSearch" ></grew-request-card>
+            <grew-request-card :parentOnSearch="onSearch" :grewquery="$route.query.q"></grew-request-card>
         </q-dialog>
 
         <q-dialog v-model="resultSearchDialog" transition-show="fade" transition-hide="fade" >
@@ -147,6 +147,7 @@ export default {
         this.getSampleContent(); 
         this.getProjectConfig();
         document.title = this.$route.params.samplename+" 🌳 Arborator-Grew 🌳 Sample of the "+this.$route.params.projectname+" project";
+        if(this.$route.query.q && this.$route.query.q.length>0) this.searchDialog=true;
     },
     methods: {
         getProjectConfig(){

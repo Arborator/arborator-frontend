@@ -1,12 +1,10 @@
 <template>
     <q-card :id="index" >
         <!-- <q-toolbar :class="$q.dark.isActive?'text-white':'text-primary'"> -->
-            <!-- <q-btn flat round dense icon="archive" ><q-tooltip>Export</q-tooltip></q-btn> -->
             <!-- <q-btn flat round dense icon="undo" :disable="!graphInfo.dirty" @click="undo()"><q-tooltip>Undo</q-tooltip></q-btn>
             <q-btn flat round dense icon="redo" :disable="!graphInfo.redo"><q-tooltip>Redo</q-tooltip></q-btn> -->
             <!-- <q-toolbar-title>
             </q-toolbar-title> -->
-            <!-- <q-btn flat round dense icon="more_vert" /> -->
         <!-- </q-toolbar> -->
         <q-card-section>
             <div class="row items-center">
@@ -40,7 +38,7 @@
                         <q-avatar icon="ion-md-link" color="primary" text-color="white" />
                     </q-item-section>
                     <q-item-section>
-                        <q-item-label>Get direct link to this tree (todo)</q-item-label>
+                        <q-item-label>Get direct link to this tree</q-item-label>
                     </q-item-section>
                 </q-item>
 
@@ -95,7 +93,7 @@
                                 :user="user" 
                                 :sentenceId="sentenceId" 
                                 :matches="sampleData.matches"
-                                :id="'conllGraph'+user"
+                                :id="searchResult+'_conllGraph_'+user"
                                 @update-conll="onConllGraphUpdate($event)"
                                 @meta-changed="metaUpdate($event)"
                             ></conll-graph>
@@ -124,7 +122,7 @@ export default {
     components: {
         'conll-graph': ConllGraph
     },
-    props: ['index', 'sample', 'sentenceId'],
+    props: ['index', 'sample', 'sentenceId', 'searchResult'],
     data() {
         return {
             tab:'',

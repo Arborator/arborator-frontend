@@ -29,11 +29,14 @@ export default {
     getUsersTreeFrom(projectname){
         return API.get('projects/'+projectname+'/treesfrom');
     },
-    getProjectInfos(name){ // this one is slow, asks grew
-        return API.get('projects/'+name);
+    getProjectInfos(projectname){ // this one is slow, asks grew
+        return API.get('projects/'+projectname);
     },
-    getProjectSettings(name){ // this one is fast, only flask, also some more information, such as is_open
-        return API.get('projects/'+name+'/settings/infos');
+    getProjectSettings(projectname){ // this one is fast, only flask, also some more information, such as is_open
+        return API.get('projects/'+projectname+'/settings/infos');
+    },
+    updateProjectSettings(projectname, projectconfig){ // new from kim JSON.stringify(user)
+        return API.post('projects/'+projectname+'/settings/update', projectconfig);
     },
     addProjectCatLabel(projectname, cat){
         return API.post('projects/'+projectname+'/config/cat/add', {'cat': cat});

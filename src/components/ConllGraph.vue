@@ -273,11 +273,11 @@ export default {
     components: {
         AttributeTable, codemirror
     },
-    props: ['conll', 'user', 'sentenceId', 'matches'],
+    props: ['conll', 'user', 'sentenceId', 'matches', 'id'],
     data(){
         return {
             draft: new ArboratorDraft(),
-            id: this.user+'_'+this.sentenceId.replace(/\W/g, ''),
+            // id: this.user+'_'+this.sentenceId.replace(/\W/g, ''),
             svgContent: '',
             conllContent: '',
             currentConllContent: '',
@@ -359,6 +359,7 @@ export default {
          */
         getProjectConfig(){
           var conf = this.$store.getters.getProjectConfig;
+          console.log(666666,conf)
           this.options.annof = conf.annotationFeatures;
           this.options.shownfeatures = conf.shownfeatures;
           this.options.shownmeta = conf.shownmeta;
@@ -382,6 +383,12 @@ export default {
         start(conllStr, matches, id){
             if (this.user in matches) var usermatch = matches[this.user];
             else var usermatch = {'nodes':[],'edges':[]};
+            
+            // matches in standard query table:"kimgerdes":{"edges":[],"nodes":["2"]}
+            // matches in relation table: "kimgerdes":{"edges":{"e":{"source":"ROOT","label":"root","target":"2"}}
+            if (!Array.isArray(usermatch.nodes)) usermatch = {'nodes':[usermatch.edges.e.target],'edges':[]}
+            // console.log(8787,usermatch, matches)
+            // problem nodes not list but nodes: {DEP: "1", GOV: "ROOT"}
             this.snap.treedata = this.draft.drawit(conllStr, usermatch, id, this.options.shownfeatures); // here it happens
             this.loading = false;
             // give the draft access to these functions:
@@ -606,7 +613,8 @@ export default {
 <style>
   .CodeMirror {
   border: 1px solid rgb(238, 238, 238);
-  height: auto;
+  
+  min-height: 680px;
   height: 100%
 }
 .vs-dark .vs__search::placeholder,

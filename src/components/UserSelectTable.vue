@@ -2,7 +2,7 @@
 	<q-card :class="$q.dark.isActive?'':'bg-blue-grey-1 text-black'" style="max-width: 100vw;">
 		<q-bar class="bg-primary text-white">
 			<q-space />
-			<div class="text-weight-bold">User Selection Table</div>
+			<div class="text-weight-bold">{{selectiontype}} Selection Table</div>
 			<q-space />
 			<q-btn dense flat icon="close" v-close-popup>
 				<q-tooltip content-class="bg-white text-primary">Close</q-tooltip>
@@ -30,7 +30,7 @@
 				:filter="table.filter"
 				binary-state-sort
 				:visible-columns="table.visibleColumns"
-				selection="single"
+				:selection="singlemultiple"
 				:selected.sync="table.selected"
 				dense
 				table-header-class="text-primary"
@@ -40,11 +40,11 @@
 				table-style="max-height:80vh"
 				:rows-per-page-options="[0]"
 				>
-
+<!-- selection="single" -->
 				<template v-slot:top="props">
 					<q-btn-group flat >
-						<q-btn rounded push color="primary" label="validate" :disabled="table.selected.length <1" @click="parentCallback(table.selected)" v-close-popup>
-							<q-tooltip :delay="300" content-class="text-white bg-primary">Validate</q-tooltip>
+						<q-btn no-caps  push color="primary" label="validate" :disabled="table.selected.length <1" @click="parentCallback(table.selected)" v-close-popup>
+							<q-tooltip :delay="300" content-class="text-white bg-primary">Validate the selection</q-tooltip>
 						</q-btn>
 					</q-btn-group>
 
@@ -89,19 +89,20 @@
 import api from '../boot/backend-api';
 
 export default {
-	props: ['parentCallback', 'general', 'projectname', 'robot'],
+	props: ['parentCallback', 'general', 'projectname', 'robot', 'selectiontype', 'singlemultiple', 'preselected'],
 	data(){
 		return {
 			table:{
 				data: [],
 				fields: [
+					// { name: 'selection', label: 'selection', field: 'selection' },
 					{ name: 'picture_url', label: 'Avatar', field: 'picture_url' },
 					{ name: 'name', label: 'Name', field:'username', sortable: true },
-					{ name: 'email', label: 'Mail', field: 'id', sortable: true },
+					{ name: 'email', label: 'Mail or ID', field: 'id', sortable: true },
 					{ name: 'super_admin', label: 'Admin', field: 'super_admin', sortable: true },
 					{ name: 'last_seen', label: 'Last Seen', field: 'last_seen', sortable: true}
 				],
-				visibleColumns: [ 'picture_url', 'name' ],
+				visibleColumns: ['picture_url', 'name', 'email' ],
 				filter: '',
 				selected: [],
 				loading: false,
@@ -113,13 +114,21 @@ export default {
 	mounted(){
 		if(this.$props.general){this.getUsers();}
 		else{ this.getUsersTreeFrom(); }
+		
 	},
 	methods: {
 		filterFields(tableJson) {
 			var tempArray = tableJson.fields.filter(function( obj ) { return obj.field !== 'syntInfo' && obj.field !== 'cat' && obj.field !== 'redistributions' ; });
 			return tempArray;
 		},
-		getUsers(){ api.getUsers().then( response => { this.table.data = response.data; }).catch(error => { this.$store.dispatch("notifyError", {error: error}); }); },
+		getUsers(){ 
+			api.getUsers()
+				.then( response => {
+					this.table.data = response.data; 
+					this.table.selected = this.table.data.filter(u => this.preselected.includes(u.id))
+					})
+				.catch(error => { this.$store.dispatch("notifyError", {error: error}); }); 
+		},
 		getUsersTreeFrom(){ api.getUsersTreeFrom(this.$props.projectname).then( response => { this.table.data = response.data; }).catch(error => { this.$store.dispatch("notifyError", {error: error}); }); }
 	}
 }

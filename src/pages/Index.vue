@@ -157,7 +157,8 @@
       </q-card-section>
     </q-card>
   </div>  <br/><br/><br/>
-  <q-separator  inset /><br/><br/><br/><div class="q-pa-md row q-gutter-lg justify-evenly" >
+  <q-separator  inset /><br/><br/><br/>
+  <div class="q-pa-md row q-gutter-lg justify-evenly" >
     <q-card style=" width: 100%; max-width: 30vw">
       <q-parallax
         src="../statics/svg/arborator.grew.superposed.svg"
@@ -169,7 +170,8 @@
       <q-separator  inset />
       <q-card-section>
         <p>
-          Arborator is a widely used collaborative graphical online dependency treebank annotation tool.          Grew is a tool for graph querying and rewriting specialized in structures needed in NLP, i.e. syntactic and semantic dependency trees and graphs. Grew also has an online version, <a href="http://match.grew.fr/" target="_blank">Grew-match</a>, where all Universal Dependencies treebanks in their classical, deep and surface-syntactic flavors can be queried. Arborator-Grew is a complete redevelopment and modernization of Arborator, replacing its own internal database storage by a new Grew API, which adds a powerful query tool to Arborator's existing treebank creation and correction features. This includes complex access control for parallel expert and crowd-sourced annotation, tree comparison visualization, and various exercise modes for teaching and training of annotators. Arborator-Grew opens up new paths of collectively creating, updating, maintaining, and curating syntactic treebanks and semantic graph banks.       </p>      </q-card-section>    </q-card>
+          Arborator is a widely used collaborative graphical online dependency treebank annotation tool.          Grew is a tool for graph querying and rewriting specialized in structures needed in NLP, i.e. syntactic and semantic dependency trees and graphs. Grew also has an online version, <a href="http://match.grew.fr/" target="_blank">Grew-match</a>, where all Universal Dependencies treebanks in their classical, deep and surface-syntactic flavors can be queried. Arborator-Grew is a complete redevelopment and modernization of Arborator, replacing its own internal database storage by a new Grew API, which adds a powerful query tool to Arborator's existing treebank creation and correction features. This includes complex access control for parallel expert and crowd-sourced annotation, tree comparison visualization, and various exercise modes for teaching and training of annotators. Arborator-Grew opens up new paths of collectively creating, updating, maintaining, and curating syntactic treebanks and semantic graph banks.       </p>      </q-card-section>    
+    </q-card>
     <q-card style=" width: 100%; max-width: 30vw">
       <q-parallax
         src="../statics/images/annie-spratt-_dAnK9GJvdY-unsplash.jpg"
@@ -194,7 +196,9 @@
       pages     = {5293--5302},
     ,
       url       = {https://www.aclweb.org/anthology/2020.lrec-1.651}
-    }      </q-card-section>    </q-card>    <q-card style=" width: 100%; max-width: 30vw" >
+    }      </q-card-section>    
+    </q-card>    
+    <q-card style=" width: 100%; max-width: 30vw" >
       <q-parallax
         src="../statics/images/julie-molliver-Z3vFp7szCAY-unsplash.jpg"
         :height="260"
@@ -204,7 +208,8 @@
       </q-card-section>
       <q-separator  inset />
       <div class="q-gutter-lg">
-      <q-card-section>         <q-card :class="hoverdraft ? 'bg-grey-2' : 'hover'" class="clickable col-1 grid-style-transition shadow-7"
+      <q-card-section>         
+        <q-card :class="hoverdraft ? 'bg-grey-2' : 'hover'" class="clickable col-1 grid-style-transition shadow-7"
             @mouseover="hoverdraft = true"            @mouseleave="hoverdraft = false"            @click="openURL('https://arborator.github.io/draft')"
             :style="hoverdraft ? 'transform: scale(0.95);' : ''"
             >
@@ -237,55 +242,233 @@
             :style="hoverlegacy ? 'transform: scale(0.95);' : 'hover'"
             >
             <q-card-section>
-              The legacy Arborator is still running here            </q-card-section>          </q-card>
+              The legacy Arborator is still running here            
+            </q-card-section>          
+            </q-card>
       </q-card-section>
-       </div>    </q-card>
-<!--    <q-card style=" width: 100%; max-width: 20vw">
-      <q-parallax
-        src="../statics/images/sourcecode.png"
-        :height="260"
-      ></q-parallax>      <q-card-section>
-        <div class="text-h5 text-primary text-bold">Source code and access to this Web page are completely free</div>
-        <div class="text-subtitle2">as in free beer and as in in free speech</div>
+  </div> 
+
+  
+  </q-card>
+
+  
+  </div>
+  <q-separator inset /><br/><br/><br/>
+
+  <q-card class="q-pa-md row q-gutter-lg justify-evenly" flat bordered>
+      <q-card-section horizontal>
+        <q-card-section>
+          <q-card-section class="q-pa-md" style="max-width: 44vw">
+          <q-list>
+            <q-toolbar class="bg-primary text-white shadow-2">
+              <q-toolbar-title>Features</q-toolbar-title>
+              <!-- FeaturesFeaturesFeaturesFeaturesFeaturesFeaturesFeaturesFeaturesFeatures -->
+            </q-toolbar>
+
+            <q-item>
+              <q-item-section>
+                <q-item-label class="text-primary text-bold">Search with Grew in projects or in specific sample</q-item-label>
+                <q-item-label caption lines="2">Maybe allow to choose the samples to search in on the project page?</q-item-label>
+              </q-item-section>
+              <q-item-section side top><q-rating v-model="rating3" size="1em" :max="3" color="primary"/></q-item-section>
+            </q-item>
+            <q-separator spaced inset />
+
+
+            <q-item>
+              <q-item-section>
+                <q-item-label class="text-primary text-bold">Backup on your GitHub folder</q-item-label>
+                <q-item-label caption lines="2">Backup and versioning for users logged in with GitHub</q-item-label>
+                <q-badge color="primary">
+                  Check that the 4 options are working correctly <q-icon name="warning" color="white" class="q-ml-xs" />
+                </q-badge>
+              </q-item-section>
+              <q-item-section side top><q-rating v-model="rating3" size="1em" :max="2" color="primary"/></q-item-section>
+            </q-item>
+            <q-separator spaced inset />
+
+            <q-item>
+              <q-item-section>
+                <q-item-label class="text-primary text-bold">Relation tables for each dependency relation</q-item-label>
+                <q-item-label caption lines="2">showing the quantity of relations for each governor dependent pair</q-item-label>
+                <q-item-label caption >4 choices: all trees, most recent trees, user's tree, user's tree filled up with most recent. Except the user's tree option, only available to admins or open projects</q-item-label>
+                <q-badge color="primary">
+                  Check that the 4 options are working correctly <q-icon name="warning" color="white" class="q-ml-xs" />
+                </q-badge>
+              </q-item-section>
+              <q-item-section side top><q-rating v-model="rating3" size="1em" :max="3" color="primary"/></q-item-section>
+            </q-item>
+            <q-separator spaced inset />
+
+            <q-item>
+              <q-item-section>
+                <q-item-label class="text-primary text-bold">Searches can be saved as sharable link</q-item-label>
+                <q-item-label caption lines="2">no local storage, it's all in the base 64 zipped Grew query</q-item-label>
+              </q-item-section>
+              <q-item-section side top><q-rating v-model="rating3" size="1em" :max="3" color="primary"/></q-item-section>
+            </q-item>
+            <q-separator spaced inset />
+
+             <q-item>
+              <q-item-section>
+                <q-item-label class="text-primary text-bold">Modify tokens of your sentence</q-item-label>
+                <q-item-label caption lines="2">by selecting the token you want to create or edit in the text line above the dependency graph. Annotator agreement measures get complicated by this...</q-item-label>
+              </q-item-section>
+              <q-item-section side top><q-rating v-model="rating3" size="1em" :max="3" color="primary"/></q-item-section>
+            </q-item>
+            <q-separator spaced inset />
+
+            <q-item>
+              <q-item-section>
+                <q-item-label class="text-primary text-bold">SVG image export</q-item-label>
+                <q-item-label caption lines="2">saved with CSS included</q-item-label>
+                <q-badge color="primary">
+                  Use the actual CSS file to include possible user modification<q-icon name="warning" color="white" class="q-ml-xs" />
+                </q-badge>
+              </q-item-section>
+              <q-item-section side top><q-rating v-model="rating2" size="1em" :max="3" color="primary"/></q-item-section>
+            </q-item>
+            <q-separator spaced inset />
+
+
+
+
+
+        
+          </q-list>
       </q-card-section>
-      <q-separator  inset />
-       <q-card-section>
-         Head over to  <a href="https://github.com/Arborator" target="_blank">
-       <q-icon name="fab fa-github"  size="lg" />
-       <q-tooltip content-class="bg-accent" content-style="font-size: 16px" >
-          our GitHub page        </q-tooltip>
-       </a> to have a look and grab the code.<br>
-        Get involved give us feedback on the <a href="https://github.com/Arborator/arborator-frontend/issues">issue page of this Arborator front-end</a>.
-        <br>A guide to install Arborator-Grew on your own server will be provided here...
+        </q-card-section>
+
+        <q-separator vertical />
+
+        <q-card-section>
+          <q-card-section class="q-pa-md" style="max-width: 44vw">
+          <q-list>
+            <q-toolbar class="bg-primary text-white shadow-2">
+              <q-toolbar-title>Todos:</q-toolbar-title>
+              <!-- TODOTODOTOTODOTODOTOTODOTODOTOTODOTODOTOTODOTODOTOTODOTODOTOTODOTODOTO -->
+            </q-toolbar>
+
+            <q-item>
+              <q-item-section>
+                <q-item-label class="text-primary text-bold">Correct configuration saving on Grew and local database</q-item-label>
+                <q-item-label caption lines="2">Some configurations are not saved properly</q-item-label>
+              </q-item-section>
+              <q-item-section side top><q-rating v-model="rating3" size="1em" :max="3" color="red"/></q-item-section>
+            </q-item>
+            <q-separator spaced inset />
+
+             <q-item>
+              <q-item-section>
+                <q-item-label class="text-primary text-bold">Undo!</q-item-label>
+                <q-item-label caption lines="2">redo</q-item-label>
+              </q-item-section>
+              <q-item-section side top><q-rating v-model="rating3" size="1em" :max="3" color="red"/></q-item-section>
+            </q-item>
+            <q-separator spaced inset />
+
+            <q-item>
+              <q-item-section>
+                <q-item-label class="text-primary text-bold">Teaching mode</q-item-label>
+                <q-item-label caption lines="2">Redevelop exercice modes and sample distribution</q-item-label>
+              </q-item-section>
+              <q-item-section side top><q-rating v-model="rating3" size="1em" :max="3" color="red"/></q-item-section>
+            </q-item>
+            <q-separator spaced inset />
+
+
+            <q-item>
+              <q-item-section>
+                <q-item-label class="text-primary text-bold">Screen cast for presentation and training</q-item-label>
+                <!-- <q-item-label caption lines="2">showing the quantity of relations for each governor dependent pair</q-item-label> -->
+                <q-item-label caption >Different versions for administors and annotators (+ guide for installing on a server)</q-item-label>
+                
+              </q-item-section>
+              <q-item-section side top><q-rating v-model="rating2" size="1em" :max="3" color="red"/></q-item-section>
+            </q-item>
+            <q-separator spaced inset />
+
+
+            <q-item>
+              <q-item-section>
+                <q-item-label class="text-primary text-bold">Direct clone from GitHub folder containing CoNLL files</q-item-label>
+                <!-- <q-item-label caption lines="2">showing the quantity of relations for each governor dependent pair</q-item-label> -->
+                <q-item-label caption ></q-item-label>
+                
+              </q-item-section>
+              <q-item-section side top><q-rating v-model="rating2" size="1em" :max="3" color="red"/></q-item-section>
+            </q-item>
+            <q-separator spaced inset />
+
+            <q-item>
+              <q-item-section>
+                <q-item-label class="text-primary text-bold">Human readable user name</q-item-label>
+                <q-item-label caption lines="2">mail for google, login for GitHub users</q-item-label>
+                <q-item-label caption ></q-item-label>
+                
+              </q-item-section>
+              <q-item-section side top><q-rating v-model="rating2" size="1em" :max="3" color="red"/></q-item-section>
+            </q-item>
+            <q-separator spaced inset />
+
+             <q-item>
+              <q-item-section>
+                <q-item-label class="text-primary text-bold">After login return to present page</q-item-label>
+                <q-item-label caption lines="2">not to home page</q-item-label>
+                <q-item-label caption ></q-item-label>
+                
+              </q-item-section>
+              <q-item-section side top><q-rating v-model="rating1" size="1em" :max="3" color="red"/></q-item-section>
+            </q-item>
+            <q-separator spaced inset />
+
+             <q-item>
+              <q-item-section>
+                <q-item-label class="text-primary text-bold">Get rid of # in URL</q-item-label>
+                <q-item-label caption lines="2"></q-item-label>
+                <q-item-label caption ></q-item-label>
+                
+              </q-item-section>
+              <q-item-section side top><q-rating v-model="rating1" size="1em" :max="3" color="red"/></q-item-section>
+            </q-item>
+            <q-separator spaced inset />
+        
+          </q-list>
+        </q-card-section>
+        </q-card-section>
       </q-card-section>
-    </q-card> -->
-  </div><!--    <q-page-sticky position="bottom-right" :offset="[18, 18]">    </q-page-sticky> -->
-  </q-page>
-</template><style scoped lang="stylus">
-.clickable:hoverquick {
-  cursor:pointer;
-}
-.clickable:hoverdraft {
-  cursor:pointer;
-}.clickable:hoverlegacy {
-  cursor:pointer;
-}.grid-style-transition
-  transition transform .28s, background-color .28s
-.btn:focus {
-  outline: none;
-  box-shadow: none;
-}
-.btn {
-  outline: none;
-  box-shadow: none;
-}
-</style><script>
-import { openURL } from 'quasar';
+    </q-card>
+
+
+
+</q-page>
+</template>
+<style scoped lang="stylus">
+  .clickable:hoverquick {
+    cursor:pointer;
+  }
+  .clickable:hoverdraft {
+    cursor:pointer;
+  }.clickable:hoverlegacy {
+    cursor:pointer;
+  }.grid-style-transition
+    transition transform .28s, background-color .28s
+  .btn:focus {
+    outline: none;
+    box-shadow: none;
+  }
+  .btn {
+    outline: none;
+    box-shadow: none;
+  }
+</style>
+<script>
+import { openURL, QRating } from 'quasar';
 import api from '../boot/backend-api';
 import Store from '../store/index';
 import ProjectCard from '../components/ProjectCard.vue';export default {
   components: {
-    ProjectCard
+    ProjectCard, QRating
   },
   name: 'PageIndex',
   data() {
@@ -300,7 +483,8 @@ import ProjectCard from '../components/ProjectCard.vue';export default {
       search: '',
       slide: 'style',
       animatex:0,
-      step:20,      size:80,      blade:null
+      step:20,      size:80,      blade:null,
+      rating0: 0, rating1: 1, rating2: 2, rating3: 3,
     }
   },
   mounted(){    this.blade=document.getElementById("path15");

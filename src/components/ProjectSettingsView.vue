@@ -63,160 +63,110 @@
 					</q-item>
 				</q-list>
 			</q-card>
-			<q-card class="col col-xs-12">
-				<q-card-section>
-					<div class="text-h6 text-center">Default User Tree <q-btn v-show="admin" flat round icon="add" :color="$q.dark.isActive?'purple-12':'primary'" @click="addDefaultUserTreeDial = true"></q-btn></div>
-				</q-card-section>
-				<q-card-section >
-					<q-list bordered separator class="list-size">
-						<q-item v-for="dut in infos.default_user_trees" :key="dut.id" clickable v-ripple >
-							<q-item-section>{{dut.username}}</q-item-section>
-							<q-item-section side><q-btn v-show="admin" dense round flat icon="remove" :color="$q.dark.isActive?'red-13':'negative'" @click="triggerConfirm(removeDefaultUserTree, dut.id)" ></q-btn></q-item-section>
-						</q-item>
-					</q-list>
-				</q-card-section>
-			</q-card>
 		</q-card-section>
-		<q-card-section class="row items-start q-gutter-md">
-			<q-card class="col col-xs-12">
-				<q-card-section>
-					<div class="text-h6 text-center">Admins <q-btn v-show="admin" flat round icon="add" :color="$q.dark.isActive?'purple-12':'primary'" @click="addAdminDial = true"></q-btn></div>
-				</q-card-section>
-				<q-card-section>
-					<q-list bordered separator class="list-size">
-						<q-item v-for="admin in infos.admins" :key="admin" clickable v-ripple >
-							<q-item-section>{{admin}}</q-item-section>
-							<q-item-section side><q-btn v-show="admin" dense round flat icon="remove" :color="$q.dark.isActive?'red-13':'negative'" @click="triggerConfirm(removeAdmin, admin)"></q-btn></q-item-section>
-						</q-item>
-					</q-list>
-				</q-card-section>
-			</q-card>
-			<q-card class="col col-xs-12">
-				<q-card-section>
-					<div class="text-h6 text-center">Guests <q-btn v-show="admin" flat round icon="add" :color="$q.dark.isActive?'purple-12':'primary'" @click="addGuestDial = true"></q-btn></div>
-				</q-card-section>
-				<q-card-section >
-					<q-list bordered separator class="list-size">
-						<q-item v-for="guest in infos.guests" :key="guest" clickable v-ripple >
-							<q-item-section>{{guest}}</q-item-section>
-							<q-item-section side><q-btn v-show="admin" dense round flat icon="remove" :color="$q.dark.isActive?'red-13':'negative'" @click="triggerConfirm(removeGuest, guest)"></q-btn></q-item-section>
-						</q-item>
-					</q-list>
-				</q-card-section>
-			</q-card>
-		</q-card-section>
-		<q-card-section class="q-pa-sm row items-start q-gutter-md">
-			<q-card class="full-width">
-				<q-card-section><div class="text-h6 text-center">Relations SubLabels (to form a deprel)</div></q-card-section>
-				<q-card-section>
-					<q-expansion-item expand-separator icon="edit" label="Advanced Insertion" caption="Manually insert a batch of deprel using a text format">
-						<q-btn icon="save" :color="$q.dark.isActive?'purple-12':'primary'" class="full-width" flat label="save textual values" @click="triggerConfirm(saveTextLabels)" ></q-btn>
-	  					<codemirror v-model="txtLabels" :options="cmOption"></codemirror>
-					</q-expansion-item>
-				</q-card-section>
-				<q-card-section class="row q-gutter-md q-pa-sm">
-					<div class="col-md-4 col-xs-12 col-sm-12" v-for="(listrel, index) in infos.labels" :key="index">
-						<q-btn-group spread flat>
-							<q-btn flat square icon="add" :color="$q.dark.isActive?'purple-12':'primary'" @click="addLabelDial = true; stockid = listrel.id;">Label</q-btn>
-							<q-btn flat square icon="remove" :color="$q.dark.isActive?'red-13':'negative'"  @click="triggerConfirm(removeLabelColumn, listrel.id)" >Column</q-btn>
-						</q-btn-group>
-						<q-virtual-scroll  style="max-height: 150px;" :virtual-scroll-slice-size="5" :virtual-scroll-item-size="10" :items="listrel.labels" bordered separator>
-							<template v-slot="{ item, index }">
-							<q-item	:key="index" dense>
-								<q-item-section>
-								<q-item-label>
-									<q-chip dense>
-										<q-avatar color="secondary" text-color="white">{{index}}</q-avatar>
-										{{item.value}}
-									</q-chip>
-								</q-item-label>
-								</q-item-section>
-								<q-item-section side><q-btn v-show="admin" dense round flat icon="remove" :color="$q.dark.isActive?'red-13':'negative'" @click="triggerConfirm(removeLabel, item)"></q-btn></q-item-section>
+		<q-card-section class="full row justify-between q-gutter-md">
+<!-- q-pa-sm row items-start q-gutter-md -->
+			<!-- <div class="fit row  justify-between"> -->
+				<q-card class="col ">
+					<q-card-section>
+						<div class="text-h6 text-center">Default User Tree <q-btn v-show="admin" flat round icon="add" :color="$q.dark.isActive?'purple-12':'primary'" @click="addDefaultUserTreeDial = true"></q-btn></div>
+					</q-card-section>
+					<q-card-section >
+						<q-list bordered separator class="list-size">
+							<q-item v-for="dut in infos.default_user_trees" :key="dut.id" clickable v-ripple >
+								<q-item-section>{{dut.username}}</q-item-section>
+								<q-item-section side><q-btn v-show="admin" dense round flat icon="remove" :color="$q.dark.isActive?'red-13':'negative'" @click="triggerConfirm(removeDefaultUserTree, dut.id)" ></q-btn></q-item-section>
+							</q-item>
+						</q-list>
+					</q-card-section>
+				</q-card>
+			
+			<!-- <q-card-section class="row items-start q-gutter-md"> -->
+				<q-card class="col">
+					<q-card-section>
+						<div class="text-h6 text-center">Admins <q-btn v-show="admin" flat round icon="add" :color="$q.dark.isActive?'purple-12':'primary'" @click="addAdminDial = true"></q-btn></div>
+					</q-card-section>
+					<q-card-section>
+						<q-list bordered separator class="list-size">
+							<q-item v-for="admin in infos.admins" :key="admin" clickable v-ripple >
+								<q-item-section>{{admin}}</q-item-section>
+								<q-item-section side><q-btn v-show="admin" dense round flat icon="remove" :color="$q.dark.isActive?'red-13':'negative'" @click="triggerConfirm(removeAdmin, admin)"></q-btn></q-item-section>
+							</q-item>
+						</q-list>
+					</q-card-section>
+				</q-card>
+				<q-card class="col ">
+					<q-card-section>
+						<div class="text-h6 text-center">Guests <q-btn v-show="admin" flat round icon="add" :color="$q.dark.isActive?'purple-12':'primary'" @click="addGuestDial = true"></q-btn></div>
+					</q-card-section>
+					<q-card-section >
+						<q-list bordered separator class="list-size">
+							<q-item v-for="guest in infos.guests" :key="guest" clickable v-ripple >
+								<q-item-section>{{guest}}</q-item-section>
+								<q-item-section side><q-btn v-show="admin" dense round flat icon="remove" :color="$q.dark.isActive?'red-13':'negative'" @click="triggerConfirm(removeGuest, guest)"></q-btn></q-item-section>
+							</q-item>
+						</q-list>
+					</q-card-section>
+				</q-card>
 
-							</q-item>
-							</template>
-						</q-virtual-scroll>
-					</div>
-					<div class="col-md-4 col-xs-12 col-sm-12">
-						<q-btn flat :color="$q.dark.isActive?'purple-12':'primary'" icon="add" label="" class="full-width full-height" @click="addLabelColumn()"></q-btn>
-					</div>
-				</q-card-section>
-			</q-card>
-		</q-card-section>
-		<q-card-section class="q-pa-md row items-start ">
-			<q-card class="full-width">
-				<q-card-section><div class="text-h6 text-center">Categories (POS tags)</div></q-card-section>
+				<q-card class="col ">
+					<q-card-section>
+						<div class="text-h6 text-center">Shown Features</div>
+					</q-card-section>
+					<q-card-section >
+						<q-select
+							filled
+							v-model="shownfeatures"
+							multiple
+							:options="shownfeatureschoices"
+							use-chips
+							stack-label
+							label="Choose the features to be shown under each token"
+							@input="saveannofshown"
+							/>
+					</q-card-section>
+					<q-card-section >
+						<q-select
+							filled
+							v-model="shownmeta"
+							multiple
+							:options="shownmetachoices"
+							use-chips
+							stack-label
+							label="Choose the features to be shown under each sentence"
+							@input="savemetashown"
+							/>
+					</q-card-section>
+				</q-card>
+
+				
+			
+			</q-card-section>
+		<!-- </div> -->
+		<q-card-section class="q-pa-sm row items-start q-gutter-md">
+			<q-card class="col col-sm-12">
+				<q-card-section><div class="text-h6 text-center">Annotation settings</div></q-card-section>
 				<q-card-section>
-					<q-expansion-item expand-separator icon="edit" label="Advanced Insertion" caption="Manually insert a batch of tags using a text format">
-						<q-btn icon="save" :color="$q.dark.isActive?'purple-12':'primary'" class="full-width" flat label="save textual values" @click="triggerConfirm(saveTextCats)"></q-btn>
-	  					<codemirror v-model="txtCats" :options="cmOption"></codemirror>
-					</q-expansion-item>
+					<codemirror 
+						v-model="annofjson" 
+						:options="cmOption"
+						@input="checkAnnotationFeatures"
+					></codemirror>
 				</q-card-section>
-				<q-card-section class="row q-gutter-md q-pa-md">
-					<div class="col">
-						<q-btn flat square icon="add" :color="$q.dark.isActive?'purple-12':'primary'" class="full-width" @click="addCatDial = true">Cat</q-btn>
-						<q-virtual-scroll  style="max-height: 150px;" :virtual-scroll-slice-size="5" :virtual-scroll-item-size="10" :items="infos.cats" bordered separator>
-							<template v-slot="{ item, index }">
-							<q-item	:key="index" dense>
-								<q-item-section>
-								<q-item-label>
-									<q-chip dense>
-										<q-avatar color="secondary" text-color="white">{{index}}</q-avatar>
-										{{item}}
-									</q-chip>
-								</q-item-label>
-								</q-item-section>
-								<q-item-section side><q-btn v-show="admin" dense round flat icon="remove" :color="$q.dark.isActive?'red-13':'negative'" @click="triggerConfirm(removeCat, item)"></q-btn></q-item-section>
-							</q-item>
-							</template>
-						</q-virtual-scroll>
-					</div>
-				</q-card-section>
+				<q-btn color="bg-primary" text-color="primary" @click="saveAnnotationSettings()" label="save annotation settings" icon="save" dense flat :disabled="!annofok" no-caps></q-btn>
+				<q-chip   text-color="primary" :icon="annofok?'sentiment_satisfied_alt':'sentiment_very_dissatisfied'">
+					{{annofcomment}}
+				</q-chip>
 			</q-card>
+				
+			
 		</q-card-section>
-		<!-- <q-card-section>
-			<codemirror v-model="config" :options="cmOption"></codemirror>
-		</q-card-section> -->
-		<q-dialog v-model="addAdminDial" transition-show="fade" transition-hide="fade">  <user-select-table :parentCallback="addAdmin" :general="true"></user-select-table>   </q-dialog>
-		<q-dialog v-model="addGuestDial" transition-show="fade" transition-hide="fade">  <user-select-table :parentCallback="addGuest" :general="true"></user-select-table>   </q-dialog>
-		<q-dialog v-model="addDefaultUserTreeDial" transition-show="fade" transition-hide="fade">  <user-select-table :parentCallback="addDefaultUserTree" :general="false" :projectname="$props.projectname"></user-select-table>   </q-dialog>
-		<q-dialog v-model="confirmActionDial"> <confirm-action :parentAction="confirmActionCallback" :arg1="confirmActionArg1"></confirm-action> </q-dialog>
-		<q-dialog v-model="addCatDial">
-			<q-card>
-				<q-bar class="bg-primary text-white">
-					<q-space />
-					<div class="text-weight-bold">Add a Category</div>
-					<q-space />
-					<q-btn flat dense icon="close" v-close-popup/>
-				</q-bar>
-				<q-card-section > 
-					<q-form @submit="addCat" @reset="resetCat">
-						<q-input v-model="entryCat" label="Cat (Part-of-Speech)" counter dense></q-input>
-						<q-btn rounded flat label="Reset" type="reset" />
-						<q-btn color="primary" icon="add" label="Add" type="submit" v-close-popup/>
-					</q-form>
-				</q-card-section>
-			</q-card>
-		</q-dialog>
-		<q-dialog v-model="addLabelDial">
-			<q-card>
-				<q-bar class="bg-primary text-white">
-					<q-space />
-					<div class="text-weight-bold">Add a Label</div>
-					<q-space />
-					<q-btn flat dense icon="close" v-close-popup/>
-				</q-bar>
-				<q-card-section > 
-					<q-form @submit="addLabel" @reset="resetLabel">
-						<q-input v-model="entryLabel" label="Label Part (for deprel)" counter dense></q-input>
-						<q-btn rounded flat label="Reset" type="reset" />
-						<q-btn color="primary" icon="add" label="Add" type="submit" v-close-popup/>
-					</q-form>
-				</q-card-section>
-			</q-card>
-		</q-dialog>
+
+
 	</q-card>
 </template>
+
+
 
 <script>
 import { codemirror } from 'vue-codemirror';
@@ -227,6 +177,8 @@ import api from '../boot/backend-api.js';
 import UserSelectTable from '../components/UserSelectTable.vue';
 import ConfirmAction from '../components/ConfirmAction.vue';
 
+
+
 export default {
 	name: 'project-settings-view',
 	components: { codemirror, UserSelectTable, ConfirmAction },
@@ -235,8 +187,8 @@ export default {
 		return{
 			addAdminDial: false,
 			addGuestDial: false,
-			addLabelDial: false,
-			addCatDial: false,
+			// addLabelDial: false,
+			// addCatDial: false,
 			addDefaultUserTreeDial: false,
 			confirmActionDial: false,
 			confirmActionCallback: null,
@@ -246,6 +198,15 @@ export default {
 			stockid: '',
 			uploadImage: {image: null, submitting: false},
 			infos: {admins:[], guests:[], labels:[], cats:[], description: ''},
+			projectconfig: {},
+			annotationFeatures: {},
+			annofjson: '',
+			annofok: true,
+			annofcomment: '',
+			shownfeatures:[],
+			shownfeatureschoices:[],
+			shownmeta: [],
+			shownmetachoices: [],
 			txtCats: `# please drop your categories here in a comma separated format. For instance:
 VER,DET,NOMcom`,
 			txtLabels: `# please drop your labels here in a comma separated format with one column per line. For instance:
@@ -253,13 +214,13 @@ subj,comp,vocative
 :aux,:caus,:cleft`,
 			config: ``,
 			cmOption: {
-                tabSize: 4,
+                tabSize: 8,
                 styleActiveLine: true,
                 lineNumbers: true,
                 lineWrapping: true,
                 line: true,
                 mode: 'python',
-                theme: 'material-darker'
+                theme: 'default'
 			}
 		}
 	},
@@ -283,26 +244,78 @@ subj,comp,vocative
 		admin(){ return this.infos.admins.includes(this.$store.getters.getUserInfos.id) || this.$store.getters.getUserInfos.super_admin; }   
     },
 	methods:{
-		getProjectInfos(){ api.getProjectSettings(this.$props.projectname).then(response => {
-			console.log(response.data); 
-			this.infos = response.data; }).catch(error => {
-				this.$store.dispatch("notifyError", {error: error}); 
-				this.$q.notify({message: `${error}`, color:'negative', position: 'bottom'});}) },
+		getProjectInfos(){ 
+			api.getProjectSettings(this.$props.projectname)
+			.then(response => {
+				this.infos = response.data; 
+				this.annotationFeatures = this.$store.getters.getProjectConfig.annotationFeatures;
+				this.shownfeatures = this.$store.getters.getProjectConfig.shownfeatures;
+				// console.log(this.annotationFeatures)
+				this.shownfeatureschoices = ['FORM','UPOS','LEMMA'].concat(this.annotationFeatures.FEATS.map(({ name }) => 'FEATS.'+name).concat(this.annotationFeatures.MISC.map(({ name }) => 'MISC.'+name)))
+				// this.$store.getters.getProjectConfig.shownfeatures;
+				this.shownmeta = this.$store.getters.getProjectConfig.shownmeta;
+				this.shownmetachoices = this.annotationFeatures.META;
+				this.annofjson = JSON.stringify(this.annotationFeatures, null, 4);
+				})
+			.catch(error => {
+					this.$store.dispatch("notifyError", {error: error}); 
+					this.$q.notify({message: `${error}`, color:'negative', position: 'bottom'});}) 
+		},
+		checkAnnotationFeatures(){
+			try {
+					JSON.parse(this.annofjson);
+					this.annofok=true;
+					this.annofcomment="This looks like reasonable Json"
+			} catch (e) {
+				this.annofok=false;
+				this.annofcomment=e
+            }
+			
+		},
+		saveannofshown(){
+			console.log('shownfeatures',this.shownfeatures)
+			var config = this.$store.getters.getProjectConfig;
+			console.log(111,config)
+			config.shownfeatures = this.shownfeatures;
+			this.$store.commit('set_project_config', config);
+			console.log(222, this.$props.projectname, config)
+			
+
+			api.updateProjectSettings(this.$props.projectname, config)
+			.then(response => {
+				console.log(66565,response.data)
+				
+				})
+			.catch(error => {
+					this.$store.dispatch("notifyError", {error: error}); 
+					this.$q.notify({message: `${error}`, color:'negative', position: 'bottom'});}) 
+		},
+		
+     
+			
+		savemetashown(){
+			console.log('todo savemetashown')
+		},
+		saveAnnotationSettings(){
+			console.log('todo: here the project annotation settings should be saved');
+			// this.annotationFeatures = JSON.parse(this.annofjson);
+			// this.$store.commit('set_project_config', {annotationFeatures:this.annotationFeatures}) // todo: check this!!!
+		},
 
 
-
-		addAdmin(selected){ api.setProjectUserRole(this.$props.projectname, 'admin', selected[0].id).then(response => {this.$q.notify({message:`Change saved!`}); this.infos = response.data}).catch(error => {this.$store.dispatch("notifyError", {error: error})});  },
+		addAdmin(selected){ 
+			api.setProjectUserRole(this.$props.projectname, 'admin', selected[0].id).then(response => {this.$q.notify({message:`Change saved!`}); this.infos = response.data}).catch(error => {this.$store.dispatch("notifyError", {error: error})});  },
 		removeAdmin(userid){ api.removeProjectUserRole(this.$props.projectname, 'admin', userid).then( response => {this.$q.notify({message:`Change saved!`}); this.infos = response.data;} ).catch(error => {this.$store.dispatch("notifyError", {error: error})});  },
 		addGuest(selected){ api.setProjectUserRole(this.$props.projectname, 'guest', selected[0].id).then(response=> {this.$q.notify({message:`Change saved!`});this.infos = response.data;}).catch(error => {this.$store.dispatch("notifyError", {error: error})});  },
 		removeGuest(userid){ api.removeProjectUserRole(this.$props.projectname, 'guest', userid).then( response => {this.$q.notify({message:`Change saved!`}); this.infos = response.data;} ).catch(error => {this.$store.dispatch("notifyError", {error: error})});  },
-		addLabel(){  api.addProjectStockLabel(this.$props.projectname, this.stockid, this.entryLabel).then(response => {this.$q.notify({message:`Change saved!`}); this.infos.labels = response.data; this.entryLabel='';}).catch(error => { this.$store.dispatch("notifyError", {error: error}); })  },
-		removeLabel(item){ api.removeProjectStockLabel(this.$props.projectname, item.id, item.stock_id, item.value).then(response => {this.$q.notify({message:`Change saved!`}); this.infos.labels = response.data; }).catch(error => { this.$store.dispatch("notifyError", {error: error}); })  },
-		resetLabel(){ this.entryLabel = ''; },
-		addLabelColumn(){ api.addProjectStock(this.$props.projectname).then(response => {this.$q.notify({message:`Change saved!`}); this.infos.labels = response.data; }).catch(error => { this.$store.dispatch("notifyError", {error: error}); })  },
-		removeLabelColumn(stockid){ api.removeProjectStock(this.$props.projectname, stockid).then(response => {this.$q.notify({message:`Change saved!`}); this.infos.labels = response.data; }).catch(error => { this.$store.dispatch("notifyError", {error: error}); })  },
-		addCat(){ api.addProjectCatLabel(this.$props.projectname, this.entryCat).then(response => {this.$q.notify({message:`Change saved!`}); this.infos.cats = response.data; this.entryCat = '';}).catch(error => { this.$store.dispatch("notifyError", {error: error}); }) },
-		removeCat(cat){ api.removeProjectCatLabel(this.$props.projectname, cat).then(response => {this.$q.notify({message:`Change saved!`}); this.infos.cats = response.data; }).catch(error => { this.$store.dispatch("notifyError", {error: error}); })},
-		resetCat(){ this.entryCat = ''; },
+		// addLabel(){  api.addProjectStockLabel(this.$props.projectname, this.stockid, this.entryLabel).then(response => {this.$q.notify({message:`Change saved!`}); this.infos.labels = response.data; this.entryLabel='';}).catch(error => { this.$store.dispatch("notifyError", {error: error}); })  },
+		// removeLabel(item){ api.removeProjectStockLabel(this.$props.projectname, item.id, item.stock_id, item.value).then(response => {this.$q.notify({message:`Change saved!`}); this.infos.labels = response.data; }).catch(error => { this.$store.dispatch("notifyError", {error: error}); })  },
+		// resetLabel(){ this.entryLabel = ''; },
+		// addLabelColumn(){ api.addProjectStock(this.$props.projectname).then(response => {this.$q.notify({message:`Change saved!`}); this.infos.labels = response.data; }).catch(error => { this.$store.dispatch("notifyError", {error: error}); })  },
+		// removeLabelColumn(stockid){ api.removeProjectStock(this.$props.projectname, stockid).then(response => {this.$q.notify({message:`Change saved!`}); this.infos.labels = response.data; }).catch(error => { this.$store.dispatch("notifyError", {error: error}); })  },
+		// addCat(){ api.addProjectCatLabel(this.$props.projectname, this.entryCat).then(response => {this.$q.notify({message:`Change saved!`}); this.infos.cats = response.data; this.entryCat = '';}).catch(error => { this.$store.dispatch("notifyError", {error: error}); }) },
+		// removeCat(cat){ api.removeProjectCatLabel(this.$props.projectname, cat).then(response => {this.$q.notify({message:`Change saved!`}); this.infos.cats = response.data; }).catch(error => { this.$store.dispatch("notifyError", {error: error}); })},
+		// resetCat(){ this.entryCat = ''; },
 
 		addDefaultUserTree(selected){ api.addDefaultUserTree(this.$props.projectname, selected[0]).then(response => {this.$q.notify({message:`Change saved!`}); this.infos = response.data;}).catch(error => {this.$store.dispatch("notifyError", {error: error})});  },
 		removeDefaultUserTree(dutid){ api.removeDefaultUserTree(this.$props.projectname, dutid).then( response => {this.$q.notify({message:`Change saved!`}); this.infos = response.data;} ).catch(error => {this.$store.dispatch("notifyError", {error: error})});  },
@@ -325,12 +338,12 @@ subj,comp,vocative
 		},
 
 
-		saveTextCats(){ 
-			api.saveTxtCats(this.$props.projectname, this.txtCats).then(response => { this.$q.notify({message:`Change saved!`}); this.infos.cats = response.data;}).catch(error => { this.$store.dispatch("notifyError", {error: error}); }); 
-		},
-		saveTextLabels(){ 
-			api.saveTxtLabels(this.$props.projectname, this.txtLabels).then(response => { console.log(JSON.stringify(response.data)); this.$q.notify({message:`Change saved!`}); this.infos.labels = response.data;}).catch(error => { this.$store.dispatch("notifyError", {error: error}); }); 
-		},
+		// saveTextCats(){ 
+		// 	api.saveTxtCats(this.$props.projectname, this.txtCats).then(response => { this.$q.notify({message:`Change saved!`}); this.infos.cats = response.data;}).catch(error => { this.$store.dispatch("notifyError", {error: error}); }); 
+		// },
+		// saveTextLabels(){ 
+		// 	api.saveTxtLabels(this.$props.projectname, this.txtLabels).then(response => { console.log(JSON.stringify(response.data)); this.$q.notify({message:`Change saved!`}); this.infos.labels = response.data;}).catch(error => { this.$store.dispatch("notifyError", {error: error}); }); 
+		// },
 
 		triggerConfirm(method, arg){
 			this.confirmActionDial = true;

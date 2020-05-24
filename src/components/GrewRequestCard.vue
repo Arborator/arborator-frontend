@@ -29,7 +29,7 @@
                     </div>
 
                     <div class="row">
-                        <div class="full-width row  justify-start  ">
+                        <div class="full-width row justify-start  ">
 
                             <q-btn color="primary" type="submit" label="Search" no-caps />
                             <q-space/>
@@ -181,17 +181,18 @@ pattern { N [form="Form_to_search"] }`,
         onResetSearch(){ this.searchPattern = ''; },
         getgrewlink(){
                 var z = this.zip(this.searchPattern)
-                this.grewlink = window.location.href.split('?')[0]+'?q='+z;
+                this.grewlink = window.location.href.split('/projects/'+this.$route.params.projectname)[0]+'/projects/'+this.$route.params.projectname+(this.$route.params.samplename ? '/'+this.$route.params.samplename : '')+'?q='+z;
                 setTimeout(()=>{this.$refs.grewlinkinput.select();document.execCommand('copy') }, 500)
         },
         checkgrewquery(){
             if (this.grewquery.length>0) {
-                
-                var customquery = this.unzip(this.grewquery)
-                this.queries = this.queries.filter(c => c.name != "custom query");
-                this.queries.unshift({"name":"custom query", "pattern":customquery})
-                this.changeSearchPattern(customquery);
-                this.onSearch();
+                if (this.queries.filter(c => c.name == "custom query").length==0)
+                {
+                    var customquery = this.unzip(this.grewquery);
+                    this.queries.unshift({"name":"custom query", "pattern":customquery});
+                    this.changeSearchPattern(customquery);
+                    this.onSearch(); // autostart the query?
+                }
             }
         },
         // Apply LZW-compression to a string and return base64 compressed string.

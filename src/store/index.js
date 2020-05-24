@@ -113,13 +113,15 @@ export default new Vuex.Store({
             state.lastGrewQuery = payload;
         },
         set_project_config(state, payload){
-            state.projectConfig.cats = payload.cats;
-            state.projectConfig.labels = payload.labels;
-            state.projectConfig.is_open = payload.is_open;
-            state.projectConfig.show_all_trees = payload.show_all_trees;
 
-            console.log(1234444444, '// todo as soon as api gets the information');
-            // , payload, !("annotationFeatures" in payload)) 
+            // state.projectConfig = payload // bad idea as it erases all local information better:
+            state.projectConfig = Object.assign(state.projectConfig, payload)
+            // state.projectConfig.cats = payload.cats;
+            // state.projectConfig.labels = payload.labels;
+            // state.projectConfig.is_open = payload.is_open;
+            // state.projectConfig.show_all_trees = payload.show_all_trees;
+
+            console.log(1234444444, '// todo save on grew, as soon as api accepts the information', payload);
         }
     },
     actions: {

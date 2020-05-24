@@ -3,7 +3,7 @@
         <q-bar class="bg-primary text-white">
             <q-icon name="img:../statics/svg/grew.svg" size="7rem" />
             <q-space />
-            <div class="text-weight-bold">{{sentenceCount}} results (of the {{totalsents}} sentences in the {{searchscope}})</div>
+            <div class="text-weight-bold">{{sentenceCount}} <span v-if="sentenceCount==1">result</span><span v-else>results</span> (of the {{totalsents}} <span v-if="totalsents==1">sentence</span><span v-else>sentences</span> in the {{searchscope}})</div>
             <q-space />
             <q-btn flat dense icon="close" v-close-popup/>
         </q-bar>
@@ -15,10 +15,9 @@
         </q-bar> -->
         <q-card-section > 
             <div v-show="!loading" class="q-pa-md row q-gutter-md">
-                <!-- <q-badge color="secondary">{{sentenceCount}} sentences found</q-badge> -->
                 <q-virtual-scroll :items="this.samplesFrozen.list" style="height: 80vh; width:90vw" :virtual-scroll-slice-size="5" :virtual-scroll-item-size="200">
                 <template v-slot="{ item, index }">
-                <sentence-card :key="index" :id="item" :sample="searchresults[item]" :index="index" :sentenceId="item" ></sentence-card>
+                <sentence-card :key="index" :id="item" :sample="searchresults[item]" :index="index" :sentenceId="item"  searchResult='searchResult'></sentence-card>
                 </template>
                 </q-virtual-scroll>
             </div>

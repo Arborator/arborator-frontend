@@ -93,19 +93,42 @@
                                     <q-btn-dropdown v-if="loggedWithGithub" :disable="table.selected.length<1" icon="ion-md-git-commit"  flat dense> <q-tooltip>Commit and push the selected samples to GitHub</q-tooltip>
                                         <q-list>
                                         <q-item clickable v-close-popup @click="commit('user')">
-                                        <q-item-section>
-                                            <q-item-label>Push only my trees of the selected samples</q-item-label>
-                                        </q-item-section>
+                                            <q-item-section avatar>
+                                                <q-avatar v-if="isLoggedIn" size="1.2rem"><img :src="avatar"></q-avatar>
+                                                <q-icon v-else name="account_circle" /> 
+                                            </q-item-section>
+                                            <q-item-section>
+                                                <q-item-label>Push only my trees of the selected samples</q-item-label>
+                                            </q-item-section>
                                         </q-item>
 
                                         <q-item clickable v-close-popup @click="commit('user_recent')">
-                                        <q-item-section>
-                                            <q-item-label>Push my trees of the selected samples, filled up with the most recent trees</q-item-label>
-                                        </q-item-section>
+                                            <q-item-section avatar>
+                                                <q-avatar v-if="isLoggedIn" size="1.2rem">
+                                                    <img :src="avatar">
+                                                    <q-badge floating transparent color="principal">+</q-badge>
+                                                </q-avatar>
+                                                <q-icon v-else name="account_circle" /><div></div> 
+                                                
+                                            </q-item-section>
+                                            <q-item-section>
+                                                <q-item-label>Push my trees of the selected samples, filled up with the most recent trees</q-item-label>
+                                            </q-item-section>
+                                        </q-item>
+
+                                        <q-item v-if="admin || super_admin" clickable v-close-popup @click="commit('recent')">
+                                            <q-item-section avatar>
+                                                <q-icon name="schedule" />
+                                            </q-item-section>
+                                            <q-item-section>
+                                                <q-item-label>Push the most recent trees</q-item-label>
+                                            </q-item-section>
                                         </q-item>
 
                                         <q-item v-if="admin || super_admin" clickable v-close-popup @click="commit('all')">
-                                        <q-item-section>
+                                            <q-item-section avatar>
+                                                <q-icon name="ion-md-globe" />
+                                            </q-item-section>                                        <q-item-section>
                                             <q-item-label>Push all trees of the selected samples</q-item-label>
                                         </q-item-section>
                                         </q-item>
@@ -116,21 +139,31 @@
                                     <q-btn-dropdown v-if="loggedWithGithub" :disable="false" icon="ion-md-git-pull-request"  flat dense> <q-tooltip>Pull from GitHub</q-tooltip>
                                         <q-list>
                                         <q-item clickable v-close-popup @click="pullSample()" :disable="table.selected.length<1" >
-                                        <q-item-section>
-                                            <q-item-label>Replace my trees from the selected samples with the ones from GitHub</q-item-label>
-                                        </q-item-section>
+                                            <q-item-section avatar>
+                                                <q-avatar v-if="isLoggedIn" size="1.2rem"><img :src="avatar"></q-avatar>
+                                                <q-icon v-else name="account_circle" /> 
+                                            </q-item-section>
+                                            <q-item-section>
+                                                <q-item-label>Replace my trees from the selected samples with the ones from GitHub</q-item-label>
+                                            </q-item-section>
                                         </q-item>
 
                                         <q-item v-if="admin || super_admin" clickable v-close-popup @click="pullSample()" :disable="table.selected.length<1" >
-                                        <q-item-section>
-                                            <q-item-label>Replace all trees from the selected samples with the ones from GitHubs</q-item-label>
-                                        </q-item-section>
+                                             <q-item-section avatar>
+                                                <q-icon name="ion-md-globe" />
+                                            </q-item-section>  
+                                            <q-item-section>
+                                                <q-item-label>Replace all trees from the selected samples with the ones from GitHub</q-item-label>
+                                            </q-item-section>
                                         </q-item>
 
                                         <q-item v-if="admin || super_admin" clickable v-close-popup @click="pullSample()">
-                                        <q-item-section>
-                                            <q-item-label>Replace all trees with the ones from GitHubs</q-item-label>
-                                        </q-item-section>
+                                            <q-item-section avatar>
+                                                <q-icon name="ion-md-globe" />
+                                            </q-item-section> 
+                                            <q-item-section>
+                                                <q-item-label>Replace all trees with the ones from GitHub</q-item-label>
+                                            </q-item-section>
                                         </q-item>
 
                                         </q-list>
@@ -236,6 +269,11 @@
                         <q-icon v-else name="account_circle" /> 
                         <div>+</div>
                     </q-btn>
+                    <q-btn @click="getRelationTable('recent')" push icon="schedule"  color="primary" no-caps v-if="admin || super_admin">
+                        <q-tooltip content-class="bg-primary" content-style="font-size: 16px" >
+                            View most recent trees
+                        </q-tooltip>
+                    </q-btn>
                     <q-btn @click="getRelationTable('all')" push icon="ion-md-globe"  color="primary" no-caps v-if="admin || super_admin">
                         <q-tooltip content-class="bg-primary" content-style="font-size: 16px" >
                             View all trees
@@ -251,9 +289,8 @@
           
 
             <q-dialog v-model="searchDialog" seamless position="right" full-width>
-                <grew-request-card :parentOnSearch="onSearch" ></grew-request-card>
+                <grew-request-card :parentOnSearch="onSearch" :grewquery="$route.query.q || ''"></grew-request-card>
             </q-dialog>
-
             <q-dialog v-model="assignDial" persistent transition-show="slide-up" transition-hide="slide-down" >
                 <user-table :samples="table.selected" ></user-table>
             </q-dialog>
@@ -293,7 +330,7 @@
             </q-dialog>
 
             <q-dialog v-model="resultSearchDialog" transition-show="fade" transition-hide="fade" >
-                <result-view :searchresults="resultSearch" :totalsents="infos.number_sentences" searchscope="sample" ></result-view>
+                <result-view :searchresults="resultSearch" :totalsents="infos.number_sentences" searchscope="project" ></result-view>
             </q-dialog>
 
             <q-dialog v-model="relationTableDial" transition-show="fade" transition-hide="fade" >
@@ -424,7 +461,7 @@ export default {
             tagContext: {},
             tableKey: 0,
             initLoad: false,
-            robot: {active:false, name:'parser'}
+            robot: {active:false, name:'parser'},
             
 
 
@@ -435,7 +472,8 @@ export default {
     mounted(){
         this.getProjectInfos();
         this.getUsers();
-        document.title = this.$route.params.samplename+" 🌳 Arborator-Grew 🌳 Sample of the "+this.$route.params.projectname+" project";    
+        document.title = this.$route.params.samplename+" 🌳 Arborator-Grew 🌳 Sample of the "+this.$route.params.projectname+" project";
+        if(this.$route.query.q && this.$route.query.q.length>0) this.searchDialog=true;
         },
     computed: {
         routePath() { return this.$route.path; },
@@ -444,6 +482,7 @@ export default {
         admin(){ return this.infos.admins.includes(this.$store.getters.getUserInfos.id); },
         super_admin(){ return this.$store.getters.getUserInfos.super_admin; },
 
+        
         
         noselect(){ return this.table.selected.length < 1;},
         loggedWithGithub() {
@@ -554,6 +593,12 @@ export default {
                 this.resultSearch = response.data;
             }).catch(error => {  this.$store.dispatch("notifyError", {error: error})  });
         },
+        // grewquery() {
+        //     console.log('projectview',this.grewqueryc)
+        //     if (this.grewqueryc==0) return 
+        //     this.grewqueryc++;
+        //     // if(this.$route.query.q && this.$route.query.q.length>0) this.searchDialog=true;
+        // },
         /**
          * Used to update tags and table view based on response
          * @param response : the response from backend

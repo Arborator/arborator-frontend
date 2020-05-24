@@ -14,7 +14,7 @@ import { Notify } from 'quasar'
 export default new Vuex.Store({
     state: {
         // source: "https://127.0.0.1:5000",
-        // source: "https://arborapi.ilpga.fr:8888",
+        // source: "https://arboratorgrew.ilpga.fr:8888",
         source: process.env.API,
         loginSuccess: false,
         loginError: false,

@@ -159,8 +159,8 @@ import Store from '../store/index';export default {
     tologin(url){
       window.location.assign(url);
       // console.log(this.store.getters.getSource + '/login/google'); openURL(this.store.getters.getSource + '/login/google');
-      // window.location.href = 'https://arborapi.ilpga.fr:8888/login/google';
-      // window.location.assign("https://arborapi.ilpga.fr:8888/login/google");
+      // window.location.href = 'https://arboratorgrew.ilpga.fr:8888/login/google';
+      // window.location.assign("https://arboratorgrew.ilpga.fr:8888/login/google");
       // window.location.assign("https://profiterole-almanach-ui.paris.inria.fr:8888/");
     },
     logout() {

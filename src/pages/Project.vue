@@ -551,8 +551,15 @@ export default {
             var data = { samplenames: x, commit_type:type};
             console.log(data);
             api.commit(this.$route.params.projectname, data)
-            .then(response => {console.log("wooohoo");})
-            .catch(error => {this.$store.dispatch("notifyError", {error: error}); })
+            .then(response => {
+                // 200 : updaté
+                // 200 : créé
+                console.log("wooohoo");})
+            .catch(error => {
+                // 418 : app pas installée 
+                // 204 : l'utilisateur n'a pas d'arbres
+                console.log('ici il faut un popup utile indiquant comment installer l application')
+                this.$store.dispatch("notifyError", {error: error}); })
         },
         pull(type) {
         var x = [];
@@ -561,7 +568,14 @@ export default {
         console.log(data);
         api.pull(this.$route.params.projectname, data)
         .then(response => {console.log("wooohoo");})
-        .catch(error => {this.$store.dispatch("notifyError", {error: error}); })
+        .catch(
+            
+            error => {
+                // 418 : app pas installée 
+                // 404 : pas d'échantillon sur la page indiqué
+                console.log('ici il faut un popup utile indiquant comment installer l application')
+
+                this.$store.dispatch("notifyError", {error: error}); })
             },
         exportSamplesZip(){
             this.table.exporting = true;

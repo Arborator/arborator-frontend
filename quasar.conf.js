@@ -2,7 +2,7 @@
 // https://quasar.dev/quasar-cli/quasar-conf-js
 
 const source = "https://127.0.0.1:5000";
-// const source = "https://arborapi.ilpga.fr:8888";
+// const source = "https://arboratorgrew.ilpga.fr:8888";
 
 module.exports = function (ctx) {
   return {
@@ -98,7 +98,7 @@ module.exports = function (ctx) {
           API: JSON.stringify('https://127.0.0.1:5000')
         }
         : { // and on build (production):
-          API: JSON.stringify('https://arborapi.ilpga.fr:8888')
+          API: JSON.stringify('https://arboratorgrew.ilpga.fr:8888')
         },
       scopeHoisting: true,
       // vueRouterMode: 'history',

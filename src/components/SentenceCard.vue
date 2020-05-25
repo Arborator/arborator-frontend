@@ -93,7 +93,7 @@
                                 :user="user" 
                                 :sentenceId="sentenceId" 
                                 :matches="sampleData.matches"
-                                :id="searchResult+'_conllGraph_'+user"
+                                :id="searchResult+'conllGraph_'+sentenceId+'_'+user"
                                 @update-conll="onConllGraphUpdate($event)"
                                 @meta-changed="metaUpdate($event)"
                             ></conll-graph>

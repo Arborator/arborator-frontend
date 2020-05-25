@@ -281,7 +281,8 @@ subj,comp,vocative
 			console.log(222, this.$props.projectname, config)
 			
 
-			api.updateProjectSettings(this.$props.projectname, config)
+			// api.updateProjectSettings(this.$props.projectname, config)
+			api.updateProjectSettings(this.$props.projectname, {'shownfeatures':this.shownfeatures})
 			.then(response => {
 				console.log(66565,response.data)
 				

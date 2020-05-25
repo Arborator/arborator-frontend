@@ -4,7 +4,7 @@ import VueCookies from 'vue-cookies';
 VueCookies.config('7d');
 
 const API = axios.create({
-    // baseURL: 'https://arborapi.ilpga.fr:8888/api',
+    // baseURL: 'https://arboratorgrew.ilpga.fr:8888/api',
     // baseURL: `/api`,
     baseURL: ( process.env.DEV ) ? "/api"  : process.env.API+"/api",
     timeout: 50000,
@@ -12,7 +12,7 @@ const API = axios.create({
 });
 
 const AUTH = axios.create({
-    // baseURL: 'https://arborapi.ilpga.fr:8888/login',
+    // baseURL: 'https://arboratorgrew.ilpga.fr:8888/login',
     // baseURL: process.env.API + `/login`,
     baseURL: ( process.env.DEV ) ? "/login"  : process.env.API+"/login",
     timeout: 5000,

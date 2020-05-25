@@ -157,14 +157,14 @@
                                             </q-item-section>
                                         </q-item>
 
-                                        <q-item v-if="admin || super_admin" clickable v-close-popup @click="pull('user_recent')">
+                                        <!-- <q-item v-if="admin || super_admin" clickable v-close-popup @click="pull('user_recent')">
                                             <q-item-section avatar>
                                                 <q-icon name="ion-md-globe" />
                                             </q-item-section> 
                                             <q-item-section>
                                                 <q-item-label>Replace all trees with the ones from GitHub</q-item-label>
                                             </q-item-section>
-                                        </q-item>
+                                        </q-item> -->
 
                                         </q-list>
                                     </q-btn-dropdown>

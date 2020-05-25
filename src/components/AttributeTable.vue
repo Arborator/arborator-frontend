@@ -156,8 +156,6 @@ export default {
       this.$emit("feature-changed");
     },
     thisdate(timestamp){
-      // return timestamp
-      console.log(timestamp)
       if (!timestamp) return 'no'
       let now = Date.now()
       let date1 = new Date(2017, 4, 12)

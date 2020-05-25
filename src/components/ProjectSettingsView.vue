@@ -163,6 +163,19 @@
 		</q-card-section>
 
 
+		<q-dialog v-model="addAdminDial" transition-show="fade" transition-hide="fade">  
+			<user-select-table :parentCallback="addAdmin" :general="true" selectiontype="Project Admin" singlemultiple="multiple" :preselected='infos.admins'>
+				</user-select-table>   
+		</q-dialog>
+		<q-dialog v-model="addGuestDial" transition-show="fade" transition-hide="fade"> 
+			<user-select-table :parentCallback="addGuest" :general="true" selectiontype="Project Guest" singlemultiple="multiple" :preselected='infos.guests'> 
+			</user-select-table>   
+		</q-dialog>
+		<q-dialog v-model="addDefaultUserTreeDial" transition-show="fade" transition-hide="fade">  
+			<user-select-table :parentCallback="addDefaultUserTree" :general="false" :projectname="$props.projectname"></user-select-table>   
+		</q-dialog>
+		<q-dialog v-model="confirmActionDial"> <confirm-action :parentAction="confirmActionCallback" :arg1="confirmActionArg1"></confirm-action> </q-dialog>
+
 	</q-card>
 </template>
 
@@ -305,6 +318,8 @@ subj,comp,vocative
 
 
 		addAdmin(selected){ 
+			console.log('addAdmin todo!',selected)
+			// todo: why does the function only accept one user?
 			api.setProjectUserRole(this.$props.projectname, 'admin', selected[0].id).then(response => {this.$q.notify({message:`Change saved!`}); this.infos = response.data}).catch(error => {this.$store.dispatch("notifyError", {error: error})});  },
 		removeAdmin(userid){ api.removeProjectUserRole(this.$props.projectname, 'admin', userid).then( response => {this.$q.notify({message:`Change saved!`}); this.infos = response.data;} ).catch(error => {this.$store.dispatch("notifyError", {error: error})});  },
 		addGuest(selected){ api.setProjectUserRole(this.$props.projectname, 'guest', selected[0].id).then(response=> {this.$q.notify({message:`Change saved!`});this.infos = response.data;}).catch(error => {this.$store.dispatch("notifyError", {error: error})});  },

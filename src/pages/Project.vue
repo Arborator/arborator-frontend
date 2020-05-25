@@ -558,15 +558,25 @@ export default {
             var data = { samplenames: x, commit_type:type};
             console.log(data);
             api.commit(this.$route.params.projectname, data)
-            .then(response => {
-                // 200 : updaté
-                // 200 : créé
-                console.log("wooohoo");})
+            .then(response => { // 200 : updaté ou créé
+                this.showNotif('top', 'Successfully pushed your data to GitHub');
+                // console.log("wooohoo");
+                })
             .catch(error => {
-                // 418 : app pas installée 
-                // 204 : l'utilisateur n'a pas d'arbres
-                console.log('ici il faut un popup utile indiquant comment installer l application')
-                this.$store.dispatch("notifyError", {error: error}); })
+                if (error.response.data.status==418) // 418 : app pas installée (ou autre problème ?)
+                {
+                    console.log(error, error.response);
+                    error.response.message = error.response.data.message;
+                    error.permanent = true;
+                    this.$store.dispatch("notifyError", {error: error});
+                }
+                else if (error.response.data.status==204) // 204 : l'utilisateur n'a pas d'arbres
+                {
+                    console.log(error, error.response)
+                    this.$store.dispatch("notifyError", {error: error.response.data.message});
+                }
+                else this.$store.dispatch("notifyError", {error: error}); 
+                })
         },
         pull(type) {
         var x = [];

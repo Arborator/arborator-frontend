@@ -187,7 +187,7 @@ export default new Vuex.Store({
             }
             else msg='Something went wrong: '+error;
             if (error.caption) caption=error.caption;
-            if (error.permanent) Notify.create({message: msg, position: 'top-right', color: 'negative', icon:'warning', caption:caption, timeout:0, closeBtn:'Dismiss'});
+            if (error.permanent) Notify.create({message: msg, position: 'top-right', color: 'negative', icon:'warning', caption:caption, timeout:0, closeBtn:'Dismiss', html:true});
             else Notify.create({message: msg, position: 'top-right', color: 'negative', icon:'warning', caption:caption});
         }
 

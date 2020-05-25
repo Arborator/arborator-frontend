@@ -138,7 +138,7 @@
 
                                     <q-btn-dropdown v-if="loggedWithGithub" :disable="false" icon="ion-md-git-pull-request"  flat dense> <q-tooltip>Pull from GitHub</q-tooltip>
                                         <q-list>
-                                        <q-item clickable v-close-popup @click="pullSample()" :disable="table.selected.length<1" >
+                                        <q-item clickable v-close-popup @click="pull('user')" :disable="table.selected.length<1" >
                                             <q-item-section avatar>
                                                 <q-avatar v-if="isLoggedIn" size="1.2rem"><img :src="avatar"></q-avatar>
                                                 <q-icon v-else name="account_circle" /> 
@@ -148,7 +148,7 @@
                                             </q-item-section>
                                         </q-item>
 
-                                        <q-item v-if="admin || super_admin" clickable v-close-popup @click="pullSample()" :disable="table.selected.length<1" >
+                                        <q-item v-if="admin || super_admin" clickable v-close-popup @click="pull('all')" :disable="table.selected.length<1" >
                                              <q-item-section avatar>
                                                 <q-icon name="ion-md-globe" />
                                             </q-item-section>  
@@ -157,7 +157,7 @@
                                             </q-item-section>
                                         </q-item>
 
-                                        <q-item v-if="admin || super_admin" clickable v-close-popup @click="pullSample()">
+                                        <q-item v-if="admin || super_admin" clickable v-close-popup @click="pull('user_recent')">
                                             <q-item-section avatar>
                                                 <q-icon name="ion-md-globe" />
                                             </q-item-section> 
@@ -554,6 +554,15 @@ export default {
             .then(response => {console.log("wooohoo");})
             .catch(error => {this.$store.dispatch("notifyError", {error: error}); })
         },
+        pull(type) {
+        var x = [];
+        for (const sample of this.table.selected) { x.push(sample.samplename) }
+        var data = { samplenames: x, pull_type:type};
+        console.log(data);
+        api.pull(this.$route.params.projectname, data)
+        .then(response => {console.log("wooohoo");})
+        .catch(error => {this.$store.dispatch("notifyError", {error: error}); })
+            },
         exportSamplesZip(){
             this.table.exporting = true;
             var samplenames = [];

@@ -180,8 +180,8 @@ export default {
     commit(projectname, data) {
         return API.post('projects/' + projectname + '/commit', data);
     },
-    pull(projectname, samplename) {
-        return API.get('projects/' + projectname + '/sample/' + samplename + '/pull');
+    pull(projectname, data) {
+        return API.post('projects/' + projectname + '/pull', data);
     }
 
 }

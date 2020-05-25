@@ -90,7 +90,9 @@
                                     </q-btn>
 
                                     <!-- ion-logo-github -->
-                                    <q-btn-dropdown v-if="loggedWithGithub" :disable="table.selected.length<1" icon="ion-md-git-commit"  flat dense> <q-tooltip>Commit and push the selected samples to GitHub</q-tooltip>
+                                    <div>
+                                    <q-btn-dropdown v-if="loggedWithGithub" :disable="table.selected.length<1" icon="ion-md-git-commit"  flat dense> 
+                                        
                                         <q-list>
                                         <q-item clickable v-close-popup @click="commit('user')">
                                             <q-item-section avatar>
@@ -135,8 +137,14 @@
 
                                         </q-list>
                                     </q-btn-dropdown>
+                                     <!-- v-if="loggedWithGithub" :disable="table.selected.length<1 -->
+                                         
+                                    <q-tooltip v-if="table.selected.length<1" :delay="300" content-class="text-white bg-primary">Select the samples you want to commit and push to GitHub</q-tooltip>
+                                    <q-tooltip v-else :delay="300" content-class="text-white bg-primary">Commit and push the selected samples to GitHub</q-tooltip>
+                                    </div>
 
-                                    <q-btn-dropdown v-if="loggedWithGithub" :disable="false" icon="ion-md-git-pull-request"  flat dense> <q-tooltip>Pull from GitHub</q-tooltip>
+                                    <div>
+                                    <q-btn-dropdown v-if="loggedWithGithub" :disable="false" icon="ion-md-git-pull-request"  flat dense>
                                         <q-list>
                                         <q-item clickable v-close-popup @click="pull('user')" :disable="table.selected.length<1" >
                                             <q-item-section avatar>
@@ -168,6 +176,10 @@
 
                                         </q-list>
                                     </q-btn-dropdown>
+                                    <q-tooltip v-if="table.selected.length<1" :delay="300" content-class="text-white bg-primary">Select the samples you want to update from your GitHub folder</q-tooltip>
+                                    <q-tooltip v-else :delay="300" content-class="text-white bg-primary">Pull data from your GitHub folder onto the selected samples</q-tooltip>
+                                    <q-tooltip :delay="300" content-class="text-white bg-primary"></q-tooltip>
+                                    </div>
 
                                 </q-btn-group>
 

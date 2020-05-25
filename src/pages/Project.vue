@@ -535,6 +535,12 @@ export default {
                 this.uploadSample.submitting = false; 
                 this.showNotif('top-right', 'uploadsuccess');})
                 .catch(error => { 
+                    if (error.response) 
+                    {
+                        error.response.message = error.response.data.message;
+                        error.permanent = true;
+                    }
+                    error.caption = "Check your file please!"
                     this.uploadSample.submitting = false; 
                     this.uploadDial = false; 
                     this.$store.dispatch("notifyError", {error: error}); });
@@ -545,6 +551,7 @@ export default {
                 api.deleteSample(this.infos.name, sample.samplename).then( response => { this.infos = response.data; this.table.selected = []; this.showNotif('top-right', 'deletesuccess'); } ).catch(error => {  this.$store.dispatch("notifyError", {error: error})  });
             }
         },
+        
         commit(type) {
             var x = [];
             for (const sample of this.table.selected) { x.push(sample.samplename) }

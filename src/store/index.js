@@ -177,17 +177,18 @@ export default new Vuex.Store({
             commit('update_user', { user: user });
         },
         notifyError({commit}, {error}){
-            var caption="";
-            // if (error.response && error.response.data.message) caption=error.response.data.message;
             var msg;
-            if (error.response) {
-                if(error.response.status == 403){ msg = `Hey you! You do not have the permissions for this action. Please contact the administrator.`;  }
-                else if(error.response.status == 401){ msg == `Hey you! Please log in to do any further actions of that type.`;}
-                else { msg = error.response.statusText + ' error ' + error.response.status; }
+            var caption="";
+            if(error.message!=undefined) {msg = error.response.message;}
+            else if (error.response) {
+                if(error.response.status == 403){ msg = (error.response.message)?error.response.message:`Hey you! You do not have the permissions for this action. Please contact the administrator.`;  }
+                else if(error.response.status == 401){ msg == (error.response.message)?error.response.message:`Hey you! Please log in to do any further actions of that type.`;}
+                else { msg =(error.response.message)?error.response.message: error.response.statusText + ' error ' + error.response.status; }
             }
-            else msg='Something went wrong: '+error
-            if (error.caption) caption=error.caption
-            Notify.create({message: msg, position: 'top-right', color: 'negative', icon:'warning', caption:caption});
+            else msg='Something went wrong: '+error;
+            if (error.caption) caption=error.caption;
+            if (error.permanent) Notify.create({message: msg, position: 'top-right', color: 'negative', icon:'warning', caption:caption, timeout:0, closeBtn:'Dismiss'});
+            else Notify.create({message: msg, position: 'top-right', color: 'negative', icon:'warning', caption:caption});
         }
 
     },

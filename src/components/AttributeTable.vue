@@ -50,8 +50,11 @@
           </q-td>
 
           <q-td key="v" :props="props">
+            <div v-if="props.row.a=='timestamp'">
+              {{thisdate(props.row.v)}}
+            </div>
             <q-input
-              v-if="computeValueType(props.row)=='Number'"
+              v-else-if="computeValueType(props.row)=='Number'"
               v-model.number="props.row.v"
               type="number"
               filled
@@ -110,13 +113,13 @@
 
 <script>
 import Vue from "vue";
-// Vue.config.ignoredElements = ['conll'];
 import vSelect from "vue-select";
 import "vue-select/dist/vue-select.css";
-// import api from '../boot/backend-api';
+import { date } from 'quasar'
 Vue.component("v-select", vSelect);
 
 export default {
+  // components: {date},
   name: "attributeTable",
   props: ["title", "featdata", "columns", "featOptions", "openFeatures", "modifiable", "numbered", "prepend"],
   // featdata contains the actual data, featOptions the possible options, 
@@ -152,7 +155,18 @@ export default {
       this.featdata.splice(this.featdata.map(function(e) { return e.a; }).indexOf(row.a), 1)
       this.$emit("feature-changed");
     },
-
+    thisdate(timestamp){
+      if (!timestamp) return 'no'
+      let now = Date.now()
+      let date1 = new Date(2017, 4, 12)
+      let date2 = new Date(2017, 3, 8)
+      let diff = date.getDateDiff(now,parseInt(timestamp), 'days')
+      let diffstr = ''
+      if (diff == 0) diffstr = date.getDateDiff(now,parseInt(timestamp), 'hours')+" hours ago: "
+      else if (diff>365) diffstr = 'a long time ago: '
+      else diffstr = diff+" days ago: "
+      return diffstr+date.formatDate(parseInt(timestamp), 'YYYY-MM-DD HH:mm:ss')
+    },
     computeAttributeOptions(row) {
       // for new line, returns all the predefined attributes not yet existing
       // todo: hide completely the q-select, if no selection possible

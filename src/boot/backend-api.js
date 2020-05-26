@@ -171,8 +171,8 @@ export default {
     searchSample( projectname, samplename, query) {
         return API.post('projects/'+projectname+'/sample/'+samplename+'/search', query)
     },
-    saveTrees(projectname, samplename, data) {
-        return API.post('projects/' + projectname + '/sample/' + samplename+ '/saveTrees', data);
+    saveTrees(projectname, data) {
+        return API.post('projects/' + projectname + '/saveTrees', data);
     },
     getRelationTable(projectname, data) {
         return API.post('projects/' + projectname + '/relation_table', data);

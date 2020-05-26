@@ -279,9 +279,9 @@ export default {
             conll = conll.replace(/# user_id = .+\n/, "# user_id = "+this.$store.getters.getUserInfos.username+"\n");
             conll = conll.replace(/# timestamp = \d+(\.\d*)?\n/, "# timestamp = "+timestamp+"\n");
             // console.log("after", conll);
-            var data={"trees":[{"sent_id":this.sentenceId, "conll":conll}], "user_id":this.$store.getters.getUserInfos.username};
+            var data={"trees":[{"sent_id":this.sentenceId, "conll":conll, "sample_name":this.$props.sample.samplename}], "user_id":this.$store.getters.getUserInfos.username};
             // console.log("data", data);
-            api.saveTrees(this.$route.params.projectname, this.$props.sample.samplename, data).then(response => {
+            api.saveTrees(this.$route.params.projectname, data).then(response => {
                 if(response.status == 200){
                     this.graphInfo.dirty = false;
                     // console.log("status", this.graphInfo.dirty);

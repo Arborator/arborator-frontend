@@ -22,7 +22,7 @@
                   <q-icon name='fab fa-google'/>
                 </q-item-section>
                 <q-item-section>
-                  <q-item-label caption>Connect via</q-item-label>
+                  <!-- <q-item-label caption>{{$t('loginselector')}}</q-item-label> -->
                   <q-item-label>Google</q-item-label>
                 </q-item-section>
               </q-item>
@@ -31,7 +31,7 @@
                   <q-icon name='fab fa-github'/>
                 </q-item-section>
                 <q-item-section>
-                  <q-item-label caption>Connect via</q-item-label>
+                  <!-- <q-item-label caption>{{$t('loginselector')}}</q-item-label> -->
                   <q-item-label>GitHub</q-item-label>
                 </q-item-section>
               </q-item>
@@ -49,11 +49,11 @@
                     <q-list>
                       <q-item clickable v-ripple to="/settings">
                         <q-item-section avatar> <q-icon name="settings" /> </q-item-section>
-                        <q-item-section> Settings </q-item-section>
+                        <q-item-section> {{$t('settings')}} </q-item-section>
                       </q-item>
                       <q-item v-show="store.getters.getUserInfos.super_admin" clickable v-ripple to="/admin">
                         <q-item-section avatar> <q-icon name="vpn_key" /> </q-item-section>
-                        <q-item-section> Admin </q-item-section>
+                        <q-item-section> {{$t('admin')}} </q-item-section>
                       </q-item>
                     </q-list>
                 </div>                <q-separator vertical inset class="q-mx-lg" />                <div class="column items-center">
@@ -69,16 +69,16 @@
           </q-btn>
           <q-btn flat dense @click="$q.fullscreen.toggle()" :icon="$q.fullscreen.isActive ? 'fullscreen_exit' : 'fullscreen'"
            :label="$q.fullscreen.isActive ? '' : ''">
-            <q-tooltip :delay="300" content-class="bg-white text-primary">Fullscreen</q-tooltip>
+            <q-tooltip :delay="300" content-class="bg-white text-primary">{{$t('fullscreen')}}</q-tooltip>
           </q-btn>
         </div>      </q-bar>    </q-header>    <q-page-container>
       <router-view />    </q-page-container>    <q-footer >
       <q-item-label caption class="text-center text-grey-3">
-        Made with <q-icon name="favorite" style="font-size:22px;color: #dd137b;height:18px;vertical-align:text-bottom"/> in        <img aria-hidden="true" role="presentation" src="../statics/svg/paris.svg" class="" style="color: #dd137b;height:18px;">
-         at
-        <a href="https://team.inria.fr/almanach" target="_blank">
-          <img aria-hidden="true" role="presentation" src="../statics/svg/almanachInria.svg" class="" style="height:18px;">
-        </a>
+       {{$t('footer')[0]}} <q-icon name="favorite" style="font-size:22px;color: #dd137b;height:18px;vertical-align:text-bottom"/> {{$t('footer')[1]}}        <img aria-hidden="true" role="presentation" src="../statics/svg/paris.svg" class="" style="color: #dd137b;height:18px;">
+        {{$t('footer')[2]}}
+      <a href="https://team.inria.fr/almanach" target="_blank">
+        <img aria-hidden="true" role="presentation" src="../statics/svg/almanachInria.svg" class="" style="height:18px;">
+      </a>
        v1.0 beta (20200515)</q-item-label>
     </q-footer>    <q-drawer
         v-model="drawerLeft"
@@ -115,7 +115,7 @@ import Store from '../store/index';export default {
       menuList: [
           {
             icon: 'house',
-            label: 'Home',
+            label: this.$t('navhome'),
             separator: false,
             public: true,
             to: '/#',
@@ -123,7 +123,7 @@ import Store from '../store/index';export default {
           },
           {
             icon: 'library_books',
-            label: 'Projects',
+            label: this.$t('navprojects'),
             separator: true,
             public: true,
             to: '/projects',
@@ -131,7 +131,7 @@ import Store from '../store/index';export default {
           },
           {
             icon: 'settings',
-            label: 'Settings',
+            label: this.$t('navsettings'),
             separator: false,
             public: false,
             to: '/settings',

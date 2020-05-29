@@ -13,6 +13,7 @@ Vue.use(VueRouter)
 export default function (/* { store, ssrContext } */) {
   const Router = new VueRouter({
     scrollBehavior: () => ({ x: 0, y: 0 }),
+    // mode: 'history',
     routes,
 
     // Leave these as is and change from quasar.conf.js instead!
@@ -21,6 +22,12 @@ export default function (/* { store, ssrContext } */) {
     mode: process.env.VUE_ROUTER_MODE,
     base: process.env.VUE_ROUTER_BASE
   })
+
+  // Router.onError(error => {
+  //   if (/loading chunk \d* failed./i.test(error.message)) {
+  //     window.location.reload()
+  //   }
+  // })
 
   return Router
 }

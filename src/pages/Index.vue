@@ -73,31 +73,31 @@
             </svg>
           </div>
       <!-- </q-responsive>  -->    <h4 class="text-primary text-bold text-center " style="margin-bottom:20px" color="primary">
-      Treebank Annotation for Human Beings
+      {{$t('homepage').slogan}}
     </h4>      <p class="text-center ">
-       <q-btn id="accesstreebank" push to="/projects" color="primary" no-caps >Access Treebanks</q-btn>
+       <q-btn id="accesstreebank" push to="/projects" color="primary" no-caps >{{$t('homepage').accessTreebankBtn}}</q-btn>
       </p><div class="q-pa-md row q-gutter-lg justify-evenly" >
     <q-card style=" width: 100%; max-width: 20vw">
       <q-parallax
         src="../statics/svg/dependency.svg"
         :height="260"
       ></q-parallax>      <q-card-section>
-        <div class="text-h5 text-primary text-bold">A collaborative annotation tool for treebank development</div>
-        <div class="text-subtitle2">An easy to use graphic annotation interface makes it annotation the best part of a linguist's day.</div>
+        <div class="text-h5 text-primary text-bold">{{$t('homepage').descriptionCard.title}}</div>
+        <div class="text-subtitle2">{{$t('homepage').descriptionCard.subtitle}}</div>
       </q-card-section>
       <q-separator  inset />
       <q-card-section>
         <p>
-       Just drag a word on the other to make a dependency relation. Just click on a word to change its features. Just choose the words to make them tokens. The dependency set, the tagset, and the feature set are fully configurable. We provide ready-made configurations for       <a href="https://surfacesyntacticud.github.io" target="_blank">
+       {{$t('homepage').descriptionCard.content[0]}} <a href="https://surfacesyntacticud.github.io" target="_blank">
        <q-icon name="img:../statics/svg/sud.svg"  size="md" />
        <q-tooltip content-class="bg-accent" content-style="font-size: 16px" >
-          SUD: The surface-syntactic, distribution-based version of Universal Dependencies
+          {{$t('homepage').descriptionCard.tooltipSud}}
         </q-tooltip>
        </a>
-       and       <a href="https://universaldependencies.org/" target="_blank">
+       {{$t('homepage').descriptionCard.content[1]}} <a href="https://universaldependencies.org/" target="_blank">
        <q-icon name="img:../statics/svg/ud.svg"  size="sm" />
        <q-tooltip content-class="bg-accent" content-style="font-size: 16px" >
-          Universal Dependencies: The amazing collaborative treebank annotation project providing 150 treebanks in 90 languages
+          {{$t('homepage').descriptionCard.tooltipUd}}
         </q-tooltip>
        </a>.
        </p>      </q-card-section>    </q-card>
@@ -107,53 +107,52 @@
         :height="260"
       ></q-parallax>
       <q-card-section>
-        <div class="text-h5 text-primary text-bold">Search with a powerful graph grammar</div>
-        <div class="text-subtitle2">Modify the search results directly in the Web interface</div>
+        <div class="text-h5 text-primary text-bold">{{$t('homepage').grewCard.title}}</div>
+        <div class="text-subtitle2">{{$t('homepage').grewCard.subtitle}}</div>
       </q-card-section>
       <q-separator  inset />      <q-card-section>
-        A good treebank is a lot about curation, about finding the problems and correcting them coherently.
-        With Arborator-Grew, there is no more back and forth between different websites or twisting your mind with complex greps in CoNLL files. Well, you got to learn the <a href="http://grew.fr//" target="_blank">       <q-icon name="img:../statics/svg/grew.svg"  size="xl" />
+       {{$t('homepage').grewCard.content[0]}} <a href="http://grew.fr//" target="_blank">       <q-icon name="img:../statics/svg/grew.svg"  size="xl" />
        <q-tooltip content-class="bg-accent" content-style="font-size: 16px" >
-          The grew graph grammar
+          {{$t('homepage').grewCard.tooltipGrew}}
         </q-tooltip>
-       </a> syntax, but that's a breeze with all the great examples and tutorials provided.
+       </a> {{$t('homepage').grewCard.content[1]}}
       </q-card-section>    </q-card>
     <q-card style=" width: 100%; max-width: 20vw">
       <q-parallax
         src="../statics/images/small.niko-photos-tGTVxeOr_Rs-unsplash.jpg"
         :height="260"
       ></q-parallax>      <q-card-section>
-        <div class="text-h5 text-primary text-bold">Together with others you can build beautiful treebanks</div>
-        <div class="text-subtitle2">Social login makes Arborator-Grew a hazzle free tool</div>
+        <div class="text-h5 text-primary text-bold">{{$t('homepage').collaborativeCard.title}}</div>
+        <div class="text-subtitle2">{{$t('homepage').collaborativeCard.subtitle}}</div>
       </q-card-section>
       <q-separator  inset />
        <q-card-section>
-       You control who accesses your annotation projetct, and no annotator can destroy other trees than their owns.<br>
-          Push the CoNLL data onto your GitHub project and share your beautiful trees from there.
+       {{$t('homepage').collaborativeCard.content[0]}}<br>
+          {{$t('homepage').collaborativeCard.content[1]}}
       </q-card-section>
-      <p class="text-center ">Try it all out on our
-       <q-btn push to="/projects/Playground/en_gum-sud-dev/665" color="primary" no-caps>Playground</q-btn>
+      <p class="text-center ">{{$t('homepage').collaborativeCard.content[2]}}
+       <q-btn push to="/projects/Playground/en_gum-sud-dev/665" color="primary" no-caps>{{$t('homepage').collaborativeCard.playgroundBtn}}</q-btn>
       </p>
     </q-card>    <q-card style=" width: 100%; max-width: 20vw">
       <q-parallax
         src="../statics/images/sourcecode.png"
         :height="260"
       ></q-parallax>      <q-card-section>
-        <div class="text-h5 text-primary text-bold">Source code and access to this Web page are completely free</div>
-        <div class="text-subtitle2">as in free beer and as in in free speech</div>
+        <div class="text-h5 text-primary text-bold">{{$t('homepage').sourceCard.title}}</div>
+        <div class="text-subtitle2">{{$t('homepage').sourceCard.subtitle}}</div>
       </q-card-section>
       <q-separator  inset />
-       <q-card-section>         Head over to          <!-- <q-btn type="a" href="https://github.com/Arborator" flat round color="primary" icon="fab fa-github" size="lg" target="_blank" > -->
+       <q-card-section>         {{$t('homepage').sourceCard.content[0]}}         <!-- <q-btn type="a" href="https://github.com/Arborator" flat round color="primary" icon="fab fa-github" size="lg" target="_blank" > -->
               <q-btn type="a" href="https://github.com/Arborator" target="_blank" icon="fab fa-github" flat round  color="primary"  size="lg" >
        <!-- <q-icon name="fab fa-github"  ripple=false /> -->
               <q-tooltip content-class="bg-accent" content-style="font-size: 16px" >
-                our GitHub page
+                {{$t('homepage').sourceCard.tooltipGit}}
               </q-tooltip>
           </q-btn>
         <!-- <a href="https://github.com/Arborator" target="_blank">our GitHub page </a>  -->
-        to have a look and grab the code.<br>
-        Get involved give us feedback on the <a href="https://github.com/Arborator/arborator-frontend/issues" target="_blank">issue page of this Arborator front-end</a>.
-        <br>A guide to install Arborator-Grew on your own server will be provided here shortly...
+        {{$t('homepage').sourceCard.content[1]}}<br>
+        {{$t('homepage').sourceCard.content[2]}}<a href="https://github.com/Arborator/arborator-frontend/issues" target="_blank">{{$t('homepage').sourceCard.content[3]}}</a>.
+        <br>{{$t('homepage').sourceCard.content[4]}}
       </q-card-section>
     </q-card>
   </div>  <br/><br/><br/>
@@ -164,13 +163,13 @@
         src="../statics/svg/arborator.grew.superposed.svg"
         :height="260"
       ></q-parallax>      <q-card-section>
-        <div class="text-h5 text-primary text-bold">Our story</div>
-        <div class="text-subtitle2">Arborator-Grew combines the features of two preexisting tools: Arborator and Grew.</div>
+        <div class="text-h5 text-primary text-bold">{{$t('homepage').storyCard.title}}</div>
+        <div class="text-subtitle2">{{$t('homepage').storyCard.subtitle}}</div>
       </q-card-section>
       <q-separator  inset />
       <q-card-section>
         <p>
-          Arborator is a widely used collaborative graphical online dependency treebank annotation tool.          Grew is a tool for graph querying and rewriting specialized in structures needed in NLP, i.e. syntactic and semantic dependency trees and graphs. Grew also has an online version, <a href="http://match.grew.fr/" target="_blank">Grew-match</a>, where all Universal Dependencies treebanks in their classical, deep and surface-syntactic flavors can be queried. Arborator-Grew is a complete redevelopment and modernization of Arborator, replacing its own internal database storage by a new Grew API, which adds a powerful query tool to Arborator's existing treebank creation and correction features. This includes complex access control for parallel expert and crowd-sourced annotation, tree comparison visualization, and various exercise modes for teaching and training of annotators. Arborator-Grew opens up new paths of collectively creating, updating, maintaining, and curating syntactic treebanks and semantic graph banks.       </p>      </q-card-section>    
+          {{$t('homepage').storyCard.content[0]}} <a href="http://match.grew.fr/" target="_blank">Grew-match</a> {{$t('homepage').storyCard.content[1]}}       </p>  </q-card-section>    
     </q-card>
     <q-card style=" width: 100%; max-width: 30vw">
       <q-parallax
@@ -178,8 +177,8 @@
         :height="260"
       ></q-parallax>
       <q-card-section>
-        <div class="text-h5 text-primary text-bold">Cite us if you use this</div>
-        <div class="text-subtitle2">And good things will happen</div>
+        <div class="text-h5 text-primary text-bold">{{$t('homepage').citeCard.title}}</div>
+        <div class="text-subtitle2">{{$t('homepage').citeCard.subtitle}}</div>
       </q-card-section>
       <q-separator  inset />
       <q-card-section>
@@ -203,8 +202,8 @@
         src="../statics/images/julie-molliver-Z3vFp7szCAY-unsplash.jpg"
         :height="260"
       ></q-parallax>      <q-card-section>
-        <div class="text-h5 text-primary text-bold">Some other tools</div>
-        <div class="text-subtitle2">in the Arborator series</div>
+        <div class="text-h5 text-primary text-bold">{{$t('homepage').toolsCard.title}}</div>
+        <div class="text-subtitle2">{{$t('homepage').toolsCard.subtitle}}</div>
       </q-card-section>
       <q-separator  inset />
       <div class="q-gutter-lg">
@@ -214,14 +213,14 @@
             :style="hoverdraft ? 'transform: scale(0.95);' : ''"
             >
             <q-card-section>
-             If you just want to look at a CoNLL file quickly, check out this:
+             {{$t('homepage').toolsCard.content[0]}}
              </q-card-section>
               <q-card-section>
-                  <img src="../statics/svg/arborator.quick.svg" width="100em" /> <q-badge align="top" color="positive">No login!</q-badge>
+                  <img src="../statics/svg/arborator.quick.svg" width="100em" /> <q-badge align="top" color="positive">{{$t('homepage').toolsCard.content[1]}}</q-badge>
                   <q-item-section>
                       <q-item-label lines="1"> </q-item-label>
                       <q-item-label caption lines="2" :class="$q.dark.isActive?'text-grey':''">
-                        Fast CoNLL files viewer
+                        {{$t('homepage').toolsCard.content[2]}}
                       </q-item-label>
                   </q-item-section>
               </q-card-section>
@@ -233,16 +232,16 @@
             :style="hoverquick ? 'transform: scale(0.95);' : ''"
             >
             <q-card-section>
-              For quick graphical modification of a CoNLL file:            </q-card-section>
+              {{$t('homepage').toolsCard.content[3]}}            </q-card-section>
             <q-card-section>
-              CoNLL files graphical editor
+              {{$t('homepage').toolsCard.content[4]}}
             </q-card-section>          </q-card>
            <br/>           <q-card :class="hoverlegacy ? 'bg-grey-2' : ''" class="clickable col-1 grid-style-transition shadow-7"
             @mouseover="hoverlegacy = true"            @mouseleave="hoverlegacy = false"            @click="openURL('https://arborator.ilpga.fr/')"
             :style="hoverlegacy ? 'transform: scale(0.95);' : 'hover'"
             >
             <q-card-section>
-              The legacy Arborator is still running here            
+              {{$t('homepage').toolsCard.content[5]}}            
             </q-card-section>          
             </q-card>
       </q-card-section>

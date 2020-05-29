@@ -2,10 +2,10 @@
 	<q-card :class="$q.dark.isActive?'':'bg-blue-grey-1 text-black'" class="full">
 		<q-bar class="bg-primary text-white">
 			<q-space />
-			<div class="text-weight-bold">Settings</div>
+			<div class="text-weight-bold">{{$t('projectSettings').title}}</div>
 			<q-space />
 			<q-btn dense flat icon="close" v-close-popup>
-				<q-tooltip content-class="bg-white text-primary">Close</q-tooltip>
+				<q-tooltip content-class="bg-white text-primary">{{$t('projectSettings').windowClose}}</q-tooltip>
 			</q-btn>
 		</q-bar>
 		<q-card-section class="q-pa-sm row q-gutter-md"> 
@@ -29,15 +29,15 @@
 		</q-card-section>
 		<q-card-section>
 			<q-input v-model="infos.description" style="height: 100px;" label="Description" filled clearable type="textarea"/>
-			<q-btn color="primary" @click="changeDescription()" label="save description" icon="save" dense flat ></q-btn>
+			<q-btn color="primary" @click="changeDescription()" :label="$t('projectSettings').descriptionSave" icon="save" dense flat ></q-btn>
 		</q-card-section>
 		<q-card-section class="q-pa-sm row items-start q-gutter-md">
 			<q-card class="col col-sm-12">
 				<q-list>
 					<q-item tag="label" v-ripple>
 						<q-item-section>
-						<q-item-label>Private</q-item-label>
-						<q-item-label caption>If true, only you and super admins will be able to see the project</q-item-label>
+						<q-item-label>{{$t('projectSettings').togglePrivate}}</q-item-label>
+						<q-item-label caption>togglePrivateCaption</q-item-label>
 						</q-item-section>
 						<q-item-section avatar>
 						<q-toggle  color="blue" v-model="infos.is_private" checked-icon="check" unchecked-icon="clear" @input="changeIsPrivate()" />
@@ -45,8 +45,8 @@
 					</q-item>
 					<q-item tag="label" v-ripple>
 						<q-item-section>
-						<q-item-label>All trees visible</q-item-label>
-						<q-item-label caption>If true, annotators will be able to see others' trees</q-item-label>
+						<q-item-label>{{$t('projectSettings').toggleAllVisible}}</q-item-label>
+						<q-item-label caption>{{$t('projectSettings').toggleAllVisibleCaption}}</q-item-label>
 						</q-item-section>
 						<q-item-section avatar>
 						<q-toggle  color="blue" v-model="infos.show_all_trees" checked-icon="check" unchecked-icon="clear" @input="changeShowAllTrees()" />
@@ -54,8 +54,8 @@
 					</q-item>
 					<q-item tag="label" v-ripple>
 						<q-item-section>
-						<q-item-label>Open project</q-item-label>
-						<q-item-label caption>If true, anyone can edit samples</q-item-label>
+						<q-item-label>{{$t('projectSettings').toggleOpenProject}}</q-item-label>
+						<q-item-label caption>{{$t('projectSettings').toggleOpenProjectCaption}}</q-item-label>
 						</q-item-section>
 						<q-item-section avatar>
 						<q-toggle  color="green" v-model="infos.is_open" checked-icon="check" unchecked-icon="clear" @input="changeOpenProject()" />
@@ -69,7 +69,7 @@
 			<!-- <div class="fit row  justify-between"> -->
 				<q-card class="col ">
 					<q-card-section>
-						<div class="text-h6 text-center">Default User Tree <q-btn v-show="admin" flat round icon="add" :color="$q.dark.isActive?'purple-12':'primary'" @click="addDefaultUserTreeDial = true"></q-btn></div>
+						<div class="text-h6 text-center">{{$t('projectSettings').defaultUserTreePanel}} <q-btn v-show="admin" flat round icon="add" :color="$q.dark.isActive?'purple-12':'primary'" @click="addDefaultUserTreeDial = true"></q-btn></div>
 					</q-card-section>
 					<q-card-section >
 						<q-list bordered separator class="list-size">
@@ -84,7 +84,7 @@
 			<!-- <q-card-section class="row items-start q-gutter-md"> -->
 				<q-card class="col">
 					<q-card-section>
-						<div class="text-h6 text-center">Admins <q-btn v-show="admin" flat round icon="add" :color="$q.dark.isActive?'purple-12':'primary'" @click="addAdminDial = true"></q-btn></div>
+						<div class="text-h6 text-center">{{$t('projectSettings').adminsPanel}} <q-btn v-show="admin" flat round icon="add" :color="$q.dark.isActive?'purple-12':'primary'" @click="addAdminDial = true"></q-btn></div>
 					</q-card-section>
 					<q-card-section>
 						<q-list bordered separator class="list-size">
@@ -97,7 +97,7 @@
 				</q-card>
 				<q-card class="col ">
 					<q-card-section>
-						<div class="text-h6 text-center">Guests <q-btn v-show="admin" flat round icon="add" :color="$q.dark.isActive?'purple-12':'primary'" @click="addGuestDial = true"></q-btn></div>
+						<div class="text-h6 text-center">{{$t('projectSettings').guestsPanel}} <q-btn v-show="admin" flat round icon="add" :color="$q.dark.isActive?'purple-12':'primary'" @click="addGuestDial = true"></q-btn></div>
 					</q-card-section>
 					<q-card-section >
 						<q-list bordered separator class="list-size">
@@ -111,7 +111,7 @@
 
 				<q-card class="col ">
 					<q-card-section>
-						<div class="text-h6 text-center">Shown Features</div>
+						<div class="text-h6 text-center">{{$t('projectSettings').shownFeaturesPanel}}</div>
 					</q-card-section>
 					<q-card-section >
 						<q-select
@@ -121,7 +121,7 @@
 							:options="shownfeatureschoices"
 							use-chips
 							stack-label
-							label="Choose the features to be shown under each token"
+							:label="$t('projectSettings').shownFeaturesTokens"
 							@input="saveannofshown"
 							/>
 					</q-card-section>
@@ -133,7 +133,7 @@
 							:options="shownmetachoices"
 							use-chips
 							stack-label
-							label="Choose the features to be shown under each sentence"
+							:label="$t('projectSettings').shownFeaturesSentences"
 							@input="savemetashown"
 							/>
 					</q-card-section>
@@ -145,7 +145,7 @@
 		<!-- </div> -->
 		<q-card-section class="q-pa-sm row items-start q-gutter-md">
 			<q-card class="col col-sm-12">
-				<q-card-section><div class="text-h6 text-center">Annotation settings</div></q-card-section>
+				<q-card-section><div class="text-h6 text-center">{{$t('projectSettings').annotationSettingsInput}}</div></q-card-section>
 				<q-card-section>
 					<codemirror 
 						v-model="annofjson" 
@@ -153,7 +153,7 @@
 						@input="checkAnnotationFeatures"
 					></codemirror>
 				</q-card-section>
-				<q-btn color="bg-primary" text-color="primary" @click="saveAnnotationSettings()" label="save annotation settings" icon="save" dense flat :disabled="!annofok" no-caps></q-btn>
+				<q-btn color="bg-primary" text-color="primary" @click="saveAnnotationSettings()" :label="$t('projectSettings').annotationSettingsSave" icon="save" dense flat :disabled="!annofok" no-caps></q-btn>
 				<q-chip   text-color="primary" :icon="annofok?'sentiment_satisfied_alt':'sentiment_very_dissatisfied'">
 					{{annofcomment}}
 				</q-chip>
@@ -260,6 +260,7 @@ subj,comp,vocative
 		getProjectInfos(){ 
 			api.getProjectSettings(this.$props.projectname)
 			.then(response => {
+				console.log(response.data);
 				this.infos = response.data; 
 				this.annotationFeatures = this.$store.getters.getProjectConfig.annotationFeatures;
 				this.shownfeatures = this.$store.getters.getProjectConfig.shownfeatures;
@@ -278,7 +279,7 @@ subj,comp,vocative
 			try {
 					JSON.parse(this.annofjson);
 					this.annofok=true;
-					this.annofcomment="This looks like reasonable Json"
+					this.annofcomment=this.$t('projectSettings').checkAnnotation
 			} catch (e) {
 				this.annofok=false;
 				this.annofcomment=e

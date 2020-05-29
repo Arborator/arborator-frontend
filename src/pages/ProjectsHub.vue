@@ -8,13 +8,13 @@
         <q-card-section class="q-pa-md row items-start q-gutter-md">
           <q-toolbar class="text-center">
               <q-btn id="createproject" color="primary" round dense icon="add" @click="creaProjectDial = true">
-                <q-tooltip :delay="300" content-class="text-white bg-primary">Create a new project</q-tooltip>
+                <q-tooltip :delay="300" content-class="text-white bg-primary">{{$t('projectHub').tooltipCreaProject}}</q-tooltip>
               </q-btn>
               <q-toolbar-title :class="($q.dark.isActive?'':'text-primary') + ' text-bold'">
-                Projects
+                {{$t('projectHub').title}}
               </q-toolbar-title>
               <q-btn flat round dense :icon="listMode?'view_module':'list'" @click="toggleProjectView()">
-                <q-tooltip :delay="300" content-class="text-white bg-primary">Change view</q-tooltip>
+                <q-tooltip :delay="300" content-class="text-white bg-primary">{{$t('projectHub').tooltipChangeView}}</q-tooltip>
               </q-btn>
           </q-toolbar>
           <q-toolbar class="text-center">

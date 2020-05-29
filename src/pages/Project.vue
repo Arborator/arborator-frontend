@@ -7,10 +7,10 @@
                         <q-toolbar-title>
                             <span :class="($q.dark.isActive?'':'text-primary') + ' text-bold'">{{infos.name}}</span> 
                             <q-btn v-if="super_admin || admin" flat round :color="$q.dark.isActive?'':'primary'" icon="settings" @click="projectSettingsDial=true">
-                                <q-tooltip :delay="300" content-class="text-white bg-primary" >Modify project settings</q-tooltip>
+                                <q-tooltip :delay="300" content-class="text-white bg-primary" >{{$t('projectView').tooltipSettings}}</q-tooltip>
                             </q-btn>
                             <q-btn v-else flat round :color="$q.dark.isActive?'':'primary'" icon="settings" @click="simpleProjectInfoDialog=true">
-                                <q-tooltip :delay="300" content-class="text-white bg-primary" >View admininstrator information</q-tooltip>
+                                <q-tooltip :delay="300" content-class="text-white bg-primary" >{{$t('projectView').tooltipViewAdmin}}</q-tooltip>
                             </q-btn>
                         </q-toolbar-title>
                     </q-toolbar>
@@ -45,13 +45,13 @@
                                 <div class="row">
                                     <div v-show="table.loading" class="col-5 offset-4"><q-circular-progress  indeterminate size="50px" :thickness="0.22" color="primary" :track-color="$q.dark.isActive?'grey':'grey-3'" /></div>
                                     <q-banner v-show="!table.loading && !initLoad" inline-actions class="text-white bg-negative">
-                                        Oops! No data to display...
+                                        {{$t('projectView').nodata[0]}}
                                         <template v-slot:action>
                                             <q-btn flat color="white" label="try again" @click="getProjectInfos();" />
                                         </template>
                                     </q-banner>
                                     <q-banner v-show="!table.loading && initLoad" inline-actions class="text-white bg-accent">
-                                        No sample yet. This project is empty, please upload some conll files. <span v-show="!admin">Ask an administrator to add files</span>
+                                        {{$t('projectView').nodata[1]}}<span v-show="!admin">{{$t('projectView').nodata[2]}}</span>
                                         <div v-show="admin" class="q-pa-md column items-start q-gutter-y-md">
                                             <q-toggle v-model="robot.active" checked-icon="check" color="warning" label="Choose a custom import name?" unchecked-icon="clear"/>
                                             <q-input dark v-show="robot.active" v-model="robot.name" label="Custom Name for non real user import" />
@@ -70,23 +70,23 @@
                                 <q-btn-group flat>
                                     
                                     <q-btn v-if="admin || super_admin" flat color="default"  icon="cloud_upload" @click="uploadDial = true" >
-                                        <q-tooltip v-if="(super_admin || admin)" :delay="300" content-class="text-white bg-primary" >Add CoNLL files as new samples</q-tooltip>
+                                        <q-tooltip v-if="(super_admin || admin)" :delay="300" content-class="text-white bg-primary" >{{$t('projectView').tooltipAddSample}}</q-tooltip>
                                     </q-btn>
                                     
                                     <div>
                                         <q-btn flat  color="default"  icon="cloud_download" @click="exportSamplesZip()" :loading="table.exporting" :disable="(!infos.is_open && !guest && !admin && !super_admin) || table.selected.length<1">
                                         </q-btn>
-                                        <q-tooltip v-if="table.selected.length<1" :delay="300" content-class="text-white bg-primary">Select the samples you want to export</q-tooltip>
-                                        <q-tooltip v-else :delay="300" content-class="text-white bg-primary">Export selected samples</q-tooltip>
+                                        <q-tooltip v-if="table.selected.length<1" :delay="300" content-class="text-white bg-primary">{{$t('projectView').tooltipExportSample[0]}}</q-tooltip>
+                                        <q-tooltip v-else :delay="300" content-class="text-white bg-primary">{{$t('projectView').tooltipExportSample[1]}}</q-tooltip>
                                     </div>
 
                                     <q-btn v-if="admin || super_admin" v-show="table.selected.length<1" flat color="default"  icon="delete_forever" disable>
-                                         <q-tooltip v-if="table.selected.length<1" :delay="300" content-class="text-white bg-primary">Select the samples you want to delete</q-tooltip>
-                                        <q-tooltip v-else :delay="300" content-class="text-white bg-primary">Delete selected samples</q-tooltip>
+                                         <q-tooltip v-if="table.selected.length<1" :delay="300" content-class="text-white bg-primary">{{$t('projectView').tooltipDeleteSample[0]}}</q-tooltip>
+                                        <q-tooltip v-else :delay="300" content-class="text-white bg-primary">{{$t('projectView').tooltipDeleteSample[1]}}</q-tooltip>
                                     </q-btn>
                                 
                                     <q-btn  v-if="admin || super_admin" v-show="table.selected.length!=0" :loading="table.loadingDelete" flat color="default" text-color="red" icon="delete_forever" @click="triggerConfirm(deleteSamples)" :disable="!admin && !super_admin">
-                                        <q-tooltip :delay="300" content-class="text-white bg-primary">Delete selected samples</q-tooltip>
+                                        <q-tooltip :delay="300" content-class="text-white bg-primary">{{$t('projectView').tooltipDeleteSample[1]}}</q-tooltip>
                                     </q-btn>
 
                                     <!-- ion-logo-github -->
@@ -100,7 +100,7 @@
                                                 <q-icon v-else name="account_circle" /> 
                                             </q-item-section>
                                             <q-item-section>
-                                                <q-item-label>Push only my trees of the selected samples</q-item-label>
+                                                <q-item-label>{{$t('projectView').tooltipGitPush[0]}}</q-item-label>
                                             </q-item-section>
                                         </q-item>
 
@@ -114,7 +114,7 @@
                                                 
                                             </q-item-section>
                                             <q-item-section>
-                                                <q-item-label>Push my trees of the selected samples, filled up with the most recent trees</q-item-label>
+                                                <q-item-label>{{$t('projectView').tooltipGitPush[1]}}</q-item-label>
                                             </q-item-section>
                                         </q-item>
 
@@ -123,7 +123,7 @@
                                                 <q-icon name="schedule" />
                                             </q-item-section>
                                             <q-item-section>
-                                                <q-item-label>Push the most recent trees</q-item-label>
+                                                <q-item-label>{{$t('projectView').tooltipGitPush[2]}}</q-item-label>
                                             </q-item-section>
                                         </q-item>
 
@@ -131,7 +131,7 @@
                                             <q-item-section avatar>
                                                 <q-icon name="ion-md-globe" />
                                             </q-item-section>                                        <q-item-section>
-                                            <q-item-label>Push all trees of the selected samples</q-item-label>
+                                            <q-item-label>{{$t('projectView').tooltipGitPush[3]}}</q-item-label>
                                         </q-item-section>
                                         </q-item>
 
@@ -139,8 +139,8 @@
                                     </q-btn-dropdown>
                                      <!-- v-if="loggedWithGithub" :disable="table.selected.length<1 -->
                                          
-                                    <q-tooltip v-if="table.selected.length<1" :delay="300" content-class="text-white bg-primary">Select the samples you want to commit and push to GitHub</q-tooltip>
-                                    <q-tooltip v-else :delay="300" content-class="text-white bg-primary">Commit and push the selected samples to GitHub</q-tooltip>
+                                    <q-tooltip v-if="table.selected.length<1" :delay="300" content-class="text-white bg-primary">{{$t('projectView').tooltipGitPush[4]}}</q-tooltip>
+                                    <q-tooltip v-else :delay="300" content-class="text-white bg-primary">{{$t('projectView').tooltipGitPush[5]}}</q-tooltip>
                                     </div>
 
                                     <div>
@@ -152,7 +152,7 @@
                                                 <q-icon v-else name="account_circle" /> 
                                             </q-item-section>
                                             <q-item-section>
-                                                <q-item-label>Replace my trees from the selected samples with the ones from GitHub</q-item-label>
+                                                <q-item-label>{{$t('projectView').gitPullUser}}</q-item-label>
                                             </q-item-section>
                                         </q-item>
 
@@ -161,7 +161,7 @@
                                                 <q-icon name="ion-md-globe" />
                                             </q-item-section>  
                                             <q-item-section>
-                                                <q-item-label>Replace all trees from the selected samples with the ones from GitHub</q-item-label>
+                                                <q-item-label>{{$t('projectView').gitPullAll}}</q-item-label>
                                             </q-item-section>
                                         </q-item>
 
@@ -176,8 +176,8 @@
 
                                         </q-list>
                                     </q-btn-dropdown>
-                                    <q-tooltip v-if="table.selected.length<1" :delay="300" content-class="text-white bg-primary">Select the samples you want to update from your GitHub folder</q-tooltip>
-                                    <q-tooltip v-else :delay="300" content-class="text-white bg-primary">Pull data from your GitHub folder onto the selected samples</q-tooltip>
+                                    <q-tooltip v-if="table.selected.length<1" :delay="300" content-class="text-white bg-primary">{{$t('projectView').tooltipGitPullSelect[0]}}</q-tooltip>
+                                    <q-tooltip v-else :delay="300" content-class="text-white bg-primary">{{$t('projectView').tooltipGitPullSelect[1]}}</q-tooltip>
                                     <q-tooltip :delay="300" content-class="text-white bg-primary"></q-tooltip>
                                     </div>
 
@@ -189,18 +189,18 @@
                                     <template v-slot:append>
                                         <q-icon name="search" />
                                     </template>
-                                    <q-tooltip :delay="300" content-class="text-white bg-primary">Search a sample</q-tooltip>
+                                    <q-tooltip :delay="300" content-class="text-white bg-primary">{{$t('projectView').tooltipSearch}}</q-tooltip>
                                 </q-input>
                                 
                                 <q-space />
 
                                 <q-select v-model="table.visibleColumns" multiple borderless dense options-dense :display-value="$q.lang.table.columns"
                                 emit-value map-options  :options="filterFields(table)"  option-value="name" style="min-width: 100px"  >
-                                    <q-tooltip :delay="300" content-class="text-white bg-primary">Select visible columns</q-tooltip>
+                                    <q-tooltip :delay="300" content-class="text-white bg-primary">{{$t('projectView').tooltipSelectVisible}}</q-tooltip>
                                 </q-select>
 
                                 <q-btn flat round dense  :icon="props.inFullscreen ? 'fullscreen_exit' : 'fullscreen'"  @click="props.toggleFullscreen"  class="q-ml-md" >
-                                    <q-tooltip :delay="300" content-class="text-white bg-primary">Fullscreen table</q-tooltip>
+                                    <q-tooltip :delay="300" content-class="text-white bg-primary">{{$t('projectView').tooltipFullscreen}}</q-tooltip>
                                 </q-btn>
                             </template>
 
@@ -259,7 +259,7 @@
             <q-page-sticky :position="breakpoint?'bottom-right':'top-right'" :offset="breakpoint?[18, 18]:[18,70]">
                 <q-btn size="20px" round @click="searchDialog = !searchDialog" color="primary" icon="img:../statics/svg/g.svg" >
                     <q-tooltip content-class="bg-primary" content-style="font-size: 16px" >
-                         Search with Grew in the whole project
+                         {{$t('projectView').tooltipFabGrew}}
                     </q-tooltip>
                 </q-btn>
             </q-page-sticky>
@@ -268,14 +268,14 @@
                     <q-btn-group push flat rounded v-if="reltablebuttons">
                     <q-btn @click="getRelationTable('user')" push color="primary" no-caps>
                         <q-tooltip content-class="bg-primary" content-style="font-size: 16px" >
-                            View only my trees
+                            {{$t('projectView').tooltipFabGrewUser}}
                         </q-tooltip>
                         <q-avatar v-if="isLoggedIn" size="1.2rem"><img :src="avatar"></q-avatar>
                         <q-icon v-else name="account_circle" /> 
                     </q-btn>
                     <q-btn @click="getRelationTable('user_recent')" push color="primary" no-caps>
                         <q-tooltip content-class="bg-primary" content-style="font-size: 16px" >
-                            View my trees, filled up with the most recent trees
+                            {{$t('projectView').tooltipFabGrewUserRecent}}
                         </q-tooltip>
                         <q-avatar v-if="isLoggedIn" size="1.2rem"><img :src="avatar"></q-avatar>
                         <q-icon v-else name="account_circle" /> 
@@ -283,18 +283,18 @@
                     </q-btn>
                     <q-btn @click="getRelationTable('recent')" push icon="schedule"  color="primary" no-caps v-if="admin || super_admin">
                         <q-tooltip content-class="bg-primary" content-style="font-size: 16px" >
-                            View most recent trees
+                            {{$t('projectView').tooltipFabGrewRecent}}
                         </q-tooltip>
                     </q-btn>
                     <q-btn @click="getRelationTable('all')" push icon="ion-md-globe"  color="primary" no-caps v-if="admin || super_admin">
                         <q-tooltip content-class="bg-primary" content-style="font-size: 16px" >
-                            View all trees
+                            {{$t('projectView').tooltipFabGrewAll}}
                         </q-tooltip>
                     </q-btn>
                 </q-btn-group>
                 <q-btn size="20px" round @click="reltablebuttons = !reltablebuttons;" color="primary text-green" icon="ion-md-grid" >
                     <q-tooltip content-class="bg-primary" content-style="font-size: 16px" >
-                        Get Relation Tables
+                        {{$t('projectView').tooltipRelationTable}}
                     </q-tooltip>
                 </q-btn>
             </q-page-sticky>
@@ -312,18 +312,18 @@
                     <q-bar>
                         <q-space />
                         <q-btn dense flat icon="minimize" @click="maximizedUploadToggle = false" :disable="!maximizedUploadToggle">
-                            <q-tooltip v-if="maximizedUploadToggle" content-class="bg-white text-primary">Minimize</q-tooltip>
+                            <q-tooltip v-if="maximizedUploadToggle" content-class="bg-white text-primary">{{$t('projectView').tooltipWindows[0]}}</q-tooltip>
                         </q-btn>
                         <q-btn dense flat icon="crop_square" @click="maximizedUploadToggle = true" :disable="maximizedUploadToggle">
-                            <q-tooltip v-if="!maximizedUploadToggle" content-class="bg-white text-primary">Maximize</q-tooltip>
+                            <q-tooltip v-if="!maximizedUploadToggle" content-class="bg-white text-primary">{{$t('projectView').tooltipWindows[1]}}</q-tooltip>
                         </q-btn>
                         <q-btn dense flat icon="close" v-close-popup>
-                            <q-tooltip content-class="bg-white text-primary">Close</q-tooltip>
+                            <q-tooltip content-class="bg-white text-primary">{{$t('projectView').tooltipWindows[2]}}</q-tooltip>
                         </q-btn>
                     </q-bar>
 
                     <q-card-section>
-                        <div class="text-h6 text-blue-grey-8">Select one or multiple conll files</div>
+                        <div class="text-h6 text-blue-grey-8">{{$t('projectView').uploadSelectDial}}</div>
                     </q-card-section>
                     
                     <q-card-section>
@@ -356,12 +356,12 @@
             <q-dialog v-model="simpleProjectInfoDialog">
                 <q-card style="width: 300px">
                     <q-card-section>
-                    <div class="text-h6">Project Information</div>
+                    <div class="text-h6">{{$t('projectView').projectInfoDial.title}}</div>
                     </q-card-section>
 
                     <q-card-section class="q-pt-none">
-                        <div v-if="infos.admins.length>1">Contact these project administrators if you need access or further information:</div>
-                        <div v-else>Contact the project administrator if you need access or further information:</div>
+                        <div v-if="infos.admins.length>1">{{$t('projectView').projectInfoDial.ifAdmin}}</div>
+                        <div v-else>{{$t('projectView').projectInfoDial.else}}</div>
                     </q-card-section>
                     <q-card-section>
                         <q-list >

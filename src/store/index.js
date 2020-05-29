@@ -181,11 +181,11 @@ export default new Vuex.Store({
             var caption="";
             if(error.message!=undefined) {msg = error.response.message;}
             else if (error.response) {
-                if(error.response.status == 403){ msg = (error.response.message)?error.response.message:`Hey you! You do not have the permissions for this action. Please contact the administrator.`;  }
-                else if(error.response.status == 401){ msg == (error.response.message)?error.response.message:`Hey you! Please log in to do any further actions of that type.`;}
+                if(error.response.status == 403){ msg = (error.response.message)?error.response.message:$t('error403');  }
+                else if(error.response.status == 401){ msg == (error.response.message)?error.response.message:$t('error401');}
                 else { msg =(error.response.message)?error.response.message: error.response.statusText + ' error ' + error.response.status; }
             }
-            else msg='Something went wrong: '+error;
+            else msg=$t('oops')+error;
             if (error.caption) caption=error.caption;
             if (error.permanent) Notify.create({message: msg, position: 'top-right', color: 'negative', icon:'warning', caption:caption, timeout:0, closeBtn:'Dismiss', html:true});
             else Notify.create({message: msg, position: 'top-right', color: 'negative', icon:'warning', caption:caption});

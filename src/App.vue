@@ -26,7 +26,7 @@ export default {
       store: Store,
       alerts: {
         'welcomeback': { color: 'primary', 
-                        message: `Welcome back to Arborator!`,         
+                        message: this.$t('welcomeback'),         
                         progress: true,
                         icon: 'mood'}
       }

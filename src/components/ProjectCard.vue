@@ -2,7 +2,7 @@
     <q-card v-show="visible" :class="(hover ? 'shadow-12' : '')" class="clickable my-card grid-style-transition shadow-2 "
       @mouseover="hover = true" @mouseleave="hover = false" @click="goTo()" :style="hover ? 'transform: scale(0.95);' : ''">
         <q-popup-proxy transition-show="flip-up" transition-hide="flip-down" context-menu>
-            <q-card>
+            <q-card v-if="isLoggedIn">
                 <q-card-section>
                     <q-list>
                         <q-item clickable @click="projectSettings()">
@@ -60,6 +60,9 @@ export default {
         }
     },
     computed: {
+        isLoggedIn() {
+            return this.$store.getters.isLoggedIn;
+        },
         imageEmpty(){
             if(this.project.image == null){ this.project.image = "b''";}
             if(this.project.image == "b''") {return true;}

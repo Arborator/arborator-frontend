@@ -28,8 +28,10 @@
                     </q-input>
                 </template>
                 <q-space/>
-                 <q-btn flat round dense icon="save" :disable="!graphInfo.dirty" @click="save()"> <q-tooltip>Save this tree</q-tooltip> </q-btn>
-            <q-btn flat round dense icon="post_add" :disable="tab==''" @click="openMetaDialog()"> <q-tooltip>Edit this tree's metadata</q-tooltip> </q-btn>
+                 <q-btn v-if="isLoggedIn" flat round dense icon="save" :disable="!graphInfo.dirty" @click="save()"> <q-tooltip>Save this tree</q-tooltip> </q-btn>
+
+            <!-- TODO : still display the metadata when the user is not logged in, but hide all the buttons for deleting and saving them -->
+            <q-btn v-if="isLoggedIn" flat round dense icon="post_add" :disable="tab==''" @click="openMetaDialog()"> <q-tooltip>Edit this tree's metadata</q-tooltip> </q-btn>
                 
             <q-btn-dropdown :disable="tab==''" icon="more_vert"  flat dense> <q-tooltip>More</q-tooltip>
                 <q-list>
@@ -148,6 +150,9 @@ export default {
             let dirty = this.graphInfo.dirty;
             let open = this.$store.getters.projectConfig.is_open;
             return !dirty || !open;
+        },
+        isLoggedIn() {
+            return this.$store.getters.isLoggedIn;
         }
     },
     mounted() {

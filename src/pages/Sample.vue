@@ -107,7 +107,7 @@ export default {
             intri: 10, // give the scroll 10 seconds
             infos: {
                 name: '',
-                is_private: false,
+                visibility: 2,
                 description: '',
                 image: '',
                 sentences: [],

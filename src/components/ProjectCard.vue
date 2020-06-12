@@ -1,10 +1,10 @@
 <template>
     <q-card v-show="visible" :class="(hover ? 'shadow-12' : '')" class="clickable my-card grid-style-transition shadow-2 "
       @mouseover="hover = true" @mouseleave="hover = false" @click="goTo()" :style="hover ? 'transform: scale(0.95);' : ''">
-        <q-popup-proxy transition-show="flip-up" transition-hide="flip-down" context-menu>
-            <q-card v-if="isLoggedIn">
+        <q-popup-proxy v-if="canSeeSettings" transition-show="flip-up" transition-hide="flip-down" context-menu>
+            <q-card >
                 <q-card-section>
-                    <q-list>
+                    <q-list >
                         <q-item clickable @click="projectSettings()">
                             <q-item-section>{{$t('projectHub').rightClickSettings}}</q-item-section>
                             <q-item-section side>
@@ -23,8 +23,9 @@
         </q-popup-proxy>
         <q-img :ratio="16/9" :src="imageEmpty?'../statics/images/project.jpg':imageCleaned" basic >
             <div class="absolute-bottom text-h6">
-                <q-icon v-show="project.is_private" name="lock" color="negative" size="lg"></q-icon>
-                <q-icon v-show="!project.is_private" name="public" color="positive" size="lg"></q-icon>
+                <q-icon v-show="project.visibility == 0" name="lock" color="negative" size="lg"></q-icon>
+                <q-icon v-show="project.visibility == 1" name="lock" color="positive" size="lg"></q-icon>
+                <q-icon v-show="project.visibility == 2" name="public" color="positive" size="lg"></q-icon>
                 {{project.projectname}}
             </div>
         </q-img>
@@ -60,8 +61,12 @@ export default {
         }
     },
     computed: {
-        isLoggedIn() {
-            return this.$store.getters.isLoggedIn;
+        canSeeSettings() {
+            if (!this.$store.getters.isLoggedIn) {return false}
+            if(this.project.admins.includes(this.$store.getters.getUserInfos.id)){ return true; }
+            else if(this.$store.getters.getUserInfos.super_admin) { return true; }
+            else { return false; }
+
         },
         imageEmpty(){
             if(this.project.image == null){ this.project.image = "b''";}
@@ -78,13 +83,17 @@ export default {
             return 'data:image/png;base64, '+clean;
         },
         visible(){
-            if(!this.project.is_private){ return true; }
-            else{
-                if(this.project.admins.includes(this.$store.getters.getUserInfos.id)){ return true; }
-                else if(this.project.guests.includes(this.$store.getters.getUserInfos.id)){ return true; }
-                else if(this.$store.getters.getUserInfos.super_admin) { return true; }
-                else { return false; }
-            }
+            // show all projects regardless of their visibility status
+            return true
+
+            // only show non-private projects
+            // if(!this.project.visibility == 0){ return true; }
+            // else{
+            //     if(this.project.admins.includes(this.$store.getters.getUserInfos.id)){ return true; }
+            //     else if(this.project.guests.includes(this.$store.getters.getUserInfos.id)){ return true; }
+            //     else if(this.$store.getters.getUserInfos.super_admin) { return true; }
+            //     else { return false; }
+            // }
         }      
     },
     methods: {

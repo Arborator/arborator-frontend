@@ -36,8 +36,11 @@
             <q-badge :color="($q.dark.isActive?'grey':'secondary')"> {{project.number_samples}} {{$t('projectHub').samples}} </q-badge>
         </q-item-section>
         <q-item-section side>
-            <q-icon v-show="project.is_private" name="lock" color="negative"></q-icon>
-            <q-icon v-show="!project.is_private" name="public" color="positive"></q-icon>
+            <div class="absolute-bottom text-h6">
+                <q-icon v-show="project.visibility == 0" name="lock" color="negative" size="lg"></q-icon>
+                <q-icon v-show="project.visibility == 1" name="lock" color="positive" size="lg"></q-icon>
+                <q-icon v-show="project.visibility == 2" name="public" color="positive" size="lg"></q-icon>
+            </div>
         </q-item-section>
 
         <q-dialog v-model="confirmActionDial"> <confirm-action :parentAction="confirmActionCallback" :arg1="confirmActionArg1"></confirm-action> </q-dialog>
@@ -72,7 +75,7 @@ export default {
             return 'data:image/png;base64, '+clean;
         },
         visible(){
-            if(!this.project.is_private){ return true; }
+            if(!this.project.visibility == 0){ return true; }
             else{
                 if(this.project.admins.includes(this.$store.getters.getUserInfos.id)){ return true; }
                 else if(this.project.guests.includes(this.$store.getters.getUserInfos.id)){ return true; }

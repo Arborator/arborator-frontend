@@ -138,6 +138,7 @@ export default {
     getProjects(){ 
       this.loadingProjects = true; 
       api.getProjects().then(response => { 
+        console.log("here", response.data.projects);
         this.projects = response.data.projects; this.visibleProjects = response.data.projects; this.projectDifference = response.data.difference; this.loadingProjects = false; this.initLoading = false;
         if(this.$store.getters.getUserInfos.super_admin){ this.$q.notify({message:`Projects from Grew and Arborator are different!`, type:'warning'}); }
       }).catch(error => { this.$store.dispatch("notifyError", {error: error}); this.loadingProjects = false;}); 

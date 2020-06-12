@@ -426,7 +426,7 @@ export default {
             },
             infos: {
                 name: '',
-                is_private: false,
+                visibility: 2,
                 is_open: false,
                 description: '',
                 image: '',

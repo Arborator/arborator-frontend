@@ -380,16 +380,15 @@ export default {
                 'user': this.user}); //emits to parent the id of the tree and a bunch of other stuff
             }
           },
+        
+        // usermatch examples:
+        // pattern { N [upos="PROPN"] }  --> [{"edges":{},"nodes":{"N":"13"}}]
+        // pattern { GOV -[det]-> DEP } --> [{"edges":{},"nodes":{"GOV":"5","DEP":"4"}}]
+        // pattern {e: GOV -[subj]-> DEP } --> [{"edges":{"e":{"source":"7","label":"subj","target":"6"}},"nodes":{"GOV":"7","DEP":"6"}},{"edges":{"e":{"source":"10","label":"subj","target":"9"}},"nodes":{"GOV":"10","DEP":"9"}}]
         start(conllStr, matches, id){
-            if (this.user in matches) var usermatch = matches[this.user];
-            else var usermatch = {'nodes':[],'edges':[]};
-            
-            // matches in standard query table:"kimgerdes":{"edges":[],"nodes":["2"]}
-            // matches in relation table: "kimgerdes":{"edges":{"e":{"source":"ROOT","label":"root","target":"2"}}
-            if (!Array.isArray(usermatch.nodes)) usermatch = {'nodes':[usermatch.edges.e.target],'edges':[]}
-            // console.log(8787,usermatch, matches)
-            // problem nodes not list but nodes: {DEP: "1", GOV: "ROOT"}
-            this.snap.treedata = this.draft.drawit(conllStr, usermatch, id, this.options.shownfeatures); // here it happens
+            if (this.user in matches) var usermatches = matches[this.user];
+            else var usermatches = []; //{'nodes':[],'edges':[]};
+            this.snap.treedata = this.draft.drawit(conllStr, usermatches, id, this.options.shownfeatures); // here it happens
             this.loading = false;
             // give the draft access to these functions:
             this.snap.treedata.openRelationDialog = this.openRelationDialog;

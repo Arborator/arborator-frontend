@@ -65,18 +65,12 @@ export default new Vuex.Store({
                     { "name": "EXTPOS", "values": ["SCONJ"] },
                     { "name": "Gloss", "values": "String" }
                 ],
-                // "DEPREL": {
-                //     "1": ["cc","comp","compound","conj","det","discourse","dislocated","flat","goeswith","mod","parataxis","punct","root","subj","unk","vocative"],
-                //     "2": ["appos", "aux", "cleft", "comp", "conj", "coord", "dicto", "discourse", "dislocated", "emph", "expl", "fixed", "foreign", "insert", "num", "obj", "obl", "parenth", "periph", "poss", "pred", "prt", "redup", "relcl", "scrap", "svc"],
-                //     "deep": ["agent", "expl", "fixed", "lvc", "num", "relcl", "scrap", "x"]
-                // },
                 "DEPREL": [
                     {"name": "rel", "values": ["cc","comp","compound","conj","det","discourse","dislocated","flat","goeswith","mod","parataxis","punct","root","subj","unk","vocative"], "join":""},
                     {"name": "subrel", "values": ["","appos", "aux", "cleft", "comp", "conj", "coord", "dicto", "discourse", "dislocated", "emph", "expl", "fixed", "foreign", "insert", "num", "obj", "obl", "parenth", "periph", "poss", "pred", "prt", "redup", "relcl", "scrap", "svc"], "join":":"},
                     {"name": "deep", "values": ["","agent", "expl", "fixed", "lvc", "num", "relcl", "scrap", "x"], "join":"@"}
                 ],
                 "DEPS": [
-                    // "deep": ["comp", "mod", "subj"]
                     {"name": "deep", "values": ["comp", "mod", "subj"], "join":""}
 
                 ]
@@ -177,7 +171,8 @@ export default new Vuex.Store({
         notifyError({commit}, {error}){
             var msg;
             var caption="";
-            if(error.message!=undefined) {msg = error.response.message;}
+            if(error.message!=undefined) 
+                {msg = error.message;}
             else if (error.response) {
                 if(error.response.status == 403){ msg = (error.response.message)?error.response.message:$t('error403');  }
                 else if(error.response.status == 401){ msg == (error.response.message)?error.response.message:$t('error401');}

@@ -422,7 +422,8 @@ export default {
                 'uploadsuccess': { color: 'positive', message: 'Upload success'},
                 'uploadfail': { color: 'negative', message: 'Upload failed', icon: 'report_problem' },
                 'deletesuccess': { color: 'positive', message: 'Delete success'},
-                'deletefail': { color: 'negative', message: 'Delete failed', icon: 'report_problem'}
+                'deletefail': { color: 'negative', message: 'Delete failed', icon: 'report_problem'},
+                'GitHubPushSuccess': {color: 'positive', message:'Successfully pushed your data to GitHub'}
             },
             infos: {
                 name: '',
@@ -568,16 +569,19 @@ export default {
             var x = [];
             for (const sample of this.table.selected) { x.push(sample.samplename) }
             var data = { samplenames: x, commit_type:type};
-            console.log(data);
+            console.log(123,data);
             api.commit(this.$route.params.projectname, data)
             .then(response => { // 200 : updaté ou créé
-                this.showNotif('top', 'Successfully pushed your data to GitHub');
+                console.log(777, response)
+                this.showNotif('top', 'GitHubPushSuccess');
                 // console.log("wooohoo");
                 })
             .catch(error => {
+                console.log(111,error)
                 if (error.response.data.status==418) // 418 : app pas installée (ou autre problème ?)
                 {
-                    console.log(error, error.response);
+                    console.log(111,error)
+                    console.log(222, error.response);
                     error.response.message = error.response.data.message;
                     error.permanent = true;
                     this.$store.dispatch("notifyError", {error: error});

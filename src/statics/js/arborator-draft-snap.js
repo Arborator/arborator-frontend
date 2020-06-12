@@ -364,7 +364,9 @@ function drawsnap(idSVG, treedata, usermatches, shownfeatures) {
 	///////////////////////////////////
 	// draws json tree on svg in div //
 	// idSVG is of pre-existing svg
-	// treedata is an object containing .tree (relevant here), but also sentence and META with one line per sentence feature: [ "# user_id = Marine", "# elan_id = P_WAZK_07_34 P_WAZK_07_35", … ]
+	// treedata is an object containing .tree (relevant here), 
+	// but also sentence and META with one line per sentence feature: 
+	// [ "# user_id = Marine", "# elan_id = P_WAZK_07_34 P_WAZK_07_35", … ]
 	// usermatches is of the form edges: Array [], nodes: 20, 21]
 	// shownfeatures todo!!!
 	///////////////////////////////////
@@ -381,6 +383,9 @@ function drawsnap(idSVG, treedata, usermatches, shownfeatures) {
 	s.id = idSVG;
 	var tree = treedata.tree;
 	
+	// usermatches
+	const matchnodes = usermatches.map(({nodes})=>Object.values(nodes)).flat(); // simple array of match nodes to highlight
+	const matchedges = Object.fromEntries(usermatches.map(um=>[um.edges.e.target,um.edges.e])); // object { target node : object }
 	// insertion of texts
 	var xpositions = [0];
 	var allstexts = {};
@@ -403,17 +408,15 @@ function drawsnap(idSVG, treedata, usermatches, shownfeatures) {
 				else levels.push(2); // minimum height 2 for root relations
 				for (var headid in word["DEPS"]) { // computation of tree depth. for each governor...
 					if (tree[headid]) levels.push(getlevel(nr, headid, tree, idhead2level));
-					// log(6666,idhead2level)	
-				}
-				
-				
+				}				
 			}
 			if (shofea == 'UPOS') { // categories
 				sword.attr({cursor: "pointer"}).click( categoryclick );
 				sword.upos =  word[shofea];
 			}
-			if ( usermatches.nodes.includes( nr.toString()) ) { // highlight matches
-				sword.attr({class:"DEPRELselected"}).node.scrollIntoView()
+			if ( matchnodes.includes( nr.toString()) ) { // highlight matches, todo: hightlight relation, too!
+				sword.node.style.fill = "#dd137bff";
+				sword.node.scrollIntoView() // todo: check why this is not operational
 			}
 			if ('highlight' in word.MISC) {
 				sword.node.style.fill = word.MISC['highlight'];
@@ -422,8 +425,6 @@ function drawsnap(idSVG, treedata, usermatches, shownfeatures) {
 			if (!sword.wordDistance) {sword.wordDistance=xWordDistance;log('check your CSS for',shofea)}
 			nextx = Math.max(xpositions[ind+1] || 0, xpositions[ind]+sword.getBBox().w + sword.wordDistance);
 			xpositions[ind+1]=nextx;
-			// log("@@@@",shofea,ind+1,nextx,xpositions[ind+1] || 0, xpositions[ind+1], xpositions)
-			// log(xpositions[ind],sword.getBBox().w, sword.wordDistance)
 			ind += 1;
 		};
 		runningy += yWordDistance;
@@ -442,9 +443,7 @@ function drawsnap(idSVG, treedata, usermatches, shownfeatures) {
 	for (let shofea of shownfeatures) {
 		var ind = 0;
 		for (var nr in tree) {
-			
 			var xmidpoint = xpositions[ind]+(xpositions[ind+1]-xpositions[ind])/2;
-			// log(444,xmidpoint,shofea,ind,allstexts[shofea][ind])
 			xmidpoints.push(xmidpoint);
 			allstexts[shofea][ind].midx=xmidpoint;
 			allstexts[shofea][ind].attr({'x':  xmidpoint - allstexts[shofea][ind].getBBox().w/2});
@@ -460,13 +459,25 @@ function drawsnap(idSVG, treedata, usermatches, shownfeatures) {
 	var ind = 0;
 	for (var nr in tree) {
 		var word = tree[nr];
-		drawRelation(word["HEAD"], word["DEPREL"], null, null, 0, tree, idhead2level, nr, basey, ind, 
+		var lineclass= null;var relationclass = null;
+		if (nr in matchedges) { // matchedges[nr] looks like {"source":"10","label":"subj","target":"9"}
+			if(word["HEAD"]==matchedges[nr]["source"] && word["DEPREL"]==matchedges[nr]["label"]) { 
+				lineclass= "DEPRELselected";relationclass = "dragcurve";
+			}
+		}
+		drawRelation(word["HEAD"], word["DEPREL"], relationclass, lineclass, 0, tree, idhead2level, nr, basey, ind, 
 			xmidpoints, firstTextFontSize, s, arrowhead, word, relationclick);
 		var gap=0
 		for (var headid in word["DEPS"]) { // for each governor of extended dependency
 			gap=gap+arrowheadsize
+			var lineclass= null;var relationclass = null;
+			if (nr in matchedges) { // matchedges[nr] looks like {"source":"10","label":"subj","target":"9"}
+				if(headid==matchedges[nr]["source"] && word["DEPS"][headid]==matchedges[nr]["label"]) { 
+					lineclass= "DEPRELselected";relationclass = "dragcurve";
+				}
+			}
 			drawRelation(headid, word["DEPS"][headid], "xdep", "xdeprel", gap, tree, idhead2level, nr, basey, ind, 
-				xmidpoints, firstTextFontSize, s, arrowhead, word, relationclick);
+				xmidpoints, firstTextFontSize, s, arrowhead, word, relationclick); // todo: hightlight usermatch in relation, too!
 		}
 		ind += 1;
 	};
@@ -719,7 +730,7 @@ function conllToTree(treeline) {
 	var sentence = [];
 	words.forEach(function (word, i) {
 		sentence.push(word);
-		if (!("NoSpaceAfter" in tree[i+1]["MISC"] && tree[i+1]["MISC"]=="No" )) sentence.push(" ");
+		if (!("SpaceAfter" in tree[i+1]["MISC"] && tree[i+1]["MISC"]["SpaceAfter"]=="No" )) sentence.push(" ");
 		// if(!reverseMode){
 		// 	if (i+1 in tree && !(("NoSpaceAfter" in tree[i+1]) && tree[i+1]["NoSpaceAfter"]==false)) sentence.push(" ");
 		// } else{ sentence.push(word); }

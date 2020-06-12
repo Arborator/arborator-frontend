@@ -217,7 +217,8 @@ export default {
 			entryLabel: '',
 			stockid: '',
 			uploadImage: {image: null, submitting: false},
-			infos: {admins:[], guests:[], labels:[], cats:[], description: ''},
+			infos: {admins:[], guests:[], description: ''},
+			// infos: {admins:[], guests:[], labels:[], cats:[], description: ''},
 			projectconfig: {},
 			annotationFeatures: {},
 			annofjson: '',
@@ -246,6 +247,7 @@ subj,comp,vocative
 	},
 	mounted(){
 		this.getProjectInfos();
+		console.log(this.infos);
 	},
 	computed: {
         imageEmpty(){
@@ -270,11 +272,14 @@ subj,comp,vocative
 				console.log(response.data);
 				this.infos = response.data; 
 				this.annotationFeatures = this.$store.getters.getProjectConfig.annotationFeatures;
-				this.shownfeatures = this.$store.getters.getProjectConfig.shownfeatures;
-				// console.log(this.annotationFeatures)
+
+				var tmp = this.infos.config.shownfeatures;
+				this.shownfeatures = tmp;
 				this.shownfeatureschoices = ['FORM','UPOS','LEMMA'].concat(this.annotationFeatures.FEATS.map(({ name }) => 'FEATS.'+name).concat(this.annotationFeatures.MISC.map(({ name }) => 'MISC.'+name)))
-				// this.$store.getters.getProjectConfig.shownfeatures;
-				this.shownmeta = this.$store.getters.getProjectConfig.shownmeta;
+				
+				var tmp = this.infos.config.shownmeta;
+				this.shownmeta = tmp;
+
 				this.shownmetachoices = this.annotationFeatures.META;
 				this.annofjson = JSON.stringify(this.annotationFeatures, null, 4);
 				})
@@ -294,10 +299,11 @@ subj,comp,vocative
 			
 		},
 		saveannofshown(){
-			console.log('shownfeatures',this.shownfeatures)
 			var config = this.$store.getters.getProjectConfig;
-			console.log(111,config)
+			// console.log("777", this.shownfeatures, this.infos.config.shownfeatures);
 			config.shownfeatures = this.shownfeatures;
+			// don't know if I should update this as well..
+			// this.infos.config.shownfeatures = this.shownfeatures;
 			this.$store.commit('set_project_config', config);
 			console.log(222, this.$props.projectname, config)
 			
@@ -316,7 +322,22 @@ subj,comp,vocative
      
 			
 		savemetashown(){
-			console.log('todo savemetashown')
+			var config = this.$store.getters.getProjectConfig;
+
+			config.shownmeta = this.shownmeta;
+			// don't know if I should update this as well..
+			// this.infos.config.shownfeatures = this.shownfeatures;
+			this.$store.commit('set_project_config', config);
+		
+			// api.updateProjectSettings(this.$props.projectname, config)
+			api.updateProjectSettings(this.$props.projectname, {'shownmeta':this.shownmeta})
+			.then(response => {
+				console.log(66565,response.data)
+				
+				})
+			.catch(error => {
+					this.$store.dispatch("notifyError", {error: error}); 
+					this.$q.notify({message: `${error}`, color:'negative', position: 'bottom'});})
 		},
 		saveAnnotationSettings(){
 			console.log('todo: here the project annotation settings should be saved');

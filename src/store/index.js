@@ -24,9 +24,7 @@ export default new Vuex.Store({
         avatarKey: 0, 
         lastGrewQuery: '',
         projectConfig: {
-            cats: [], 
-            labels: [], 
-            is_open: false, 
+            // is_open: false, 
             show_all_trees: true,
             shownfeatures: ["FORM", "UPOS", "LEMMA", "MISC.Gloss"],
             shownmeta: ["text_en"],

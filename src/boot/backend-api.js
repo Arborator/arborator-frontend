@@ -38,32 +38,32 @@ export default {
     updateProjectSettings(projectname, projectconfig){ // new from kim JSON.stringify(user)
         return API.post('projects/'+projectname+'/settings/update', projectconfig);
     },
-    addProjectCatLabel(projectname, cat){
-        return API.post('projects/'+projectname+'/config/cat/add', {'cat': cat});
-    },
-    removeProjectCatLabel(projectname, cat){
-        return API.post('projects/'+projectname+'/config/cat/delete', {'cat': cat});
-    },
-    addProjectStock(projectname){
-        return API.post('projects/'+projectname+'/config/stock/add', {'stockid':'dummy'});
-    },
-    removeProjectStock(projectname, stockid){
-        return API.post('projects/'+projectname+'/config/stock/delete', {'stockid':stockid})
-    },
-    addProjectStockLabel(projectname, stockid, label){
-        return API.post('projects/'+projectname+'/config/label/add', {'stockid':stockid, 'label':label});
-    },
-    removeProjectStockLabel(projectname, id, stockid, label){
-        return API.post('projects/'+projectname+'/config/label/delete', {'labelid': id,'stockid':stockid, 'label':label});
-    },
-    saveTxtCats(projectname, txtCats){
-        let data = {'cats':txtCats};
-        return API.post('projects/'+projectname+'/config/txtcats', data);
-    },
-    saveTxtLabels(projectname, txtLabels){
-        let data = {'labels':txtLabels};
-        return API.post('projects/'+projectname+'/config/txtlabels', data);
-    },
+    // addProjectCatLabel(projectname, cat){
+    //     return API.post('projects/'+projectname+'/config/cat/add', {'cat': cat});
+    // },
+    // removeProjectCatLabel(projectname, cat){
+    //     return API.post('projects/'+projectname+'/config/cat/delete', {'cat': cat});
+    // },
+    // addProjectStock(projectname){
+    //     return API.post('projects/'+projectname+'/config/stock/add', {'stockid':'dummy'});
+    // },
+    // removeProjectStock(projectname, stockid){
+    //     return API.post('projects/'+projectname+'/config/stock/delete', {'stockid':stockid})
+    // },
+    // addProjectStockLabel(projectname, stockid, label){
+    //     return API.post('projects/'+projectname+'/config/label/add', {'stockid':stockid, 'label':label});
+    // },
+    // removeProjectStockLabel(projectname, id, stockid, label){
+    //     return API.post('projects/'+projectname+'/config/label/delete', {'labelid': id,'stockid':stockid, 'label':label});
+    // },
+    // saveTxtCats(projectname, txtCats){
+    //     let data = {'cats':txtCats};
+    //     return API.post('projects/'+projectname+'/config/txtcats', data);
+    // },
+    // saveTxtLabels(projectname, txtLabels){
+    //     let data = {'labels':txtLabels};
+    //     return API.post('projects/'+projectname+'/config/txtlabels', data);
+    // },
     setProjectUserRole(projectname, targetrole, userid){
         let data = {'user_id':userid};
         return API.post('projects/'+projectname+'/'+targetrole+'/add', data);

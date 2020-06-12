@@ -28,7 +28,7 @@
 					{label: 'Visible', value: 1},
 					{label: 'Open', value: 2}]" />
 				</div>
-				<q-toggle v-model="isOpen" label="Open Project" />
+				<!-- <q-toggle v-model="isOpen" label="Open Project" /> -->
 				<q-toggle v-model="showAllTrees" label="Show All Trees" />
 				<div>
 					<q-btn id="submitproject" type="submit" :loading="submitting" label="create" color="primary" class="q-mt-md" v-close-popup/>

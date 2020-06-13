@@ -312,12 +312,14 @@ export default {
             this.$refs.conllGraph.filter(c => c.user == this.tab)[0].openMetaDialog();    
         },
         autoopen(user) {
+            console.log(4444545454, 'conllGraph_'+this.sentenceId+'_'+this.index+'_'+user)
             // called from Sample.vue to open specific tree
             if('tab'+user in this.$refs){
                 var usertab = this.$refs['tab'+user][0];
                 usertab.__activate();
                 setTimeout( () => {
-                 document.getElementById('conllGraph'+user).scrollIntoView({behavior: "smooth", block: "center", inline: "nearest"});
+                    
+                 document.getElementById('conllGraph_'+this.sentenceId+'_'+this.index+'_'+user).scrollIntoView({behavior: "smooth", block: "center", inline: "nearest"});
                 }, 1000)
             }
             else {

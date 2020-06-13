@@ -4,16 +4,23 @@
             <q-card flat style="max-width: 100%;">
                 <q-card-section>
                     <q-toolbar class="  text-center">
-                        <q-toolbar-title>
-                            <span :class="($q.dark.isActive?'':'text-primary') + ' text-bold'">{{infos.name}}</span> 
-                            <q-btn v-if="super_admin || admin" flat round :color="$q.dark.isActive?'':'primary'" icon="settings" @click="projectSettingsDial=true">
+                        <!-- <q-toolbar-title><span :class="($q.dark.isActive?'':'text-primary') + ' text-bold'">{{infos.name}}</span> </q-toolbar-title> -->
+                         
+                    </q-toolbar>
+                         <q-img style="height: 120px; "  :src="imageEmpty?'../statics/images/niko-photos-tGTVxeOr_Rs-unsplash.jpg':imageCleaned" basic >
+						<div class="absolute-bottom text-h6" style="padding:6px;">
+							<q-icon v-show="infos.visibility == 0" name="lock" :color="$q.dark.isActive?'red-13':'negative'" size="lg"></q-icon>
+							<q-icon v-show="infos.visibility == 1" name="lock" :color="$q.dark.isActive?'red-13':'positive'" size="lg"></q-icon>
+							<q-icon v-show="infos.visibility == 2" name="public" :color="$q.dark.isActive?'red-13':'positive'" size="lg"></q-icon>
+							Project {{infos.name}}
+                            <q-btn v-if="super_admin || admin" flat round :color="$q.dark.isActive?'primary':''" icon="settings" @click="projectSettingsDial=true">
                                 <q-tooltip :delay="300" content-class="text-white bg-primary" >{{$t('projectView').tooltipSettings}}</q-tooltip>
                             </q-btn>
-                            <q-btn v-else flat round :color="$q.dark.isActive?'':'primary'" icon="settings" @click="simpleProjectInfoDialog=true">
+                            <q-btn v-else flat round :color="$q.dark.isActive?'primary':''" icon="settings" @click="simpleProjectInfoDialog=true">
                                 <q-tooltip :delay="300" content-class="text-white bg-primary" >{{$t('projectView').tooltipViewAdmin}}</q-tooltip>
                             </q-btn>
-                        </q-toolbar-title>
-                    </q-toolbar>
+						</div>
+					</q-img> 
                 </q-card-section>
                 <q-card-section>
                         <q-table
@@ -256,7 +263,7 @@
             </q-card>
          
 
-            <q-page-sticky :position="breakpoint?'bottom-right':'bottom-right'" :offset="breakpoint?[18, 18]:[30,80]">
+            <q-page-sticky :position="breakpoint?'bottom-right':'bottom-right'" :offset="breakpoint?[18, 18]:[30,80]" style="z-index:999">
                 <q-btn size="20px" round @click="searchDialog = !searchDialog" color="primary" icon="img:../statics/svg/g.svg" >
                     <q-tooltip content-class="bg-primary" content-style="font-size: 16px" >
                          {{$t('projectView').tooltipFabGrew}}
@@ -494,7 +501,18 @@ export default {
         guest(){ return this.infos.guests.includes(this.$store.getters.getUserInfos.id); },
         admin(){ return this.infos.admins.includes(this.$store.getters.getUserInfos.id); },
         super_admin(){ return this.$store.getters.getUserInfos.super_admin; },
-
+        imageEmpty(){
+            if(this.infos.image == null){ this.infos.image = "b''";}
+            if(this.infos.image == "b''" ) {return true;}
+            else if(this.infos.image.length < 1) {return true;}
+            else{ return false; }
+        },
+        imageCleaned(){
+            var clean = this.infos.image.replace('b', '');
+            clean = clean.replace(/^'/g,'');
+            clean = clean.replace(/'$/g,'');
+            return 'data:image/png;base64, '+clean;
+		},
         
         
         noselect(){ return this.table.selected.length < 1;},

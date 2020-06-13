@@ -119,7 +119,7 @@
       </q-card-section>    </q-card>
     <q-card style=" width: 100%; max-width: 20vw">
       <q-parallax
-        src="../statics/images/small.niko-photos-tGTVxeOr_Rs-unsplash.jpg"
+        src="../statics/images/niko-photos-tGTVxeOr_Rs-unsplash.jpg"
         :height="260"
       ></q-parallax>      <q-card-section>
         <div class="text-h5 text-primary text-bold">{{$t('homepage').collaborativeCard.title}}</div>

@@ -12,7 +12,7 @@
             <div class="absolute-center"><q-circular-progress  indeterminate size="70px" :thickness="0.22" color="primary" track-color="grey-3" /></div>
         </div>
 
-        <q-page-sticky :position="breakpoint?'bottom-right':'bottom-right'" :offset="breakpoint?[18, 18]:[30,80]">
+        <q-page-sticky :position="breakpoint?'bottom-right':'bottom-right'" :offset="breakpoint?[18, 18]:[30,80]" style="z-index:999">
                 <q-btn size="20px" round @click="searchDialog = !searchDialog" color="primary" icon="img:../statics/svg/g.svg" >
                     <q-tooltip content-class="bg-primary" content-style="font-size: 16px" >
                          Search with Grew in this sample

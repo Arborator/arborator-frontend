@@ -10,7 +10,7 @@
 		</q-bar>
 		<q-card-section class="q-pa-sm row q-gutter-md"> 
 			<q-banner rounded class="col-md-4 offset-md-4 col-xs-12 col-sm-12">
-					<q-img :ratio="16/9" :src="imageEmpty?'../statics/images/project.jpg':imageCleaned" basic >
+					<q-img :ratio="16/9" :src="imageEmpty?'../statics/images/niko-photos-tGTVxeOr_Rs-unsplash.jpg':imageCleaned" basic >
 						<div class="absolute-bottom text-h6">
 							<q-icon v-show="infos.visibility == 0" name="lock" :color="$q.dark.isActive?'red-13':'negative'" size="lg"></q-icon>
 							<q-icon v-show="infos.visibility == 1" name="lock" :color="$q.dark.isActive?'red-13':'positive'" size="lg"></q-icon>
@@ -368,7 +368,7 @@ subj,comp,vocative
 
 		changeShowAllTrees(){ api.modifyShowAllTrees(this.$props.projectname, this.infos.show_all_trees).then(response => {this.$q.notify({message:'Change saved!'}); this.infos = response.data; }).catch(error => { this.$store.dispatch("notifyError", {error: error}); }) },
 		// changeOpenProject(){ api.modifyOpenProject(this.$props.projectname, this.infos.is_open).then(response => {this.$q.notify({message:`Change saved!`}); this.infos = response.data; }).catch(error => { this.$store.dispatch("notifyError", {error: error}); }) },
-		changeIsPrivate(){ api.modifyPrivate(this.$props.projectname, this.infos.visibility).then(response => {this.$q.notify({message:`Change saved!`}); this.infos = response.data; this.$forceUpdate(); }).catch(error => { this.$store.dispatch("notifyError", {error: error}); }) },
+		changeIsPrivate(){ api.modifyPrivate(this.$props.projectname, this.infos.visibility).then(response => {this.$q.notify({message:`xxChange saved!`}); this.infos = response.data; this.$forceUpdate(); }).catch(error => { this.$store.dispatch("notifyError", {error: error}); }) },
 		changeDescription(){ api.modifyDescription(this.$props.projectname, this.infos.description).then(response => {this.$q.notify({message:`Change saved!`}); this.infos = response.data; }).catch(error => { this.$store.dispatch("notifyError", {error: error}); }) },
 		uploadProjectImage(){ 
 			this.uploadImage.submitting = true;

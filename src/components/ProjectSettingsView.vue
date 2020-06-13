@@ -368,7 +368,7 @@ subj,comp,vocative
 
 		changeShowAllTrees(){ api.modifyShowAllTrees(this.$props.projectname, this.infos.show_all_trees).then(response => {this.$q.notify({message:'Change saved!'}); this.infos = response.data; }).catch(error => { this.$store.dispatch("notifyError", {error: error}); }) },
 		// changeOpenProject(){ api.modifyOpenProject(this.$props.projectname, this.infos.is_open).then(response => {this.$q.notify({message:`Change saved!`}); this.infos = response.data; }).catch(error => { this.$store.dispatch("notifyError", {error: error}); }) },
-		changeIsPrivate(){ api.modifyPrivate(this.$props.projectname, this.infos.visibility).then(response => {this.$q.notify({message:`xxChange saved!`}); this.infos = response.data; this.$forceUpdate(); }).catch(error => { this.$store.dispatch("notifyError", {error: error}); }) },
+		changeIsPrivate(){ api.modifyPrivate(this.$props.projectname, this.infos.visibility).then(response => {this.$q.notify({message:`Change saved!`}); this.infos = response.data; this.$forceUpdate(); }).catch(error => { this.$store.dispatch("notifyError", {error: error}); }) },
 		changeDescription(){ api.modifyDescription(this.$props.projectname, this.infos.description).then(response => {this.$q.notify({message:`Change saved!`}); this.infos = response.data; }).catch(error => { this.$store.dispatch("notifyError", {error: error}); }) },
 		uploadProjectImage(){ 
 			this.uploadImage.submitting = true;

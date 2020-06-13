@@ -384,8 +384,9 @@ function drawsnap(idSVG, treedata, usermatches, shownfeatures) {
 	var tree = treedata.tree;
 	
 	// usermatches
+	// console.log(1212,JSON.stringify(usermatches),JSON.stringify(usermatches.map(um=>(um.edges.length))));
 	const matchnodes = usermatches.map(({nodes})=>Object.values(nodes)).flat(); // simple array of match nodes to highlight
-	const matchedges = Object.fromEntries(usermatches.map(um=>[um.edges.e.target,um.edges.e])); // object { target node : object }
+	const matchedges = Object.fromEntries(usermatches.map(um=>(um.edges.length == null)?[]:[um.edges.e.target,um.edges.e])); // object { target node : object }
 	// insertion of texts
 	var xpositions = [0];
 	var allstexts = {};

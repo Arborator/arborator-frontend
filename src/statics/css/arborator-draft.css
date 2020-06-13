@@ -5,6 +5,8 @@
 	--wordDistance:55;
 	fill:black;
 	text-align: center;
+	position: relative;
+	z-index:99;
 } 
 
 .dark .FORM {
@@ -14,6 +16,8 @@
 		--wordDistance:55;
 		fill:rgb(255, 255, 255);
 		text-align: center;
+		position: relative;
+		z-index:99;
 	}
 
 .LEMMA {
@@ -65,6 +69,8 @@
 	font-style: oblique;
 	font-family:sans-serif;
 	cursor:pointer;
+	position: relative;
+	z-index:99;
 	--funcCurveDist:3; /* distance between the function name and the curves highest point */
 } 
 
@@ -74,6 +80,7 @@
 	font-style: oblique;
 	font-family:sans-serif;
 	cursor:pointer;
+	z-index:99;
 	--funcCurveDist:3; /* distance between the function name and the curves highest point */
 }
 
@@ -89,6 +96,7 @@
 
 .xdeprel {
 	fill: #21ba45;
+	z-index:99;
 } 
 
 .xdep {
@@ -98,6 +106,7 @@
 
 .DEPRELselected {
 	fill: #dd137b;
+	z-index:99;
 	/* font-weight: bold; */
 } 
 

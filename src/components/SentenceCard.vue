@@ -17,7 +17,7 @@
                     <q-input 
                         style="width:70%"
                         class="row items-center justify-center"
-                        :value="sampleData.sentence"
+                        :value="sentenceData.sentence"
                         v-on="$listeners"
                         v-bind="$attrs"                   
                         @select="ttselect"
@@ -82,11 +82,11 @@
 
 
             <q-tabs v-model="tab" :class="($q.dark.isActive?'text-grey-5':'text-grey-8') + ' shadow-2'" dense :active-color="$q.dark.isActive?'info':'accent'" :active-bg-color="$q.dark.isActive?'':'grey-2'">
-                <q-tab v-for="(tree, user) in sampleData.conlls" :key="user" :props="user" :label="user" :name="user" icon="person" no-caps :ripple="false" :ref="'tab'+user"/>
+                <q-tab v-for="(tree, user) in sentenceData.conlls" :key="user" :props="user" :label="user" :name="user" icon="person" no-caps :ripple="false" :ref="'tab'+user"/>
             </q-tabs>
             <q-separator />
             <q-tab-panels v-model="tab" keep-alive >
-                <q-tab-panel v-for="(tree, user) in sampleData.conlls" :key="user" :props="tree" :name="user" >
+                <q-tab-panel v-for="(tree, user) in sentenceData.conlls" :key="user" :props="tree" :name="user" >
                     <q-card  flat >
                         <q-card-section :class="($q.dark.isActive?'':'') + ' scrollable'" >
                             <conll-graph
@@ -94,7 +94,7 @@
                                 :conll="tree" 
                                 :user="user" 
                                 :sentenceId="sentenceId" 
-                                :matches="sampleData.matches"
+                                :matches="sentenceData.matches"
                                 :id="searchResult+'conllGraph_'+sentenceId+'_'+index+'_'+user"
                                 @update-conll="onConllGraphUpdate($event)"
                                 @meta-changed="metaUpdate($event)"
@@ -124,11 +124,11 @@ export default {
     components: {
         'conll-graph': ConllGraph
     },
-    props: ['index', 'sample', 'sentenceId', 'searchResult'],
+    props: ['index', 'sentence', 'sentenceId', 'searchResult'],
     data() {
         return {
             tab:'',
-            sampleData: this.$props.sample,
+            sentenceData: this.$props.sentence,
             // graphInfo: { svgId: '',  draft: '', dirty: false, redo: false, conll: '', user: '' },
             graphInfo: { conllGraph: null, dirty: false, redo: false, user: '' },
             alerts: { 
@@ -160,7 +160,7 @@ export default {
     },
     methods: {
         getlink() {
-            this.sentenceLink = window.location.href.split('/projects/'+this.$route.params.projectname)[0]+'/projects/'+this.$route.params.projectname+'/'+this.sample.samplename+'/'+(this.index+1)+'/'+this.graphInfo.user
+            this.sentenceLink = window.location.href.split('/projects/'+this.$route.params.projectname)[0]+'/projects/'+this.$route.params.projectname+'/'+this.sentence.samplename+'/'+(this.index+1)+'/'+this.graphInfo.user
             setTimeout(()=>{this.$refs.linkinput.select();document.execCommand('copy') }, 500)
         },
         showconll() {
@@ -273,7 +273,7 @@ export default {
             // log("dirty user");
             // // log(this.data); // undefined
             // // log(this.graphInfo);
-            // log(this.$props); // index, projectname, sample...
+            // log(this.$props); // index, projectname, sentence...
             // log("lastsvg", this.graphInfo.svgId);
         },
        
@@ -283,8 +283,8 @@ export default {
             var conll = this.graphInfo.conllGraph.draft.getConll(this.graphInfo.conllGraph.snap.treedata);
             conll = conll.replace(/# user_id = .+\n/, "# user_id = "+this.$store.getters.getUserInfos.username+"\n");
             conll = conll.replace(/# timestamp = \d+(\.\d*)?\n/, "# timestamp = "+timestamp+"\n");
-            // console.log("after", conll);
-            var data={"trees":[{"sent_id":this.sentenceId, "conll":conll, "sample_name":this.$props.sample.samplename}], "user_id":this.$store.getters.getUserInfos.username};
+            console.log("_________after", this.$props,this.$props.sentence);
+            var data={"trees":[{"sent_id":this.sentenceId, "conll":conll, "sample_name":this.$props.sentence.samplename}], "user_id":this.$store.getters.getUserInfos.username};
             // console.log("data", data);
             api.saveTrees(this.$route.params.projectname, data).then(response => {
                 if(response.status == 200){
@@ -292,7 +292,7 @@ export default {
                     // console.log("status", this.graphInfo.dirty);
                     // console.log("user", this.$store.getters.getUserInfos.username);
                     this.showNotif('top', 'saveSuccess');
-                    this.sampleData.conlls[this.$store.getters.getUserInfos.username] = conll; 
+                    this.sentenceData.conlls[this.$store.getters.getUserInfos.username] = conll; 
                     this.$forceUpdate();
                     this.tab = this.$store.getters.getUserInfos.username;
                 }
@@ -305,7 +305,7 @@ export default {
         },
         metaUpdate(metas) {
             this.shownmetas = Object.keys(metas).filter(m => this.shownmetanames.includes(m)).map( m => ({'a':m,'v':metas[m]}));
-            if (metas.text) this.sampleData.sentence = metas.text;
+            if (metas.text) this.sentenceData.sentence = metas.text;
         },
         openMetaDialog() {
             // "this.tab" contains the user name, calls the openMetaDialog function in ConllGraph.vue

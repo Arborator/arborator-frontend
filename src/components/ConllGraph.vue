@@ -359,7 +359,7 @@ export default {
          */
         getProjectConfig(){
           var conf = this.$store.getters.getProjectConfig;
-          console.log(666666,conf)
+          // console.log(666666,conf)
           this.options.annof = conf.annotationFeatures;
           this.options.shownfeatures = conf.shownfeatures;
           this.options.shownmeta = conf.shownmeta;
@@ -386,6 +386,7 @@ export default {
         // pattern { GOV -[det]-> DEP } --> [{"edges":{},"nodes":{"GOV":"5","DEP":"4"}}]
         // pattern {e: GOV -[subj]-> DEP } --> [{"edges":{"e":{"source":"7","label":"subj","target":"6"}},"nodes":{"GOV":"7","DEP":"6"}},{"edges":{"e":{"source":"10","label":"subj","target":"9"}},"nodes":{"GOV":"10","DEP":"9"}}]
         start(conllStr, matches, id){
+            console.log(5545454,matches,(this.user in matches),matches[this.user])
             if (this.user in matches) var usermatches = matches[this.user];
             else var usermatches = []; //{'nodes':[],'edges':[]};
             this.snap.treedata = this.draft.drawit(conllStr, usermatches, id, this.options.shownfeatures); // here it happens

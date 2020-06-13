@@ -4,7 +4,7 @@
            
             <q-virtual-scroll ref="virtualListRef" :items="sentencesFrozen.list" style="max-height: 95vh; width:99vw" :virtual-scroll-slice-size="7" :virtual-scroll-item-size="200">
                 <template v-slot="{ item, index }">
-                    <sentence-card :key="index" :ref="'sc'+index" :id="'sc'+index" :sample="sentences[item]" :index="index" :sentenceId="item" searchResult=''></sentence-card>
+                    <sentence-card :key="index" :ref="'sc'+index" :id="'sc'+index" :sentence="sentences[item]" :index="index" :sentenceId="item" searchResult=''></sentence-card>
                 </template>
             </q-virtual-scroll>
         </div>
@@ -152,10 +152,10 @@ export default {
     methods: {
         getProjectConfig(){
             api.getProjectSettings(this.$route.params.projectname).then(response => { 
-                console.log(111,'getProjectSettings response',response.data.shownfeatures)
-                console.log(111,'$store.getters.getProjectConfig',this.$store.getters.getProjectConfig.shownfeatures)
+                // console.log(111,'getProjectSettings response',response.data.shownfeatures)
+                // console.log(111,'$store.getters.getProjectConfig',this.$store.getters.getProjectConfig.shownfeatures)
                 this.$store.commit('set_project_config', response.data.shownfeatures); 
-                console.log(222,'$store.getters.getProjectConfig',this.$store.getters.getProjectConfig.shownfeatures)
+                // console.log(222,'$store.getters.getProjectConfig',this.$store.getters.getProjectConfig.shownfeatures)
                 this.infos = response.data;
                 }).catch(error => { 
                     this.$store.dispatch("notifyError", {error: error}); });
@@ -203,7 +203,7 @@ export default {
             var query = { pattern: searchPattern };
             api.searchSample(this.projectname, this.samplename, query)
             .then(response => { 
-                console.log(555,response.data)
+                // console.log(555,response.data)
                 this.resultSearch = response.data; 
                 this.resultSearchDialog = true; })
             .catch(error => {this.$store.dispatch("notifyError", {error: error}); })

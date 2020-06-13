@@ -16,9 +16,9 @@
         <q-card-section > 
             <div v-show="!loading" class="q-pa-md row q-gutter-md">
                 <q-virtual-scroll :items="this.samplesFrozen.list" style="height: 80vh; width:90vw" :virtual-scroll-slice-size="5" :virtual-scroll-item-size="200">
-                <template v-slot="{ item, index}">
-                <sentence-card :key="index" :id="item[1]" :sample="searchresults[item[0]][item[1]]" :index="index" :sentenceId="item[1]" searchResult='searchResult'></sentence-card>
-                </template>
+                    <template v-slot="{ item, index}">
+                    <sentence-card :key="index" :id="item[1]" :sentence="searchresults[item[0]][item[1]]" :index="index" :sentenceId="item[1]" searchResult='searchResult'></sentence-card>
+                    </template>
                 </q-virtual-scroll>
             </div>
             <div v-show="loading" class="q-pa-md row justify-center">
@@ -31,7 +31,7 @@
 <script>
 import api from '../boot/backend-api';
 import SentenceCard from './SentenceCard';
-var heavyList = [];
+// var heavyList = [];
 // var heavyListSamples = [];
 export default {
     components: {SentenceCard},
@@ -44,27 +44,33 @@ export default {
             inResult: true,
         }
     },
-    computed: { sentenceCount() {return Object.keys(this.searchresults).length;}  },
+    computed: { 
+        sentenceCount() {
+            return Object.keys(this.searchresults).map(sa=>Object.keys(this.searchresults[sa])).flat().length; // number of keys in subobjects
+            }  
+        },
     mounted(){
         this.freezeSamples();
         this.getProjectConfig();
     },
     methods: {
         freezeSamples() {
-            console.log('samples to freeze', JSON.stringify(this.searchresults) );
-            var listIds = []
+            // console.log('samples to freeze', JSON.stringify(this.searchresults) );
+            var listIds = [] // list: [["WAZA_10_Bluetooth-Lifestory_MG","WAZA_10_Bluetooth-Lifestory_MG__86"],["WAZA_10_Bluetooth-Lifestory_MG","WAZA_10_Bluetooth-Lifestory_MG__79"], ...
             var index = 0;
-            var index2Ids = {};
-            for (let sampleId in this.searchresults) {             
+            var index2Ids = {}; // object: {"0":["WAZA_10_Bluetooth-Lifestory_MG","WAZA_10_Bluetooth-Lifestory_MG__86"],"1":["WAZA_10_Bluetooth-Lifestory_MG","WAZA_10_Bluetooth-Lifestory_MG__79"], ...
+            // this is sent to the sentenceCard: searchresults[item[0]][item[1]], items from this.samplesFrozen.list
+            for (let sampleId in this.searchresults) {   
                 for (let sentId in this.searchresults[sampleId]) {
                     listIds.push([sampleId, sentId])
                     index2Ids[index] = [sampleId, sentId];
+                    this.searchresults[sampleId][sentId]['samplename']=sampleId
                     index++;
                 }
             }
-            heavyList = listIds;
-            Object.freeze(heavyList);
-            this.samplesFrozen = {'list': heavyList, 'indexes': index2Ids, };
+            // heavyList = listIds;
+            Object.freeze(listIds);
+            this.samplesFrozen = {'list': listIds, 'indexes': index2Ids, };
         },
         getProjectConfig(){
             api.getProjectSettings(this.$route.params.projectname).then(response => { this.$store.commit('set_project_config', response.data); }).catch(error => { this.$store.dispatch("notifyError", {error: error}); });

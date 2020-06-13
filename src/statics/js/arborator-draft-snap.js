@@ -327,7 +327,7 @@ function relationChanged(treedata, depid, headid, relation, addasextended) {  //
 		treedata.tree[depid]['DEPREL']=relation;
 	}
 	treedata.s.paper.clear();
-	treedata.s = drawsnap(treedata.s.id, treedata, {'nodes':[],'edges':[]}, shownfeatures)
+	treedata.s = drawsnap(treedata.s.id, treedata, [], shownfeatures)
 	return treedata
 }
 
@@ -336,7 +336,7 @@ function catChanged(treedata, depid, cat ) {
 	// console.log("BEFORE", JSON.parse(JSON.stringify(s.root.treedata.tree)));
 	treedata.tree[depid]['UPOS']=cat;
 	treedata.s.paper.clear();
-	treedata.s = drawsnap(treedata.s.id, treedata, {'nodes':[],'edges':[]}, shownfeatures)
+	treedata.s = drawsnap(treedata.s.id, treedata, [], shownfeatures)
 	return treedata
 }
 function featureChanged(treedata, depid, lemma, feats, misc ) {  
@@ -346,7 +346,7 @@ function featureChanged(treedata, depid, lemma, feats, misc ) {
 	treedata.tree[depid]['FEATS']=feats;
 	treedata.tree[depid]['MISC']=misc;
 	treedata.s.paper.clear();
-	treedata.s = drawsnap(treedata.s.id, treedata, {'nodes':[],'edges':[]}, shownfeatures)
+	treedata.s = drawsnap(treedata.s.id, treedata, [], shownfeatures)
 	return treedata
 }
 function metaChanged(treedata, metas ) {  
@@ -356,7 +356,7 @@ function metaChanged(treedata, metas ) {
 	
 	// can metadata influence how the graph is drawn? if yes, but this back:
 	treedata.s.paper.clear();
-	treedata.s = drawsnap(treedata.s.id, treedata, {'nodes':[],'edges':[]}, shownfeatures)
+	treedata.s = drawsnap(treedata.s.id, treedata, [], shownfeatures)
 	return treedata
 }
 
@@ -619,7 +619,7 @@ function replaceNodes(treedata, idsequence, headid, newtokens) {
 	
 	treedata.META.text = treeToSentence(treedata.tree);
 	treedata.s.paper.clear();
-	treedata.s = drawsnap(treedata.s.id, treedata, {'nodes':[],'edges':[]}, shownfeatures)
+	treedata.s = drawsnap(treedata.s.id, treedata, [], shownfeatures)
 	return treedata;
 }
 

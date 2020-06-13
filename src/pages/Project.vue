@@ -569,7 +569,7 @@ export default {
             var x = [];
             for (const sample of this.table.selected) { x.push(sample.samplename) }
             var data = { samplenames: x, commit_type:type};
-            console.log(123,data);
+            // console.log(123,data);
             api.commit(this.$route.params.projectname, data)
             .then(response => { // 200 : updaté ou créé
                 console.log(777, response)
@@ -577,18 +577,18 @@ export default {
                 // console.log("wooohoo");
                 })
             .catch(error => {
-                console.log(111,error)
+                // console.log(111,error)
                 if (error.response.data.status==418) // 418 : app pas installée (ou autre problème ?)
                 {
-                    console.log(111,error)
-                    console.log(222, error.response);
+                    // console.log(111,error)
+                    // console.log(222, error.response);
                     error.response.message = error.response.data.message;
                     error.permanent = true;
                     this.$store.dispatch("notifyError", {error: error});
                 }
                 else if (error.response.data.status==204) // 204 : l'utilisateur n'a pas d'arbres
                 {
-                    console.log(error, error.response)
+                    // console.log(error, error.response)
                     this.$store.dispatch("notifyError", {error: error.response.data.message});
                 }
                 else this.$store.dispatch("notifyError", {error: error}); 
@@ -598,7 +598,7 @@ export default {
         var x = [];
         for (const sample of this.table.selected) { x.push(sample.samplename) }
         var data = { samplenames: x, pull_type:type};
-        console.log(data);
+        // console.log(data);
         api.pull(this.$route.params.projectname, data)
         .then(response => {console.log("wooohoo");})
         .catch(

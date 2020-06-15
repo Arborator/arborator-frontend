@@ -31,7 +31,7 @@ module.exports = function (ctx) {
 
     framework: {
       // iconSet: 'ionicons-v4',
-      // lang: 'de', // Quasar language
+      //lang: Quasar.lang.getLocale(), // Quasar language
 
       // all: true, // --- includes everything; for dev only!
 

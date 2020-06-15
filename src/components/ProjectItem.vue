@@ -21,7 +21,7 @@
             </q-card>
         </q-popup-proxy>
         <q-item-section avatar>
-          <q-avatar v-show="imageEmpty" rounded color="primary" text-color="white" icon="work" />
+          <q-avatar v-show="imageEmpty" rounded color="primary" text-color="white" icon="fas fa-tree" />
           <q-avatar v-show="!imageEmpty" rounded color="primary" text-color="white" >
               <img :src="imageCleaned"/>
           </q-avatar>

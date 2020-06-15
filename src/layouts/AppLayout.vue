@@ -11,9 +11,18 @@
           </a>          <q-space />          <q-breadcrumbs :active-color="$q.dark.isActive?'white':'primary'" :class="($q.dark.isActive?'text-grey':'text-black') + ' mobile-hide native-mobile-hide within-iframe-hide gt-xs'" style="max-height:20px;max-width:70vh;overflow:y;">
             <q-breadcrumbs-el v-if="notHome" icon="home" to="/" />
             <q-breadcrumbs-el v-if="$route.path.startsWith('/projects/')" icon="view_module" to="/projects" />
-            <q-breadcrumbs-el v-if="$route.params.projectname != null" :label="$route.params.projectname" icon="ion-ios-leaf" :to="'/projects/'+$route.params.projectname" />
+            <q-breadcrumbs-el v-if="$route.params.projectname != null" :label="$route.params.projectname" icon="fas fa-tree" :to="'/projects/'+$route.params.projectname" />
             <q-breadcrumbs-el v-if="$route.params.samplename != null && $route.params.projectname != null" :label="$route.params.samplename" icon="assignment" :to="'/projects/'+$route.params.projectname+'/'+$route.params.samplename" />
           </q-breadcrumbs>          <q-space />          <div class="q-gutter-sm row items-center no-wrap"  size="4rem">
+          
+          <q-select v-model="lang" :options="langOptions" dense borderless options-dense display-value="">
+            <template v-slot:append>
+              <q-avatar>
+                <img :src="lang.img">
+              </q-avatar>
+            </template>
+          </q-select>
+
           <q-btn flat round @click="toggleDarkMode()"  :icon="$q.dark.isActive?'lightbulb':'brightness_2'"></q-btn>
           <q-btn-dropdown v-show="!store.getters.isLoggedIn" color="secondary" outline label="Log In" icon="account_circle">
             <q-list>
@@ -145,7 +154,18 @@ import Store from '../store/index';export default {
           //   to: '/adminpanel',
           //   bottom: false
           // }
+        ],
+        lang: this.$i18n.locale,
+        langOptions: [
+          { value: 'en-us', label: 'English', img: '../statics/images/usflag.svg' },
+          { value: 'fr-fra', label: 'Français', img: '../statics/images/frenchflag.svg' }
         ]
+    }
+  },
+  watch: {
+    lang(lang) {
+      this.$i18n.locale = lang;
+      this.$ls.set('arbolang', lang);
     }
   },
   computed:{

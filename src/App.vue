@@ -52,6 +52,13 @@ export default {
     } catch (error) {
       console.log('ls not found');
     }
+
+    try{
+      this.$i18n.locale = this.$ls.get('arbolang');
+    }catch (error) {
+      this.$i18n.locale = this.$q.lang.getLocale();
+      this.$ls.set('arbolang', this.$i18n.locale);
+    }
   },
   methods: {
     parseJwt: function (token) {

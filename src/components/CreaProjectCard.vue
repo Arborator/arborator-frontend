@@ -59,6 +59,12 @@ export default {
 		}
 	},
 	methods: {
+		/**
+		 * Not used ! Handle project submission and creation for initializing
+		 * 
+		 * @deprecated
+		 * @returns void
+		 */
 		onSubmitInit(){
 			this.submitting = true;
 			var form = new FormData();
@@ -68,6 +74,11 @@ export default {
 			api.createInitializedProject(this.projectName, form).then( response => { this.attachment.file = []; this.$props.parentGetProjects(); this.submitting = false; this.$q.notify({message: `${this.projectName} uploaded and created.`,color: 'positive'})})
 			.catch(error => {this.$store.dispatch("notifyError", {error: error}); this.submitting = false; });
 		},
+		/**
+		 * Handle project submission by creating form data and sending to backend
+		 * 
+		 * @returns void
+		 */
 		onSubmit(){
 			this.submitting = true;
 			var form = new FormData();
@@ -78,13 +89,31 @@ export default {
 			form.append('visibility', this.visibility);
 			// form.append('is_open', this.isOpen);
 			form.append('show_all_trees', this.showAllTrees);
-			api.createProject(form).then( response => { this.attachment.file = []; this.$props.parentGetProjects(); this.submitting = false; this.$q.notify({message: `${this.projectName} uploaded and created.`}); })
-			.catch(error => {this.$store.dispatch("notifyError", {error: error}); this.submitting = false; });
+			api.createProject(form)
+			.then( response => { 
+				this.attachment.file = []; 
+				this.$props.parentGetProjects(); 
+				this.submitting = false; 
+				this.$q.notify({message: `${this.projectName} uploaded and created.`});
+			})
+			.catch(error => {
+				this.$store.dispatch("notifyError", {error: error});
+				this.submitting = false;
+			});
 		},
-		onReset(){
-
-		},
-		onFileChange(event) { this.attachment.file = event.target.files; }
+		/**
+		 * @TODO : Nothing yet ,to delete ?
+		 */
+		onReset(){},
+		/**
+		 * Attach the file when the event is triggerred
+		 * 
+		 * @param {Event} event
+		 * @returns void
+		 */
+		onFileChange(event) { 
+			this.attachment.file = event.target.files;
+		}
 	}
 }
 </script>

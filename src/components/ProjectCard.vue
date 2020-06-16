@@ -97,6 +97,11 @@ export default {
         }      
     },
     methods: {
+        /**
+         * Use the router to push (i.e. got to) a new route
+         * 
+         * @returns void
+         */
         goTo(){
             this.$router.push({
                 name: 'project',
@@ -106,8 +111,29 @@ export default {
                 }
             }) 
         },
-        projectSettings(){ this.$props.parentProjectSettings(this.project.projectname); },
-        deleteProject(){ this.$props.parentDeleteProject(this.project.projectname); },
+        /**
+         * Use the parent project settings function
+         * 
+         * @returns void
+         */
+        projectSettings(){ 
+            this.$props.parentProjectSettings(this.project.projectname); 
+        },
+        /**
+         * Delete a project using the parent function
+         * 
+         * @returns void
+         */
+        deleteProject(){ 
+            this.$props.parentDeleteProject(this.project.projectname); 
+        },
+        /**
+         * Wrapper to display the confirm dialog prior to executing the method
+         * 
+         * @param {method} method
+         * @param {*} arg
+         * @returns void
+         */
         triggerConfirm(method, arg){
 			this.confirmActionDial = true;
 			this.confirmActionCallback = method;

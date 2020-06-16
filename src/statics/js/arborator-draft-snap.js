@@ -492,8 +492,6 @@ function drawsnap(idSVG, treedata, usermatches, shownfeatures) {
 	return s;
 }
 
-
-
 function drawRelation(headid, relation, xdep, xdeprel, gap, tree, idhead2level, nr, basey, 
 		ind, xmidpoints, firstTextFontSize, 
 		s, arrowhead, word, relationclick) {

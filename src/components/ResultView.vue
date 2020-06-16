@@ -54,6 +54,11 @@ export default {
         this.getProjectConfig();
     },
     methods: {
+        /**
+         * Freeze the samples in order to speed up computation for onscroll loading view
+         * 
+         * @returns void
+         */
         freezeSamples() {
             // console.log('samples to freeze', JSON.stringify(this.searchresults) );
             var listIds = [] // list: [["WAZA_10_Bluetooth-Lifestory_MG","WAZA_10_Bluetooth-Lifestory_MG__86"],["WAZA_10_Bluetooth-Lifestory_MG","WAZA_10_Bluetooth-Lifestory_MG__79"], ...
@@ -72,8 +77,19 @@ export default {
             Object.freeze(listIds);
             this.samplesFrozen = {'list': listIds, 'indexes': index2Ids, };
         },
+        /**
+         * Requests project configuration from backend and put it into the store
+         * 
+         * @returns void
+         */
         getProjectConfig(){
-            api.getProjectSettings(this.$route.params.projectname).then(response => { this.$store.commit('set_project_config', response.data); }).catch(error => { this.$store.dispatch("notifyError", {error: error}); });
+            api.getProjectSettings(this.$route.params.projectname)
+            .then(response => { 
+                this.$store.commit('set_project_config', response.data); 
+            })
+            .catch(error => { 
+                this.$store.dispatch("notifyError", {error: error});
+            });
         },
     }
 }

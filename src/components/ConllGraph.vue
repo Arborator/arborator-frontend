@@ -235,20 +235,21 @@ CodeMirror.defineMode('tsv', function(_config, parserConfig) {
        
 	function tokenBase(stream, state) {
 	    var ch = stream.next();
-	    if (ch === '#' ) {
-		stream.skipToEnd();
-		return 'comment';
+	    // if (ch === '#' ) {
+      if (/^#/.test(ch) ) {
+        stream.skipToEnd();
+        return 'comment';
 	    }
 
 	    if (/\d/.test(ch)) {
-		stream.eatWhile(/[\d]/);
-		if (stream.eat('.')) {
-		    stream.eatWhile(/[\d]/);
-		}
-		return 'number';
+        stream.eatWhile(/[\d]/);
+        if (stream.eat('.')) {
+            stream.eatWhile(/[\d]/);
+        }
+        return 'number';
 	    }
 	    if ( /[+\-*&%=<>!?|:]/.test(ch)) {
-		return 'operator';
+		    return 'operator';
 	    }
 	    stream.eatWhile(/\w/);
 	    var cur = stream.current();
@@ -355,7 +356,9 @@ export default {
     },
     methods: {
         /**
-         * replace the default labels and cats by the ones in the config if list not empty
+         * Replace the default labels and cats by the ones in the config if list not empty
+         * 
+         * @returns void
          */
         getProjectConfig(){
           var conf = this.$store.getters.getProjectConfig;

@@ -26,6 +26,11 @@ export default {
 		}
 	},
 	methods:{
+		/**
+		 * Trigger a parentAction to handle confirm dialog
+		 * 
+		 * @returns void
+		 */
 		confirm(){
 			this.$props.parentAction(this.arg1);
 		}

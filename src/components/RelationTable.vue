@@ -108,6 +108,12 @@ export default {
         // sentenceCount() {return 17}, // todo get the total number of sentences in the table
     },
     methods: {
+        /**
+         * Create the table  based on the update event on selected list
+         * 
+         * @param {Event} eve
+         * @returns void
+         */
         getTable(eve) {
             // console.log(444,eve,this.edges, this.currentEdge)
             var keyset = new Set();
@@ -162,6 +168,11 @@ export default {
         //     this.table.rows = rows;
         //     this.table.pagination.rowsNumber = rows.length;
         // },
+        /**
+         * Set the filter to an empty string
+         * 
+         * @returns void
+         */
         resetFilter() {
             this.filter=''
         },
@@ -172,11 +183,23 @@ export default {
             
         //     // this.currentEdge = edge;
         // },
+        /**
+         * Show the trees considering the table row props
+         * 
+         * @param {Object} props
+         * @returns void
+         */
         showTrees(props) {
             this.tablename = this.currentEdge+' relation table'
             this.selectedResults = props;
             this.visuTreeDial = true;
         },
+        /**
+         * Check whether variable s is a String or not
+         * 
+         * @param {*} s 
+         * @returns {Boolean}
+         */
         isString: function(s) {
             return typeof s === 'string' || s instanceof String;
         }

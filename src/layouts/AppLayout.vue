@@ -15,7 +15,7 @@
             <q-breadcrumbs-el v-if="$route.params.samplename != null && $route.params.projectname != null" :label="$route.params.samplename" icon="assignment" :to="'/projects/'+$route.params.projectname+'/'+$route.params.samplename" />
           </q-breadcrumbs>          <q-space />          <div class="q-gutter-sm row items-center no-wrap"  size="4rem">
           
-          <q-select v-model="lang" :options="langOptions" dense borderless options-dense display-value="">
+          <q-select v-model="lang" :options="langOptions" dense borderless options-dense map-options emit-value >
             <template v-slot:append>
               <q-avatar>
                 <q-icon name="fas fa-globe" />

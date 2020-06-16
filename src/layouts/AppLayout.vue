@@ -18,7 +18,7 @@
           <q-select v-model="lang" :options="langOptions" dense borderless options-dense display-value="">
             <template v-slot:append>
               <q-avatar>
-                <img :src="lang.img">
+                <q-icon name="fas fa-globe" />
               </q-avatar>
             </template>
           </q-select>
@@ -157,8 +157,8 @@ import Store from '../store/index';export default {
         ],
         lang: this.$i18n.locale,
         langOptions: [
-          { value: 'en-us', label: 'English', img: '../statics/images/usflag.svg' },
-          { value: 'fr-fra', label: 'Français', img: '../statics/images/frenchflag.svg' }
+          { value: 'en-us', label: 'EN', img: '../statics/images/usflag.svg' },
+          { value: 'fr-fra', label: 'FR', img: '../statics/images/frenchflag.svg' }
         ]
     }
   },

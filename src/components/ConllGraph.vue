@@ -234,12 +234,13 @@ import CodeMirror from 'codemirror'
 CodeMirror.defineMode('tsv', function(_config, parserConfig) {
        
 	function tokenBase(stream, state) {
-	    var ch = stream.next();
-	    // if (ch === '#' ) {
-      if (/^#/.test(ch) ) {
+
+      if (stream.string.match(/^#.+/)) {
         stream.skipToEnd();
         return 'comment';
-	    }
+      }
+      
+      var ch = stream.next();
 
 	    if (/\d/.test(ch)) {
         stream.eatWhile(/[\d]/);

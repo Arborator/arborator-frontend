@@ -182,6 +182,9 @@ export default {
     },
     pull(projectname, data) {
         return API.post('projects/' + projectname + '/pull', data);
+    },
+    getLexicon(projectname, data) {
+        return API.post('projects/' + projectname + '/getLexicon', data);
     }
 
 }

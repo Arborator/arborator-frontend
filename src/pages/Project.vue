@@ -188,6 +188,13 @@
                                     <q-tooltip :delay="300" content-class="text-white bg-primary"></q-tooltip>
                                     </div>
 
+                                    <div>
+                                        <q-btn flat  color="default"  icon="playlist_add_check" @click="getLexicon()" :loading="table.exporting" :disable="(!infos.is_open && !guest && !admin && !super_admin) || table.selected.length<1">
+                                        </q-btn>
+                                        <q-tooltip v-if="table.selected.length<1" :delay="300" content-class="text-white bg-primary">Select the samples to create a lexicon</q-tooltip>
+                                        <q-tooltip v-else :delay="300" content-class="text-white bg-primary">Create lexicon from selected samples</q-tooltip>
+                                    </div>
+
                                 </q-btn-group>
 
                                 <q-space />
@@ -199,6 +206,9 @@
                                     <q-tooltip :delay="300" content-class="text-white bg-primary">{{$t('projectView').tooltipSearch}}</q-tooltip>
                                 </q-input>
                                 
+
+                                
+
                                 <q-space />
 
                                 <q-select v-model="table.visibleColumns" multiple borderless dense options-dense :display-value="$q.lang.table.columns"
@@ -430,7 +440,8 @@ export default {
                 'uploadfail': { color: 'negative', message: 'Upload failed', icon: 'report_problem' },
                 'deletesuccess': { color: 'positive', message: 'Delete success'},
                 'deletefail': { color: 'negative', message: 'Delete failed', icon: 'report_problem'},
-                'GitHubPushSuccess': {color: 'positive', message:'Successfully pushed your data to GitHub'}
+                'GitHubPushSuccess': {color: 'positive', message:'Successfully pushed your data to GitHub'},
+                'getLexiconSuccess': {color: 'positive', message:'got lexicon. TODO: get the real lexicon!!!'}
             },
             infos: {
                 name: '',
@@ -531,7 +542,9 @@ export default {
     methods:{
 
         handleResize() {this.window.width = window.innerWidth; this.window.height = window.innerHeight;},
+
         goToRoute(props) { this.$router.push('/projects/' + this.infos.name + '/samples') },
+
         filterFields(tableJson) {
             // to remove some fields from visiblecolumns select options
             var tempArray = tableJson.fields.filter(function( obj ) {
@@ -539,6 +552,7 @@ export default {
             });
             return tempArray;
         },
+
         getProjectInfos(){ 
             this.table.loading = true; 
             api.getProjectInfos(this.$route.params.projectname).then(response => 
@@ -548,10 +562,12 @@ export default {
                     document.title = this.$route.params.projectname+" 🌳 Arborator-Grew 🌳 Project with "+this.infos.number_sentences+" sentences in "+this.infos.samples.length+" samples";
                     // console.log('ààà',this.infos.admins)
                 }).catch(error => {this.$store.dispatch("notifyError", {error: error}); this.table.loading = false;}); },
+
         getUsers(){ api.getUsers().then( response => {  
                 for(let name of response.data.map(a => a.username)){ this.possiblesUsers.push( {key:name, value:name} ); }
             }).catch(error => {  this.$store.dispatch("notifyError", {error: error}) });
         },
+
         upload(){
             var form = new FormData();
             form.append('robotname', this.robot.name);
@@ -576,7 +592,9 @@ export default {
                     this.uploadDial = false; 
                     this.$store.dispatch("notifyError", {error: error}); });
         },
+
         onFileChange(event) { this.uploadSample.attachment.file = event.target.files; },
+
         deleteSamples(){
             for (const sample of this.table.selected) {
                 api.deleteSample(this.infos.name, sample.samplename).then( response => { this.infos = response.data; this.table.selected = []; this.showNotif('top-right', 'deletesuccess'); } ).catch(error => {  this.$store.dispatch("notifyError", {error: error})  });
@@ -584,9 +602,9 @@ export default {
         },
         
         commit(type) {
-            var x = [];
-            for (const sample of this.table.selected) { x.push(sample.samplename) }
-            var data = { samplenames: x, commit_type:type};
+            var samplenames = [];
+            for (const sample of this.table.selected) { samplenames.push(sample.samplename) }
+            var data = { samplenames: samplenames, commit_type:type};
             // console.log(123,data);
             api.commit(this.$route.params.projectname, data)
             .then(response => { // 200 : updaté ou créé
@@ -612,10 +630,11 @@ export default {
                 else this.$store.dispatch("notifyError", {error: error}); 
                 })
         },
+
         pull(type) {
-        var x = [];
-        for (const sample of this.table.selected) { x.push(sample.samplename) }
-        var data = { samplenames: x, pull_type:type};
+        var samplenames = [];
+        for (const sample of this.table.selected) { samplenames.push(sample.samplename) }
+        var data = { samplenames: samplenames, pull_type:type};
         // console.log(data);
         api.pull(this.$route.params.projectname, data)
         .then(response => {console.log("wooohoo");})
@@ -628,6 +647,7 @@ export default {
 
                 this.$store.dispatch("notifyError", {error: error}); })
             },
+
         exportSamplesZip(){
             this.table.exporting = true;
             var samplenames = [];
@@ -650,6 +670,7 @@ export default {
                 return [];
             });
         },
+
         getRelationTable(type) {
             // var data = { table_type:type};
             // console.log(type, data);
@@ -659,6 +680,37 @@ export default {
                 this.relationTableDial = true;
             }).catch(error => {  this.$store.dispatch("notifyError", {error: error}) });
         },
+
+        getLexicon(type) {
+            var samplenames = [];
+            for (const sample of this.table.selected) { samplenames.push(sample.samplename) }
+            var data = { samplenames: samplenames, treeSelection:type};
+            // console.log(123,data);
+            api.getLexicon(this.$route.params.projectname, data)
+            .then(response => { // 200 : updaté ou créé
+                console.log(777, response)
+                this.showNotif('top', 'getLexiconSuccess');
+                console.log("wooohoo",response.data.lexicon);
+                })
+            .catch(error => {
+                // console.log(111,error)
+                if (error.response.data.status==418) // 418 : app pas installée (ou autre problème ?)
+                {
+                    // console.log(111,error)
+                    // console.log(222, error.response);
+                    error.response.message = error.response.data.message;
+                    error.permanent = true;
+                    this.$store.dispatch("notifyError", {error: error});
+                }
+                else if (error.response.data.status==204) // 204 : l'utilisateur n'a pas d'arbres
+                {
+                    // console.log(error, error.response)
+                    this.$store.dispatch("notifyError", {error: error.response.data.message});
+                }
+                else this.$store.dispatch("notifyError", {error: error}); 
+                })
+        },
+
         onSearch(searchPattern){
             var query = { pattern: searchPattern };
             api.searchProject(this.$route.params.projectname, query)
@@ -683,6 +735,7 @@ export default {
             this.tableKey++;
             // this.$refs.textsTable.requestServerInteraction(this.table.pagination);
         },
+
         reverseTags(value, samplename, target){
             for(let [i, sample] of this.infos.samples.entries()){ 
                 if(sample.samplename == samplename ){ 
@@ -692,15 +745,18 @@ export default {
             }
             this.tableKey++;
         },
+
         addAnnotator(slug, context){ 
             api.addSampleAnnotator(slug.value, this.$route.params.projectname, context.samplename).then(response => { this.updateTags(response, context.samplename); this.$q.notify({message:`Change saved!`});}).catch(error => { 
                 this.reverseTags(slug.value, context.samplename, 'annotator'); this.$store.dispatch("notifyError", {error: error})  });
         },
+
         removeAnnotator(slug, context){ 
             api.removeSampleAnnotator(slug.value, this.$route.params.projectname, context.samplename).then(response => {
                 this.updateTags(response, context.samplename); this.$q.notify({message:`Change saved!`});
             }).catch(error => {  this.$store.dispatch("notifyError", {error: error})  });
         },
+
         addValidator(slug, context){ api.addSampleValidator(slug.value, this.$route.params.projectname, context.samplename).then(response => { this.updateTags(response, context.samplename); this.$q.notify({message:`Change saved!`}); }) },
         removeValidator(slug, context){ api.removeSampleValidator(slug.value, this.$route.params.projectname, context.samplename).then(response => { this.updateTags(response, context.samplename); this.$q.notify({message:`Change saved!`}); }) },
         addSuperValidator(slug, context){ api.addSampleSuperValidator(slug.value, this.$route.params.projectname, context.samplename).then(response => { this.updateTags(response, context.samplename); }) },
@@ -711,7 +767,8 @@ export default {
 			this.confirmActionDial = true;
 			this.confirmActionCallback = method;
 			this.confirmActionArg1 = arg;
-		},
+        },
+        
         showNotif (position, alert) {
             const { color, textColor, multiLine, icon, message, avatar, actions } = this.alerts[alert];
             const buttonColor = color ? 'white' : void 0;

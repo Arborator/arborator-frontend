@@ -120,6 +120,8 @@
 	stroke: black;
 	stroke-width: 1;
 	fill: none;
+	position: relative;
+	z-index:0;
 	--startOffset: 8;
 	--tokDepDist: 15; /* distance between tokens and depdendency relation */
 	--depMinHeight: 15; /* minimum height for dependency */

@@ -266,6 +266,11 @@ subj,comp,vocative
 		admin(){ return this.infos.admins.includes(this.$store.getters.getUserInfos.id) || this.$store.getters.getUserInfos.super_admin; }   
     },
 	methods:{
+		/**
+		 * Handle project infos request from backend
+		 * 
+		 * @returns void
+		 */
 		getProjectInfos(){ 
 			api.getProjectSettings(this.$props.projectname)
 			.then(response => {
@@ -285,19 +290,29 @@ subj,comp,vocative
 				})
 			.catch(error => {
 					this.$store.dispatch("notifyError", {error: error}); 
-					this.$q.notify({message: `${error}`, color:'negative', position: 'bottom'});}) 
+					this.$q.notify({message: `${error}`, color:'negative', position: 'bottom'});
+			}); 
 		},
+		/**
+		 * Parse annotation features. Display a related informative message dependeing on success
+		 * 
+		 * @returns void
+		 */
 		checkAnnotationFeatures(){
 			try {
-					JSON.parse(this.annofjson);
-					this.annofok=true;
-					this.annofcomment=this.$t('projectSettings').checkAnnotation
+				JSON.parse(this.annofjson);
+				this.annofok=true;
+				this.annofcomment=this.$t('projectSettings').checkAnnotation
 			} catch (e) {
 				this.annofok=false;
 				this.annofcomment=e
-            }
-			
+			}
 		},
+		/**
+		 * Save annotation features into the store and requests update project setting in backend
+		 * 
+		 * @returns void
+		 */
 		saveannofshown(){
 			var config = this.$store.getters.getProjectConfig;
 			// console.log("777", this.shownfeatures, this.infos.config.shownfeatures);
@@ -307,20 +322,21 @@ subj,comp,vocative
 			this.$store.commit('set_project_config', config);
 			console.log(222, this.$props.projectname, config)
 			
-
 			// api.updateProjectSettings(this.$props.projectname, config)
 			api.updateProjectSettings(this.$props.projectname, {'shownfeatures':this.shownfeatures})
 			.then(response => {
 				console.log(66565,response.data)
-				
-				})
+			})
 			.catch(error => {
-					this.$store.dispatch("notifyError", {error: error}); 
-					this.$q.notify({message: `${error}`, color:'negative', position: 'bottom'});}) 
+				this.$store.dispatch("notifyError", {error: error}); 
+				this.$q.notify({message: `${error}`, color:'negative', position: 'bottom'});
+			}) 
 		},
-		
-     
-			
+		/**
+		 * Save meta infos to be shown into the store and update project settings from backend
+		 * 
+		 * @returns void
+		 */
 		savemetashown(){
 			var config = this.$store.getters.getProjectConfig;
 
@@ -333,26 +349,91 @@ subj,comp,vocative
 			api.updateProjectSettings(this.$props.projectname, {'shownmeta':this.shownmeta})
 			.then(response => {
 				console.log(66565,response.data)
-				
 				})
 			.catch(error => {
-					this.$store.dispatch("notifyError", {error: error}); 
-					this.$q.notify({message: `${error}`, color:'negative', position: 'bottom'});})
+				this.$store.dispatch("notifyError", {error: error}); 
+				this.$q.notify({message: `${error}`, color:'negative', position: 'bottom'});
+			})
 		},
+		/**
+		 * @todo : Save annotation settings
+		 * 
+		 * @returns void
+		 */
 		saveAnnotationSettings(){
 			console.log('todo: here the project annotation settings should be saved');
 			// this.annotationFeatures = JSON.parse(this.annofjson);
 			// this.$store.commit('set_project_config', {annotationFeatures:this.annotationFeatures}) // todo: check this!!!
 		},
-
-
+		/**
+		 * Add an administrator by requesting backend
+		 * @todo change backend function to accept multiple users
+		 * 
+		 * @param {Object[]} selected list of selected rows (objects)
+		 * @returns void
+		 */
 		addAdmin(selected){ 
 			console.log('addAdmin todo!',selected)
 			// todo: why does the function only accept one user?
-			api.setProjectUserRole(this.$props.projectname, 'admin', selected[0].id).then(response => {this.$q.notify({message:`Change saved!`}); this.infos = response.data}).catch(error => {this.$store.dispatch("notifyError", {error: error})});  },
-		removeAdmin(userid){ api.removeProjectUserRole(this.$props.projectname, 'admin', userid).then( response => {this.$q.notify({message:`Change saved!`}); this.infos = response.data;} ).catch(error => {this.$store.dispatch("notifyError", {error: error})});  },
-		addGuest(selected){ api.setProjectUserRole(this.$props.projectname, 'guest', selected[0].id).then(response=> {this.$q.notify({message:`Change saved!`});this.infos = response.data;}).catch(error => {this.$store.dispatch("notifyError", {error: error})});  },
-		removeGuest(userid){ api.removeProjectUserRole(this.$props.projectname, 'guest', userid).then( response => {this.$q.notify({message:`Change saved!`}); this.infos = response.data;} ).catch(error => {this.$store.dispatch("notifyError", {error: error})});  },
+			api.setProjectUserRole(this.$props.projectname, 'admin', selected[0].id)
+				.then(response => {
+					this.$q.notify({message:`Change saved!`}); 
+					this.infos = response.data;
+				})
+				.catch(error => {
+					this.$store.dispatch("notifyError", {error: error});
+				}
+			);  
+		},
+		/**
+		 * Remove a user from the administrators using its userId
+		 * 
+		 * @param {String} userId the user id
+		 * @returns void
+		 */
+		removeAdmin(userid){ 
+			api.removeProjectUserRole(this.$props.projectname, 'admin', userid)
+			.then( response => {
+				this.$q.notify({message:`Change saved!`}); 
+				this.infos = response.data;
+			})
+			.catch(error => {
+				this.$store.dispatch("notifyError", {error: error});
+			});  
+		},
+		/**
+		 * Add a guest by requesting backend
+		 * @todo change backend function to accept multiple users
+		 * 
+		 * @param {Object[]} selected list of selected rows (objects)
+		 * @returns void
+		 */
+		addGuest(selected){ 
+			api.setProjectUserRole(this.$props.projectname, 'guest', selected[0].id)
+			.then(response=> {
+				this.$q.notify({message:`Change saved!`});
+				this.infos = response.data;
+				})
+			.catch(error => {
+				this.$store.dispatch("notifyError", {error: error})
+			});
+		},
+		/**
+		 * Remove a user from the guests using its userId
+		 *
+		 * @param {String} userId the user id
+		 * @returns void
+		 */
+		removeGuest(userid){ 
+			api.removeProjectUserRole(this.$props.projectname, 'guest', userid)
+			.then( response => {
+				this.$q.notify({message:`Change saved!`});
+				this.infos = response.data;
+			} )
+			.catch(error => {
+				this.$store.dispatch("notifyError", {error: error})
+			});
+		},
 		// addLabel(){  api.addProjectStockLabel(this.$props.projectname, this.stockid, this.entryLabel).then(response => {this.$q.notify({message:`Change saved!`}); this.infos.labels = response.data; this.entryLabel='';}).catch(error => { this.$store.dispatch("notifyError", {error: error}); })  },
 		// removeLabel(item){ api.removeProjectStockLabel(this.$props.projectname, item.id, item.stock_id, item.value).then(response => {this.$q.notify({message:`Change saved!`}); this.infos.labels = response.data; }).catch(error => { this.$store.dispatch("notifyError", {error: error}); })  },
 		// resetLabel(){ this.entryLabel = ''; },
@@ -362,14 +443,91 @@ subj,comp,vocative
 		// removeCat(cat){ api.removeProjectCatLabel(this.$props.projectname, cat).then(response => {this.$q.notify({message:`Change saved!`}); this.infos.cats = response.data; }).catch(error => { this.$store.dispatch("notifyError", {error: error}); })},
 		// resetCat(){ this.entryCat = ''; },
 
-		addDefaultUserTree(selected){ api.addDefaultUserTree(this.$props.projectname, selected[0]).then(response => {this.$q.notify({message:`Change saved!`}); this.infos = response.data;}).catch(error => {this.$store.dispatch("notifyError", {error: error})});  },
-		removeDefaultUserTree(dutid){ api.removeDefaultUserTree(this.$props.projectname, dutid).then( response => {this.$q.notify({message:`Change saved!`}); this.infos = response.data;} ).catch(error => {this.$store.dispatch("notifyError", {error: error})});  },
-		
-
-		changeShowAllTrees(){ api.modifyShowAllTrees(this.$props.projectname, this.infos.show_all_trees).then(response => {this.$q.notify({message:'Change saved!'}); this.infos = response.data; }).catch(error => { this.$store.dispatch("notifyError", {error: error}); }) },
+		/**
+		 * Add a default user for the tree to be uploaded if not specified. 
+		 * @todo change backend function to accept multiple users
+		 * 
+		 * @param {Object[]} selected list of selected rows (objects)
+		 * @returns void
+		 */
+		addDefaultUserTree(selected){ 
+			api.addDefaultUserTree(this.$props.projectname, selected[0])
+			.then(response => {
+				this.$q.notify({message:`Change saved!`}); 
+				this.infos = response.data;
+			})
+			.catch(error => {
+				this.$store.dispatch("notifyError", {error: error})
+			});
+		},
+		/**
+		 * Remove a default user for the tree to be uploaded if not specified
+		 * 
+		 * @param {String} dutid id of the DUT (defautUserTree Object)
+		 * @returns void
+		 */
+		removeDefaultUserTree(dutid){ 
+			api.removeDefaultUserTree(this.$props.projectname, dutid)
+			.then( response => {
+				this.$q.notify({message:`Change saved!`}); 
+				this.infos = response.data;
+			} )
+			.catch(error => {
+				this.$store.dispatch("notifyError", {error: error})
+			});  
+		},
+		/**
+		 * Change the boolean of the project in backend : to show all trees to every users or not
+		 * 
+		 * @returns void
+		 */
+		changeShowAllTrees(){ 
+			api.modifyShowAllTrees(this.$props.projectname, this.infos.show_all_trees)
+			.then(response => {
+				this.$q.notify({message:'Change saved!'}); 
+				this.infos = response.data; 
+			})
+			.catch(error => { 
+				this.$store.dispatch("notifyError", {error: error});
+			}) 
+		},
 		// changeOpenProject(){ api.modifyOpenProject(this.$props.projectname, this.infos.is_open).then(response => {this.$q.notify({message:`Change saved!`}); this.infos = response.data; }).catch(error => { this.$store.dispatch("notifyError", {error: error}); }) },
-		changeIsPrivate(){ api.modifyPrivate(this.$props.projectname, this.infos.visibility).then(response => {this.$q.notify({message:`Change saved!`}); this.infos = response.data; this.$forceUpdate(); }).catch(error => { this.$store.dispatch("notifyError", {error: error}); }) },
-		changeDescription(){ api.modifyDescription(this.$props.projectname, this.infos.description).then(response => {this.$q.notify({message:`Change saved!`}); this.infos = response.data; }).catch(error => { this.$store.dispatch("notifyError", {error: error}); }) },
+		/**
+		 * Change the project's boolean in backend : whether it is private or not
+		 * 
+		 * @returns void
+		 */
+		changeIsPrivate(){ 
+			api.modifyPrivate(this.$props.projectname, this.infos.visibility)
+			.then(response => {
+				this.$q.notify({message:`Change saved!`}); 
+				this.infos = response.data; 
+				this.$forceUpdate(); 
+			})
+			.catch(error => { 
+				this.$store.dispatch("notifyError", {error: error});
+			})
+		},
+		/**
+		 * Change the project description in backend using the infos data
+		 * 
+		 * @returns void
+		 */
+		changeDescription(){ 
+			api.modifyDescription(this.$props.projectname, this.infos.description)
+			.then(response => {
+				this.$q.notify({message:`Change saved!`});
+				this.infos = response.data; 
+			})
+			.catch(error => { 
+				this.$store.dispatch("notifyError", {error: error});
+			})
+		},
+		/**
+		 * Upload a project image by creating formdata to be send to the backend
+		 * 
+		 * @returns void
+		 */
 		uploadProjectImage(){ 
 			this.uploadImage.submitting = true;
 			var form = new FormData();
@@ -390,6 +548,13 @@ subj,comp,vocative
 		// 	api.saveTxtLabels(this.$props.projectname, this.txtLabels).then(response => { console.log(JSON.stringify(response.data)); this.$q.notify({message:`Change saved!`}); this.infos.labels = response.data;}).catch(error => { this.$store.dispatch("notifyError", {error: error}); }); 
 		// },
 
+		/**
+         * Wrapper to display the confirm dialog prior to executing the method
+		 * 
+         * @param {method} method
+         * @param {*} arg
+		 * @returns void
+         */
 		triggerConfirm(method, arg){
 			this.confirmActionDial = true;
 			this.confirmActionCallback = method;

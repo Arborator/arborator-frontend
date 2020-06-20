@@ -81,7 +81,7 @@
                                     </q-btn>
                                     
                                     <div>
-                                        <q-btn flat  color="default"  icon="cloud_download" @click="exportSamplesZip()" :loading="table.exporting" :disable="(!infos.is_open && !guest && !admin && !super_admin) || table.selected.length<1">
+                                        <q-btn flat  color="default"  icon="cloud_download" @click="exportSamplesZip()" :loading="table.exporting" :disable="(infos.visibility == 0 && !guest && !admin && !super_admin) || table.selected.length<1">
                                         </q-btn>
                                         <q-tooltip v-if="table.selected.length<1" :delay="300" content-class="text-white bg-primary">{{$t('projectView').tooltipExportSample[0]}}</q-tooltip>
                                         <q-tooltip v-else :delay="300" content-class="text-white bg-primary">{{$t('projectView').tooltipExportSample[1]}}</q-tooltip>

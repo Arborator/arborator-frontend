@@ -117,10 +117,21 @@ export default {
 		
 	},
 	methods: {
+		/**
+		 * Filter the fields (visible columns) given the table in json format
+		 * 
+		 * @param {Object} tableJson
+		 * @returns {Array} array of fields
+		 */
 		filterFields(tableJson) {
 			var tempArray = tableJson.fields.filter(function( obj ) { return obj.field !== 'syntInfo' && obj.field !== 'cat' && obj.field !== 'redistributions' ; });
 			return tempArray;
 		},
+		/**
+		 * Retrieve users from backend and populate the table data
+		 * 
+		 * @returns void
+		 */
 		getUsers(){ 
 			api.getUsers()
 				.then( response => {
@@ -129,7 +140,20 @@ export default {
 					})
 				.catch(error => { this.$store.dispatch("notifyError", {error: error}); }); 
 		},
-		getUsersTreeFrom(){ api.getUsersTreeFrom(this.$props.projectname).then( response => { this.table.data = response.data; }).catch(error => { this.$store.dispatch("notifyError", {error: error}); }); }
+		/**
+		 * Retrived the source of trees and populate the table data
+		 * 
+		 * @returns void
+		 */
+		getUsersTreeFrom(){ 
+			api.getUsersTreeFrom(this.$props.projectname)
+			.then( response => { 
+				this.table.data = response.data;
+			})
+			.catch(error => { 
+				this.$store.dispatch("notifyError", {error: error});
+			});
+		}
 	}
 }
 </script>

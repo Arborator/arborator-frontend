@@ -15,10 +15,10 @@
             <q-breadcrumbs-el v-if="$route.params.samplename != null && $route.params.projectname != null" :label="$route.params.samplename" icon="assignment" :to="'/projects/'+$route.params.projectname+'/'+$route.params.samplename" />
           </q-breadcrumbs>          <q-space />          <div class="q-gutter-sm row items-center no-wrap"  size="4rem">
           
-          <q-select v-model="lang" :options="langOptions" dense borderless options-dense display-value="">
+          <q-select v-model="lang" :options="langOptions" dense borderless options-dense map-options emit-value >
             <template v-slot:append>
               <q-avatar>
-                <img :src="lang.img">
+                <q-icon name="fas fa-globe" />
               </q-avatar>
             </template>
           </q-select>
@@ -157,8 +157,8 @@ import Store from '../store/index';export default {
         ],
         lang: this.$i18n.locale,
         langOptions: [
-          { value: 'en-us', label: 'English', img: '../statics/images/usflag.svg' },
-          { value: 'fr-fra', label: 'Français', img: '../statics/images/frenchflag.svg' }
+          { value: 'en-us', label: 'EN', img: '../statics/images/usflag.svg' },
+          { value: 'fr-fra', label: 'FR', img: '../statics/images/frenchflag.svg' }
         ]
     }
   },

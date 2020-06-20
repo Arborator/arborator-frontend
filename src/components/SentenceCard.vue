@@ -146,11 +146,20 @@ export default {
 
 
     computed: {
+        /**
+         * Never used ?! 
+         * Check if the graph is dirty (I.E. modified but not saved) or open to see if it's supposed to be possible to save
+         * @returns {Boolean}
+         */
         cannotSave(){  
             let dirty = this.graphInfo.dirty;
             let open = this.$store.getters.projectConfig.is_open;
             return !dirty || !open;
         },
+        /**
+         * Check the store to see if a user is logged in or not
+         * @returns {Boolean}
+         */
         isLoggedIn() {
             return this.$store.getters.isLoggedIn;
         }
@@ -159,14 +168,33 @@ export default {
         this.shownmetanames = this.$store.getters.getProjectConfig.shownmeta;
     },
     methods: {
+        /**
+         * Set the sentence link and copy it after 500 ms
+         * 
+         * @returns void
+         */
         getlink() {
             this.sentenceLink = window.location.href.split('/projects/'+this.$route.params.projectname)[0]+'/projects/'+this.$route.params.projectname+'/'+this.sentence.samplename+'/'+(this.index+1)+'/'+this.graphInfo.user
-            setTimeout(()=>{this.$refs.linkinput.select();document.execCommand('copy') }, 500)
+            setTimeout(()=>{
+                this.$refs.linkinput.select();
+                document.execCommand('copy');
+            }, 500)
         },
+        /**
+         * Show the conll graph
+         * 
+         * @returns void
+         */
         showconll() {
             if ('conllGraph' in this.$refs) var cg = this.$refs.conllGraph.filter(c => c.user == this.tab)[0];
             if (cg) cg.openConllDialog();
         },
+        /**
+         * Get the SVG by creating it using snap arborator plugin and then replacing the placeholder in the current DOM
+         * @todo instead of this long string, read the actual css file and put it there.
+         * 
+         * @returns void
+         */
         getSVG() { // todo: instead of this long string, read the actual css file and put it there.
             var svg = this.graphInfo.conllGraph.snap.treedata.s.toString();
             var style=`<style> 
@@ -258,6 +286,12 @@ export default {
             // this.table.exporting = false;
             this.$q.notify({message:`Files downloaded`});
         },
+        /**
+         * Handle token click event to display the related dialog
+         * 
+         * @param {Event} event
+         * @returns void
+         */
         ttselect(event) {
             // triggered if some letters of the sentence are selected
             if ('conllGraph' in this.$refs) var cg = this.$refs.conllGraph.filter(c => c.user == this.tab)[0];
@@ -267,7 +301,9 @@ export default {
                 event.srcElement.value.substring(event.srcElement.selectionStart,event.srcElement.selectionEnd) 
                 )
         },
-
+        /**
+         * @todo undo
+         */
         undo() {
             // log("sentenceid", this.$props.sentenceId);
             // log("dirty user");
@@ -276,7 +312,11 @@ export default {
             // log(this.$props); // index, projectname, sentence...
             // log("lastsvg", this.graphInfo.svgId);
         },
-       
+        /**
+         * Save the graph into backend after modifying its metadata and changing it into an object
+         * 
+         * @returns void
+         */
         save() {
             var timestamp = Date.now();
             // console.log("timestamp", timestamp);
@@ -299,18 +339,40 @@ export default {
             }).catch(error => { 
                 this.$store.dispatch("notifyError", {error: error}); });
         },
+        /**
+         * Set the graph infos according to the event payload. This event shoudl be trigerred from the ConllGraph
+         * 
+         * @returns void
+         */
         onConllGraphUpdate(payload) {
-            // called from the ConllGraph
             this.graphInfo = payload;
         },
+        /**
+         * Update shown metadata considering the event payload
+         * 
+         * @param {Event} metas
+         * @returns void
+         */
         metaUpdate(metas) {
             this.shownmetas = Object.keys(metas).filter(m => this.shownmetanames.includes(m)).map( m => ({'a':m,'v':metas[m]}));
             if (metas.text) this.sentenceData.sentence = metas.text;
         },
+        /**
+         * Open the metadata dialog considering the conllGraph related function
+         * 
+         * @returns void
+         */
         openMetaDialog() {
             // "this.tab" contains the user name, calls the openMetaDialog function in ConllGraph.vue
             this.$refs.conllGraph.filter(c => c.user == this.tab)[0].openMetaDialog();    
         },
+        /**
+         * Never used ?!
+         * Auto open the conll graph component related to the current user. Never used due to computing time slowing down the whole interface.
+         * 
+         * @param {String} user
+         * @returns void
+         */
         autoopen(user) {
             console.log(4444545454, 'conllGraph_'+this.sentenceId+'_'+this.index+'_'+user)
             // called from Sample.vue to open specific tree
@@ -328,6 +390,14 @@ export default {
             }
             
         },
+        /**
+         * Show a notification. Wrapper considering parameters
+         * @deprecated should use this.$q.notify instead. Global params are already set
+         * 
+         * @param {String} position 'top-right' etc
+         * @param {String} alert 'warn', ect.
+         * @returns void
+         */
         showNotif (position, alert) {
             const { color, textColor, multiLine, icon, message, avatar, actions } = this.alerts[alert];
             const buttonColor = color ? 'white' : void 0;

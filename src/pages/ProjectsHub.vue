@@ -7,7 +7,7 @@
       <q-card flat>
         <q-card-section class="q-pa-md row items-start q-gutter-md">
           <q-toolbar class="text-center">
-              <q-btn v-if="isLoggedIn" id="createproject" color="primary" round dense icon="add" @click="creaProjectDial = true">
+              <q-btn :disable="!isLoggedIn" id="createproject" color="primary" round dense icon="add" @click="creaProjectDial = true">
                 <q-tooltip :delay="300" content-class="text-white bg-primary">{{$t('projectHub').tooltipCreaProject}}</q-tooltip>
               </q-btn>
               <q-toolbar-title :class="($q.dark.isActive?'':'text-primary') + ' text-bold'">

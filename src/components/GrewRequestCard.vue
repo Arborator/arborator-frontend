@@ -176,14 +176,48 @@ pattern { N [form="Form_to_search"] }`,
         this.checkgrewquery();
     },
     methods: {
-        onSearch(){ this.parentOnSearch(this.searchPattern); this.$store.commit('change_last_grew_query', this.searchPattern ); this.$ls.set('grewHistory', this.searchPattern); },
-        changeSearchPattern(pattern) { this.searchPattern = pattern; },
-        onResetSearch(){ this.searchPattern = ''; },
+        /**
+         * Call parent onsearch function and update store and history
+         * 
+         * @returns void
+         */
+        onSearch(){ 
+            this.parentOnSearch(this.searchPattern); 
+            this.$store.commit('change_last_grew_query', this.searchPattern ); 
+            this.$ls.set('grewHistory', this.searchPattern); 
+        },
+        /**
+         * Modify the search pattern (search string)
+         * 
+         * @param {string} pattern 
+         * @returns void
+         */
+        changeSearchPattern(pattern) { 
+            this.searchPattern = pattern; 
+        },
+        /**
+         * Reset the search pattern to an empty string
+         * 
+         * @returns void
+         */
+        onResetSearch(){ 
+            this.searchPattern = ''; 
+        },
+        /**
+         * Retrieve the grew link based on windows location (current url) 
+         * 
+         * @returns void
+         */
         getgrewlink(){
                 var z = this.zip(this.searchPattern)
                 this.grewlink = window.location.href.split('/projects/'+this.$route.params.projectname)[0]+'/projects/'+this.$route.params.projectname+(this.$route.params.samplename ? '/'+this.$route.params.samplename : '')+'?q='+z;
                 setTimeout(()=>{this.$refs.grewlinkinput.select();document.execCommand('copy') }, 500)
         },
+        /**
+         * Grew query check : verify if it is not empty, and if it's a custom query
+         * 
+         * @returns void
+         */
         checkgrewquery(){
             if (this.grewquery.length>0) {
                 if (this.queries.filter(c => c.name == "custom query").length==0)
@@ -195,7 +229,12 @@ pattern { N [form="Form_to_search"] }`,
                 }
             }
         },
-        // Apply LZW-compression to a string and return base64 compressed string.
+        /**
+         * Apply LZW-compression to a string (s) and return base64 compressed string.
+         * 
+         * @param {string} s
+         * @returns void
+         */ 
         zip (s) {
             try {
                 var dict = {}
@@ -224,9 +263,13 @@ pattern { N [form="Form_to_search"] }`,
                 console.log('Failed to zip string return empty string', e)
                 return ''
             }
-            },
-
-// Decompress an LZW-encoded base64 string
+        },
+        /**
+         * Decompress an LZW-encoded base64 string
+         * 
+         * @param {string} base64ZippedString a string result representing zipped base64; result from the above zip(s) method
+         * @returns void
+         */
         unzip (base64ZippedString) {
             try {
                 var s = this.atou(base64ZippedString)
@@ -256,11 +299,21 @@ pattern { N [form="Form_to_search"] }`,
                 return ''
             }
         },
-        // ucs-2 string to base64 encoded ascii
+        /**
+         * ucs-2 string to base64 encoded ascii
+         * 
+         * @param {string} str
+         * @returns void
+         */
         utoa (str) {
             return window.btoa(unescape(encodeURIComponent(str)))
         },
-        // base64 encoded ascii to ucs-2 string
+        /**
+         * base64 encoded ascii to ucs-2 string
+         * 
+         * @param {string} str
+         * @returns void
+         */
         atou (str) {
             return decodeURIComponent(escape(window.atob(str)))
         }

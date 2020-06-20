@@ -108,11 +108,30 @@ export default {
 		this.getUsers();
 	},
 	methods: {
+		/**
+		 * Filter the fields (visible columns) given the table in json format
+		 * 
+		 * @param {Object} tableJson
+		 * @returns {Array} array of fields
+		 */
 		filterFields(tableJson) {
 			var tempArray = tableJson.fields.filter(function( obj ) { return obj.field !== 'syntInfo' && obj.field !== 'cat' && obj.field !== 'redistributions' ; });
 			return tempArray;
 		},
-		getUsers(){ api.getUsers().then( response => {  this.table.data = response.data; }).catch(error => { this.$store.dispatch("notifyError", {error: error});}); }
+		/**
+		 * Retrieve users from backend and populate the table data
+		 * 
+		 * @returns void
+		 */
+		getUsers(){ 
+			api.getUsers()
+			.then( response => {  
+				this.table.data = response.data;
+			})
+			.catch(error => { 
+				this.$store.dispatch("notifyError", {error: error});
+			});
+		}
 	}
 }
 </script>

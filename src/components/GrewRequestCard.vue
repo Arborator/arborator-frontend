@@ -14,12 +14,11 @@
                         
                         <div class="col-10" >
                             <codemirror v-model="searchPattern" :options="cmOption"></codemirror>
-                            <q-space />
-                            
-                        </div>
+                        </div> 
+                        <q-space />
                         <div class="col-2" >
                             <q-list bordered separator >
-                                <q-item v-for="query in queries" :key="query.name" clickable v-ripple @click="changeSearchPattern(query.pattern)">
+                                <q-item v-for="query in queries" :key="query.name" clickable v-ripple @click="changeSearchPattern(query.pattern, query.commands)">
                                     <q-item-section>
                                         {{query.name}}
                                     </q-item-section>
@@ -28,10 +27,20 @@
                         </div>
                     </div>
 
+
+                    <div class="row">
+                        <div v-if="rewriteCommands!=''" class="col-10" >
+                            <codemirror v-model="rewriteCommands" :options="cmOption"></codemirror>
+                        </div>
+                    </div>
+
+
+
                     <div class="row">
                         <div class="full-width row justify-start  ">
 
                             <q-btn color="primary" type="submit" label="Search" no-caps />
+                            <q-btn v-if="rewriteCommands!=''" color="primary" @click="tryRule" label="try Rule" no-caps />
                             <q-space/>
                             <q-btn icon="ion-md-link" @click="getgrewlink"/>
                             <q-space/>
@@ -67,6 +76,7 @@ import store from '../store';
         var words = {
 	    'global': 'builtin',
 	    'pattern': 'builtin',
+	    'commands': 'builtin',
 	    'without': 'builtin',
 	};
 
@@ -152,11 +162,12 @@ import store from '../store';
 export default {
     components: { codemirror },
     name: 'GrewRequestCard',
-    props: ['parentOnSearch', 'grewquery'],
+    props: ['parentOnSearch', 'parentOnTryRule', 'grewquery'],
     data() {
         return {
             searchPattern: `% Search for a given word form
 pattern { N [form="Form_to_search"] }`,
+            rewriteCommands: '',
             cmOption: {
                 tabSize: 4,
                 styleActiveLine: true,
@@ -173,6 +184,7 @@ pattern { N [form="Form_to_search"] }`,
     mounted(){
         if (this.$ls.get('grewHistory', '').length > 0) this.$store.commit('change_last_grew_query', this.$ls.get('grewHistory'));
         if (this.$store.getters.getLastGrewQuery.length > 0) this.searchPattern = this.$store.getters.getLastGrewQuery;
+        if (this.$store.getters.getLastGrewCommand.length > 0) this.rewriteCommands = this.$store.getters.getLastGrewCommand;
         this.checkgrewquery();
     },
     methods: {
@@ -184,17 +196,33 @@ pattern { N [form="Form_to_search"] }`,
         onSearch(){ 
             this.parentOnSearch(this.searchPattern); 
             this.$store.commit('change_last_grew_query', this.searchPattern ); 
+            this.$store.commit('change_last_grew_command', this.rewriteCommands ); 
             this.$ls.set('grewHistory', this.searchPattern); 
         },
+         /**
+         * Call parent onsearch function and update store and history
+         * 
+         * @returns void
+         */
+        tryRule(){
+            console.log(78787,this.searchPattern, this.rewriteCommands);
+            this.parentOnTryRule(this.searchPattern, this.rewriteCommands);
+
+
+
+        },
+
         /**
          * Modify the search pattern (search string)
          * 
          * @param {string} pattern 
          * @returns void
          */
-        changeSearchPattern(pattern) { 
+        changeSearchPattern(pattern, rewriteCommands) { 
             this.searchPattern = pattern; 
-        },
+            this.rewriteCommands = rewriteCommands; 
+        },   
+      
         /**
          * Reset the search pattern to an empty string
          * 
@@ -202,6 +230,7 @@ pattern { N [form="Form_to_search"] }`,
          */
         onResetSearch(){ 
             this.searchPattern = ''; 
+            this.rewriteCommands = ''; 
         },
         /**
          * Retrieve the grew link based on windows location (current url) 

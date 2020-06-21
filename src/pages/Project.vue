@@ -318,7 +318,7 @@
           
 
             <q-dialog v-model="searchDialog" seamless position="right" full-width>
-                <grew-request-card :parentOnSearch="onSearch" :grewquery="$route.query.q || ''"></grew-request-card>
+                <grew-request-card :parentOnSearch="onSearch" :parentOnTryRule="onTryRule" :grewquery="$route.query.q || ''"></grew-request-card>
             </q-dialog>
             <q-dialog v-model="assignDial" persistent transition-show="slide-up" transition-hide="slide-down" >
                 <user-table :samples="table.selected" ></user-table>
@@ -718,6 +718,16 @@ export default {
                 this.resultSearchDialog = true;
                 this.resultSearch = response.data;
             }).catch(error => {  this.$store.dispatch("notifyError", {error: error})  });
+        },
+        onTryRule(searchPattern, rewriteCommands){
+            console.log(12121,searchPattern, rewriteCommands)
+            var query = { pattern: searchPattern, rewriteCommands:rewriteCommands };
+            api.tryRuleProject(this.$route.params.projectname, query)
+            .then(response => {
+                this.resultSearchDialog = true;
+                this.resultSearch = response.data;
+            }).catch(error => {  this.$store.dispatch("notifyError", {error: error.response.data.message})  });
+
         },
         // grewquery() {
         //     console.log('projectview',this.grewqueryc)

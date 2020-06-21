@@ -23,6 +23,7 @@ export default new Vuex.Store({
         failedAccess: false,
         avatarKey: 0, 
         lastGrewQuery: '',
+        lastGrewCommand: '',
         projectConfig: {
             // is_open: false, 
             show_all_trees: true,
@@ -104,6 +105,9 @@ export default new Vuex.Store({
         change_last_grew_query(state, payload){
             state.lastGrewQuery = payload;
         },
+        change_last_grew_command(state, payload){
+            state.lastGrewCommand = payload;
+        },
         set_project_config(state, payload){
 
             // state.projectConfig = payload // bad idea as it erases all local information better:
@@ -178,7 +182,7 @@ export default new Vuex.Store({
                 else if(error.response.status == 401){ msg == (error.response.message)?error.response.message:$t('error401');}
                 else { msg =(error.response.message)?error.response.message: error.response.statusText + ' error ' + error.response.status; }
             }
-            else msg=$t('oops')+error;
+            else msg='oops'+error;
             if (error.caption) caption=error.caption;
             if (error.permanent) Notify.create({message: msg, position: 'top-right', color: 'negative', icon:'warning', caption:caption, timeout:0, closeBtn:'Dismiss', html:true});
             else Notify.create({message: msg, position: 'top-right', color: 'negative', icon:'warning', caption:caption});
@@ -193,6 +197,7 @@ export default new Vuex.Store({
         getUserInfos: state => state.user,
         getAvatarKey: state => state.avatarKey,
         getLastGrewQuery: state => state.lastGrewQuery,
+        getLastGrewCommand: state => state.lastGrewCommand,
         getProjectConfig: state => state.projectConfig
     }
 })

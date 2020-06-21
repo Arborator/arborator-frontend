@@ -168,6 +168,9 @@ export default {
     searchProject( projectname, query){
         return API.post('projects/'+projectname+'/search', query);
     },
+    tryRuleProject( projectname, query){
+        return API.post('projects/'+projectname+'/tryRule', query);
+    },
     searchSample( projectname, samplename, query) {
         return API.post('projects/'+projectname+'/sample/'+samplename+'/search', query)
     },

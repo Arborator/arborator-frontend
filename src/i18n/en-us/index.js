@@ -51,7 +51,7 @@ export default {
 		playgroundBtn: 'Playground'
 	  },
 	  sourceCard: {
-		title: 'Source code and access to this Web page are completely free',
+		title: 'Source code',
 		subtitle: 'as in free beer and as in in free speech',
 		content: [
 		  'Head over to', 
@@ -71,7 +71,7 @@ export default {
 		]
 	  },
 	  citeCard: {
-		title: 'Cite us if you use this',
+		title: 'Cite us',
 		subtitle: 'And good things will happen'
 	  },
 	  toolsCard: {

@@ -3,12 +3,14 @@
     <q-header :class="$q.dark.isActive?'bg-dark':'bg-white'">
       <q-bar :class="$q.dark.isActive?'bg-dark':'bg-white text-black'">        <!-- class="bg-white text-black" -->
           <!--   :class="$q.dark.isActive ? 'text-white' : 'text-primary'" -->          <q-btn flat @click="drawerLeft = !drawerLeft" round icon="menu"  />
-          <a href="/">
-          <div class="q-btn__content text-center col items-center q-anchor--skip row">
-            <img v-if="$q.dark.isActive" alt="Arborator" src="../statics/svg/arborator.grew.white.svg" style="height: 2.3vw;">
-            <img v-else alt="Arborator" src="../statics/svg/arborator.grew.svg" style="height: 2.3vw;">
-          </div>
-          </a>          <q-space />          <q-breadcrumbs :active-color="$q.dark.isActive?'white':'primary'" :class="($q.dark.isActive?'text-grey':'text-black') + ' mobile-hide native-mobile-hide within-iframe-hide gt-xs'" style="max-height:20px;max-width:70vh;overflow:y;">
+          <q-btn flat to="/" :ripple="false" type="a">
+            <div class="q-btn__content text-center col items-center q-anchor--skip row">
+              <img v-if="$q.dark.isActive" alt="Arborator" src="../statics/svg/arborator.grew.white.svg" style="height: 2.3vw;">
+              <img v-else alt="Arborator" src="../statics/svg/arborator.grew.svg" style="height: 2.3vw;">
+            </div>
+          </q-btn>
+          <q-space />
+          <q-breadcrumbs :active-color="$q.dark.isActive?'white':'primary'" :class="($q.dark.isActive?'text-grey':'text-black') + ' mobile-hide native-mobile-hide within-iframe-hide gt-xs'" style="max-height:20px;max-width:70vh;overflow:y;">
             <q-breadcrumbs-el v-if="notHome" icon="home" to="/" />
             <q-breadcrumbs-el v-if="$route.path.startsWith('/projects/')" icon="view_module" to="/projects" />
             <q-breadcrumbs-el v-if="$route.params.projectname != null" :label="$route.params.projectname" icon="fas fa-tree" :to="'/projects/'+$route.params.projectname" />

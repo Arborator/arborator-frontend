@@ -10,6 +10,8 @@ Vue.use(VueCookies);
 
 import { Notify } from 'quasar'
 
+import { i18n } from 'src/boot/i18n'
+
 
 export default new Vuex.Store({
     state: {
@@ -178,8 +180,8 @@ export default new Vuex.Store({
             if(error.message!=undefined) 
                 {msg = error.message;}
             else if (error.response) {
-                if(error.response.status == 403){ msg = (error.response.message)?error.response.message:$t('error403');  }
-                else if(error.response.status == 401){ msg == (error.response.message)?error.response.message:$t('error401');}
+                if(error.response.status == 403){ msg = (error.response.message)?error.response.message:i18n.t('error403');  }
+                else if(error.response.status == 401){ msg == (error.response.message)?error.response.message:i18n.t('error401');}
                 else { msg =(error.response.message)?error.response.message: error.response.statusText + ' error ' + error.response.status; }
             }
             else msg='oops'+error;

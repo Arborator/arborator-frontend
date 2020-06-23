@@ -5,20 +5,19 @@
       <section class="sectionfscreen">
         <q-card flat class="fixed-center">
           <q-card-section >
-            <!-- <div :class="$q.dark.isActive?'text-grey-1':'text-blue-grey-8'" class="text-h4 text-center ">Welcome to ArboratorGrew!</div> -->
             <div class="text-center"> 
               <img v-if="$q.dark.isActive" alt="Arborator" src="../statics/svg/arborator.grew.white.svg" class="brandinglogo">
               <img v-else alt="Arborator" src="../statics/svg/arborator.grew.svg" class="brandinglogo">
             </div>
           </q-card-section>
 
-          <!-- <q-card-section class="text-center text-justify" :class="$q.dark.isActive?'text-grey-1':'text-blue-grey-8'">
-            <h5>{{$t('homepage').slogan}}</h5>
-          </q-card-section> -->
-
           <q-card-section >
             <div class="text-center" :class="$q.dark.isActive?'text-grey-1':'text-blue-grey-8'"><h4>{{$t('homepage').slogan}}</h4></div>
           </q-card-section>
+
+          <q-card-actions align="around">
+            <q-btn id="accesstreebank" rounded to="/projects" color="primary" no-caps >{{$t('homepage').accessTreebankBtn}}</q-btn>
+          </q-card-actions>
 
           <q-card-section >
             <q-carousel
@@ -39,41 +38,35 @@
               <q-carousel-slide name="style" class="column no-wrap flex-center">
                 <q-icon name="fas fa-edit" size="56px" />
                 <div class="q-mt-md text-center text-body1">
-                  Annotate and Share your Treebanks
+                  {{$t('homepage').features[0]}}
                 </div>
               </q-carousel-slide>
               <q-carousel-slide name="tv" class="column no-wrap flex-center">
-                <q-icon name="fab fa-searchengin" size="56px" />
+                <q-icon name="fas fa-search" size="56px" />
                 <div class="q-mt-md text-center text-body1">
-                  Query and Search using State-of-the-art Grammars
+                  {{$t('homepage').features[1]}}
                 </div>
               </q-carousel-slide>
               <q-carousel-slide name="layers" class="column no-wrap flex-center">
                 <q-icon name="fas fa-code-branch" size="56px" />
                 <div class="q-mt-md text-center text-body1">
-                  Free and Open Source
+                  {{$t('homepage').features[2]}}
                 </div>
               </q-carousel-slide>
               <q-carousel-slide name="map" class="column no-wrap flex-center">
                 <q-icon name="fas fa-user-friends" size="56px" />
                 <div class="q-mt-md text-center text-body1">
-                  Team up and Manage Access to your Projects
+                  {{$t('homepage').features[3]}}
                 </div>
               </q-carousel-slide>
             </q-carousel>
           </q-card-section>
-          <!-- free, share, annotate, query, team up -->
-
-
-          <q-card-actions align="around">
-            <q-btn id="accesstreebank" rounded to="/projects" color="primary" no-caps >{{$t('homepage').accessTreebankBtn}}</q-btn>
-          </q-card-actions>
 
           <q-separator vertical />
 
           <q-card-actions align="around" vertical>
-            <div>
-            <q-icon name="fas fa-angle-double-down"/></div>
+            <span class="text-center text-caption text-grey">{{$t('homepage').scroll}}</span>
+            <q-icon name="fas fa-angle-double-down"/>
           </q-card-actions>
 
         </q-card>
@@ -83,37 +76,22 @@
 
     <q-card flat class="q-pa-md q-gutter-y-xl">
       <q-separator inset/>
-      <!-- <section class="row bg-white">
 
-        <q-card class="my-card col">
-          <q-card-section>
-            {{ lorem }}
-          </q-card-section>
-        </q-card>
-
-        <div class="col"></div>
-
-      </section>   -->
-
-      <section class="row">
+      <section class="row sectionsize">
         <q-card flat class="col" style=" width: 100%; width: 45vw">
           <q-card-section>
-            <div class="text-h3 text-center text-primary text-bold">Arborator's Collaborative Annotation</div>
+            <div class="text-h3 text-center text-primary text-bold">{{$t('homepage').arboheadline}}</div>
           </q-card-section>
           <q-card-section horizontal>
-            <!-- <q-img
-              class="col-5"
-              src="https://cdn.quasar.dev/img/parallax1.jpg"
-            /> -->
-            <q-parallax :height="440" class="col-5">
+            <q-parallax :height="440" :speed="0.0" class="col col-md-5">
               <template v-slot:media>
-                <video width="720" height="440" poster="https://cdn.quasar.dev/img/polina.jpg" autoplay loop muted>
+                <video width="720" height="440" autoplay loop muted>
                   <source type="video/webm" src="../statics/videos/annotate.webm">
                 </video>
               </template>
             </q-parallax>
             <div class="col"></div>
-            <q-card-section vertical class="col-6">
+            <q-card-section vertical class="col-12 col-md-6">
               <q-card-section>
                 <div class="text-h5 text-primary text-bold">{{$t('homepage').descriptionCard.title}}</div>
                 <div class="text-subtitle2">{{$t('homepage').descriptionCard.subtitle}}</div>
@@ -146,17 +124,13 @@
         </q-card>
       </section>
 
-      <section class="row">
+      <section class="row sectionsize">
         <q-card flat class="col" style=" width: 100%; width: 45vw">
           <q-card-section>
-            <div class="text-h3 text-center text-green text-bold">Grew's Graph Grammar</div>
+            <div class="text-h3 text-center text-green text-bold">{{$t('homepage').grewheadline}}</div>
           </q-card-section>
           <q-card-section horizontal>
-            <!-- <q-img
-              class="col-5"
-              src="https://cdn.quasar.dev/img/parallax1.jpg"
-            /> -->
-            <q-card-section vertical>
+            <q-card-section vertical class="col-12 col-md-6">
               <q-card-section>
                 <div class="text-h5 text-primary text-bold">{{$t('homepage').grewCard.title}}</div>
                 <div class="text-subtitle2">{{$t('homepage').grewCard.subtitle}}</div>
@@ -174,9 +148,10 @@
                 </div>
               </q-card-section>
             </q-card-section>
-            <q-parallax :height="440" class="col-5">
+            <div class="col"></div>
+            <q-parallax :height="440" :speed="0.0" class="col col-md-5">
               <template v-slot:media>
-                <video width="720" height="440" poster="https://cdn.quasar.dev/img/polina.jpg" autoplay loop muted>
+                <video width="720" height="440" autoplay loop muted>
                   <source type="video/webm" src="../statics/videos/grew.webm">
                 </video>
               </template>
@@ -186,7 +161,7 @@
       </section>
 
       <section class="row items-start">
-        <q-card flat style="width: 32vw">
+        <q-card flat class="col-md-4">
           <div class="text-center">
               <q-icon color="primary" name="fas fa-newspaper"  style="font-size: 4em;"></q-icon>
           </div>
@@ -222,12 +197,12 @@
           </q-card-section>    
         </q-card>
 
-        <q-card flat style=" width: 32vw; ">
+        <q-card flat class="col-md-4">
           <div class="text-center">
               <q-icon color="primary" name="fab fa-github"  style="font-size: 4em;"></q-icon>
           </div>
           <q-card-section>
-            <div class="text-h5 text-primary text-bold">{{$t('homepage').sourceCard.title}}</div>
+            <div class="text-h5 text-primary text-center text-bold">{{$t('homepage').sourceCard.title}}</div>
           </q-card-section>
           <q-separator  inset />
           <q-card-section>
@@ -244,13 +219,12 @@
         </q-card>
 
 
-       <q-card flat style=" width: 32vw; " >
+       <q-card flat class="col-md-4" >
          <div class="text-center">
               <q-icon color="primary" name="fas fa-toolbox"  style="font-size: 4em;"></q-icon>
           </div>
          <q-card-section>
-          <div class="text-h5 text-primary text-bold">{{$t('homepage').toolsCard.title}}</div>
-          <div class="text-subtitle2">{{$t('homepage').toolsCard.subtitle}}</div>
+          <div class="text-h5 text-primary text-center text-bold">{{$t('homepage').toolsCard.title}}</div>
         </q-card-section>
         <q-separator  inset />
         <div class="q-gutter-lg q-gutter-y-lg">
@@ -291,25 +265,6 @@
     </q-card>
 
     </div>
-
-    <!-- <q-page-sticky position="bottom-right" :offset="[18, 18]">
-      <q-card :class="hover ? 'bg-grey-2' : ''" class="clickable col-1 grid-style-transition shadow-7"
-      @mouseover="hover = true" 
-      @mouseleave="hover = false" 
-      @click="openURL('https://arborator.github.io/draft')"
-      :style="hover ? 'transform: scale(0.95);' : ''"
-      style="border-radius: 20px 20px 10px 10px">
-        <q-card-section>
-            <img src="../statics/svg/arborator.quick.svg" width="100em" /> <q-badge align="top" color="positive">No login!</q-badge>
-            <q-item-section>
-                <q-item-label lines="1"> </q-item-label>
-                <q-item-label caption lines="2" :class="$q.dark.isActive?'text-grey':''">
-                  CoNLL files graphical editor
-                </q-item-label>
-            </q-item-section>
-        </q-card-section>
-      </q-card>
-    </q-page-sticky> -->
   </q-page>
 </template>
 
@@ -337,6 +292,10 @@
   height: 100vh;
 }
 
+.sectionsize {
+  min-height:80vh;
+}
+
 
 </style>
 
@@ -359,6 +318,9 @@ export default {
       Arborator-Grew, a collaborative annotation tool for treebank development. Arborator-Grew combines the features of two preexisting tools: Arborator and Grew. Arborator is a widely used collaborative graphical online dependency treebank annotation tool. Grew is a tool for graph querying and rewriting specialized in structures needed in NLP, i.e. syntactic and semantic dependency trees and graphs. Grew also has an online version, Grew-match, where all Universal Dependencies treebanks in their classical, deep and surface-syntactic flavors can be queried. Arborator-Grew is a complete redevelopment and modernization of Arborator, replacing its own internal database storage by a new Grew API, which adds a powerful query tool to Arborator's existing treebank creation and correction features. This includes complex access control for parallel expert and crowd-sourced annotation, tree comparison visualization, and various exercise modes for teaching and training of annotators. Arborator-Grew opens up new paths of collectively creating, updating, maintaining, and curating syntactic treebanks and semantic graph banks.
       `,
       hover: false,
+      hoverdraft: false,
+      hoverquick: false,
+      hoverlegacy: false,
       search: '',
       slide: 'style',
     }

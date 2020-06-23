@@ -14,5 +14,6 @@
     "options": [
       "scripts"
     ]
-  }
+  },
+  "@quasar/qmediaplayer": {}
 }

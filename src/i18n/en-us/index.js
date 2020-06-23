@@ -21,6 +21,15 @@ export default {
 	homepage: {
 	  accessTreebankBtn: 'Access Treebanks',
 	  slogan: 'Treebank Annotation for Human Beings',
+	  features: [
+		  'Annotate and Share your Treebanks',
+		  'Query and Search using State-of-the-art Grammars',
+		  'Free and Open Source',
+		  'Team up and Manage Access to your Projects'
+	  ],
+	  scroll: 'Scroll down to see more',
+	  arboheadline: "Arborator's Collaborative Annotation",
+	  grewheadline: "Grew's Graph Grammar",
 	  descriptionCard: {
 		title: 'A collaborative annotation tool for treebank development',
 		subtitle: "An easy to use graphic annotation interface makes it annotation the best part of a linguist's day.",
@@ -52,7 +61,6 @@ export default {
 	  },
 	  sourceCard: {
 		title: 'Source code',
-		subtitle: 'as in free beer and as in in free speech',
 		content: [
 		  'Head over to', 
 		  'to have a look and grab the code.', 
@@ -71,12 +79,10 @@ export default {
 		]
 	  },
 	  citeCard: {
-		title: 'Cite us',
-		subtitle: 'And good things will happen'
+		title: 'Cite us'
 	  },
 	  toolsCard: {
-		title: 'Some other tools',
-		subtitle: 'in the Arborator series',
+		title: 'Other Arborator tools',
 		content: [
 		  'If you just want to look at a CoNLL file quickly, check out this:',
 		  'No login!',

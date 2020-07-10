@@ -36,7 +36,7 @@
               dense            
               v-model="props.row.a"
               :options="computeAttributeOptions(props.row)"
-              :options-sanitize=true
+              :options-sanitize="true"
             />
             <q-select
               v-else
@@ -50,6 +50,7 @@
           </q-td>
 
           <q-td key="v" :props="props">
+            {{props.row}}
             <div v-if="props.row.a=='timestamp'">
               {{thisdate(props.row.v)}}
             </div>
@@ -84,18 +85,18 @@
               clearable
               @input="oninput(props.row)"
               :options="computeValueOptions(props.row)"
-              :options-sanitize=true
+              :options-sanitize="true"
             />
             <q-select
-            v-else
+              v-else
+              :key="key"
               filled
               dense
               clearable
               v-model="props.row.v"
-              
               :options="computeValueOptions(props.row)"
               @input="oninput(props.row)"
-            > 
+            >
             <!-- removed fill-input to allow to erase functions -->
             <template v-if='prepend!=undefined' v-slot:prepend>{{props.row.join}}</template>
             </q-select>
@@ -130,7 +131,8 @@ export default {
      
       pagination: {
         rowsPerPage: 0 // current rows per page being displayed : 0=All
-      }
+      },
+      key: 0 //workaround...
       
     };
   },
@@ -191,6 +193,7 @@ export default {
     oninput(row) {
       console.log('oninput this.featdata',this.featdata)
       this.$emit("feature-changed");
+      this.key++;
     
     },
   

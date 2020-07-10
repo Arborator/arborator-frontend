@@ -44,7 +44,7 @@
             </q-card>
         </q-card-section>
         <q-card-section v-if="!listMode" style="width: 90vw; height:60vh;">
-          <q-virtual-scroll v-if="$q.platform.is.mobile" :items="visibleProjects" style="max-height: 60vh; width:80vw"  :virtual-scroll-slice-size="5" :virtual-scroll-item-size="200">
+          <q-virtual-scroll v-if="$q.platform.is.mobile" :items="visibleProjects" style="max-height: 60vh; width:80vw"  :virtual-scroll-slice-size="30" :virtual-scroll-item-size="200">
             <template v-slot="{ item, index }">
               <project-card style="max-width: 80vw" :props="item" :parentDeleteProject="deleteProject" :parentProjectSettings="showProjectSettings" :key="item.id"></project-card>
             </template>
@@ -55,7 +55,7 @@
         </q-card-section>
         <q-card-section v-if="listMode" style="width: 90vw; height:60vh;">
           <q-list style="width:100%" bordered>
-            <q-virtual-scroll :items="visibleProjects" style="max-height: 60vh;width:100%;"  :virtual-scroll-slice-size="5" :virtual-scroll-item-size="200">
+            <q-virtual-scroll :items="visibleProjects" style="max-height: 60vh;width:100%;"  :virtual-scroll-slice-size="30" :virtual-scroll-item-size="200">
               <template v-slot="{ item, index }">
                 <project-item  :props="item" :parentDeleteProject="deleteProject" :parentProjectSettings="showProjectSettings" :key="item.id"></project-item>
               </template>

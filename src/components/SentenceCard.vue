@@ -318,8 +318,9 @@ export default {
          * @returns void
          */
         save() {
-            var timestamp = Date.now();
-            // console.log("timestamp", timestamp);
+            // timestamp in milliseconds type int
+            var timestamp = Math.round(Date.now());
+            console.log("timestamp", timestamp);
             var conll = this.graphInfo.conllGraph.draft.getConll(this.graphInfo.conllGraph.snap.treedata);
             conll = conll.replace(/# user_id = .+\n/, "# user_id = "+this.$store.getters.getUserInfos.username+"\n");
             conll = conll.replace(/# timestamp = \d+(\.\d*)?\n/, "# timestamp = "+timestamp+"\n");

@@ -347,6 +347,8 @@ export default {
          */
         onConllGraphUpdate(payload) {
             this.graphInfo = payload;
+            if (this.graphInfo.dirty == true) this.$store.commit('add_pending_modification', this.sentenceId);
+            else this.$store.commit('remove_pending_modification', this.sentenceId);
         },
         /**
          * Update shown metadata considering the event payload

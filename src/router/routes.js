@@ -1,3 +1,5 @@
+import Store from '../store/index';
+
 
 const routes = 
 [
@@ -11,13 +13,7 @@ const routes =
       { path: '/projects/:projectname/:samplename', component: () => import('src/pages/Sample.vue'), props: true },
       { path: '/projects/:projectname/:samplename/:nr', component: () => import('src/pages/Sample.vue'), props: true },
       { path: '/projects/:projectname/:samplename/:nr/:user', component: () => import('src/pages/Sample.vue'), props: true },
-      {
-        path: 'settings',
-        component: () => import('src/pages/Settings'),
-        meta: {
-          requiresAuth: true
-        }
-      },
+      { path: 'settings', component: () => import('src/pages/Settings'), meta: { requiresAuth: true } },
     ]
   }
 ]

@@ -114,7 +114,8 @@
 </template><script>
 import { openURL } from 'quasar';
 import api from '../boot/backend-api';
-import Store from '../store/index';export default {
+import Store from '../store/index';
+export default {
   name: 'TempLayout',
   data () {
     return {

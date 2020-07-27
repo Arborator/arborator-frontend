@@ -149,6 +149,18 @@ export default {
         if(this.$route.query.q && this.$route.query.q.length>0) this.searchDialog=true;
         // console.log(this.admin || this.super_admin,this.admin, this.super_admin)
     },
+    beforeRouteLeave (to, from, next) {
+        if (this.$store.getters.getPendingModifications.size > 0){
+            const answer = window.confirm('Do you really want to leave? you have unsaved changes!');
+            if (answer) { 
+                this.$store.commit('empty_pending_modification');
+                next() 
+            } 
+            else { next(false) }
+        }else {
+            next()
+        }
+    },
     methods: {
         getProjectConfig(){
             api.getProjectSettings(this.$route.params.projectname).then(response => { 

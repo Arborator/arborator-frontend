@@ -26,6 +26,7 @@ export default new Vuex.Store({
         avatarKey: 0, 
         lastGrewQuery: '',
         lastGrewCommand: '',
+        pendingModifications: new Set(), // set of sentence ids
         projectConfig: {
             // is_open: false, 
             show_all_trees: true,
@@ -122,6 +123,15 @@ export default new Vuex.Store({
             // state.projectConfig.show_all_trees = payload.show_all_trees;
 
             console.log(1234444444, '// todo save on grew, as soon as api accepts the information', payload);
+        },
+        add_pending_modification(state, payload){
+            state.pendingModifications.add(payload);
+        },
+        remove_pending_modification(state, payload){
+            state.pendingModifications.delete(payload);
+        },
+        empty_pending_modification(state){
+            state.pendingModifications.clear();
         }
     },
     actions: {
@@ -173,6 +183,9 @@ export default new Vuex.Store({
             state.desiredUrl = payload.value;
             commit('desiredurl_modified', {value: value});
         },
+        changePendingModifications({commit}, {value}) {
+            commit('change_pending_modifications', {value: value});
+        },
         accessFailed({commit}, {value}) {
             commit('access_failed');
         },
@@ -205,6 +218,7 @@ export default new Vuex.Store({
         getAvatarKey: state => state.avatarKey,
         getLastGrewQuery: state => state.lastGrewQuery,
         getLastGrewCommand: state => state.lastGrewCommand,
-        getProjectConfig: state => state.projectConfig
+        getProjectConfig: state => state.projectConfig,
+        getPendingModifications: state => state.pendingModifications
     }
 })

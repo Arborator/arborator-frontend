@@ -50,7 +50,6 @@
           </q-td>
 
           <q-td key="v" :props="props">
-            {{props.row}}
             <div v-if="props.row.a=='timestamp'">
               {{thisdate(props.row.v)}}
             </div>

@@ -94,6 +94,8 @@ export default new Vuex.Store({
             state.loginSuccess = false;
             state.userName = null;
             state.userPass = null;
+            state.user = {as_json: null, auth_provider: null, created_date: null, family_name: null, first_name: null, get_id: null, get_or_create: null, id: null, is_active: false, is_anonymous: true, is_authenticated: false, 
+                last_seen: null, make_unique_nickname: null, make_valid_nickname: null, picture_url: null, query: null, query_class: null, super_admin: false, username: null};
         },
         access_failed(state, value){
             state.failedAccess = value;
@@ -158,7 +160,10 @@ export default new Vuex.Store({
         logout({commit}, {user}) {
             return new Promise((resolve, reject) => {
                 console.log("logging out user: " + user);
-                api.logout().then(response => {console.log(response);}).catch(error => { console.log(error);});
+                api.logout().then(response => {
+                    console.log(response);
+                    commit('logout_success');
+                }).catch(error => { console.log(error);});
                 VueCookies.remove('session'); VueCookies.remove('remember_token');
                 commit('logout_success');
                 resolve({status: 'disconnected'});

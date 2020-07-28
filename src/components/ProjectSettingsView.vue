@@ -325,7 +325,7 @@ subj,comp,vocative
 			// api.updateProjectSettings(this.$props.projectname, config)
 			api.updateProjectSettings(this.$props.projectname, {'shownfeatures':this.shownfeatures})
 			.then(response => {
-				console.log(66565,response.data)
+				this.$q.notify({message:`Change saved!`}); 
 			})
 			.catch(error => {
 				this.$store.dispatch("notifyError", {error: error}); 
@@ -348,7 +348,7 @@ subj,comp,vocative
 			// api.updateProjectSettings(this.$props.projectname, config)
 			api.updateProjectSettings(this.$props.projectname, {'shownmeta':this.shownmeta})
 			.then(response => {
-				console.log(66565,response.data)
+				this.$q.notify({message:`Change saved!`}); 
 				})
 			.catch(error => {
 				this.$store.dispatch("notifyError", {error: error}); 
@@ -356,14 +356,23 @@ subj,comp,vocative
 			})
 		},
 		/**
-		 * @todo : Save annotation settings
+		 * @todo : Save annotation settings : UPOS, relations, features and their values...
 		 * 
 		 * @returns void
 		 */
 		saveAnnotationSettings(){
-			console.log('todo: here the project annotation settings should be saved');
-			// this.annotationFeatures = JSON.parse(this.annofjson);
-			// this.$store.commit('set_project_config', {annotationFeatures:this.annotationFeatures}) // todo: check this!!!
+			var config = this.$store.getters.getProjectConfig;
+			config.annotationFeatures = JSON.parse(this.annofjson);
+			this.$store.commit('set_project_config', config); // update the config
+			// send the update to grew
+			api.updateProjectSettings(this.$props.projectname, {"annotationFeatures":JSON.stringify(config.annotationFeatures)})
+			.then(response => {
+				this.$q.notify({message:`Change saved!`}); 
+				})
+			.catch(error => {
+				this.$store.dispatch("notifyError", {error: error}); 
+				this.$q.notify({message: `${error}`, color:'negative', position: 'bottom'});
+			})
 		},
 		/**
 		 * Add an administrator by requesting backend

@@ -38,6 +38,12 @@ export default {
     updateProjectSettings(projectname, projectconfig){ // new from kim JSON.stringify(user)
         return API.post('projects/'+projectname+'/settings/update', projectconfig);
     },
+    getProjectConfig(projectname){ 
+        return API.get('projects/'+projectname+'/config/get');
+    },
+    updateProjectConfig(projectname, projectconfig){ 
+        return API.post('projects/'+projectname+'/config/update', projectconfig);
+    },
     // addProjectCatLabel(projectname, cat){
     //     return API.post('projects/'+projectname+'/config/cat/add', {'cat': cat});
     // },

@@ -161,6 +161,7 @@
 					></codemirror>
 				</q-card-section>
 				<q-btn color="bg-primary" text-color="primary" @click="saveAnnotationSettings()" :label="$t('projectSettings').annotationSettingsSave" icon="save" dense flat :disabled="!annofok" no-caps></q-btn>
+				<q-btn color="bg-primary" text-color="primary" @click="$store.commit('reset_project_config')" label="reset congif" icon="save" dense flat :disabled="!annofok" no-caps></q-btn>
 				<q-chip   text-color="primary" :icon="annofok?'sentiment_satisfied_alt':'sentiment_very_dissatisfied'">
 					{{annofcomment}}
 				</q-chip>
@@ -271,22 +272,24 @@ subj,comp,vocative
 		 * 
 		 * @returns void
 		 */
-		getProjectInfos(){ 
+		getProjectInfos(){
+			this.$store.dispatch("getConfigConllu", {projectname:this.$props.projectname})
+			.then(response=> {
+				this.annotationFeatures = this.$store.state.projectConfig.annotationFeatures
+				this.shownmetachoices = this.annotationFeatures.META;
+				this.shownfeatureschoices = ['FORM','UPOS','LEMMA'].concat(this.annotationFeatures.FEATS.map(({ name }) => 'FEATS.'+name).concat(this.annotationFeatures.MISC.map(({ name }) => 'MISC.'+name)))
+				this.annofjson = JSON.stringify(this.annotationFeatures, null, 4);
+			})
 			api.getProjectSettings(this.$props.projectname)
 			.then(response => {
 				console.log(response.data);
 				this.infos = response.data; 
-				this.annotationFeatures = this.$store.getters.getProjectConfig.annotationFeatures;
 
 				var tmp = this.infos.config.shownfeatures;
 				this.shownfeatures = tmp;
-				this.shownfeatureschoices = ['FORM','UPOS','LEMMA'].concat(this.annotationFeatures.FEATS.map(({ name }) => 'FEATS.'+name).concat(this.annotationFeatures.MISC.map(({ name }) => 'MISC.'+name)))
 				
 				var tmp = this.infos.config.shownmeta;
 				this.shownmeta = tmp;
-
-				this.shownmetachoices = this.annotationFeatures.META;
-				this.annofjson = JSON.stringify(this.annotationFeatures, null, 4);
 				})
 			.catch(error => {
 					this.$store.dispatch("notifyError", {error: error}); 
@@ -361,11 +364,17 @@ subj,comp,vocative
 		 * @returns void
 		 */
 		saveAnnotationSettings(){
-			var config = this.$store.getters.getProjectConfig;
-			config.annotationFeatures = JSON.parse(this.annofjson);
-			this.$store.commit('set_project_config', config); // update the config
+			// var config = this.$store.getters.getProjectConfig;
+			// config.annotationFeatures = JSON.parse(this.annofjson);
+			// this.$store.commit('set_project_config', config); // update the config
+			
 			// send the update to grew
-			api.updateProjectSettings(this.$props.projectname, {"annotationFeatures":JSON.stringify(config.annotationFeatures)})
+			// api.updateProjectSettings(this.$props.projectname, {"annotationFeatures":JSON.stringify(config.annotationFeatures)})
+			this.$store.dispatch('updateConfigConllu', 
+			{
+				annotationFeatures:JSON.parse(this.annofjson),
+				projectname: this.projectname
+			}) 
 			.then(response => {
 				this.$q.notify({message:`Change saved!`}); 
 				})

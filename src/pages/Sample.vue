@@ -145,6 +145,7 @@ export default {
     mounted(){ 
         this.getSampleContent(); 
         this.getProjectConfig();
+        this.$store.dispatch('getConfigConllu', {projectname:this.projectname}); 
         document.title = this.$route.params.samplename+" 🌳 Arborator-Grew 🌳 Sample of the "+this.$route.params.projectname+" project";
         if(this.$route.query.q && this.$route.query.q.length>0) this.searchDialog=true;
         // console.log(this.admin || this.super_admin,this.admin, this.super_admin)

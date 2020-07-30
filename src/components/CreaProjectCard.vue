@@ -89,6 +89,7 @@ export default {
 			form.append('visibility', this.visibility);
 			// form.append('is_open', this.isOpen);
 			form.append('show_all_trees', this.showAllTrees);
+			this.$store.commit("reset_project_config"); // reset annotationFeature object
 			api.createProject(form)
 			.then( response => { 
 				this.attachment.file = []; 

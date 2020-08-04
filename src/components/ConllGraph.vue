@@ -230,7 +230,6 @@ import AttributeTable from './AttributeTable'
 Vue.config.ignoredElements = ['conll'];
 import { codemirror } from 'vue-codemirror'
 import CodeMirror from 'codemirror'
-
 CodeMirror.defineMode('tsv', function(_config, parserConfig) {
        
 	function tokenBase(stream, state) {
@@ -269,6 +268,8 @@ CodeMirror.defineMode('tsv', function(_config, parserConfig) {
 	};
     
   }); // end codemirror
+
+import { mapGetters } from 'vuex'
 
 export default {
     name:'conllGraph',
@@ -345,10 +346,15 @@ export default {
             },
         }
     },
-    computed: {
-    },
+    // computed: {
+    //   ...mapGetters[{
+
+    //   }]
+    // },
     mounted(){
-        this.getProjectConfig();
+        this.options.annof = this.$store.getters['config/annotationFeatures'];
+        this.options.shownfeatures = this.$store.getters['config/shownfeatures'];
+        this.options.shownmeta = this.$store.getters['config/shownmeta'];
         this.start(this.conll, this.matches, this.id, this.user);
         // precompute to check for changes quickly:
         this.options.annofFEATS = this.options.annof.FEATS.reduce(function(obj, r) {if (r.values) obj[r.name] = r.values; return obj;}, {});
@@ -361,14 +367,6 @@ export default {
          * 
          * @returns void
          */
-        getProjectConfig(){
-          // transform all of this in getters
-          var conf = this.$store.getters['config/getProjectConfig'];
-          this.options.annof = conf.annotationFeatures;
-          this.options.shownfeatures = conf.shownfeatures;
-          this.options.shownmeta = conf.shownmeta;
-          
-        },
         up(dirty, redo) {
           // console.log(svg.tree)
           // console.log("NOW"); // when I open a sentence, when I click on OK after editing a category or a relation;

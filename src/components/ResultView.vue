@@ -51,7 +51,7 @@ export default {
         },
     mounted(){
         this.freezeSamples();
-        this.getProjectConfig();
+        // this.getProjectConfig();
     },
     methods: {
         /**
@@ -81,16 +81,17 @@ export default {
          * Requests project configuration from backend and put it into the store
          * 
          * @returns void
-         */
-        getProjectConfig(){
-            api.getProjectSettings(this.$route.params.projectname)
-            .then(response => { 
-                this.$store.commit('config/set_project_config', response.data); 
-            })
-            .catch(error => { 
-                this.$store.dispatch("notifyError", {error: error});
-            });
-        },
+         * removed by kirian 2020_08_04 22h59
+         */ 
+        // getProjectConfig(){
+        //     api.getProjectSettings(this.$route.params.projectname)
+        //     .then(response => { 
+        //         this.$store.commit('config/set_project_config', response.data); 
+        //     })
+        //     .catch(error => { 
+        //         this.$store.dispatch("notifyError", {error: error});
+        //     });
+        // },
     }
 }
 </script>

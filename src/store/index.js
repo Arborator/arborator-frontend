@@ -2,6 +2,8 @@ import Vue from 'vue'
 import Vuex from 'vuex'
 import api from '../boot/backend-api'
 
+import config from './modules/config'
+
 Vue.use(Vuex);
 
 import VueCookies from 'vue-cookies';
@@ -11,62 +13,6 @@ Vue.use(VueCookies);
 import { Notify } from 'quasar'
 
 import { i18n } from 'src/boot/i18n'
-
-
-const defaultProjectConfig = () => ({
-        // is_open: false, 
-        show_all_trees: true,
-        shownfeatures: ["FORM", "UPOS", "LEMMA", "MISC.Gloss"],
-        shownmeta: ["text_en"],
-        annotationFeatures: {
-            "META": [
-                "sent_id", "text", "text_en", "text_ortho", "speaker_id", "sound_url"
-            ],
-            "UPOS": [
-                "ADJ", "ADP", "ADV", "AUX", "CCONJ", "DET", "INTJ", "NOUN", "NUM", "PART", "PRON", "PROPN", "PUNCT", "SCONJ", "VERB", "X"
-            ],
-            "XPOS": [],
-            "FEATS": [
-                { "name": "Abbr", "values": ["Yes"]},
-                { "name": "Animacy", "values": ["Anim", "Hum ", "Inan ", "Nhum"]},
-                { "name": "Aspect", "values": ["Hab", "Imp", "Iter", "Perf", "Prog", "Prosp"]},
-                { "name": "Case", "values": ["Abs", "Acc", "Erg", "Nom", "Abe", "Ben", "Cau", "Cmp", "Com", "Dat", "Dis", "Equ", "Gen", "Ins", "Par", "Tem", "Tra", "Voc", "Abl", "Add", "Ade", "All", "Del", "Ela", "Ess", "Ill", "Ine", "Lat", "Loc", "Sub", "Sup", "Ter"]},
-                { "name": "Definite", "values": ["Com", "Cons", "Def", "Ind", "Spec"]},
-                { "name": "Degree", "values": ["Abs", "Cmp", "Equ", "Pos", "Sup"]},
-                { "name": "Evident", "values": ["Fh", "Nfh"]},
-                { "name": "Foreign", "values": ["Yes"]},
-                { "name": "Gender", "values": ["Com", "Fem", "Masc", "Neut"]},
-                { "name": "Mood", "values": ["Adm", "Cnd", "Des", "Imp", "Ind", "Jus", "Nec", "Opt", "Pot", "Prp", "Qot", "Sub"]},
-                { "name": "NumType", "values": ["Card", "Dist", "Frac", "Mult", "Ord", "Range", "Sets"]},
-                { "name": "Number", "values": ["Coll", "Count", "Dual", "Grpa", "Grpl", "Inv", "Pauc", "Plur", "Ptan", "Sing", "Tri"]},
-                { "name": "Person", "values": ["0", "1", "2", "3", "4"]},
-                { "name": "Polarity", "values": ["Neg", "Pos"]},
-                { "name": "Polite", "values": ["Elev", "Form", "Humb", "Infm"]},
-                { "name": "Poss", "values": ["Yes"]},
-                { "name": "PronType", "values": ["Art", "Dem", "Emp", "Exc", "Ind", "Int", "Neg", "Prs", "Rcp", "Rel", "Tot"]},
-                { "name": "Reflex", "values": ["Yes"]},
-                { "name": "Tense", "values": ["Fut", "Imp", "Past", "Pqp", "Pres"]},
-                { "name": "VerbForm", "values": ["Conv", "Fin", "Gdv", "Ger", "Inf", "Part", "Sup", "Vnoun"]},
-                { "name": "Voice", "values": ["Act", "Antip", "Cau", "Dir", "Inv", "Mid", "Pass", "Rcp"]}
-            ],
-            "MISC": [
-                { "name": "AlignBegin", "values": "Number" },
-                { "name": "AlignEnd", "values": "Number" },
-                { "name": "EXTPOS", "values": ["SCONJ"] },
-                { "name": "Gloss", "values": "String" }
-            ],
-            "DEPREL": [
-                {"name": "rel", "values": ["cc","comp","compound","conj","det","discourse","dislocated","flat","goeswith","mod","parataxis","punct","root","subj","unk","vocative"], "join":""},
-                {"name": "subrel", "values": ["","appos", "aux", "cleft", "comp", "conj", "coord", "dicto", "discourse", "dislocated", "emph", "expl", "fixed", "foreign", "insert", "num", "obj", "obl", "parenth", "periph", "poss", "pred", "prt", "redup", "relcl", "scrap", "svc"], "join":":"},
-                {"name": "deep", "values": ["","agent", "expl", "fixed", "lvc", "num", "relcl", "scrap", "x"], "join":"@"}
-            ],
-            "DEPS": [
-                {"name": "deep", "values": ["comp", "mod", "subj"], "join":""}
-
-            ]
-        }
-})
-
 
 
 export default new Vuex.Store({
@@ -83,7 +29,6 @@ export default new Vuex.Store({
         lastGrewQuery: '',
         lastGrewCommand: '',
         pendingModifications: new Set(), // set of sentence ids
-        projectConfig: defaultProjectConfig(),
     },
     mutations: {
         change_source(state, payload){
@@ -116,19 +61,6 @@ export default new Vuex.Store({
         },
         change_last_grew_command(state, payload){
             state.lastGrewCommand = payload;
-        },
-        set_project_config(state, payload){
-            // state.projectConfig = payload // bad idea as it erases all local information better:
-            state.projectConfig = Object.assign(state.projectConfig, payload)
-            // state.projectConfig.cats = payload.cats;
-            // state.projectConfig.labels = payload.labels;
-            // state.projectConfig.is_open = payload.is_open;
-            // state.projectConfig.show_all_trees = payload.show_all_trees;
-
-            console.log(1234444444, '// todo save on grew, as soon as api accepts the information', payload);
-        },
-        reset_project_config(state) {
-            Object.assign(state.projectConfig, defaultProjectConfig())
         },
         add_pending_modification(state, payload){
             state.pendingModifications.add(payload);
@@ -213,39 +145,6 @@ export default new Vuex.Store({
             if (error.permanent) Notify.create({message: msg, position: 'top-right', color: 'negative', icon:'warning', caption:caption, timeout:0, closeBtn:'Dismiss', html:true});
             else Notify.create({message: msg, position: 'top-right', color: 'negative', icon:'warning', caption:caption});
         },
-        getConfigConllu({commit, state}, {projectname}) {
-            return new Promise((resolve, reject) => {
-                api.getProjectConfig(projectname)
-                .then((response) => {
-                    var fetchedAnnotationFeatures = response.data.data;
-                    // check if there is a json in proper format, otherwise use default ConfigConllu
-                    if (typeof(fetchedAnnotationFeatures) !== "object" || fetchedAnnotationFeatures === null) {
-                        commit("reset_project_config")
-                        fetchedAnnotationFeatures = state.projectConfig.annotationFeatures;
-                    }
-                    commit("set_project_config", {annotationFeatures: fetchedAnnotationFeatures})
-                    resolve(response)
-                    })
-                    .catch((error) => {
-                    reject(error.response.data.errors)
-                    })
-                })
-        },
-        updateConfigConllu({commit}, {projectname, annotationFeatures}) {
-            return new Promise((resolve, reject) => {
-                api.updateProjectConfig(projectname, {'config': annotationFeatures})
-                .then(response=> {
-                    commit("set_project_config", {annotationFeatures: annotationFeatures})
-                    resolve(response)
-                })
-                .catch((error) => {
-                    reject(error.response.data.errors)
-                  })
-
-            }) 
-        },
-
-
     },
     getters: {
         getSource: state => state.source,
@@ -256,7 +155,13 @@ export default new Vuex.Store({
         getAvatarKey: state => state.avatarKey,
         getLastGrewQuery: state => state.lastGrewQuery,
         getLastGrewCommand: state => state.lastGrewCommand,
+        getPendingModifications: state => state.pendingModifications,
         getProjectConfig: state => state.projectConfig,
-        getPendingModifications: state => state.pendingModifications
+        getAnnofjson: state => {
+            return JSON.stringify(state.projectConfig.annotationFeatures, null, 4)
+        }
+    },
+    modules: {
+        config,
     }
 })

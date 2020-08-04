@@ -85,7 +85,7 @@ export default {
         getProjectConfig(){
             api.getProjectSettings(this.$route.params.projectname)
             .then(response => { 
-                this.$store.commit('set_project_config', response.data); 
+                this.$store.commit('config/set_project_config', response.data); 
             })
             .catch(error => { 
                 this.$store.dispatch("notifyError", {error: error});

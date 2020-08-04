@@ -165,7 +165,7 @@ export default {
         }
     },
     mounted() {
-        this.shownmetanames = this.$store.getters.getProjectConfig.shownmeta;
+        this.shownmetanames = this.$store.getters['config/getProjectConfig'].shownmeta;
     },
     methods: {
         /**

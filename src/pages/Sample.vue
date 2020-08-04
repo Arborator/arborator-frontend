@@ -145,7 +145,7 @@ export default {
     mounted(){ 
         this.getSampleContent(); 
         this.getProjectConfig();
-        this.$store.dispatch('getConfigConllu', {projectname:this.projectname}); 
+        this.$store.dispatch('config/getConfigConllu', {projectname:this.projectname}); 
         document.title = this.$route.params.samplename+" 🌳 Arborator-Grew 🌳 Sample of the "+this.$route.params.projectname+" project";
         if(this.$route.query.q && this.$route.query.q.length>0) this.searchDialog=true;
         // console.log(this.admin || this.super_admin,this.admin, this.super_admin)
@@ -165,10 +165,7 @@ export default {
     methods: {
         getProjectConfig(){
             api.getProjectSettings(this.$route.params.projectname).then(response => { 
-                // console.log(111,'getProjectSettings response',response.data.shownfeatures)
-                // console.log(111,'$store.getters.getProjectConfig',this.$store.getters.getProjectConfig.shownfeatures)
-                this.$store.commit('set_project_config', response.data.shownfeatures); 
-                // console.log(222,'$store.getters.getProjectConfig',this.$store.getters.getProjectConfig.shownfeatures)
+                this.$store.commit('config/set_project_config', response.data.shownfeatures); 
                 this.infos = response.data;
                 }).catch(error => { 
                     this.$store.dispatch("notifyError", {error: error}); });

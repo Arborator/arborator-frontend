@@ -161,8 +161,9 @@
 					></codemirror>
 				</q-card-section>
 				<q-btn color="bg-primary" text-color="primary" @click="saveAnnotationSettings()" :label="$t('projectSettings').annotationSettingsSave" icon="save" dense flat :disabled="!annofok" no-caps></q-btn>
-				<q-btn color="bg-primary" text-color="primary" @click="$store.commit('reset_project_config')" label="reset congif" icon="save" dense flat :disabled="!annofok" no-caps></q-btn>
+				<q-btn color="bg-primary" text-color="primary" @click="resetProjectConfig()" label="reset to SUD" icon="replay" dense flat :disabled="!annofok" no-caps></q-btn>
 				<q-chip   text-color="primary" :icon="annofok?'sentiment_satisfied_alt':'sentiment_very_dissatisfied'">
+				<q-btn color="bg-primary" text-color="primary" @click="testFunction()" label="test button" icon="undo" dense flat no-caps></q-btn>
 					{{annofcomment}}
 				</q-chip>
 			</q-card>
@@ -264,21 +265,24 @@ subj,comp,vocative
             return 'data:image/png;base64, '+clean;
 		},
 		guest(){ return this.infos.guests.includes(this.$store.getters.getUserInfos.id); },
-		admin(){ return this.infos.admins.includes(this.$store.getters.getUserInfos.id) || this.$store.getters.getUserInfos.super_admin; }   
+		admin(){ return this.infos.admins.includes(this.$store.getters.getUserInfos.id) || this.$store.getters.getUserInfos.super_admin; } ,
     },
 	methods:{
+		testFunction() {
+			this.$store.dispatch('config/an_action', 'KK succeed');
+		},
 		/**
 		 * Handle project infos request from backend
 		 * 
 		 * @returns void
 		 */
 		getProjectInfos(){
-			this.$store.dispatch("getConfigConllu", {projectname:this.$props.projectname})
+			this.$store.dispatch("config/getConfigConllu", {projectname:this.$props.projectname})
 			.then(response=> {
-				this.annotationFeatures = this.$store.state.projectConfig.annotationFeatures
-				this.shownmetachoices = this.annotationFeatures.META;
-				this.shownfeatureschoices = ['FORM','UPOS','LEMMA'].concat(this.annotationFeatures.FEATS.map(({ name }) => 'FEATS.'+name).concat(this.annotationFeatures.MISC.map(({ name }) => 'MISC.'+name)))
-				this.annofjson = JSON.stringify(this.annotationFeatures, null, 4);
+				this.annotationFeatures = this.$store.state.config.annotationFeatures
+				this.shownmetachoices = this.$store.getters['config/shownmetachoices'];
+				this.shownfeatureschoices = this.$store.getters['config/shownfeatureschoices']
+				this.annofjson = this.$store.getters['config/getAnnofjson']
 			})
 			api.getProjectSettings(this.$props.projectname)
 			.then(response => {
@@ -317,13 +321,13 @@ subj,comp,vocative
 		 * @returns void
 		 */
 		saveannofshown(){
-			var config = this.$store.getters.getProjectConfig;
+			var config = this.$store.getters['config/getProjectConfig'];
 			// console.log("777", this.shownfeatures, this.infos.config.shownfeatures);
 			config.shownfeatures = this.shownfeatures;
 			// don't know if I should update this as well..
 			// this.infos.config.shownfeatures = this.shownfeatures;
-			this.$store.commit('set_project_config', config);
-			console.log(222, this.$props.projectname, config)
+			this.$store.commit('config/set_project_config', config);
+			console.log("KK 333", this.$props.projectname, config)
 			
 			// api.updateProjectSettings(this.$props.projectname, config)
 			api.updateProjectSettings(this.$props.projectname, {'shownfeatures':this.shownfeatures})
@@ -341,12 +345,12 @@ subj,comp,vocative
 		 * @returns void
 		 */
 		savemetashown(){
-			var config = this.$store.getters.getProjectConfig;
+			var config = this.$store.getters['config/getProjectConfig'];
 
 			config.shownmeta = this.shownmeta;
 			// don't know if I should update this as well..
 			// this.infos.config.shownfeatures = this.shownfeatures;
-			this.$store.commit('set_project_config', config);
+			this.$store.commit('config/set_project_config', config);
 		
 			// api.updateProjectSettings(this.$props.projectname, config)
 			api.updateProjectSettings(this.$props.projectname, {'shownmeta':this.shownmeta})
@@ -364,13 +368,9 @@ subj,comp,vocative
 		 * @returns void
 		 */
 		saveAnnotationSettings(){
-			// var config = this.$store.getters.getProjectConfig;
-			// config.annotationFeatures = JSON.parse(this.annofjson);
-			// this.$store.commit('set_project_config', config); // update the config
-			
 			// send the update to grew
 			// api.updateProjectSettings(this.$props.projectname, {"annotationFeatures":JSON.stringify(config.annotationFeatures)})
-			this.$store.dispatch('updateConfigConllu', 
+			this.$store.dispatch('config/updateConfigConllu', 
 			{
 				annotationFeatures:JSON.parse(this.annofjson),
 				projectname: this.projectname
@@ -382,6 +382,10 @@ subj,comp,vocative
 				this.$store.dispatch("notifyError", {error: error}); 
 				this.$q.notify({message: `${error}`, color:'negative', position: 'bottom'});
 			})
+		},
+		resetProjectConfig() {
+			this.$store.dispatch('config/resetProjectConfig', {projectname:this.projectname})
+			this.annofjson = this.$store.getters['config/getAnnofjson']
 		},
 		/**
 		 * Add an administrator by requesting backend

@@ -205,7 +205,7 @@ export default {
         }
     }, 
     mounted(){
-        const splitters = this.$store.getters.getProjectConfig.annotationFeatures.DEPREL.map(({ join }) => join).join('')
+        const splitters = this.$store.getters['config/getProjectConfig'].annotationFeatures.DEPREL.map(({ join }) => join).join('')
         const splitregex = new RegExp('['+ splitters +']', 'g') // = /[:@]/g  
        
         this.relationtree = [];

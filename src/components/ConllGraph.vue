@@ -362,8 +362,8 @@ export default {
          * @returns void
          */
         getProjectConfig(){
-          var conf = this.$store.getters.getProjectConfig;
-          // console.log(666666,conf)
+          // transform all of this in getters
+          var conf = this.$store.getters['config/getProjectConfig'];
           this.options.annof = conf.annotationFeatures;
           this.options.shownfeatures = conf.shownfeatures;
           this.options.shownmeta = conf.shownmeta;

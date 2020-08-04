@@ -145,7 +145,6 @@ export default {
     mounted(){ 
         this.getSampleContent(); 
         this.getProjectConfig();
-        this.$store.dispatch('config/getConfigConllu', {projectname:this.projectname}); 
         document.title = this.$route.params.samplename+" 🌳 Arborator-Grew 🌳 Sample of the "+this.$route.params.projectname+" project";
         if(this.$route.query.q && this.$route.query.q.length>0) this.searchDialog=true;
         // console.log(this.admin || this.super_admin,this.admin, this.super_admin)
@@ -164,8 +163,12 @@ export default {
     },
     methods: {
         getProjectConfig(){
+            /* 
+            * fetch the projectSettings (flask) for getting information on admin, etc
+            * TODO : refactor (to modules.config ?) <Kirian>
+            */
             api.getProjectSettings(this.$route.params.projectname).then(response => { 
-                this.$store.commit('config/set_project_config', response.data.shownfeatures); 
+                console.log("KK response data", response.data)
                 this.infos = response.data;
                 }).catch(error => { 
                     this.$store.dispatch("notifyError", {error: error}); });

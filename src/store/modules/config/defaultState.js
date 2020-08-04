@@ -37,7 +37,7 @@ export default () => ({
         "MISC": [
             { "name": "AlignBegin", "values": "Number" },
             { "name": "AlignEnd", "values": "Number" },
-            { "name": "EXTPOS", "values": ["SCONJ"] },
+            { "name": "EXTPOS", "values": ["ADJ", "ADP", "ADV", "AUX", "CCONJ", "DET", "INTJ", "NOUN", "NUM", "PART", "PRON", "PROPN", "PUNCT", "SCONJ", "VERB", "X"] },
             { "name": "Gloss", "values": "String" }
         ],
         "DEPREL": [

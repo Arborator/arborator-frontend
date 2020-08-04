@@ -125,13 +125,13 @@
 							filled
 							v-model="shownfeatures"
 							multiple
-							:options="shownfeatureschoices"
+							:options="$store.getters['config/shownfeatureschoices']"
 							use-chips
 							stack-label
 							:label="$t('projectSettings').shownFeaturesTokens"
-							@input="saveannofshown"
 							/>
 					</q-card-section>
+							<!-- @input="saveannofshown" -->
 					<q-card-section >
 						<q-select
 							filled
@@ -141,9 +141,9 @@
 							use-chips
 							stack-label
 							:label="$t('projectSettings').shownFeaturesSentences"
-							@input="savemetashown"
 							/>
 					</q-card-section>
+							<!-- @input="savemetashown" -->
 				</q-card>
 
 				
@@ -161,7 +161,7 @@
 					></codemirror>
 				</q-card-section>
 				<q-btn color="bg-primary" text-color="primary" @click="saveAnnotationSettings()" :label="$t('projectSettings').annotationSettingsSave" icon="save" dense flat :disabled="!annofok" no-caps></q-btn>
-				<q-btn color="bg-primary" text-color="primary" @click="resetProjectConfig()" label="reset to SUD" icon="replay" dense flat :disabled="!annofok" no-caps></q-btn>
+				<q-btn color="bg-primary" text-color="primary" @click="resetAnnotationFeatures()" label="reset to SUD" icon="replay" dense flat :disabled="!annofok" no-caps></q-btn>
 				<q-chip   text-color="primary" :icon="annofok?'sentiment_satisfied_alt':'sentiment_very_dissatisfied'">
 				<q-btn color="bg-primary" text-color="primary" @click="testFunction()" label="test button" icon="undo" dense flat no-caps></q-btn>
 					{{annofcomment}}
@@ -222,14 +222,9 @@ export default {
 			infos: {admins:[], guests:[], description: ''},
 			// infos: {admins:[], guests:[], labels:[], cats:[], description: ''},
 			projectconfig: {},
-			annotationFeatures: {},
 			annofjson: '',
 			annofok: true,
 			annofcomment: '',
-			shownfeatures:[],
-			shownfeatureschoices:[],
-			shownmeta: [],
-			shownmetachoices: [],
 			txtCats: `# please drop your categories here in a comma separated format. For instance:
 VER,DET,NOMcom`,
 			txtLabels: `# please drop your labels here in a comma separated format with one column per line. For instance:
@@ -248,10 +243,39 @@ subj,comp,vocative
 		}
 	},
 	mounted(){
-		this.getProjectInfos();
-		console.log(this.infos);
+		// this.getProjectInfos();
+		// console.log(this.infos);
+		this.annofjson = this.$store.getters['config/getAnnofjson']
 	},
 	computed: {
+		shownfeatures: {
+			get() {
+				return this.$store.getters['config/shownfeatures']
+			},
+			set(value) {
+				this.$store.dispatch('config/updateConfigShown', {
+					projectname:this.$props.projectname,
+					toUpdateObject: {shownfeatures:value}
+					})
+			}
+		},
+		shownmetachoices() {
+			return this.$store.getters['config/shownmetachoices']
+		},
+		shownmeta: {
+			get() {
+				return this.$store.getters['config/shownmeta']
+			},
+			set(value) {
+				this.$store.dispatch('config/updateConfigShown', {
+					projectname:this.$props.projectname,
+					toUpdateObject: {shownmeta:value}
+					})
+			}
+		},
+		shownfeatureschoices() {
+			return this.$store.getters['config/shownfeatureschoices']
+		},
         imageEmpty(){
             if(this.infos.image == null){ this.infos.image = "b''";}
             if(this.infos.image == "b''" ) {return true;}
@@ -268,37 +292,23 @@ subj,comp,vocative
 		admin(){ return this.infos.admins.includes(this.$store.getters.getUserInfos.id) || this.$store.getters.getUserInfos.super_admin; } ,
     },
 	methods:{
-		testFunction() {
-			this.$store.dispatch('config/an_action', 'KK succeed');
-		},
 		/**
 		 * Handle project infos request from backend
 		 * 
 		 * @returns void
 		 */
 		getProjectInfos(){
-			this.$store.dispatch("config/getConfigConllu", {projectname:this.$props.projectname})
-			.then(response=> {
-				this.annotationFeatures = this.$store.state.config.annotationFeatures
-				this.shownmetachoices = this.$store.getters['config/shownmetachoices'];
-				this.shownfeatureschoices = this.$store.getters['config/shownfeatureschoices']
-				this.annofjson = this.$store.getters['config/getAnnofjson']
-			})
-			api.getProjectSettings(this.$props.projectname)
-			.then(response => {
-				console.log(response.data);
-				this.infos = response.data; 
+			// this.$store.dispatch("config/fetchConfigConllu", {projectname:this.$props.projectname})
+			// .then(response=> {
+			// 	this.annofjson = this.$store.getters['config/getAnnofjson']
+			// })
+			// this.$store.dispatch("config/fetchConfigShown", {projectname:this.$props.projectname})
 
-				var tmp = this.infos.config.shownfeatures;
-				this.shownfeatures = tmp;
-				
-				var tmp = this.infos.config.shownmeta;
-				this.shownmeta = tmp;
-				})
-			.catch(error => {
-					this.$store.dispatch("notifyError", {error: error}); 
-					this.$q.notify({message: `${error}`, color:'negative', position: 'bottom'});
-			}); 
+			// 	})
+			// .catch(error => {
+			// 		this.$store.dispatch("notifyError", {error: error}); 
+			// 		this.$q.notify({message: `${error}`, color:'negative', position: 'bottom'});
+			// });
 		},
 		/**
 		 * Parse annotation features. Display a related informative message dependeing on success
@@ -314,53 +324,6 @@ subj,comp,vocative
 				this.annofok=false;
 				this.annofcomment=e
 			}
-		},
-		/**
-		 * Save annotation features into the store and requests update project setting in backend
-		 * 
-		 * @returns void
-		 */
-		saveannofshown(){
-			var config = this.$store.getters['config/getProjectConfig'];
-			// console.log("777", this.shownfeatures, this.infos.config.shownfeatures);
-			config.shownfeatures = this.shownfeatures;
-			// don't know if I should update this as well..
-			// this.infos.config.shownfeatures = this.shownfeatures;
-			this.$store.commit('config/set_project_config', config);
-			console.log("KK 333", this.$props.projectname, config)
-			
-			// api.updateProjectSettings(this.$props.projectname, config)
-			api.updateProjectSettings(this.$props.projectname, {'shownfeatures':this.shownfeatures})
-			.then(response => {
-				this.$q.notify({message:`Change saved!`}); 
-			})
-			.catch(error => {
-				this.$store.dispatch("notifyError", {error: error}); 
-				this.$q.notify({message: `${error}`, color:'negative', position: 'bottom'});
-			}) 
-		},
-		/**
-		 * Save meta infos to be shown into the store and update project settings from backend
-		 * 
-		 * @returns void
-		 */
-		savemetashown(){
-			var config = this.$store.getters['config/getProjectConfig'];
-
-			config.shownmeta = this.shownmeta;
-			// don't know if I should update this as well..
-			// this.infos.config.shownfeatures = this.shownfeatures;
-			this.$store.commit('config/set_project_config', config);
-		
-			// api.updateProjectSettings(this.$props.projectname, config)
-			api.updateProjectSettings(this.$props.projectname, {'shownmeta':this.shownmeta})
-			.then(response => {
-				this.$q.notify({message:`Change saved!`}); 
-				})
-			.catch(error => {
-				this.$store.dispatch("notifyError", {error: error}); 
-				this.$q.notify({message: `${error}`, color:'negative', position: 'bottom'});
-			})
 		},
 		/**
 		 * @todo : Save annotation settings : UPOS, relations, features and their values...
@@ -383,8 +346,8 @@ subj,comp,vocative
 				this.$q.notify({message: `${error}`, color:'negative', position: 'bottom'});
 			})
 		},
-		resetProjectConfig() {
-			this.$store.dispatch('config/resetProjectConfig', {projectname:this.projectname})
+		resetAnnotationFeatures() {
+			this.$store.dispatch('config/resetAnnotationFeatures', {projectname:this.projectname})
 			this.annofjson = this.$store.getters['config/getAnnofjson']
 		},
 		/**

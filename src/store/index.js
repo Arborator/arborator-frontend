@@ -156,10 +156,6 @@ export default new Vuex.Store({
         getLastGrewQuery: state => state.lastGrewQuery,
         getLastGrewCommand: state => state.lastGrewCommand,
         getPendingModifications: state => state.pendingModifications,
-        getProjectConfig: state => state.projectConfig,
-        getAnnofjson: state => {
-            return JSON.stringify(state.projectConfig.annotationFeatures, null, 4)
-        }
     },
     modules: {
         config,

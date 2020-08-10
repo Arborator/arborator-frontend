@@ -163,7 +163,6 @@
 				<q-btn color="bg-primary" text-color="primary" @click="saveAnnotationSettings()" :label="$t('projectSettings').annotationSettingsSave" icon="save" dense flat :disabled="!annofok" no-caps></q-btn>
 				<q-btn color="bg-primary" text-color="primary" @click="resetAnnotationFeatures()" label="reset to SUD" icon="replay" dense flat :disabled="!annofok" no-caps></q-btn>
 				<q-chip   text-color="primary" :icon="annofok?'sentiment_satisfied_alt':'sentiment_very_dissatisfied'">
-				<q-btn color="bg-primary" text-color="primary" @click="testFunction()" label="test button" icon="undo" dense flat no-caps></q-btn>
 					{{annofcomment}}
 				</q-chip>
 			</q-card>

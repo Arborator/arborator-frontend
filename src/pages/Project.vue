@@ -14,6 +14,7 @@
 							<q-icon v-show="infos.visibility == 2" name="public" :color="$q.dark.isActive?'red-13':'positive'" size="lg"></q-icon>
 							Project {{infos.name}}
                             <q-btn v-if="super_admin || admin" flat round :color="$q.dark.isActive?'primary':''" icon="settings" @click="projectSettingsDial=true">
+                            <!-- <q-btn v-if="1" flat round :color="$q.dark.isActive?'primary':''" icon="settings" @click="projectSettingsDial=true"> -->
                                 <q-tooltip :delay="300" content-class="text-white bg-primary" >{{$t('projectView').tooltipSettings}}</q-tooltip>
                             </q-btn>
                             <q-btn v-else flat round :color="$q.dark.isActive?'primary':''" icon="settings" @click="simpleProjectInfoDialog=true">
@@ -507,6 +508,10 @@ export default {
         if(this.$route.query.q && this.$route.query.q.length>0) this.searchDialog=true;
         },
     computed: {
+        // on the long run, replace `admin` by `isAdmin`
+        isAdmin() {
+			return this.$store.getters['config/isAdmin']
+		}, 
         routePath() { return this.$route.path; },
         breakpoint(){ return this.window.width <= 400; },
         guest(){ return this.infos.guests.includes(this.$store.getters.getUserInfos.id); },
@@ -557,7 +562,8 @@ export default {
             this.table.loading = true; 
             api.getProjectInfos(this.$route.params.projectname).then(response => 
                 { 
-                    this.infos = response.data; this.initLoad = true; 
+                    this.infos = response.data; 
+                    this.initLoad = true; 
                     this.table.loading = false;
                     document.title = this.$route.params.projectname+" 🌳 Arborator-Grew 🌳 Project with "+this.infos.number_sentences+" sentences in "+this.infos.samples.length+" samples";
                     // console.log('ààà',this.infos.admins)

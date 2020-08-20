@@ -1,5 +1,7 @@
 export default () => ({
     // is_open: false, 
+    admins: [],
+    guests: [],
     showAllTrees: true,
     shownfeatures: ["FORM", "UPOS", "LEMMA", "MISC.Gloss"],
     shownmeta: ["text_en"],

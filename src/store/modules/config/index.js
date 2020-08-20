@@ -8,6 +8,12 @@ export default {
   state: defaultState(),
   getters: {
     getProjectConfig: (state) => state,
+    admins: (state) => state.admins,
+    guests: (state) => state.guests,
+    isAdmin: (state, getters, rootSate) => {
+      return state.admins.includes(rootSate.user.id);
+      // return state.admins.includes(getters["getUserInfos"].id);
+    },
     showAllTrees: (state) => state.showAllTrees,
     shownfeatures: (state) => state.shownfeatures,
     shownmeta: (state) => state.shownmeta,
@@ -49,8 +55,9 @@ export default {
       api
         .getProjectSettings(projectname)
         .then((response) => {
-          console.log("KK api.getProjectSettings response.data",response.data);
           commit("set_project_config", {
+            admins: response.data.admins,
+            guests: response.data.guests,
             shownfeatures: response.data.config.shownfeatures,
             shownmeta: response.data.config.shownmeta,
             showAllTrees: response.data.show_all_trees

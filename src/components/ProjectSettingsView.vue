@@ -76,13 +76,14 @@
 			<!-- <div class="fit row  justify-between"> -->
 				<q-card class="col ">
 					<q-card-section>
-						<div class="text-h6 text-center">{{$t('projectSettings').defaultUserTreePanel}} <q-btn v-show="admin" flat round icon="add" :color="$q.dark.isActive?'purple-12':'primary'" @click="addDefaultUserTreeDial = true"></q-btn></div>
+						<div class="text-h6 text-center">{{$t('projectSettings').defaultUserTreePanel}} <q-btn v-show="isAdmin" flat round icon="add" :color="$q.dark.isActive?'purple-12':'primary'" @click="addDefaultUserTreeDial = true"></q-btn></div>
 					</q-card-section>
 					<q-card-section >
 						<q-list bordered separator class="list-size">
 							<q-item v-for="dut in infos.default_user_trees" :key="dut.id" clickable v-ripple >
 								<q-item-section>{{dut.username}}</q-item-section>
-								<q-item-section side><q-btn v-show="admin" dense round flat icon="remove" :color="$q.dark.isActive?'red-13':'negative'" @click="triggerConfirm(removeDefaultUserTree, dut.id)" ></q-btn></q-item-section>
+								<q-item-section side><q-btn v-show="isAdmin" dense round flat icon="remove" :color="$q.dark.isActive?'red-13':'negative'" @click="triggerConfirm(removeDefaultUserTree, dut.id)" ></q-btn></q-item-section>
+							
 							</q-item>
 						</q-list>
 					</q-card-section>
@@ -91,26 +92,26 @@
 			<!-- <q-card-section class="row items-start q-gutter-md"> -->
 				<q-card class="col">
 					<q-card-section>
-						<div class="text-h6 text-center">{{$t('projectSettings').adminsPanel}} <q-btn v-show="admin" flat round icon="add" :color="$q.dark.isActive?'purple-12':'primary'" @click="addAdminDial = true"></q-btn></div>
+						<div class="text-h6 text-center">{{$t('projectSettings').adminsPanel}} <q-btn v-show="isAdmin" flat round icon="add" :color="$q.dark.isActive?'purple-12':'primary'" @click="addAdminDial = true"></q-btn></div>
 					</q-card-section>
 					<q-card-section>
 						<q-list bordered separator class="list-size">
-							<q-item v-for="admin in infos.admins" :key="admin" clickable v-ripple >
+							<q-item v-for="admin in admins" :key="admin" clickable v-ripple >
 								<q-item-section>{{admin}}</q-item-section>
-								<q-item-section side><q-btn v-show="admin" dense round flat icon="remove" :color="$q.dark.isActive?'red-13':'negative'" @click="triggerConfirm(removeAdmin, admin)"></q-btn></q-item-section>
+								<q-item-section side><q-btn v-show="isAdmin" dense round flat icon="remove" :color="$q.dark.isActive?'red-13':'negative'" @click="triggerConfirm(removeAdmin, admin)"></q-btn></q-item-section>
 							</q-item>
 						</q-list>
 					</q-card-section>
 				</q-card>
 				<q-card class="col ">
 					<q-card-section>
-						<div class="text-h6 text-center">{{$t('projectSettings').guestsPanel}} <q-btn v-show="admin" flat round icon="add" :color="$q.dark.isActive?'purple-12':'primary'" @click="addGuestDial = true"></q-btn></div>
+						<div class="text-h6 text-center">{{$t('projectSettings').guestsPanel}} <q-btn v-show="isAdmin" flat round icon="add" :color="$q.dark.isActive?'purple-12':'primary'" @click="addGuestDial = true"></q-btn></div>
 					</q-card-section>
 					<q-card-section >
 						<q-list bordered separator class="list-size">
-							<q-item v-for="guest in infos.guests" :key="guest" clickable v-ripple >
+							<q-item v-for="guest in guests" :key="guest" clickable v-ripple >
 								<q-item-section>{{guest}}</q-item-section>
-								<q-item-section side><q-btn v-show="admin" dense round flat icon="remove" :color="$q.dark.isActive?'red-13':'negative'" @click="triggerConfirm(removeGuest, guest)"></q-btn></q-item-section>
+								<q-item-section side><q-btn v-show="isAdmin" dense round flat icon="remove" :color="$q.dark.isActive?'red-13':'negative'" @click="triggerConfirm(removeGuest, guest)"></q-btn></q-item-section>
 							</q-item>
 						</q-list>
 					</q-card-section>
@@ -172,11 +173,11 @@
 
 
 		<q-dialog v-model="addAdminDial" transition-show="fade" transition-hide="fade">  
-			<user-select-table :parentCallback="addAdmin" :general="true" selectiontype="Project Admin" singlemultiple="multiple" :preselected='infos.admins'>
+			<user-select-table :parentCallback="addAdmin" :general="true" selectiontype="Project Admin" singlemultiple="multiple" :preselected='admins'>
 				</user-select-table>   
 		</q-dialog>
 		<q-dialog v-model="addGuestDial" transition-show="fade" transition-hide="fade"> 
-			<user-select-table :parentCallback="addGuest" :general="true" selectiontype="Project Guest" singlemultiple="multiple" :preselected='infos.guests'> 
+			<user-select-table :parentCallback="addGuest" :general="true" selectiontype="Project Guest" singlemultiple="multiple" :preselected='guests'> 
 			</user-select-table>   
 		</q-dialog>
 		<q-dialog v-model="addDefaultUserTreeDial" transition-show="fade" transition-hide="fade">  
@@ -247,6 +248,23 @@ subj,comp,vocative
 		this.annofjson = this.$store.getters['config/getAnnofjson']
 	},
 	computed: {
+		admins() {
+			return this.$store.getters['config/admins']
+		}, 
+		guests() {
+			return this.$store.getters['config/guests']
+		}, 
+		showAllTrees: {
+			get() {
+				return this.$store.getters['config/showAllTrees']
+			},
+			set(value) {
+				this.$store.dispatch('config/updateConfigShown', {
+					projectname:this.$props.projectname,
+					toUpdateObject: {showAllTrees:value}
+					})
+			}
+		},
 		shownfeatures: {
 			get() {
 				return this.$store.getters['config/shownfeatures']
@@ -260,17 +278,6 @@ subj,comp,vocative
 		},
 		shownmetachoices() {
 			return this.$store.getters['config/shownmetachoices']
-		},
-		showAllTrees: {
-			get() {
-				return this.$store.getters['config/showAllTrees']
-			},
-			set(value) {
-				this.$store.dispatch('config/updateConfigShown', {
-					projectname:this.$props.projectname,
-					toUpdateObject: {showAllTrees:value}
-					})
-			}
 		},
 		shownmeta: {
 			get() {
@@ -300,6 +307,9 @@ subj,comp,vocative
 		},
 		guest(){ return this.infos.guests.includes(this.$store.getters.getUserInfos.id); },
 		admin(){ return this.infos.admins.includes(this.$store.getters.getUserInfos.id) || this.$store.getters.getUserInfos.super_admin; } ,
+		// create a new computed property `isAdmin` for better clarity
+		isAdmin(){ return this.$store.getters['config/isAdmin'] || this.$store.getters.getUserInfos.super_admin; } ,
+		isGuest(){ return this.guests.includes(this.$store.getters.getUserInfos.id); },
     },
 	methods:{
 		/**
@@ -367,13 +377,20 @@ subj,comp,vocative
 		 * @param {Object[]} selected list of selected rows (objects)
 		 * @returns void
 		 */
-		addAdmin(selected){ 
-			console.log('addAdmin todo!',selected)
+		addAdmin(newAdminArray){ 
+			const newAdminIdArray = []
+			for (const admin of newAdminArray) {
+				newAdminIdArray.push(admin.id)
+			}
+			console.log('addAdmin todo!',newAdminIdArray)
 			// todo: why does the function only accept one user?
-			api.setProjectUserRole(this.$props.projectname, 'admin', selected[0].id)
+			api.setProjectUserRole(this.$props.projectname, 'admin', newAdminIdArray)
 				.then(response => {
 					this.$q.notify({message:`Change saved!`}); 
-					this.infos = response.data;
+					this.$store.commit('config/set_project_config', {
+					admins: response.data.admins,
+					guests: response.data.guests
+					});
 				})
 				.catch(error => {
 					this.$store.dispatch("notifyError", {error: error});
@@ -390,7 +407,11 @@ subj,comp,vocative
 			api.removeProjectUserRole(this.$props.projectname, 'admin', userid)
 			.then( response => {
 				this.$q.notify({message:`Change saved!`}); 
-				this.infos = response.data;
+				this.$store.commit('config/set_project_config', {
+					admins: response.data.admins,
+					guests: response.data.guests
+					
+				})
 			})
 			.catch(error => {
 				this.$store.dispatch("notifyError", {error: error});
@@ -403,12 +424,19 @@ subj,comp,vocative
 		 * @param {Object[]} selected list of selected rows (objects)
 		 * @returns void
 		 */
-		addGuest(selected){ 
-			api.setProjectUserRole(this.$props.projectname, 'guest', selected[0].id)
+		addGuest(newGuestArray){
+			const newGuestIdArray = []
+			for (const guest of newGuestArray) {
+				newGuestIdArray.push(guest.id)
+			} 
+			api.setProjectUserRole(this.$props.projectname, 'guest', newGuestIdArray)
 			.then(response=> {
 				this.$q.notify({message:`Change saved!`});
-				this.infos = response.data;
-				})
+				this.$store.commit('config/set_project_config', {
+					admins: response.data.admins,
+					guests: response.data.guests
+				});
+			})
 			.catch(error => {
 				this.$store.dispatch("notifyError", {error: error})
 			});
@@ -423,7 +451,10 @@ subj,comp,vocative
 			api.removeProjectUserRole(this.$props.projectname, 'guest', userid)
 			.then( response => {
 				this.$q.notify({message:`Change saved!`});
-				this.infos = response.data;
+				this.$store.commit('config/set_project_config', {
+					admins: response.data.admins,
+					guests: response.data.guests
+				});
 			} )
 			.catch(error => {
 				this.$store.dispatch("notifyError", {error: error})

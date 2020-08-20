@@ -72,7 +72,7 @@ export default {
     // },
     setProjectUserRole(projectname, targetrole, userid){
         let data = {'user_id':userid};
-        return API.post('projects/'+projectname+'/'+targetrole+'/add', data);
+        return API.post('projects/'+projectname+'/'+targetrole+'/add_many', data);
     },
     removeProjectUserRole(projectname, targetrole, userid){
         let data = {'user_id':userid};

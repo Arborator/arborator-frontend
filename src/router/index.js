@@ -24,7 +24,7 @@ export default function (/* { store, ssrContext } */) {
     mode: process.env.VUE_ROUTER_MODE,
     base: process.env.VUE_ROUTER_BASE,
     afterEach: to => {
-      console.log("KK after each", to.params)
+      // aftereach is outsideshow_all_trees
 
     }
   })

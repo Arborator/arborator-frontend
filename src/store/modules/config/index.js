@@ -8,6 +8,7 @@ export default {
   state: defaultState(),
   getters: {
     getProjectConfig: (state) => state,
+    showAllTrees: (state) => state.showAllTrees,
     shownfeatures: (state) => state.shownfeatures,
     shownmeta: (state) => state.shownmeta,
     annotationFeatures: (state) => state.annotationFeatures,
@@ -48,10 +49,11 @@ export default {
       api
         .getProjectSettings(projectname)
         .then((response) => {
-          console.log(response.data);
+          console.log("KK api.getProjectSettings response.data",response.data);
           commit("set_project_config", {
             shownfeatures: response.data.config.shownfeatures,
             shownmeta: response.data.config.shownmeta,
+            showAllTrees: response.data.show_all_trees
           });
         })
         .catch((error) => {
@@ -63,6 +65,9 @@ export default {
           // });
         });
     },
+    // there is still a mismatch between all name 'updateProjectSettings' and 'updateConfigShown' ...
+    // ... so we have to get a proper data structure of the whole setting for then having better  ...
+    // ... separation of conscerns for API calls
     updateConfigShown({ commit, dispatch }, { projectname, toUpdateObject }) {
       return new Promise((resolve, reject) => {
         api
@@ -88,7 +93,6 @@ export default {
         api
           .getProjectConfig(projectname)
           .then((response) => {
-            console.log("KK project name", projectname);
             var fetchedAnnotationFeatures = response.data.data;
             // check if there is a json in proper format, otherwise use default ConfigConllu
             if (
@@ -104,7 +108,6 @@ export default {
             resolve(response);
           })
           .catch((error) => {
-            console.log("KK error", error);
             reject(error.response.data.errors);
           });
       });

@@ -56,7 +56,7 @@
 						<q-item-label caption>{{$t('projectSettings').toggleAllVisibleCaption}}</q-item-label>
 						</q-item-section>
 						<q-item-section avatar>
-						<q-toggle  color="blue" v-model="infos.show_all_trees" checked-icon="check" unchecked-icon="clear" @input="changeShowAllTrees()" />
+						<q-toggle  color="blue" v-model="showAllTrees" checked-icon="check" unchecked-icon="clear" />
 						</q-item-section>
 					</q-item>
 					<!-- <q-item tag="label" v-ripple>
@@ -260,6 +260,17 @@ subj,comp,vocative
 		},
 		shownmetachoices() {
 			return this.$store.getters['config/shownmetachoices']
+		},
+		showAllTrees: {
+			get() {
+				return this.$store.getters['config/showAllTrees']
+			},
+			set(value) {
+				this.$store.dispatch('config/updateConfigShown', {
+					projectname:this.$props.projectname,
+					toUpdateObject: {showAllTrees:value}
+					})
+			}
 		},
 		shownmeta: {
 			get() {
@@ -466,7 +477,7 @@ subj,comp,vocative
 		 * @returns void
 		 */
 		changeShowAllTrees(){ 
-			api.modifyShowAllTrees(this.$props.projectname, this.infos.show_all_trees)
+			api.modifyShowAllTrees(this.$props.projectname, this.showAllTrees)
 			.then(response => {
 				this.$q.notify({message:'Change saved!'}); 
 				this.infos = response.data; 

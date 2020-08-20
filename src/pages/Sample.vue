@@ -168,7 +168,6 @@ export default {
             * TODO : refactor (to modules.config ?) <Kirian>
             */
             api.getProjectSettings(this.$route.params.projectname).then(response => { 
-                console.log("KK response data", response.data)
                 this.infos = response.data;
                 }).catch(error => { 
                     this.$store.dispatch("notifyError", {error: error}); });

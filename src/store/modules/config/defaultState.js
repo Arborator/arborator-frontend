@@ -1,6 +1,6 @@
 export default () => ({
     // is_open: false, 
-    show_all_trees: true,
+    showAllTrees: true,
     shownfeatures: ["FORM", "UPOS", "LEMMA", "MISC.Gloss"],
     shownmeta: ["text_en"],
     annotationFeatures: {

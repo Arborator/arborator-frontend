@@ -130,7 +130,7 @@ export default {
   },
   computed:{
     isLoggedIn() {
-            return this.$store.getters.isLoggedIn;
+            return this.$store.getters['user/isLoggedIn'];
         }
   },
   methods:{
@@ -140,7 +140,7 @@ export default {
       api.getProjects().then(response => { 
         console.log("here", response.data.projects);
         this.projects = response.data.projects; this.visibleProjects = response.data.projects; this.projectDifference = response.data.difference; this.loadingProjects = false; this.initLoading = false;
-        if(this.$store.getters.getUserInfos.super_admin){ this.$q.notify({message:`Projects from Grew and Arborator are different!`, type:'warning'}); }
+        if(this.$store.getters['user/getUserInfos'].super_admin){ this.$q.notify({message:`Projects from Grew and Arborator are different!`, type:'warning'}); }
       }).catch(error => { this.$store.dispatch("notifyError", {error: error}); this.loadingProjects = false;}); 
     },
     searchProject(pattern) {

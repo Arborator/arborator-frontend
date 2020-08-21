@@ -3,6 +3,7 @@ import Vuex from 'vuex'
 import api from '../boot/backend-api'
 
 import config from './modules/config'
+import user from './modules/user'
 
 Vue.use(Vuex);
 
@@ -20,41 +21,14 @@ export default new Vuex.Store({
         // source: "https://127.0.0.1:5000",
         // source: "https://arboratorgrew.ilpga.fr:8888",
         source: process.env.API,
-        loginSuccess: false,
-        loginError: false,
-        user: {as_json: null, auth_provider: null, created_date: null, family_name: null, first_name: null, get_id: null, get_or_create: null, id: null, is_active: false, is_anonymous: true, is_authenticated: false, 
-            last_seen: null, make_unique_nickname: null, make_valid_nickname: null, picture_url: null, query: null, query_class: null, super_admin: false, username: null},
-        failedAccess: false,
-        avatarKey: 0, 
         lastGrewQuery: '',
         lastGrewCommand: '',
         pendingModifications: new Set(), // set of sentence ids
     },
     mutations: {
+        // seems to be not use
         change_source(state, payload){
             state.source = payload;
-        },
-        login_success(state, payload){
-            state.loginSuccess = true;
-        },
-        login_error(state, payload){
-            state.loginError = true;
-        },
-        logout_success(state){
-            state.loginSuccess = false;
-            state.userName = null;
-            state.userPass = null;
-            state.user = {as_json: null, auth_provider: null, created_date: null, family_name: null, first_name: null, get_id: null, get_or_create: null, id: null, is_active: false, is_anonymous: true, is_authenticated: false, 
-                last_seen: null, make_unique_nickname: null, make_valid_nickname: null, picture_url: null, query: null, query_class: null, super_admin: false, username: null};
-        },
-        access_failed(state, value){
-            state.failedAccess = value;
-        },
-        update_user(state, payload){
-            state.user = payload.user;
-        },
-        increment_avatar_key(state){
-            state.avatarKey += 1;
         },
         change_last_grew_query(state, payload){
             state.lastGrewQuery = payload;
@@ -73,50 +47,6 @@ export default new Vuex.Store({
         }
     },
     actions: {
-        login({commit}, {user, password}){
-            return new Promise((resolve, object) => {
-                api.requestAccessToken(user, password)
-                    .then(response => {
-                        if(response.access_token) {
-                            VueCookies.set('axesstoken', response.access_token, response.expires_in, null, null, true);
-                            commit('login_success', { userName: user });
-                            api.getPersonalInfos(user).then( resp => { 
-                                commit('update_user', {user : resp.data} );
-                            })
-                        }
-                        resolve(response);
-                    })
-                    .catch(error => {
-                        console.log("Error: " + error);
-                        commit('login_error', {});
-                        Promise.reject("Invalid credentials!");
-                    })
-            });
-        },
-        setUser({commit}, {user}){
-            // commit('login_success', { userName: user.username});
-            commit('update_user', {user: user} );
-        },
-        checkSession({commit}, {sessionid}){
-            return new Promise((resolve, object) => {
-                api.whoAmI().then(response => {
-                        commit('login_success', {});
-                        commit('update_user', {user : response.data} );
-                    }).catch(error => { console.log(error); });
-            });
-        },
-        logout({commit}, {user}) {
-            return new Promise((resolve, reject) => {
-                console.log("logging out user: " + user);
-                api.logout().then(response => {
-                    console.log(response);
-                    commit('logout_success');
-                }).catch(error => { console.log(error);});
-                VueCookies.remove('session'); VueCookies.remove('remember_token');
-                commit('logout_success');
-                resolve({status: 'disconnected'});
-            });
-        },
         changeDesiredUrl({commit}, {value}) {
             state.desiredUrl = payload.value;
             commit('desiredurl_modified', {value: value});
@@ -124,9 +54,11 @@ export default new Vuex.Store({
         changePendingModifications({commit}, {value}) {
             commit('change_pending_modifications', {value: value});
         },
+        // seems to be not used 
         accessFailed({commit}, {value}) {
             commit('access_failed');
         },
+        // seems to be not used 
         updateUser({commit}, {user}) {
             commit('update_user', { user: user });
         },
@@ -148,16 +80,12 @@ export default new Vuex.Store({
     },
     getters: {
         getSource: state => state.source,
-        isLoggedIn: state => state.loginSuccess,
-        hasLoginErrored: state => state.loginError,
-        getFailedAccess: state => state.failedAccess,
-        getUserInfos: state => state.user,
-        getAvatarKey: state => state.avatarKey,
         getLastGrewQuery: state => state.lastGrewQuery,
         getLastGrewCommand: state => state.lastGrewCommand,
         getPendingModifications: state => state.pendingModifications,
     },
     modules: {
         config,
+        user: user,
     }
 })

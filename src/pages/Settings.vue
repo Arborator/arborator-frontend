@@ -5,7 +5,7 @@
             <div class="col items-center">
                 <q-banner rounded :class="$q.dark.isActive?'':'bg-grey-3' ">
                     <template v-slot:avatar>
-                        <q-avatar :key="store.getters.getAvatarKey" color="default" text-color="white" size="100px"  >
+                        <q-avatar :key="store.getters['user/getAvatarKey']" color="default" text-color="white" size="100px"  >
                             <img :src="user.picture_url">
                         </q-avatar>
                     </template>
@@ -56,7 +56,7 @@ export default {
     name: 'settings',
     data(){
         return {
-            user: this.$store.getters.getUserInfos,
+            user: this.$store.getters['user/getUserInfos'],
             store: Store,
             alerts: { 'saveerror': { color: 'negative', message: 'Could not save the data.', icon: 'report_problem' },
                 'savesuccess': { color: 'positive', message: 'Modifications saved' },

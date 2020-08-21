@@ -2,6 +2,7 @@ import api from "boot/backend-api";
 
 import defaultState from "./defaultState";
 
+import { Notify } from "quasar";
 
 export default {
   namespaced: true,
@@ -46,11 +47,12 @@ export default {
   },
   actions: {
     /*
-    * For now, `configShown` regroup information about `shownmeta` and `shownfeatures`
-    * while `configConllu` regroup the information about `annotationfeatures`
-    * both of these config are saved on different servers (resp arborator-flask and grew_server)
-    * so we need to keep separate the logic in Vuex, API calls and so on
-    */ 
+     * For now, `configShown` regroup information about `shownmeta` and `shownfeatures`
+     * while `configConllu` regroup the information about `annotationfeatures`
+     * both of these config are saved on different servers (resp arborator-flask and grew_server)
+     * so we need to keep separate the logic in Vuex, API calls and so on
+     */
+
     fetchConfigShown({ commit }, { projectname }) {
       api
         .getProjectSettings(projectname)
@@ -60,15 +62,15 @@ export default {
             guests: response.data.guests,
             shownfeatures: response.data.config.shownfeatures,
             shownmeta: response.data.config.shownmeta,
-            showAllTrees: response.data.show_all_trees
+            showAllTrees: response.data.show_all_trees,
           });
         })
         .catch((error) => {
           this.$store.dispatch("notifyError", { error: error });
           // this.$q.notify({
-            // message: `${error}`,
-            // color: "negative",
-            // position: "bottom",
+          // message: `${error}`,
+          // color: "negative",
+          // position: "bottom",
           // });
         });
     },
@@ -80,18 +82,20 @@ export default {
         api
           .updateProjectSettings(projectname, toUpdateObject)
           .then((response) => {
-            commit("set_project_config", {...toUpdateObject});
-            // this.$q.notify({ message: `Change saved!` });
-            resolve(response)
+            commit("set_project_config", { ...toUpdateObject });
+            Notify.create({
+              message: `Change saved!`,
+            });
+            resolve(response);
           })
           .catch((error) => {
-            dispatch("notifyError", { error: error }, {root:true});
-            // this.$q.notify({
-            //   message: `${error}`,
-            //   color: "negative",
-            //   position: "bottom",
-            // });
-            reject(error)
+            dispatch("notifyError", { error: error }, { root: true });
+            Notify.create({
+              message: `${error}`,
+              color: "negative",
+              position: "bottom",
+            });
+            reject(error);
           });
       });
     },

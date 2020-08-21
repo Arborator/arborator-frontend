@@ -305,11 +305,11 @@ subj,comp,vocative
             clean = clean.replace(/'$/g,'');
             return 'data:image/png;base64, '+clean;
 		},
-		guest(){ return this.infos.guests.includes(this.$store.getters.getUserInfos.id); },
-		admin(){ return this.infos.admins.includes(this.$store.getters.getUserInfos.id) || this.$store.getters.getUserInfos.super_admin; } ,
+		guest(){ return this.infos.guests.includes(this.$store.getters['user/getUserInfos'].id); },
+		admin(){ return this.infos.admins.includes(this.$store.getters['user/getUserInfos'].id) || this.$store.getters['user/getUserInfos'].super_admin; } ,
 		// create a new computed property `isAdmin` for better clarity
-		isAdmin(){ return this.$store.getters['config/isAdmin'] || this.$store.getters.getUserInfos.super_admin; } ,
-		isGuest(){ return this.guests.includes(this.$store.getters.getUserInfos.id); },
+		isAdmin(){ return this.$store.getters['config/isAdmin'] || this.$store.getters['user/getUserInfos'].super_admin; } ,
+		isGuest(){ return this.guests.includes(this.$store.getters['user/getUserInfos'].id); },
     },
 	methods:{
 		/**

@@ -26,7 +26,7 @@
           </q-select>
 
           <q-btn flat round @click="toggleDarkMode()"  :icon="$q.dark.isActive?'lightbulb':'brightness_2'"></q-btn>
-          <q-btn-dropdown v-show="!store.getters.isLoggedIn" color="secondary" outline label="Log In" icon="account_circle">
+          <q-btn-dropdown v-show="!store.getters['user/isLoggedIn']" color="secondary" outline label="Log In" icon="account_circle">
             <q-list>
               <q-item clickable v-close-popup @click="tologin(store.getters.getSource + '/login/google')">
                 <q-item-section avatar>
@@ -48,11 +48,11 @@
               </q-item>
             </q-list>
           </q-btn-dropdown>
-          <q-btn v-show="store.getters.isLoggedIn" round flat dense color="purple"  >
+          <q-btn v-show="store.getters['user/isLoggedIn']" round flat dense color="purple"  >
             <q-avatar >
-              <q-icon v-show="store.getters.getUserInfos.avatar == ''" name="account_circle" />
-              <q-avatar v-show="store.getters.getUserInfos.picture_url != ''" :key="store.getters.getAvatarKey" color="default" text-color="white"  size="xs"  >
-                  <img :src="store.getters.getUserInfos.picture_url">
+              <q-icon v-show="store.getters['user/getUserInfos'].avatar == ''" name="account_circle" />
+              <q-avatar v-show="store.getters['user/getUserInfos'].picture_url != ''" :key="store.getters['user/getAvatarKey']" color="default" text-color="white"  size="xs"  >
+                  <img :src="store.getters['user/getUserInfos'].picture_url">
               </q-avatar>
             </q-avatar>            <q-menu transition-show="jump-down" transition-hide="jump-up">
               <div class="row no-wrap q-pa-md">
@@ -62,17 +62,17 @@
                         <q-item-section avatar> <q-icon name="settings" /> </q-item-section>
                         <q-item-section> {{$t('settings')}} </q-item-section>
                       </q-item>
-                      <q-item v-show="store.getters.getUserInfos.super_admin" clickable v-ripple to="/admin">
+                      <q-item v-show="store.getters['user/getUserInfos'].super_admin" clickable v-ripple to="/admin">
                         <q-item-section avatar> <q-icon name="vpn_key" /> </q-item-section>
                         <q-item-section> {{$t('admin')}} </q-item-section>
                       </q-item>
                     </q-list>
                 </div>                <q-separator vertical inset class="q-mx-lg" />                <div class="column items-center">
-                  <q-icon v-show="store.getters.getUserInfos.avatar == ''" name="account_circle" />
-                  <q-avatar v-show="store.getters.getUserInfos.picture_url != ''" :key="store.getters.getAvatarKey" color="default" text-color="white">
-                    <img :src="store.getters.getUserInfos.picture_url">
+                  <q-icon v-show="store.getters['user/getUserInfos'].avatar == ''" name="account_circle" />
+                  <q-avatar v-show="store.getters['user/getUserInfos'].picture_url != ''" :key="store.getters['user/getAvatarKey']" color="default" text-color="white">
+                    <img :src="store.getters['user/getUserInfos'].picture_url">
                   </q-avatar>
-                  <div class="text-subtitle1 q-mt-md q-mb-xs">{{store.getters.getUserInfos.username}}</div>
+                  <div class="text-subtitle1 q-mt-md q-mb-xs">{{store.getters['user/getUserInfos'].username}}</div>
                   <q-btn color="negative" label="Logout" size="sm" v-close-popup @click="logout()"/>
                 </div>
               </div>
@@ -98,7 +98,7 @@
         mini-to-overlay bordered
       >      <q-scroll-area  style="height: calc(100% - 0px); margin-top: 0px; ">
         <q-list padding>
-          <div v-for="(menuItem, index) in menuList" :key="index">            <q-item  v-show="store.getters.isLoggedIn || menuItem.public" :to="menuItem.to" clickable :active="menuItem.label == $route.currentRoute" v-ripple>
+          <div v-for="(menuItem, index) in menuList" :key="index">            <q-item  v-show="store.getters['user/isLoggedIn'] || menuItem.public" :to="menuItem.to" clickable :active="menuItem.label == $route.currentRoute" v-ripple>
               <q-item-section avatar>
                 <q-icon :name="menuItem.icon" />
               </q-item-section>
@@ -187,7 +187,7 @@ export default {
       // window.location.assign("https://profiterole-almanach-ui.paris.inria.fr:8888/");
     },
     logout() {
-      this.store.dispatch("logout", { user: this.store.getters.getUserInfos.username}).then(() => {  this.$router.push('/').catch(error => {});  }).catch(error => {  this.$store.dispatch("notifyError", {error: error});  });
+      this.store.dispatch("user/logout", { user: this.store.getters['user/getUserInfos'].username}).then(() => {  this.$router.push('/').catch(error => {});  }).catch(error => {  this.$store.dispatch("notifyError", {error: error});  });
     },
   }
 }

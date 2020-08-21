@@ -160,9 +160,9 @@ export default {
     logout(){
         return axios.get('/logout');
     },
-    whoAmI(){
-        var sessionId = VueCookies.get("session");
-        var session = {id: sessionId}
+    whoAmI(session){
+        // var sessionId = VueCookies.get("session");
+        // var session = {id: sessionId}
         return AUTH.post('userinfos', session);
     },
     createProject(data){

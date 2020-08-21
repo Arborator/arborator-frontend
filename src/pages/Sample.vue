@@ -123,18 +123,18 @@ export default {
     computed: {
         sentenceCount() {return Object.keys(this.sentences).length},
         breakpoint(){ return this.window.width <= 400; },
-        admin(){ return this.infos.admins.includes(this.$store.getters.getUserInfos.id); },
-        super_admin(){ return this.$store.getters.getUserInfos.super_admin; },
+        admin(){ return this.infos.admins.includes(this.$store.getters['user/getUserInfos'].id); },
+        super_admin(){ return this.$store.getters['user/getUserInfos'].super_admin; },
         
         loggedWithGithub() {
-            var authProvider = this.$store.getters.getUserInfos.auth_provider;
+            var authProvider = this.$store.getters['user/getUserInfos'].auth_provider;
             return authProvider == 4
         }, 
         isLoggedIn() {
-            return this.$store.getters.isLoggedIn;
+            return this.$store.getters['user/isLoggedIn'];
         }, 
         avatar() {
-            if (this.$store.getters.getUserInfos.picture_url) return this.$store.getters.getUserInfos.picture_url
+            if (this.$store.getters['user/getUserInfos'].picture_url) return this.$store.getters['user/getUserInfos'].picture_url
             return "perm_identity";
         }, 
         

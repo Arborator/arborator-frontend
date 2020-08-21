@@ -62,9 +62,9 @@ export default {
     },
     computed: {
         canSeeSettings() {
-            if (!this.$store.getters.isLoggedIn) {return false}
-            if(this.project.admins.includes(this.$store.getters.getUserInfos.id)){ return true; }
-            else if(this.$store.getters.getUserInfos.super_admin) { return true; }
+            if (!this.$store.getters['user/isLoggedIn']) {return false}
+            if(this.project.admins.includes(this.$store.getters['user/getUserInfos'].id)){ return true; }
+            else if(this.$store.getters['user/getUserInfos'].super_admin) { return true; }
             else { return false; }
 
         },
@@ -89,9 +89,9 @@ export default {
             // only show non-private projects
             // if(!this.project.visibility == 0){ return true; }
             // else{
-            //     if(this.project.admins.includes(this.$store.getters.getUserInfos.id)){ return true; }
-            //     else if(this.project.guests.includes(this.$store.getters.getUserInfos.id)){ return true; }
-            //     else if(this.$store.getters.getUserInfos.super_admin) { return true; }
+            //     if(this.project.admins.includes(this.$store.getters['user/getUserInfos'].id)){ return true; }
+            //     else if(this.project.guests.includes(this.$store.getters['user/getUserInfos'].id)){ return true; }
+            //     else if(this.$store.getters['user/getUserInfos'].super_admin) { return true; }
             //     else { return false; }
             // }
         }      

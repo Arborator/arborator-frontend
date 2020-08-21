@@ -161,7 +161,7 @@ export default {
          * @returns {Boolean}
          */
         isLoggedIn() {
-            return this.$store.getters.isLoggedIn;
+            return this.$store.getters['user/isLoggedIn'];
         }
     },
     mounted() {
@@ -322,20 +322,20 @@ export default {
             var timestamp = Math.round(Date.now());
             console.log("timestamp", timestamp);
             var conll = this.graphInfo.conllGraph.draft.getConll(this.graphInfo.conllGraph.snap.treedata);
-            conll = conll.replace(/# user_id = .+\n/, "# user_id = "+this.$store.getters.getUserInfos.username+"\n");
+            conll = conll.replace(/# user_id = .+\n/, "# user_id = "+this.$store.getters['user/getUserInfos'].username+"\n");
             conll = conll.replace(/# timestamp = \d+(\.\d*)?\n/, "# timestamp = "+timestamp+"\n");
             console.log("_________after", this.$props,this.$props.sentence);
-            var data={"trees":[{"sent_id":this.sentenceId, "conll":conll, "sample_name":this.$props.sentence.samplename}], "user_id":this.$store.getters.getUserInfos.username};
+            var data={"trees":[{"sent_id":this.sentenceId, "conll":conll, "sample_name":this.$props.sentence.samplename}], "user_id":this.$store.getters['user/getUserInfos'].username};
             // console.log("data", data);
             api.saveTrees(this.$route.params.projectname, data).then(response => {
                 if(response.status == 200){
                     this.graphInfo.dirty = false;
                     // console.log("status", this.graphInfo.dirty);
-                    // console.log("user", this.$store.getters.getUserInfos.username);
+                    // console.log("user", this.$store.getters['user/getUserInfos'].username);
                     this.showNotif('top', 'saveSuccess');
-                    this.sentenceData.conlls[this.$store.getters.getUserInfos.username] = conll; 
+                    this.sentenceData.conlls[this.$store.getters['user/getUserInfos'].username] = conll; 
                     this.$forceUpdate();
-                    this.tab = this.$store.getters.getUserInfos.username;
+                    this.tab = this.$store.getters['user/getUserInfos'].username;
                 }
             }).catch(error => { 
                 this.$store.dispatch("notifyError", {error: error}); });

@@ -514,9 +514,9 @@ export default {
 		}, 
         routePath() { return this.$route.path; },
         breakpoint(){ return this.window.width <= 400; },
-        guest(){ return this.infos.guests.includes(this.$store.getters.getUserInfos.id); },
-        admin(){ return this.infos.admins.includes(this.$store.getters.getUserInfos.id); },
-        super_admin(){ return this.$store.getters.getUserInfos.super_admin; },
+        guest(){ return this.infos.guests.includes(this.$store.getters['user/getUserInfos'].id); },
+        admin(){ return this.infos.admins.includes(this.$store.getters['user/getUserInfos'].id); },
+        super_admin(){ return this.$store.getters['user/getUserInfos'].super_admin; },
         imageEmpty(){
             if(this.infos.image == null){ this.infos.image = "b''";}
             if(this.infos.image == "b''" ) {return true;}
@@ -533,14 +533,14 @@ export default {
         
         noselect(){ return this.table.selected.length < 1;},
         loggedWithGithub() {
-            var authProvider = this.$store.getters.getUserInfos.auth_provider;
+            var authProvider = this.$store.getters['user/getUserInfos'].auth_provider;
             return authProvider == 4
         }, 
         isLoggedIn() {
-            return this.$store.getters.isLoggedIn;
+            return this.$store.getters['user/isLoggedIn'];
         }, 
         avatar() {
-            if (this.$store.getters.getUserInfos.picture_url) return this.$store.getters.getUserInfos.picture_url
+            if (this.$store.getters['user/getUserInfos'].picture_url) return this.$store.getters['user/getUserInfos'].picture_url
             return "perm_identity";
         }, 
     },
@@ -580,7 +580,7 @@ export default {
             form.append('robot', this.robot.active);
             this.uploadSample.submitting = true;
             for(const file of this.uploadSample.attachment.file){ form.append('files',file); }
-            form.append('import_user',Store.getters.getUserInfos.username);
+            form.append('import_user',Store.getters['user/getUserInfos'].username);
             api.uploadSample(this.$route.params.projectname, form).then( response => { 
                 this.uploadSample.attachment.file = []; 
                 this.getProjectInfos(); 

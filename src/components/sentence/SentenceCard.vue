@@ -60,9 +60,9 @@
           :disable="!graphInfo.dirty"
           @click="save('teacher')"
         >
+          <q-tooltip>Save as teacher</q-tooltip>
         </q-btn>
 
-        <q-tooltip>Save as teacher</q-tooltip>
         <q-btn
           v-if="isLoggedIn"
           flat
@@ -186,6 +186,7 @@
                 :user="user"
                 :sentenceId="sentenceId"
                 :matches="sentenceData.matches"
+                :conllSavedCounter="conllSavedCounter"
                 :id="
                   searchResult +
                   'conllGraph_' +
@@ -213,8 +214,13 @@
 </template>
 
 <script>
+import Vue from 'vue'
 import ConllGraph from "./ConllGraph";
 import api from "../../boot/backend-api";
+
+
+// ArboratorDraft is the svg tree handler
+const arboratorDraft = new ArboratorDraft();
 
 export default {
   name: "SentenceCard",
@@ -224,6 +230,7 @@ export default {
   props: ["index", "sentence", "sentenceId", "searchResult"],
   data() {
     return {
+      sentenceBus: new Vue(),
       tab: "",
       sentenceData: this.$props.sentence,
       // graphInfo: { svgId: '',  draft: '', dirty: false, redo: false, conll: '', user: '' },
@@ -236,7 +243,7 @@ export default {
           icon: "report_problem",
         },
       },
-      changed: false,
+      conllSavedCounter: 0,
       shownmetanames: [],
       shownmetas: {},
       view: null,
@@ -276,7 +283,7 @@ export default {
     },
     refresh() {
       this.$emit("refresh:trees");
-      this.$forceUpdate()
+      this.$forceUpdate();
     },
     /**
      * Set the sentence link and copy it after 500 ms
@@ -452,31 +459,32 @@ export default {
      * @returns void
      */
     save(mode) {
-      var userId = this.$store.getters["user/getUserInfos"].username;
-      if (mode == "teacher") {
-        userId = "teacher";
-      }
-      console.log("_________before", JSON.stringify(this.$props.sentence));
+      // console.log("_________before", JSON.stringify(this.$props.sentence.conlls));
+      // console.log("_________before", JSON.stringify(this.sentenceData.conlls));
 
       // timestamp in milliseconds type int
       var timestamp = Math.round(Date.now());
-      var conll = this.graphInfo.conllGraph.draft.getConll(
+      var conll = arboratorDraft.getConll(
         this.graphInfo.conllGraph.snap.treedata
       );
+      var changedConllUser = this.$store.getters["user/getUserInfos"].username;
+      if (mode == "teacher") {
+        changedConllUser = "teacher";
+      }
+
       conll = conll.replace(
         /# user_id = .+\n/,
-        "# user_id = " +
-          this.$store.getters["user/getUserInfos"].username +
-          "\n"
+        "# user_id = " + changedConllUser + "\n"
       );
       conll = conll.replace(
         /# timestamp = \d+(\.\d*)?\n/,
         "# timestamp = " + timestamp + "\n"
       );
-      this.$props.sentence.conlls["teacher"] = "bala";
-      // this.$props.sentence.conlls["teacher"] = conll;
-      console.log("_________after", this.$props.sentence);
-      console.log("KK conll", conll);
+
+      // TODO : handle when grew doesn't save the conll
+
+      // console.log("_________after", JSON.stringify(this.sentenceData.conlls));
+      // console.log("KK conll", conll);
 
       var data = {
         trees: [
@@ -486,22 +494,18 @@ export default {
             sample_name: this.$props.sentence.samplename,
           },
         ],
-        user_id: userId,
+        user_id: changedConllUser,
       };
       console.log("data", data);
       api
         .saveTrees(this.$route.params.projectname, data)
         .then((response) => {
           if (response.status == 200) {
+            this.sentenceData.conlls[changedConllUser] = conll;
+            this.tab = changedConllUser;
+            this.conllSavedCounter += 1;
             this.graphInfo.dirty = false;
-            // console.log("status", this.graphInfo.dirty);
-            // console.log("user", this.$store.getters['user/getUserInfos'].username);
             this.showNotif("top", "saveSuccess");
-            this.sentenceData.conlls[
-              this.$store.getters["user/getUserInfos"].username
-            ] = conll;
-            this.$forceUpdate();
-            this.tab = userId;
           }
         })
         .catch((error) => {

@@ -20,7 +20,6 @@
             v-on:refresh:trees="getSampleTrees"
           >
           </SentenceCard>
-          <p>{{ item }}, {{ index }}</p>
         </template>
       </q-virtual-scroll>
     </div>
@@ -259,7 +258,7 @@ export default {
         .getSampleTrees(this.projectname, this.samplename, this.exerciseMode)
         .then((response) => {
           this.sentences = response.data;
-          console.log("KK getSampleTrees")
+          // console.log("KK getSampleTrees")
           this.freezesentences();
           this.$forceUpdate();
           this.loading = false;

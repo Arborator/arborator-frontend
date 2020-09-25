@@ -109,10 +109,16 @@ ArboratorDraft.prototype.drawit = function(strConll, usermatches, id, shof){
 	shownfeatures=shof
 	// log('usermatches', usermatches) // the one that we see
 	var treedata = conllToTree(strConll.trim()); // treedata is object: {tree:tree, META:META, svg:snap-object}
+	// console.log("KK treedata", treedata)
 	treedata.s = drawsnap(id, treedata, usermatches, shownfeatures);
 	return treedata;
 }
 
+ArboratorDraft.prototype.cleanSvgTree = function(SvgId) {
+	cleanSnap(SvgId)
+}
+
+// Kirian : does this need to be public ? I don't see anuy call to this function outside of this file
 ArboratorDraft.prototype.getTree = function(strConll){
 	return conllToTree(strConll.trim());
 }
@@ -301,6 +307,7 @@ var categoryclick = function(e) {
 }
 
 var relationclick = function(e) {
+	console.log("KK relation click in snap : e :", e)
 	this.attr({class:"DEPRELselected"})
 	this.paper.root.treedata.openRelationDialog(
 		this.paper, 
@@ -375,6 +382,7 @@ function drawsnap(idSVG, treedata, usermatches, shownfeatures) {
 	var textstarty = 10; // has to be bigger than arborator-draft.css DEPREL fontsize
 	var runningy = textstarty;
 	var s=Snap(document.getElementById(idSVG));
+
 	droppables = [];
 	leveldistance = parseInt(getComputedStyle(s.parent().node).getPropertyValue('--depLevelHeight'));
 	var idhead2level = {};
@@ -491,6 +499,12 @@ function drawsnap(idSVG, treedata, usermatches, shownfeatures) {
 	svgHeight = s.attr('height').replace(/px/,'');
 	return s;
 }
+
+function cleanSnap(idSVG) {
+	var s=Snap(document.getElementById(idSVG));
+	s.clear(); 
+}
+
 
 function drawRelation(headid, relation, xdep, xdeprel, gap, tree, idhead2level, nr, basey, 
 		ind, xmidpoints, firstTextFontSize, 

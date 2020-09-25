@@ -1,9 +1,10 @@
 <template>
   <div class="sentencebox">
     <svg :id="id" :ref="id" :class="$q.dark.isActive ? 'dark' : ''"></svg>
+    <q-btn flat dense icon="refresh" @click="myKKfunction" />
 
     <q-dialog
-      v-model="relDialog"
+      v-model="relationDialogOpened"
       :maximized="maximizedToggle"
       @hide="ondialoghide()"
     >
@@ -284,9 +285,13 @@ import Vue from "vue";
 // import 'vue-select/dist/vue-select.css';
 
 import AttributeTable from "./AttributeTable";
-Vue.config.ignoredElements = ['conll']; // seems it can be removed, useless
+Vue.config.ignoredElements = ["conll"]; // seems it can be removed, useless
 import { codemirror } from "vue-codemirror";
 import CodeMirror from "codemirror";
+
+// from arborator-draft-snap.js
+const arboratorDraft = new ArboratorDraft();
+
 CodeMirror.defineMode("tsv", function (_config, parserConfig) {
   function tokenBase(stream, state) {
     if (stream.string.match(/^#.+/)) {
@@ -333,9 +338,11 @@ export default {
     AttributeTable,
     codemirror,
   },
-  props: ["conll", "user", "sentenceId", "matches", "id"],
+  props: ["conll", "user", "sentenceId", "matches", "id", "conllSavedCounter"],
   data() {
     return {
+      localConll: JSON.parse(JSON.stringify(this.conll)),
+
       draft: new ArboratorDraft(),
       // id: this.user+'_'+this.sentenceId.replace(/\W/g, ''),
       svgContent: "",
@@ -399,12 +406,12 @@ export default {
       },
       someFeatureChanged: false,
       model: null,
-      relDialog: false,
+      relationDialogOpened: false,
       catDialog: false,
       featureDialog: false,
       metaDialog: false,
       tokenDialog: false,
-      maximizedToggle: true,
+      maximizedToggle: false,
 
       cmOption: {
         tabSize: 8,
@@ -423,10 +430,17 @@ export default {
 
   //   }]
   // },
+  watch: {
+    conllSavedCounter: function (val) {
+      this.start(this.conll, this.matches, this.id, this.user);
+      console.log("KK watcher conll", this.id, this.conll);
+    },
+  },
   mounted() {
     this.options.annof = this.$store.getters["config/annotationFeatures"];
     this.options.shownfeatures = this.$store.getters["config/shownfeatures"];
     this.options.shownmeta = this.$store.getters["config/shownmeta"];
+    // console.log("KK this.conll", this.conll)
     this.start(this.conll, this.matches, this.id, this.user);
     // precompute to check for changes quickly:
     this.options.annofFEATS = this.options.annof.FEATS.reduce(function (
@@ -447,6 +461,10 @@ export default {
     ); // = /[:@]/g
   },
   methods: {
+    myKKfunction() {
+      // console.log("KK refresh");
+      this.start(this.conll, this.matches, this.id, this.user);
+    },
     /**
      * Replace the default labels and cats by the ones in the config if list not empty
      *
@@ -455,12 +473,12 @@ export default {
     up(dirty, redo) {
       // console.log(svg.tree)
       // console.log("NOW"); // when I open a sentence, when I click on OK after editing a category or a relation;
-      // console.log("gonna emit ", this.draft, this.id);
-      // console.log('conll', this.draft.getConll(this.snapInfos.paper));
-      // { treedata: {}, dirty: false, redo: false, user: '' }            'conll': this.draft.getConll(this.snapInfos.paper),
+      // console.log("gonna emit ", arboratorDraft, this.id);
+      // console.log('conll', arboratorDraft.getConll(this.snapInfos.paper));
+      // { treedata: {}, dirty: false, redo: false, user: '' }            'conll': arboratorDraft.getConll(this.snapInfos.paper),
       // if(this.snapInfos.paper != null){
       if (this.snap.treedata != null) {
-        console.log("KK emit update-conll");
+        // console.log("KK emit update-conll");
         this.$emit("update-conll", {
           conllGraph: this,
           dirty: dirty,
@@ -474,6 +492,11 @@ export default {
     // pattern { N [upos="PROPN"] }  --> [{"edges":{},"nodes":{"N":"13"}}]
     // pattern { GOV -[det]-> DEP } --> [{"edges":{},"nodes":{"GOV":"5","DEP":"4"}}]
     // pattern {e: GOV -[subj]-> DEP } --> [{"edges":{"e":{"source":"7","label":"subj","target":"6"}},"nodes":{"GOV":"7","DEP":"6"}},{"edges":{"e":{"source":"10","label":"subj","target":"9"}},"nodes":{"GOV":"10","DEP":"9"}}]
+
+    cleanSvgTree() {
+      arboratorDraft.cleanSvgTree(this.id);
+      // console.log("KK tree cleaned")
+    },
     start(conllStr, matches, id) {
       // console.log(5545454,JSON.stringify(matches))
       if (this.user in matches) {
@@ -482,12 +505,16 @@ export default {
         var usermatches = []; //{'nodes':[],'edges':[]};
       }
 
-      this.snap.treedata = this.draft.drawit(
+      arboratorDraft.cleanSvgTree(this.id);
+      this.snap.treedata = arboratorDraft.drawit(
         conllStr,
         usermatches,
         id,
         this.options.shownfeatures
-      ); // here it happens
+      );
+      console.log("KK this.snap.treedata", this.snap.treedata)
+      // console.log('KK refresh conllStr', conllStr)
+      this.$forceUpdate(); // here it happens
       // give the draft access to these functions:
       this.snap.treedata.openRelationDialog = this.openRelationDialog;
       this.snap.treedata.openCategoryDialog = this.openCategoryDialog;
@@ -520,6 +547,7 @@ export default {
       // snaprelation.attr({class:"deprelselected"});
       // relation="qsdwf:zsert@swxcv";
       this.snap.treedata.s = s;
+      console.log("KK s", s)
       var subrels = relation.split(this.options.splitregex);
       this.options.extendedrel = ctrlkey;
       var depr = ctrlkey ? this.options.annof.DEPS : this.options.annof.DEPREL; //options.annof.DEPREL
@@ -551,11 +579,13 @@ export default {
 
       this.snap.currentword = govwordform;
       this.snap.currentdepword = depwordform;
-      this.relDialog = !this.relDialog;
+      this.relationDialogOpened = !this.relationDialogOpened;
     },
     onchangerel(addasextended) {
-      this.relDialog = !this.relDialog;
-      this.snap.treedata = this.draft.relationChanged(
+      console.log("KK addasextended", addasextended)
+      this.relationDialogOpened = !this.relationDialogOpened;
+      console.log("KK this.snap.treedata", this.snap.treedata)
+      this.snap.treedata = arboratorDraft.relationChanged(
         this.snap.treedata,
         this.snap.depid,
         this.snap.govid,
@@ -568,6 +598,7 @@ export default {
         ),
         addasextended
       );
+      console.log("KK this.snap.treedata", this.snap.treedata)
       this.up(true, false);
     },
 
@@ -582,7 +613,7 @@ export default {
     },
     onchangecat() {
       this.catDialog = !this.catDialog;
-      this.snap.treedata = this.draft.catChanged(
+      this.snap.treedata = arboratorDraft.catChanged(
         this.snap.treedata,
         this.snap.depid,
         this.snap.category
@@ -596,7 +627,7 @@ export default {
       this.metaDialog = !this.metaDialog;
     },
     onMetaDialogOk() {
-      this.snap.treedata = this.draft.metaChanged(
+      this.snap.treedata = arboratorDraft.metaChanged(
         this.snap.treedata,
         this.snap.metal.reduce(function (obj, r) {
           if (r.v) obj[r.a] = r.v;
@@ -643,7 +674,7 @@ export default {
     },
     onFeatureDialogOk() {
       if (this.someFeatureChanged) {
-        this.snap.treedata = this.draft.featureChanged(
+        this.snap.treedata = arboratorDraft.featureChanged(
           this.snap.treedata,
           this.snap.depid,
           this.featTable.lemma.reduce(function (obj, r) {
@@ -691,11 +722,11 @@ export default {
 
     ondialoghide() {
       if (this.snap.snaprelation) {
-        this.snap.snaprelation.attr({ class: "DEPREL" });
+        // this.snap.snaprelation.attr({ class: "DEPREL" });
         this.snap.snaprelation = null;
       }
       if (this.snap.snapcat) {
-        this.snap.snapcat.attr({ class: "UPOS" });
+        // this.snap.snapcat.attr({ class: "UPOS" });
         this.snap.snapcat = null;
       }
     },
@@ -771,7 +802,7 @@ export default {
       var ttokl = this.snap.tokl
         .map(({ v }) => v)
         .filter((x) => x.trim().length > 0);
-      var treedata = this.draft.replaceNodes(
+      var treedata = arboratorDraft.replaceNodes(
         this.snap.treedata,
         this.snap.tokidsequence,
         ttokl.length
@@ -784,7 +815,7 @@ export default {
     },
     openConllDialog() {
       this.conllDialog = !this.conllDialog;
-      this.conllContent = this.draft.getConll(this.snap.treedata);
+      this.conllContent = arboratorDraft.getConll(this.snap.treedata);
       this.currentConllContent = this.conllContent;
     },
     onConllDialogOk() {

@@ -202,7 +202,10 @@
                     @click="exportSamplesZip()"
                     :loading="table.exporting"
                     :disable="
-                      (visibility == 0 && !isGuest && !isAdmin && !isSuperAdmin) ||
+                      (visibility == 0 &&
+                        !isGuest &&
+                        !isAdmin &&
+                        !isSuperAdmin) ||
                       table.selected.length < 1
                     "
                   ></q-btn>
@@ -1095,7 +1098,7 @@ export default {
       "isLoggedIn",
       "isSuperAdmin",
       "loggedWithGithub",
-      "avatar"
+      "avatar",
     ]),
     routePath() {
       return this.$route.path;

@@ -1,10 +1,23 @@
+// default config state
 export default () => ({
     // is_open: false, 
+    // access: {
+    // },
+    // settings: {
+
+    // },
+
+    name: "",
     admins: [],
     guests: [],
+    visibility: 2,
+    description: "",
+    image:"",
     showAllTrees: true,
+    exerciseMode: false,
     shownfeatures: ["FORM", "UPOS", "LEMMA", "MISC.Gloss"],
     shownmeta: ["text_en"],
+    
     annotationFeatures: {
         "META": [
             "sent_id", "text", "text_en", "text_ortho", "speaker_id", "sound_url"

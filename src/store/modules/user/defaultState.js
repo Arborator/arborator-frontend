@@ -1,3 +1,4 @@
+// default user state
 export default () => ({
   loginSuccess: false,
   loginError: false,

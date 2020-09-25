@@ -2119,7 +2119,7 @@ FN:79,mounted
 FN:85,getProjectConfig
 FN:86,(anonymous_8)
 FN:88,handleResize
-FN:89,getSampleContent
+FN:89,getSampleTrees
 FN:91,(anonymous_12)
 FN:98,(anonymous_13)
 FN:101,(anonymous_14)
@@ -2148,7 +2148,7 @@ FNDA:0,mounted
 FNDA:0,getProjectConfig
 FNDA:0,(anonymous_8)
 FNDA:0,handleResize
-FNDA:0,getSampleContent
+FNDA:0,getSampleTrees
 FNDA:0,(anonymous_12)
 FNDA:0,(anonymous_13)
 FNDA:0,(anonymous_14)

@@ -143,7 +143,7 @@ export default {
       form.append("show_all_trees", this.showAllTrees);
       form.append("exercise_mode", this.exerciseMode);
 
-      this.$store.dispatch("resetAnnotationFeatures"); // reset annotationFeature object
+      this.$store.dispatch("config/resetAnnotationFeatures"); // reset annotationFeature object
       
       var data = {
         project: this.project,

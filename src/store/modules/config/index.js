@@ -169,7 +169,7 @@ export default {
               typeof fetchedAnnotationFeatures !== "object" ||
               fetchedAnnotationFeatures === null
             ) {
-              commit("reset_project_config");
+              // commit("reset_project_config");
               fetchedAnnotationFeatures = state.annotationFeatures;
             }
             commit("set_project_conllu_schema", {

@@ -268,6 +268,62 @@
   </q-page>
 </template>
 
+
+<script>
+import { openURL } from 'quasar';
+import { copyToClipboard } from 'quasar'
+import api from '../boot/backend-api';
+import Store from '../store/index';
+import ProjectCard from '../components/ProjectCard.vue';
+// import Snap from "snapsvg"
+import Snap from "snapsvg-cjs";
+export default {
+  components: {
+    ProjectCard
+  },
+  name: 'PageIndex',
+  data() {
+    return {
+      lorem: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.',
+      presentation:`
+      Arborator-Grew, a collaborative annotation tool for treebank development. Arborator-Grew combines the features of two preexisting tools: Arborator and Grew. Arborator is a widely used collaborative graphical online dependency treebank annotation tool. Grew is a tool for graph querying and rewriting specialized in structures needed in NLP, i.e. syntactic and semantic dependency trees and graphs. Grew also has an online version, Grew-match, where all Universal Dependencies treebanks in their classical, deep and surface-syntactic flavors can be queried. Arborator-Grew is a complete redevelopment and modernization of Arborator, replacing its own internal database storage by a new Grew API, which adds a powerful query tool to Arborator's existing treebank creation and correction features. This includes complex access control for parallel expert and crowd-sourced annotation, tree comparison visualization, and various exercise modes for teaching and training of annotators. Arborator-Grew opens up new paths of collectively creating, updating, maintaining, and curating syntactic treebanks and semantic graph banks.
+      `,
+      hover: false,
+      hoverdraft: false,
+      hoverquick: false,
+      hoverlegacy: false,
+      search: '',
+      slide: 'style',
+    }
+  },
+  mounted(){
+    },
+  methods:{
+    openURL,
+    copy(){
+      copyToClipboard(`@InProceedings{guibon-EtAl:2020:LREC,
+              author    = {Guibon, Gaël  and  Courtin, Marine  and  Gerdes, Kim  and  Guillaume, Bruno},
+              title     = {When Collaborative Treebank Curation Meets Graph Grammars},
+              booktitle      = {Proceedings of The 12th Language Resources and Evaluation Conference},
+              month          = {May},
+              year           = {2020},
+              address        = {Marseille, France},
+              publisher      = {European Language Resources Association},
+              pages     = {5293--5302},
+              url       = {https://www.aclweb.org/anthology/2020.lrec-1.651}
+              }`)
+      .then(() => {
+        this.$q.notify({message: 'Copied to clipboard!'})
+      })
+      .catch(() => {
+        this.$q.notify({message:'Failed to copy.'})
+      })
+    }
+  }
+}
+
+
+</script>
 <style scoped lang="stylus">
 .clickable:hover {
   cursor:pointer;
@@ -298,56 +354,3 @@
 
 
 </style>
-
-<script>
-import { openURL } from 'quasar';
-import { copyToClipboard } from 'quasar'
-import api from '../boot/backend-api';
-import Store from '../store/index';
-import ProjectCard from '../components/ProjectCard.vue';
-
-export default {
-  components: {
-    ProjectCard
-  },
-  name: 'PageIndex',
-  data() {
-    return {
-      lorem: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.',
-      presentation:`
-      Arborator-Grew, a collaborative annotation tool for treebank development. Arborator-Grew combines the features of two preexisting tools: Arborator and Grew. Arborator is a widely used collaborative graphical online dependency treebank annotation tool. Grew is a tool for graph querying and rewriting specialized in structures needed in NLP, i.e. syntactic and semantic dependency trees and graphs. Grew also has an online version, Grew-match, where all Universal Dependencies treebanks in their classical, deep and surface-syntactic flavors can be queried. Arborator-Grew is a complete redevelopment and modernization of Arborator, replacing its own internal database storage by a new Grew API, which adds a powerful query tool to Arborator's existing treebank creation and correction features. This includes complex access control for parallel expert and crowd-sourced annotation, tree comparison visualization, and various exercise modes for teaching and training of annotators. Arborator-Grew opens up new paths of collectively creating, updating, maintaining, and curating syntactic treebanks and semantic graph banks.
-      `,
-      hover: false,
-      hoverdraft: false,
-      hoverquick: false,
-      hoverlegacy: false,
-      search: '',
-      slide: 'style',
-    }
-  },
-  mounted(){
-  },
-  methods:{
-    openURL,
-    copy(){
-      copyToClipboard(`@InProceedings{guibon-EtAl:2020:LREC,
-              author    = {Guibon, Gaël  and  Courtin, Marine  and  Gerdes, Kim  and  Guillaume, Bruno},
-              title     = {When Collaborative Treebank Curation Meets Graph Grammars},
-              booktitle      = {Proceedings of The 12th Language Resources and Evaluation Conference},
-              month          = {May},
-              year           = {2020},
-              address        = {Marseille, France},
-              publisher      = {European Language Resources Association},
-              pages     = {5293--5302},
-              url       = {https://www.aclweb.org/anthology/2020.lrec-1.651}
-              }`)
-      .then(() => {
-        this.$q.notify({message: 'Copied to clipboard!'})
-      })
-      .catch(() => {
-        this.$q.notify({message:'Failed to copy.'})
-      })
-    }
-  }
-}
-</script>

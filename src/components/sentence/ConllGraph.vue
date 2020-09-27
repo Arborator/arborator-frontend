@@ -506,6 +506,8 @@ export default {
       }
 
       arboratorDraft.cleanSvgTree(this.id);
+      console.log("KK shownfeatures", this.options.shownfeatures)
+      console.log("KK usermatches", usermatches)
       this.snap.treedata = arboratorDraft.drawit(
         conllStr,
         usermatches,

@@ -5,6 +5,7 @@
 	--wordDistance:55;
 	fill:black;
 	text-align: center;
+	cursor:pointer;
 	position: relative;
 	z-index:99;
 } 
@@ -25,6 +26,7 @@
 	fill: black;
 	font-family:sans-serif;
 	text-align: center;
+	cursor:pointer;
 	font-style: italic;
 	--wordDistance:22;
 } 
@@ -51,6 +53,7 @@
 .UPOS {
 	font: 11px DejaVu Sans;
 	fill: rgb(80, 29, 125);
+	cursor:pointer;
 	text-align: center;
 	--wordDistance:22;
 } 

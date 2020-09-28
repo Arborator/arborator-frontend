@@ -51,6 +51,7 @@
       </q-card>
     </q-dialog>
 
+    <!-------------------- Start uposDialog -------------------->
     <q-dialog
       v-model="catDialog"
       :maximized="maximizedToggle"
@@ -96,6 +97,10 @@
         </q-card-actions>
       </q-card>
     </q-dialog>
+
+    <!----------------- End uposDialog ------------------->
+
+
 
     <q-dialog v-model="featureDialog" :maximized="maximizedToggle">
       <!-- @hide="ondialoghide()" @keyup.enter="onFeatureDialogOk()" @keyup.enter="ononefeaturemodified()"-->
@@ -506,15 +511,15 @@ export default {
       }
 
       arboratorDraft.cleanSvgTree(this.id);
-      console.log("KK shownfeatures", this.options.shownfeatures)
-      console.log("KK usermatches", usermatches)
+      console.log("KK shownfeatures", this.options.shownfeatures);
+      console.log("KK usermatches", usermatches);
       this.snap.treedata = arboratorDraft.drawit(
         conllStr,
         usermatches,
         id,
         this.options.shownfeatures
       );
-      console.log("KK this.snap.treedata", this.snap.treedata)
+      console.log("KK this.snap.treedata", this.snap.treedata);
       // console.log('KK refresh conllStr', conllStr)
       this.$forceUpdate(); // here it happens
       // give the draft access to these functions:
@@ -549,11 +554,15 @@ export default {
       // snaprelation.attr({class:"deprelselected"});
       // relation="qsdwf:zsert@swxcv";
       this.snap.treedata.s = s;
-      console.log("KK s", s)
+      // console.log("KK s", s)
+      console.log("KK relation", relation);
+
       var subrels = relation.split(this.options.splitregex);
+      console.log("KK subrels", subrels);
       this.options.extendedrel = ctrlkey;
       var depr = ctrlkey ? this.options.annof.DEPS : this.options.annof.DEPREL; //options.annof.DEPREL
       this.options.currentoptions = depr;
+      console.log("KK currentoptions", this.options.currentoptions);
 
       this.options.relav = depr.map((sr) => ({
         a: sr.name,
@@ -573,6 +582,7 @@ export default {
           }
         }
       }
+      console.log("KK relav", this.options.relav);
       // console.log(45646,this.options.relav)
       this.snap.depid = depid;
       this.snap.govid = govid;
@@ -584,9 +594,9 @@ export default {
       this.relationDialogOpened = !this.relationDialogOpened;
     },
     onchangerel(addasextended) {
-      console.log("KK addasextended", addasextended)
+      console.log("KK addasextended", addasextended);
       this.relationDialogOpened = !this.relationDialogOpened;
-      console.log("KK this.snap.treedata", this.snap.treedata)
+      console.log("KK this.snap.treedata", this.snap.treedata);
       this.snap.treedata = arboratorDraft.relationChanged(
         this.snap.treedata,
         this.snap.depid,
@@ -600,7 +610,17 @@ export default {
         ),
         addasextended
       );
-      console.log("KK this.snap.treedata", this.snap.treedata)
+      console.log(
+        "KK reduce :",
+        this.options.relav.reduce(
+          (tot, cur, i) =>
+            (tot += this.options.relav[i].v
+              ? this.options.annof.DEPREL[i].join + cur.v
+              : ""),
+          ""
+        )
+      );
+      console.log("KK this.snap.treedata", this.snap.treedata);
       this.up(true, false);
     },
 

@@ -588,9 +588,10 @@ export default {
                 this.uploadSample.submitting = false; 
                 this.showNotif('top-right', 'uploadsuccess');})
                 .catch(error => { 
+                    
                     if (error.response) 
                     {
-                        error.response.message = error.response.data.message;
+                        error.message = error.response.data.message;
                         error.permanent = true;
                     }
                     error.caption = "Check your file please!"

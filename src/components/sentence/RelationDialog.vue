@@ -23,22 +23,33 @@
       ></AttributeTable>
       <!-- @feature-changed="informFeatureChanged()" -->
       <q-space />
+      
+
       <q-card-actions>
         <q-btn
           flat
           label="Cancel"
           v-close-popup
-          style="width: 35%; margin-left: auto; margin-right: auto"
+          style="width: 25%; margin-left: auto; margin-right: auto"
         />
         <!-- @click="ondialoghide()" -->
         <q-space />
+                      <q-btn
+          color="negative"
+          @click="onDeleteRelation()"
+          label="Delete"
+          v-close-popup
+          style="width: 25%; margin-left: auto"
+        />
+      <q-space />
         <q-btn
           color="primary"
           @click="onChangeRelation(options.extendedrel)"
           label="Ok"
           v-close-popup
-          style="width: 35%; margin-left: auto; margin-right: auto"
+          style="width: 25%; margin-left: auto; margin-right: auto"
         />
+
       </q-card-actions>
       <!-- :disabled="!someFeatureChanged" -->
     </q-card>
@@ -122,7 +133,6 @@ export default {
       this.userId = userId;
       this.depDeprel = dep.DEPREL;
       this.depDeprelSplitted = dep.DEPREL.split(this.options.splitregex);
-      console.log("KK depDeprelSplitted", this.depDeprelSplitted);
 
       ////// TODO TO REFACTOR //////
       const depr = this.options.annof.DEPREL;
@@ -148,7 +158,6 @@ export default {
           }
         }
       }
-      console.log("KK this.options.relav", this.options.relav);
       this.relationDialogOpened = true;
 
       /////// END TODO //////
@@ -167,16 +176,23 @@ export default {
             : ""),
         ""
       );
-      console.log("KK this.dep before", this.dep)
       this.dep.DEPREL = newDeprel;
       this.dep.HEAD = this.gov.ID;
-      console.log("KK this.dep after", this.dep)
-      this.sentenceBus.$emit("tree-update:deprel", {
-        dep: this.dep,
+      this.sentenceBus.$emit("tree-update:token", {
+        token: this.dep,
         // gov: this.gov,
         userId: this.userId
       });
     },
+    onDeleteRelation() {
+      this.dep.DEPREL = "";
+      this.dep.HEAD = null;
+      this.sentenceBus.$emit("tree-update:token", {
+        token: this.dep,
+        // gov: this.gov,
+        userId: this.userId
+      });
+    }
   },
 };
 </script>

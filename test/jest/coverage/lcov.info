@@ -2756,7 +2756,7 @@ FN:538,treeDataToConll
 FN:569,replaceNodes
 FN:609,(anonymous_31)
 FN:610,(anonymous_32)
-FN:632,conllToTree
+FN:632,conllToJson
 FN:648,(anonymous_34)
 FN:719,(anonymous_35)
 FN:730,analyzeFeaturestring
@@ -2797,7 +2797,7 @@ FNDA:0,treeDataToConll
 FNDA:0,replaceNodes
 FNDA:0,(anonymous_31)
 FNDA:0,(anonymous_32)
-FNDA:0,conllToTree
+FNDA:0,conllToJson
 FNDA:0,(anonymous_34)
 FNDA:0,(anonymous_35)
 FNDA:0,analyzeFeaturestring

@@ -57,9 +57,9 @@
           round
           dense
           icon="school"
+          :disable="!graphInfo.dirty"
           @click="save('teacher')"
         >
-          <!-- :disable="!graphInfo.dirty" -->
           <q-tooltip>Save as teacher</q-tooltip>
         </q-btn>
 
@@ -69,9 +69,9 @@
           round
           dense
           icon="save"
+          :disable="!graphInfo.dirty"
           @click="save('user')"
         >
-          <!-- :disable="!graphInfo.dirty" -->
           <q-tooltip>Save this tree</q-tooltip>
         </q-btn>
 
@@ -180,13 +180,7 @@
             <q-card-section
               :class="($q.dark.isActive ? '' : '') + ' scrollable'"
             >
-              <VueDepTree
-                :conll="tree"
-                :sentenceId="sentenceId"
-                :sentenceBus="sentenceBus"
-                :userId="user"
-              ></VueDepTree>
-              <!-- <ConllGraph
+              <ConllGraph
                 ref="conllGraph"
                 :conll="tree"
                 :user="user"
@@ -204,7 +198,7 @@
                 "
                 @update-conll="onConllGraphUpdate($event)"
                 @meta-changed="metaUpdate($event)"
-              ></ConllGraph> -->
+              ></ConllGraph>
             </q-card-section>
           </q-card>
         </q-tab-panel>
@@ -216,19 +210,14 @@
         </q-item>
       </q-list>
     </q-card-section>
-    <RelationDialog :sentenceBus="sentenceBus" />
-    <UposDialog :sentenceBus="sentenceBus" />
   </q-card>
 </template>
 
 <script>
-import Vue from "vue";
-// import ConllGraph from "./ConllGraph.vue";
+import Vue from 'vue'
+import ConllGraph from "./ConllGraph";
 import api from "../../boot/backend-api";
 
-import VueDepTree from "./VueDepTree.vue";
-import RelationDialog from "./RelationDialog.vue";
-import UposDialog from "./UposDialog";
 
 // ArboratorDraft is the svg tree handler
 const arboratorDraft = new ArboratorDraft();
@@ -236,14 +225,12 @@ const arboratorDraft = new ArboratorDraft();
 export default {
   name: "SentenceCard",
   components: {
-    VueDepTree,
-    RelationDialog,
-    UposDialog,
+    ConllGraph,
   },
   props: ["index", "sentence", "sentenceId", "searchResult"],
   data() {
     return {
-      sentenceBus: new Vue(), // Event/Object Bus that communicate between all components
+      sentenceBus: new Vue(),
       tab: "",
       sentenceData: this.$props.sentence,
       // graphInfo: { svgId: '',  draft: '', dirty: false, redo: false, conll: '', user: '' },
@@ -272,7 +259,8 @@ export default {
      */
     cannotSave() {
       let dirty = this.graphInfo.dirty;
-      return !dirty;
+      let open = this.$store.getters.projectConfig.is_open;
+      return !dirty || !open;
     },
     /**
      * Check the store to see if a user is logged in or not
@@ -339,7 +327,81 @@ export default {
     getSVG() {
       // todo: instead of this long string, read the actual css file and put it there.
       var svg = this.graphInfo.conllGraph.snap.treedata.s.toString();
-      var style = "";
+      var style = `<style> 
+<![CDATA[  
+   .curve {
+	stroke: black;
+	stroke-width: 1;
+	fill: none;
+}
+.dark .curve {
+	stroke: rgb(248, 244, 244);
+	stroke-width: 1;
+	fill: none;	
+}
+.arrowhead {
+	fill: white;
+	stroke: black;
+	stroke-width: .8;
+}
+.FORM {
+	fill:black;
+	text-align: center;
+} 
+.dark .FORM {
+		fill:rgb(255, 255, 255);
+		text-align: center;
+	}
+.LEMMA {
+	font: 15px DejaVu Sans;
+	fill: black;
+	font-family:sans-serif;
+	text-align: center;
+	font-style: italic;
+} 
+.dark .LEMMA {
+	font: 15px DejaVu Sans;
+	fill: rgb(238, 232, 232);
+	font-family:sans-serif;
+	text-align: center;
+	font-style: italic;
+} 
+.MISC-Gloss {
+	font: 15px DejaVu Sans;
+	fill: rgb(124, 96, 86);
+	font-family:sans-serif;
+	text-align: center;
+	font-style: italic;
+} 
+.UPOS {
+	font: 11px DejaVu Sans;
+	fill: rgb(80, 29, 125);
+	text-align: center;
+} 
+.UPOSselected {
+	font: 11px DejaVu Sans;
+	fill: #dd137bff;
+	font-weight: bold;
+	text-align: center;
+} 
+.DEPREL {
+	font: 12px Arial;
+	fill: #501d7d;
+	font-style: oblique;
+	font-family:sans-serif;
+	cursor:pointer;
+	--funcCurveDist:3; /* distance between the function name and the curves highest point */
+} 
+.dark .DEPREL {
+	font: 12px Arial;
+	fill: #aab3ff;
+	font-style: oblique;
+	font-family:sans-serif;
+	cursor:pointer;
+	--funcCurveDist:3; /* distance between the function name and the curves highest point */
+}
+    ]]>  
+</style> `;
 
       svg = svg.replace(
         /<desc>Created with Snap<\/desc>/g,
@@ -397,65 +459,14 @@ export default {
      * @returns void
      */
     save(mode) {
-      console.log("KK Save", this.sentenceBus);
-      const currentTreeUser = this.tab;
-      var conll = this.sentenceBus[currentTreeUser].exportConll();
-
-      console.log("KK this.tab", this.tab);
-      console.log("KK active conll", conll);
-
-      var changedConllUser = this.$store.getters["user/getUserInfos"].username;
-      if (mode == "teacher") {
-        changedConllUser = "teacher";
-      }
-      conll = conll.replace(
-        /# user_id = .+\n/,
-        "# user_id = " + changedConllUser + "\n"
-      );
-
-      const timestamp = Math.round(Date.now());
-      conll = conll.replace(
-        /# timestamp = \d+(\.\d*)?\n/,
-        "# timestamp = " + timestamp + "\n"
-      );
-
-      var data = {
-        trees: [
-          {
-            sent_id: this.sentenceId,
-            conll: conll,
-            sample_name: this.$props.sentence.samplename,
-          },
-        ],
-        user_id: changedConllUser,
-      };
-      console.log("data", data);
-      api
-        .saveTrees(this.$route.params.projectname, data)
-        .then((response) => {
-          if (response.status == 200) {
-            this.sentenceData.conlls[changedConllUser] = conll;
-            this.tab = changedConllUser;
-            this.conllSavedCounter += 1;
-            this.graphInfo.dirty = false;
-            this.showNotif("top", "saveSuccess");
-          }
-        })
-        .catch((error) => {
-          this.$store.dispatch("notifyError", { error: error });
-        });
-      // var conll = this.sentenceBus[this.tab]
-    },
-    save2(mode) {
       // console.log("_________before", JSON.stringify(this.$props.sentence.conlls));
       // console.log("_________before", JSON.stringify(this.sentenceData.conlls));
 
       // timestamp in milliseconds type int
       var timestamp = Math.round(Date.now());
-      // var conll = arboratorDraft.getConll(
-      //   this.graphInfo.conllGraph.snap.treedata
-      // );
-
+      var conll = arboratorDraft.getConll(
+        this.graphInfo.conllGraph.snap.treedata
+      );
       var changedConllUser = this.$store.getters["user/getUserInfos"].username;
       if (mode == "teacher") {
         changedConllUser = "teacher";

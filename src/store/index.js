@@ -4,6 +4,7 @@ import api from '../boot/backend-api'
 
 import config from './modules/config'
 import user from './modules/user'
+import sample from './modules/sample'
 
 Vue.use(Vuex);
 
@@ -86,6 +87,7 @@ export default new Vuex.Store({
     },
     modules: {
         config,
-        user: user,
+        sample,
+        user,
     }
 })

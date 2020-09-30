@@ -632,6 +632,7 @@
                     v-model="props.row.exerciseLevel"
                     label="exercise level"
                     :dense="false"
+                    :disable="!isAdmin"
                   />
                 </q-td>
                 <!-- <q-td key="exo" :props="props">{{ props.row.exo }}</q-td> -->
@@ -759,96 +760,6 @@
         :uploadDial.sync="uploadDial"
         v-on:uploaded:sample="getProjectSamples()"
       />
-      <!-- <q-dialog
-        v-model="uploadDial"
-        :maximized="maximizedUploadToggle"
-        transition-show="fade"
-        transition-hide="fade"
-      >
-        <q-card style="max-width: 100vw">
-          <q-bar>
-            <q-space />
-            <q-btn
-              dense
-              flat
-              icon="minimize"
-              @click="maximizedUploadToggle = false"
-              :disable="!maximizedUploadToggle"
-            >
-              <q-tooltip
-                v-if="maximizedUploadToggle"
-                content-class="bg-white text-primary"
-                >{{ $t("projectView").tooltipWindows[0] }}</q-tooltip
-              >
-            </q-btn>
-            <q-btn
-              dense
-              flat
-              icon="crop_square"
-              @click="maximizedUploadToggle = true"
-              :disable="maximizedUploadToggle"
-            >
-              <q-tooltip
-                v-if="!maximizedUploadToggle"
-                content-class="bg-white text-primary"
-                >{{ $t("projectView").tooltipWindows[1] }}</q-tooltip
-              >
-            </q-btn>
-            <q-btn dense flat icon="close" v-close-popup>
-              <q-tooltip content-class="bg-white text-primary">{{
-                $t("projectView").tooltipWindows[2]
-              }}</q-tooltip>
-            </q-btn>
-          </q-bar>
-
-          <q-card-section>
-            <div class="text-h6 text-blue-grey-8">
-              {{ $t("projectView").uploadSelectDial }}
-            </div>
-          </q-card-section>
-
-          <q-card-section>
-            <q-toggle
-              v-model="robot.active"
-              checked-icon="check"
-              color="warning"
-              label="Choose a custom import name?"
-              unchecked-icon="clear"
-            />
-            <q-input
-              v-show="robot.active"
-              v-model="robot.name"
-              label="Custom Name for non real user import"
-            />
-          </q-card-section>
-
-          <q-card-section>
-            <q-file
-              v-model="uploadSample.attachment.file"
-              label="Pick files"
-              outlined
-              use-chips
-              clearable
-              :loading="uploadSample.submitting"
-              multiple
-              style="max-width: 400px"
-            >
-              <template v-slot:after>
-                <q-btn
-                  color="primary"
-                  dense
-                  icon="cloud_upload"
-                  round
-                  @click="upload()"
-                  :loading="uploadSample.submitting"
-                  :disable="uploadSample.attachment.file == null"
-                />
-              </template>
-            </q-file>
-          </q-card-section>
-        </q-card>
-      </q-dialog> -->
-
       <q-dialog
         v-model="resultSearchDialog"
         transition-show="fade"
@@ -1123,11 +1034,7 @@ export default {
     this.getUsers();
     this.getProjectSamples();
 
-    document.title =
-      this.$route.params.samplename +
-      " 🌳 Arborator-Grew 🌳 Sample of the " +
-      this.$route.params.projectname +
-      " project";
+    document.title = this.$route.params.projectname;
     if (this.$route.query.q && this.$route.query.q.length > 0)
       this.searchDialog = true;
   },

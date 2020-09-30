@@ -1,11 +1,5 @@
 <template>
   <q-card :id="index">
-    <!-- <q-toolbar :class="$q.dark.isActive?'text-white':'text-primary'"> -->
-    <!-- <q-btn flat round dense icon="undo" :disable="!graphInfo.dirty" @click="undo()"><q-tooltip>Undo</q-tooltip></q-btn>
-            <q-btn flat round dense icon="redo" :disable="!graphInfo.redo"><q-tooltip>Redo</q-tooltip></q-btn> -->
-    <!-- <q-toolbar-title>
-            </q-toolbar-title> -->
-    <!-- </q-toolbar> -->
     <q-card-section>
       <div class="row items-center">
         <!-- icon="textsms"  ref="self" -->
@@ -32,32 +26,24 @@
           </q-input>
         </template>
         <q-space />
-        <!-- for checking data : to delete -->
         <q-btn
-          v-if="isLoggedIn && $store.getters['config/isTeacher']"
+          v-if="isLoggedIn && exerciseLevel <= 3"
           flat
           round
           dense
-          icon="construction"
-          @click="checkData"
-        >
+          icon="assessment"
+          @click="openStatisticsDialog"
+          :disable="tab == ''"
+          ><q-tooltip>See your annotation errors</q-tooltip>
         </q-btn>
-        <q-btn
-          v-if="isLoggedIn && $store.getters['config/isTeacher']"
-          flat
-          round
-          dense
-          icon="refresh"
-          @click="refresh"
-        >
-        </q-btn>
+
         <q-btn
           v-if="isLoggedIn && $store.getters['config/isTeacher']"
           flat
           round
           dense
           icon="school"
-          :disable="!graphInfo.dirty"
+          :disable="tab == ''"
           @click="save('teacher')"
         >
           <q-tooltip>Save as teacher</q-tooltip>
@@ -69,10 +55,10 @@
           round
           dense
           icon="save"
-          :disable="!graphInfo.dirty"
+          :disable="tab == ''"
           @click="save('user')"
         >
-          <q-tooltip>Save this tree</q-tooltip>
+          <q-tooltip>Save this tree {{ this.tab }}</q-tooltip>
         </q-btn>
 
         <!-- TODO : still display the metadata when the user is not logged in, but hide all the buttons for deleting and saving them -->
@@ -104,7 +90,7 @@
               </q-item-section>
             </q-item>
 
-            <q-item clickable v-close-popup @click="showconll()">
+            <q-item clickable v-close-popup @click="openConllDialog()">
               <q-item-section avatar>
                 <q-avatar
                   icon="format_list_numbered"
@@ -117,7 +103,7 @@
               </q-item-section>
             </q-item>
 
-            <q-item clickable v-close-popup @click="getSVG()">
+            <q-item clickable v-close-popup @click="exportSVG()">
               <q-item-section avatar>
                 <q-avatar
                   icon="ion-md-color-palette"
@@ -156,8 +142,9 @@
         :active-color="$q.dark.isActive ? 'info' : 'accent'"
         :active-bg-color="$q.dark.isActive ? '' : 'grey-2'"
       >
+        <!-- v-for="(tree, user) in filteredConlls" -->
         <q-tab
-          v-for="(tree, user) in sentenceData.conlls"
+          v-for="(tree, user) in filteredConlls"
           :key="user"
           :props="user"
           :label="user"
@@ -171,7 +158,7 @@
       <q-separator />
       <q-tab-panels v-model="tab" keep-alive>
         <q-tab-panel
-          v-for="(tree, user) in sentenceData.conlls"
+          v-for="(tree, user) in filteredConlls"
           :key="user"
           :props="tree"
           :name="user"
@@ -180,25 +167,18 @@
             <q-card-section
               :class="($q.dark.isActive ? '' : '') + ' scrollable'"
             >
-              <ConllGraph
-                ref="conllGraph"
+              <VueDepTree
                 :conll="tree"
-                :user="user"
                 :sentenceId="sentenceId"
-                :matches="sentenceData.matches"
+                :sentenceBus="sentenceBus"
+                :userId="user"
                 :conllSavedCounter="conllSavedCounter"
-                :id="
-                  searchResult +
-                  'conllGraph_' +
-                  sentenceId +
-                  '_' +
-                  index +
-                  '_' +
-                  user
+                :teacherConll="
+                  (exerciseLevel <= 2 || isAdmin) && user !== 'teacher'
+                    ? sentenceData.conlls.teacher
+                    : ''
                 "
-                @update-conll="onConllGraphUpdate($event)"
-                @meta-changed="metaUpdate($event)"
-              ></ConllGraph>
+              ></VueDepTree>
             </q-card-section>
           </q-card>
         </q-tab-panel>
@@ -210,14 +190,37 @@
         </q-item>
       </q-list>
     </q-card-section>
+    <RelationDialog :sentenceBus="sentenceBus" />
+    <UposDialog :sentenceBus="sentenceBus" />
+    <FeaturesDialog :sentenceBus="sentenceBus" />
+    <MetaDialog :sentenceBus="sentenceBus" />
+    <ConlluDialog :sentenceBus="sentenceBus" />
+    <ExportSVG :sentenceBus="sentenceBus" />
+    <TokenDialog :sentenceBus="sentenceBus" @changed:metaText="changeMetaText" />
+    <StatisticsDialog
+      :sentenceBus="sentenceBus"
+      :conlls="sentenceData.conlls"
+    />
   </q-card>
 </template>
 
 <script>
-import Vue from 'vue'
-import ConllGraph from "./ConllGraph";
+import Vue from "vue";
+
+import { mapGetters } from "vuex";
+
+// import ConllGraph from "./ConllGraph.vue";
 import api from "../../boot/backend-api";
 
+import VueDepTree from "./VueDepTree.vue";
+import RelationDialog from "./RelationDialog.vue";
+import UposDialog from "./UposDialog.vue";
+import FeaturesDialog from "./FeaturesDialog.vue";
+import MetaDialog from "./MetaDialog.vue";
+import ConlluDialog from "./ConlluDialog.vue";
+import ExportSVG from "./ExportSVG.vue";
+import TokenDialog from "./TokenDialog.vue";
+import StatisticsDialog from "./StatisticsDialog.vue";
 
 // ArboratorDraft is the svg tree handler
 const arboratorDraft = new ArboratorDraft();
@@ -225,15 +228,22 @@ const arboratorDraft = new ArboratorDraft();
 export default {
   name: "SentenceCard",
   components: {
-    ConllGraph,
+    VueDepTree,
+    RelationDialog,
+    UposDialog,
+    FeaturesDialog,
+    MetaDialog,
+    ConlluDialog,
+    ExportSVG,
+    TokenDialog,
+    StatisticsDialog,
   },
-  props: ["index", "sentence", "sentenceId", "searchResult"],
+  props: ["index", "sentence", "sentenceId", "searchResult", "exerciseLevel"],
   data() {
     return {
-      sentenceBus: new Vue(),
+      sentenceBus: new Vue(), // Event/Object Bus that communicate between all components
       tab: "",
       sentenceData: this.$props.sentence,
-      // graphInfo: { svgId: '',  draft: '', dirty: false, redo: false, conll: '', user: '' },
       graphInfo: { conllGraph: null, dirty: false, redo: false, user: "" },
       alerts: {
         saveSuccess: { color: "positive", message: "Saved!" },
@@ -252,6 +262,16 @@ export default {
   },
 
   computed: {
+    ...mapGetters("config", [
+      // "visibility",
+      "isAdmin",
+      "isGuest",
+      "guests",
+      "admins",
+      // "image",
+      "exerciseMode",
+    ]),
+    // ...mapGetters("sample", ["exerciseLevel"]), //module store is not set yet
     /**
      * Never used ?!
      * Check if the graph is dirty (I.E. modified but not saved) or open to see if it's supposed to be possible to save
@@ -259,8 +279,7 @@ export default {
      */
     cannotSave() {
       let dirty = this.graphInfo.dirty;
-      let open = this.$store.getters.projectConfig.is_open;
-      return !dirty || !open;
+      return !dirty;
     },
     /**
      * Check the store to see if a user is logged in or not
@@ -269,18 +288,28 @@ export default {
     isLoggedIn() {
       return this.$store.getters["user/isLoggedIn"];
     },
+    filteredConlls() {
+      Object.filter = (obj, predicate) =>
+        Object.fromEntries(Object.entries(obj).filter(predicate));
+
+      if (this.exerciseLevel != 1 && !this.isAdmin) {
+        return Object.filter(
+          this.sentenceData.conlls,
+          ([user, conll]) => user != "teacher"
+        );
+      } else {
+        return this.sentenceData.conlls;
+      }
+    },
   },
   mounted() {
     this.shownmetanames = this.$store.getters[
       "config/getProjectConfig"
     ].shownmeta;
+
   },
   methods: {
     // to delete KK
-    checkData() {
-      console.log("KK props.sentence.conlls", this.sentence.conlls);
-      console.log("KK sentenceData", this.sentenceData);
-    },
     refresh() {
       this.$emit("refresh:trees");
       this.$forceUpdate();
@@ -308,15 +337,16 @@ export default {
         document.execCommand("copy");
       }, 500);
     },
+    openStatisticsDialog() {
+      this.sentenceBus.$emit("open:statisticsDialog", { userId: this.tab });
+    },
     /**
      * Show the conll graph
      *
      * @returns void
      */
-    showconll() {
-      if ("conllGraph" in this.$refs)
-        var cg = this.$refs.conllGraph.filter((c) => c.user == this.tab)[0];
-      if (cg) cg.openConllDialog();
+    openConllDialog() {
+      this.sentenceBus.$emit("open:conlluDialog", { userId: this.tab });
     },
     /**
      * Get the SVG by creating it using snap arborator plugin and then replacing the placeholder in the current DOM
@@ -324,102 +354,9 @@ export default {
      *
      * @returns void
      */
-    getSVG() {
+    exportSVG() {
       // todo: instead of this long string, read the actual css file and put it there.
-      var svg = this.graphInfo.conllGraph.snap.treedata.s.toString();
-      var style = `<style> 
-<![CDATA[  
-   .curve {
-	stroke: black;
-	stroke-width: 1;
-	fill: none;
-}
-.dark .curve {
-	stroke: rgb(248, 244, 244);
-	stroke-width: 1;
-	fill: none;	
-}
-.arrowhead {
-	fill: white;
-	stroke: black;
-	stroke-width: .8;
-}
-.FORM {
-	fill:black;
-	text-align: center;
-} 
-.dark .FORM {
-		fill:rgb(255, 255, 255);
-		text-align: center;
-	}
-.LEMMA {
-	font: 15px DejaVu Sans;
-	fill: black;
-	font-family:sans-serif;
-	text-align: center;
-	font-style: italic;
-} 
-.dark .LEMMA {
-	font: 15px DejaVu Sans;
-	fill: rgb(238, 232, 232);
-	font-family:sans-serif;
-	text-align: center;
-	font-style: italic;
-} 
-.MISC-Gloss {
-	font: 15px DejaVu Sans;
-	fill: rgb(124, 96, 86);
-	font-family:sans-serif;
-	text-align: center;
-	font-style: italic;
-} 
-.UPOS {
-	font: 11px DejaVu Sans;
-	fill: rgb(80, 29, 125);
-	text-align: center;
-} 
-.UPOSselected {
-	font: 11px DejaVu Sans;
-	fill: #dd137bff;
-	font-weight: bold;
-	text-align: center;
-} 
-.DEPREL {
-	font: 12px Arial;
-	fill: #501d7d;
-	font-style: oblique;
-	font-family:sans-serif;
-	cursor:pointer;
-	--funcCurveDist:3; /* distance between the function name and the curves highest point */
-} 
-.dark .DEPREL {
-	font: 12px Arial;
-	fill: #aab3ff;
-	font-style: oblique;
-	font-family:sans-serif;
-	cursor:pointer;
-	--funcCurveDist:3; /* distance between the function name and the curves highest point */
-}
-    ]]>  
-</style> `;
-
-      svg = svg.replace(
-        /<desc>Created with Snap<\/desc>/g,
-        "<desc>Created with Snap on Arborator</desc>"
-      );
-      svg = svg.replace(/>/g, ">\n");
-      svg = svg.replace(/(<svg.*>)/, "$1\n" + style);
-      const url = window.URL.createObjectURL(
-        new Blob([svg], { type: "image/svg+xml" })
-      );
-      const link = document.createElement("a");
-      link.href = url;
-      link.setAttribute("download", this.sentenceId + ".svg");
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-      // this.table.exporting = false;
-      this.$q.notify({ message: `Files downloaded` });
+      this.sentenceBus.$emit("export:SVG", { userId: this.tab });
     },
     /**
      * Handle token click event to display the related dialog
@@ -428,64 +365,44 @@ export default {
      * @returns void
      */
     ttselect(event) {
-      // triggered if some letters of the sentence are selected
-      if ("conllGraph" in this.$refs)
-        var cg = this.$refs.conllGraph.filter((c) => c.user == this.tab)[0];
-      if (cg)
-        cg.openTokenDialog(
-          // if the user's conllGraph is open:
-          event.srcElement.selectionStart,
-          event.srcElement.selectionEnd,
-          event.srcElement.value.substring(
-            event.srcElement.selectionStart,
-            event.srcElement.selectionEnd
-          )
-        );
+      // only if a tab is open
+      if (this.tab !== "") {
+        this.sentenceBus.$emit("open:tokenDialog", {
+          userId: this.tab,
+          event: event,
+        });
+      }
     },
     /**
      * @todo undo
      */
-    undo() {
-      // log("sentenceid", this.$props.sentenceId);
-      // log("dirty user");
-      // // log(this.data); // undefined
-      // // log(this.graphInfo);
-      // log(this.$props); // index, projectname, sentence...
-      // log("lastsvg", this.graphInfo.svgId);
-    },
+    undo() {},
     /**
-     * Save the graph into backend after modifying its metadata and changing it into an object
+     * Save the graph to backend after modifying its metadata and changing it into an object
      *
      * @returns void
      */
     save(mode) {
-      // console.log("_________before", JSON.stringify(this.$props.sentence.conlls));
-      // console.log("_________before", JSON.stringify(this.sentenceData.conlls));
+      const currentTreeUser = this.tab;
+      var conll = this.sentenceBus[currentTreeUser].exportConll();
 
-      // timestamp in milliseconds type int
-      var timestamp = Math.round(Date.now());
-      var conll = arboratorDraft.getConll(
-        this.graphInfo.conllGraph.snap.treedata
-      );
       var changedConllUser = this.$store.getters["user/getUserInfos"].username;
       if (mode == "teacher") {
         changedConllUser = "teacher";
       }
 
+      // TODO add this METAedit() in the tree object
       conll = conll.replace(
         /# user_id = .+\n/,
         "# user_id = " + changedConllUser + "\n"
       );
+
+      const timestamp = Math.round(Date.now());
       conll = conll.replace(
         /# timestamp = \d+(\.\d*)?\n/,
         "# timestamp = " + timestamp + "\n"
       );
-
-      // TODO : handle when grew doesn't save the conll
-
-      // console.log("_________after", JSON.stringify(this.sentenceData.conlls));
-      // console.log("KK conll", conll);
-
+      console.log("KK conllu\n", conll);
       var data = {
         trees: [
           {
@@ -503,7 +420,8 @@ export default {
           if (response.status == 200) {
             this.sentenceData.conlls[changedConllUser] = conll;
             this.tab = changedConllUser;
-            this.conllSavedCounter += 1;
+            // this.sentenceBus.$emit("saved:tree", {userId: changedConllUser})
+            this.conllSavedCounter++;
             this.graphInfo.dirty = false;
             this.showNotif("top", "saveSuccess");
           }
@@ -511,6 +429,7 @@ export default {
         .catch((error) => {
           this.$store.dispatch("notifyError", { error: error });
         });
+      // var conll = this.sentenceBus[this.tab]
     },
     /**
      * Set the graph infos according to the event payload. This event shoudl be trigerred from the ConllGraph
@@ -523,60 +442,9 @@ export default {
         this.$store.commit("add_pending_modification", this.sentenceId);
       else this.$store.commit("remove_pending_modification", this.sentenceId);
     },
-    /**
-     * Update shown metadata considering the event payload
-     *
-     * @param {Event} metas
-     * @returns void
-     */
-    metaUpdate(metas) {
-      this.shownmetas = Object.keys(metas)
-        .filter((m) => this.shownmetanames.includes(m))
-        .map((m) => ({ a: m, v: metas[m] }));
-      if (metas.text) this.sentenceData.sentence = metas.text;
-    },
-    /**
-     * Open the metadata dialog considering the conllGraph related function
-     *
-     * @returns void
-     */
     openMetaDialog() {
-      // "this.tab" contains the user name, calls the openMetaDialog function in ConllGraph.vue
-      this.$refs.conllGraph
-        .filter((c) => c.user == this.tab)[0]
-        .openMetaDialog();
-    },
-    /**
-     * Never used ?!
-     * Auto open the conll graph component related to the current user. Never used due to computing time slowing down the whole interface.
-     *
-     * @param {String} user
-     * @returns void
-     */
-    autoopen(user) {
-      console.log(
-        4444545454,
-        "conllGraph_" + this.sentenceId + "_" + this.index + "_" + user
-      );
-      // called from Sample.vue to open specific tree
-      if ("tab" + user in this.$refs) {
-        var usertab = this.$refs["tab" + user][0];
-        usertab.__activate();
-        setTimeout(() => {
-          document
-            .getElementById(
-              "conllGraph_" + this.sentenceId + "_" + this.index + "_" + user
-            )
-            .scrollIntoView({
-              behavior: "smooth",
-              block: "center",
-              inline: "nearest",
-            });
-        }, 1000);
-      } else {
-        var t = Object.keys(this.$refs).filter((c) => c.includes("tab"))[0];
-        if (t != undefined && t.length > 3) this.autoopen(t.substring(3));
-      }
+      // "this.tab" contains the user name
+      this.sentenceBus.$emit("open:metaDialog", { userId: this.tab });
     },
     /**
      * Show a notification. Wrapper considering parameters
@@ -586,6 +454,9 @@ export default {
      * @param {String} alert 'warn', ect.
      * @returns void
      */
+    changeMetaText(newMetaText) {
+      this.sentenceData.sentence = newMetaText
+    },
     showNotif(position, alert) {
       const {
         color,

@@ -102,6 +102,10 @@
 
 
 
+
+    
+    <!----------------- Start FeaturesDialog ------------------->
+
     <q-dialog v-model="featureDialog" :maximized="maximizedToggle">
       <!-- @hide="ondialoghide()" @keyup.enter="onFeatureDialogOk()" @keyup.enter="ononefeaturemodified()"-->
       <q-card style="height: 90vh">
@@ -160,6 +164,11 @@
         </q-card-actions>
       </q-card>
     </q-dialog>
+    <!----------------- END FeaturesDialog ------------------->
+
+
+
+    <!----------------- Start MetaDialog ------------------->
 
     <q-dialog v-model="metaDialog" :maximized="maximizedToggle">
       <q-card style="height: 110vh; width: 110vh">
@@ -197,6 +206,11 @@
         </q-card-actions>
       </q-card>
     </q-dialog>
+
+    <!----------------- End MetaDialog ------------------->
+
+
+    <!----------------- Start TokenDialog ------------------->
 
     <q-dialog v-model="tokenDialog" :maximized="maximizedToggle">
       <q-card style="height: 90vh; width: 90vh">
@@ -244,6 +258,10 @@
         </q-card-actions>
       </q-card>
     </q-dialog>
+    <!----------------- End TokenDialog ------------------->
+
+
+    <!----------------- Start ConllDialog ------------------->
 
     <q-dialog v-model="conllDialog" full-width>
       <q-layout view="Lhh lpR fff" container class="bg-white">
@@ -280,6 +298,9 @@
         </q-footer>
       </q-layout>
     </q-dialog>
+
+    <!----------------- End ConllDialog ------------------->
+
   </div>
 
   <!-- <div :id="id" v-html="svgContent"></div> -->
@@ -415,7 +436,7 @@ export default {
       catDialog: false,
       featureDialog: false,
       metaDialog: false,
-      tokenDialog: false,
+      tokenDialog: true,
       maximizedToggle: false,
 
       cmOption: {
@@ -438,14 +459,12 @@ export default {
   watch: {
     conllSavedCounter: function (val) {
       this.start(this.conll, this.matches, this.id, this.user);
-      console.log("KK watcher conll", this.id, this.conll);
     },
   },
   mounted() {
     this.options.annof = this.$store.getters["config/annotationFeatures"];
     this.options.shownfeatures = this.$store.getters["config/shownfeatures"];
     this.options.shownmeta = this.$store.getters["config/shownmeta"];
-    // console.log("KK this.conll", this.conll)
     this.start(this.conll, this.matches, this.id, this.user);
     // precompute to check for changes quickly:
     this.options.annofFEATS = this.options.annof.FEATS.reduce(function (
@@ -467,7 +486,6 @@ export default {
   },
   methods: {
     myKKfunction() {
-      // console.log("KK refresh");
       this.start(this.conll, this.matches, this.id, this.user);
     },
     /**
@@ -483,7 +501,6 @@ export default {
       // { treedata: {}, dirty: false, redo: false, user: '' }            'conll': arboratorDraft.getConll(this.snapInfos.paper),
       // if(this.snapInfos.paper != null){
       if (this.snap.treedata != null) {
-        // console.log("KK emit update-conll");
         this.$emit("update-conll", {
           conllGraph: this,
           dirty: dirty,
@@ -500,7 +517,7 @@ export default {
 
     cleanSvgTree() {
       arboratorDraft.cleanSvgTree(this.id);
-      // console.log("KK tree cleaned")
+      // console.log("tree cleaned")
     },
     start(conllStr, matches, id) {
       // console.log(5545454,JSON.stringify(matches))
@@ -511,16 +528,12 @@ export default {
       }
 
       arboratorDraft.cleanSvgTree(this.id);
-      console.log("KK shownfeatures", this.options.shownfeatures);
-      console.log("KK usermatches", usermatches);
       this.snap.treedata = arboratorDraft.drawit(
         conllStr,
         usermatches,
         id,
         this.options.shownfeatures
       );
-      console.log("KK this.snap.treedata", this.snap.treedata);
-      // console.log('KK refresh conllStr', conllStr)
       this.$forceUpdate(); // here it happens
       // give the draft access to these functions:
       this.snap.treedata.openRelationDialog = this.openRelationDialog;
@@ -535,7 +548,6 @@ export default {
     },
 
     codefocus(cm, ev) {
-      // console.log('ev', cm,ev);
       cm.refresh();
       cm.execCommand("selectAll");
     },
@@ -554,15 +566,11 @@ export default {
       // snaprelation.attr({class:"deprelselected"});
       // relation="qsdwf:zsert@swxcv";
       this.snap.treedata.s = s;
-      // console.log("KK s", s)
-      console.log("KK relation", relation);
 
       var subrels = relation.split(this.options.splitregex);
-      console.log("KK subrels", subrels);
       this.options.extendedrel = ctrlkey;
       var depr = ctrlkey ? this.options.annof.DEPS : this.options.annof.DEPREL; //options.annof.DEPREL
       this.options.currentoptions = depr;
-      console.log("KK currentoptions", this.options.currentoptions);
 
       this.options.relav = depr.map((sr) => ({
         a: sr.name,
@@ -582,7 +590,6 @@ export default {
           }
         }
       }
-      console.log("KK relav", this.options.relav);
       // console.log(45646,this.options.relav)
       this.snap.depid = depid;
       this.snap.govid = govid;
@@ -594,9 +601,7 @@ export default {
       this.relationDialogOpened = !this.relationDialogOpened;
     },
     onchangerel(addasextended) {
-      console.log("KK addasextended", addasextended);
       this.relationDialogOpened = !this.relationDialogOpened;
-      console.log("KK this.snap.treedata", this.snap.treedata);
       this.snap.treedata = arboratorDraft.relationChanged(
         this.snap.treedata,
         this.snap.depid,
@@ -610,17 +615,6 @@ export default {
         ),
         addasextended
       );
-      console.log(
-        "KK reduce :",
-        this.options.relav.reduce(
-          (tot, cur, i) =>
-            (tot += this.options.relav[i].v
-              ? this.options.annof.DEPREL[i].join + cur.v
-              : ""),
-          ""
-        )
-      );
-      console.log("KK this.snap.treedata", this.snap.treedata);
       this.up(true, false);
     },
 
@@ -691,7 +685,7 @@ export default {
       this.featTable.lemma = [{ a: "Lemma", v: lemma }];
       this.snap.snaptoken = snaptoken;
       this.snap.depid = depid;
-      this.snap.snaptoken = snaptoken;
+
       this.featureDialog = !this.featureDialog;
     },
     onFeatureDialogOk() {

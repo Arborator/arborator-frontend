@@ -29,7 +29,7 @@
   posHeight = 0;
   svgDefaultHeight = 500;
   svgHeight = 0;
-  el = 10; // type of conll (10, 14, or 4), computed in conllToTree
+  el = 10; // type of conll (10, 14, or 4), computed in conllToJson
   trees = []; // list of tree objects
   conlltrees = []; // list of conll strings
   defaultCat = "_";
@@ -114,8 +114,7 @@
   ArboratorDraft.prototype.drawit = function(strConll, usermatches, id, shof) {
     shownfeatures = shof;
     // log('usermatches', usermatches) // the one that we see
-    var treedata = conllToTree(strConll.trim()); // treedata is object: {tree:tree, META:META, svg:snap-object}
-    // console.log("KK treedata", treedata)
+    var treedata = conllToJson(strConll.trim()); // treedata is object: {tree:tree, META:META, svg:snap-object}
     treedata.s = drawsnap(id, treedata, usermatches, shownfeatures);
     return treedata;
   };
@@ -126,7 +125,7 @@
 
   // Kirian : does this need to be public ? I don't see anuy call to this function outside of this file
   ArboratorDraft.prototype.getTree = function(strConll) {
-    return conllToTree(strConll.trim());
+    return conllToJson(strConll.trim());
   };
 
   // ArboratorDraft.prototype.setRel = function(rel){
@@ -198,7 +197,7 @@
   // 	listOfConlls = content.trim().split(/\n\s*\n\s*\n*/);
 
   // 	for (let singleConll of listOfConlls) { // for each conll tree at once, can block the browser
-  // 		var treedata = conllToTree(singleConll)
+  // 		var treedata = conllToJson(singleConll)
   // 		// console.log("refresh function",this);
   // 		drawsnap(idSVG, treedata, usermatches, shownfeatures)
   // 		}
@@ -230,7 +229,6 @@
   }
 
   var startdrag = function(xx, yy, e) {
-    console.log("KK start drag this", this, e);
 
     dragclicktime = new Date().getTime();
     dragrepl = this.clone();
@@ -319,7 +317,6 @@
   }
 
   var stopdrag = function(e) {
-    console.log("KK stop drag this", this, e);
     if (new Date().getTime() < dragclicktime + dragclickthreshold) {
       // log("ccccclick",this.paper.root.treedata.tree[this.nr]) //, this.paper.root.treedata.tree);
       this.paper.root.treedata.openFeatureDialog(
@@ -389,8 +386,6 @@
   };
 
   var relationclick = function(e) {
-    console.log("KK relation click in snap : e :", e);
-    console.log("KK relation click in snap : this :", this);
     this.attr({ class: "DEPRELselected" });
     this.paper.root.treedata.openRelationDialog(
       this.paper,
@@ -870,7 +865,7 @@
   // 	4: 		{"FORM":0, "LEMMA": 0, "UPOS": 1, "HEAD":2, "DEPREL":3}
   // }
 
-  function conllToTree(treeline) {
+  function conllToJson(treeline) {
     // takes a conll representation of a single tree as input
     // returns object: {tree:tree, META:META}
 

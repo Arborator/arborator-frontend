@@ -16,20 +16,22 @@ const options = {
     14: { ID: 0, FORM: 1, LEMMA: 3, UPOS: 5, HEAD: 9, DEPREL: 11 },
     4: { FORM: 0, LEMMA: 0, UPOS: 1, HEAD: 2, DEPREL: 3 },
   },
-}
+};
 
-export function conllToTree(conllString) {
+export function conllToJson(sentenceConll) {
   // takes a conll string representation of a single tree as input
   // returns object: {tree:tree, META:META}
   // tree : {1: {ID : "1", FORM : "euuuh", LEMMA : "euh", ...}}
   // META : {sent_id : "3245", text: "euuuh je ne suis pas sur", timestamp: "12341245421", ...}
 
-  // conllString = "# text_id = 3245\n# text = euuuh je ne suis pas sur\n ......"
-  var nodes = conllString.trim().split("\n");
-  if (options.reverseMode) nodes.reverse();
+  // sentenceConll = "# text_id = 3245\n# text = euuuh je ne suis pas sur\n ......"
+  var nodes = sentenceConll.trim().split("\n");
+  if (options.reverseMode) {
+    nodes.reverse();
+  }
   // nodes = nodes.reverse();
-  var tree = {};
-  var META = {}; // sentence features before the actual conll
+  var treeJson = {};
+  var metaJson = {}; // sentence features before the actual conll
   var addLines = {}; // node position to additional line
   var uextra = {}; // todo: check this for reconstruction of conllu
   var lastid = 0;
@@ -41,13 +43,13 @@ export function conllToTree(conllString) {
       .trim()
       .replace(/^[\s\uFEFF\xA0]+|[\s\uFEFF\xA0]+$/g, "");
     if (nodeline.charAt(0) == "#") {
-      // META
+      // metaJson
       var [a, v] = nodeline
         .substring(1)
         .trim()
         .split("=");
       if (v != null) [a, v] = [a.trim(), v.trim()];
-      META[a] = v;
+      metaJson[a] = v;
       return true;
     }
     var elements = nodeline.split("\t");
@@ -60,31 +62,35 @@ export function conllToTree(conllString) {
       var tokids = id.split("-");
       if (tokids.length == 1) {
         // simple token
-        tree[id] = {};
-        tree[id]["ID"] = parseInt(id);
-        tree[id]["FORM"] = form;
-        tree[id]["LEMMA"] = elements[options.conlls[el]["LEMMA"]];
-        tree[id]["UPOS"] = elements[options.conlls[el]["UPOS"]];
-        tree[id]["HEAD"] = parseInt(elements[options.conlls[el]["HEAD"]]);
-        tree[id]["DEPREL"] = elements[options.conlls[el]["DEPREL"]];
-        tree[id]["FEATS"] = {};
-        tree[id]["DEPS"] = {};
-        tree[id]["MISC"] = {};
+        treeJson[id] = {};
+        treeJson[id]["ID"] = parseInt(id);
+        treeJson[id]["FORM"] = form;
+        treeJson[id]["LEMMA"] = elements[options.conlls[el]["LEMMA"]];
+        treeJson[id]["UPOS"] = elements[options.conlls[el]["UPOS"]];
+        treeJson[id]["HEAD"] = parseInt(elements[options.conlls[el]["HEAD"]]);
+        treeJson[id]["DEPREL"] = elements[options.conlls[el]["DEPREL"]];
+        treeJson[id]["FEATS"] = {};
+        treeJson[id]["DEPS"] = {};
+        treeJson[id]["MISC"] = {};
+
+        // if (treeJson[id]["DEPREL"] == "_") {
+        //   treeJson[id]["DEPREL"] = ""
+        // }
 
         if (id > skipuntil) words.push(form);
         if (el == 10) {
-          tree[id]["XPOS"] = elements[options.conlls[el]["XPOS"]];
-          tree[id]["FEATS"] = analyzeFeaturestring(
+          treeJson[id]["XPOS"] = elements[options.conlls[el]["XPOS"]];
+          treeJson[id]["FEATS"] = analyzeFeaturestring(
             elements[options.conlls[el]["FEATS"]],
             "=",
             "|"
           );
-          tree[id]["DEPS"] = analyzeFeaturestring(
+          treeJson[id]["DEPS"] = analyzeFeaturestring(
             elements[options.conlls[el]["DEPS"]],
             ":",
             "|"
           );
-          tree[id]["MISC"] = analyzeFeaturestring(
+          treeJson[id]["MISC"] = analyzeFeaturestring(
             elements[options.conlls[el]["MISC"]],
             "=",
             "|"
@@ -110,48 +116,51 @@ export function conllToTree(conllString) {
         skipuntil = parseInt(tokids[1]);
         words.push(elements[options.conlls[el]["FORM"]]);
       }
-      tree[id]["HEAD"] = parseInt(elements[options.conlls[el]["HEAD"]]); // todo: think about this
-      tree[id]["DEPREL"] = elements[options.conlls[el]["DEPREL"]];
+      treeJson[id]["HEAD"] = parseInt(elements[options.conlls[el]["HEAD"]]); // todo: think about this
+      treeJson[id]["DEPREL"] = elements[options.conlls[el]["DEPREL"]];
     }
 
     lastid = id;
   });
 
-  // now always correcting the META.text feature. if this is not desired, uncomment this line:
-  // if ("text" in META) return {tree:tree, META:META};
+  // now always correcting the metaJson.text feature. if this is not desired, uncomment this line:
+  // if ("text" in metaJson) return {treeJson:treeJson, metaJson:metaJson};
   // got to contstruct the sentence
   var sentence = [];
   words.forEach((word, i) => {
     sentence.push(word);
     if (
       !(
-        "SpaceAfter" in tree[i + 1]["MISC"] &&
-        tree[i + 1]["MISC"]["SpaceAfter"] == "No"
+        "SpaceAfter" in treeJson[i + 1]["MISC"] &&
+        treeJson[i + 1]["MISC"]["SpaceAfter"] == "No"
       )
     )
       sentence.push(" ");
     // if(!reverseMode){
-    // 	if (i+1 in tree && !(("NoSpaceAfter" in tree[i+1]) && tree[i+1]["NoSpaceAfter"]==false)) sentence.push(" ");
+    // 	if (i+1 in treeJson && !(("NoSpaceAfter" in treeJson[i+1]) && treeJson[i+1]["NoSpaceAfter"]==false)) sentence.push(" ");
     // } else{ sentence.push(word); }
   });
-  META["text"] = sentence.join("");
-  return { tree: tree, META: META };
+  metaJson["text"] = sentence.join("");
+  return { treeJson: treeJson, metaJson: metaJson };
 }
 
-
-export function treeToConll(treedata) {
-  // constructs a conllu string from the current treedata
-  // log('treeDataToConll',treedata)
-  if (!treedata) return "";
+export function jsonToConll({treeJson, metaJson}) {
+  // input : sentenceJson {metaJson, treeJson}
+  // output : sentenceConll (string)
+  const sentenceJson = {treeJson, metaJson}
+  if (!sentenceJson) return "";
   var conlines = [];
-  for (let a in treedata.META) {
-    var v = treedata.META[a];
+  for (let a in sentenceJson.metaJson) {
+    var v = sentenceJson.metaJson[a];
     if (v != null) conlines.push("# " + a + " = " + v);
     // +'\n'
     else conlines.push("# " + a);
   }
-  for (let nr in treedata.tree) {
-    var node = treedata.tree[nr];
+  for (let nr in sentenceJson.treeJson) {
+    var node = sentenceJson.treeJson[nr];
+    // if (node["DEPREL"] == "_") {
+    //   node["DEPREL"] = ""
+    // }
     conlines.push(
       [
         nr,
@@ -167,12 +176,9 @@ export function treeToConll(treedata) {
       ].join("\t")
     );
   }
-  const conllstr = conlines.join("\n");
-  return conllstr;
+  const sentenceConll = conlines.join("\n");
+  return sentenceConll;
 }
-
-
-
 
 export function analyzeFeaturestring(featstr, eq, spl) {
   const o = {};
@@ -197,4 +203,15 @@ function makeFeaturestring(feato, eq, spl) {
   }
   const str = strs.join(spl);
   return str || "_";
+}
+
+export function getSentenceTextFromJson(treeJson) {
+  var toks = Object.values(treeJson).map(({ FORM }) => FORM);
+  var spa = Object.values(treeJson).map(({ MISC }) =>
+    "SpaceAfter" in MISC && MISC.SpaceAfter == "No" ? 0 : 1
+  );
+  var sentence = "";
+  for (var i = 0; i < toks.length; ++i)
+    sentence += toks[i] + (spa[i] ? " " : "");
+  return sentence;
 }

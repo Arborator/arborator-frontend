@@ -1,104 +1,134 @@
 <template>
   <div class="sentencebox">
-    <svg :id="randomId" />
+    <svg :id="svgID" />
   </div>
 </template>
 
 <script>
-import { conllToTree } from "../../helpers/Conll";
-import { SvgDepTree } from "../../helpers/SnapDepTree";
+import { conllToJson } from "../../helpers/Conll";
+import { SentenceSVG } from "../../helpers/SnapDepTree";
 
 export default {
-  props: ["sentenceId", "conll", "sentenceBus", "userId"],
+  props: [
+    "sentenceId",
+    "conll",
+    "sentenceBus",
+    "userId",
+    "conllSavedCounter",
+    "teacherConll",
+  ],
   data() {
     return {
-      depTree: null,
-      treeJson: {},
+      sentenceSVG: null,
+      sentenceJson: {},
       usermatches: [],
     };
   },
   computed: {
-    randomId() {
-      return "abc" + Math.floor(Math.random() * 100000001).toString(); // TODO : change ID to put projectID + sentenceID
+    svgID() {
+      return `svg-${this.sentenceId}-${this.userId}`;
     },
     shownfeatures() {
       return this.$store.getters["config/shownfeatures"];
+      // return ["FORM", "UPOS", "LEMMA", "FEATS.Aspect", "MISC.Gloss"];
+    },
+  },
+  watch: {
+    conllSavedCounter: function (val) {
+      console.log("KK watcher", this.userId)
+      this.sentenceSVG.treeJson = conllToJson(this.conll).treeJson;
+      this.sentenceSVG.metaJson = conllToJson(this.conll).metaJson;
+      this.sentenceSVG.drawTree();
     },
   },
   mounted() {
-    this.treeJson = conllToTree(this.conll);
+    this.sentenceJson = conllToJson(this.conll);
+    const teacherTreeJson = (this.teacherConll && this.userId !== "teacher") ? conllToJson(this.teacherConll).treeJson : "";
 
-    this.depTree = new SvgDepTree(
-      "#" + this.randomId,
-      this.treeJson,
+    this.sentenceSVG = new SentenceSVG(
+      "#" + this.svgID,
+      this.sentenceJson,
       this.usermatches,
-      this.shownfeatures
+      this.shownfeatures,
+      teacherTreeJson
     );
-    console.log("KK export conll", this.depTree.exportConll())
-    this.sentenceBus[this.userId] = this.depTree;
 
-    this.depTree.addEventListener("svg-click", (e) => {
-      console.log("KK click e :", e);
+    // this.sentenceSVG.showDiffs(teacherTreeJson);
+
+    this.sentenceBus[this.userId] = this.sentenceSVG;
+
+    this.sentenceSVG.addEventListener("svg-click", (e) => {
       this.svgClickHandler(e);
     });
 
-    this.depTree.addEventListener("svg-drop", (e) => {
-      console.log("KK drop :", e);
+    this.sentenceSVG.addEventListener("svg-drop", (e) => {
       this.svgDropHandler(e);
     });
 
-    this.sentenceBus.$on("tree-update:deprel", ({ dep, userId }) => {
+    this.sentenceBus.$on("tree-update:token", ({ token, userId }) => {
       if (userId == this.userId) {
-        this.depTree.updateNode(dep);
-        this.depTree.refresh();
+        this.sentenceSVG.updateToken(token);
+        this.sentenceSVG.refresh();
       }
     });
 
-    this.sentenceBus.$on("tree-update:upos", ({ token, userId }) => {
-      if (userId == this.userId) {
-        this.depTree.updateNode(token);
-        this.depTree.refresh();
-      }
-    });
+    // this.sentenceBus.$on("saved:tree", () => {
+    // console.log(this.conll)
+    // this.sentenceSVG.treeJson = conllToJson(this.conll).tree;
+    // this.sentenceSVG.META = conllToJson(this.conll).META;
+    // this.sentenceSVG.drawTree();
+    // this.sentenceSVG.refresh();
+    // })
   },
   methods: {
     svgClickHandler(e) {
-      console.log("KK clicked", e.detail.clicked);
-      console.log("KK node", e.detail.treeNode.treeNodeJson);
-      console.log("KK targetLabel", e.detail.targetLabel);
-
       const clickedId = e.detail.clicked;
-      const clickedToken = this.depTree.treeJson[clickedId];
+      const clickedToken = this.sentenceSVG.treeJson[clickedId];
       const targetLabel = e.detail.targetLabel;
 
       if (targetLabel == "DEPREL") {
         const dep = clickedToken;
-        const gov = this.depTree.treeJson[dep.HEAD] || {FORM: "ROOT", ID: 0}; // handle if head is root
+        const gov = this.sentenceSVG.treeJson[dep.HEAD] || {
+          FORM: "ROOT",
+          ID: 0,
+        }; // handle if head is root
         this.sentenceBus.$emit("open:relationDialog", {
           gov,
           dep,
           userId: this.userId,
         });
-
-        console.log("KK clickedToken", dep, gov);
+      } else if (
+        targetLabel == "FORM" ||
+        ["MISC.", "FEATS", "LEMMA"].includes(targetLabel.slice(0, 5))
+      ) {
+        this.sentenceBus.$emit(`open:featuresDialog`, {
+          token: clickedToken,
+          userId: this.userId,
+        });
       } else {
         this.sentenceBus.$emit(`open:${targetLabel.toLowerCase()}Dialog`, {
           token: clickedToken,
           userId: this.userId,
         });
-
-        console.log("KK emit", `open:${targetLabel.toLowerCase()}Dialog`);
       }
     },
+
     svgDropHandler(e) {
-      console.log("KK detail", e.detail)
-      const govId = e.detail.dragged;
-      const depId = e.detail.hovered;
+      const draggedId = e.detail.dragged;
+      const hoveredId = e.detail.hovered;
 
-      const gov = this.depTree.treeJson[govId];
-      const dep = this.depTree.treeJson[depId];
+      var gov = {};
+      var dep = {};
+      // if the area being hovered is the root (circle on top of the svg), assign the gov object to root
+      if (e.detail.isRoot) {
+        gov = { ID: 0, FORM: "ROOT" };
+        dep = this.sentenceSVG.treeJson[draggedId];
+      } else {
+        gov = this.sentenceSVG.treeJson[draggedId];
+        dep = this.sentenceSVG.treeJson[hoveredId];
+      }
 
-      console.log("KK dragged", gov, dep);
+      // emit only if dep is defined. If the token is being dragged on nothing, nothing will happen
       if (dep) {
         this.sentenceBus.$emit("open:relationDialog", {
           gov,

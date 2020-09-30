@@ -115,8 +115,8 @@ export default {
       data
     );
   },
-  getSampleTrees(projectname, samplename, exerciseMode) {
-    return API.get("projects/" + projectname + "/samples/" + samplename + "/trees/fetch_all", {params: {exerciseMode}});
+  getSampleTrees(projectname, samplename) {
+    return API.get("projects/" + projectname + "/samples/" + samplename + "/trees/fetch_all");
   },
   deleteProject(projectname) {
     return API.delete("projects/" + projectname + "/delete");

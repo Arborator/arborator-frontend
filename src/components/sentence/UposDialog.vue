@@ -74,7 +74,7 @@ export default {
   methods: {
     onChangeUpos() {
       this.uposDialogOpened = false;
-      this.sentenceBus.$emit("tree-update:upos", {
+      this.sentenceBus.$emit("tree-update:token", {
         token: this.token,
         userId: this.userId,
       });

@@ -1,25 +1,32 @@
 import Snap from "snapsvg-cjs";
-import { treeToConll} from "./Conll"
-import { EventDispatcher } from "./EventDispatcher";
+import { jsonToConll, conllToJson, getSentenceTextFromJson } from "./Conll.js";
+import { EventDispatcher } from "./EventDispatcher.js";
 
 //////    CONSTANT DECLARATION    //////
 
 const dragclickthreshold = 400; //ms
 
 ///////////////                ////////////////
-///////////////   SvgDepTree  ////////////////
+///////////////   SentenceSVG  ////////////////
 ///////////////                ////////////////
 
-export class SvgDepTree {
-  constructor(idSVG, treeData, usermatches, shownFeatures) {
+export class SentenceSVG {
+  constructor(
+    idSVG,
+    sentenceJson,
+    usermatches,
+    shownFeatures,
+    teacherTreeJson
+  ) {
     //// base properties
     this.idSVG = idSVG;
-    this.treeJson = treeData.tree;
-    this.META = treeData.META;
+    this.snapSentence = Snap(idSVG);
+
+    this.treeJson = sentenceJson.treeJson;
+    this.metaJson = sentenceJson.metaJson;
     this.usermatches = usermatches;
     this.shownFeatures = shownFeatures;
-    this.snapTree = Snap(idSVG);
-    // this.treeData = treeData;
+    this.teacherTreeJson = teacherTreeJson;
 
     //// other properties
     // distances
@@ -27,7 +34,7 @@ export class SvgDepTree {
     this.textstarty = 10; // has to be bigger than arborator-draft.css DEPREL fontsize
     this.runningy = this.textstarty;
     this.leveldistance = parseInt(
-      getComputedStyle(this.snapTree.parent().node).getPropertyValue(
+      getComputedStyle(this.snapSentence.parent().node).getPropertyValue(
         "--depLevelHeight"
       )
     );
@@ -48,38 +55,105 @@ export class SvgDepTree {
 
     // populate ylevel, be careful, the computed levels are stored
     // ... inside this.getLevel() as a side effect. TODO : Make this better
+
+    this.drawTree();
+  }
+
+  drawTree() {
+    this.snapSentence.clear();
     this.populateLevels();
-    this.populateTreeNodes();
+    this.populateTokenSVGs();
     this.drawRelations();
     this.adaptSvgCanvas();
     this.attachDraggers();
     this.attachEvents();
     this.attachHovers();
+    if (this.teacherTreeJson) {
+      this.showDiffs(this.teacherTreeJson);
+    }
   }
 
-  populateTreeNodes() {
-    console.log("KK this.treeJson", this.treeJson);
-    this.treeNodes = {};
+  populateTokenSVGs() {
+    this.tokenSVGs = {};
     let runningX = 0;
     let maxLevelY = Math.max(...this.levelsArray, 2); // 2 would be the minimum possible level size
     let offsetY = this.runningy + maxLevelY * this.leveldistance;
 
-    for (const [treeNodeIndex, treeNodeJson] of Object.entries(this.treeJson)) {
-      var depTreeNode = new DepTreeNode(treeNodeJson, this);
-      this.treeNodes[treeNodeIndex] = depTreeNode;
-      depTreeNode.createSnap(
-        this.snapTree,
+    for (const [tokenIndex, tokenJson] of Object.entries(this.treeJson)) {
+      var tokenSVG = new TokenSVG(tokenJson, this);
+      this.tokenSVGs[tokenIndex] = tokenSVG;
+      tokenSVG.createSnap(
+        this.snapSentence,
         this.shownFeatures,
         runningX,
         offsetY
       );
-      depTreeNode["ylevel"] = this.levelsArray[treeNodeIndex];
-      runningX += depTreeNode.width;
+      tokenSVG["ylevel"] = this.levelsArray[tokenIndex];
+      runningX += tokenSVG.width;
     }
   }
 
-  updateNode(treeNodeJson) {
-    this.treeJson[treeNodeJson.ID] = treeNodeJson;
+  updateToken(tokenJson) {
+    this.treeJson[tokenJson.ID] = tokenJson;
+  }
+
+  replaceArrayOfTokens(tokenIds, firstToken, tokensToReplace) {
+    console.log("KK tokenIds", tokenIds);
+    console.log("KK firstToken", firstToken);
+    console.log("KK tokensToReplace", tokensToReplace);
+
+
+
+    var id2newid = { 0: 0 };
+    for (let id in this.treeJson) {
+      id = parseInt(id);
+      if (id < tokenIds[0]) id2newid[id] = id;
+      else if (tokenIds.includes(id)) {
+        if (tokenIds.indexOf(id) < tokensToReplace.length) id2newid[id] = id;
+        else id2newid[id] = firstToken;
+      } else id2newid[id] = id + tokensToReplace.length - tokenIds.length;
+    }
+    var newtree = {};
+    for (let id in this.treeJson) {
+      id = parseInt(id);
+      if (tokenIds.includes(id) && tokenIds.indexOf(id) >= tokensToReplace.length)
+        continue;
+      var node = this.treeJson[id];
+      node.ID = id2newid[id];
+      node.HEAD = id2newid[node.HEAD];
+      const newdeps = {};
+      for (let gid in node.DEPS) newdeps[id2newid[gid]] = node.DEPS[gid];
+      node.DEPS = newdeps;
+      if (tokenIds.includes(id)) {
+        node.FORM = tokensToReplace[tokenIds.indexOf(id)];
+      }
+      newtree[id2newid[id]] = node;
+    }
+    // now the case where more tokens were inserted than replaced:
+    var basenode = this.treeJson[id2newid[tokenIds[tokenIds.length - 1]]];
+    for (var i = tokenIds.length; i < tokensToReplace.length; ++i) {
+      let newnode = JSON.parse(JSON.stringify(basenode));
+      newnode.ID = tokenIds[0] + i;
+      newnode.FORM = tokensToReplace[i];
+      newnode.HEAD = 0;
+      newnode.DEPREL = "root";
+      newnode.DEPS = {};
+      if (newnode.MISC.Gloss) newnode.MISC.Gloss = newnode.FORM;
+      newtree[tokenIds[0] + i] = newnode;
+    }
+    if (!Object.keys(newtree).length) return ; // forbid to erase entire tree
+    this.treeJson = newtree;
+
+    // // TODO handle new meta text
+    this.metaJson.text = getSentenceTextFromJson(newtree);
+
+
+
+    this.snapSentence.clear();
+    this.drawTree();
+    // treedata.s.paper.clear();
+    // treedata.s = drawsnap(treedata.s.id, treedata, [], shownfeatures);
+    return;
   }
 
   populateLevels() {
@@ -132,9 +206,10 @@ export class SvgDepTree {
 
     for (var i = inf; i <= sup; i++) {
       this.recursionCounter++;
-      if (i == index) {
+      if (i == index || headsIdArray[headsIdArray[i]] == i) {
         levelsSubArray.push(0);
-      } else if (inf <= headsIdArray[i] && headsIdArray[i] < sup) { // sup is outside the scope for avoiding infinite recursion loop
+      } else if (inf <= headsIdArray[i] && headsIdArray[i] <= sup) {
+        // sup is outside the scope for avoiding infinite recursion loop
         levelsSubArray.push(this.getLevel(headsIdArray, i, inf, sup));
       }
     }
@@ -145,107 +220,143 @@ export class SvgDepTree {
   }
 
   drawRelations() {
-    for (const treeNode of Object.values(this.treeNodes)) {
-      const headId = treeNode.head;
+    for (const tokenSVG of Object.values(this.tokenSVGs)) {
+      const headId = tokenSVG.head;
       var headCoordX = 0;
       if (headId > 0) {
-        const headTreeNode = this.treeNodes[headId];
-        headCoordX = headTreeNode.centerX;
+        const headtokenSVG = this.tokenSVGs[headId];
+        headCoordX = headtokenSVG.centerX;
         // if governor is root, draw root relation
       } else if (headId === 0) {
         headCoordX = 0;
       } else {
         console.log(
           "this nodeTree has no governor, not drawing it",
-          treeNode.id
+          tokenSVG.id
         );
         continue;
       }
-      treeNode.drawRelation(this.snapTree, headCoordX, this.leveldistance);
+      tokenSVG.drawRelation(this.snapSentence, headCoordX, this.leveldistance);
     }
   }
 
   adaptSvgCanvas() {
     // get the maximum x and y of the svg for resizing the window
     this.totalWidth = Math.max(
-      ...Object.values(this.treeNodes).map((x) => x.startX + x.width)
+      ...Object.values(this.tokenSVGs).map((x) => x.startX + x.width)
     );
-    this.totalHeight = Math.max(
-      ...this.shownFeatures.map(
-        (feature) =>
-          Object.values(this.treeNodes)[0].snapElements[feature].getBBox().y2
-      )
-    );
-    this.snapTree.attr("width", this.totalWidth + 50);
-    this.snapTree.attr("height", this.totalHeight);
+
+    this.totalHeight = 0;
+    for (const tokenSVG of Object.values(this.tokenSVGs)) {
+      tokenSVG.attachEvent();
+
+      const tokenSVGHeight = Math.max(
+        ...this.shownFeatures.map(
+          (feature) => tokenSVG.snapElements[feature].getBBox().y2
+        )
+      );
+      this.totalHeight = Math.max(this.totalHeight, tokenSVGHeight);
+    }
+
+    this.snapSentence.attr("width", this.totalWidth + 50);
+    this.snapSentence.attr("height", this.totalHeight);
   }
 
   attachEvents() {
-    for (const treeNode of Object.values(this.treeNodes)) {
-      treeNode.attachEvent();
+    for (const tokenSVG of Object.values(this.tokenSVGs)) {
+      tokenSVG.attachEvent();
     }
   }
 
   attachDraggers() {
-    for (const treeNode of Object.values(this.treeNodes)) {
-      treeNode.attachDragger();
+    for (const tokenSVG of Object.values(this.tokenSVGs)) {
+      tokenSVG.attachDragger();
     }
   }
 
   attachHovers() {
-    for (const treeNode of Object.values(this.treeNodes)) {
-      treeNode.attachHover();
+    for (const tokenSVG of Object.values(this.tokenSVGs)) {
+      tokenSVG.attachHover();
     }
   }
 
+  showDiffs(otherTreeJson) {
+    for (const [tokenIndex, tokenSVG] of Object.entries(this.tokenSVGs)) {
+      if (otherTreeJson[tokenIndex].FORM !== tokenSVG.tokenJson.FORM) {
+        console.log(`Error, token id ${tokenIndex} doesn't match`);
+      } else {
+        tokenSVG.showDiff(otherTreeJson[tokenIndex]);
+      }
+    }
+  }
+
+  getDiffStats(otherTreeConll) {
+    const teacherTreeJson = conllToJson(otherTreeConll).treeJson;
+    const currentTreeJson = this.treeJson;
+
+    const corrects = {
+      HEAD: 0,
+      DEPREL: 0,
+      UPOS: 0,
+    };
+    const totals = {
+      HEAD: 0,
+      DEPREL: 0,
+      UPOS: 0,
+    };
+
+    for (const [tokenIndex, teacherTokenJson] of Object.entries(
+      teacherTreeJson
+    )) {
+      for (const [tag, score] of Object.entries(corrects)) {
+        corrects[tag] +=
+          teacherTreeJson[tokenIndex][tag] == currentTreeJson[tokenIndex][tag];
+        totals[tag]++;
+      }
+    }
+
+    return { corrects, totals };
+  }
+
   exportConll() {
-    return treeToConll({tree : this.treeJson, META: this.META})
+    return jsonToConll({ treeJson: this.treeJson, metaJson: this.metaJson });
   }
 
   refresh() {
-    this.snapTree.clear();
-    this.populateLevels();
-    this.populateTreeNodes();
-    this.drawRelations();
-    this.adaptSvgCanvas();
-    this.attachDraggers();
-    this.attachEvents();
-    this.attachHovers();
+    this.drawTree();
   }
 
-  repr() {
-    console.log("KK this.name", this);
-  }
+  repr() {}
 }
 
 // add a basic event dispatch/listen system
-Object.assign(SvgDepTree.prototype, EventDispatcher.prototype);
+Object.assign(SentenceSVG.prototype, EventDispatcher.prototype);
 
 ///////////////                ////////////////
-///////////////   DepTreeNode  ////////////////
+///////////////   tokenSVG  ////////////////
 ///////////////                ////////////////
 
-class DepTreeNode {
-  constructor(treeNodeJson, parentTree) {
-    this.parentTree = parentTree;
-    this.treeNodeJson = treeNodeJson;
-    this.id = parseInt(treeNodeJson["ID"]);
-    this.head = isNaN(parseInt(treeNodeJson["HEAD"]))
+class TokenSVG {
+  constructor(tokenJson, sentenceSVG) {
+    this.sentenceSVG = sentenceSVG;
+    this.tokenJson = tokenJson;
+    this.id = parseInt(tokenJson["ID"]);
+    this.head = isNaN(parseInt(tokenJson["HEAD"]))
       ? -1
-      : parseInt(treeNodeJson["HEAD"]);
-    this.form = treeNodeJson["FORM"];
-    this.lemma = treeNodeJson["LEMMA"];
-    this.upos = treeNodeJson["UPOS"];
-    this.xpos = treeNodeJson["XPOS"];
-    this.deprel = treeNodeJson["DEPREL"];
-    this.misc = treeNodeJson["MISC"];
-    this.feats = treeNodeJson["FEATS"];
-    this.deps = treeNodeJson["DEPS"];
+      : parseInt(tokenJson["HEAD"]);
+    this.form = tokenJson["FORM"];
+    this.lemma = tokenJson["LEMMA"];
+    this.upos = tokenJson["UPOS"];
+    this.xpos = tokenJson["XPOS"];
+    this.deprel = tokenJson["DEPREL"];
+    this.misc = tokenJson["MISC"];
+    this.feats = tokenJson["FEATS"];
+    this.deps = tokenJson["DEPS"];
 
     // populate the FEATS and MISC child features
     for (const label of ["FEATS", "MISC"]) {
-      for (const [key, value] of Object.entries(treeNodeJson[label])) {
-        treeNodeJson[`${label}.${key}`] = value;
+      for (const [key, value] of Object.entries(tokenJson[label])) {
+        tokenJson[`${label}.${key}`] = value;
       }
     }
 
@@ -259,8 +370,8 @@ class DepTreeNode {
     this.ylevel = 0;
   }
 
-  createSnap(snapTree, shownFeatures, startX, startY) {
-    this.snapTree = snapTree;
+  createSnap(snapSentence, shownFeatures, startX, startY) {
+    this.snapSentence = snapSentence;
     this.shownFeatures = shownFeatures;
     this.startX = startX;
     this.startY = startY || 10;
@@ -269,10 +380,10 @@ class DepTreeNode {
     let maxFeatureWidth = 0;
     for (const feature of shownFeatures) {
       // create new snap node for the feature text
-      const snapFeature = snapTree.text(
+      const snapFeature = snapSentence.text(
         this.startX,
         runningY,
-        this.treeNodeJson[feature]
+        this.tokenJson[feature]
       );
       snapFeature.addClass(feature);
 
@@ -301,7 +412,7 @@ class DepTreeNode {
     }
   }
 
-  drawRelation(snapTree, headCoordX, levelHeight) {
+  drawRelation(snapSentence, headCoordX, levelHeight) {
     // draw the relation for a treeNode and attach to it
 
     var heightArc = this.startY - this.ylevel * levelHeight;
@@ -321,11 +432,11 @@ class DepTreeNode {
       arcPath = getArcPath(xFrom, xTo, yLow, yTop);
     }
 
-    this.snapArc = snapTree.path(arcPath).addClass("curve");
+    this.snapArc = snapSentence.path(arcPath).addClass("curve");
 
     const arrowheadsize = 5;
     const arrowheadPath = getArrowheadPath(xFrom, yLow, arrowheadsize);
-    this.snapArrowhead = snapTree.path(arrowheadPath).addClass("arrowhead");
+    this.snapArrowhead = snapSentence.path(arrowheadPath).addClass("arrowhead");
 
     var deprelX = this.snapArc.getBBox().x + this.snapArc.getBBox().w / 2;
     var deprelY = this.snapArc.getBBox().y - 5;
@@ -336,7 +447,7 @@ class DepTreeNode {
       deprelY = 30;
     }
 
-    this.snapDeprel = snapTree
+    this.snapDeprel = snapSentence
       .text(deprelX, deprelY, this.deprel)
       .addClass("DEPREL");
 
@@ -360,7 +471,7 @@ class DepTreeNode {
             event: e,
           },
         });
-        this_.parentTree.dispatchEvent(event);
+        this_.sentenceSVG.dispatchEvent(event);
       });
     }
   }
@@ -372,22 +483,42 @@ class DepTreeNode {
 
   attachHover() {
     this.snapElements["FORM"].mouseover(() => {
-      if (this.parentTree.dragged && this.id !== this.parentTree.dragged) {
+      if (this.sentenceSVG.dragged && this.id !== this.sentenceSVG.dragged) {
         this.snapElements["FORM"].addClass("glossy");
-        this.parentTree.hovered = this.id;
+        this.sentenceSVG.hovered = this.id;
       }
     });
     this.snapElements["FORM"].mouseout(() => {
-      if (this.parentTree.dragged && this.id !== this.parentTree.dragged) {
+      if (this.sentenceSVG.dragged && this.id !== this.sentenceSVG.dragged) {
         this.snapElements["FORM"].removeClass("glossy");
-        this.parentTree.hovered = 0;
+        this.sentenceSVG.hovered = 0;
       }
     });
   }
 
-  repr() {
-    console.log("KK depTreeNode repr()", this);
+  showDiff(otherTokenJson) {
+    if (
+      !Object.is(this.tokenJson.HEAD, Number.NaN) &&
+      otherTokenJson.HEAD !== this.tokenJson.HEAD
+    ) {
+      this.snapElements["arc"].addClass("diff");
+      this.snapElements["arrowhead"].addClass("diff");
+    }
+    if (
+      this.tokenJson.DEPREL !== "_" &&
+      otherTokenJson.DEPREL !== this.tokenJson.DEPREL
+    ) {
+      this.snapElements["DEPREL"].addClass("diff");
+    }
+    if (
+      this.tokenJson.UPOS !== "_" &&
+      otherTokenJson.UPOS !== this.tokenJson.UPOS
+    ) {
+      this.snapElements["UPOS"].addClass("diff");
+    }
   }
+
+  repr() {}
 }
 
 ///////////////             ////////////////
@@ -464,7 +595,7 @@ function startDrag() {
   this.dragStartX = this.centerX;
   this.draggedStartY = this.draggedForm.getBBox().y;
 
-  this.parentTree.dragged = this.id;
+  this.sentenceSVG.dragged = this.id;
 
   var xb = this.dragStartX;
   var yb = this.draggedStartY;
@@ -486,8 +617,8 @@ function startDrag() {
     (xb + 1) +
     "," +
     yb;
-  this.draggedCurve = this.snapTree.path(path).addClass("dragcurve");
-  this.draggedArrowhead = this.snapTree
+  this.draggedCurve = this.snapSentence.path(path).addClass("dragcurve");
+  this.draggedArrowhead = this.snapSentence
     .path(getArrowheadPath(xb, yb))
     .addClass("dragcurve");
   this.dragRootCircle = null;
@@ -530,7 +661,7 @@ function dragging(dx, dy) {
   const leveldistance = 35;
   if (yb + dy < leveldistance / 2 && Math.abs(dx) < leveldistance / 2) {
     if (this.dragRootCircle == null) {
-      this.dragRootCircle = this.snapTree
+      this.dragRootCircle = this.snapSentence
         .circle(xb, 0, leveldistance / 2)
         .addClass("dragcurve");
     }
@@ -557,20 +688,21 @@ function stopDrag(e) {
     event = new CustomEvent("svg-drop", {
       detail: {
         treeNode: this,
-        hovered: this.parentTree.hovered,
-        dragged: this.parentTree.dragged,
+        hovered: this.sentenceSVG.hovered,
+        dragged: this.sentenceSVG.dragged,
+        isRoot: this.dragRootCircle ? true : false,
       },
     });
     e.preventDefault();
     e.stopPropagation();
   }
-  this.parentTree.dispatchEvent(event);
-  this.parentTree.dragged = 0;
-  if (this.parentTree.hovered) {
-    this.parentTree.treeNodes[this.parentTree.hovered].snapElements[
+  this.sentenceSVG.dispatchEvent(event);
+  this.sentenceSVG.dragged = 0;
+  if (this.sentenceSVG.hovered) {
+    this.sentenceSVG.tokenSVGs[this.sentenceSVG.hovered].snapElements[
       "FORM"
     ].removeClass("glossy");
-    this.parentTree.hovered = 0;
+    this.sentenceSVG.hovered = 0;
   }
 
   this.draggedFormClone.animate(

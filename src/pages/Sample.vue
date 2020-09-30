@@ -18,6 +18,7 @@
             :sentenceId="item"
             searchResult=""
             v-on:refresh:trees="getSampleTrees"
+            :exerciseLevel="exerciseLevel"
           >
           </SentenceCard>
         </template>
@@ -175,6 +176,7 @@ export default {
   props: ["projectname", "samplename", "nr", "user"],
   data() {
     return {
+      exerciseLevel: 4,
       svg: "",
       tab: "gold",
       loading: true,
@@ -224,10 +226,7 @@ export default {
     this.getSampleTrees();
     // this.getProjectConfig();
     document.title =
-      this.$route.params.samplename +
-      " 🌳 Arborator-Grew 🌳 Sample of the " +
-      this.$route.params.projectname +
-      " project";
+      this.$route.params.projectname + "/" + this.$route.params.samplename;
     if (this.$route.query.q && this.$route.query.q.length > 0)
       this.searchDialog = true;
     // console.log(this.isAdmin || this.isSuperAdmin,this.isAdmin, this.isSuperAdmin)
@@ -255,10 +254,10 @@ export default {
     getSampleTrees() {
       this.loading = true;
       api
-        .getSampleTrees(this.projectname, this.samplename, this.exerciseMode)
+        .getSampleTrees(this.projectname, this.samplename)
         .then((response) => {
-          this.sentences = response.data;
-          // console.log("KK getSampleTrees")
+          this.sentences = response.data.sample_trees;
+          this.exerciseLevel = response.data.exercise_level
           this.freezesentences();
           this.$forceUpdate();
           this.loading = false;

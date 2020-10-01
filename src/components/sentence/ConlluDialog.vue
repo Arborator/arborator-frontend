@@ -117,19 +117,23 @@ export default {
       cm.execCommand("selectAll");
     },
     onConllDialogOk() {
-      try {
-        const treeJson = conllToJson(this.conllContent);
-        this.sentenceBus[this.userId].treeJson = treeJson.tree;
-        this.sentenceBus[this.userId].META = treeJson.META;
+      const sentenceJson = conllToJson(this.conllContent);
+      const oldMeta = this.sentenceBus[this.userId].metaJson;
+      const newMeta = sentenceJson.metaJson;
+
+      var isMetaChanged = 0;
+      for (const [metaKey, metaValue] of Object.entries(newMeta)) {
+        if (metaValue != oldMeta[metaKey]) {
+          isMetaChanged = 1;
+        }
+      }
+      console.log("KK ", isMetaChanged)
+      if (!isMetaChanged) {
+        this.sentenceBus[this.userId].treeJson = sentenceJson.treeJson;
+        this.sentenceBus[this.userId].metaJson = sentenceJson.metaJson;
         this.sentenceBus[this.userId].refresh();
-        // TODO : notify success
-      } catch (error) {
-        console.error(error);
-        error.caption = "The format of your CoNLL-U is not correct";
-        this.$store.dispatch("notifyError", { error: error });
-        // this.snap.treedata.s.paper.clear();
-        // this.start(this.currentConllContent, { nodes: [], edges: [] }, this.id);
-        // this.up(false, false);
+      } else {
+        this.$store.dispatch("notifyError", { error: "Changing meta this way is not allowed (yet)" });
       }
     },
   },

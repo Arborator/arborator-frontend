@@ -42,12 +42,13 @@ export default {
     },
   },
   mounted() {
-    this.sentenceJson = conllToJson(this.conll);
-    const teacherTreeJson = (this.teacherConll && this.userId !== "teacher") ? conllToJson(this.teacherConll).treeJson : "";
+    const sentenceJson = conllToJson(this.conll);
+    console.log("KK step 0 ", sentenceJson)
 
+    const teacherTreeJson = (this.teacherConll && this.userId !== "teacher") ? conllToJson(this.teacherConll).treeJson : "";
     this.sentenceSVG = new SentenceSVG(
       "#" + this.svgID,
-      this.sentenceJson,
+      sentenceJson,
       this.usermatches,
       this.shownfeatures,
       teacherTreeJson

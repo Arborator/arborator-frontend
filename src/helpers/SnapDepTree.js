@@ -21,7 +21,7 @@ export class SentenceSVG {
     //// base properties
     this.idSVG = idSVG;
     this.snapSentence = Snap(idSVG);
-
+    console.log("KK step 2", sentenceJson.metaJson)
     this.treeJson = sentenceJson.treeJson;
     this.metaJson = sentenceJson.metaJson;
     this.usermatches = usermatches;
@@ -71,6 +71,7 @@ export class SentenceSVG {
     if (this.teacherTreeJson) {
       this.showDiffs(this.teacherTreeJson);
     }
+    console.log("KK metaJson", this.metaJson)
   }
 
   populateTokenSVGs() {
@@ -98,12 +99,6 @@ export class SentenceSVG {
   }
 
   replaceArrayOfTokens(tokenIds, firstToken, tokensToReplace) {
-    console.log("KK tokenIds", tokenIds);
-    console.log("KK firstToken", firstToken);
-    console.log("KK tokensToReplace", tokensToReplace);
-
-
-
     var id2newid = { 0: 0 };
     for (let id in this.treeJson) {
       id = parseInt(id);

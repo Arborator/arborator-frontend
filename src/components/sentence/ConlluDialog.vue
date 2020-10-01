@@ -132,6 +132,9 @@ export default {
         this.sentenceBus[this.userId].treeJson = sentenceJson.treeJson;
         this.sentenceBus[this.userId].metaJson = sentenceJson.metaJson;
         this.sentenceBus[this.userId].refresh();
+        this.$q.notify({
+            message: `Conllu changed`,
+          });
       } else {
         this.$store.dispatch("notifyError", { error: "Changing meta this way is not allowed (yet)" });
       }

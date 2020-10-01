@@ -22,18 +22,18 @@
         <q-input
           id="projectnameinput"
           filled
-          v-model="projectName"
+          v-model="project.name"
           label="Project name"
           lazy-rules
           :rules="[ val => val && val.length > 0 || 'Please type something']"
         />
-        <q-input id="descriptioninput" filled v-model="description" label="Description" />
+        <q-input id="descriptioninput" filled v-model="project.description" label="Description" />
         <!-- <q-toggle v-model="visibility" label="Visibility" /> -->
         <div>
           <q-btn-toggle
             label="Visibility"
             glossy
-            v-model="visibility"
+            v-model="project.visibility"
             toggle-color="primary"
             :options="[
 					{label: 'Private', value: 0},
@@ -42,7 +42,8 @@
           />
         </div>
         <!-- <q-toggle v-model="isOpen" label="Open Project" /> -->
-        <q-toggle v-model="showAllTrees" label="Show All Trees" />
+        <q-toggle v-model="project.showAllTrees" label="Show All Trees" />
+        <q-toggle v-model="project.exerciseMode" :label="$t('createProjectCard').exerciseMode" />
         <div>
           <q-btn
             id="submitproject"
@@ -68,17 +69,25 @@ export default {
   data() {
     return {
       submitting: false,
+      project: {
+        name: "",
+        description: "",
+        visibility: 2,
+        showAllTrees: true,
+        exerciseMode: false,
+      },
       projectName: "",
       description: "",
       visibility: 2,
       isOpen: true,
       showAllTrees: true,
+      exerciseMode: false,
       attachment: { name: null, file: null },
     };
   },
   computed: {
     getUserInfos() {
-      return this.$store.getters["config/getUserInfos"];
+      return this.$store.getters["user/getUserInfos"];
     },
   },
   methods: {
@@ -97,7 +106,7 @@ export default {
       }
       form.append(
         "import_user",
-        this.$store.getters["config/getUserInfos"].username
+        this.$store.getters["user/getUserInfos"].username
       );
       api
         .createInitializedProject(this.projectName, form)
@@ -123,19 +132,36 @@ export default {
     onSubmit() {
       this.submitting = true;
       var form = new FormData();
-      this.submitting = true;
       form.append(
         "import_user",
-        this.$store.getters["config/getUserInfos"].username
+        this.$store.getters["user/getUserInfos"].username
       );
       form.append("project_name", this.projectName);
       form.append("description", this.description);
       form.append("visibility", this.visibility);
       // form.append('is_open', this.isOpen);
       form.append("show_all_trees", this.showAllTrees);
-      this.$store.dispatch("resetAnnotationFeatures"); // reset annotationFeature object
+      form.append("exercise_mode", this.exerciseMode);
+
+      this.$store.dispatch("config/resetAnnotationFeatures"); // reset annotationFeature object
+      
+      var data = {
+        project: this.project,
+        user: this.$store.getters["user/getUserInfos"].username,
+        // name: this.projectName,
+        // description: this.description,
+        // visibility: this.visibility,
+        // show_all_trees: this.showAllTrees,
+        // exercise_mode: this.exerciseMode,
+      };
+      // form = {
+      //   val1: "val1",
+      //   val2: "val2",
+      //   bool1: true,
+      //   bool2: false,
+      // }
       api
-        .createProject(form)
+        .createProject(data)
         .then((response) => {
           this.attachment.file = [];
           this.$props.parentGetProjects();

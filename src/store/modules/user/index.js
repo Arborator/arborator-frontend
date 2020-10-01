@@ -10,11 +10,19 @@ export default {
   state: defaultState(),
 
   getters: {
-    getUserInfos: state => state,
-    isLoggedIn: state => state.loginSuccess,
-    hasLoginErrored: state => state.loginError,
-    getFailedAccess: state => state.failedAccess,
-    getAvatarKey: state => state.avatarKey,
+    getUserInfos: (state) => state,
+    isSuperAdmin: (state) => state.super_admin,
+    isLoggedIn: (state) => state.loginSuccess,
+    hasLoginErrored: (state) => state.loginError,
+    getFailedAccess: (state) => state.failedAccess,
+    getAvatarKey: (state) => state.avatarKey,
+    loggedWithGithub: (state) => {
+      return state.auth_provider == 4;
+    },
+    avatar: (state) => {
+      if (state.picture_url) return state.picture_url;
+      return "perm_identity";
+    },
   },
   mutations: {
     login_success(state) {
@@ -47,7 +55,7 @@ export default {
             })
             .then((response) => {
               commit("login_success", {});
-              commit("update_user", response.data );
+              commit("update_user", response.data);
             })
             .catch((error) => {
               console.log(error);

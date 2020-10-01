@@ -8,60 +8,7 @@ export default {
   namespaced: true,
   state: defaultState(),
   getters: {
-    getProjectConfig: (state) => state,
-    infos: (state) => state,
-    admins: (state) => state.admins,
-    guests: (state) => state.guests,
-    isAdmin: (state, getters, rootSate) => {
-      return state.admins.includes(rootSate.user.id);
-      // return state.admins.includes(getters["getUserInfos"].id);
-    },
-    isGuest: (state, getters, rootState) => {
-      return state.guests.includes(rootState.user.id);
-    } ,
-    isTeacher: (state, getters) => {
-      return getters.isAdmin && getters.exerciseMode
-    },
-    visibility: (state) => state.visibility,
-    showAllTrees: (state) => state.showAllTrees,
-    exerciseMode: (state) => state.exerciseMode,
-    shownfeatures: (state) => state.shownfeatures,
-    shownmeta: (state) => state.shownmeta,
-    annotationFeatures: (state) => state.annotationFeatures,
-    getAnnofjson: (state) => {
-      return JSON.stringify(state.annotationFeatures, null, 4);
-    },
-    shownmetachoices: (state) => {
-      return state.annotationFeatures.META;
-    },
-    shownfeatureschoices: (state) =>
-      ["FORM", "UPOS", "LEMMA"].concat(
-        state.annotationFeatures.FEATS.map(
-          ({ name }) => "FEATS." + name
-        ).concat(
-          state.annotationFeatures.MISC.map(({ name }) => "MISC." + name)
-        )
-      ),
-    image: (state) => {
-      var clean = state.image.replace("b", "");
-      clean = clean.replace(/^'/g, "");
-      clean = clean.replace(/'$/g, "");
-      var ifImageNotEmpty = "data:image/png;base64, " + clean;
-
-      var ifImageEmpty =
-        "../statics/images/niko-photos-tGTVxeOr_Rs-unsplash.jpg";
-
-      if (state.image == null) {
-        state.image = "b''";
-      }
-      if (state.image == "b''") {
-        return ifImageEmpty;
-      } else if (state.image.length < 1) {
-        return ifImageEmpty;
-      } else {
-        return ifImageNotEmpty;
-      }
-    },
+    exerciseLevel: (state) => state.exerciseLevel,
   },
   mutations: {
     set_project_settings(state, payload) {
@@ -169,7 +116,7 @@ export default {
               typeof fetchedAnnotationFeatures !== "object" ||
               fetchedAnnotationFeatures === null
             ) {
-              // commit("reset_project_config");
+              commit("reset_project_config");
               fetchedAnnotationFeatures = state.annotationFeatures;
             }
             commit("set_project_conllu_schema", {

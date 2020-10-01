@@ -1,225 +1,234 @@
 .FORM {
-/* 	font: 18px DejaVu Sans; */
-/* 	fill: black; */
-/* 	font-family:sans-serif; */
-	--wordDistance:55;
-	fill:black;
-	text-align: center;
-	position: relative;
-	z-index:99;
-} 
+  /* 	font: 18px DejaVu Sans; */
+  /* 	fill: black; */
+  /* 	font-family:sans-serif; */
+  --wordDistance: 55;
+  fill: black;
+  text-align: center;
+  cursor: pointer;
+  position: relative;
+  z-index: 99;
+}
 
 .dark .FORM {
-	/* 	font: 18px DejaVu Sans; */
-	/* 	fill: black; */
-	/* 	font-family:sans-serif; */
-		--wordDistance:55;
-		fill:rgb(255, 255, 255);
-		text-align: center;
-		position: relative;
-		z-index:99;
-	}
+  /* 	font: 18px DejaVu Sans; */
+  /* 	fill: black; */
+  /* 	font-family:sans-serif; */
+  --wordDistance: 55;
+  fill: rgb(255, 255, 255);
+  text-align: center;
+  position: relative;
+  z-index: 99;
+}
 
 .LEMMA {
-	font: 15px DejaVu Sans;
-	fill: black;
-	font-family:sans-serif;
-	text-align: center;
-	font-style: italic;
-	--wordDistance:22;
-} 
+  font: 15px DejaVu Sans;
+  fill: black;
+  font-family: sans-serif;
+  text-align: center;
+  cursor: pointer;
+  font-style: italic;
+  --wordDistance: 22;
+}
 
 .dark .LEMMA {
-	font: 15px DejaVu Sans;
-	fill: rgb(238, 232, 232);
-	font-family:sans-serif;
-	text-align: center;
-	font-style: italic;
-	--wordDistance:22;
-} 
+  font: 15px DejaVu Sans;
+  fill: rgb(238, 232, 232);
+  font-family: sans-serif;
+  text-align: center;
+  font-style: italic;
+  --wordDistance: 22;
+}
 
 .MISC-Gloss {
-	font: 15px DejaVu Sans;
-	fill: rgb(124, 96, 86);
-	font-family:sans-serif;
-	text-align: center;
-	font-style: italic;
-	--wordDistance:11;
-} 
-
+  font: 15px DejaVu Sans;
+  fill: rgb(124, 96, 86);
+  font-family: sans-serif;
+  text-align: center;
+  font-style: italic;
+  --wordDistance: 11;
+}
 
 .UPOS {
-	font: 11px DejaVu Sans;
-	fill: rgb(80, 29, 125);
-	text-align: center;
-	--wordDistance:22;
-} 
+  font: 11px DejaVu Sans;
+  fill: rgb(80, 29, 125);
+  cursor: pointer;
+  text-align: center;
+  --wordDistance: 22;
+}
 
 .UPOSselected {
-	font: 11px DejaVu Sans;
-	fill: #dd137bff;
-	font-weight: bold;
-	text-align: center;
-} 
-
+  font: 11px DejaVu Sans;
+  fill: #dd137bff;
+  font-weight: bold;
+  text-align: center;
+}
 
 .DEPREL {
-	font: 12px Arial;
-	fill: #501d7d;
-	font-style: oblique;
-	font-family:sans-serif;
-	cursor:pointer;
-	position: relative;
-	z-index:99;
-	--funcCurveDist:3; /* distance between the function name and the curves highest point */
-} 
+  font: 12px Arial;
+  fill: #501d7d;
+  font-style: oblique;
+  font-family: sans-serif;
+  cursor: pointer;
+  position: relative;
+  z-index: 99;
+  --funcCurveDist: 3; /* distance between the function name and the curves highest point */
+}
 
 .dark .DEPREL {
-	font: 12px Arial;
-	fill: #aab3ff;
-	font-style: oblique;
-	font-family:sans-serif;
-	cursor:pointer;
-	z-index:99;
-	--funcCurveDist:3; /* distance between the function name and the curves highest point */
+  font: 12px Arial;
+  fill: #aab3ff;
+  font-style: oblique;
+  font-family: sans-serif;
+  cursor: pointer;
+  z-index: 99;
+  --funcCurveDist: 3; /* distance between the function name and the curves highest point */
 }
 
 .glossy {
-	font: 15px DejaVu Sans;
-	fill: coral;
-	font-family:sans-serif;
-	text-align: center;
-	font-style: italic;
-	--wordDistance:11;
-} 
-
+  font: 15px DejaVu Sans;
+  fill: coral;
+  font-family: sans-serif;
+  text-align: center;
+  font-style: italic;
+  --wordDistance: 11;
+}
 
 .xdeprel {
-	fill: #21ba45;
-	z-index:99;
-} 
+  fill: #21ba45;
+  z-index: 99;
+}
 
 .xdep {
-	stroke: #21ba45;
-	fill: none;
-} 
+  stroke: #21ba45;
+  fill: none;
+}
 
 .DEPRELselected {
-	fill: #dd137b;
-	z-index:99;
-	/* font-weight: bold; */
-} 
+  fill: #dd137b;
+  z-index: 99;
+  /* font-weight: bold; */
+}
 
 .arrowhead {
-	fill: white;
-	stroke: black;
-	stroke-width: .8;
+  fill: white;
+  stroke: black;
+  stroke-width: 0.8;
 }
 
 .curve {
-	stroke: black;
-	stroke-width: 1;
-	fill: none;
-	position: relative;
-	z-index:0;
-	--startOffset: 8;
-	--tokDepDist: 15; /* distance between tokens and depdendency relation */
-	--depMinHeight: 15; /* minimum height for dependency */
-	--wordDistanceFactor: -1; /* distant words get higher curves. this factor fixes how much higher */
+  stroke: black;
+  stroke-width: 1;
+  fill: none;
+  position: relative;
+  z-index: 0;
+  --startOffset: 8;
+  --tokDepDist: 15; /* distance between tokens and depdendency relation */
+  --depMinHeight: 15; /* minimum height for dependency */
+  --wordDistanceFactor: -1; /* distant words get higher curves. this factor fixes how much higher */
 }
 
 .dark .curve {
-	stroke: rgb(248, 244, 244);
-	stroke-width: 1;
-	fill: none;
-	--startOffset: 8;
-	--tokDepDist: 15; /* distance between tokens and depdendency relation */
-	--depMinHeight: 15; /* minimum height for dependency */
-	--wordDistanceFactor: -1; /* distant words get higher curves. this factor fixes how much higher */
+  stroke: rgb(248, 244, 244);
+  stroke-width: 1;
+  fill: none;
+  --startOffset: 8;
+  --tokDepDist: 15; /* distance between tokens and depdendency relation */
+  --depMinHeight: 15; /* minimum height for dependency */
+  --wordDistanceFactor: -1; /* distant words get higher curves. this factor fixes how much higher */
 }
-
-
 
 .dragcurve {
-	stroke: #dd137bff;
-	stroke-width: 1.5;
-	fill: none;
+  stroke: #dd137bff;
+  stroke-width: 1.5;
+  fill: none;
 }
 .draggov {
-		fill:#dd137bff;
-		text-align: center;
-	} 
-
+  fill: #dd137bff;
+  text-align: center;
+}
 
 .conll {
-	display:none; /*toggles to inline*/
-	unicode-bidi: embed;
-	font-family: monospace;
-	white-space: pre;
-	margin-bottom: 0.6em;
-	border-bottom: 1px solid #aaa;
-	padding: 0.5em 0 0.17em 0;
-	tab-size: 12;
-	background-color: #fff ;
-	box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.26);
+  display: none; /*toggles to inline*/
+  unicode-bidi: embed;
+  font-family: monospace;
+  white-space: pre;
+  margin-bottom: 0.6em;
+  border-bottom: 1px solid #aaa;
+  padding: 0.5em 0 0.17em 0;
+  tab-size: 12;
+  background-color: #fff;
+  box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.26);
 }
 
 .sentencebox {
-	margin-bottom: 0.6em;
-	border-bottom: 1px solid #aaa;
-	padding: 0.5em 0 0.17em 0;
-	margin-top: 1em;
-	--depLevelHeight: 45; /* minimum height for dependency */
+  margin-bottom: 0.6em;
+  border-bottom: 1px solid #aaa;
+  padding: 0.5em 0 0.17em 0;
+  margin-top: 1em;
+  --depLevelHeight: 45; /* minimum height for dependency */
 }
 
 /* Button */
 .button {
-	display: inline-block;
-	position: relative;
-	width: 120px;
-	height: 32px;
-	line-height: 32px;
-	border-radius: 2px;
-	font-size: 0.9em;
-	background-color: #fff;
-	color: #646464;
-	cursor:pointer;
-  }
-  
-  .button > paper-ripple {
-	border-radius: 2px;
-	overflow: hidden;
-  }
+  display: inline-block;
+  position: relative;
+  width: 120px;
+  height: 32px;
+  line-height: 32px;
+  border-radius: 2px;
+  font-size: 0.9em;
+  background-color: #fff;
+  color: #646464;
+  cursor: pointer;
+}
 
+.button > paper-ripple {
+  border-radius: 2px;
+  overflow: hidden;
+}
 
 .button.raised {
-	transition: box-shadow 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-	transition-delay: 0.2s;
-	box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.26);
-  }
+  transition: box-shadow 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  transition-delay: 0.2s;
+  box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.26);
+}
 
-  .button.raised:active {
-	box-shadow: 0 8px 17px 0 rgba(0, 0, 0, 0.2);
-	transition-delay: 0s;
-  }
+.button.raised:active {
+  box-shadow: 0 8px 17px 0 rgba(0, 0, 0, 0.2);
+  transition-delay: 0s;
+}
 
-  .center {
-	text-align: center;
-  }
+.center {
+  text-align: center;
+}
 
-  /* logo animation transitions */
-  .arboratorlogo {
-	transition: all 0.4s ease-in-out;
-	-webkit-transition: all 0.4s ease-in-out;
-  }
+/* logo animation transitions */
+.arboratorlogo {
+  transition: all 0.4s ease-in-out;
+  -webkit-transition: all 0.4s ease-in-out;
+}
 
-  .arboratorlogo:hover {
-	transform: scale(1.1);
-    transition: all 0.2s ease-in-out;
-	-webkit-transition: all 0.2s ease-in-out;
-	opacity: .9;
-  }
+.arboratorlogo:hover {
+  transform: scale(1.1);
+  transition: all 0.2s ease-in-out;
+  -webkit-transition: all 0.2s ease-in-out;
+  opacity: 0.9;
+}
 
-	.svgbox {
-		overflow-x: auto;
-	}
+.svgbox {
+  overflow-x: auto;
+}
+
+.curve.diff,
+.arrowhead.diff {
+  stroke: red;
+  stroke-width: 1;
+  fill: none;
+  position: relative;
+}
+
+.UPOS.diff,
+.DEPREL.diff {
+  fill: red;
+}

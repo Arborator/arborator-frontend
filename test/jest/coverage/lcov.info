@@ -2119,7 +2119,7 @@ FN:79,mounted
 FN:85,getProjectConfig
 FN:86,(anonymous_8)
 FN:88,handleResize
-FN:89,getSampleContent
+FN:89,getSampleTrees
 FN:91,(anonymous_12)
 FN:98,(anonymous_13)
 FN:101,(anonymous_14)
@@ -2148,7 +2148,7 @@ FNDA:0,mounted
 FNDA:0,getProjectConfig
 FNDA:0,(anonymous_8)
 FNDA:0,handleResize
-FNDA:0,getSampleContent
+FNDA:0,getSampleTrees
 FNDA:0,(anonymous_12)
 FNDA:0,(anonymous_13)
 FNDA:0,(anonymous_14)
@@ -2756,7 +2756,7 @@ FN:538,treeDataToConll
 FN:569,replaceNodes
 FN:609,(anonymous_31)
 FN:610,(anonymous_32)
-FN:632,conllToTree
+FN:632,conllToJson
 FN:648,(anonymous_34)
 FN:719,(anonymous_35)
 FN:730,analyzeFeaturestring
@@ -2797,7 +2797,7 @@ FNDA:0,treeDataToConll
 FNDA:0,replaceNodes
 FNDA:0,(anonymous_31)
 FNDA:0,(anonymous_32)
-FNDA:0,conllToTree
+FNDA:0,conllToJson
 FNDA:0,(anonymous_34)
 FNDA:0,(anonymous_35)
 FNDA:0,analyzeFeaturestring

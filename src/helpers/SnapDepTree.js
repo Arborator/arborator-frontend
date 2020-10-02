@@ -11,22 +11,41 @@ const dragclickthreshold = 400; //ms
 ///////////////                ////////////////
 
 export class SentenceSVG {
-  constructor(
-    idSVG,
-    sentenceJson,
+  constructor({
+    svgID,
+    reactiveSentence,
     usermatches,
     shownFeatures,
-    teacherTreeJson
-  ) {
+    teacherReactiveSentence,
+  }) {
     //// base properties
-    this.idSVG = idSVG;
-    this.snapSentence = Snap(idSVG);
-    console.log("KK step 2", sentenceJson.metaJson)
-    this.treeJson = sentenceJson.treeJson;
-    this.metaJson = sentenceJson.metaJson;
+    this.svgID = svgID;
+    this.snapSentence = Snap(`#${svgID}`);
+    this.reactiveSentence = reactiveSentence;
+
+    this.treeJson = reactiveSentence.treeJson;
+    
+    this.metaJson = reactiveSentence.metaJson;
+    console.log("KK this.treeJson = reactiveSentence.treeJso init", this.treeJson === reactiveSentence.treeJson, this.metaJson.user_id);
     this.usermatches = usermatches;
     this.shownFeatures = shownFeatures;
-    this.teacherTreeJson = teacherTreeJson;
+    console.log("KK teacherReactiveSentence", teacherReactiveSentence);
+
+    if (teacherReactiveSentence) {
+      this.teacherTreeJson = teacherReactiveSentence.treeJson;
+    }
+    this.reactiveSentence.addEventListener("token-updated", (e) => {
+      console.log("KK event listener triggered", this.treeJson);
+      console.log("KK event ", e);
+      console.log("KK this.treeJson = ctiveSentence.treeJsonent event", this.treeJson === reactiveSentence.treeJson, this.metaJson.user_id);
+      // setTimeout(() =>{ this.refresh() }, 10);
+      this.refresh();
+    });
+    // console.log("KK step 1", JSON.stringify(this.reactiveSentence))
+    // reactiveSentence.updateToken({ID:1, DEPREL:"PO"})
+    // console.log("KK step 2", this.reactiveSentence)
+    // console.log("KK step 3", reactiveSentence)
+    // console.log("KK equality", reactiveSentence === this.reactiveSentence)
 
     //// other properties
     // distances
@@ -71,7 +90,6 @@ export class SentenceSVG {
     if (this.teacherTreeJson) {
       this.showDiffs(this.teacherTreeJson);
     }
-    console.log("KK metaJson", this.metaJson)
   }
 
   populateTokenSVGs() {
@@ -111,7 +129,10 @@ export class SentenceSVG {
     var newtree = {};
     for (let id in this.treeJson) {
       id = parseInt(id);
-      if (tokenIds.includes(id) && tokenIds.indexOf(id) >= tokensToReplace.length)
+      if (
+        tokenIds.includes(id) &&
+        tokenIds.indexOf(id) >= tokensToReplace.length
+      )
         continue;
       var node = this.treeJson[id];
       node.ID = id2newid[id];
@@ -136,13 +157,11 @@ export class SentenceSVG {
       if (newnode.MISC.Gloss) newnode.MISC.Gloss = newnode.FORM;
       newtree[tokenIds[0] + i] = newnode;
     }
-    if (!Object.keys(newtree).length) return ; // forbid to erase entire tree
+    if (!Object.keys(newtree).length) return; // forbid to erase entire tree
     this.treeJson = newtree;
 
     // // TODO handle new meta text
     this.metaJson.text = getSentenceTextFromJson(newtree);
-
-
 
     this.snapSentence.clear();
     this.drawTree();
@@ -244,7 +263,6 @@ export class SentenceSVG {
     this.totalHeight = 0;
     for (const tokenSVG of Object.values(this.tokenSVGs)) {
       tokenSVG.attachEvent();
-
       const tokenSVGHeight = Math.max(
         ...this.shownFeatures.map(
           (feature) => tokenSVG.snapElements[feature].getBBox().y2
@@ -252,9 +270,10 @@ export class SentenceSVG {
       );
       this.totalHeight = Math.max(this.totalHeight, tokenSVGHeight);
     }
-
+    console.log("KK this.totalHeight", this.totalHeight, this.metaJson.user_id)
     this.snapSentence.attr("width", this.totalWidth + 50);
-    this.snapSentence.attr("height", this.totalHeight);
+    this.snapSentence.attr("height", this.totalHeight || 1000);
+    // TODO problem is in this.totalHeight and tokenSVGs
   }
 
   attachEvents() {
@@ -318,6 +337,7 @@ export class SentenceSVG {
   }
 
   refresh() {
+    console.log("KK YOLO")
     this.drawTree();
   }
 

@@ -277,6 +277,21 @@ export default {
     return API.post("projects/" + projectname + "/pull", data);
   },
   getLexicon(projectname, data) {
-    return API.post("projects/" + projectname + "/getLexicon", data);
+      return API.post('projects/' + projectname + '/getLexicon', data);
   },
+  exportLexiconJSON(projectname, data){
+      return API.post('projects/'+projectname+'/export/json', data, {responseType: 'arraybuffer'});
+  },
+  exportLexiconTSV(projectname, data){
+      return API.post('projects/'+projectname+'/export/tsv', data, {responseType: 'arraybuffer'});
+  },
+  transformation_grew(projectname, data){
+      return API.post('projects/'+projectname+'/transformationgrew', data);
+  },
+  uploadValidator(projectname, data){
+      return API.post('projects/' + projectname +'/upload/validator', data);
+  },
+  addValidator(projectname, data){
+      return API.post('projects/' + projectname +'/addvalidator', data);
+  }
 };

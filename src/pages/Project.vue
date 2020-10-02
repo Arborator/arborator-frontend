@@ -55,6 +55,12 @@
             </div>
           </q-img>
         </q-card-section>
+        <q-card-section v-if="LexiconTable">
+          <lexicon-table
+            :data="this.lexicon"
+            @request="getLexicon">
+          </lexicon-table>
+        </q-card-section>
         <q-card-section>
           <q-table
             ref="textsTable"
@@ -841,6 +847,7 @@ import ProjectSettingsView from "../components/ProjectSettingsView.vue";
 import ConfirmAction from "../components/ConfirmAction.vue";
 import UploadDialog from "../components/project/UploadDialog.vue";
 import { mapGetters } from "vuex";
+import LexiconTable from '../components/LexiconTable';
 
 export default {
   components: {
@@ -852,6 +859,7 @@ export default {
     ProjectSettingsView,
     ConfirmAction,
     UploadDialog,
+    LexiconTable
   },
   data() {
     return {
@@ -869,6 +877,8 @@ export default {
       confirmActionDial: false,
       confirmActionCallback: null,
       confirmActionArg1: "",
+      LexiconTable: false,
+      lexicon:[],
       alerts: {
         uploadsuccess: { color: "positive", message: "Upload success" },
         uploadfail: {
@@ -885,10 +895,6 @@ export default {
         GitHubPushSuccess: {
           color: "positive",
           message: "Successfully pushed your data to GitHub",
-        },
-        getLexiconSuccess: {
-          color: "positive",
-          message: "got lexicon. TODO: get the real lexicon!!!",
         },
       },
       project: {
@@ -1292,6 +1298,7 @@ export default {
     },
 
     getLexicon(type) {
+      this.LexiconTable=true;
       var samplenames = [];
       for (const sample of this.table.selected) {
         samplenames.push(sample.samplename);
@@ -1303,8 +1310,8 @@ export default {
         .then((response) => {
           // 200 : updaté ou créé
           console.log(777, response);
-          this.showNotif("top", "getLexiconSuccess");
           console.log("wooohoo", response.data.lexicon);
+          this.lexicon = response.data.lexicon;
         })
         .catch((error) => {
           // console.log(111,error)

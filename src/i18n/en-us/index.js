@@ -162,6 +162,10 @@ export default {
       else:
         "Contact the project administrator if you need access or further information:",
     },
+    tooltipExportLexicon: ['export to tsv', 'export to json'],
+	  tooltipRuleGrewLexicon : 'get the rules grew for all modifications',
+	  tooltipValidatorLexicon: 'Import validator to compare',
+	  tooltipSelectValidator: 'Select a file in tsv format'
 	},
 
   // dialog window which displays create project card

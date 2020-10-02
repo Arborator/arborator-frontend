@@ -220,6 +220,7 @@ pattern { N [form="Form_to_search"] }`,
          */
         changeSearchPattern(pattern, rewriteCommands) { 
             this.searchPattern = pattern; 
+            console.log(this.searchPattern)
             this.rewriteCommands = rewriteCommands; 
         },   
       

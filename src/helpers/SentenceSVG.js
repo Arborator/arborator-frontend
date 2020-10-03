@@ -26,26 +26,15 @@ export class SentenceSVG {
     this.treeJson = reactiveSentence.treeJson;
     
     this.metaJson = reactiveSentence.metaJson;
-    console.log("KK this.treeJson = reactiveSentence.treeJso init", this.treeJson === reactiveSentence.treeJson, this.metaJson.user_id);
     this.usermatches = usermatches;
     this.shownFeatures = shownFeatures;
-    console.log("KK teacherReactiveSentence", teacherReactiveSentence);
 
     if (teacherReactiveSentence) {
       this.teacherTreeJson = teacherReactiveSentence.treeJson;
     }
     this.reactiveSentence.addEventListener("token-updated", (e) => {
-      console.log("KK event listener triggered", this.treeJson);
-      console.log("KK event ", e);
-      console.log("KK this.treeJson = ctiveSentence.treeJsonent event", this.treeJson === reactiveSentence.treeJson, this.metaJson.user_id);
-      // setTimeout(() =>{ this.refresh() }, 10);
       this.refresh();
     });
-    // console.log("KK step 1", JSON.stringify(this.reactiveSentence))
-    // reactiveSentence.updateToken({ID:1, DEPREL:"PO"})
-    // console.log("KK step 2", this.reactiveSentence)
-    // console.log("KK step 3", reactiveSentence)
-    // console.log("KK equality", reactiveSentence === this.reactiveSentence)
 
     //// other properties
     // distances
@@ -235,7 +224,8 @@ export class SentenceSVG {
 
   drawRelations() {
     for (const tokenSVG of Object.values(this.tokenSVGs)) {
-      const headId = tokenSVG.head;
+      const headId = tokenSVG.tokenJson.HEAD;
+      console.log("KK headId", headId)
       var headCoordX = 0;
       if (headId > 0) {
         const headtokenSVG = this.tokenSVGs[headId];
@@ -246,7 +236,7 @@ export class SentenceSVG {
       } else {
         console.log(
           "this nodeTree has no governor, not drawing it",
-          tokenSVG.id
+          tokenSVG.tokenJson.ID
         );
         continue;
       }
@@ -270,10 +260,8 @@ export class SentenceSVG {
       );
       this.totalHeight = Math.max(this.totalHeight, tokenSVGHeight);
     }
-    console.log("KK this.totalHeight", this.totalHeight, this.metaJson.user_id)
     this.snapSentence.attr("width", this.totalWidth + 50);
-    this.snapSentence.attr("height", this.totalHeight || 1000);
-    // TODO problem is in this.totalHeight and tokenSVGs
+    this.snapSentence.attr("height", this.totalHeight || 1000); // 1000 was there in case the SVG pop up after the div, so it give a heigth
   }
 
   attachEvents() {
@@ -337,7 +325,6 @@ export class SentenceSVG {
   }
 
   refresh() {
-    console.log("KK YOLO")
     this.drawTree();
   }
 
@@ -355,18 +342,18 @@ class TokenSVG {
   constructor(tokenJson, sentenceSVG) {
     this.sentenceSVG = sentenceSVG;
     this.tokenJson = tokenJson;
-    this.id = parseInt(tokenJson["ID"]);
-    this.head = isNaN(parseInt(tokenJson["HEAD"]))
-      ? -1
-      : parseInt(tokenJson["HEAD"]);
-    this.form = tokenJson["FORM"];
-    this.lemma = tokenJson["LEMMA"];
-    this.upos = tokenJson["UPOS"];
-    this.xpos = tokenJson["XPOS"];
-    this.deprel = tokenJson["DEPREL"];
-    this.misc = tokenJson["MISC"];
-    this.feats = tokenJson["FEATS"];
-    this.deps = tokenJson["DEPS"];
+    // this.id = parseInt(tokenJson["ID"]);
+    // this.head = isNaN(parseInt(tokenJson["HEAD"]))
+    //   ? -1
+    //   : parseInt(tokenJson["HEAD"]);
+    // this.form = tokenJson["FORM"];
+    // this.lemma = tokenJson["LEMMA"];
+    // this.upos = tokenJson["UPOS"];
+    // this.xpos = tokenJson["XPOS"];
+    // this.deprel = tokenJson["DEPREL"];
+    // this.misc = tokenJson["MISC"];
+    // this.feats = tokenJson["FEATS"];
+    // this.deps = tokenJson["DEPS"];
 
     // populate the FEATS and MISC child features
     for (const label of ["FEATS", "MISC"]) {
@@ -443,7 +430,7 @@ class TokenSVG {
       arcPath = getArcPathRoot(xFrom, yLow);
     } else {
       yTop = heightArc;
-      xTo = this.id > this.head ? headCoordX + GAPX / 2 : headCoordX - GAPX / 2;
+      xTo = this.tokenJson.ID > this.tokenJson.HEAD ? headCoordX + GAPX / 2 : headCoordX - GAPX / 2;
       arcPath = getArcPath(xFrom, xTo, yLow, yTop);
     }
 
@@ -482,7 +469,7 @@ class TokenSVG {
           detail: {
             treeNode: this_,
             targetLabel: label,
-            clicked: this_.id,
+            clicked: this_.tokenJson.ID,
             event: e,
           },
         });
@@ -498,13 +485,13 @@ class TokenSVG {
 
   attachHover() {
     this.snapElements["FORM"].mouseover(() => {
-      if (this.sentenceSVG.dragged && this.id !== this.sentenceSVG.dragged) {
+      if (this.sentenceSVG.dragged && this.tokenJson.ID !== this.sentenceSVG.dragged) {
         this.snapElements["FORM"].addClass("glossy");
-        this.sentenceSVG.hovered = this.id;
+        this.sentenceSVG.hovered = this.tokenJson.ID;
       }
     });
     this.snapElements["FORM"].mouseout(() => {
-      if (this.sentenceSVG.dragged && this.id !== this.sentenceSVG.dragged) {
+      if (this.sentenceSVG.dragged && this.tokenJson.ID !== this.sentenceSVG.dragged) {
         this.snapElements["FORM"].removeClass("glossy");
         this.sentenceSVG.hovered = 0;
       }
@@ -695,7 +682,7 @@ function stopDrag(e) {
     event = new CustomEvent("svg-click", {
       detail: {
         treeNode: this,
-        clicked: this.id,
+        clicked: this.tokenJson.ID,
         targetLabel: "FORM",
       },
     });

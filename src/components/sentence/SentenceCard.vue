@@ -159,13 +159,18 @@
         />
       </q-tabs>
       <q-separator />
-      <q-tab-panels v-model="tab" keep-alive @transition="transitioned" :animated="animated ? true : false" :class="animated ? 'easeOutSine' : ''">
+      <q-tab-panels
+        v-model="tab"
+        keep-alive
+        @transition="transitioned"
+        :animated="animated ? true : false"
+        :class="animated ? 'easeOutSine' : ''"
+      >
         <q-tab-panel
           v-for="(tree, user) in filteredConlls"
           :key="user"
           :props="tree"
           :name="user"
-          
         >
           <q-card flat>
             <q-card-section
@@ -440,7 +445,7 @@ export default {
         .saveTrees(this.$route.params.projectname, data)
         .then((response) => {
           if (response.status == 200) {
-            // this.sentenceData.conlls[changedConllUser] = exportedConll;
+            this.sentenceData.conlls[changedConllUser] = exportedConll;
             // console.log("KK exportedConll", exportedConll);
             // console.log(
             //   "KK this.reactiveSentencesObj[changedConllUser]",
@@ -450,20 +455,18 @@ export default {
             // this.reactiveSentencesObj[changedConllUser].updateTree(this.reactiveSentencesObj[openedTreeUser].treeJson)
 
             if (this.tab != changedConllUser) {
-              this.animated = true;
               this.reactiveSentencesObj[openedTreeUser].resetRecentChanges();
               this.tab = changedConllUser;
-              setTimeout(() => {
-                this.reactiveSentencesObj[changedConllUser].fromConll(
-                  exportedConll
-                );
-              }, 0);
-            }
-            //  this.reactiveSentencesObj[changedConllUser].fromConll(exportedConll)
-            // this.reactiveSentencesObj[changedConllUser].fromConll(exportedConll)
 
-            // this.sentenceBus.$emit("saved:tree", {userId: changedConllUser})
-            // this.conllSavedCounter++;
+              if (!this.reactiveSentencesObj[changedConllUser]) {
+                this.reactiveSentencesObj[
+                  changedConllUser
+                ] = new ReactiveSentence();
+              }
+
+              this.changedConllUser = changedConllUser;
+              this.exportedConll = exportedConll;
+            }
             this.graphInfo.dirty = false;
             this.showNotif("top", "saveSuccess");
           }
@@ -471,7 +474,14 @@ export default {
         .catch((error) => {
           this.$store.dispatch("notifyError", { error: error });
         });
-      // var conll = this.sentenceBus[this.tab]
+    },
+    transitioned() {
+      if (this.exportedConll) {
+        this.reactiveSentencesObj[this.changedConllUser].fromConll(
+          this.exportedConll
+        );
+        this.exportedConll = "";
+      }
     },
     /**
      * Set the graph infos according to the event payload. This event shoudl be trigerred from the ConllGraph
@@ -499,10 +509,7 @@ export default {
     changeMetaText(newMetaText) {
       this.sentenceData.sentence = newMetaText;
     },
-    transitioned() {
-      console.log("KK transitioned,")
-      setTimeout(()=>{this.animated=false}, 2000)
-    },
+
     showNotif(position, alert) {
       const {
         color,
@@ -546,7 +553,7 @@ export default {
   transform: translateX(10px);
   opacity: 0;
 }
-
+/* 
 .easeInOutQuart .q-transition--slide-right-enter-active,
 .easeInOutQuart .q-transition--slide-left-enter-active,
 .easeInOutQuart .q-transition--slide-up-enter-active,
@@ -555,11 +562,10 @@ export default {
 .easeInOutQuart .q-transition--slide-left-leave-active,
 .easeInOutQuart .q-transition--slide-up-leave-active,
 .easeInOutQuart .q-transition--slide-down-leave-active {
-  /* easeInOutQuart */
   transition: transform 0.3s cubic-bezier(0.77, 0, 0.175, 1) !important;
-}
+} */
 
-.easeOutQuad .q-transition--slide-right-enter-active,
+/* .easeOutQuad .q-transition--slide-right-enter-active,
 .easeOutQuad .q-transition--slide-left-enter-active,
 .easeOutQuad .q-transition--slide-up-enter-active,
 .easeOutQuad .q-transition--slide-down-enter-active,
@@ -567,43 +573,52 @@ export default {
 .easeOutQuad .q-transition--slide-left-leave-active,
 .easeOutQuad .q-transition--slide-up-leave-active,
 .easeOutQuad .q-transition--slide-down-leave-active {
-  /* easeOutQuad */
   transition: transform 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94) !important;
-}
-
+} */
+/* 
 .easeOutSine .q-transition--slide-right-enter-active,
 .easeOutSine .q-transition--slide-left-enter-active {
-  /* easeOutSine */
   transition: opacity 0.5s !important;
 }
 
 .easeOutSine .q-transition--slide-right-leave-active,
 .easeOutSine .q-transition--slide-left-leave-active {
-  /* easeOutSine */
   transition: transform 3s cubic-bezier(0.39, 0.575, 0.765, 1) !important;
 }
 
 .easeOutSine .q-transition--slide-right-enter-active,
-.easeOutSine .q-transition--slide-right-leave-active,
-.easeOutSine .q-transition--slide-left-enter-active,
-.easeOutSine .q-transition--slide-left-leave-active {
+.easeOutSine .q-transition--slide-left-enter-active {
   transition: opacity 0.1s !important;
+  transition-delay: 2s !important;
+
+} */
+
+.easeOutSine.q-transition--slide-right-leave-active,
+.easeOutSine.q-transition--slide-left-leave-active {
+  transition: opacity 1s !important;
+}
+
+.easeOutSine.q-transition--slide-right-enter-active,
+.easeOutSine.q-transition--slide-left-enter-active {
+  transition: opacity 1s !important;
+}
+/* transition-delay: 2s !important; */
+
+.easeOutSine.q-transition--slide-right-enter,
+.easeOutSine.q-transition--slide-left-enter {
+  opacity: 0 !important;
   transition-delay: 2s !important;
 }
 
-.easeOutSine .q-transition--slide-right-enter,
-.easeOutSine .q-transition--slide-right-leave-to,
-.easeOutSine .q-transition--slide-left-enter,
-.easeOutSine .q-transition--slide-left-leave-to {
-    opacity: 0 !important;
-    /* transition-delay: 2s !important; */
+.easeOutSine.q-transition--slide-right-leave-to,
+.easeOutSine.q-transition--slide-left-leave-to {
+  opacity: 0 !important;
 }
 
 .easeOutSine .q-transition--slide-right-leave-from,
 .easeOutSine .q-transition--slide-left-leave-from {
-  opacity : 1 !important;
+  opacity: 1 !important;
 }
-
 
 /* .easeOutCubic .q-transition--slide-right-enter-active,
 .easeOutCubic .q-transition--slide-left-enter-active,

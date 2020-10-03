@@ -1,11 +1,6 @@
 <template>
   <div>
-    <q-btn
-      flat
-      round
-      dense
-      icon="refresh"
-      @click="dummyfct"
+    <q-btn flat round dense icon="refresh" @click="dummyfct"
       ><q-tooltip>See your annotation errors</q-tooltip>
     </q-btn>
     <div class="sentencebox">
@@ -16,7 +11,7 @@
 
 <script>
 import { conllToJson } from "../../helpers/Conll";
-import { SentenceSVG } from "../../helpers/SnapDepTree";
+import { SentenceSVG } from "../../helpers/SentenceSVG";
 
 export default {
   props: [
@@ -42,33 +37,19 @@ export default {
     },
     shownFeatures() {
       return this.$store.getters["config/shownfeatures"];
-      // return ["FORM", "UPOS", "LEMMA", "FEATS.Aspect", "MISC.Gloss"];
     },
   },
-  watch: {
-    conllSavedCounter: function (val) {
-      console.log("KK watcher", this.userId);
-      this.sentenceSVG.treeJson = conllToJson(this.conll).treeJson;
-      this.sentenceSVG.metaJson = conllToJson(this.conll).metaJson;
-      this.sentenceSVG.drawTree();
-    },
-  },
+  // watch: {
+    // conllSavedCounter: function (val) {
+      // console.log("KK 3 after ++", Math.round(Date.now()), this.userId);
+
+      // this.sentenceSVG.treeJson = conllToJson(this.conll).treeJson;
+      // this.sentenceSVG.metaJson = conllToJson(this.conll).metaJson;
+      // this.sentenceSVG.drawTree();
+    // },
+  // },
   mounted() {
-    console.log("KK reactiveSentence in child", this.reactiveSentence);
     const sentenceJson = conllToJson(this.conll);
-
-    // const teacherTreeJson =
-    //   this.teacherConll && this.userId !== "teacher"
-    //     ? conllToJson(this.teacherConll).treeJson
-    //     : "";
-
-    // this.sentenceSVG = new SentenceSVG(
-    //   "#" + this.svgID,
-    //   sentenceJson,
-    //   this.usermatches,
-    //   this.shownFeatures,
-    //   teacherTreeJson
-    // );
 
     this.sentenceSVG = new SentenceSVG({
       svgID: this.svgID,
@@ -77,7 +58,6 @@ export default {
       shownFeatures: this.shownFeatures,
       teacherReactiveSentence: this.teacherReactiveSentence,
     });
-    // this.sentenceSVG.showDiffs(teacherTreeJson);
 
     this.sentenceBus[this.userId] = this.sentenceSVG;
 
@@ -91,31 +71,14 @@ export default {
 
     this.sentenceBus.$on("tree-update:token", ({ token, userId }) => {
       if (userId == this.userId) {
-        // this.sentenceSVG.updateToken(token);
-        // this.sentenceSVG.refresh();
-        // this.reactiveSentence.updateToken({
-        //   ID: token.ID,
-        //   HEAD: token.HEAD,
-        //   DEPREL: token.DEPREL,
-        // });
         this.reactiveSentence.updateToken(token);
-        console.log("KK sentenceBus on tree-update:token");
       }
     });
-
-    // this.sentenceBus.$on("saved:tree", () => {
-    // console.log(this.conll)
-    // this.sentenceSVG.treeJson = conllToJson(this.conll).tree;
-    // this.sentenceSVG.META = conllToJson(this.conll).META;
-    // this.sentenceSVG.drawTree();
-    // this.sentenceSVG.refresh();
-    // })
   },
   methods: {
     dummyfct() {
-      console.log("KK", this.sentenceSVG)
-      this.sentenceSVG.refresh()
-      console.log("KK inside svg tree")
+      console.log("KK", this.sentenceSVG);
+      this.sentenceSVG.refresh();
     },
     svgClickHandler(e) {
       const clickedId = e.detail.clicked;

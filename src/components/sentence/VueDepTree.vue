@@ -1,12 +1,17 @@
 <template>
-  <div class="sentencebox">
-    <svg :id="svgID" />
+  <div>
+    <q-btn flat round dense icon="refresh" @click="dummyfct"
+      ><q-tooltip>See your annotation errors</q-tooltip>
+    </q-btn>
+    <div class="sentencebox">
+      <svg :id="svgID" />
+    </div>
   </div>
 </template>
 
 <script>
 import { conllToJson } from "../../helpers/Conll";
-import { SentenceSVG } from "../../helpers/SnapDepTree";
+import { SentenceSVG } from "../../helpers/SentenceSVG";
 
 export default {
   props: [
@@ -16,6 +21,8 @@ export default {
     "userId",
     "conllSavedCounter",
     "teacherConll",
+    "reactiveSentence",
+    "teacherReactiveSentence",
   ],
   data() {
     return {
@@ -28,33 +35,29 @@ export default {
     svgID() {
       return `svg-${this.sentenceId}-${this.userId}`;
     },
-    shownfeatures() {
+    shownFeatures() {
       return this.$store.getters["config/shownfeatures"];
-      // return ["FORM", "UPOS", "LEMMA", "FEATS.Aspect", "MISC.Gloss"];
     },
   },
-  watch: {
-    conllSavedCounter: function (val) {
-      console.log("KK watcher", this.userId)
-      this.sentenceSVG.treeJson = conllToJson(this.conll).treeJson;
-      this.sentenceSVG.metaJson = conllToJson(this.conll).metaJson;
-      this.sentenceSVG.drawTree();
-    },
-  },
+  // watch: {
+    // conllSavedCounter: function (val) {
+      // console.log("KK 3 after ++", Math.round(Date.now()), this.userId);
+
+      // this.sentenceSVG.treeJson = conllToJson(this.conll).treeJson;
+      // this.sentenceSVG.metaJson = conllToJson(this.conll).metaJson;
+      // this.sentenceSVG.drawTree();
+    // },
+  // },
   mounted() {
     const sentenceJson = conllToJson(this.conll);
-    console.log("KK step 0 ", sentenceJson)
 
-    const teacherTreeJson = (this.teacherConll && this.userId !== "teacher") ? conllToJson(this.teacherConll).treeJson : "";
-    this.sentenceSVG = new SentenceSVG(
-      "#" + this.svgID,
-      sentenceJson,
-      this.usermatches,
-      this.shownfeatures,
-      teacherTreeJson
-    );
-
-    // this.sentenceSVG.showDiffs(teacherTreeJson);
+    this.sentenceSVG = new SentenceSVG({
+      svgID: this.svgID,
+      reactiveSentence: this.reactiveSentence,
+      usermatches: this.usermatches,
+      shownFeatures: this.shownFeatures,
+      teacherReactiveSentence: this.teacherReactiveSentence,
+    });
 
     this.sentenceBus[this.userId] = this.sentenceSVG;
 
@@ -68,20 +71,15 @@ export default {
 
     this.sentenceBus.$on("tree-update:token", ({ token, userId }) => {
       if (userId == this.userId) {
-        this.sentenceSVG.updateToken(token);
-        this.sentenceSVG.refresh();
+        this.reactiveSentence.updateToken(token);
       }
     });
-
-    // this.sentenceBus.$on("saved:tree", () => {
-    // console.log(this.conll)
-    // this.sentenceSVG.treeJson = conllToJson(this.conll).tree;
-    // this.sentenceSVG.META = conllToJson(this.conll).META;
-    // this.sentenceSVG.drawTree();
-    // this.sentenceSVG.refresh();
-    // })
   },
   methods: {
+    dummyfct() {
+      console.log("KK", this.sentenceSVG);
+      this.sentenceSVG.refresh();
+    },
     svgClickHandler(e) {
       const clickedId = e.detail.clicked;
       const clickedToken = this.sentenceSVG.treeJson[clickedId];

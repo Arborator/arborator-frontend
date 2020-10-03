@@ -11,22 +11,30 @@ const dragclickthreshold = 400; //ms
 ///////////////                ////////////////
 
 export class SentenceSVG {
-  constructor(
-    idSVG,
-    sentenceJson,
+  constructor({
+    svgID,
+    reactiveSentence,
     usermatches,
     shownFeatures,
-    teacherTreeJson
-  ) {
+    teacherReactiveSentence,
+  }) {
     //// base properties
-    this.idSVG = idSVG;
-    this.snapSentence = Snap(idSVG);
-    console.log("KK step 2", sentenceJson.metaJson)
-    this.treeJson = sentenceJson.treeJson;
-    this.metaJson = sentenceJson.metaJson;
+    this.svgID = svgID;
+    this.snapSentence = Snap(`#${svgID}`);
+    this.reactiveSentence = reactiveSentence;
+
+    this.treeJson = reactiveSentence.treeJson;
+    
+    this.metaJson = reactiveSentence.metaJson;
     this.usermatches = usermatches;
     this.shownFeatures = shownFeatures;
-    this.teacherTreeJson = teacherTreeJson;
+
+    if (teacherReactiveSentence) {
+      this.teacherTreeJson = teacherReactiveSentence.treeJson;
+    }
+    this.reactiveSentence.addEventListener("token-updated", (e) => {
+      this.refresh();
+    });
 
     //// other properties
     // distances
@@ -71,7 +79,6 @@ export class SentenceSVG {
     if (this.teacherTreeJson) {
       this.showDiffs(this.teacherTreeJson);
     }
-    console.log("KK metaJson", this.metaJson)
   }
 
   populateTokenSVGs() {
@@ -111,7 +118,10 @@ export class SentenceSVG {
     var newtree = {};
     for (let id in this.treeJson) {
       id = parseInt(id);
-      if (tokenIds.includes(id) && tokenIds.indexOf(id) >= tokensToReplace.length)
+      if (
+        tokenIds.includes(id) &&
+        tokenIds.indexOf(id) >= tokensToReplace.length
+      )
         continue;
       var node = this.treeJson[id];
       node.ID = id2newid[id];
@@ -136,13 +146,11 @@ export class SentenceSVG {
       if (newnode.MISC.Gloss) newnode.MISC.Gloss = newnode.FORM;
       newtree[tokenIds[0] + i] = newnode;
     }
-    if (!Object.keys(newtree).length) return ; // forbid to erase entire tree
+    if (!Object.keys(newtree).length) return; // forbid to erase entire tree
     this.treeJson = newtree;
 
     // // TODO handle new meta text
     this.metaJson.text = getSentenceTextFromJson(newtree);
-
-
 
     this.snapSentence.clear();
     this.drawTree();
@@ -216,7 +224,8 @@ export class SentenceSVG {
 
   drawRelations() {
     for (const tokenSVG of Object.values(this.tokenSVGs)) {
-      const headId = tokenSVG.head;
+      const headId = tokenSVG.tokenJson.HEAD;
+      console.log("KK headId", headId)
       var headCoordX = 0;
       if (headId > 0) {
         const headtokenSVG = this.tokenSVGs[headId];
@@ -227,7 +236,7 @@ export class SentenceSVG {
       } else {
         console.log(
           "this nodeTree has no governor, not drawing it",
-          tokenSVG.id
+          tokenSVG.tokenJson.ID
         );
         continue;
       }
@@ -244,7 +253,6 @@ export class SentenceSVG {
     this.totalHeight = 0;
     for (const tokenSVG of Object.values(this.tokenSVGs)) {
       tokenSVG.attachEvent();
-
       const tokenSVGHeight = Math.max(
         ...this.shownFeatures.map(
           (feature) => tokenSVG.snapElements[feature].getBBox().y2
@@ -252,9 +260,8 @@ export class SentenceSVG {
       );
       this.totalHeight = Math.max(this.totalHeight, tokenSVGHeight);
     }
-
     this.snapSentence.attr("width", this.totalWidth + 50);
-    this.snapSentence.attr("height", this.totalHeight);
+    this.snapSentence.attr("height", this.totalHeight || 1000); // 1000 was there in case the SVG pop up after the div, so it give a heigth
   }
 
   attachEvents() {
@@ -335,18 +342,18 @@ class TokenSVG {
   constructor(tokenJson, sentenceSVG) {
     this.sentenceSVG = sentenceSVG;
     this.tokenJson = tokenJson;
-    this.id = parseInt(tokenJson["ID"]);
-    this.head = isNaN(parseInt(tokenJson["HEAD"]))
-      ? -1
-      : parseInt(tokenJson["HEAD"]);
-    this.form = tokenJson["FORM"];
-    this.lemma = tokenJson["LEMMA"];
-    this.upos = tokenJson["UPOS"];
-    this.xpos = tokenJson["XPOS"];
-    this.deprel = tokenJson["DEPREL"];
-    this.misc = tokenJson["MISC"];
-    this.feats = tokenJson["FEATS"];
-    this.deps = tokenJson["DEPS"];
+    // this.id = parseInt(tokenJson["ID"]);
+    // this.head = isNaN(parseInt(tokenJson["HEAD"]))
+    //   ? -1
+    //   : parseInt(tokenJson["HEAD"]);
+    // this.form = tokenJson["FORM"];
+    // this.lemma = tokenJson["LEMMA"];
+    // this.upos = tokenJson["UPOS"];
+    // this.xpos = tokenJson["XPOS"];
+    // this.deprel = tokenJson["DEPREL"];
+    // this.misc = tokenJson["MISC"];
+    // this.feats = tokenJson["FEATS"];
+    // this.deps = tokenJson["DEPS"];
 
     // populate the FEATS and MISC child features
     for (const label of ["FEATS", "MISC"]) {
@@ -423,7 +430,7 @@ class TokenSVG {
       arcPath = getArcPathRoot(xFrom, yLow);
     } else {
       yTop = heightArc;
-      xTo = this.id > this.head ? headCoordX + GAPX / 2 : headCoordX - GAPX / 2;
+      xTo = this.tokenJson.ID > this.tokenJson.HEAD ? headCoordX + GAPX / 2 : headCoordX - GAPX / 2;
       arcPath = getArcPath(xFrom, xTo, yLow, yTop);
     }
 
@@ -462,7 +469,7 @@ class TokenSVG {
           detail: {
             treeNode: this_,
             targetLabel: label,
-            clicked: this_.id,
+            clicked: this_.tokenJson.ID,
             event: e,
           },
         });
@@ -478,13 +485,13 @@ class TokenSVG {
 
   attachHover() {
     this.snapElements["FORM"].mouseover(() => {
-      if (this.sentenceSVG.dragged && this.id !== this.sentenceSVG.dragged) {
+      if (this.sentenceSVG.dragged && this.tokenJson.ID !== this.sentenceSVG.dragged) {
         this.snapElements["FORM"].addClass("glossy");
-        this.sentenceSVG.hovered = this.id;
+        this.sentenceSVG.hovered = this.tokenJson.ID;
       }
     });
     this.snapElements["FORM"].mouseout(() => {
-      if (this.sentenceSVG.dragged && this.id !== this.sentenceSVG.dragged) {
+      if (this.sentenceSVG.dragged && this.tokenJson.ID !== this.sentenceSVG.dragged) {
         this.snapElements["FORM"].removeClass("glossy");
         this.sentenceSVG.hovered = 0;
       }
@@ -675,7 +682,7 @@ function stopDrag(e) {
     event = new CustomEvent("svg-click", {
       detail: {
         treeNode: this,
-        clicked: this.id,
+        clicked: this.tokenJson.ID,
         targetLabel: "FORM",
       },
     });

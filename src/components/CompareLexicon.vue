@@ -17,11 +17,17 @@
     card-class="shadow-8"
     :key="tableKey"
     table-style="max-height:80vh">
-
+    <template v-slot:top-right>
+      <q-input borderless dense debounce="300" v-model="table.filter" placeholder="Search">
+        <template v-slot:append>
+          <q-icon name="search" />
+        </template>
+      </q-input>
+    </template>
     <template v-slot:body-cell="props">
       
       <td v-if="props.row.type=='In the two dictionaries with the same information'" style="background: mediumseagreen">{{props.value}}</td>
-      <td v-else-if="props.row.type=='In the two dictionaries with different information'" style="background: orange">{{props.value}}</td>
+      <td v-else-if="props.row.type=='Identical form in both dictionaries with different information'" style="background: orange">{{props.value}}</td>
       <td v-else-if="props.row.type=='Only in the old dictionary'" style="background: #7EF0CC">{{props.value}}</td>
       <td v-else-if="props.row.type=='Only in the imported dictionary'" style="background: #FAA5CB">{{props.value}}</td>
 

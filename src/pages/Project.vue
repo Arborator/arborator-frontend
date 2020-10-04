@@ -1303,7 +1303,7 @@ export default {
       for (const sample of this.table.selected) {
         samplenames.push(sample.samplename);
       }
-      var data = { samplenames: samplenames, treeSelection: type };
+      var data = { samplenames: samplenames, treeSelection: type};
       // console.log(123,data);
       api
         .getLexicon(this.$route.params.projectname, data)

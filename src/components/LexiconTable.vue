@@ -117,8 +117,12 @@
       </q-card>
     </q-dialog>
     <q-dialog v-model="searchDialog" seamless position="right" full-width>
-      <grew-request-card :parentOnSearch="onSearch" :parentOnTryRule="onTryRule" :grewquery="$route.query.q || ''"></grew-request-card>
-    </q-dialog>
+        <grew-request-card
+          :parentOnSearch="onSearch"
+          :parentOnTryRule="onTryRule"
+          :grewquery="$route.query.q || ''"
+        ></grew-request-card>
+      </q-dialog>
 
     <q-dialog v-model="uploadDial" :maximized="maximizedUploadToggle" transition-show="fade" transition-hide="fade" >
       <q-card style=" max-width: 100vw;">
@@ -189,11 +193,11 @@ export default {
       RulesApplied : false,
       uploadDial : false,
       maximizedUploadToggle:false,
-      tsvOK: false,
       download : [],
       uploadLexicon : [],
       CompareDics : false,
       dics : [],
+      rules_grew : [],
       featTable: {
         form:[],
         pos:[],
@@ -288,26 +292,22 @@ export default {
       this.uploadSample.submitting = true;
       if (this.uploadSample.attachment.file.length == 1){
         for(const file of this.uploadSample.attachment.file){ form.append('files',file); 
-          if (file['type']==('text/tab-separated-values'||'tsv')){ this.tsvOK = true ;}}
-        if (this.tsvOK == true){
-          api.uploadValidator(this.$route.params.projectname, form).then( response => { 
-            this.uploadSample.attachment.file = []; 
+        api.uploadValidator(this.$route.params.projectname, form).then( response => { 
+          this.uploadSample.attachment.file = []; 
+          this.uploadDial = false; 
+          this.addValidator(response.data.validator);
+          this.uploadSample.submitting = false;})
+          .catch(error => { 
+            if (error.response) 
+            {
+                error.response.message = error.response.data.message;
+                error.permanent = true;
+            }
+            error.caption = "Check your file please!"
+            this.uploadSample.submitting = false; 
             this.uploadDial = false; 
-            this.addValidator(response.data.validator);
-            this.uploadSample.submitting = false;})
-            .catch(error => { 
-              if (error.response) 
-              {
-                  error.response.message = error.response.data.message;
-                  error.permanent = true;
-              }
-              error.caption = "Check your file please!"
-              this.uploadSample.submitting = false; 
-              this.uploadDial = false; 
-              this.$store.dispatch("notifyError", {error: error}); });
-          this.tsvOK = false;
+            this.$store.dispatch("notifyError", {error: error}); });
         }
-        else{this.showNotif('top', 'onlyTSVFile')}
       }
       else {this.showNotif('top', 'onlyOneFile');}
     },
@@ -318,9 +318,9 @@ export default {
         api.transformation_grew(this.$route.params.projectname, datasample)
         .then(response => {
           console.log(444555666,response.data)
-          var pattern_prov = response.data.patterns+response.data.without
-          // Demander à KIM si without doit être renvoyé sous forme de pattern
-
+          var pattern_prov = response.data.patterns+response.data.without;
+          this.rules_grew = response.data.tryRules;
+          console.log(888888, this.rules_grew)
           if ( this.RulesApplied == false ){
             if (response.data.without != ""){
               if ( this.queries.length == 6 || this.queries[6]['name'] != 'Correct lexicon'){
@@ -360,21 +360,20 @@ export default {
           this.resultSearch = response.data;
       }).catch(error => {  this.$store.dispatch("notifyError", {error: error})  });
     },
-    onTryRule(searchPattern, rewriteCommands){
-      console.log(12121,searchPattern, rewriteCommands)
-      var query = { pattern: searchPattern, rewriteCommands:rewriteCommands };
-      console.log(3333, query);
-      api.tryRuleProject(this.$route.butparams.projectname, query)
-      .then(response => {
+    onTryRule(searchPattern, rewriteCommands) {
+      console.log(12121, searchPattern, rewriteCommands);
+      var query = { pattern: searchPattern, rewriteCommands: rewriteCommands };
+      api
+        .tryRuleProject(this.$route.params.projectname, query)
+        .then((response) => {
           this.resultSearchDialog = true;
           this.resultSearch = response.data;
-      }).catch(error => {  this.$store.dispatch("notifyError", {error: error.response.data.message})  });
-      this.RulesGrew=[];
-      this.RulesApplied = true;
-      this.searchDialog=false;
-      this.queries.splice(-1, 1);
-      // console.log(this.queries)
-
+        })
+        .catch((error) => {
+          this.$store.dispatch("notifyError", {
+            error: error.response.data.message,
+          });
+        });
     },
     addEntry(){
       if(this.infotochange !=""){

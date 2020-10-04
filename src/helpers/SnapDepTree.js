@@ -472,6 +472,7 @@ class TokenSVG {
   }
 
   attachDragger() {
+    console.log("KK attach dragger", this.snapElements["FORM"])
     this.draggedForm = this.snapElements["FORM"];
     this.draggedForm.drag(dragging, startDrag, stopDrag, this); // `this` act like the context. (Similar to .bind(this))
   }

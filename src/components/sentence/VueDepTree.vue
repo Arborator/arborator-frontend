@@ -26,9 +26,7 @@ export default {
   },
   computed: {
     svgID() {
-      const correctedUserId = this.userId.replaceAll(".", "-")
-      console.log(correctedUserId)
-      return `svg-${this.sentenceId}-${correctedUserId}`;
+      return `svg-${this.sentenceId}-${this.userId}`.replaceAll(".", "-");
     },
     shownfeatures() {
       return this.$store.getters["config/shownfeatures"];
@@ -44,6 +42,7 @@ export default {
     },
   },
   mounted() {
+    console.log("KK this.conll", this.conll)
     const sentenceJson = conllToJson(this.conll);
     console.log("KK step 0 ", sentenceJson)
 

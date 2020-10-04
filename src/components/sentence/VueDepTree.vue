@@ -26,7 +26,9 @@ export default {
   },
   computed: {
     svgID() {
-      return `svg-${this.sentenceId}-${this.userId}`;
+      const correctedUserId = this.userId.replaceAll(".", "-")
+      console.log(correctedUserId)
+      return `svg-${this.sentenceId}-${correctedUserId}`;
     },
     shownfeatures() {
       return this.$store.getters["config/shownfeatures"];

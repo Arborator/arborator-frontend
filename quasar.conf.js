@@ -133,6 +133,7 @@ module.exports = function(ctx) {
             API: JSON.stringify("https://arboratorgrew.ilpga.fr:8888"),
           },
       scopeHoisting: true,
+      devtool: 'source-map',
       // vueRouterMode: 'history',
       // vueCompiler: true,
       // gzip: true,

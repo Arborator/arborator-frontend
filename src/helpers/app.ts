@@ -1,6 +1,6 @@
-console.log("hello you !");
+import {  testConllString, conllToJson} from "./Conll.js"
 
-export function testt() {
-  console.log("hello world")
-}
 
+
+const sentenceJson = conllToJson(testConllString)
+console.log(sentenceJson)

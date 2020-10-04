@@ -1,7 +1,6 @@
 import Snap from "snapsvg-cjs";
 import { jsonToConll, conllToJson, getSentenceTextFromJson } from "./Conll.js";
 import { EventDispatcher } from "./EventDispatcher.js";
-
 //////    CONSTANT DECLARATION    //////
 
 const dragclickthreshold = 400; //ms
@@ -597,7 +596,7 @@ function startDrag() {
   this.dragStartX = this.centerX;
   this.draggedStartY = this.draggedForm.getBBox().y;
 
-  this.sentenceSVG.dragged = this.id;
+  this.sentenceSVG.dragged = this.tokenJson.ID;
 
   var xb = this.dragStartX;
   var yb = this.draggedStartY;

@@ -26,6 +26,8 @@ export class SentenceSVG {
     this.metaJson = sentenceJson.metaJson;
     this.usermatches = usermatches;
     this.shownFeatures = shownFeatures;
+    this.shownFeatures = this.shownFeatures.filter((item) => item !== "FORM");
+    this.shownFeatures.unshift("FORM");
     this.teacherTreeJson = teacherTreeJson;
 
     //// other properties

@@ -228,7 +228,7 @@ import { mapGetters } from "vuex";
 // import ConllGraph from "./ConllGraph.vue";
 import api from "../../boot/backend-api";
 
-import { ReactiveSentence } from "../../helpers/ReactiveSentence.js"; // for test ony at the moment
+import { ReactiveSentence } from "../../helpers/ReactiveSentence"; // for test ony at the moment
 
 import VueDepTree from "./VueDepTree.vue";
 import RelationDialog from "./RelationDialog.vue";

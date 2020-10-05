@@ -1,9 +1,5 @@
 <template>
   <q-dialog v-model="relationDialogOpened">
-    <!-- :maximized="maximizedToggle"
-    @hide="ondialoghide()" -->
-
-    <!-- @keyup.enter="onchangerel(false)" -->
     <q-card>
       <q-bar class="bg-primary text-white">
         <div class="text-weight-bold">

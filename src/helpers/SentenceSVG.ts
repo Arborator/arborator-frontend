@@ -1,6 +1,13 @@
 import Snap from "snapsvg-cjs";
-import { jsonToConll, conllToJson, getSentenceTextFromJson } from "./Conll.js";
-import { EventDispatcher } from "./EventDispatcher.js";
+import {
+  jsonToConll,
+  conllToJson,
+  getSentenceTextFromJson,
+  TreeJson,
+  MetaJson,
+} from "./Conll";
+import { EventDispatcher } from "./EventDispatcher";
+import { ReactiveSentence } from "./ReactiveSentence";
 //////    CONSTANT DECLARATION    //////
 
 const dragclickthreshold = 400; //ms
@@ -8,29 +15,41 @@ const dragclickthreshold = 400; //ms
 ///////////////                ////////////////
 ///////////////   SentenceSVG  ////////////////
 ///////////////                ////////////////
+interface SentenceSVGOptions {
+  svgID: string;
+  reactiveSentence: ReactiveSentence;
+  usermatches: [];
+  shownFeatures: string[];
+  teacherReactiveSentence: ReactiveSentence;
+}
 
-export class SentenceSVG {
-  constructor({
-    svgID,
-    reactiveSentence,
-    usermatches,
-    shownFeatures,
-    teacherReactiveSentence,
-  }) {
+export interface SentenceSVG extends SentenceSVGOptions {}
+
+const SVG_CONFIG = {
+  textstarty: 10,
+};
+
+export class SentenceSVG extends EventDispatcher {
+  snapSentence: Snap;
+  treeJson: TreeJson;
+  metaJson: MetaJson;
+  teacherTreeJson: TreeJson;
+
+  constructor(opts: SentenceSVGOptions) {
+    super();
+    Object.assign(this, opts);
     //// base properties
-    this.svgID = svgID;
-    this.snapSentence = Snap(`#${svgID}`);
-    this.reactiveSentence = reactiveSentence;
+    this.snapSentence = Snap(`#${this.svgID}`);
 
-    this.treeJson = reactiveSentence.treeJson;
-    
-    this.metaJson = reactiveSentence.metaJson;
-    this.usermatches = usermatches;
-    this.shownFeatures = shownFeatures;
+    this.treeJson = this.reactiveSentence.treeJson;
+    this.metaJson = this.reactiveSentence.metaJson;
 
-    if (teacherReactiveSentence) {
-      this.teacherTreeJson = teacherReactiveSentence.treeJson;
+    if (this.teacherReactiveSentence) {
+      this.teacherTreeJson = this.teacherReactiveSentence.treeJson;
+    } else {
+      this.teacherTreeJson = {};
     }
+    document.addEventListener;
     this.reactiveSentence.addEventListener("token-updated", (e) => {
       this.refresh();
     });
@@ -51,11 +70,11 @@ export class SentenceSVG {
     this.hovered = 0;
 
     //// to refactor (start of drawit)
-    this.matchnodes = usermatches
+    this.matchnodes = this.usermatches
       .map(({ nodes }) => Object.values(nodes))
       .flat(); // simple array of match nodes to highlight
     this.matchedges = Object.fromEntries(
-      usermatches.map((um) =>
+      this.usermatches.map((um) =>
         um.edges.length == null ? [] : [um.edges.e.target, um.edges.e]
       )
     ); // object { target node : object }
@@ -224,7 +243,6 @@ export class SentenceSVG {
   drawRelations() {
     for (const tokenSVG of Object.values(this.tokenSVGs)) {
       const headId = tokenSVG.tokenJson.HEAD;
-      console.log("KK headId", headId)
       var headCoordX = 0;
       if (headId > 0) {
         const headtokenSVG = this.tokenSVGs[headId];
@@ -282,11 +300,13 @@ export class SentenceSVG {
   }
 
   showDiffs(otherTreeJson) {
-    for (const [tokenIndex, tokenSVG] of Object.entries(this.tokenSVGs)) {
-      if (otherTreeJson[tokenIndex].FORM !== tokenSVG.tokenJson.FORM) {
-        console.log(`Error, token id ${tokenIndex} doesn't match`);
-      } else {
-        tokenSVG.showDiff(otherTreeJson[tokenIndex]);
+    if (!(Object.keys(otherTreeJson).length === 0 && otherTreeJson.constructor === Object)) {
+      for (const [tokenIndex, tokenSVG] of Object.entries(this.tokenSVGs)) {
+        if (otherTreeJson[tokenIndex].FORM !== tokenSVG.tokenJson.FORM) {
+          console.log(`Error, token id ${tokenIndex} doesn't match`);
+        } else {
+          tokenSVG.showDiff(otherTreeJson[tokenIndex]);
+        }
       }
     }
   }
@@ -331,7 +351,7 @@ export class SentenceSVG {
 }
 
 // add a basic event dispatch/listen system
-Object.assign(SentenceSVG.prototype, EventDispatcher.prototype);
+// Object.assign(SentenceSVG.prototype, EventDispatcher.prototype);
 
 ///////////////                ////////////////
 ///////////////   tokenSVG  ////////////////
@@ -429,7 +449,10 @@ class TokenSVG {
       arcPath = getArcPathRoot(xFrom, yLow);
     } else {
       yTop = heightArc;
-      xTo = this.tokenJson.ID > this.tokenJson.HEAD ? headCoordX + GAPX / 2 : headCoordX - GAPX / 2;
+      xTo =
+        this.tokenJson.ID > this.tokenJson.HEAD
+          ? headCoordX + GAPX / 2
+          : headCoordX - GAPX / 2;
       arcPath = getArcPath(xFrom, xTo, yLow, yTop);
     }
 
@@ -447,9 +470,9 @@ class TokenSVG {
       deprelX += 20;
       deprelY = 30;
     }
-
+    
     this.snapDeprel = snapSentence
-      .text(deprelX, deprelY, this.deprel)
+      .text(deprelX, deprelY, this.tokenJson.DEPREL)
       .addClass("DEPREL");
 
     this.snapDeprel.attr({ x: deprelX - this.snapDeprel.getBBox().w / 2 });
@@ -484,13 +507,19 @@ class TokenSVG {
 
   attachHover() {
     this.snapElements["FORM"].mouseover(() => {
-      if (this.sentenceSVG.dragged && this.tokenJson.ID !== this.sentenceSVG.dragged) {
+      if (
+        this.sentenceSVG.dragged &&
+        this.tokenJson.ID !== this.sentenceSVG.dragged
+      ) {
         this.snapElements["FORM"].addClass("glossy");
         this.sentenceSVG.hovered = this.tokenJson.ID;
       }
     });
     this.snapElements["FORM"].mouseout(() => {
-      if (this.sentenceSVG.dragged && this.tokenJson.ID !== this.sentenceSVG.dragged) {
+      if (
+        this.sentenceSVG.dragged &&
+        this.tokenJson.ID !== this.sentenceSVG.dragged
+      ) {
         this.snapElements["FORM"].removeClass("glossy");
         this.sentenceSVG.hovered = 0;
       }

@@ -36,7 +36,6 @@ export function conllToJson(sentenceConll) {
     var lastid = 0;
     var skipuntil = 0;
     var words = [];
-    console.log("KK nodes", nodes);
     nodes.forEach((nodeline, id) => {
         // for each conll line:
         let ID;

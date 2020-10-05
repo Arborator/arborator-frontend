@@ -14,7 +14,6 @@ export class ReactiveSentence {
 
   fromConll(sentenceConll) {
     this.sentenceConll = sentenceConll;
-    console.log("KK sentenceConll", sentenceConll)
 
     const sentenceJson = conllToJson(this.sentenceConll);
     Object.assign(this.treeJson, sentenceJson.treeJson);

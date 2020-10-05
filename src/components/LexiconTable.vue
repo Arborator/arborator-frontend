@@ -117,12 +117,23 @@
       </q-card>
     </q-dialog>
     <q-dialog v-model="searchDialog" seamless position="right" full-width>
-        <grew-request-card
-          :parentOnSearch="onSearch"
-          :parentOnTryRule="onTryRule"
-          :grewquery="$route.query.q || ''"
-        ></grew-request-card>
-      </q-dialog>
+      <grew-request-card
+        :parentOnSearch="onSearch"
+        :parentOnTryRule="onTryRule"
+        :grewquery="$route.query.q || ''"
+      ></grew-request-card>
+    </q-dialog>
+    <q-dialog
+      v-model="resultSearchDialog"
+      transition-show="fade"
+      transition-hide="fade"
+    >
+      <result-view
+        :searchresults="resultSearch"
+        searchscope="project"
+      ></result-view>
+      <!-- :totalsents="project.infos.number_sentences" -->
+    </q-dialog>
 
     <q-dialog v-model="uploadDial" :maximized="maximizedUploadToggle" transition-show="fade" transition-hide="fade" >
       <q-card style=" max-width: 100vw;">
@@ -163,6 +174,7 @@ import AttributeTable from './sentence/AttributeTable';
 import GrewRequestCard from './GrewRequestCard';
 import CompareLexicon from './CompareLexicon';
 import grewTemplates from '../assets/grew-templates.json';
+import ResultView from "../components/ResultView";
 
 export default {
   name: "LexiconTable",
@@ -170,7 +182,8 @@ export default {
   components: {
     GrewRequestCard,
     CompareLexicon,
-    AttributeTable
+    AttributeTable,
+    ResultView
   },
 
   data() {
@@ -198,6 +211,7 @@ export default {
       CompareDics : false,
       dics : [],
       rules_grew : [],
+      resultSearch: {},
       featTable: {
         form:[],
         pos:[],
@@ -264,11 +278,13 @@ export default {
   mounted() {
     this.options.annof = this.$store.getters['config/annotationFeatures'];
     this.options.catoptions.push({'name':'POS', 'values':this.options.annof.UPOS});
+    if (this.$route.query.q && this.$route.query.q.length > 0)
+      this.searchDialog = true;
   },
   methods: {
     addValidator(Validator){
       for (let i = 0; i < this.data.length; i++){
-        if (this.data[i]['changed']!= 'delete'){
+        if (this.data[i]['changed']!= 'delete' && this.data[i]['changed']!= 'replace'){
           if(!('frequency' in this.data[i])) {this.data[i].frequency = '_'}
           this.uploadLexicon.push(this.data[i])
         }
@@ -415,7 +431,7 @@ export default {
         this.temp_features+=this.tempfeat
         }}
       this.tempfeat=''
-      //console.log(555555,this.infotochange)
+      // console.log(555555,this.infotochange)
 
     },
 
@@ -494,7 +510,7 @@ export default {
     },
     exportLexiconTSV(){
       for (let i = 0; i < this.data.length; i++){
-        if (this.data[i]['changed']!= 'delete'){
+        if (this.data[i]['changed']!= 'delete' && this.data[i]['changed']!= 'replace'){
           if(!('frequency' in this.data[i])) {this.data[i].frequency = '_'}
           this.download.push(this.data[i])
         }
@@ -521,7 +537,7 @@ export default {
     },
     exportLexiconJSON(){
       for (let i = 0; i < this.data.length; i++){
-        if (this.data[i]['changed']!= 'delete'){
+        if (this.data[i]['changed']!= 'delete' && this.data[i]['changed']!= 'replace'){
           if(!('frequency' in this.data[i])) {this.data[i].frequency = '_'}
           this.download.push(this.data[i])
         }

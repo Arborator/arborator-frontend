@@ -33,7 +33,7 @@ export default {
   },
   computed: {
     svgID() {
-      return `svg-${this.sentenceId}-${this.userId}`;
+      return `svg-${this.sentenceId}-${this.userId}`.replaceAll(".","-");
     },
     shownFeatures() {
       return this.$store.getters["config/shownfeatures"];

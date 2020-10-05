@@ -26,7 +26,15 @@ interface SentenceSVGOptions {
 export interface SentenceSVG extends SentenceSVGOptions {}
 
 const SVG_CONFIG = {
-  textstarty: 10,
+  startTextY: 10,
+  textgraphdistance: 10,
+  dragclickthreshold: 400, //ms
+  depLevelHeight: 45,
+  arrowheadsize: 5,
+  gapX: 18, // TODO set it properly elsewhere SVG_CONFIG
+  sizeFontY: 18, // TODO 
+  spacingX: 40,
+  spacingY: 20,
 };
 
 export class SentenceSVG extends EventDispatcher {
@@ -34,6 +42,9 @@ export class SentenceSVG extends EventDispatcher {
   treeJson: TreeJson;
   metaJson: MetaJson;
   teacherTreeJson: TreeJson;
+
+  tokenSVGs: {[key: number]: TokenSVG} = {};
+
 
   constructor(opts: SentenceSVGOptions) {
     super();
@@ -43,6 +54,11 @@ export class SentenceSVG extends EventDispatcher {
 
     this.treeJson = this.reactiveSentence.treeJson;
     this.metaJson = this.reactiveSentence.metaJson;
+
+    // put FORM at the beginning of the shownFeatures array
+    this.shownFeatures = this.shownFeatures.filter((item) => item !== "FORM");
+    this.shownFeatures.unshift("FORM");
+
 
     if (this.teacherReactiveSentence) {
       this.teacherTreeJson = this.teacherReactiveSentence.treeJson;
@@ -54,20 +70,7 @@ export class SentenceSVG extends EventDispatcher {
       this.refresh();
     });
 
-    //// other properties
-    // distances
-    this.textgraphdistance = 10;
-    this.textstarty = 10; // has to be bigger than arborator-draft.css DEPREL fontsize
-    this.runningy = this.textstarty;
-    this.leveldistance = parseInt(
-      getComputedStyle(this.snapSentence.parent().node).getPropertyValue(
-        "--depLevelHeight"
-      )
-    );
 
-    // states
-    this.dragged = 0; // dragged element ID
-    this.hovered = 0;
 
     //// to refactor (start of drawit)
     this.matchnodes = this.usermatches
@@ -100,10 +103,9 @@ export class SentenceSVG extends EventDispatcher {
   }
 
   populateTokenSVGs() {
-    this.tokenSVGs = {};
     let runningX = 0;
     let maxLevelY = Math.max(...this.levelsArray, 2); // 2 would be the minimum possible level size
-    let offsetY = this.runningy + maxLevelY * this.leveldistance;
+    let offsetY = SVG_CONFIG.startTextY + maxLevelY * SVG_CONFIG.depLevelHeight;
 
     for (const [tokenIndex, tokenJson] of Object.entries(this.treeJson)) {
       var tokenSVG = new TokenSVG(tokenJson, this);
@@ -126,7 +128,6 @@ export class SentenceSVG extends EventDispatcher {
   replaceArrayOfTokens(tokenIds, firstToken, tokensToReplace) {
     var id2newid = { 0: 0 };
     for (let id in this.treeJson) {
-      id = parseInt(id);
       if (id < tokenIds[0]) id2newid[id] = id;
       else if (tokenIds.includes(id)) {
         if (tokenIds.indexOf(id) < tokensToReplace.length) id2newid[id] = id;
@@ -135,7 +136,6 @@ export class SentenceSVG extends EventDispatcher {
     }
     var newtree = {};
     for (let id in this.treeJson) {
-      id = parseInt(id);
       if (
         tokenIds.includes(id) &&
         tokenIds.indexOf(id) >= tokensToReplace.length
@@ -257,7 +257,7 @@ export class SentenceSVG extends EventDispatcher {
         );
         continue;
       }
-      tokenSVG.drawRelation(this.snapSentence, headCoordX, this.leveldistance);
+      tokenSVG.drawRelation(this.snapSentence, headCoordX, SVG_CONFIG.depLevelHeight);
     }
   }
 
@@ -300,7 +300,12 @@ export class SentenceSVG extends EventDispatcher {
   }
 
   showDiffs(otherTreeJson) {
-    if (!(Object.keys(otherTreeJson).length === 0 && otherTreeJson.constructor === Object)) {
+    if (
+      !(
+        Object.keys(otherTreeJson).length === 0 &&
+        otherTreeJson.constructor === Object
+      )
+    ) {
       for (const [tokenIndex, tokenSVG] of Object.entries(this.tokenSVGs)) {
         if (otherTreeJson[tokenIndex].FORM !== tokenSVG.tokenJson.FORM) {
           console.log(`Error, token id ${tokenIndex} doesn't match`);
@@ -385,8 +390,6 @@ class TokenSVG {
 
     this.startX = 0;
     this.startY = 0;
-    this.spacingX = 40;
-    this.spacingY = 20; // TODO  get from CSS
     this.width = 0;
     this.ylevel = 0;
   }
@@ -415,9 +418,9 @@ class TokenSVG {
       maxFeatureWidth = Math.max(maxFeatureWidth, featureWidth); // keep biggest node width
 
       // increment position
-      runningY += this.spacingY;
+      runningY += SVG_CONFIG.spacingY;
     }
-    this.width = maxFeatureWidth + this.spacingX;
+    this.width = maxFeatureWidth + SVG_CONFIG.spacingX;
     this.centerX = this.startX + this.width / 2;
 
     this.centerFeatures();
@@ -438,11 +441,9 @@ class TokenSVG {
 
     var heightArc = this.startY - this.ylevel * levelHeight;
 
-    const GAPX = 18; // TODO set it properly elsewhere
-    const SIZE_FONT_Y = 18; // TODO same
     var xFrom = this.centerX;
     var xTo = 0;
-    var yLow = this.startY - SIZE_FONT_Y;
+    var yLow = this.startY - SVG_CONFIG.sizeFontY;
     var yTop = 0;
     var arcPath = "";
     if (headCoordX == 0) {
@@ -451,15 +452,14 @@ class TokenSVG {
       yTop = heightArc;
       xTo =
         this.tokenJson.ID > this.tokenJson.HEAD
-          ? headCoordX + GAPX / 2
-          : headCoordX - GAPX / 2;
+          ? headCoordX + SVG_CONFIG.gapX / 2
+          : headCoordX - SVG_CONFIG.gapX / 2;
       arcPath = getArcPath(xFrom, xTo, yLow, yTop);
     }
 
     this.snapArc = snapSentence.path(arcPath).addClass("curve");
 
-    const arrowheadsize = 5;
-    const arrowheadPath = getArrowheadPath(xFrom, yLow, arrowheadsize);
+    const arrowheadPath = getArrowheadPath(xFrom, yLow);
     this.snapArrowhead = snapSentence.path(arrowheadPath).addClass("arrowhead");
 
     var deprelX = this.snapArc.getBBox().x + this.snapArc.getBBox().w / 2;
@@ -470,7 +470,7 @@ class TokenSVG {
       deprelX += 20;
       deprelY = 30;
     }
-    
+
     this.snapDeprel = snapSentence
       .text(deprelX, deprelY, this.tokenJson.DEPREL)
       .addClass("DEPREL");
@@ -555,8 +555,8 @@ class TokenSVG {
 /////////////// SVG ELEMENT ////////////////
 ///////////////             ////////////////
 
-function getArrowheadPath(xFrom, yLow, arrowheadsize) {
-  arrowheadsize = 5;
+function getArrowheadPath(xFrom, yLow) {
+  const arrowheadsize = SVG_CONFIG.arrowheadsize;
   // gives path for arrowhead x,y startpoint (end of arrow)
   // var
   var startpoint = xFrom + "," + yLow; // to move the arrowhead lower: (y+this.sizes.arrowheadsize/3);
@@ -688,7 +688,7 @@ function dragging(dx, dy) {
   this.draggedArrowhead.transform("translate(" + dx + "," + dy + ")");
 
   // TODO : softcode the leveldistance
-  const leveldistance = 35;
+  const leveldistance = SVG_CONFIG.depLevelHeight;
   if (yb + dy < leveldistance / 2 && Math.abs(dx) < leveldistance / 2) {
     if (this.dragRootCircle == null) {
       this.dragRootCircle = this.snapSentence

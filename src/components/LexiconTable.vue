@@ -27,7 +27,8 @@
       
       <td v-if="props.row.changed=='replace'" style="background: mediumseagreen">{{props.value}}</td>
       <td v-else-if="props.row.changed=='add'" style="background: orange">{{props.value}}</td>
-      <td v-else-if="props.row.changed=='delete'" style="background: #f34336">{{props.value}}</td>
+      <td v-else-if="props.row.changed=='add_delete'" style="background: #f34336">{{props.value}}</td>
+      <td v-else-if="props.row.changed=='replace_delete'" style="background: #108EE5">{{props.value}}</td>
       <td v-else>{{props.value}}</td>
 
     </template>
@@ -284,7 +285,7 @@ export default {
   methods: {
     addValidator(Validator){
       for (let i = 0; i < this.data.length; i++){
-        if (this.data[i]['changed']!= 'delete' && this.data[i]['changed']!= 'replace'){
+        if (this.data[i]['changed']!= 'add_delete' && this.data[i]['changed']!= 'replace' && this.data[i]['changed']!='replace_delete'){
           if(!('frequency' in this.data[i])) {this.data[i].frequency = '_'}
           this.uploadLexicon.push(this.data[i])
         }
@@ -393,7 +394,7 @@ export default {
     },
     addEntry(){
       if(this.infotochange !=""){
-      this.data[this.indexfeat].changed='delete'
+      this.data[this.indexfeat].changed='add_delete'
       var newRow = {
         form:this.featTable.form[0]['v'],
         lemma:this.featTable.lemma[0]['v'],
@@ -437,7 +438,7 @@ export default {
 
     replaceEntry(){
     if(this.infotochange !=""){
-    this.data[this.indexfeat].changed='delete'
+    this.data[this.indexfeat].changed='replace_delete'
     var newRow = {
         form:this.featTable.form[0]['v'],
         lemma:this.featTable.lemma[0]['v'],
@@ -510,7 +511,7 @@ export default {
     },
     exportLexiconTSV(){
       for (let i = 0; i < this.data.length; i++){
-        if (this.data[i]['changed']!= 'delete' && this.data[i]['changed']!= 'replace'){
+        if (this.data[i]['changed']!= 'add_delete' && this.data[i]['changed']!= 'replace' && this.data[i]['changed']!='replace_delete'){
           if(!('frequency' in this.data[i])) {this.data[i].frequency = '_'}
           this.download.push(this.data[i])
         }
@@ -537,7 +538,7 @@ export default {
     },
     exportLexiconJSON(){
       for (let i = 0; i < this.data.length; i++){
-        if (this.data[i]['changed']!= 'delete' && this.data[i]['changed']!= 'replace'){
+        if (this.data[i]['changed']!= 'add_delete' && this.data[i]['changed']!= 'replace' && this.data[i]['changed']!='replace_delete'){
           if(!('frequency' in this.data[i])) {this.data[i].frequency = '_'}
           this.download.push(this.data[i])
         }

@@ -35,9 +35,14 @@ export class ReactiveSentence extends EventDispatcher {
   }
 
   updateTree(treeJson: TreeJson): void {
-    for (const [tokenIndex, tokenJson] of Object.entries(treeJson)) {
-      this.treeJson[tokenIndex] = tokenJson;
-      Object.assign(this.treeJson[tokenIndex], tokenJson);
+    // for (const [tokenIndex, tokenJson] of Object.entries(treeJson)) {
+    //   this.treeJson[tokenIndex] = tokenJson;
+    //   Object.assign(this.treeJson[tokenIndex], tokenJson);
+    // }
+
+    for (const tokenIndex in treeJson) {
+      // this.treeJson[tokenIndex] = treeJson[tokenIndex];
+      Object.assign(this.treeJson[tokenIndex], treeJson[tokenIndex]);
     }
 
     this._emitEvent();

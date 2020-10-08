@@ -1,15 +1,27 @@
 import Snap from "snapsvg-cjs";
+import { Token } from "typescript";
 import {
   jsonToConll,
   conllToJson,
   getSentenceTextFromJson,
   TreeJson,
   MetaJson,
+  TokenJson,
 } from "./Conll";
 import { EventDispatcher } from "./EventDispatcher";
 import { ReactiveSentence } from "./ReactiveSentence";
 //////    CONSTANT DECLARATION    //////
-
+const SVG_CONFIG = {
+  startTextY: 10,
+  textgraphdistance: 10,
+  dragclickthreshold: 400, //ms
+  depLevelHeight: 45,
+  arrowheadsize: 5,
+  gapX: 18, // TODO set it properly elsewhere SVG_CONFIG
+  sizeFontY: 18, // TODO
+  spacingX: 40,
+  spacingY: 20,
+};
 const dragclickthreshold = 400; //ms
 
 ///////////////                ////////////////
@@ -25,25 +37,18 @@ interface SentenceSVGOptions {
 
 export interface SentenceSVG extends SentenceSVGOptions {}
 
-const SVG_CONFIG = {
-  startTextY: 10,
-  textgraphdistance: 10,
-  dragclickthreshold: 400, //ms
-  depLevelHeight: 45,
-  arrowheadsize: 5,
-  gapX: 18, // TODO set it properly elsewhere SVG_CONFIG
-  sizeFontY: 18, // TODO 
-  spacingX: 40,
-  spacingY: 20,
-};
-
 export class SentenceSVG extends EventDispatcher {
   snapSentence: Snap;
   treeJson: TreeJson;
   metaJson: MetaJson;
   teacherTreeJson: TreeJson;
 
-  tokenSVGs: {[key: number]: TokenSVG} = {};
+  matchnodes: string[];
+  matchedges: string[];
+
+  tokenSVGs: { [key: number]: TokenSVG } = {};
+  dragged: number = 0;
+  hovered: number = 0;
 
 
   constructor(opts: SentenceSVGOptions) {
@@ -59,7 +64,6 @@ export class SentenceSVG extends EventDispatcher {
     this.shownFeatures = this.shownFeatures.filter((item) => item !== "FORM");
     this.shownFeatures.unshift("FORM");
 
-
     if (this.teacherReactiveSentence) {
       this.teacherTreeJson = this.teacherReactiveSentence.treeJson;
     } else {
@@ -69,8 +73,6 @@ export class SentenceSVG extends EventDispatcher {
     this.reactiveSentence.addEventListener("token-updated", (e) => {
       this.refresh();
     });
-
-
 
     //// to refactor (start of drawit)
     this.matchnodes = this.usermatches
@@ -116,12 +118,12 @@ export class SentenceSVG extends EventDispatcher {
         runningX,
         offsetY
       );
-      tokenSVG["ylevel"] = this.levelsArray[tokenIndex];
+      tokenSVG.ylevel = this.levelsArray[tokenIndex];
       runningX += tokenSVG.width;
     }
   }
 
-  updateToken(tokenJson) {
+  updateToken(tokenJson: TokenJson) {
     this.treeJson[tokenJson.ID] = tokenJson;
   }
 
@@ -199,7 +201,6 @@ export class SentenceSVG extends EventDispatcher {
       }
     );
     var level = 0;
-    this.recursionCounter = 0;
     for (var i = 1; i < this.headsIdArray.length; i++) {
       level = this.getLevel(this.headsIdArray, i, 1, this.headsIdArray.length);
     }
@@ -226,7 +227,6 @@ export class SentenceSVG extends EventDispatcher {
     const levelsSubArray = [];
 
     for (var i = inf; i <= sup; i++) {
-      this.recursionCounter++;
       if (i == index || headsIdArray[headsIdArray[i]] == i) {
         levelsSubArray.push(0);
       } else if (inf <= headsIdArray[i] && headsIdArray[i] <= sup) {
@@ -257,7 +257,11 @@ export class SentenceSVG extends EventDispatcher {
         );
         continue;
       }
-      tokenSVG.drawRelation(this.snapSentence, headCoordX, SVG_CONFIG.depLevelHeight);
+      tokenSVG.drawRelation(
+        this.snapSentence,
+        headCoordX,
+        SVG_CONFIG.depLevelHeight
+      );
     }
   }
 
@@ -299,7 +303,7 @@ export class SentenceSVG extends EventDispatcher {
     }
   }
 
-  showDiffs(otherTreeJson) {
+  showDiffs(otherTreeJson: TreeJson) {
     if (
       !(
         Object.keys(otherTreeJson).length === 0 &&
@@ -316,7 +320,7 @@ export class SentenceSVG extends EventDispatcher {
     }
   }
 
-  getDiffStats(otherTreeConll) {
+  getDiffStats(otherTreeConll: string) {
     const teacherTreeJson = conllToJson(otherTreeConll).treeJson;
     const currentTreeJson = this.treeJson;
 
@@ -331,9 +335,7 @@ export class SentenceSVG extends EventDispatcher {
       UPOS: 0,
     };
 
-    for (const [tokenIndex, teacherTokenJson] of Object.entries(
-      teacherTreeJson
-    )) {
+    for (const tokenIndex in teacherTreeJson) {
       for (const [tag, score] of Object.entries(corrects)) {
         corrects[tag] +=
           teacherTreeJson[tokenIndex][tag] == currentTreeJson[tokenIndex][tag];
@@ -351,8 +353,6 @@ export class SentenceSVG extends EventDispatcher {
   refresh() {
     this.drawTree();
   }
-
-  repr() {}
 }
 
 // add a basic event dispatch/listen system
@@ -361,9 +361,39 @@ export class SentenceSVG extends EventDispatcher {
 ///////////////                ////////////////
 ///////////////   tokenSVG  ////////////////
 ///////////////                ////////////////
-
+// export interface FeatureJson {
+//   [key: string]: string;
+// }
+// interface TokenJson {
+//   ID: number;
+//   FORM: string;
+//   LEMMA: string;
+//   UPOS: string;
+//   XPOS: string;
+//   FEATS: FeatureJson;
+//   HEAD: number;
+//   DEPREL: string;
+//   DEPS: FeatureJson;
+//   MISC: FeatureJson;
+// }
 class TokenSVG {
-  constructor(tokenJson, sentenceSVG) {
+  // type definitions
+  tokenJson: TokenJson;
+  sentenceSVG: SentenceSVG;
+  startY: number = 0;
+  startX: number = 0;
+  width: number = 0;
+  ylevel: number = 0;
+  shownFeatures: string[] = [];
+  centerX: number = 0;
+  // snap elements
+  // snapArc: ??? = ???
+  // snapArrowhead: ??? = ???
+  // snapDeprel: ??? = ???
+  // snapElements: ??[] = ???
+  // draggedForm : ??? (snap)
+
+  constructor(tokenJson: TokenJson, sentenceSVG: SentenceSVG) {
     this.sentenceSVG = sentenceSVG;
     this.tokenJson = tokenJson;
     // this.id = parseInt(tokenJson["ID"]);
@@ -380,21 +410,22 @@ class TokenSVG {
     // this.deps = tokenJson["DEPS"];
 
     // populate the FEATS and MISC child features
-    for (const label of ["FEATS", "MISC"]) {
+    const listLabels: (keyof TokenJson)[] = ["FEATS", "MISC"];
+    for (var label of listLabels) {
       for (const [key, value] of Object.entries(tokenJson[label])) {
         tokenJson[`${label}.${key}`] = value;
       }
     }
 
     this.snapElements = {};
-
-    this.startX = 0;
-    this.startY = 0;
-    this.width = 0;
-    this.ylevel = 0;
   }
 
-  createSnap(snapSentence, shownFeatures, startX, startY) {
+  createSnap(
+    snapSentence,
+    shownFeatures: string[],
+    startX: number,
+    startY: number
+  ) {
     this.snapSentence = snapSentence;
     this.shownFeatures = shownFeatures;
     this.startX = startX;
@@ -436,7 +467,7 @@ class TokenSVG {
     }
   }
 
-  drawRelation(snapSentence, headCoordX, levelHeight) {
+  drawRelation(snapSentence, headCoordX: number, levelHeight: number) {
     // draw the relation for a treeNode and attach to it
 
     var heightArc = this.startY - this.ylevel * levelHeight;
@@ -457,13 +488,13 @@ class TokenSVG {
       arcPath = getArcPath(xFrom, xTo, yLow, yTop);
     }
 
-    this.snapArc = snapSentence.path(arcPath).addClass("curve");
+    var snapArc = snapSentence.path(arcPath).addClass("curve");
 
     const arrowheadPath = getArrowheadPath(xFrom, yLow);
-    this.snapArrowhead = snapSentence.path(arrowheadPath).addClass("arrowhead");
+    var snapArrowhead = snapSentence.path(arrowheadPath).addClass("arrowhead");
 
-    var deprelX = this.snapArc.getBBox().x + this.snapArc.getBBox().w / 2;
-    var deprelY = this.snapArc.getBBox().y - 5;
+    var deprelX = snapArc.getBBox().x + snapArc.getBBox().w / 2;
+    var deprelY = snapArc.getBBox().y - 5;
 
     // replace the deprel when it's the root
     if (headCoordX == 0) {
@@ -471,20 +502,20 @@ class TokenSVG {
       deprelY = 30;
     }
 
-    this.snapDeprel = snapSentence
+    var snapDeprel = snapSentence
       .text(deprelX, deprelY, this.tokenJson.DEPREL)
       .addClass("DEPREL");
 
-    this.snapDeprel.attr({ x: deprelX - this.snapDeprel.getBBox().w / 2 });
-    this.snapElements["DEPREL"] = this.snapDeprel;
-    this.snapElements["arrowhead"] = this.snapArrowhead;
-    this.snapElements["arc"] = this.snapArc;
+    snapDeprel.attr({ x: deprelX - snapDeprel.getBBox().w / 2 });
+    this.snapElements["DEPREL"] = snapDeprel;
+    this.snapElements["arrowhead"] = snapArrowhead;
+    this.snapElements["arc"] = snapArc;
   }
 
   attachEvent() {
     var this_ = this;
     for (const [label, snapElement] of Object.entries(this.snapElements)) {
-      snapElement.click(function(e) {
+      snapElement.click(function(e: Event) {
         // be careful, 'this' is the element because it's normal function
         // const event = new Event("svg-click")
         const event = new CustomEvent("svg-click", {
@@ -502,7 +533,7 @@ class TokenSVG {
 
   attachDragger() {
     this.draggedForm = this.snapElements["FORM"];
-    this.draggedForm.drag(dragging, startDrag, stopDrag, this); // `this` act like the context. (Similar to .bind(this))
+    this.draggedForm.drag(this.dragging, this.startDrag, this.stopDrag, this); // `this` act like the context. (Similar to .bind(this))
   }
 
   attachHover() {
@@ -548,7 +579,144 @@ class TokenSVG {
     }
   }
 
-  repr() {}
+  startDrag() {
+    // `this` is a treeNode instance
+    //  `this.draggedForm` is the Snap object that's being dragged
+    this.dragclicktime = new Date().getTime();
+
+    // create a copy of the FROM that will be deleted after dragging
+    this.draggedFormClone = this.draggedForm.clone();
+    this.draggedFormClone.attr({ cursor: "move" });
+    this.dragStartX = this.centerX;
+    this.draggedStartY = this.draggedForm.getBBox().y;
+
+    this.sentenceSVG.dragged = this.tokenJson.ID;
+
+    var xb = this.dragStartX;
+    var yb = this.draggedStartY;
+
+    var path =
+      "M" +
+      xb +
+      "," +
+      yb +
+      " C" +
+      xb +
+      "," +
+      (yb - 1) +
+      " " +
+      (xb + 1) +
+      "," +
+      (yb - 1) +
+      " " +
+      (xb + 1) +
+      "," +
+      yb;
+    this.draggedCurve = this.snapSentence.path(path).addClass("dragcurve");
+    this.draggedArrowhead = this.snapSentence
+      .path(getArrowheadPath(xb, yb))
+      .addClass("dragcurve");
+    this.dragRootCircle = null;
+    // TODO add droppables
+  }
+
+  dragging(dx, dy) {
+    // `this` is a treeNode instance
+    // `this.draggedForm` is the Snap object that's being dragged
+    this.draggedFormClone.transform(
+      "translate(" + (dx - 15) + "," + (dy - 30) + ")"
+    );
+    this.draggedFormClone.addClass("glossy");
+    var xb = this.dragStartX;
+    var yb = this.draggedStartY;
+
+    var cy = yb + dy - Math.abs(dx) / 2;
+    if (cy < 0) cy = 0;
+    var path =
+      "M" +
+      xb +
+      "," +
+      yb +
+      " C" +
+      xb +
+      "," +
+      cy +
+      " " +
+      (xb + dx) +
+      "," +
+      cy +
+      " " +
+      (xb + dx) +
+      "," +
+      (yb + dy);
+    this.draggedCurve.attr({ d: path });
+    this.draggedArrowhead.transform("translate(" + dx + "," + dy + ")");
+
+    // TODO : softcode the leveldistance
+    const leveldistance = SVG_CONFIG.depLevelHeight;
+    if (yb + dy < leveldistance / 2 && Math.abs(dx) < leveldistance / 2) {
+      if (this.dragRootCircle == null) {
+        this.dragRootCircle = this.snapSentence
+          .circle(xb, 0, leveldistance / 2)
+          .addClass("dragcurve");
+      }
+    } else {
+      if (this.dragRootCircle != null) {
+        this.dragRootCircle.remove();
+        this.dragRootCircle = null;
+      }
+    }
+  }
+
+  stopDrag(e) {
+    var event;
+    if (
+      new Date().getTime() <
+      this.dragclicktime + SVG_CONFIG.dragclickthreshold
+    ) {
+      // TODO handle form:click
+      event = new CustomEvent("svg-click", {
+        detail: {
+          treeNode: this,
+          clicked: this.tokenJson.ID,
+          targetLabel: "FORM",
+        },
+      });
+    } else {
+      event = new CustomEvent("svg-drop", {
+        detail: {
+          treeNode: this,
+          hovered: this.sentenceSVG.hovered,
+          dragged: this.sentenceSVG.dragged,
+          isRoot: this.dragRootCircle ? true : false,
+        },
+      });
+      e.preventDefault();
+      e.stopPropagation();
+    }
+    this.sentenceSVG.dispatchEvent(event);
+    this.sentenceSVG.dragged = 0;
+    if (this.sentenceSVG.hovered) {
+      this.sentenceSVG.tokenSVGs[this.sentenceSVG.hovered].snapElements[
+        "FORM"
+      ].removeClass("glossy");
+      this.sentenceSVG.hovered = 0;
+    }
+
+    this.draggedFormClone.animate(
+      { transform: "translate(" + 0 + "," + 0 + ")" },
+      300,
+      () => {
+        this.draggedFormClone.remove();
+      }
+    );
+    this.draggedCurve.remove();
+    this.draggedArrowhead.remove();
+    if (this.dragRootCircle != null) {
+      this.dragRootCircle.remove();
+      this.dragRootCircle = null;
+    }
+  }
 }
 
 ///////////////             ////////////////
@@ -584,7 +752,7 @@ function getArrowheadPath(xFrom, yLow) {
   return arrowPath;
 }
 
-function getArcPath(xFrom, xTo, yLow, yTop) {
+function getArcPath(xFrom: number, xTo: number, yLow: number, yTop: number) {
   const path =
     "M" +
     xFrom +
@@ -605,7 +773,7 @@ function getArcPath(xFrom, xTo, yLow, yTop) {
   return path;
 }
 
-function getArcPathRoot(xFrom, yLow) {
+function getArcPathRoot(xFrom: number, yLow: number) {
   const path = "M" + xFrom + "," + yLow + " L" + xFrom + "," + "0 ";
   return path;
 }
@@ -613,139 +781,3 @@ function getArcPathRoot(xFrom, yLow) {
 ///////////////            ////////////////
 ///////////////  DRAGGERS  ////////////////
 ///////////////            ////////////////
-
-function startDrag() {
-  // `this` is a treeNode instance
-  //  `this.draggedForm` is the Snap object that's being dragged
-  this.dragclicktime = new Date().getTime();
-
-  // create a copy of the FROM that will be deleted after dragging
-  this.draggedFormClone = this.draggedForm.clone();
-  this.draggedFormClone.attr({ cursor: "move" });
-  this.dragStartX = this.centerX;
-  this.draggedStartY = this.draggedForm.getBBox().y;
-
-  this.sentenceSVG.dragged = this.tokenJson.ID;
-
-  var xb = this.dragStartX;
-  var yb = this.draggedStartY;
-
-  var path =
-    "M" +
-    xb +
-    "," +
-    yb +
-    " C" +
-    xb +
-    "," +
-    (yb - 1) +
-    " " +
-    (xb + 1) +
-    "," +
-    (yb - 1) +
-    " " +
-    (xb + 1) +
-    "," +
-    yb;
-  this.draggedCurve = this.snapSentence.path(path).addClass("dragcurve");
-  this.draggedArrowhead = this.snapSentence
-    .path(getArrowheadPath(xb, yb))
-    .addClass("dragcurve");
-  this.dragRootCircle = null;
-  // TODO add droppables
-}
-
-function dragging(dx, dy) {
-  // `this` is a treeNode instance
-  // `this.draggedForm` is the Snap object that's being dragged
-  this.draggedFormClone.transform(
-    "translate(" + (dx - 15) + "," + (dy - 30) + ")"
-  );
-  this.draggedFormClone.addClass("glossy");
-  var xb = this.dragStartX;
-  var yb = this.draggedStartY;
-
-  var cy = yb + dy - Math.abs(dx) / 2;
-  if (cy < 0) cy = 0;
-  var path =
-    "M" +
-    xb +
-    "," +
-    yb +
-    " C" +
-    xb +
-    "," +
-    cy +
-    " " +
-    (xb + dx) +
-    "," +
-    cy +
-    " " +
-    (xb + dx) +
-    "," +
-    (yb + dy);
-  this.draggedCurve.attr({ d: path });
-  this.draggedArrowhead.transform("translate(" + dx + "," + dy + ")");
-
-  // TODO : softcode the leveldistance
-  const leveldistance = SVG_CONFIG.depLevelHeight;
-  if (yb + dy < leveldistance / 2 && Math.abs(dx) < leveldistance / 2) {
-    if (this.dragRootCircle == null) {
-      this.dragRootCircle = this.snapSentence
-        .circle(xb, 0, leveldistance / 2)
-        .addClass("dragcurve");
-    }
-  } else {
-    if (this.dragRootCircle != null) {
-      this.dragRootCircle.remove();
-      this.dragRootCircle = null;
-    }
-  }
-}
-
-function stopDrag(e) {
-  var event;
-  if (new Date().getTime() < this.dragclicktime + dragclickthreshold) {
-    // TODO handle form:click
-    event = new CustomEvent("svg-click", {
-      detail: {
-        treeNode: this,
-        clicked: this.tokenJson.ID,
-        targetLabel: "FORM",
-      },
-    });
-  } else {
-    event = new CustomEvent("svg-drop", {
-      detail: {
-        treeNode: this,
-        hovered: this.sentenceSVG.hovered,
-        dragged: this.sentenceSVG.dragged,
-        isRoot: this.dragRootCircle ? true : false,
-      },
-    });
-    e.preventDefault();
-    e.stopPropagation();
-  }
-  this.sentenceSVG.dispatchEvent(event);
-  this.sentenceSVG.dragged = 0;
-  if (this.sentenceSVG.hovered) {
-    this.sentenceSVG.tokenSVGs[this.sentenceSVG.hovered].snapElements[
-      "FORM"
-    ].removeClass("glossy");
-    this.sentenceSVG.hovered = 0;
-  }
-
-  this.draggedFormClone.animate(
-    { transform: "translate(" + 0 + "," + 0 + ")" },
-    300,
-    () => {
-      this.draggedFormClone.remove();
-    }
-  );
-  this.draggedCurve.remove();
-  this.draggedArrowhead.remove();
-  if (this.dragRootCircle != null) {
-    this.dragRootCircle.remove();
-    this.dragRootCircle = null;
-  }
-}

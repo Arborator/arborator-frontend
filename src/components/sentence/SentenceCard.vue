@@ -47,6 +47,18 @@
           @click="save('teacher')"
         >
           <q-tooltip>Save as teacher</q-tooltip>
+        </q-btn>        
+        
+        <q-btn
+          v-if="isBernardCaron"
+          flat
+          round
+          dense
+          icon="face"
+          :disable="tab == ''"
+          @click="save(EMMETT)"
+        >
+          <q-tooltip>Save as Emmett</q-tooltip>
         </q-btn>
 
         <q-btn
@@ -244,6 +256,7 @@ export default {
       sentenceBus: new Vue(), // Event/Object Bus that communicate between all components
       tab: "",
       sentenceData: this.$props.sentence,
+      EMMETT: "emmett.strickland",
       graphInfo: { conllGraph: null, dirty: false, redo: false, user: "" },
       alerts: {
         saveSuccess: { color: "positive", message: "Saved!" },
@@ -301,6 +314,9 @@ export default {
         return this.sentenceData.conlls;
       }
     },
+    isBernardCaron() {
+      return ((this.$store.getters["user/getUserInfos"].username == "bernard.l.caron") || (this.$store.getters["user/getUserInfos"].username == "kirianguiller"))
+    }
   },
   mounted() {
     this.shownmetanames = this.$store.getters[
@@ -390,6 +406,9 @@ export default {
       if (mode == "teacher") {
         changedConllUser = "teacher";
       }
+      if (mode == this.EMMETT) {
+        changedConllUser = this.EMMETT;
+      }
 
       // TODO add this METAedit() in the tree object
       conll = conll.replace(
@@ -402,7 +421,6 @@ export default {
         /# timestamp = \d+(\.\d*)?\n/,
         "# timestamp = " + timestamp + "\n"
       );
-      console.log("KK conllu\n", conll);
       var data = {
         trees: [
           {
@@ -413,7 +431,6 @@ export default {
         ],
         user_id: changedConllUser,
       };
-      console.log("data", data);
       api
         .saveTrees(this.$route.params.projectname, data)
         .then((response) => {

@@ -36,6 +36,7 @@ export interface TokenJson {
   DEPREL: string;
   DEPS: FeatureJson;
   MISC: FeatureJson;
+  [key: string] : string | number | FeatureJson
 }
 
 export interface TreeJson {

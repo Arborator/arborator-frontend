@@ -19,6 +19,7 @@
   },
   "dependencies": {
     "@quasar/extras": "^1.8.2",
+    "@types/snapsvg": "^0.5.0",
     "@vue/composition-api": "^1.0.0-beta.14",
     "autoprefixer": "^9.6.2",
     "axios": "^0.18.1",

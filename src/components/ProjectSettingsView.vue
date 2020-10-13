@@ -321,29 +321,31 @@
     </q-card-section>
 
     <q-dialog v-model="addAdminDial" transition-show="fade" transition-hide="fade">
-      <user-select-table
-        :parentCallback="addAdmin"
+      <UserSelectTable
+        :parentCallback="updateAdminsOrGuests"
         :general="true"
         selectiontype="Project Admin"
+        targetRole="admin"
         singlemultiple="multiple"
         :preselected="admins"
-      ></user-select-table>
+      ></UserSelectTable>
     </q-dialog>
     <q-dialog v-model="addGuestDial" transition-show="fade" transition-hide="fade">
-      <user-select-table
-        :parentCallback="addGuest"
+      <UserSelectTable
+        :parentCallback="updateAdminsOrGuests"
         :general="true"
         selectiontype="Project Guest"
+        targetRole="guest"
         singlemultiple="multiple"
         :preselected="guests"
-      ></user-select-table>
+      ></UserSelectTable>
     </q-dialog>
     <q-dialog v-model="addDefaultUserTreeDial" transition-show="fade" transition-hide="fade">
-      <user-select-table
+      <UserSelectTable
         :parentCallback="addDefaultUserTree"
         :general="false"
         :projectname="$props.projectname"
-      ></user-select-table>
+      ></UserSelectTable>
     </q-dialog>
     <q-dialog v-model="confirmActionDial">
       <confirm-action :parentAction="confirmActionCallback" :arg1="confirmActionArg1"></confirm-action>
@@ -577,18 +579,16 @@ subj,comp,vocative
      * @param {Object[]} selected list of selected rows (objects)
      * @returns void
      */
-    addAdmin(newAdminArray) {
-      const newAdminIdArray = [];
-      for (const admin of newAdminArray) {
-        newAdminIdArray.push(admin.id);
+    updateAdminsOrGuests(usersArray, targetRole) {
+      const newRolesArrayId = [];
+            for (const user of usersArray) {
+              newRolesArrayId.push(user.id);
       }
-      console.log("addAdmin todo!", newAdminIdArray);
-      // todo: why does the function only accept one user?
       api
-        .setProjectUserRole(this.$props.projectname, "admin", newAdminIdArray)
+        .setProjectUserRole(this.$props.projectname, targetRole, newRolesArrayId)
         .then((response) => {
           this.$q.notify({ message: `Change saved!` });
-          this.$store.commit("config/set_project_config", {
+          this.$store.commit("config/set_project_settings", {
             admins: response.data.admins,
             guests: response.data.guests,
           });
@@ -597,43 +597,13 @@ subj,comp,vocative
           this.$store.dispatch("notifyError", { error: error });
         });
     },
-    /**
-     * Remove a user from the administrators using its userId
-     *
-     * @param {String} userId the user id
-     * @returns void
-     */
+  
     removeAdmin(userid) {
       api
         .removeProjectUserRole(this.$props.projectname, "admin", userid)
         .then((response) => {
           this.$q.notify({ message: `Change saved!` });
-          this.$store.commit("config/set_project_config", {
-            admins: response.data.admins,
-            guests: response.data.guests,
-          });
-        })
-        .catch((error) => {
-          this.$store.dispatch("notifyError", { error: error });
-        });
-    },
-    /**
-     * Add a guest by requesting backend
-     * @todo change backend function to accept multiple users
-     *
-     * @param {Object[]} selected list of selected rows (objects)
-     * @returns void
-     */
-    addGuest(newGuestArray) {
-      const newGuestIdArray = [];
-      for (const guest of newGuestArray) {
-        newGuestIdArray.push(guest.id);
-      }
-      api
-        .setProjectUserRole(this.$props.projectname, "guest", newGuestIdArray)
-        .then((response) => {
-          this.$q.notify({ message: `Change saved!` });
-          this.$store.commit("config/set_project_config", {
+          this.$store.commit("config/set_project_settings", {
             admins: response.data.admins,
             guests: response.data.guests,
           });
@@ -653,7 +623,7 @@ subj,comp,vocative
         .removeProjectUserRole(this.$props.projectname, "guest", userid)
         .then((response) => {
           this.$q.notify({ message: `Change saved!` });
-          this.$store.commit("config/set_project_config", {
+          this.$store.commit("config/set_project_settings", {
             admins: response.data.admins,
             guests: response.data.guests,
           });

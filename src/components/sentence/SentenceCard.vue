@@ -26,9 +26,6 @@
           </q-input>
         </template>
         <q-space />
-        <q-btn flat round dense icon="refresh" @click="dummyfct"
-          ><q-tooltip>See your annotation errors</q-tooltip>
-        </q-btn>
         <q-btn
           v-if="isLoggedIn && exerciseLevel <= 3"
           flat
@@ -332,14 +329,6 @@ export default {
   },
   methods: {
     // to delete KK
-    dummyfct() {
-      for (const [userId, conll] of Object.entries(this.sentence.conlls)) {
-        console.log(
-          `KK this snap ${userId}`,
-          this.sentenceBus[userId].tokenSVGs[1]
-        );
-      }
-    },
     refresh() {
       this.$emit("refresh:trees");
       this.$forceUpdate();
@@ -446,13 +435,6 @@ export default {
         .then((response) => {
           if (response.status == 200) {
             this.sentenceData.conlls[changedConllUser] = exportedConll;
-            // console.log("KK exportedConll", exportedConll);
-            // console.log(
-            //   "KK this.reactiveSentencesObj[changedConllUser]",
-            //   this.reactiveSentencesObj[changedConllUser]
-            // );
-            // this.sentenceBus[changedConllUser].refresh()
-            // this.reactiveSentencesObj[changedConllUser].updateTree(this.reactiveSentencesObj[openedTreeUser].treeJson)
 
             if (this.tab != changedConllUser) {
               this.reactiveSentencesObj[openedTreeUser].resetRecentChanges();

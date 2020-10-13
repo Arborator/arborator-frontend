@@ -1,0 +1,67 @@
+{
+  "_from": "@types/snapsvg-cjs",
+  "_id": "@types/snapsvg@0.5.0",
+  "_inBundle": false,
+  "_integrity": "sha512-epmNLxsCGYvg1tSodnZo5bGJ24KD0hYnALXBhr1m0k1vcMYxjEx2PETlYrrGREzGvRQnDg850DhOtghRtoDVtg==",
+  "_location": "/@types/snapsvg-cjs",
+  "_phantomChildren": {},
+  "_requested": {
+    "type": "tag",
+    "registry": true,
+    "raw": "@types/snapsvg-cjs",
+    "name": "@types/snapsvg-cjs",
+    "escapedName": "@types%2fsnapsvg",
+    "scope": "@types",
+    "rawSpec": "",
+    "saveSpec": null,
+    "fetchSpec": "latest"
+  },
+  "_requiredBy": [
+    "#USER",
+    "/"
+  ],
+  "_resolved": "https://registry.npmjs.org/@types/snapsvg/-/snapsvg-0.5.0.tgz",
+  "_shasum": "01ca6f37ff567d01448444845f6d53c1bfe58954",
+  "_spec": "@types/snapsvg",
+  "_where": "/home/wran/Projects/Arborator/arborator-frontend",
+  "bugs": {
+    "url": "https://github.com/DefinitelyTyped/DefinitelyTyped/issues"
+  },
+  "bundleDependencies": false,
+  "contributors": [
+    {
+      "name": "Lars Klein",
+      "url": "https://github.com/lhk"
+    },
+    {
+      "name": "Mattanja Kern",
+      "url": "https://github.com/mattanja"
+    },
+    {
+      "name": "Andrey Kurdyumov",
+      "url": "https://github.com/kant2002"
+    },
+    {
+      "name": "Terry Mun",
+      "url": "https://github.com/terrymun"
+    }
+  ],
+  "dependencies": {
+    "@types/mina": "*"
+  },
+  "deprecated": false,
+  "description": "TypeScript definitions for Snap-SVG",
+  "homepage": "https://github.com/DefinitelyTyped/DefinitelyTyped#readme",
+  "license": "MIT",
+  "main": "",
+  "name": "@types/snapsvg-cjs",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/DefinitelyTyped/DefinitelyTyped.git"
+  },
+  "scripts": {},
+  "typeScriptVersion": "3.0",
+  "types": "index",
+  "typesPublisherContentHash": "c0c1fe58d2612ba823eb56860f618f3a60b29999a9510768b05460c54fe09281",
+  "version": "0.5.0"
+}

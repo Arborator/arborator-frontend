@@ -38,15 +38,6 @@
           flat
           round
           dense
-          icon="construction"
-          @click="checkData"
-        >
-        </q-btn>
-        <q-btn
-          v-if="isLoggedIn && $store.getters['config/isTeacher']"
-          flat
-          round
-          dense
           icon="refresh"
           @click="refresh"
         >
@@ -276,11 +267,6 @@ export default {
     ].shownmeta;
   },
   methods: {
-    // to delete KK
-    checkData() {
-      console.log("KK props.sentence.conlls", this.sentence.conlls);
-      console.log("KK sentenceData", this.sentenceData);
-    },
     refresh() {
       this.$emit("refresh:trees");
       this.$forceUpdate();
@@ -483,8 +469,6 @@ export default {
 
       // TODO : handle when grew doesn't save the conll
 
-      // console.log("_________after", JSON.stringify(this.sentenceData.conlls));
-      // console.log("KK conll", conll);
 
       var data = {
         trees: [

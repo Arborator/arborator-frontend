@@ -86,3 +86,28 @@ export class ReactiveSentence extends EventDispatcher {
 }
 
 // Object.assign(ReactiveSentence.prototype, EventDispatcher.prototype);
+// function Logger(constructor: Function) {
+//   console.log("Logger...")
+//   console.log(constructor)
+// }
+
+// function Printer(_ : Function) {
+//   console.log("Printer...")
+// }
+
+// @Logger
+// @Printer
+// class Yolo {
+//   constructor() {
+//     console.log("Init yolo")
+//   }
+// }
+
+// new Yolo()
+
+// function normalFunction() {
+// console.log("normal func")
+// }
+
+
+// normalFunction()

@@ -39,15 +39,6 @@ export default {
       return this.$store.getters["config/shownfeatures"];
     },
   },
-  // watch: {
-    // conllSavedCounter: function (val) {
-      // console.log("KK 3 after ++", Math.round(Date.now()), this.userId);
-
-      // this.sentenceSVG.treeJson = conllToJson(this.conll).treeJson;
-      // this.sentenceSVG.metaJson = conllToJson(this.conll).metaJson;
-      // this.sentenceSVG.drawTree();
-    // },
-  // },
   mounted() {
     const sentenceJson = conllToJson(this.conll);
 

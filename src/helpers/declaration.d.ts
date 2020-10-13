@@ -1,1 +1,1 @@
-declare module "snapsvg-cjs";
+// declare module "snapsvg-cjs";

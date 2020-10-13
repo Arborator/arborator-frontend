@@ -85,9 +85,10 @@ export default {
   },
   mounted() {
     this.sentenceBus.$on("open:metaDialog", ({ userId }) => {
-      this.META = this.sentenceBus[userId].META
+      this.META = this.sentenceBus[userId].metaJson
       this.metaDialogOpened = true;
       this.metal = [];
+      console.log("KK this.META", this.sentenceBus[userId].metaJson)
       for (let a in this.META) {
         this.metal.push({ a: a, v: this.META[a] });
       }

@@ -6,7 +6,7 @@
 
 <script>
 import { conllToJson } from "../../helpers/Conll";
-import { SentenceSVG } from "../../helpers/SnapDepTree";
+import { SentenceSVG } from "../../helpers/SentenceSVG";
 
 export default {
   props: [

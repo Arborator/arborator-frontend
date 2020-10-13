@@ -224,6 +224,8 @@ import { mapGetters } from "vuex";
 // import ConllGraph from "./ConllGraph.vue";
 import api from "../../boot/backend-api";
 
+import { ReactiveSentence } from "../../helpers/ReactiveSentence"; // for test ony at the moment
+
 import VueDepTree from "./VueDepTree.vue";
 import RelationDialog from "./RelationDialog.vue";
 import UposDialog from "./UposDialog.vue";
@@ -435,10 +437,21 @@ export default {
         .saveTrees(this.$route.params.projectname, data)
         .then((response) => {
           if (response.status == 200) {
-            this.sentenceData.conlls[changedConllUser] = conll;
-            this.tab = changedConllUser;
-            // this.sentenceBus.$emit("saved:tree", {userId: changedConllUser})
-            this.conllSavedCounter++;
+            this.sentenceData.conlls[changedConllUser] = exportedConll;
+
+            if (this.tab != changedConllUser) {
+              this.reactiveSentencesObj[openedTreeUser].resetRecentChanges();
+              this.tab = changedConllUser;
+
+              if (!this.reactiveSentencesObj[changedConllUser]) {
+                this.reactiveSentencesObj[
+                  changedConllUser
+                ] = new ReactiveSentence();
+              }
+
+              this.changedConllUser = changedConllUser;
+              this.exportedConll = exportedConll;
+            }
             this.graphInfo.dirty = false;
             this.showNotif("top", "saveSuccess");
           }

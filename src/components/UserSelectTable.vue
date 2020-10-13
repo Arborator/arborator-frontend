@@ -43,7 +43,7 @@
 <!-- selection="single" -->
 				<template v-slot:top="props">
 					<q-btn-group flat >
-						<q-btn no-caps  push color="primary" label="validate" :disabled="table.selected.length <1" @click="parentCallback(table.selected)" v-close-popup>
+						<q-btn no-caps  push color="primary" label="validate" :disabled="table.selected.length <1" @click="parentCallback(table.selected, targetRole)" v-close-popup>
 							<q-tooltip :delay="300" content-class="text-white bg-primary">Validate the selection</q-tooltip>
 						</q-btn>
 					</q-btn-group>
@@ -89,7 +89,7 @@
 import api from '../boot/backend-api';
 
 export default {
-	props: ['parentCallback', 'general', 'projectname', 'robot', 'selectiontype', 'singlemultiple', 'preselected'],
+	props: ['parentCallback', 'general', 'projectname', 'robot', 'selectiontype', 'singlemultiple', 'preselected', 'targetRole'],
 	data(){
 		return {
 			table:{

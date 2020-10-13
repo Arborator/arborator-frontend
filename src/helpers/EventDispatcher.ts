@@ -1,13 +1,15 @@
 /**
- * @author mrdoob / http://mrdoob.com/
+ * Typescript class from @kirianguiller / https://github.com/kirianguiller
+ * from JS prototype by @author mrdoob / http://mrdoob.com/
  */
 
-function EventDispatcher() {}
 
-Object.assign(EventDispatcher.prototype, {
-  addEventListener: function(type, listener) {
-    if (this._listeners === undefined) this._listeners = {};
+export class EventDispatcher {
+  _listeners: { [key: string]: Function[] } = {};
 
+  constructor() {}
+
+  addEventListener(type: string, listener: (event:Event) => void) {
     var listeners = this._listeners;
 
     if (listeners[type] === undefined) {
@@ -17,9 +19,9 @@ Object.assign(EventDispatcher.prototype, {
     if (listeners[type].indexOf(listener) === -1) {
       listeners[type].push(listener);
     }
-  },
+  }
 
-  hasEventListener: function(type, listener) {
+  hasEventListener(type: string, listener: () => void) {
     if (this._listeners === undefined) return false;
 
     var listeners = this._listeners;
@@ -27,9 +29,9 @@ Object.assign(EventDispatcher.prototype, {
     return (
       listeners[type] !== undefined && listeners[type].indexOf(listener) !== -1
     );
-  },
+  }
 
-  removeEventListener: function(type, listener) {
+  removeEventListener(type: string, listener: () => void) {
     if (this._listeners === undefined) return;
 
     var listeners = this._listeners;
@@ -42,9 +44,9 @@ Object.assign(EventDispatcher.prototype, {
         listenerArray.splice(index, 1);
       }
     }
-  },
+  }
 
-  dispatchEvent: function(event) {
+  dispatchEvent(event: Event) {
     if (this._listeners === undefined) return;
 
     var listeners = this._listeners;
@@ -59,7 +61,5 @@ Object.assign(EventDispatcher.prototype, {
         array[i].call(this, event);
       }
     }
-  },
-});
-
-export {EventDispatcher};
+  }
+}

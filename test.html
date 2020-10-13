@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <button id="a-button__test.t"></button>
+    <script>
+      const t = document.querySelector("#a-button__test.t")
+      console.log(t)
+
+      function Logger(constructor) {
+          console.log("Logger...")
+      }
+
+      function Printer(constructor) {
+          console.log("Printer...")
+      }
+
+      @Logger
+      @Printer
+      function normalFunction() {
+        console.log("normal func")
+      }
+
+    </script>
+  </body>
+</html>

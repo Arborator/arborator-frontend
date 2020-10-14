@@ -461,7 +461,7 @@ export default {
           {
             sent_id: this.sentenceId,
             conll: exportedConll,
-            sample_name: this.$props.sentence.samplename,
+            sample_name: this.$props.sentence.sample_name,
           },
         ],
         user_id: changedConllUser,

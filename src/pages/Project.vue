@@ -444,7 +444,7 @@
                       '/projects/' +
                       $route.params.projectname +
                       '/' +
-                      props.row.samplename
+                      props.row.sample_name
                     "
                     icon-right="open_in_browser"
                     no-caps
@@ -461,7 +461,7 @@
                     @tag-added="addAnnotator"
                     @tag-removed="removeAnnotator"
                     :tag-context="props.row"
-                    :element-id="props.row.samplename + 'annotatortag'"
+                    :element-id="props.row.sample_name + 'annotatortag'"
                     v-model="props.row.roles.annotator"
                     :existing-tags="possiblesUsers"
                     :typeahead="true"
@@ -487,7 +487,7 @@
                     @tag-added="addValidator"
                     @tag-removed="removeValidator"
                     :tag-context="props.row"
-                    :element-id="props.row.samplename + 'validatortag'"
+                    :element-id="props.row.sample_name + 'validatortag'"
                     v-model="props.row.roles.validator"
                     :existing-tags="possiblesUsers"
                     :typeahead="true"
@@ -513,7 +513,7 @@
                     @tag-added="addProf"
                     @tag-removed="removeProf"
                     :tag-context="props.row"
-                    :element-id="props.row.samplename + 'proftag'"
+                    :element-id="props.row.sample_name + 'proftag'"
                     v-model="props.row.roles.prof"
                     :existing-tags="possiblesUsers"
                     :typeahead="true"
@@ -1009,8 +1009,9 @@ export default {
         this.samples = response.data;
       });
     },
-
     getUsers() {
+    // TODO : change this function as it's downloading all users each time. It should only be users of the project
+    // this method populate the `possiblesUsers` list for feeding the annotator and validator tag input choice
       api
         .getUsers()
         .then((response) => {

@@ -26,7 +26,7 @@
                 <q-icon v-show="project.visibility == 0" name="lock" color="negative" size="lg"></q-icon>
                 <q-icon v-show="project.visibility == 1" name="lock" color="positive" size="lg"></q-icon>
                 <q-icon v-show="project.visibility == 2" name="public" color="positive" size="lg"></q-icon>
-                {{project.projectname}}
+                {{project.project_name}}
             </div>
         </q-img>
         <q-card-section>
@@ -106,7 +106,7 @@ export default {
             this.$router.push({
                 name: 'project',
                 params: {
-                    projectname: this.project.projectname,
+                    projectname: this.project.project_name,
                     infos: this.project
                 }
             }) 
@@ -117,7 +117,7 @@ export default {
          * @returns void
          */
         projectSettings(){ 
-            this.$props.parentProjectSettings(this.project.projectname); 
+            this.$props.parentProjectSettings(this.project.project_name); 
         },
         /**
          * Delete a project using the parent function
@@ -125,7 +125,7 @@ export default {
          * @returns void
          */
         deleteProject(){ 
-            this.$props.parentDeleteProject(this.project.projectname); 
+            this.$props.parentDeleteProject(this.project.project_name); 
         },
         /**
          * Wrapper to display the confirm dialog prior to executing the method

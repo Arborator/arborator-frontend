@@ -70,7 +70,7 @@
                 : 'my-sticky-header-table') + ' rounded-borders'
             "
             title="Samples"
-            :data="project.samples"
+            :data="samples"
             :columns="table.fields"
             row-key="samplename"
             :pagination.sync="table.pagination"
@@ -95,95 +95,9 @@
             :key="tableKey"
             @request="getProjectInfos"
           >
-            <!--------------------- on-page upload sample component (when samples are empty) ---------------------->
-
-            <!-- this is a logic duplication problem. I commented it out until we refactor it nicely  -->
-
-            <!-- <template v-slot:no-data="props">
-              <div class="q-pa-md">
-                <div class="row">
-                  <div v-show="table.loading" class="col-5 offset-4">
-                    <q-circular-progress
-                      indeterminate
-                      size="50px"
-                      :thickness="0.22"
-                      color="primary"
-                      :track-color="$q.dark.isActive ? 'grey' : 'grey-3'"
-                    />
-                  </div>
-                  <q-banner
-                    v-show="!table.loading && !initLoad"
-                    inline-actions
-                    class="text-white bg-negative"
-                  >
-                    {{ $t("projectView").nodata[0] }}
-                    <template v-slot:action>
-                      <q-btn
-                        flat
-                        color="white"
-                        label="try again"
-                        @click="getProjectInfos()"
-                      />
-                    </template>
-                  </q-banner>
-                  <q-banner
-                    v-show="!table.loading && initLoad"
-                    inline-actions
-                    class="text-white bg-accent"
-                  >
-                    {{ $t("projectView").nodata[1] }}
-                    <span v-show="!admin">{{
-                      $t("projectView").nodata[2]
-                    }}</span>
-                    <div
-                      v-show="admin"
-                      class="q-pa-md column items-start q-gutter-y-md"
-                    >
-                      <q-toggle
-                        v-model="robot.active"
-                        checked-icon="check"
-                        color="warning"
-                        label="Choose a custom import name?"
-                        unchecked-icon="clear"
-                      />
-                      <q-input
-                        dark
-                        v-show="robot.active"
-                        v-model="robot.name"
-                        label="Custom Name for non real user import"
-                      />
-                      <q-file
-                        dark
-                        v-model="uploadSample.attachment.file"
-                        label="Pick files"
-                        outlined
-                        use-chips
-                        clearable
-                        :loading="uploadSample.submitting"
-                        multiple
-                        style="max-width: 400px"
-                      >
-                        <template v-slot:after>
-                          <q-btn
-                            color="primary"
-                            dense
-                            icon="cloud_upload"
-                            round
-                            @click="upload()"
-                            :loading="uploadSample.submitting"
-                            :disable="uploadSample.attachment.file == null"
-                          />
-                        </template>
-                      </q-file>
-                    </div>
-                  </q-banner>
-                </div>
-              </div>
-            </template> -->
-
-            <!------ END of block ------->
 
             <template v-slot:top="props">
+
               <q-btn-group flat>
                 <q-btn
                   v-if="isAdmin || isSuperAdmin"
@@ -534,7 +448,7 @@
                     "
                     icon-right="open_in_browser"
                     no-caps
-                    >{{ props.row.samplename }}</q-btn
+                    >{{ props.row.sample_name }}</q-btn
                   >
                 </q-td>
                 <q-td key="sentences" :props="props">{{
@@ -897,18 +811,20 @@ export default {
           message: "Successfully pushed your data to GitHub",
         },
       },
-      project: {
-        // infos: {
-        //   name: "",
-        //   visibility: 2,
-        //   is_open: false,
-        //   description: "",
-        //   image: "",
-        //   admins: [],
-        //   guests: [],
-        // },
-        samples: [],
-      },
+      // project: {
+      //   // infos: {
+      //   //   name: "",
+      //   //   visibility: 2,
+      //   //   is_open: false,
+      //   //   description: "",
+      //   //   image: "",
+      //   //   admins: [],
+      //   //   guests: [],
+      //   // },
+      //   samples: [],
+      // },
+      samples: [],
+
       table: {
         fields: [
           {
@@ -1090,7 +1006,7 @@ export default {
     },
     getProjectSamples() {
       api.getProjectSamples(this.$route.params.projectname).then((response) => {
-        this.project.samples = response.data;
+        this.samples = response.data;
       });
     },
 
@@ -1106,43 +1022,6 @@ export default {
           this.$store.dispatch("notifyError", { error: error });
         });
     },
-
-    // upload() {
-    //   var form = new FormData();
-    //   form.append("robotname", this.robot.name);
-    //   form.append("robot", this.robot.active);
-    //   this.uploadSample.submitting = true;
-    //   for (const file of this.uploadSample.attachment.file) {
-    //     form.append("files", file);
-    //   }
-    //   form.append(
-    //     "import_user",
-    //     this.$store.getters["user/getUserInfos"].username
-    //   );
-    //   api
-    //     .uploadSample(this.$route.params.projectname, form)
-    //     .then((response) => {
-    //       this.uploadSample.attachment.file = [];
-    //       // this.getProjectInfos();
-    //       this.$store.dispatch("config/fetchProjectSettings", {
-    //         projectname: this.$route.params.projectname,
-    //       });
-
-    //       this.uploadDial = false;
-    //       this.uploadSample.submitting = false;
-    //       this.showNotif("top-right", "uploadsuccess");
-    //     })
-    //     .catch((error) => {
-    //       if (error.response) {
-    //         error.response.message = error.response.data.message;
-    //         error.permanent = true;
-    //       }
-    //       error.caption = "Check your file please!";
-    //       this.uploadSample.submitting = false;
-    //       this.uploadDial = false;
-    //       this.$store.dispatch("notifyError", { error: error });
-    //     });
-    // },
 
     onFileChange(event) {
       this.uploadSample.attachment.file = event.target.files;
@@ -1371,9 +1250,9 @@ export default {
      * @param samplename : the sample name to find
      */
     updateTags(response, samplename, target) {
-      for (let [i, sample] of this.project.samples.entries()) {
+      for (let [i, sample] of this.samples.entries()) {
         if (sample.samplename == samplename) {
-          this.project.samples[i]["roles"] = response.data["roles"];
+          this.samples[i]["roles"] = response.data["roles"];
         }
       }
       this.tableKey++;
@@ -1381,12 +1260,12 @@ export default {
     },
 
     reverseTags(value, samplename, target) {
-      for (let [i, sample] of this.project.samples.entries()) {
+      for (let [i, sample] of this.samples.entries()) {
         if (sample.samplename == samplename) {
-          var res = this.project.samples[i]["roles"][target].filter(
+          var res = this.samples[i]["roles"][target].filter(
             (name) => name.key != value
           );
-          this.project.samples[i]["roles"][target] = res;
+          this.samples[i]["roles"][target] = res;
         }
       }
       this.tableKey++;
@@ -1496,7 +1375,7 @@ export default {
     updateExerciseLevel(sample) {
       api.updateSampleExerciseLevel(
         this.$route.params.projectname,
-        sample.samplename,
+        sample.sample_name,
         sample.exerciseLevel
       );
     },

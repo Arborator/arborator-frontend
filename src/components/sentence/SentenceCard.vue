@@ -373,7 +373,7 @@ export default {
      *
      * @returns void
      */
-    getlink() {
+    getlink() { 
       this.sentenceLink =
         window.location.href.split(
           "/projects/" + this.$route.params.projectname
@@ -381,7 +381,7 @@ export default {
         "/projects/" +
         this.$route.params.projectname +
         "/" +
-        this.sentence.samplename +
+        this.sentence.sample_name +
         "/" +
         (this.index + 1) +
         "/" +

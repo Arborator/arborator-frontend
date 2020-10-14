@@ -27,7 +27,7 @@
           </q-avatar>
         </q-item-section>
         <q-item-section>
-            <q-item-label lines="1"><span class="text-weight-bold">{{project.projectname}}</span></q-item-label>
+            <q-item-label lines="1"><span class="text-weight-bold">{{project.project_name}}</span></q-item-label>
             <q-item-label caption lines="2">
                 {{project.description}}
             </q-item-label>
@@ -94,7 +94,7 @@ export default {
             this.$router.push({
                 name: 'project',
                 params: {
-                    projectname: this.project.projectname,
+                    projectname: this.project.project_name,
                     infos: this.project
                 }
             }) 
@@ -105,7 +105,7 @@ export default {
          * @returns void
          */
         projectSettings(){ 
-            this.$props.parentProjectSettings(this.project.projectname); 
+            this.$props.parentProjectSettings(this.project.project_name); 
         },
         /**
          * Delete a project using the parent function
@@ -113,7 +113,7 @@ export default {
          * @returns void
          */
         deleteProject(){ 
-            this.$props.parentDeleteProject(this.project.projectname); 
+            this.$props.parentDeleteProject(this.project.project_name); 
         },
         /**
          * Wrapper to display the confirm dialog prior to executing the method

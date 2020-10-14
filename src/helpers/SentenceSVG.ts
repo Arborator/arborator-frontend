@@ -41,18 +41,14 @@ export class SentenceSVG extends EventDispatcher {
   snapSentence: Snap.Paper;
   treeJson: TreeJson;
   metaJson: MetaJson;
-  teacherTreeJson: TreeJson;
-
+  teacherTreeJson: TreeJson = {};
   matchnodes: Array<string>;
   matchedges: string[];
-
   tokenSVGs: { [key: number]: TokenSVG } = {};
   dragged: number = 0;
   hovered: number = 0;
-
   totalWidth: number = 0;
   totalHeight: number = 0;
-
   levelsArray: number[] = [];
 
   constructor(opts: SentenceSVGOptions) {
@@ -62,16 +58,10 @@ export class SentenceSVG extends EventDispatcher {
     this.snapSentence = Snap(`#${this.svgID}`);
     this.treeJson = this.reactiveSentence.treeJson;
     this.metaJson = this.reactiveSentence.metaJson;
-
     // put FORM at the beginning of the shownFeatures array
     this.shownFeatures = this.shownFeatures.filter((item) => item !== "FORM");
     this.shownFeatures.unshift("FORM");
 
-    if (this.teacherReactiveSentence) {
-      this.teacherTreeJson = this.teacherReactiveSentence.treeJson;
-    } else {
-      this.teacherTreeJson = {};
-    }
     document.addEventListener;
     this.reactiveSentence.addEventListener("token-updated", (e) => {
       this.refresh();
@@ -88,7 +78,8 @@ export class SentenceSVG extends EventDispatcher {
 
     // populate ylevel, be careful, the computed levels are stored
     // ... inside this.getLevel() as a side effect. TODO : Make this better
-
+    
+    this.plugDiffTree(this.teacherReactiveSentence)
     this.drawTree();
   }
 
@@ -104,6 +95,11 @@ export class SentenceSVG extends EventDispatcher {
     if (this.teacherTreeJson) {
       this.showDiffs(this.teacherTreeJson);
     }
+  }
+
+  plugDiffTree(teacherReactiveSentence: ReactiveSentence): void {
+    this.teacherTreeJson = teacherReactiveSentence?.treeJson;
+    console.log("KK this.teacherTreeJson", this.teacherTreeJson)
   }
 
   populateTokenSVGs(): void {
@@ -379,27 +375,11 @@ export class SentenceSVG extends EventDispatcher {
   }
 }
 
-// add a basic event dispatch/listen system
-// Object.assign(SentenceSVG.prototype, EventDispatcher.prototype);
 
 ///////////////                ////////////////
 ///////////////   tokenSVG  ////////////////
 ///////////////                ////////////////
-// export interface FeatureJson {
-//   [key: string]: string;
-// }
-// interface TokenJson {
-//   ID: number;
-//   FORM: string;
-//   LEMMA: string;
-//   UPOS: string;
-//   XPOS: string;
-//   FEATS: FeatureJson;
-//   HEAD: number;
-//   DEPREL: string;
-//   DEPS: FeatureJson;
-//   MISC: FeatureJson;
-// }
+
 class TokenSVG {
   // type definitions
   tokenJson: TokenJson;

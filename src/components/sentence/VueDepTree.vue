@@ -1,8 +1,5 @@
 <template>
   <div>
-    <q-btn flat round dense icon="refresh" @click="dummyfct"
-      ><q-tooltip>See your annotation errors</q-tooltip>
-    </q-btn>
     <div class="sentencebox">
       <svg :id="svgID" />
     </div>
@@ -20,10 +17,15 @@ export default {
     "sentenceBus",
     "userId",
     "conllSavedCounter",
-    "teacherConll",
     "reactiveSentence",
     "teacherReactiveSentence",
   ],
+  watch: {
+    conllSavedCounter() {
+      this.sentenceSVG.drawTree()
+      console.log("KK watch")
+    },
+  },
   data() {
     return {
       sentenceSVG: null,
@@ -33,7 +35,7 @@ export default {
   },
   computed: {
     svgID() {
-      return `svg-${this.sentenceId}-${this.userId}`.replaceAll(".","-");
+      return `svg-${this.sentenceId}-${this.userId}`.replaceAll(".", "-");
     },
     shownFeatures() {
       return this.$store.getters["config/shownfeatures"];
@@ -49,6 +51,7 @@ export default {
       shownFeatures: this.shownFeatures,
       teacherReactiveSentence: this.teacherReactiveSentence,
     });
+    this.sentenceSVG.plugDiffTree(this.teacherReactiveSentence);
 
     this.sentenceBus[this.userId] = this.sentenceSVG;
 
@@ -67,10 +70,6 @@ export default {
     });
   },
   methods: {
-    dummyfct() {
-      console.log("KK", this.sentenceSVG);
-      this.sentenceSVG.refresh();
-    },
     svgClickHandler(e) {
       const clickedId = e.detail.clicked;
       const clickedToken = this.sentenceSVG.treeJson[clickedId];

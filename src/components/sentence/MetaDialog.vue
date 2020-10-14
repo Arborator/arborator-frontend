@@ -40,7 +40,7 @@
 
   <!----------------- End MetaDialog ------------------->
 </template>
-<script>
+<script >
 import AttributeTable from "./AttributeTable";
 
 export default {

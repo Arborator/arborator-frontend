@@ -89,6 +89,26 @@
         <q-btn-dropdown :disable="tab == ''" icon="more_vert" flat dense>
           <q-tooltip>More</q-tooltip>
           <q-list>
+            <q-item
+              v-if="!exerciseMode"
+              clickable
+              v-close-popup
+              @click="toggleDiffMode()"
+            >
+              <q-item-section avatar>
+                <q-avatar
+                  icon="ion-git-network"
+                  color="primary"
+                  text-color="white"
+                />
+              </q-item-section>
+              <q-item-section>
+                <q-item-label
+                  >{{ diffMode ? "Leave" : "Enter" }} Diff Mode</q-item-label
+                >
+              </q-item-section>
+            </q-item>
+
             <q-item clickable v-close-popup @click="getlink()">
               <q-item-section avatar>
                 <q-avatar
@@ -185,21 +205,15 @@
             <q-card-section
               :class="($q.dark.isActive ? '' : '') + ' scrollable'"
             >
-              <!-- :reactiveSentence="reactiveSentence" -->
               <VueDepTree
                 v-if="reactiveSentencesObj"
                 :conll="tree"
                 :reactiveSentence="reactiveSentencesObj[user]"
-                :teacherReactiveSentence="reactiveSentencesObj['teacher']"
+                :teacherReactiveSentence="exerciseMode ? reactiveSentencesObj['teacher'] : diffMode ? reactiveSentencesObj[userId] : {}"
                 :sentenceId="sentenceId"
                 :sentenceBus="sentenceBus"
                 :userId="user"
                 :conllSavedCounter="conllSavedCounter"
-                :teacherConll="
-                  (exerciseLevel <= 2 || isAdmin) && user !== 'teacher'
-                    ? reactiveSentencesObj[user].teacher
-                    : {}
-                "
               ></VueDepTree>
             </q-card-section>
           </q-card>
@@ -234,7 +248,6 @@ import Vue from "vue";
 
 import { mapGetters } from "vuex";
 
-// import ConllGraph from "./ConllGraph.vue";
 import api from "../../boot/backend-api";
 
 import { ReactiveSentence } from "../../helpers/ReactiveSentence"; // for test ony at the moment
@@ -248,6 +261,7 @@ import ConlluDialog from "./ConlluDialog.vue";
 import ExportSVG from "./ExportSVG.vue";
 import TokenDialog from "./TokenDialog.vue";
 import StatisticsDialog from "./StatisticsDialog.vue";
+import user from 'src/store/modules/user';
 
 export default {
   name: "SentenceCard",
@@ -285,20 +299,18 @@ export default {
       shownmetas: {},
       view: null,
       sentenceLink: "",
+      diffMode: false,
     };
   },
 
   computed: {
     ...mapGetters("config", [
-      // "visibility",
       "isAdmin",
       "isGuest",
       "guests",
       "admins",
-      // "image",
       "exerciseMode",
     ]),
-    // ...mapGetters("sample", ["exerciseLevel"]), //module store is not set yet
     /**
      * Never used ?!
      * Check if the graph is dirty (I.E. modified but not saved) or open to see if it's supposed to be possible to save
@@ -328,9 +340,16 @@ export default {
         return this.sentenceData.conlls;
       }
     },
-        isBernardCaron() {
-      return ((this.$store.getters["user/getUserInfos"].username == "bernard.l.caron") || (this.$store.getters["user/getUserInfos"].username == "kirianguiller"))
-    }
+    userId() {
+      return this.$store.getters["user/getUserInfos"].username
+    },
+    isBernardCaron() {
+      return (
+        this.$store.getters["user/getUserInfos"].username ==
+          "bernard.l.caron" ||
+        this.$store.getters["user/getUserInfos"].username == "kirianguiller"
+      );
+    },
   },
   created() {
     this.shownmetanames = this.$store.getters[
@@ -424,7 +443,7 @@ export default {
       var changedConllUser = this.$store.getters["user/getUserInfos"].username;
       if (mode == "teacher") {
         changedConllUser = "teacher";
-      }      
+      }
       if (mode == this.EMMETT) {
         changedConllUser = this.EMMETT;
       }
@@ -453,6 +472,7 @@ export default {
         .then((response) => {
           if (response.status == 200) {
             this.sentenceData.conlls[changedConllUser] = exportedConll;
+            this.reactiveSentencesObj[changedConllUser].sentenceConll = exportedConll;
 
             if (this.tab != changedConllUser) {
               this.reactiveSentencesObj[openedTreeUser].resetRecentChanges();
@@ -510,6 +530,20 @@ export default {
       this.sentenceData.sentence = newMetaText;
     },
 
+    toggleDiffMode() {
+      this.diffMode = !this.diffMode;
+      for (const otherUserId in this.reactiveSentencesObj) {
+        if (otherUserId != this.userId) {
+          if (this.sentenceBus[otherUserId]) {
+            this.sentenceBus[otherUserId].plugDiffTree(this.diffMode ? this.reactiveSentencesObj[this.userId] : {})
+            // this.sentenceBus[otherUserId].drawTree()
+          }
+          console.log("KK conllSavedCounter+1")
+          this.conllSavedCounter += 1
+        }
+      }
+    },
+
     showNotif(position, alert) {
       const {
         color,
@@ -553,45 +587,6 @@ export default {
   transform: translateX(10px);
   opacity: 0;
 }
-/* 
-.easeInOutQuart .q-transition--slide-right-enter-active,
-.easeInOutQuart .q-transition--slide-left-enter-active,
-.easeInOutQuart .q-transition--slide-up-enter-active,
-.easeInOutQuart .q-transition--slide-down-enter-active,
-.easeInOutQuart .q-transition--slide-right-leave-active,
-.easeInOutQuart .q-transition--slide-left-leave-active,
-.easeInOutQuart .q-transition--slide-up-leave-active,
-.easeInOutQuart .q-transition--slide-down-leave-active {
-  transition: transform 0.3s cubic-bezier(0.77, 0, 0.175, 1) !important;
-} */
-
-/* .easeOutQuad .q-transition--slide-right-enter-active,
-.easeOutQuad .q-transition--slide-left-enter-active,
-.easeOutQuad .q-transition--slide-up-enter-active,
-.easeOutQuad .q-transition--slide-down-enter-active,
-.easeOutQuad .q-transition--slide-right-leave-active,
-.easeOutQuad .q-transition--slide-left-leave-active,
-.easeOutQuad .q-transition--slide-up-leave-active,
-.easeOutQuad .q-transition--slide-down-leave-active {
-  transition: transform 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94) !important;
-} */
-/* 
-.easeOutSine .q-transition--slide-right-enter-active,
-.easeOutSine .q-transition--slide-left-enter-active {
-  transition: opacity 0.5s !important;
-}
-
-.easeOutSine .q-transition--slide-right-leave-active,
-.easeOutSine .q-transition--slide-left-leave-active {
-  transition: transform 3s cubic-bezier(0.39, 0.575, 0.765, 1) !important;
-}
-
-.easeOutSine .q-transition--slide-right-enter-active,
-.easeOutSine .q-transition--slide-left-enter-active {
-  transition: opacity 0.1s !important;
-  transition-delay: 2s !important;
-
-} */
 
 .easeOutSine.q-transition--slide-right-leave-active,
 .easeOutSine.q-transition--slide-left-leave-active {

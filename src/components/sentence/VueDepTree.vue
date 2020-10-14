@@ -132,6 +132,5 @@ export default {
 <style>
 * {
   --depLevelHeight: 30;
-  back
 }
 </style>

@@ -131,16 +131,16 @@ export default {
   addSampleAnnotator(username, projectname, samplename) {
     let data = {
       username: username,
-      projectname: projectname,
-      samplename: samplename,
+      project_name: projectname,
+      sample_name: samplename,
     };
     return API.post("projects/" + projectname + "/sample/annotator/add", data);
   },
   removeSampleAnnotator(username, projectname, samplename) {
     let data = {
       username: username,
-      projectname: projectname,
-      samplename: samplename,
+      project_name: projectname,
+      sample_name: samplename,
     };
     return API.post(
       "projects/" + projectname + "/sample/annotator/remove",
@@ -150,16 +150,16 @@ export default {
   addSampleValidator(username, projectname, samplename) {
     let data = {
       username: username,
-      projectname: projectname,
-      samplename: samplename,
+      project_name: projectname,
+      sample_name: samplename,
     };
     return API.post("projects/" + projectname + "/sample/validator/add", data);
   },
   removeSampleValidator(username, projectname, samplename) {
     let data = {
       username: username,
-      projectname: projectname,
-      samplename: samplename,
+      project_name: projectname,
+      sample_name: samplename,
     };
     return API.post(
       "projects/" + projectname + "/sample/validator/remove",
@@ -169,8 +169,8 @@ export default {
   addSampleSuperValidator(username, projectname, samplename) {
     let data = {
       username: username,
-      projectname: projectname,
-      samplename: samplename,
+      project_name: projectname,
+      sample_name: samplename,
     };
     return API.post(
       "projects/" + projectname + "/sample/supervalidator/add",
@@ -180,8 +180,8 @@ export default {
   removeSampleSuperValidator(username, projectname, samplename) {
     let data = {
       username: username,
-      projectname: projectname,
-      samplename: samplename,
+      project_name: projectname,
+      sample_name: samplename,
     };
     return API.post(
       "projects/" + projectname + "/sample/supervalidator/remove",
@@ -191,16 +191,16 @@ export default {
   addSampleProf(username, projectname, samplename) {
     let data = {
       username: username,
-      projectname: projectname,
-      samplename: samplename,
+      project_name: projectname,
+      sample_name: samplename,
     };
     return API.post("projects/" + projectname + "/sample/prof/add", data);
   },
   removeSampleProf(username, projectname, samplename) {
     let data = {
       username: username,
-      projectname: projectname,
-      samplename: samplename,
+      project_name: projectname,
+      sample_name: samplename,
     };
     return API.post("projects/" + projectname + "/sample/prof/remove", data);
   },

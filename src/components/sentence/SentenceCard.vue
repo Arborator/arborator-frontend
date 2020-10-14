@@ -379,7 +379,7 @@ export default {
      *
      * @returns void
      */
-    getlink() {
+    getlink() { 
       this.sentenceLink =
         window.location.href.split(
           "/projects/" + this.$route.params.projectname
@@ -387,7 +387,7 @@ export default {
         "/projects/" +
         this.$route.params.projectname +
         "/" +
-        this.sentence.samplename +
+        this.sentence.sample_name +
         "/" +
         (this.index + 1) +
         "/" +
@@ -467,7 +467,7 @@ export default {
           {
             sent_id: this.sentenceId,
             conll: exportedConll,
-            sample_name: this.$props.sentence.samplename,
+            sample_name: this.$props.sentence.sample_name,
           },
         ],
         user_id: changedConllUser,
@@ -488,11 +488,9 @@ export default {
             }
 
             if (this.tab != changedConllUser) {
-              console.log("KK this.tab 1", this.tab)
 
               this.reactiveSentencesObj[openedTreeUser].resetRecentChanges();
               this.tab = changedConllUser;
-              console.log("KK this.tab 2", this.tab)
 
               if (!this.reactiveSentencesObj[changedConllUser]) {
                 this.reactiveSentencesObj[
@@ -556,7 +554,6 @@ export default {
             );
             // this.sentenceBus[otherUserId].drawTree()
           }
-          console.log("KK conllSavedCounter+1");
           this.conllSavedCounter += 1;
         }
       }

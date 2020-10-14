@@ -96,7 +96,7 @@ export default {
         for (let sentId in this.searchresults[sampleId]) {
           listIds.push([sampleId, sentId]);
           index2Ids[index] = [sampleId, sentId];
-          this.searchresults[sampleId][sentId]["samplename"] = sampleId;
+          this.searchresults[sampleId][sentId]["sample_name"] = sampleId;
           index++;
         }
       }

@@ -99,7 +99,6 @@ export class SentenceSVG extends EventDispatcher {
 
   plugDiffTree(teacherReactiveSentence: ReactiveSentence): void {
     this.teacherTreeJson = teacherReactiveSentence?.treeJson;
-    console.log("KK this.teacherTreeJson", this.teacherTreeJson)
   }
 
   populateTokenSVGs(): void {

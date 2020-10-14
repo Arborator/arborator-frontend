@@ -28,7 +28,8 @@ export default {
     getSVG() {
       // todo: instead of this long string, read the actual css file and put it there.
       // var svg = this.graphInfo.conllGraph.snap.treedata.s.toString();
-      var svg = this.sentenceBus[this.userId].toString();
+      const sentenceSVG = this.sentenceBus[this.userId]
+      var svg = sentenceSVG.snapSentence.toString();
       var style = `<style> 
 <![CDATA[  
    .curve {
@@ -116,7 +117,7 @@ export default {
       );
       const link = document.createElement("a");
       link.href = url;
-      link.setAttribute("download", this.sentenceId + ".svg");
+      link.setAttribute("download", sentenceSVG.svgID + ".svg");
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);

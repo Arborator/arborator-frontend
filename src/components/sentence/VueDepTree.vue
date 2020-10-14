@@ -23,7 +23,6 @@ export default {
   watch: {
     conllSavedCounter() {
       this.sentenceSVG.drawTree()
-      console.log("KK watch")
     },
   },
   data() {

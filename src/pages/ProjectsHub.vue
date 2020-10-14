@@ -145,7 +145,7 @@ export default {
     },
     searchProject(pattern) {
       var filteredProjects =  this.projects.filter(function(project) {
-        if(project.projectname.toLowerCase().includes(pattern.toLowerCase())){
+        if(project.project_name.toLowerCase().includes(pattern.toLowerCase())){
           return project;
         }
       });

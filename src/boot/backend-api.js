@@ -41,7 +41,7 @@ export default {
   },
   updateSampleExerciseLevel(projectname, samplename, exerciseLevel) {
     const data = {exerciseLevel}
-    return API.post("projects/" + projectname + "/samples/" + samplename + "/exercise-level/create-or-update", data)
+    return API.post(`projects/${projectname}/${samplename}/set-exercise-level`, data)
   },
   getProjectSettings(projectname) {
     // this one is fast, only flask, also some more information, such as is_open

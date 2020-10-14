@@ -72,7 +72,7 @@
             title="Samples"
             :data="samples"
             :columns="table.fields"
-            row-key="samplename"
+            row-key="sample_name"
             :pagination.sync="table.pagination"
             :loading="table.loading"
             loading-label="loading"
@@ -1031,7 +1031,7 @@ export default {
     deleteSamples() {
       for (const sample of this.table.selected) {
         api
-          .deleteSample(this.$route.params.projectname, sample.samplename)
+          .deleteSample(this.$route.params.projectname, sample.sample_name)
           .then((response) => {
             // this.project.infos = response.data;
             this.table.selected = [];
@@ -1047,7 +1047,7 @@ export default {
     commit(type) {
       var samplenames = [];
       for (const sample of this.table.selected) {
-        samplenames.push(sample.samplename);
+        samplenames.push(sample.sample_name);
       }
       var data = { samplenames: samplenames, commit_type: type };
       // console.log(123,data);
@@ -1082,7 +1082,7 @@ export default {
     pull(type) {
       var samplenames = [];
       for (const sample of this.table.selected) {
-        samplenames.push(sample.samplename);
+        samplenames.push(sample.sample_name);
       }
       var data = { samplenames: samplenames, pull_type: type };
       // console.log(data);
@@ -1133,7 +1133,7 @@ export default {
       this.table.exporting = true;
       var samplenames = [];
       for (const sample of this.table.selected) {
-        samplenames.push(sample.samplename);
+        samplenames.push(sample.sample_name);
       }
       api
         .exportSamplesZip(samplenames, this.$route.params.projectname)
@@ -1181,7 +1181,7 @@ export default {
       this.LexiconTable=true;
       var samplenames = [];
       for (const sample of this.table.selected) {
-        samplenames.push(sample.samplename);
+        samplenames.push(sample.sample_name);
       }
       var data = { samplenames: samplenames, treeSelection: type };
       // console.log(123,data);
@@ -1190,7 +1190,6 @@ export default {
         .then((response) => {
           // 200 : updaté ou créé
           console.log(777, response);
-          console.log("wooohoo", response.data.lexicon);
           this.lexicon = response.data.lexicon;
         })
         .catch((error) => {
@@ -1252,7 +1251,7 @@ export default {
      */
     updateTags(response, samplename, target) {
       for (let [i, sample] of this.samples.entries()) {
-        if (sample.samplename == samplename) {
+        if (sample.sample_name == samplename) {
           this.samples[i]["roles"] = response.data["roles"];
         }
       }
@@ -1262,7 +1261,7 @@ export default {
 
     reverseTags(value, samplename, target) {
       for (let [i, sample] of this.samples.entries()) {
-        if (sample.samplename == samplename) {
+        if (sample.sample_name == samplename) {
           var res = this.samples[i]["roles"][target].filter(
             (name) => name.key != value
           );
@@ -1277,14 +1276,14 @@ export default {
         .addSampleAnnotator(
           slug.value,
           this.$route.params.projectname,
-          context.samplename
+          context.sample_name
         )
         .then((response) => {
-          this.updateTags(response, context.samplename);
+          this.updateTags(response, context.sample_name);
           this.$q.notify({ message: `Change saved!` });
         })
         .catch((error) => {
-          this.reverseTags(slug.value, context.samplename, "annotator");
+          this.reverseTags(slug.value, context.sample_name, "annotator");
           this.$store.dispatch("notifyError", { error: error });
         });
     },
@@ -1294,10 +1293,10 @@ export default {
         .removeSampleAnnotator(
           slug.value,
           this.$route.params.projectname,
-          context.samplename
+          context.sample_name
         )
         .then((response) => {
-          this.updateTags(response, context.samplename);
+          this.updateTags(response, context.sample_name);
           this.$q.notify({ message: `Change saved!` });
         })
         .catch((error) => {
@@ -1310,22 +1309,22 @@ export default {
         .addSampleValidator(
           slug.value,
           this.$route.params.projectname,
-          context.samplename
+          context.sample_name
         )
         .then((response) => {
-          this.updateTags(response, context.samplename);
+          this.updateTags(response, context.sample_name);
           this.$q.notify({ message: `Change saved!` });
         });
-    },
+    },  
     removeValidator(slug, context) {
       api
         .removeSampleValidator(
           slug.value,
           this.$route.params.projectname,
-          context.samplename
+          context.sample_name
         )
         .then((response) => {
-          this.updateTags(response, context.samplename);
+          this.updateTags(response, context.sample_name);
           this.$q.notify({ message: `Change saved!` });
         });
     },
@@ -1334,10 +1333,10 @@ export default {
         .addSampleSuperValidator(
           slug.value,
           this.$route.params.projectname,
-          context.samplename
+          context.sample_name
         )
         .then((response) => {
-          this.updateTags(response, context.samplename);
+          this.updateTags(response, context.sample_name);
         });
     },
     removeSuperValidator(slug, context) {
@@ -1345,10 +1344,10 @@ export default {
         .removeSampleSuperValidator(
           slug.value,
           this.$route.params.projectname,
-          context.samplename
+          context.sample_name
         )
         .then((response) => {
-          this.updateTags(response, context.samplename);
+          this.updateTags(response, context.sample_name);
         });
     },
     addProf(slug, context) {
@@ -1356,10 +1355,10 @@ export default {
         .addSampleProf(
           slug.value,
           this.$route.params.projectname,
-          context.samplename
+          context.sample_name
         )
         .then((response) => {
-          this.updateTags(response, context.samplename);
+          this.updateTags(response, context.sample_name);
         });
     },
     removeProf(slug, context) {
@@ -1367,10 +1366,10 @@ export default {
         .removeSampleProf(
           slug.value,
           this.$route.params.projectname,
-          context.samplename
+          context.sample_name
         )
         .then((response) => {
-          this.updateTags(response, context.samplename);
+          this.updateTags(response, context.sample_name);
         });
     },
     updateExerciseLevel(sample) {

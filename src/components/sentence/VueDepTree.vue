@@ -23,7 +23,6 @@ export default {
   watch: {
     conllSavedCounter() {
       this.sentenceSVG.drawTree()
-      console.log("KK watch")
     },
   },
   data() {
@@ -133,5 +132,6 @@ export default {
 <style>
 * {
   --depLevelHeight: 30;
+  back
 }
 </style>

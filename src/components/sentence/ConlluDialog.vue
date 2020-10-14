@@ -127,7 +127,6 @@ export default {
           isMetaChanged = 1;
         }
       }
-      console.log("KK ", isMetaChanged)
       if (!isMetaChanged) {
         this.sentenceBus[this.userId].treeJson = sentenceJson.treeJson;
         this.sentenceBus[this.userId].metaJson = sentenceJson.metaJson;

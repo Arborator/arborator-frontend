@@ -488,11 +488,9 @@ export default {
             }
 
             if (this.tab != changedConllUser) {
-              console.log("KK this.tab 1", this.tab)
 
               this.reactiveSentencesObj[openedTreeUser].resetRecentChanges();
               this.tab = changedConllUser;
-              console.log("KK this.tab 2", this.tab)
 
               if (!this.reactiveSentencesObj[changedConllUser]) {
                 this.reactiveSentencesObj[
@@ -556,7 +554,6 @@ export default {
             );
             // this.sentenceBus[otherUserId].drawTree()
           }
-          console.log("KK conllSavedCounter+1");
           this.conllSavedCounter += 1;
         }
       }

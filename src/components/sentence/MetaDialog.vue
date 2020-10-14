@@ -88,7 +88,6 @@ export default {
       this.META = this.sentenceBus[userId].metaJson
       this.metaDialogOpened = true;
       this.metal = [];
-      console.log("KK this.META", this.sentenceBus[userId].metaJson)
       for (let a in this.META) {
         this.metal.push({ a: a, v: this.META[a] });
       }

@@ -209,7 +209,13 @@
                 v-if="reactiveSentencesObj"
                 :conll="tree"
                 :reactiveSentence="reactiveSentencesObj[user]"
-                :teacherReactiveSentence="exerciseMode ? reactiveSentencesObj['teacher'] : diffMode ? reactiveSentencesObj[userId] : {}"
+                :teacherReactiveSentence="
+                  exerciseMode
+                    ? reactiveSentencesObj['teacher']
+                    : diffMode
+                    ? reactiveSentencesObj[userId]
+                    : {}
+                "
                 :sentenceId="sentenceId"
                 :sentenceBus="sentenceBus"
                 :userId="user"
@@ -261,7 +267,7 @@ import ConlluDialog from "./ConlluDialog.vue";
 import ExportSVG from "./ExportSVG.vue";
 import TokenDialog from "./TokenDialog.vue";
 import StatisticsDialog from "./StatisticsDialog.vue";
-import user from 'src/store/modules/user';
+import user from "src/store/modules/user";
 
 export default {
   name: "SentenceCard",
@@ -341,7 +347,7 @@ export default {
       }
     },
     userId() {
-      return this.$store.getters["user/getUserInfos"].username
+      return this.$store.getters["user/getUserInfos"].username;
     },
     isBernardCaron() {
       return (
@@ -471,12 +477,22 @@ export default {
         .saveTrees(this.$route.params.projectname, data)
         .then((response) => {
           if (response.status == 200) {
-            this.sentenceData.conlls[changedConllUser] = exportedConll;
-            this.reactiveSentencesObj[changedConllUser].sentenceConll = exportedConll;
+            if (this.sentenceData.conlls[changedConllUser]) {
+              this.sentenceData.conlls[changedConllUser] = exportedConll;
+              this.reactiveSentencesObj[changedConllUser].sentenceConll = exportedConll;
+            } else {
+              const reactiveSentence = new ReactiveSentence();
+              reactiveSentence.fromConll(exportedConll);
+              this.reactiveSentencesObj[changedConllUser] = reactiveSentence;
+              this.sentenceData.conlls[changedConllUser] = exportedConll
+            }
 
             if (this.tab != changedConllUser) {
+              console.log("KK this.tab 1", this.tab)
+
               this.reactiveSentencesObj[openedTreeUser].resetRecentChanges();
               this.tab = changedConllUser;
+              console.log("KK this.tab 2", this.tab)
 
               if (!this.reactiveSentencesObj[changedConllUser]) {
                 this.reactiveSentencesObj[
@@ -535,11 +551,13 @@ export default {
       for (const otherUserId in this.reactiveSentencesObj) {
         if (otherUserId != this.userId) {
           if (this.sentenceBus[otherUserId]) {
-            this.sentenceBus[otherUserId].plugDiffTree(this.diffMode ? this.reactiveSentencesObj[this.userId] : {})
+            this.sentenceBus[otherUserId].plugDiffTree(
+              this.diffMode ? this.reactiveSentencesObj[this.userId] : {}
+            );
             // this.sentenceBus[otherUserId].drawTree()
           }
-          console.log("KK conllSavedCounter+1")
-          this.conllSavedCounter += 1
+          console.log("KK conllSavedCounter+1");
+          this.conllSavedCounter += 1;
         }
       }
     },

@@ -18,9 +18,9 @@ export default {
     },
     isGuest: (state, getters, rootState) => {
       return state.guests.includes(rootState.user.id);
-    } ,
+    },
     isTeacher: (state, getters) => {
-      return getters.isAdmin && getters.exerciseMode
+      return getters.isAdmin && getters.exerciseMode;
     },
     visibility: (state) => state.visibility,
     showAllTrees: (state) => state.showAllTrees,
@@ -85,6 +85,44 @@ export default {
      * so we need to keep separate the logic in Vuex, API calls and so on
      */
     fetchProjectSettings({ commit }, { projectname }) {
+      api
+        .getProject(projectname)
+        .then((response) => {
+          commit("set_project_settings", {
+            showAllTrees: response.data.show_all_trees,
+            exerciseMode: response.data.exercise_mode,
+            visibility: response.data.visibility,
+          });
+        })
+        .catch((error) => {
+          this.$store.dispatch("notifyError", { error: error });
+          // this.$q.notify({
+          // message: `${error}`,
+          // color: "negative",
+          // position: "bottom",
+          // });
+        });
+      api.getProjectFeatures(projectname).then((response) => {
+        commit("set_project_settings", {
+          shownmeta: response.data.shownmeta,
+          shownfeatures: response.data.shownfeatures,
+        });
+      });
+      api.getProjectConllSchema(projectname).then((response) => {
+        var fetchedAnnotationFeatures = response.data.annotationFeatures;
+        // check if there is a json in proper format, otherwise use default ConfigConllu
+        if (
+          typeof fetchedAnnotationFeatures !== "object" ||
+          fetchedAnnotationFeatures === null
+        ) {
+          // commit("reset_project_config");
+          fetchedAnnotationFeatures = state.annotationFeatures;
+        }
+        commit("set_project_conllu_schema", {
+          annotationFeatures: fetchedAnnotationFeatures,
+        });
+      });
+
       api
         .getProjectSettings(projectname)
         .then((response) => {

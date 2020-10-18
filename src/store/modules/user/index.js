@@ -44,21 +44,21 @@ export default {
   },
   actions: {
     checkSession({ commit }) {
-      return new Promise((resolve, object) => {
+      return new Promise((resolve, reject) => {
         //var token = VueCookies.get("authomatic");
         var session = VueCookies.get("session");
         //if (token != null) console.log("token", token);
         if (session != null) {
           api
-            .whoAmI({
-              id: session,
-            })
+            .whoAmI()
             .then((response) => {
               commit("login_success", {});
               commit("update_user", response.data);
+              resolve()
             })
             .catch((error) => {
               console.log(error);
+              reject()
             });
         }
       });

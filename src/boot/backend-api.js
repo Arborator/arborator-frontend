@@ -14,26 +14,44 @@ const API = axios.create({
 const AUTH = axios.create({
   // baseURL: 'https://arboratorgrew.ilpga.fr:8888/login',
   // baseURL: process.env.API + `/login`,
-  baseURL: process.env.DEV ? "/login" : process.env.API + "/login",
+  baseURL: process.env.DEV ? "/api" : process.env.API + "/api",
   timeout: 5000,
   withCredentials: true,
 });
-
 
 export default {
   // ---------------------------------------------------- //
   // ---------------        Project       --------------- //
   // ---------------------------------------------------- //
   getProjects() {
-    return API.get("projects/fetch_all");
+    // return API.get("projects/fetch_all");
+    return API.get("projects");
   },
-  getProjectInfos(projectname) {
-    // this one is slow, asks grew
+  createProject(data) {
+    return API.post("projects/", data);
+  },
+  getProject(projectname) {
     return API.get("projects/" + projectname);
+
+  },
+  getProjectFeatures(projectname) {
+    return API.get(`projects/${projectname}/features`);
+
+  },
+  getProjectConllSchema(projectname) {
+    return API.get(`projects/${projectname}/conll-schema`);
+
   },
   deleteProject(projectname) {
-    return API.delete("projects/" + projectname + "/delete");
+    return API.delete("projects/" + projectname);
   },
+  // getProjectInfos(projectname) {
+  //   // this one is slow, asks grew
+  //   return API.get("projects/" + projectname);
+  // },
+  // deleteProject(projectname) {
+  //   return API.delete("projects/" + projectname + "/delete");
+  // },
   modifyOpenProject(projectname, value) {
     return API.post("projects/" + projectname + "/openproject", {
       value: value,
@@ -110,6 +128,9 @@ export default {
   getUsers() {
     return API.get("admin/users");
   },
+  whoAmI() {
+    return AUTH.get("user/infos");
+  },
   getUsersTreeFrom(projectname) {
     return API.get("projects/" + projectname + "/treesfrom");
   },
@@ -139,7 +160,7 @@ export default {
       data
     );
   },
- 
+
   addSampleAnnotator(username, projectname, samplename) {
     let data = {
       username: username,
@@ -217,8 +238,6 @@ export default {
     return API.post("projects/" + projectname + "/sample/prof/remove", data);
   },
 
-
-  
   uploadProjectImage(projectname, form) {
     return API.post("projects/" + projectname + "/image", form);
   },
@@ -238,14 +257,7 @@ export default {
   logout() {
     return axios.get("/logout");
   },
-  whoAmI(session) {
-    // var sessionId = VueCookies.get("session");
-    // var session = {id: sessionId}
-    return AUTH.post("userinfos", session);
-  },
-  createProject(data) {
-    return API.post("projects/create", data);
-  },
+
   createInitializedProject(projectName, data) {
     return API.post("projects/" + projectName + "/create/upload", data);
   },

@@ -1,40 +1,49 @@
 <template>
-  <q-card :class="$q.dark.isActive?'':'bg-blue-grey-1 text-black'" class="full">
+  <q-card
+    :class="$q.dark.isActive ? '' : 'bg-blue-grey-1 text-black'"
+    class="full"
+  >
     <q-bar class="bg-primary text-white">
       <q-space />
-      <div class="text-weight-bold">{{$t('projectSettings').title}}</div>
+      <div class="text-weight-bold">{{ $t("projectSettings").title }}</div>
       <q-space />
       <q-btn dense flat icon="close" v-close-popup>
-        <q-tooltip content-class="bg-white text-primary">{{$t('projectSettings').windowClose}}</q-tooltip>
+        <q-tooltip content-class="bg-white text-primary">{{
+          $t("projectSettings").windowClose
+        }}</q-tooltip>
       </q-btn>
     </q-bar>
     <q-card-section class="q-pa-sm row q-gutter-md">
       <q-banner rounded class="col-md-4 offset-md-4 col-xs-12 col-sm-12">
         <q-img
-          :ratio="16/9"
-          :src="imageEmpty?'../statics/images/niko-photos-tGTVxeOr_Rs-unsplash.jpg':imageCleaned"
+          :ratio="16 / 9"
+          :src="
+            imageEmpty
+              ? '../statics/images/niko-photos-tGTVxeOr_Rs-unsplash.jpg'
+              : imageCleaned
+          "
           basic
         >
           <div class="absolute-bottom text-h6">
             <q-icon
               v-show="infos.visibility == 0"
               name="lock"
-              :color="$q.dark.isActive?'red-13':'negative'"
+              :color="$q.dark.isActive ? 'red-13' : 'negative'"
               size="lg"
             ></q-icon>
             <q-icon
               v-show="infos.visibility == 1"
               name="lock"
-              :color="$q.dark.isActive?'red-13':'positive'"
+              :color="$q.dark.isActive ? 'red-13' : 'positive'"
               size="lg"
             ></q-icon>
             <q-icon
               v-show="infos.visibility == 2"
               name="public"
-              :color="$q.dark.isActive?'red-13':'positive'"
+              :color="$q.dark.isActive ? 'red-13' : 'positive'"
               size="lg"
             ></q-icon>
-            {{infos.name}}
+            {{ infos.name }}
           </div>
         </q-img>
 
@@ -67,7 +76,7 @@
     <q-card-section>
       <q-input
         v-model="infos.description"
-        style="height: 100px;"
+        style="height: 100px"
         label="Description"
         filled
         clearable
@@ -87,8 +96,12 @@
         <q-list>
           <q-item tag="label" v-ripple>
             <q-item-section>
-              <q-item-label>{{$t('projectSettings').togglePrivate}}</q-item-label>
-              <q-item-label caption>{{$t('projectSettings').togglePrivateCaption}}</q-item-label>
+              <q-item-label>{{
+                $t("projectSettings").togglePrivate
+              }}</q-item-label>
+              <q-item-label caption>{{
+                $t("projectSettings").togglePrivateCaption
+              }}</q-item-label>
             </q-item-section>
             <q-item-section avatar>
               <div>
@@ -99,9 +112,10 @@
                   v-model="infos.visibility"
                   toggle-color="primary"
                   :options="[
-					{label: 'Private', value: 0},
-					{label: 'Visible', value: 1},
-					{label: 'Open', value: 2}]"
+                    { label: 'Private', value: 0 },
+                    { label: 'Visible', value: 1 },
+                    { label: 'Open', value: 2 },
+                  ]"
                 />
               </div>
               <!-- <q-toggle  color="blue" v-model="infos.visibility" checked-icon="check" unchecked-icon="clear" @input="changeIsPrivate()" /> -->
@@ -109,8 +123,12 @@
           </q-item>
           <q-item tag="label" v-ripple>
             <q-item-section>
-              <q-item-label>{{$t('projectSettings').toggleAllVisible}}</q-item-label>
-              <q-item-label caption>{{$t('projectSettings').toggleAllVisibleCaption}}</q-item-label>
+              <q-item-label>{{
+                $t("projectSettings").toggleAllVisible
+              }}</q-item-label>
+              <q-item-label caption>{{
+                $t("projectSettings").toggleAllVisibleCaption
+              }}</q-item-label>
             </q-item-section>
             <q-item-section avatar>
               <q-toggle
@@ -121,10 +139,14 @@
               />
             </q-item-section>
           </q-item>
-					<q-item tag="label" v-ripple>
+          <q-item tag="label" v-ripple>
             <q-item-section>
-              <q-item-label>{{$t('projectSettings').toggleExerciseMode}}</q-item-label>
-              <q-item-label caption>{{$t('projectSettings').toggleExerciseModeCaption}}</q-item-label>
+              <q-item-label>{{
+                $t("projectSettings").toggleExerciseMode
+              }}</q-item-label>
+              <q-item-label caption>{{
+                $t("projectSettings").toggleExerciseModeCaption
+              }}</q-item-label>
             </q-item-section>
             <q-item-section avatar>
               <q-toggle
@@ -153,21 +175,26 @@
       <q-card class="col">
         <q-card-section>
           <div class="text-h6 text-center">
-            {{$t('projectSettings').defaultUserTreePanel}}
+            {{ $t("projectSettings").defaultUserTreePanel }}
             <q-btn
               v-show="isAdmin"
               flat
               round
               icon="add"
-              :color="$q.dark.isActive?'purple-12':'primary'"
+              :color="$q.dark.isActive ? 'purple-12' : 'primary'"
               @click="addDefaultUserTreeDial = true"
             ></q-btn>
           </div>
         </q-card-section>
         <q-card-section>
           <q-list bordered separator class="list-size">
-            <q-item v-for="dut in infos.default_user_trees" :key="dut.id" clickable v-ripple>
-              <q-item-section>{{dut.username}}</q-item-section>
+            <q-item
+              v-for="dut in infos.default_user_trees"
+              :key="dut.id"
+              clickable
+              v-ripple
+            >
+              <q-item-section>{{ dut.username }}</q-item-section>
               <q-item-section side>
                 <q-btn
                   v-show="isAdmin"
@@ -175,7 +202,7 @@
                   round
                   flat
                   icon="remove"
-                  :color="$q.dark.isActive?'red-13':'negative'"
+                  :color="$q.dark.isActive ? 'red-13' : 'negative'"
                   @click="triggerConfirm(removeDefaultUserTree, dut.id)"
                 ></q-btn>
               </q-item-section>
@@ -188,13 +215,13 @@
       <q-card class="col">
         <q-card-section>
           <div class="text-h6 text-center">
-            {{$t('projectSettings').adminsPanel}}
+            {{ $t("projectSettings").adminsPanel }}
             <q-btn
               v-show="isAdmin"
               flat
               round
               icon="add"
-              :color="$q.dark.isActive?'purple-12':'primary'"
+              :color="$q.dark.isActive ? 'purple-12' : 'primary'"
               @click="addAdminDial = true"
             ></q-btn>
           </div>
@@ -202,7 +229,7 @@
         <q-card-section>
           <q-list bordered separator class="list-size">
             <q-item v-for="admin in admins" :key="admin" clickable v-ripple>
-              <q-item-section>{{admin}}</q-item-section>
+              <q-item-section>{{ admin }}</q-item-section>
               <q-item-section side>
                 <q-btn
                   v-show="isAdmin"
@@ -210,7 +237,7 @@
                   round
                   flat
                   icon="remove"
-                  :color="$q.dark.isActive?'red-13':'negative'"
+                  :color="$q.dark.isActive ? 'red-13' : 'negative'"
                   @click="triggerConfirm(removeAdmin, admin)"
                 ></q-btn>
               </q-item-section>
@@ -221,13 +248,13 @@
       <q-card class="col">
         <q-card-section>
           <div class="text-h6 text-center">
-            {{$t('projectSettings').guestsPanel}}
+            {{ $t("projectSettings").guestsPanel }}
             <q-btn
               v-show="isAdmin"
               flat
               round
               icon="add"
-              :color="$q.dark.isActive?'purple-12':'primary'"
+              :color="$q.dark.isActive ? 'purple-12' : 'primary'"
               @click="addGuestDial = true"
             ></q-btn>
           </div>
@@ -235,7 +262,7 @@
         <q-card-section>
           <q-list bordered separator class="list-size">
             <q-item v-for="guest in guests" :key="guest" clickable v-ripple>
-              <q-item-section>{{guest}}</q-item-section>
+              <q-item-section>{{ guest }}</q-item-section>
               <q-item-section side>
                 <q-btn
                   v-show="isAdmin"
@@ -243,7 +270,7 @@
                   round
                   flat
                   icon="remove"
-                  :color="$q.dark.isActive?'red-13':'negative'"
+                  :color="$q.dark.isActive ? 'red-13' : 'negative'"
                   @click="triggerConfirm(removeGuest, guest)"
                 ></q-btn>
               </q-item-section>
@@ -254,7 +281,9 @@
 
       <q-card class="col">
         <q-card-section>
-          <div class="text-h6 text-center">{{$t('projectSettings').shownFeaturesPanel}}</div>
+          <div class="text-h6 text-center">
+            {{ $t("projectSettings").shownFeaturesPanel }}
+          </div>
         </q-card-section>
         <q-card-section>
           <q-select
@@ -286,10 +315,16 @@
     <q-card-section class="q-pa-sm row items-start q-gutter-md">
       <q-card class="col col-sm-12">
         <q-card-section>
-          <div class="text-h6 text-center">{{$t('projectSettings').annotationSettingsInput}}</div>
+          <div class="text-h6 text-center">
+            {{ $t("projectSettings").annotationSettingsInput }}
+          </div>
         </q-card-section>
         <q-card-section>
-          <codemirror v-model="annofjson" :options="cmOption" @input="checkAnnotationFeatures"></codemirror>
+          <codemirror
+            v-model="annofjson"
+            :options="cmOption"
+            @input="checkAnnotationFeatures"
+          ></codemirror>
         </q-card-section>
         <q-btn
           color="bg-primary"
@@ -315,12 +350,19 @@
         ></q-btn>
         <q-chip
           text-color="primary"
-          :icon="annofok?'sentiment_satisfied_alt':'sentiment_very_dissatisfied'"
-        >{{annofcomment}}</q-chip>
+          :icon="
+            annofok ? 'sentiment_satisfied_alt' : 'sentiment_very_dissatisfied'
+          "
+          >{{ annofcomment }}</q-chip
+        >
       </q-card>
     </q-card-section>
 
-    <q-dialog v-model="addAdminDial" transition-show="fade" transition-hide="fade">
+    <q-dialog
+      v-model="addAdminDial"
+      transition-show="fade"
+      transition-hide="fade"
+    >
       <UserSelectTable
         :parentCallback="updateAdminsOrGuests"
         :general="true"
@@ -330,7 +372,11 @@
         :preselected="admins"
       ></UserSelectTable>
     </q-dialog>
-    <q-dialog v-model="addGuestDial" transition-show="fade" transition-hide="fade">
+    <q-dialog
+      v-model="addGuestDial"
+      transition-show="fade"
+      transition-hide="fade"
+    >
       <UserSelectTable
         :parentCallback="updateAdminsOrGuests"
         :general="true"
@@ -340,7 +386,11 @@
         :preselected="guests"
       ></UserSelectTable>
     </q-dialog>
-    <q-dialog v-model="addDefaultUserTreeDial" transition-show="fade" transition-hide="fade">
+    <q-dialog
+      v-model="addDefaultUserTreeDial"
+      transition-show="fade"
+      transition-hide="fade"
+    >
       <UserSelectTable
         :parentCallback="addDefaultUserTree"
         :general="false"
@@ -348,7 +398,10 @@
       ></UserSelectTable>
     </q-dialog>
     <q-dialog v-model="confirmActionDial">
-      <confirm-action :parentAction="confirmActionCallback" :arg1="confirmActionArg1"></confirm-action>
+      <confirm-action
+        :parentAction="confirmActionCallback"
+        :arg1="confirmActionArg1"
+      ></confirm-action>
     </q-dialog>
   </q-card>
 </template>
@@ -581,11 +634,15 @@ subj,comp,vocative
      */
     updateAdminsOrGuests(usersArray, targetRole) {
       const newRolesArrayId = [];
-            for (const user of usersArray) {
-              newRolesArrayId.push(user.id);
+      for (const user of usersArray) {
+        newRolesArrayId.push(user.id);
       }
       api
-        .setProjectUserRole(this.$props.projectname, targetRole, newRolesArrayId)
+        .updateManyProjectUserAccess(
+          this.$props.projectname,
+          targetRole,
+          newRolesArrayId
+        )
         .then((response) => {
           this.$q.notify({ message: `Change saved!` });
           this.$store.commit("config/set_project_settings", {
@@ -597,10 +654,10 @@ subj,comp,vocative
           this.$store.dispatch("notifyError", { error: error });
         });
     },
-  
+
     removeAdmin(userid) {
       api
-        .removeProjectUserRole(this.$props.projectname, "admin", userid)
+        .deleteProjectUserAccess(this.$props.projectname, userid)
         .then((response) => {
           this.$q.notify({ message: `Change saved!` });
           this.$store.commit("config/set_project_settings", {
@@ -620,7 +677,7 @@ subj,comp,vocative
      */
     removeGuest(userid) {
       api
-        .removeProjectUserRole(this.$props.projectname, "guest", userid)
+        .deleteProjectUserAccess(this.$props.projectname, userid)
         .then((response) => {
           this.$q.notify({ message: `Change saved!` });
           this.$store.commit("config/set_project_settings", {
@@ -683,7 +740,9 @@ subj,comp,vocative
      */
     changeShowAllTrees() {
       api
-        .modifyShowAllTrees(this.$props.projectname, this.showAllTrees)
+        .updateProject(this.$props.projectname, {
+          showAllTrees: this.showAllTrees,
+        })
         .then((response) => {
           this.$q.notify({ message: "Change saved!" });
           this.infos = response.data;
@@ -700,7 +759,9 @@ subj,comp,vocative
      */
     changeIsPrivate() {
       api
-        .modifyPrivate(this.$props.projectname, this.infos.visibility)
+        .updateProject(this.$props.projectname, {
+          visibility: this.infos.visibility,
+        })
         .then((response) => {
           this.$q.notify({ message: `Change saved!` });
           this.infos = response.data;
@@ -716,8 +777,9 @@ subj,comp,vocative
      * @returns void
      */
     changeDescription() {
-      api
-        .modifyDescription(this.$props.projectname, this.infos.description)
+      api.updateProject(this.$props.projectname, {
+          description: this.infos.description,
+        })
         .then((response) => {
           this.$q.notify({ message: `Change saved!` });
           this.infos = response.data;

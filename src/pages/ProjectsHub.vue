@@ -231,12 +231,12 @@ export default {
           // this.projectDifference = response.data.difference;
           this.loadingProjects = false;
           this.initLoading = false;
-          if (this.$store.getters["user/getUserInfos"].super_admin) {
-            this.$q.notify({
-              message: `Projects from Grew and Arborator are different!`,
-              type: "warning",
-            });
-          }
+          // if (this.$store.getters["user/getUserInfos"].super_admin) {
+          //   this.$q.notify({
+          //     message: `Projects from Grew and Arborator are different!`,
+          //     type: "warning",
+          //   });
+          // }
         })
         .catch((error) => {
           this.$store.dispatch("notifyError", { error: error });

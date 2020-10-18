@@ -11,15 +11,26 @@ const API = axios.create({
   withCredentials: true,
 });
 
-const AUTH = axios.create({
-  // baseURL: 'https://arboratorgrew.ilpga.fr:8888/login',
-  // baseURL: process.env.API + `/login`,
-  baseURL: process.env.DEV ? "/api" : process.env.API + "/api",
-  timeout: 5000,
-  withCredentials: true,
-});
+// const AUTH = axios.create({
+//   // baseURL: 'https://arboratorgrew.ilpga.fr:8888/login',
+//   // baseURL: process.env.API + `/login`,
+//   baseURL: process.env.DEV ? "/api" : process.env.API + "/api",
+//   timeout: 5000,
+//   withCredentials: true,
+// });
 
 export default {
+  // -------------------------------------------------- //
+  // ---------------        User       --------------- //
+  // -------------------------------------------------- //
+
+  getUsers() {
+    return API.get("users/");
+  },
+  whoAmI() {
+    return API.get("users/me");
+  },
+
   // ---------------------------------------------------- //
   // ---------------        Project       --------------- //
   // ---------------------------------------------------- //
@@ -31,19 +42,29 @@ export default {
     return API.post("projects/", data);
   },
   getProject(projectname) {
-    return API.get("projects/" + projectname);
-
+    return API.get(`projects/${projectname}`);
   },
-  getProjectFeatures(projectname) {
-    return API.get(`projects/${projectname}/features`);
-
-  },
-  getProjectConllSchema(projectname) {
-    return API.get(`projects/${projectname}/conll-schema`);
-
+  updateProject(projectname, data) {
+    return API.put(`projects/${projectname}`,data);
   },
   deleteProject(projectname) {
     return API.delete("projects/" + projectname);
+  },
+  getProjectFeatures(projectname) {
+    return API.get(`projects/${projectname}/features`);
+  },
+  getProjectConllSchema(projectname) {
+    return API.get(`projects/${projectname}/conll-schema`);
+  },
+  getProjectUsersAccess(projectname) {
+    return API.get(`projects/${projectname}/access`);
+  },
+  updateManyProjectUserAccess(projectname, targetrole, userIds) {
+    let data = { user_ids: userIds, targetrole: targetrole };
+    return API.put(`projects/${projectname}/access/many`, data);
+  },
+  deleteProjectUserAccess(projectname, userId) {
+    return API.delete(`projects/${projectname}/access/${userId}`);
   },
   // getProjectInfos(projectname) {
   //   // this one is slow, asks grew
@@ -78,13 +99,13 @@ export default {
     // return API.get("projects/" + projectname + "/settings/infos");
     return API.get("projects/" + projectname + "/settings/fetch");
   },
-  updateProjectSettings(projectname, projectSettings) {
-    // new from kim JSON.stringify(user)
-    return API.post(
-      "projects/" + projectname + "/settings/update",
-      projectSettings
-    );
-  },
+  // updateProjectSettings(projectname, projectSettings) {
+  //   // new from kim JSON.stringify(user)
+  //   return API.post(
+  //     "projects/" + projectname + "/settings/update",
+  //     projectSettings
+  //   );
+  // },
   getProjectConlluSchema(projectname) {
     return API.get("projects/" + projectname + "/conllu-schema/fetch");
   },
@@ -121,27 +142,10 @@ export default {
     return API.post("projects/" + projectname + "/upload", data);
   },
 
-  // -------------------------------------------------- //
-  // ---------------        User       --------------- //
-  // -------------------------------------------------- //
-
-  getUsers() {
-    return API.get("admin/users");
-  },
-  whoAmI() {
-    return AUTH.get("user/infos");
-  },
   getUsersTreeFrom(projectname) {
     return API.get("projects/" + projectname + "/treesfrom");
   },
 
-  setProjectUserRole(projectname, targetrole, userid) {
-    let data = { user_id: userid };
-    return API.post(
-      "projects/" + projectname + "/" + targetrole + "/add_many",
-      data
-    );
-  },
   removeProjectUserRole(projectname, targetrole, userid) {
     let data = { user_id: userid };
     return API.post(

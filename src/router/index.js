@@ -42,7 +42,7 @@ export default function (/* { store, ssrContext } */) {
   */
   Router.afterEach((to, from) => {
     if (to.params.projectname && to.params.projectname !== from.params.projectname) {
-      store.dispatch('config/fetchProjectConlluSchema', {projectname: to.params.projectname})
+      // store.dispatch('config/fetchProjectConlluSchema', {projectname: to.params.projectname})
       store.dispatch("config/fetchProjectSettings", {projectname: to.params.projectname})
     } 
   });

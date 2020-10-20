@@ -45,7 +45,7 @@ export default {
     return API.get(`projects/${projectname}`);
   },
   updateProject(projectname, data) {
-    return API.put(`projects/${projectname}`,data);
+    return API.put(`projects/${projectname}`, data);
   },
   deleteProject(projectname) {
     return API.delete("projects/" + projectname);
@@ -53,8 +53,15 @@ export default {
   getProjectFeatures(projectname) {
     return API.get(`projects/${projectname}/features`);
   },
-  getProjectConllSchema(projectname) {
+  updateProjectFeatures(projectname, toUpdateObject) {
+    return API.put(`projects/${projectname}/features`, toUpdateObject);
+  },
+  getProjectConlluSchema(projectname) {
     return API.get(`projects/${projectname}/conll-schema`);
+  },
+  updateProjectConlluSchema(projectname, conlluSchema) {
+    console.log("KK projectname, conlluSchema", conlluSchema)
+    return API.put(`projects/${projectname}/conll-schema`, conlluSchema);
   },
   getProjectUsersAccess(projectname) {
     return API.get(`projects/${projectname}/access`);
@@ -73,6 +80,8 @@ export default {
   // deleteProject(projectname) {
   //   return API.delete("projects/" + projectname + "/delete");
   // },
+
+  /// --- deprecated ? ----
   modifyOpenProject(projectname, value) {
     return API.post("projects/" + projectname + "/openproject", {
       value: value,
@@ -91,6 +100,7 @@ export default {
       value: value,
     });
   },
+  /// ---end deprecated ? ----
 
   // -----------        Settings       ----------- //
 
@@ -106,15 +116,15 @@ export default {
   //     projectSettings
   //   );
   // },
-  getProjectConlluSchema(projectname) {
-    return API.get("projects/" + projectname + "/conllu-schema/fetch");
-  },
-  updateProjectConlluSchema(projectname, conlluSchema) {
-    return API.post(
-      "projects/" + projectname + "/conllu-schema/update",
-      conlluSchema
-    );
-  },
+  // getProjectConlluSchema(projectname) {
+  //   return API.get("projects/" + projectname + "/conllu-schema/fetch");
+  // },
+  // updateProjectConlluSchema(projectname, conlluSchema) {
+  //   return API.post(
+  //     "projects/" + projectname + "/conllu-schema/update",
+  //     conlluSchema
+  //   );
+  // },
 
   // -----------        Sample       ----------- //
 

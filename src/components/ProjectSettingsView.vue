@@ -302,7 +302,7 @@
             filled
             v-model="shownmeta"
             multiple
-            :options="shownmetachoices"
+            :options="$store.getters['config/shownmetachoices']"
             use-chips
             stack-label
             :label="$t('projectSettings').shownFeaturesSentences"
@@ -492,12 +492,15 @@ subj,comp,vocative
         });
       },
     },
+    shownfeatureschoices() {
+      return this.$store.getters["config/shownfeatureschoices"];
+    },
     shownfeatures: {
       get() {
         return this.$store.getters["config/shownfeatures"];
       },
       set(value) {
-        this.$store.dispatch("config/updateProjectSettings", {
+        this.$store.dispatch("config/updateProjectShownFeatures", {
           projectname: this.$props.projectname,
           toUpdateObject: { shownfeatures: value },
         });
@@ -511,14 +514,11 @@ subj,comp,vocative
         return this.$store.getters["config/shownmeta"];
       },
       set(value) {
-        this.$store.dispatch("config/updateProjectSettings", {
+        this.$store.dispatch("config/updateProjectShownFeatures", {
           projectname: this.$props.projectname,
           toUpdateObject: { shownmeta: value },
         });
       },
-    },
-    shownfeatureschoices() {
-      return this.$store.getters["config/shownfeatureschoices"];
     },
     imageEmpty() {
       if (this.infos.image == null) {
@@ -777,7 +777,8 @@ subj,comp,vocative
      * @returns void
      */
     changeDescription() {
-      api.updateProject(this.$props.projectname, {
+      api
+        .updateProject(this.$props.projectname, {
           description: this.infos.description,
         })
         .then((response) => {

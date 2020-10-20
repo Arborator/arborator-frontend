@@ -114,8 +114,9 @@ export default {
           shownfeatures: response.data.shownfeatures,
         });
       });
-      api.getProjectConllSchema(projectname).then((response) => {
+      api.getProjectConlluSchema(projectname).then((response) => {
         var fetchedAnnotationFeatures = response.data.annotationFeatures;
+        console.log("KK fetchedAnnotationFeatures", fetchedAnnotationFeatures)
         // check if there is a json in proper format, otherwise use default ConfigConllu
         if (
           typeof fetchedAnnotationFeatures !== "object" ||
@@ -201,11 +202,37 @@ export default {
           });
       });
     },
+    updateProjectShownFeatures(
+      {commit, dispatch},
+      {projectname, toUpdateObject}
+    ) {
+      return new Promise((resolve, reject) => {
+        api
+          .updateProjectFeatures(projectname, toUpdateObject)
+          .then((response) => {
+            commit("set_project_settings", {...toUpdateObject});
+            Notify.create({
+              message: `Change saved!`,
+            });
+            resolve(response);
+          })
+          .catch((error) => {
+            dispatch("notifyError", { error: error }, { root: true });
+            Notify.create({
+              message: `${error}`,
+              color: "negative",
+              position: "bottom",
+            });
+            reject(error);
+          });
+      });
+
+    },
     // // KK refactor : change naming (-> conllu-schema)
     // fetchProjectConlluSchema({ commit, state }, { projectname }) {
     //   return new Promise((resolve, reject) => {
     //     api
-    //       .getProjectConllSchema(projectname)
+    //       .getProjectConlluSchema(projectname)
     //       .then((response) => {
     //         var fetchedAnnotationFeatures = response.data.annotationFeatures;
     //         // check if there is a json in proper format, otherwise use default ConfigConllu

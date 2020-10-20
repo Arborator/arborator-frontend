@@ -240,6 +240,8 @@
     <ExportSVG :sentenceBus="sentenceBus" />
     <TokenDialog
       :sentenceBus="sentenceBus"
+      :reactiveSentencesObj="reactiveSentencesObj"
+
       @changed:metaText="changeMetaText"
     />
     <StatisticsDialog
@@ -472,7 +474,6 @@ export default {
         ],
         user_id: changedConllUser,
       };
-      // console.log("data", data);
       api
         .saveTrees(this.$route.params.projectname, data)
         .then((response) => {

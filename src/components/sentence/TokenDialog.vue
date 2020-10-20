@@ -53,7 +53,7 @@ import AttributeTable from "./AttributeTable.vue";
 
 export default {
   components: { AttributeTable },
-  props: ["sentenceBus"],
+  props: ["sentenceBus", "reactiveSentencesObj"],
   data() {
     return {
       tokenDialogOpened: false,
@@ -181,14 +181,21 @@ export default {
       var ttokl = this.tokl
         .map(({ v }) => v)
         .filter((x) => x.trim().length > 0);
-      this.sentenceBus[this.userId].replaceArrayOfTokens(
+
+      // var data = {
+      //   tokenIds: this.tokidsequence,
+      //   firstToken:
+      // }
+      // this.sentenceBus.$emit
+      this.reactiveSentencesObj[this.userId].replaceArrayOfTokens(
         this.tokidsequence,
-        ttokl.length
-          ? this.tokidsequence[0]
-          : this.tokidsequence[0] - 1,
+        ttokl.length ? this.tokidsequence[0] : this.tokidsequence[0] - 1,
         ttokl
       );
-      this.$emit("changed:metaText", this.sentenceBus[this.userId].metaJson.text);
+      this.$emit(
+        "changed:metaText",
+        this.sentenceBus[this.userId].metaJson.text
+      );
     },
   },
 };

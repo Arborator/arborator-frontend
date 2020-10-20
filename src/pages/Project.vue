@@ -56,9 +56,7 @@
           </q-img>
         </q-card-section>
         <q-card-section v-if="LexiconTable">
-          <lexicon-table
-            :data="this.lexicon"
-            @request="getLexicon">
+          <lexicon-table :data="this.lexicon" @request="getLexicon">
           </lexicon-table>
         </q-card-section>
         <q-card-section>
@@ -95,9 +93,7 @@
             :key="tableKey"
             @request="getProjectInfos"
           >
-
             <template v-slot:top="props">
-
               <q-btn-group flat>
                 <q-btn
                   v-if="isAdmin || isSuperAdmin"
@@ -456,10 +452,11 @@
                 }}</q-td>
                 <q-td key="tokens" :props="props">{{ props.row.tokens }}</q-td>
                 <q-td key="annotators" :props="props">
-                  <tag-input
+                  <TagInput
                     v-if="isAdmin || isSuperAdmin"
-                    @tag-added="addAnnotator"
-                    @tag-removed="removeAnnotator"
+                    role="annotator"
+                    @tag-added="modifyRole"
+                    @tag-removed="modifyRole"
                     :tag-context="props.row"
                     :element-id="props.row.sample_name + 'annotatortag'"
                     v-model="props.row.roles.annotator"
@@ -470,7 +467,7 @@
                     placeholder="add user"
                     :only-existing-tags="true"
                     :typeahead-always-show="false"
-                  ></tag-input>
+                  ></TagInput>
                   <q-list v-else dense>
                     <q-item
                       v-for="source in props.row.roles.annotator"
@@ -482,10 +479,11 @@
                   </q-list>
                 </q-td>
                 <q-td key="validators" :props="props">
-                  <tag-input
+                  <TagInput
                     v-if="isAdmin || isSuperAdmin"
-                    @tag-added="addValidator"
-                    @tag-removed="removeValidator"
+                    role="validator"
+                    @tag-added="modifyRole"
+                    @tag-removed="modifyRole"
                     :tag-context="props.row"
                     :element-id="props.row.sample_name + 'validatortag'"
                     v-model="props.row.roles.validator"
@@ -496,7 +494,7 @@
                     placeholder="add user"
                     :only-existing-tags="true"
                     :typeahead-always-show="false"
-                  ></tag-input>
+                  ></TagInput>
                   <q-list v-else dense>
                     <q-item
                       v-for="source in props.row.roles.validator"
@@ -507,8 +505,8 @@
                     </q-item>
                   </q-list>
                 </q-td>
-                <q-td key="profs" :props="props">
-                  <tag-input
+                <!-- <q-td key="profs" :props="props">
+                  <TagInput
                     v-if="isAdmin || isSuperAdmin"
                     @tag-added="addProf"
                     @tag-removed="removeProf"
@@ -522,7 +520,7 @@
                     placeholder="add user"
                     :only-existing-tags="true"
                     :typeahead-always-show="false"
-                  ></tag-input>
+                  ></TagInput>
                   <q-list v-else dense>
                     <q-item
                       v-for="source in props.row.roles.prof"
@@ -532,7 +530,7 @@
                       <q-item-label caption>{{ source.value }}</q-item-label>
                     </q-item>
                   </q-list>
-                </q-td>
+                </q-td> -->
                 <q-td key="treesFrom" :props="props">
                   <q-list dense>
                     <q-item
@@ -761,7 +759,7 @@ import ProjectSettingsView from "../components/ProjectSettingsView.vue";
 import ConfirmAction from "../components/ConfirmAction.vue";
 import UploadDialog from "../components/project/UploadDialog.vue";
 import { mapGetters } from "vuex";
-import LexiconTable from '../components/LexiconTable';
+import LexiconTable from "../components/LexiconTable";
 
 export default {
   components: {
@@ -773,7 +771,7 @@ export default {
     ProjectSettingsView,
     ConfirmAction,
     UploadDialog,
-    LexiconTable
+    LexiconTable,
   },
   data() {
     return {
@@ -792,7 +790,7 @@ export default {
       confirmActionCallback: null,
       confirmActionArg1: "",
       LexiconTable: false,
-      lexicon:[],
+      lexicon: [],
       alerts: {
         uploadsuccess: { color: "positive", message: "Upload success" },
         uploadfail: {
@@ -1010,8 +1008,8 @@ export default {
       });
     },
     getUsers() {
-    // TODO : change this function as it's downloading all users each time. It should only be users of the project
-    // this method populate the `possiblesUsers` list for feeding the annotator and validator tag input choice
+      // TODO : change this function as it's downloading all users each time. It should only be users of the project
+      // this method populate the `possiblesUsers` list for feeding the annotator and validator tag input choice
       api
         .getUsers()
         .then((response) => {
@@ -1078,7 +1076,6 @@ export default {
         });
     },
 
-
     pull(type) {
       var samplenames = [];
       for (const sample of this.table.selected) {
@@ -1102,32 +1099,35 @@ export default {
         });
     },
 
-        upload(){
-            var form = new FormData();
-            form.append('robotname', this.robot.name);
-            form.append('robot', this.robot.active);
-            this.uploadSample.submitting = true;
-            for(const file of this.uploadSample.attachment.file){ form.append('files',file); }
-            form.append('import_user',Store.getters['user/getUserInfos'].username);
-            api.uploadSample(this.$route.params.projectname, form).then( response => { 
-                this.uploadSample.attachment.file = []; 
-                this.getProjectInfos(); 
-                this.uploadDial = false; 
-                this.uploadSample.submitting = false; 
-                this.showNotif('top-right', 'uploadsuccess');})
-                .catch(error => { 
-                    
-                    if (error.response) 
-                    {
-                        error.message = error.response.data.message;
-                        error.permanent = true;
-                    }
-                    error.caption = "Check your file please!"
-                    this.uploadSample.submitting = false; 
-                    this.uploadDial = false; 
-                    this.$store.dispatch("notifyError", {error: error}); });
-        },
-
+    upload() {
+      var form = new FormData();
+      form.append("robotname", this.robot.name);
+      form.append("robot", this.robot.active);
+      this.uploadSample.submitting = true;
+      for (const file of this.uploadSample.attachment.file) {
+        form.append("files", file);
+      }
+      form.append("import_user", Store.getters["user/getUserInfos"].username);
+      api
+        .uploadSample(this.$route.params.projectname, form)
+        .then((response) => {
+          this.uploadSample.attachment.file = [];
+          this.getProjectInfos();
+          this.uploadDial = false;
+          this.uploadSample.submitting = false;
+          this.showNotif("top-right", "uploadsuccess");
+        })
+        .catch((error) => {
+          if (error.response) {
+            error.message = error.response.data.message;
+            error.permanent = true;
+          }
+          error.caption = "Check your file please!";
+          this.uploadSample.submitting = false;
+          this.uploadDial = false;
+          this.$store.dispatch("notifyError", { error: error });
+        });
+    },
 
     exportSamplesZip() {
       this.table.exporting = true;
@@ -1178,7 +1178,7 @@ export default {
     },
 
     getLexicon(type) {
-      this.LexiconTable=true;
+      this.LexiconTable = true;
       var samplenames = [];
       for (const sample of this.table.selected) {
         samplenames.push(sample.sample_name);
@@ -1270,108 +1270,112 @@ export default {
       }
       this.tableKey++;
     },
-
-    addAnnotator(slug, context) {
+    /*
+    KK : New method that add/remove annotator/validator to a sample
+    */
+    modifyRole(slug, context, role, action) {
       api
-        .addSampleAnnotator(
-          slug.value,
+        .modifySampleRole(
           this.$route.params.projectname,
-          context.sample_name
+          context.sample_name,
+          slug.value,
+          role,
+          action
         )
         .then((response) => {
           this.updateTags(response, context.sample_name);
           this.$q.notify({ message: `Change saved!` });
         })
         .catch((error) => {
-          this.reverseTags(slug.value, context.sample_name, "annotator");
+          this.reverseTags(slug.value, context.sample_name, role);
           this.$store.dispatch("notifyError", { error: error });
         });
     },
 
-    removeAnnotator(slug, context) {
-      api
-        .removeSampleAnnotator(
-          slug.value,
-          this.$route.params.projectname,
-          context.sample_name
-        )
-        .then((response) => {
-          this.updateTags(response, context.sample_name);
-          this.$q.notify({ message: `Change saved!` });
-        })
-        .catch((error) => {
-          this.$store.dispatch("notifyError", { error: error });
-        });
-    },
+    // removeAnnotator(slug, context) {
+    //   api
+    //     .removeSampleAnnotator(
+    //       slug.value,
+    //       this.$route.params.projectname,
+    //       context.sample_name
+    //     )
+    //     .then((response) => {
+    //       this.updateTags(response, context.sample_name);
+    //       this.$q.notify({ message: `Change saved!` });
+    //     })
+    //     .catch((error) => {
+    //       this.$store.dispatch("notifyError", { error: error });
+    //     });
+    // },
 
-    addValidator(slug, context) {
-      api
-        .addSampleValidator(
-          slug.value,
-          this.$route.params.projectname,
-          context.sample_name
-        )
-        .then((response) => {
-          this.updateTags(response, context.sample_name);
-          this.$q.notify({ message: `Change saved!` });
-        });
-    },  
-    removeValidator(slug, context) {
-      api
-        .removeSampleValidator(
-          slug.value,
-          this.$route.params.projectname,
-          context.sample_name
-        )
-        .then((response) => {
-          this.updateTags(response, context.sample_name);
-          this.$q.notify({ message: `Change saved!` });
-        });
-    },
-    addSuperValidator(slug, context) {
-      api
-        .addSampleSuperValidator(
-          slug.value,
-          this.$route.params.projectname,
-          context.sample_name
-        )
-        .then((response) => {
-          this.updateTags(response, context.sample_name);
-        });
-    },
-    removeSuperValidator(slug, context) {
-      api
-        .removeSampleSuperValidator(
-          slug.value,
-          this.$route.params.projectname,
-          context.sample_name
-        )
-        .then((response) => {
-          this.updateTags(response, context.sample_name);
-        });
-    },
-    addProf(slug, context) {
-      api
-        .addSampleProf(
-          slug.value,
-          this.$route.params.projectname,
-          context.sample_name
-        )
-        .then((response) => {
-          this.updateTags(response, context.sample_name);
-        });
-    },
-    removeProf(slug, context) {
-      api
-        .removeSampleProf(
-          slug.value,
-          this.$route.params.projectname,
-          context.sample_name
-        )
-        .then((response) => {
-          this.updateTags(response, context.sample_name);
-        });
-    },
+    // addValidator(slug, context) {
+    //   api
+    //     .addSampleValidator(
+    //       slug.value,
+    //       this.$route.params.projectname,
+    //       context.sample_name
+    //     )
+    //     .then((response) => {
+    //       this.updateTags(response, context.sample_name);
+    //       this.$q.notify({ message: `Change saved!` });
+    //     });
+    // },
+    // removeValidator(slug, context) {
+    //   api
+    //     .removeSampleValidator(
+    //       slug.value,
+    //       this.$route.params.projectname,
+    //       context.sample_name
+    //     )
+    //     .then((response) => {
+    //       this.updateTags(response, context.sample_name);
+    //       this.$q.notify({ message: `Change saved!` });
+    //     });
+    // },
+    // addSuperValidator(slug, context) {
+    //   api
+    //     .addSampleSuperValidator(
+    //       slug.value,
+    //       this.$route.params.projectname,
+    //       context.sample_name
+    //     )
+    //     .then((response) => {
+    //       this.updateTags(response, context.sample_name);
+    //     });
+    // },
+    // removeSuperValidator(slug, context) {
+    //   api
+    //     .removeSampleSuperValidator(
+    //       slug.value,
+    //       this.$route.params.projectname,
+    //       context.sample_name
+    //     )
+    //     .then((response) => {
+    //       this.updateTags(response, context.sample_name);
+    //     });
+    // },
+    // addProf(slug, context) {
+    //   api
+    //     .addSampleProf(
+    //       slug.value,
+    //       this.$route.params.projectname,
+    //       context.sample_name
+    //     )
+    //     .then((response) => {
+    //       this.updateTags(response, context.sample_name);
+    //     });
+    // },
+    // removeProf(slug, context) {
+    //   api
+    //     .removeSampleProf(
+    //       slug.value,
+    //       this.$route.params.projectname,
+    //       context.sample_name
+    //     )
+    //     .then((response) => {
+    //       this.updateTags(response, context.sample_name);
+    //     });
+    // },
     updateExerciseLevel(sample) {
       api.updateSampleExerciseLevel(
         this.$route.params.projectname,

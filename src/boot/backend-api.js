@@ -126,12 +126,23 @@ export default {
   //   );
   // },
 
-  // -----------        Sample       ----------- //
-
+  // -----------        Samples       ----------- //
   getProjectSamples(projectname) {
     // this call flask api that call grew api
-    return API.get("projects/" + projectname + "/samples/fetch_all");
+    return API.get(`/projects/${projectname}/samples`);
   },
+
+
+  modifySampleRole(projectname, samplename, username, targetrole, action) {
+    return API.post(`/projects/${projectname}/samples/${samplename}/role`, {username, targetrole, action});
+
+  },
+
+
+  // getProjectSamples(projectname) {
+  //   // this call flask api that call grew api
+  //   return API.get("projects/" + projectname + "/samples/fetch_all");
+  // },
   updateSampleExerciseLevel(projectname, samplename, exerciseLevel) {
     const data = { exerciseLevel };
     return API.post(

@@ -136,6 +136,7 @@ export class SentenceSVG extends EventDispatcher {
     this.treeJson[tokenJson.ID] = tokenJson;
   }
 
+<<<<<<< HEAD
   // replaceArrayOfTokens(
   //   tokenIds: number[],
   //   firstToken: number,
@@ -198,6 +199,8 @@ export class SentenceSVG extends EventDispatcher {
   //   return;
   // }
 
+=======
+>>>>>>> 56fc29348bb8870d3cdc5fffa83387dcbd7a57b1
   populateLevels(): void {
     // populate the list this.levelsArray of length Nnode+1. A fake
     // ... element is appended at the beginning of the array for easing the loop task

@@ -1,6 +1,7 @@
 import {
-  jsonToConll,
   conllToJson,
+  jsonToConll,
+  getSentenceTextFromJson,
   TokenJson,
 } from "./Conll";
 import { EventDispatcher } from "./EventDispatcher";
@@ -54,6 +55,77 @@ export class ReactiveSentence extends EventDispatcher {
 
     this._emitEvent();
   }
+  
+  replaceArrayOfTokens(
+    tokenIds: number[],
+    firstToken: number,
+    tokensToReplace: any // TODO : type this
+  ): void {
+    var id2newid: { [key: number]: number } = { 0: 0 };
+    for (let idStr in this.treeJson) {
+      let id = parseInt(idStr);
+
+      if (id < tokenIds[0]) id2newid[id] = id;
+      else if (tokenIds.includes(id)) {
+        if (tokenIds.indexOf(id) < tokensToReplace.length) id2newid[id] = id;
+        else id2newid[id] = firstToken;
+      } else id2newid[id] = id + tokensToReplace.length - tokenIds.length;
+    }
+    var newtree: TreeJson = {};
+    for (let idStr in this.treeJson) {
+      let id = parseInt(idStr);
+      if (
+        tokenIds.includes(id) &&
+        tokenIds.indexOf(id) >= tokensToReplace.length
+      )
+        continue;
+      var node = this.treeJson[id];
+      node.ID = id2newid[id];
+      node.HEAD = id2newid[node.HEAD];
+      const newdeps: any = {};
+      for (let gidStr in node.DEPS) {
+        let gid = parseInt(gidStr);
+        newdeps[id2newid[gid]] = node.DEPS[gid];
+      }
+      node.DEPS = newdeps;
+      if (tokenIds.includes(id)) {
+        node.FORM = tokensToReplace[tokenIds.indexOf(id)];
+      }
+      newtree[id2newid[id]] = node;
+    }
+    // now the case where more tokens were inserted than replaced:
+    var basenode = this.treeJson[id2newid[tokenIds[tokenIds.length - 1]]];
+    for (var i = tokenIds.length; i < tokensToReplace.length; ++i) {
+      let newnode = JSON.parse(JSON.stringify(basenode));
+      newnode.ID = tokenIds[0] + i;
+      newnode.FORM = tokensToReplace[i];
+      newnode.HEAD = 0;
+      newnode.DEPREL = "root";
+      newnode.DEPS = {};
+      if (newnode.MISC.Gloss) newnode.MISC.Gloss = newnode.FORM;
+      newtree[tokenIds[0] + i] = newnode;
+    }
+    if (!Object.keys(newtree).length) return; // forbid to erase entire tree TODO : throw an error
+
+    // this is necessary, because a simple 'this.treeJson = newtree;' would break the ===  
+    // for (const tokenIndex in newtree) {
+    //   Object.assign(this.treeJson[tokenIndex], newtree[tokenIndex]);
+    // }
+
+    this.treeJson = newtree
+
+    // // TODO handle new meta text
+    this.metaJson.text = getSentenceTextFromJson(newtree);
+
+    const event = new CustomEvent(
+      "tree-updated"
+    );
+    this.dispatchEvent(event);
+
+    return;
+  }
+
+
 
   _emitEvent(): void {
     const event = new CustomEvent(

@@ -53,7 +53,7 @@ import AttributeTable from "./AttributeTable.vue";
 
 export default {
   components: { AttributeTable },
-  props: ["sentenceBus"],
+  props: ["sentenceBus", "reactiveSentencesObj"],
   data() {
     return {
       tokenDialogOpened: false,
@@ -181,7 +181,7 @@ export default {
       var ttokl = this.tokl
         .map(({ v }) => v)
         .filter((x) => x.trim().length > 0);
-      this.sentenceBus[this.userId].replaceArrayOfTokens(
+      this.reactiveSentencesObj[this.userId].replaceArrayOfTokens(
         this.tokidsequence,
         ttokl.length
           ? this.tokidsequence[0]

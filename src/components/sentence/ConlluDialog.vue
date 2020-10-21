@@ -1,6 +1,6 @@
 <template>
   <!----------------- Start ConllDialog ------------------->
-  <q-dialog v-model="connluDialogOpened" full-width>
+  <q-dialog v-model="conlluDialogOpened" full-width>
     <q-layout view="Lhh lpR fff" container class="bg-white">
       <q-header class="bg-primary">
         <q-toolbar>
@@ -87,7 +87,7 @@ export default {
   props: ["sentenceBus"],
   data() {
     return {
-      connluDialogOpened: false,
+      conlluDialogOpened: false,
       currentConllContent: "",
       conllContent: "",
       cmOption: {
@@ -106,7 +106,7 @@ export default {
   mounted() {
     this.sentenceBus.$on("open:conlluDialog", ({ userId }) => {
       this.userId = userId;
-      this.connluDialogOpened = true;
+      this.conlluDialogOpened = true;
       this.currentConllContent = this.sentenceBus[this.userId].exportConll();
       this.conllContent = this.sentenceBus[this.userId].exportConll();
     });

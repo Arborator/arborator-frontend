@@ -60,6 +60,7 @@
         >
           <q-tooltip>Save as Emmett</q-tooltip>
         </q-btn>
+
         <q-btn
           v-if="isLoggedIn"
           flat
@@ -148,7 +149,7 @@
             </q-item>
           </q-list>
         </q-btn-dropdown>
-        <q-btn
+         <q-btn
           v-if="isLoggedIn"
           flat
           round
@@ -263,6 +264,7 @@
     <ExportSVG :sentenceBus="sentenceBus" />
     <TokenDialog
       :sentenceBus="sentenceBus"
+      :reactiveSentencesObj="reactiveSentencesObj"
       @changed:metaText="changeMetaText"
     />
     <StatisticsDialog
@@ -276,6 +278,8 @@
 import Vue from "vue";
 
 import { mapGetters } from "vuex";
+
+import { LocalStorage } from 'quasar';
 
 import api from "../../boot/backend-api";
 
@@ -291,7 +295,6 @@ import ExportSVG from "./ExportSVG.vue";
 import TokenDialog from "./TokenDialog.vue";
 import StatisticsDialog from "./StatisticsDialog.vue";
 import user from "src/store/modules/user";
-import { LocalStorage } from 'quasar';
 
 export default {
   name: "SentenceCard",
@@ -462,7 +465,7 @@ export default {
     /**
      * @todo undo
      */
-    undo(mode) {
+       undo(mode) {
       if (this.tab !== "") {
         this.sentenceBus.$emit("action:undo", {
           userId: this.tab,
@@ -479,7 +482,6 @@ export default {
         })
       }
     },
-
     /**
      * Receive canUndo, canRedo status from VueDepTree child component and
      * decide whether to disable undo, redo buttons or not
@@ -523,13 +525,12 @@ export default {
         ],
         user_id: changedConllUser,
       };
-      // console.log("data", data);
       api
         .saveTrees(this.$route.params.projectname, data)
         .then((response) => {
           if (response.status == 200) {
             this.sentenceBus.$emit("action:saved", {
-              userId: this.tab,
+                userId: this.tab,
             });
             if (this.sentenceData.conlls[changedConllUser]) {
               this.sentenceData.conlls[changedConllUser] = exportedConll;
@@ -557,7 +558,6 @@ export default {
             }
             this.graphInfo.dirty = false;
             this.showNotif("top", "saveSuccess");
-            
           }
         })
         .catch((error) => {

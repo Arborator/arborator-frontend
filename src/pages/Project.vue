@@ -56,8 +56,8 @@
           </q-img>
         </q-card-section>
         <q-card-section v-if="LexiconTable">
-          <lexicon-table :data="this.lexicon" @request="getLexicon">
-          </lexicon-table>
+          <LexiconTable :data="this.lexicon" @request="getLexicon">
+          </LexiconTable>
         </q-card-section>
         <q-card-section>
           <q-table

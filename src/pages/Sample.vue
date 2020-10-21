@@ -123,10 +123,10 @@
     </q-page-sticky>
 
     <q-dialog v-model="searchDialog" seamless position="right" full-width>
-      <grew-request-card
+      <GrewRequestCard
         :parentOnSearch="onSearch"
         :grewquery="$route.query.q || ''"
-      ></grew-request-card>
+      ></GrewRequestCard>
     </q-dialog>
 
     <q-dialog

@@ -465,11 +465,7 @@ export default {
     /**
      * @todo undo
      */
-<<<<<<< HEAD
-        undo(mode) {
-=======
        undo(mode) {
->>>>>>> 56fc29348bb8870d3cdc5fffa83387dcbd7a57b1
       if (this.tab !== "") {
         this.sentenceBus.$emit("action:undo", {
           userId: this.tab,
@@ -528,13 +524,8 @@ export default {
         .updateTree(this.$route.params.projectname, this.$props.sentence.sample_name,  data)
         .then((response) => {
           if (response.status == 200) {
-<<<<<<< HEAD
-              this.sentenceBus.$emit("action:saved", {
-              userId: this.tab,
-=======
             this.sentenceBus.$emit("action:saved", {
                 userId: this.tab,
->>>>>>> 56fc29348bb8870d3cdc5fffa83387dcbd7a57b1
             });
             if (this.sentenceData.conlls[changedConllUser]) {
               this.sentenceData.conlls[changedConllUser] = exportedConll;

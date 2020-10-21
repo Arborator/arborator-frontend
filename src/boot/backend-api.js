@@ -33,7 +33,7 @@ export default {
   logout() {
     return axios.get("/logout");
   },
-  
+
   // -------------------------------------------------- //
   // ---------------        User       --------------- //
   // -------------------------------------------------- //
@@ -49,7 +49,6 @@ export default {
   // ---------------        Project       --------------- //
   // ---------------------------------------------------- //
   getProjects() {
-    // return API.get("projects/fetch_all");
     return API.get("projects");
   },
   createProject(data) {
@@ -87,13 +86,6 @@ export default {
   deleteProjectUserAccess(projectname, userId) {
     return API.delete(`projects/${projectname}/access/${userId}`);
   },
-  // getProjectInfos(projectname) {
-  //   // this one is slow, asks grew
-  //   return API.get("projects/" + projectname);
-  // },
-  // deleteProject(projectname) {
-  //   return API.delete("projects/" + projectname + "/delete");
-  // },
 
   /// --- deprecated ? ----
   modifyOpenProject(projectname, value) {
@@ -116,30 +108,6 @@ export default {
   },
   /// ---end deprecated ? ----
 
-  // -----------        Settings       ----------- //
-  // deprecated ??
-  getProjectSettings(projectname) {
-    // this one is fast, only flask, also some more information, such as is_open
-    // return API.get("projects/" + projectname + "/settings/infos");
-    return API.get("projects/" + projectname + "/settings/fetch");
-  },
-  // updateProjectSettings(projectname, projectSettings) {
-  //   // new from kim JSON.stringify(user)
-  //   return API.post(
-  //     "projects/" + projectname + "/settings/update",
-  //     projectSettings
-  //   );
-  // },
-  // getProjectConlluSchema(projectname) {
-  //   return API.get("projects/" + projectname + "/conllu-schema/fetch");
-  // },
-  // updateProjectConlluSchema(projectname, conlluSchema) {
-  //   return API.post(
-  //     "projects/" + projectname + "/conllu-schema/update",
-  //     conlluSchema
-  //   );
-  // },
-
   // ---------------------------------------------------- //
   // ---------------        Samples       --------------- //
   // ---------------------------------------------------- //
@@ -157,12 +125,9 @@ export default {
       responseType: "arraybuffer",
     });
   },
-  // exportSamplesZip(samplenames, projectname) {
-  //   let data = { samples: samplenames };
-  //   return API.post("projects/" + projectname + "/export/zip", data, {
-  //     responseType: "arraybuffer",
-  //   });
-  // },
+  deleteSample(projectname, samplename) {
+    return API.delete(`/projects/${projectname}/samples/${samplename}`);
+  },
   modifySampleRole(projectname, samplename, username, targetrole, action) {
     return API.post(`/projects/${projectname}/samples/${samplename}/role`, {
       username,
@@ -179,166 +144,29 @@ export default {
   },
 
   // ---------------------------------------------------- //
-  // ---------------        Trees       --------------- //
+  // ---------------         Trees        --------------- //
   // ---------------------------------------------------- //
   getSampleTrees(projectname, samplename) {
     return API.get(`/projects/${projectname}/samples/${samplename}/trees`);
   },
   updateTree(projectname, samplename, data) {
-    return API.post(`/projects/${projectname}/samples/${samplename}/trees`, data);
-  },
-
-  // getSampleTrees(projectname, samplename) {
-  //   return API.get(
-  //     "projects/" + projectname + "/samples/" + samplename + "/trees/fetch_all"
-  //   );
-  // },
-  // ---------------------------------------------------- //
-  // ---------------        To Refactor       --------------- //
-  // ---------------------------------------------------- //
-  // getProjectSamples(projectname) {
-  //   // this call flask api that call grew api
-  //   return API.get("projects/" + projectname + "/samples/fetch_all");
-  // },
-  deleteSample(projectname, samplename) {
-    return API.delete("projects/" + projectname + "/sample/" + samplename);
-  },
-  // uploadSample(projectname, data) {
-  //   console.log(data);
-  //   return API.post("projects/" + projectname + "/upload", data);
-  // },
-
-  getUsersTreeFrom(projectname) {
-    return API.get("projects/" + projectname + "/treesfrom");
-  },
-
-  // removeProjectUserRole(projectname, targetrole, userid) {
-  //   let data = { user_id: userid };
-  //   return API.post(
-  //     "projects/" + projectname + "/" + targetrole + "/remove",
-  //     data
-  //   );
-  // },
-  addDefaultUserTree(projectname, user) {
-    let data = { user: JSON.stringify(user) };
-    return API.post("projects/" + projectname + "/defaultusertrees/add", data);
-  },
-  removeDefaultUserTree(projectname, dutid) {
-    let data = { dut_id: dutid };
     return API.post(
-      "projects/" + projectname + "/defaultusertrees/remove",
+      `/projects/${projectname}/samples/${samplename}/trees`,
       data
     );
   },
 
-  // addSampleAnnotator(username, projectname, samplename) {
-  //   let data = {
-  //     username: username,
-  //     project_name: projectname,
-  //     sample_name: samplename,
-  //   };
-  //   return API.post("projects/" + projectname + "/sample/annotator/add", data);
-  // },
-  // removeSampleAnnotator(username, projectname, samplename) {
-  //   let data = {
-  //     username: username,
-  //     project_name: projectname,
-  //     sample_name: samplename,
-  //   };
-  //   return API.post(
-  //     "projects/" + projectname + "/sample/annotator/remove",
-  //     data
-  //   );
-  // },
-  // addSampleValidator(username, projectname, samplename) {
-  //   let data = {
-  //     username: username,
-  //     project_name: projectname,
-  //     sample_name: samplename,
-  //   };
-  //   return API.post("projects/" + projectname + "/sample/validator/add", data);
-  // },
-  // removeSampleValidator(username, projectname, samplename) {
-  //   let data = {
-  //     username: username,
-  //     project_name: projectname,
-  //     sample_name: samplename,
-  //   };
-  //   return API.post(
-  //     "projects/" + projectname + "/sample/validator/remove",
-  //     data
-  //   );
-  // },
-  // addSampleSuperValidator(username, projectname, samplename) {
-  //   let data = {
-  //     username: username,
-  //     project_name: projectname,
-  //     sample_name: samplename,
-  //   };
-  //   return API.post(
-  //     "projects/" + projectname + "/sample/supervalidator/add",
-  //     data
-  //   );
-  // },
-  // removeSampleSuperValidator(username, projectname, samplename) {
-  //   let data = {
-  //     username: username,
-  //     project_name: projectname,
-  //     sample_name: samplename,
-  //   };
-  //   return API.post(
-  //     "projects/" + projectname + "/sample/supervalidator/remove",
-  //     data
-  //   );
-  // },
-  // addSampleProf(username, projectname, samplename) {
-  //   let data = {
-  //     username: username,
-  //     project_name: projectname,
-  //     sample_name: samplename,
-  //   };
-  //   return API.post("projects/" + projectname + "/sample/prof/add", data);
-  // },
-  // removeSampleProf(username, projectname, samplename) {
-  //   let data = {
-  //     username: username,
-  //     project_name: projectname,
-  //     sample_name: samplename,
-  //   };
-  //   return API.post("projects/" + projectname + "/sample/prof/remove", data);
-  // },
-
-  uploadProjectImage(projectname, form) {
-    return API.post("projects/" + projectname + "/image", form);
+  // ----------------------------------------------------- //
+  // ---------------          Grew         --------------- //
+  // ----------------------------------------------------- //
+  getLexicon(projectname, data) {
+    return API.post(`projects/${projectname}/lexicon`, data);
   },
-
-
-
-  // createInitializedProject(projectName, data) {
-  //   return API.post("projects/" + projectName + "/create/upload", data);
-  // },
-  
-  
-
-  getRelationTable(projectname, data) {
-    return API.post("projects/" + projectname + "/relation_table", data);
-  },
-
-  // These following two are not used
-  commit(projectname, data) {
-    return API.post("projects/" + projectname + "/commit", data);
-  },
-  pull(projectname, data) {
-    return API.post("projects/" + projectname + "/pull", data);
-  },
-
-
-  // -----------------     Lexicon     ----------------- //
   searchProject(projectname, query) {
     return API.post("projects/" + projectname + "/search", query);
   },
   tryRuleProject(projectname, query) {
-    return API.post("projects/" + projectname + "/tryRule", query);
+    return API.post("projects/" + projectname + "/try-rule", query);
   },
   searchSample(projectname, samplename, query) {
     return API.post(
@@ -346,9 +174,13 @@ export default {
       query
     );
   },
-  getLexicon(projectname, data) {
-    return API.post("projects/" + projectname + "/getLexicon", data);
+  // -------------------------------------------------------- //
+  // ---------------          Lexicon         --------------- //
+  // -------------------------------------------------------- //
+  getRelationTable(projectname, data) {
+    return API.post("projects/" + projectname + "/relation-table", data);
   },
+
   exportLexiconJSON(projectname, data) {
     return API.post("projects/" + projectname + "/export/json", data, {
       responseType: "arraybuffer",
@@ -362,6 +194,37 @@ export default {
   transformation_grew(projectname, data) {
     return API.post("projects/" + projectname + "/transformationgrew", data);
   },
+  // -------------------------------------------------------- //
+  // ---------------        To Refactor       --------------- //
+  // -------------------------------------------------------- //
+
+  getUsersTreeFrom(projectname) {
+    return API.get("projects/" + projectname + "/treesfrom");
+  },
+  addDefaultUserTree(projectname, user) {
+    let data = { user: JSON.stringify(user) };
+    return API.post("projects/" + projectname + "/defaultusertrees/add", data);
+  },
+  removeDefaultUserTree(projectname, dutid) {
+    let data = { dut_id: dutid };
+    return API.post(
+      "projects/" + projectname + "/defaultusertrees/remove",
+      data
+    );
+  },
+  uploadProjectImage(projectname, form) {
+    return API.post("projects/" + projectname + "/image", form);
+  },
+
+  // These following two are not used
+  commit(projectname, data) {
+    return API.post("projects/" + projectname + "/commit", data);
+  },
+  pull(projectname, data) {
+    return API.post("projects/" + projectname + "/pull", data);
+  },
+
+  // What are these ?
   uploadValidator(projectname, data) {
     return API.post("projects/" + projectname + "/upload/validator", data);
   },

@@ -13,7 +13,7 @@
         >&nbsp;&nbsp;&nbsp;
         <template>
           <q-input
-            style="width: 70%"
+            style="width: 65%"
             class="row items-center justify-center"
             :value="sentenceData.sentence"
             v-on="$listeners"
@@ -60,7 +60,6 @@
         >
           <q-tooltip>Save as Emmett</q-tooltip>
         </q-btn>
-
         <q-btn
           v-if="isLoggedIn"
           flat
@@ -149,6 +148,28 @@
             </q-item>
           </q-list>
         </q-btn-dropdown>
+        <q-btn
+          v-if="isLoggedIn"
+          flat
+          round
+          dense
+          icon="undo"
+          :disable="(tab == '' || !canUndo)"
+          @click="undo('user')"
+          v-bind:class="'undo-button'"
+        >
+        </q-btn>
+        <q-btn
+          v-if="isLoggedIn"
+          flat
+          round
+          dense
+          icon="ion-redo"
+          :disable="(tab == '' || !canRedo)"
+          @click="redo('user')"
+          v-bind:class="'redo-button'"
+        >
+        </q-btn>
       </div>
 
       <div class="full-width row justify-end">
@@ -207,6 +228,8 @@
             >
               <VueDepTree
                 v-if="reactiveSentencesObj"
+                v-on:statusChanged="handleStatusChange"
+                :cardId="index"
                 :conll="tree"
                 :reactiveSentence="reactiveSentencesObj[user]"
                 :teacherReactiveSentence="
@@ -240,8 +263,6 @@
     <ExportSVG :sentenceBus="sentenceBus" />
     <TokenDialog
       :sentenceBus="sentenceBus"
-      :reactiveSentencesObj="reactiveSentencesObj"
-
       @changed:metaText="changeMetaText"
     />
     <StatisticsDialog
@@ -270,6 +291,7 @@ import ExportSVG from "./ExportSVG.vue";
 import TokenDialog from "./TokenDialog.vue";
 import StatisticsDialog from "./StatisticsDialog.vue";
 import user from "src/store/modules/user";
+import { LocalStorage } from 'quasar';
 
 export default {
   name: "SentenceCard",
@@ -308,6 +330,8 @@ export default {
       view: null,
       sentenceLink: "",
       diffMode: false,
+      canUndo: false,
+      canRedo: false
     };
   },
 
@@ -438,7 +462,32 @@ export default {
     /**
      * @todo undo
      */
-    undo() {},
+    undo(mode) {
+      if (this.tab !== "") {
+        this.sentenceBus.$emit("action:undo", {
+          userId: this.tab,
+        })
+      }
+    },
+    /**
+     * @todo redo
+     */
+    redo(mode) {
+      if (this.tab !== "") {
+        this.sentenceBus.$emit("action:redo", {
+          userId: this.tab,
+        })
+      }
+    },
+
+    /**
+     * Receive canUndo, canRedo status from VueDepTree child component and
+     * decide whether to disable undo, redo buttons or not
+     */
+    handleStatusChange(event) {
+      this.canUndo = event.canUndo;
+      this.canRedo = event.canRedo;
+    },
     /**
      * Save the graph to backend after modifying its metadata and changing it into an object
      *
@@ -474,10 +523,14 @@ export default {
         ],
         user_id: changedConllUser,
       };
+      // console.log("data", data);
       api
         .saveTrees(this.$route.params.projectname, data)
         .then((response) => {
           if (response.status == 200) {
+            this.sentenceBus.$emit("action:saved", {
+              userId: this.tab,
+            });
             if (this.sentenceData.conlls[changedConllUser]) {
               this.sentenceData.conlls[changedConllUser] = exportedConll;
               this.reactiveSentencesObj[changedConllUser].sentenceConll = exportedConll;
@@ -504,6 +557,7 @@ export default {
             }
             this.graphInfo.dirty = false;
             this.showNotif("top", "saveSuccess");
+            
           }
         })
         .catch((error) => {

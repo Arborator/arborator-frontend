@@ -2,6 +2,7 @@ import Snap from "snapsvg-cjs";
 import {
   jsonToConll,
   conllToJson,
+  getSentenceTextFromJson,
   TreeJson,
   MetaJson,
   TokenJson,
@@ -61,17 +62,10 @@ export class SentenceSVG extends EventDispatcher {
     this.shownFeatures = this.shownFeatures.filter((item) => item !== "FORM");
     this.shownFeatures.unshift("FORM");
 
-    // This is what make the whole SentenceSVG/ReactiveSentence reactive. SentenceSVG is listening to changes in the ReactiveSentence object
+    document.addEventListener;
     this.reactiveSentence.addEventListener("token-updated", (e) => {
       this.refresh();
     });
-    this.reactiveSentence.addEventListener("tree-updated", (e) => {
-      this.treeJson = this.reactiveSentence.treeJson;
-      this.metaJson = this.reactiveSentence.metaJson;
-      this.tokenSVGs = {}
-      this.refresh();
-    });
-
     //// to refactor (start of drawit)
     this.matchnodes = this.usermatches
       .map(({ nodes }) => Object.values(nodes))
@@ -132,67 +126,67 @@ export class SentenceSVG extends EventDispatcher {
     this.treeJson[tokenJson.ID] = tokenJson;
   }
 
-  // replaceArrayOfTokens(
-  //   tokenIds: number[],
-  //   firstToken: number,
-  //   tokensToReplace: any // TODO : type this
-  // ): void {
-  //   var id2newid: { [key: number]: number } = { 0: 0 };
-  //   for (let idStr in this.treeJson) {
-  //     let id = parseInt(idStr);
+  replaceArrayOfTokens(
+    tokenIds: number[],
+    firstToken: number,
+    tokensToReplace: any // TODO : type this
+  ): void {
+    var id2newid: { [key: number]: number } = { 0: 0 };
+    for (let idStr in this.treeJson) {
+      let id = parseInt(idStr);
 
-  //     if (id < tokenIds[0]) id2newid[id] = id;
-  //     else if (tokenIds.includes(id)) {
-  //       if (tokenIds.indexOf(id) < tokensToReplace.length) id2newid[id] = id;
-  //       else id2newid[id] = firstToken;
-  //     } else id2newid[id] = id + tokensToReplace.length - tokenIds.length;
-  //   }
-  //   var newtree: TreeJson = {};
-  //   for (let idStr in this.treeJson) {
-  //     let id = parseInt(idStr);
-  //     if (
-  //       tokenIds.includes(id) &&
-  //       tokenIds.indexOf(id) >= tokensToReplace.length
-  //     )
-  //       continue;
-  //     var node = this.treeJson[id];
-  //     node.ID = id2newid[id];
-  //     node.HEAD = id2newid[node.HEAD];
-  //     const newdeps: any = {};
-  //     for (let gidStr in node.DEPS) {
-  //       let gid = parseInt(gidStr);
-  //       newdeps[id2newid[gid]] = node.DEPS[gid];
-  //     }
-  //     node.DEPS = newdeps;
-  //     if (tokenIds.includes(id)) {
-  //       node.FORM = tokensToReplace[tokenIds.indexOf(id)];
-  //     }
-  //     newtree[id2newid[id]] = node;
-  //   }
-  //   // now the case where more tokens were inserted than replaced:
-  //   var basenode = this.treeJson[id2newid[tokenIds[tokenIds.length - 1]]];
-  //   for (var i = tokenIds.length; i < tokensToReplace.length; ++i) {
-  //     let newnode = JSON.parse(JSON.stringify(basenode));
-  //     newnode.ID = tokenIds[0] + i;
-  //     newnode.FORM = tokensToReplace[i];
-  //     newnode.HEAD = 0;
-  //     newnode.DEPREL = "root";
-  //     newnode.DEPS = {};
-  //     if (newnode.MISC.Gloss) newnode.MISC.Gloss = newnode.FORM;
-  //     newtree[tokenIds[0] + i] = newnode;
-  //   }
-  //   if (!Object.keys(newtree).length) return; // forbid to erase entire tree
-  //   this.treeJson = newtree;
+      if (id < tokenIds[0]) id2newid[id] = id;
+      else if (tokenIds.includes(id)) {
+        if (tokenIds.indexOf(id) < tokensToReplace.length) id2newid[id] = id;
+        else id2newid[id] = firstToken;
+      } else id2newid[id] = id + tokensToReplace.length - tokenIds.length;
+    }
+    var newtree: TreeJson = {};
+    for (let idStr in this.treeJson) {
+      let id = parseInt(idStr);
+      if (
+        tokenIds.includes(id) &&
+        tokenIds.indexOf(id) >= tokensToReplace.length
+      )
+        continue;
+      var node = this.treeJson[id];
+      node.ID = id2newid[id];
+      node.HEAD = id2newid[node.HEAD];
+      const newdeps: any = {};
+      for (let gidStr in node.DEPS) {
+        let gid = parseInt(gidStr);
+        newdeps[id2newid[gid]] = node.DEPS[gid];
+      }
+      node.DEPS = newdeps;
+      if (tokenIds.includes(id)) {
+        node.FORM = tokensToReplace[tokenIds.indexOf(id)];
+      }
+      newtree[id2newid[id]] = node;
+    }
+    // now the case where more tokens were inserted than replaced:
+    var basenode = this.treeJson[id2newid[tokenIds[tokenIds.length - 1]]];
+    for (var i = tokenIds.length; i < tokensToReplace.length; ++i) {
+      let newnode = JSON.parse(JSON.stringify(basenode));
+      newnode.ID = tokenIds[0] + i;
+      newnode.FORM = tokensToReplace[i];
+      newnode.HEAD = 0;
+      newnode.DEPREL = "root";
+      newnode.DEPS = {};
+      if (newnode.MISC.Gloss) newnode.MISC.Gloss = newnode.FORM;
+      newtree[tokenIds[0] + i] = newnode;
+    }
+    if (!Object.keys(newtree).length) return; // forbid to erase entire tree
+    this.treeJson = newtree;
 
-  //   // // TODO handle new meta text
-  //   this.metaJson.text = getSentenceTextFromJson(newtree);
+    // // TODO handle new meta text
+    this.metaJson.text = getSentenceTextFromJson(newtree);
 
-  //   this.snapSentence.clear();
-  //   this.drawTree();
-  //   // treedata.s.paper.clear();
-  //   // treedata.s = drawsnap(treedata.s.id, treedata, [], shownfeatures);
-  //   return;
-  // }
+    this.snapSentence.clear();
+    this.drawTree();
+    // treedata.s.paper.clear();
+    // treedata.s = drawsnap(treedata.s.id, treedata, [], shownfeatures);
+    return;
+  }
 
   populateLevels(): void {
     // populate the list this.levelsArray of length Nnode+1. A fake

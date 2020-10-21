@@ -113,6 +113,7 @@ module.exports = function(ctx) {
         "AppVisibility",
         "AppFullscreen",
         "BottomSheet",
+        "LocalStorage"
       ],
       config: {
         notify: { position: "top-right", timeout: 2000, color: "positive" },

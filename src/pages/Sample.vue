@@ -154,7 +154,7 @@
 <script>
 import Vue from "vue";
 // Vue.config.ignoredElements = ["conll"];
-import { openURL } from "quasar";
+import { LocalStorage, openURL } from "quasar";
 import api from "../boot/backend-api";
 import Store from "../store/index";
 import SentenceCard from "../components/sentence/SentenceCard";
@@ -229,6 +229,7 @@ export default {
       this.$route.params.projectname + "/" + this.$route.params.samplename;
     if (this.$route.query.q && this.$route.query.q.length > 0)
       this.searchDialog = true;
+    LocalStorage.remove("save_status");
     // console.log(this.isAdmin || this.isSuperAdmin,this.isAdmin, this.isSuperAdmin)
   },
   beforeRouteLeave(to, from, next) {

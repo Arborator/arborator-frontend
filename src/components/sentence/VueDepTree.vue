@@ -7,6 +7,7 @@
 </template>
 
 <script>
+import { LocalStorage } from 'quasar';
 import { conllToJson } from "../../helpers/Conll";
 import { SentenceSVG } from "../../helpers/SentenceSVG";
 
@@ -19,6 +20,7 @@ export default {
     "conllSavedCounter",
     "reactiveSentence",
     "teacherReactiveSentence",
+    "cardId"
   ],
   watch: {
     conllSavedCounter() {
@@ -30,6 +32,10 @@ export default {
       sentenceSVG: null,
       sentenceJson: {},
       usermatches: [],
+      history: [],
+      history_index: -1,
+      history_end: -1,
+      history_saveIndex: -1
     };
   },
   computed: {
@@ -64,9 +70,39 @@ export default {
 
     this.sentenceBus.$on("tree-update:token", ({ token, userId }) => {
       if (userId == this.userId) {
+        let prevToken = this.reactiveSentence.getToken(token.ID);
+
+        this.history[++this.history_index] = {
+          old: prevToken,
+          new: token
+        };
+        this.history_end = this.history_index;
         this.reactiveSentence.updateToken(token);
+        this.statusChangeHadler();
       }
     });
+    this.sentenceBus.$on("action:undo", ({ userId }) => {
+      if (userId == this.userId && this.history_index != -1) {
+        const oldToken = this.history[this.history_index].old;
+        this.reactiveSentence.updateToken(oldToken);
+        this.history_index --;
+        this.statusChangeHadler();
+      }
+    });
+    this.sentenceBus.$on("action:redo", ({ userId }) => {
+      if (userId == this.userId && this.history_index != this.history_end) {
+        const newToken = this.history[++this.history_index].new;
+        this.reactiveSentence.updateToken(newToken);
+        this.statusChangeHadler();
+      }
+    });
+    this.sentenceBus.$on("action:saved", ({ userId }) => {
+      if (userId == this.userId) {
+        this.history_saveIndex = this.history_index;
+        this.statusChangeHadler();
+      }
+    });
+    this.statusChangeHadler();
   },
   methods: {
     svgClickHandler(e) {
@@ -125,6 +161,45 @@ export default {
         });
       }
     },
+    /**
+     * Update the undo, redo and save status each time user makes changes.
+     */
+    statusChangeHadler() {
+      const canUndo = (this.history_index != -1);
+      const canRedo = (this.history_index != this.history_end);
+      const needSave = (this.history_saveIndex != this.history_index);
+      const status_str = LocalStorage.getItem("save_status");
+      let status_obj = status_str ? JSON.parse(status_str) : {};
+      let card = status_obj[ this.cardId ];
+      
+      this.$emit("statusChanged", {canUndo: canUndo, canRedo: canRedo});
+      if(!card) 
+        card = {};
+      card[ this.userId ] = needSave;
+      status_obj[ this.cardId ] = card;
+      LocalStorage.set("save_status", JSON.stringify(status_obj));
+      this.checkSaveStatus();
+    },
+    checkSaveStatus() {
+      const status_str = LocalStorage.getItem("save_status");
+      const status_obj = JSON.parse(status_str);
+      const card_keys = Object.keys(status_obj);
+      for(let i in card_keys) {
+        const card = status_obj[ card_keys[i] ];
+        const userIds = Object.keys(card);
+        for(let j in userIds) {
+          if(card[userIds[j]] == true) {
+            window.onbeforeunload = function(e) {
+              return "aaaa";
+            }
+            return;
+          }
+        }
+      }
+      window.onbeforeunload = function(e) {
+        delete e['returnValue'];
+      }
+    }
   },
 };
 </script>

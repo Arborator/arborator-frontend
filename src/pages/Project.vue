@@ -1108,6 +1108,7 @@ export default {
         form.append("files", file);
       }
       form.append("import_user", Store.getters["user/getUserInfos"].username);
+      console.log("KK form", form)
       api
         .uploadSample(this.$route.params.projectname, form)
         .then((response) => {

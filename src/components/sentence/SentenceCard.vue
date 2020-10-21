@@ -379,7 +379,7 @@ export default {
      *
      * @returns void
      */
-    getlink() { 
+    getlink() {
       this.sentenceLink =
         window.location.href.split(
           "/projects/" + this.$route.params.projectname
@@ -463,32 +463,28 @@ export default {
       ].exportConllWithModifiedMeta(metaToReplace);
 
       var data = {
-        trees: [
-          {
-            sent_id: this.sentenceId,
-            conll: exportedConll,
-            sample_name: this.$props.sentence.sample_name,
-          },
-        ],
+        sent_id: this.sentenceId,
+        conll: exportedConll,
         user_id: changedConllUser,
       };
       // console.log("data", data);
       api
-        .saveTrees(this.$route.params.projectname, data)
+        .updateTree(this.$route.params.projectname, this.$props.sentence.sample_name,  data)
         .then((response) => {
           if (response.status == 200) {
             if (this.sentenceData.conlls[changedConllUser]) {
               this.sentenceData.conlls[changedConllUser] = exportedConll;
-              this.reactiveSentencesObj[changedConllUser].sentenceConll = exportedConll;
+              this.reactiveSentencesObj[
+                changedConllUser
+              ].sentenceConll = exportedConll;
             } else {
               const reactiveSentence = new ReactiveSentence();
               reactiveSentence.fromConll(exportedConll);
               this.reactiveSentencesObj[changedConllUser] = reactiveSentence;
-              this.sentenceData.conlls[changedConllUser] = exportedConll
+              this.sentenceData.conlls[changedConllUser] = exportedConll;
             }
 
             if (this.tab != changedConllUser) {
-
               this.reactiveSentencesObj[openedTreeUser].resetRecentChanges();
               this.tab = changedConllUser;
 

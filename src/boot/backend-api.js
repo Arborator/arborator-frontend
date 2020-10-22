@@ -3,6 +3,9 @@ axios.defaults.headers.post["Content-Type"] = "multipart/form-data";
 import VueCookies from "vue-cookies";
 VueCookies.config("7d");
 
+console.log("KK process.env.DEV", process.env.DEV)
+console.log("KK process.env.API", process.env.API)
+
 const API = axios.create({
   // baseURL: 'https://arboratorgrew.ilpga.fr:8888/api',
   // baseURL: `/api`,
@@ -11,13 +14,15 @@ const API = axios.create({
   withCredentials: true,
 });
 
-// const AUTH = axios.create({
-//   // baseURL: 'https://arboratorgrew.ilpga.fr:8888/login',
-//   // baseURL: process.env.API + `/login`,
-//   baseURL: process.env.DEV ? "/api" : process.env.API + "/api",
-//   timeout: 5000,
-//   withCredentials: true,
-// });
+const AUTH = axios.create({
+  // baseURL: 'https://arboratorgrew.ilpga.fr:8888/login',
+  // baseURL: process.env.API + `/login`,
+  baseURL: process.env.DEV ? "/api" : process.env.API + "/api",
+  timeout: 5000,
+  withCredentials: true,
+});
+
+console.log("KK auth url", process.env.DEV ? "/api" : process.env.API + "/api")
 
 export default {
   // -------------------------------------------------- //

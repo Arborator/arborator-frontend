@@ -131,7 +131,7 @@ module.exports = function(ctx) {
           }
         : {
             // and on build (production):
-            API: JSON.stringify("https://arboratorgrew.ilpga.fr:8888"),
+            API: JSON.stringify("https://arboratorgrew.elizia.net:8888"),
           },
       scopeHoisting: true,
       devtool: 'source-map',

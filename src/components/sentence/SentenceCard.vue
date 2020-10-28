@@ -366,7 +366,7 @@ export default {
       Object.filter = (obj, predicate) =>
         Object.fromEntries(Object.entries(obj).filter(predicate));
 
-      if (this.exerciseLevel != 1 && !this.isAdmin) {
+      if (this.exerciseLevel != 1 && !this.isAdmin && this.exerciseMode) {
         return Object.filter(
           this.sentenceData.conlls,
           ([user, conll]) => user != "teacher"

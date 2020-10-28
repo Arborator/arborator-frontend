@@ -2,7 +2,7 @@
   /*!
    * arborator script for dependency drawing
    * version 1.0
-   * http://arborator.ilpga.fr/
+   * http://arborator.elizia.net/
    *
    * Copyright 2010-2017, Kim Gerdes & Gaël Guibon
    *

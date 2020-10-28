@@ -20,7 +20,7 @@ import { i18n } from 'src/boot/i18n'
 export default new Vuex.Store({
     state: {
         // source: "https://127.0.0.1:5000",
-        // source: "https://arboratorgrew.ilpga.fr:8888",
+        // source: "https://arboratorgrew.elizia.net:8888",
         source: process.env.API,
         lastGrewQuery: '',
         lastGrewCommand: '',

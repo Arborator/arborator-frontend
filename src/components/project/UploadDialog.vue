@@ -64,12 +64,13 @@
           />
         </template>
         <!-- TODO : add proper styling for the following paragraph -->
-        <p v-else>trees will be imported as "teacher"</p>
       </q-card-section>
 
       <q-card-section>
+        <!-- <input type="file" id="input-conllu" multiple /> -->
         <q-file
           v-model="uploadSample.attachment.file"
+          @input="preprocess"
           label="Pick files"
           outlined
           use-chips
@@ -79,6 +80,16 @@
           style="max-width: 400px"
         >
           <template v-slot:after>
+            <!-- <q-btn
+              v-if="$store.getters['config/exerciseMode']"
+
+              color="primary"
+              dense
+              icon="mediation"
+              round
+              :disable="uploadSample.attachment.file == null"
+              @click="preprocess()"
+            /> -->
             <q-btn
               color="primary"
               dense
@@ -90,6 +101,18 @@
             />
           </template>
         </q-file>
+        <template v-if="uploadSample.attachment.file">
+          <!-- <p>
+              For each of the following user_id, choose a name that will replace
+              it. If one single sentence for two differents user_id get rename
+              with the same user_id, the most recent tree will be taken
+            </p> -->
+
+          <div v-for="(userId, index) of usersIds" :key="index">
+            <label :for="`f${index}`">{{ userId.old }} :</label>
+            <input :id="`f${index}`" v-model="userId.new" :placeholder="userId.old" />
+          </div>
+        </template>
       </q-card-section>
     </q-card>
   </q-dialog>
@@ -108,6 +131,9 @@ export default {
         submitting: false,
         attachment: { name: null, file: null },
       },
+      usersIds: [],
+      usersIdsList: [],
+      usersIdsPreprocessed: false,
       alerts: {
         uploadsuccess: { color: "positive", message: "Upload success" },
         uploadfail: {
@@ -143,6 +169,37 @@ export default {
     },
   },
   methods: {
+    aFunction() {
+      console.log("KK on change");
+    },
+    preprocess() {
+      if (!this.uploadSample.attachment.file) {
+        return;
+      }
+      this.usersIds = [{ old: "default", new: this.$store.getters["user/getUserInfos"].username }];
+      for (const file of this.uploadSample.attachment.file) {
+        console.log("KK file", file);
+        const reader = new FileReader();
+        reader.onload = () => {
+          var lines = reader.result.split(/[\r\n]+/g);
+          // lines.forEach((line) => {
+          for (var line of lines) {
+            if (line[0] == "#") {
+              if (line.slice(2, 9) == "user_id") {
+                var splitted_meta = line.split(" ");
+                var userId = splitted_meta[splitted_meta.length - 1];
+                if (!this.usersIds.map(userId => userId.old).includes(userId)) {
+                  this.usersIds.push({ old: userId, new: userId });
+                  // this.usersIdsList.push(userId);
+                }
+              }
+            }
+          }
+        };
+        reader.readAsText(file);
+      }
+      this.usersIdsPreprocessed = true;
+    },
     upload() {
       var form = new FormData();
       if (this.$store.getters["config/exerciseMode"]) {
@@ -159,6 +216,7 @@ export default {
         "import_user",
         this.$store.getters["user/getUserInfos"].username
       );
+      form.append("usersIdsConvertor", JSON.stringify(this.usersIds));
       api
         .uploadSample(this.$route.params.projectname, form)
         .then((response) => {

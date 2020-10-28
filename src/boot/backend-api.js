@@ -3,11 +3,9 @@ axios.defaults.headers.post["Content-Type"] = "multipart/form-data";
 import VueCookies from "vue-cookies";
 VueCookies.config("7d");
 
-console.log("KK process.env.DEV", process.env.DEV)
-console.log("KK process.env.API", process.env.API)
 
 const API = axios.create({
-  // baseURL: 'https://arboratorgrew.ilpga.fr:8888/api',
+  // baseURL: 'https://arboratorgrew.elizia.net/api',
   // baseURL: `/api`,
   baseURL: process.env.DEV ? "/api" : process.env.API + "/api",
   timeout: 50000,
@@ -15,14 +13,12 @@ const API = axios.create({
 });
 
 const AUTH = axios.create({
-  // baseURL: 'https://arboratorgrew.ilpga.fr:8888/login',
+  // baseURL: 'https://arboratorgrew.elizia.net/login',
   // baseURL: process.env.API + `/login`,
   baseURL: process.env.DEV ? "/api" : process.env.API + "/api",
   timeout: 5000,
   withCredentials: true,
 });
-
-console.log("KK auth url", process.env.DEV ? "/api" : process.env.API + "/api")
 
 export default {
   // -------------------------------------------------- //
@@ -122,7 +118,7 @@ export default {
   },
   uploadSample(projectname, data) {
     console.log("KK data", data);
-    return API.post(`/projects/${projectname}/samples`, data);
+    return API.post(`/projects/${projectname}/samples`, data, {test:"to"});
   },
   exportSamplesZip(samplenames, projectname) {
     let data = { samples: samplenames };
@@ -199,6 +195,12 @@ export default {
   transformation_grew(projectname, data) {
     return API.post("projects/" + projectname + "/transformationgrew", data);
   },
+  uploadValidator(projectname, data) {
+    return API.post("projects/" + projectname + "/upload/validator", data);
+  },
+  addValidator(projectname, data) {
+    return API.post("projects/" + projectname + "/addvalidator", data);
+  },
   // -------------------------------------------------------- //
   // ---------------        To Refactor       --------------- //
   // -------------------------------------------------------- //
@@ -229,11 +231,5 @@ export default {
     return API.post("projects/" + projectname + "/pull", data);
   },
 
-  // What are these ?
-  uploadValidator(projectname, data) {
-    return API.post("projects/" + projectname + "/upload/validator", data);
-  },
-  addValidator(projectname, data) {
-    return API.post("projects/" + projectname + "/addvalidator", data);
-  },
+
 };

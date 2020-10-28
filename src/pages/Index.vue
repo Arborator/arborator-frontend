@@ -243,12 +243,12 @@
                 </q-item-section>
               </q-card-section>
             </q-card>
-            <q-card bordered flat :class="hoverquick ? 'bg-grey-2' : ''" class="clickable clickhl col-1 grid-style-transition shadow-7" @click="openURL('https://arborator.ilpga.fr/q.cgi')" >
+            <q-card bordered flat :class="hoverquick ? 'bg-grey-2' : ''" class="clickable clickhl col-1 grid-style-transition shadow-7" @click="openURL('https://arborator.elizia.net/q.cgi')" >
               <q-card-section>
                 {{$t('homepage').toolsCard.content[3]}} {{$t('homepage').toolsCard.content[4]}}
               </q-card-section>
             </q-card>
-            <q-card bordered flat :class="hoverlegacy ? 'bg-grey-2' : ''" class="clickable clickhl col-1 grid-style-transition shadow-7" @click="openURL('https://arborator.ilpga.fr/')" >
+            <q-card bordered flat :class="hoverlegacy ? 'bg-grey-2' : ''" class="clickable clickhl col-1 grid-style-transition shadow-7" @click="openURL('https://arborator.elizia.net/')" >
               <q-card-section>
                 {{$t('homepage').toolsCard.content[5]}}            
               </q-card-section>          

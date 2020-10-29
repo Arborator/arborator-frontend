@@ -6,7 +6,10 @@
           <q-toolbar class="text-center">
             <!-- <q-toolbar-title><span :class="($q.dark.isActive?'':'text-primary') + ' text-bold'">{{project.infos.name}}</span> </q-toolbar-title> -->
           </q-toolbar>
-          <q-img style="height: 120px" :src="image" basic>
+          <q-img class="project-image" :src="
+                            imageEmpty ? 
+                            image : 
+                            imageCleaned" basic contain>
             <div class="absolute-bottom text-h6" style="padding: 6px">
               <q-icon
                 v-show="visibility == 0"
@@ -809,18 +812,18 @@ export default {
           message: "Successfully pushed your data to GitHub",
         },
       },
-      // project: {
-      //   // infos: {
-      //   //   name: "",
-      //   //   visibility: 2,
-      //   //   is_open: false,
-      //   //   description: "",
-      //   //   image: "",
-      //   //   admins: [],
-      //   //   guests: [],
-      //   // },
-      //   samples: [],
-      // },
+      project: {
+        infos: {
+          name: "",
+          visibility: 2,
+          is_open: false,
+          description: "",
+          image: "",
+          admins: [],
+          guests: [],
+        },
+        samples: [],
+      },
       samples: [],
 
       table: {
@@ -940,6 +943,24 @@ export default {
     noselect() {
       return this.table.selected.length < 1;
     },
+    imageEmpty() {
+      if (this.project.infos.image == null) {
+        this.project.infos.image = "b''";
+      }
+      if (this.project.infos.image == "b''") {
+        return true;
+      } else if (this.project.infos.image.length < 1) {
+        return true;
+      } else {
+        return false;
+      }
+    },
+    imageCleaned() {
+      var clean = this.project.infos.image.replace("b", "");
+      clean = clean.replace(/^'/g, "");
+      clean = clean.replace(/'$/g, "");
+      return "data:image/png;base64, " + clean;
+    },
   },
   created() {
     window.addEventListener("resize", this.handleResize);
@@ -950,7 +971,7 @@ export default {
   },
   mounted() {
     // this.$store.dispatch("config/fetchProjectSettings", {projectname: this.$route.params.projectname})
-    // this.getProjectInfos();
+    this.getProjectInfos();
     this.getUsers();
     this.getProjectSamples();
 
@@ -983,24 +1004,24 @@ export default {
     },
 
     getProjectInfos() {
-      this.$store.dispatch("config/fetchProjectSettings", {
-        projectname: to.params.projectname,
-      });
+      // this.$store.dispatch("config/fetchProjectSettings", {
+      //   projectname: to.params.projectname,
+      // });
 
-      //   this.table.loading = true;
-      //   api
-      //     .getProjectInfos(this.$route.params.projectname)
-      //     .then((response) => {
-      //       this.project.infos = response.data;
-      //       // this.initLoad = true;
-      //       // this.table.loading = false;
-      //       document.title =
-      //         this.$route.params.projectname + " - 🌳 Arborator-Grew 🌳 Project";
-      //     })
-      //     .catch((error) => {
-      //       this.$store.dispatch("notifyError", { error: error });
-      //       this.table.loading = false;
-      //     });
+        this.table.loading = true;
+        api
+          .getProjectInfos(this.$route.params.projectname)
+          .then((response) => {
+            this.project.infos = response.data;
+            // this.initLoad = true;
+            this.table.loading = false;
+            document.title =
+              this.$route.params.projectname + " - 🌳 Arborator-Grew 🌳 Project";
+          })
+          .catch((error) => {
+            this.$store.dispatch("notifyError", { error: error });
+            this.table.loading = false;
+          });
     },
     getProjectSamples() {
       api.getProjectSamples(this.$route.params.projectname).then((response) => {
@@ -1459,5 +1480,10 @@ export default {
 /* for limiting overflow on screen */
 .tags-input-root {
   max-width: 140px;
+}
+
+.project-image {
+  height: 120px;
+  box-shadow: 0px 0px 8px rgb(204 204 204);
 }
 </style>

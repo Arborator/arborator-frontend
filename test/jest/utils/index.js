@@ -68,3 +68,8 @@ export const mountQuasar = (component, options = {}) => {
     }
   })
 }
+
+
+export function sleep(ms) {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}

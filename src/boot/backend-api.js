@@ -1,25 +1,8 @@
-import axios from "axios";
-axios.defaults.headers.post["Content-Type"] = "multipart/form-data";
+import { API } from "./axios-adapters/axios-api";
+import { AUTH } from "./axios-adapters/axios-auth";
+import * as config from "./axio-global-config";
 import VueCookies from "vue-cookies";
 VueCookies.config("7d");
-
-
-const API = axios.create({
-  // baseURL: 'https://arboratorgrew.elizia.net/api',
-  // baseURL: `/api`,
-  baseURL: process.env.DEV ? "/api" : process.env.API + "/api",
-  timeout: 50000,
-  withCredentials: true,
-});
-
-const AUTH = axios.create({
-  // baseURL: 'https://arboratorgrew.elizia.net/login',
-  // baseURL: process.env.API + `/login`,
-  baseURL: process.env.DEV ? "/api" : process.env.API + "/api",
-  timeout: 5000,
-  withCredentials: true,
-});
-
 export default {
   // -------------------------------------------------- //
   // ---------------        AUTH       ---------------- //
@@ -51,6 +34,10 @@ export default {
   // ---------------------------------------------------- //
   getProjects() {
     return API.get("projects");
+  },
+  getProjectInfos(projectname) {
+    // this one is slow, asks grew
+    return API.get(`projects/${projectname}/settings_info`);
   },
   createProject(data) {
     return API.post("projects/", data);

@@ -1,11 +1,12 @@
 {
   "@quasar/testing": {
     "harnesses": [
-      "unit-jest"
+      "unit-jest",
+      "e2e-cypress"
     ]
   },
   "@quasar/testing-unit-jest": {
-    "babel": "babelrc",
+    "babel": false,
     "options": [
       "scripts"
     ]

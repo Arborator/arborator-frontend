@@ -459,7 +459,7 @@ subj,comp,vocative
     };
   },
   mounted() {
-    // this.getProjectInfos();
+    this.getProjectInfos();
     // console.log(this.infos);
     this.annofjson = this.$store.getters["config/getAnnofjson"];
   },
@@ -578,6 +578,9 @@ subj,comp,vocative
       // 		this.$store.dispatch("notifyError", {error: error});
       // 		this.$q.notify({message: `${error}`, color:'negative', position: 'bottom'});
       // });
+      api.getProjectInfos(this.projectname).then((response) => {
+        this.infos = response.data;
+      })
     },
     /**
      * Parse annotation features. Display a related informative message dependeing on success
@@ -806,6 +809,7 @@ subj,comp,vocative
           this.uploadImage.image = null;
           this.$q.notify({ message: `Uploaded image saved!` });
           this.infos = response.data;
+          console.log(this.infos);
         })
         .catch((error) => {
           this.$store.dispatch("notifyError", { error: error });

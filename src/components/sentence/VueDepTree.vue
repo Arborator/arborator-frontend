@@ -172,7 +172,7 @@ export default {
       let status_obj = status_str ? JSON.parse(status_str) : {};
       let card = status_obj[ this.cardId ];
       
-      this.$emit("statusChanged", {canUndo: canUndo, canRedo: canRedo});
+      this.$emit("statusChanged", {canUndo: canUndo, canRedo: canRedo, canSave: needSave});
       if(!card) 
         card = {};
       card[ this.userId ] = needSave;

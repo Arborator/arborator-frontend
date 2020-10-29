@@ -67,7 +67,7 @@
           round
           dense
           icon="save"
-          :disable="tab == ''"
+          :disable="(tab == '' || !canSave)"
           @click="save('user')"
         >
           <q-tooltip>Save this tree {{ this.tab }}</q-tooltip>
@@ -334,7 +334,8 @@ export default {
       sentenceLink: "",
       diffMode: false,
       canUndo: false,
-      canRedo: false
+      canRedo: false,
+      canSave: false
     };
   },
 
@@ -489,6 +490,7 @@ export default {
     handleStatusChange(event) {
       this.canUndo = event.canUndo;
       this.canRedo = event.canRedo;
+      this.canSave = event.canSave;
     },
     /**
      * Save the graph to backend after modifying its metadata and changing it into an object

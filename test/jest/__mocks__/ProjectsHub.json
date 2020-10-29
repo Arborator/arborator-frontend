@@ -1,0 +1,33 @@
+{
+    "ui_testing": {
+        "response_mock": [{
+            "number_trees":8,
+            "number_tokens":100,
+            "guests":[],
+            "show_all_trees":true,
+            "project_name":"Khoatest",
+            "exercise_mode":true,
+            "description":"Testing project",
+            "number_samples":1,
+            "id":1,
+            "admins":["42817736","42817736"],
+            "number_sentences":5,"visibility":0}
+        ]
+    },
+    "api_testing": {
+        "fields" : {
+            "number_trees": "number",
+            "number_tokens": "number",
+            "guests": "array",
+            "show_all_trees": "boolean",
+            "project_name": "string",
+            "exercise_mode": "boolean",
+            "description": "string",
+            "number_samples": "number",
+            "id": "number",
+            "admins": "array",
+            "number_sentences": "number",
+            "visibility": "number"
+        }
+    }
+}

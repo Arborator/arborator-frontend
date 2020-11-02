@@ -4,12 +4,14 @@
       <q-card flat style="max-width: 100%">
         <q-card-section>
           <q-toolbar class="text-center">
-            <!-- <q-toolbar-title><span :class="($q.dark.isActive?'':'text-primary') + ' text-bold'">{{project.infos.name}}</span> </q-toolbar-title> -->
+            <!-- <q-toolbar-title><span :class="($q.dark.isActive?'':'text-primary') + ' text-bold'">{.name}}</span> </q-toolbar-title> -->
           </q-toolbar>
-          <q-img class="project-image" :src="
-                            imageEmpty ? 
-                            image : 
-                            imageCleaned" basic contain>
+          <q-img
+            class="project-image"
+            :src="cleanedImage"
+            basic
+            contain
+          >
             <div class="absolute-bottom text-h6" style="padding: 6px">
               <q-icon
                 v-show="visibility == 0"
@@ -94,8 +96,8 @@
             table-style="max-height:80vh"
             :rows-per-page-options="[0]"
             :key="tableKey"
-            @request="getProjectInfos"
           >
+            <!-- @request="getProjectInfos" -->
             <template v-slot:top="props">
               <q-btn-group flat>
                 <q-btn
@@ -690,7 +692,7 @@
           :searchresults="resultSearch"
           searchscope="project"
         ></result-view>
-        <!-- :totalsents="project.infos.number_sentences" -->
+        <!-- :totalsents=.number_sentences" -->
       </q-dialog>
 
       <q-dialog
@@ -927,6 +929,7 @@ export default {
       "admins",
       "image",
       "exerciseMode",
+      "cleanedImage",
     ]),
     ...mapGetters("user", [
       "isLoggedIn",
@@ -943,24 +946,6 @@ export default {
     noselect() {
       return this.table.selected.length < 1;
     },
-    imageEmpty() {
-      if (this.project.infos.image == null) {
-        this.project.infos.image = "b''";
-      }
-      if (this.project.infos.image == "b''") {
-        return true;
-      } else if (this.project.infos.image.length < 1) {
-        return true;
-      } else {
-        return false;
-      }
-    },
-    imageCleaned() {
-      var clean = this.project.infos.image.replace("b", "");
-      clean = clean.replace(/^'/g, "");
-      clean = clean.replace(/'$/g, "");
-      return "data:image/png;base64, " + clean;
-    },
   },
   created() {
     window.addEventListener("resize", this.handleResize);
@@ -971,7 +956,7 @@ export default {
   },
   mounted() {
     // this.$store.dispatch("config/fetchProjectSettings", {projectname: this.$route.params.projectname})
-    this.getProjectInfos();
+    // this.getProjectInfos();
     this.getUsers();
     this.getProjectSamples();
 
@@ -1003,26 +988,26 @@ export default {
       return tempArray;
     },
 
-    getProjectInfos() {
-      // this.$store.dispatch("config/fetchProjectSettings", {
-      //   projectname: to.params.projectname,
-      // });
+    // getProjectInfos() {
+    // this.$store.dispatch("config/fetchProjectSettings", {
+    //   projectname: to.params.projectname,
+    // });
 
-        this.table.loading = true;
-        api
-          .getProjectInfos(this.$route.params.projectname)
-          .then((response) => {
-            this.project.infos = response.data;
-            // this.initLoad = true;
-            this.table.loading = false;
-            document.title =
-              this.$route.params.projectname + " - 🌳 Arborator-Grew 🌳 Project";
-          })
-          .catch((error) => {
-            this.$store.dispatch("notifyError", { error: error });
-            this.table.loading = false;
-          });
-    },
+    //     this.table.loading = true;
+    //     api
+    //       .getProjectInfos(this.$route.params.projectname)
+    //       .then((response) => {
+    //         this = response.data;
+    //         // this.initLoad = true;
+    //         this.table.loading = false;
+    //         document.title =
+    //           this.$route.params.projectname + " - 🌳 Arborator-Grew 🌳 Project";
+    //       })
+    //       .catch((error) => {
+    //         this.$store.dispatch("notifyError", { error: error });
+    //         this.table.loading = false;
+    //       });
+    // },
     getProjectSamples() {
       api.getProjectSamples(this.$route.params.projectname).then((response) => {
         this.samples = response.data;
@@ -1052,7 +1037,7 @@ export default {
         api
           .deleteSample(this.$route.params.projectname, sample.sample_name)
           .then((response) => {
-            // this.project.infos = response.data;
+            // this = response.data;
             this.table.selected = [];
             this.showNotif("top-right", "deletesuccess");
             this.getProjectSamples();
@@ -1129,12 +1114,12 @@ export default {
         form.append("files", file);
       }
       form.append("import_user", Store.getters["user/getUserInfos"].username);
-      console.log("KK form", form)
+      console.log("KK form", form);
       api
         .uploadSample(this.$route.params.projectname, form)
         .then((response) => {
           this.uploadSample.attachment.file = [];
-          this.getProjectInfos();
+          // this.getProjectInfos();
           this.uploadDial = false;
           this.uploadSample.submitting = false;
           this.showNotif("top-right", "uploadsuccess");
@@ -1313,91 +1298,6 @@ export default {
           this.$store.dispatch("notifyError", { error: error });
         });
     },
-
-    // removeAnnotator(slug, context) {
-    //   api
-    //     .removeSampleAnnotator(
-    //       slug.value,
-    //       this.$route.params.projectname,
-    //       context.sample_name
-    //     )
-    //     .then((response) => {
-    //       this.updateTags(response, context.sample_name);
-    //       this.$q.notify({ message: `Change saved!` });
-    //     })
-    //     .catch((error) => {
-    //       this.$store.dispatch("notifyError", { error: error });
-    //     });
-    // },
-
-    // addValidator(slug, context) {
-    //   api
-    //     .addSampleValidator(
-    //       slug.value,
-    //       this.$route.params.projectname,
-    //       context.sample_name
-    //     )
-    //     .then((response) => {
-    //       this.updateTags(response, context.sample_name);
-    //       this.$q.notify({ message: `Change saved!` });
-    //     });
-    // },
-    // removeValidator(slug, context) {
-    //   api
-    //     .removeSampleValidator(
-    //       slug.value,
-    //       this.$route.params.projectname,
-    //       context.sample_name
-    //     )
-    //     .then((response) => {
-    //       this.updateTags(response, context.sample_name);
-    //       this.$q.notify({ message: `Change saved!` });
-    //     });
-    // },
-    // addSuperValidator(slug, context) {
-    //   api
-    //     .addSampleSuperValidator(
-    //       slug.value,
-    //       this.$route.params.projectname,
-    //       context.sample_name
-    //     )
-    //     .then((response) => {
-    //       this.updateTags(response, context.sample_name);
-    //     });
-    // },
-    // removeSuperValidator(slug, context) {
-    //   api
-    //     .removeSampleSuperValidator(
-    //       slug.value,
-    //       this.$route.params.projectname,
-    //       context.sample_name
-    //     )
-    //     .then((response) => {
-    //       this.updateTags(response, context.sample_name);
-    //     });
-    // },
-    // addProf(slug, context) {
-    //   api
-    //     .addSampleProf(
-    //       slug.value,
-    //       this.$route.params.projectname,
-    //       context.sample_name
-    //     )
-    //     .then((response) => {
-    //       this.updateTags(response, context.sample_name);
-    //     });
-    // },
-    // removeProf(slug, context) {
-    //   api
-    //     .removeSampleProf(
-    //       slug.value,
-    //       this.$route.params.projectname,
-    //       context.sample_name
-    //     )
-    //     .then((response) => {
-    //       this.updateTags(response, context.sample_name);
-    //     });
-    // },
     updateExerciseLevel(sample) {
       api.updateSampleExerciseLevel(
         this.$route.params.projectname,

@@ -42,11 +42,13 @@ export default {
           state.annotationFeatures.MISC.map(({ name }) => "MISC." + name)
         )
       ),
-    image: (state) => {
-      var clean = state.image.replace("b", "");
-      clean = clean.replace(/^'/g, "");
-      clean = clean.replace(/'$/g, "");
-      var ifImageNotEmpty = "data:image/png;base64, " + clean;
+    cleanedImage: (state) => {
+      if (state.image !== null) {
+        var clean = state.image.replace("b", "");
+        clean = clean.replace(/^'/g, "");
+        clean = clean.replace(/'$/g, "");
+        var ifImageNotEmpty = "data:image/png;base64, " + clean;
+      }
 
       var ifImageEmpty =
         "../statics/images/niko-photos-tGTVxeOr_Rs-unsplash.jpg";
@@ -92,6 +94,9 @@ export default {
             showAllTrees: response.data.show_all_trees,
             exerciseMode: response.data.exercise_mode,
             visibility: response.data.visibility,
+            image: response.data.image,
+            name: response.data.projectName,
+            description: response.data.description,
           });
         })
         .catch((error) => {

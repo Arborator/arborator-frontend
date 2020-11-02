@@ -955,8 +955,6 @@ export default {
     window.removeEventListener("resize", this.handleResize);
   },
   mounted() {
-    // this.$store.dispatch("config/fetchProjectSettings", {projectname: this.$route.params.projectname})
-    // this.getProjectInfos();
     this.getUsers();
     this.getProjectSamples();
 
@@ -1114,7 +1112,6 @@ export default {
         form.append("files", file);
       }
       form.append("import_user", Store.getters["user/getUserInfos"].username);
-      console.log("KK form", form);
       api
         .uploadSample(this.$route.params.projectname, form)
         .then((response) => {

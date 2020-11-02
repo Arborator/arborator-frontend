@@ -24,6 +24,7 @@ export default {
     },
     visibility: (state) => state.visibility,
     showAllTrees: (state) => state.showAllTrees,
+    description: (state) => state.description,
     exerciseMode: (state) => state.exerciseMode,
     shownfeatures: (state) => state.shownfeatures,
     shownmeta: (state) => state.shownmeta,
@@ -48,6 +49,8 @@ export default {
         clean = clean.replace(/^'/g, "");
         clean = clean.replace(/'$/g, "");
         var ifImageNotEmpty = "data:image/png;base64, " + clean;
+        return ifImageNotEmpty;
+      } else {
       }
 
       var ifImageEmpty =
@@ -91,11 +94,11 @@ export default {
         .getProject(projectname)
         .then((response) => {
           commit("set_project_settings", {
-            showAllTrees: response.data.show_all_trees,
-            exerciseMode: response.data.exercise_mode,
+            name: response.data.projectName,
+            showAllTrees: response.data.showAllTrees,
+            exerciseMode: response.data.exerciseMode,
             visibility: response.data.visibility,
             image: response.data.image,
-            name: response.data.projectName,
             description: response.data.description,
           });
         })
@@ -121,7 +124,6 @@ export default {
       });
       api.getProjectConlluSchema(projectname).then((response) => {
         var fetchedAnnotationFeatures = response.data.annotationFeatures;
-        console.log("KK fetchedAnnotationFeatures", fetchedAnnotationFeatures)
         // check if there is a json in proper format, otherwise use default ConfigConllu
         if (
           typeof fetchedAnnotationFeatures !== "object" ||
@@ -134,61 +136,33 @@ export default {
           annotationFeatures: fetchedAnnotationFeatures,
         });
       });
-
-      // api
-      //   .getProjectSettings(projectname)
-      //   .then((response) => {
-      //     commit("set_project_settings", {
-      //       shownfeatures: response.data.config.shownfeatures,
-      //       admins: response.data.admins,
-      //       guests: response.data.guests,
-      //       shownmeta: response.data.config.shownmeta,
-      //       showAllTrees: response.data.show_all_trees,
-      //       exerciseMode: response.data.exercise_mode,
-      //       visibility: response.data.visibility,
-      //     });
-      //   })
-      //   .catch((error) => {
-      //     this.$store.dispatch("notifyError", { error: error });
-      //     // this.$q.notify({
-      //     // message: `${error}`,
-      //     // color: "negative",
-      //     // position: "bottom",
-      //     // });
-      //   });
     },
-    // fetchConfigShown({ commit }, { projectname }) {
-    //   api
-    //     .getProjectSettings(projectname)
-    //     .then((response) => {
-    //       commit("set_project_settings", {
-    //         admins: response.data.admins,
-    //         guests: response.data.guests,
-    //         shownfeatures: response.data.config.shownfeatures,
-    //         shownmeta: response.data.config.shownmeta,
-    //         showAllTrees: response.data.show_all_trees,
-    //       });
-    //     })
-    //     .catch((error) => {
-    //       this.$store.dispatch("notifyError", { error: error });
-    //       // this.$q.notify({
-    //       // message: `${error}`,
-    //       // color: "negative",
-    //       // position: "bottom",
-    //       // });
-    //     });
-    // },
+    // KK TODO
     // there is still a mismatch between all name 'updateProjectSettings' and 'updateProjectSettings'
     // ... so we have to get a proper data structure of the whole setting for then having better
     // ... separation of conscerns for API calls
-    // KK TODO
-    updateProjectSettings(
-      { commit, dispatch },
-      { projectname, toUpdateObject }
-    ) {
+    putProjectDescription({ state }) {
+      api
+        .updateProject(state.name, { description: state.description })
+        .then(() => {
+          Notify.create({
+            message: `Change saved!`,
+          });
+        })
+        .catch((error) => {
+          dispatch("notifyError", { error: error }, { root: true });
+          Notify.create({
+            message: `${error}`,
+            color: "negative",
+            position: "bottom",
+          });
+        });
+    },
+
+    updateProjectSettings({ commit, dispatch, state }, { toUpdateObject }) {
       return new Promise((resolve, reject) => {
         api
-          .updateProject(projectname, toUpdateObject)
+          .updateProject(state.name, toUpdateObject)
           .then((response) => {
             commit("set_project_settings", { ...toUpdateObject });
             Notify.create({
@@ -208,14 +182,14 @@ export default {
       });
     },
     updateProjectShownFeatures(
-      {commit, dispatch},
-      {projectname, toUpdateObject}
+      { commit, dispatch },
+      { projectname, toUpdateObject }
     ) {
       return new Promise((resolve, reject) => {
         api
           .updateProjectFeatures(projectname, toUpdateObject)
           .then((response) => {
-            commit("set_project_settings", {...toUpdateObject});
+            commit("set_project_settings", { ...toUpdateObject });
             Notify.create({
               message: `Change saved!`,
             });
@@ -231,33 +205,22 @@ export default {
             reject(error);
           });
       });
-
     },
-    // // KK refactor : change naming (-> conllu-schema)
-    // fetchProjectConlluSchema({ commit, state }, { projectname }) {
-    //   return new Promise((resolve, reject) => {
-    //     api
-    //       .getProjectConlluSchema(projectname)
-    //       .then((response) => {
-    //         var fetchedAnnotationFeatures = response.data.annotationFeatures;
-    //         // check if there is a json in proper format, otherwise use default ConfigConllu
-    //         if (
-    //           typeof fetchedAnnotationFeatures !== "object" ||
-    //           fetchedAnnotationFeatures === null
-    //         ) {
-    //           // commit("reset_project_config");
-    //           fetchedAnnotationFeatures = state.annotationFeatures;
-    //         }
-    //         commit("set_project_conllu_schema", {
-    //           annotationFeatures: fetchedAnnotationFeatures,
-    //         });
-    //         resolve(response);
-    //       })
-    //       .catch((error) => {
-    //         reject(error.response.data.errors);
-    //       });
-    //   });
-    // },
+    postImage({ commit, state }, newImage) {
+      return new Promise((resolve, reject) => {
+        var form = new FormData();
+        form.append("files", newImage);
+        api
+          .uploadProjectImage(state.name, form)
+          .then((response) => {
+            commit("set_project_settings", { ...response.data });
+            resolve(response);
+          })
+          .catch((error) => {
+            reject(error);
+          });
+      });
+    },
     updateProjectConlluSchema({ commit }, { projectname, annotationFeatures }) {
       return new Promise((resolve, reject) => {
         api

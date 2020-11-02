@@ -178,7 +178,6 @@ export default {
       }
       this.usersIds = [{ old: "default", new: this.$store.getters["user/getUserInfos"].username }];
       for (const file of this.uploadSample.attachment.file) {
-        console.log("KK file", file);
         const reader = new FileReader();
         reader.onload = () => {
           var lines = reader.result.split(/[\r\n]+/g);
@@ -221,10 +220,6 @@ export default {
         .uploadSample(this.$route.params.projectname, form)
         .then((response) => {
           this.uploadSample.attachment.file = [];
-          // this.getProjectInfos();
-          // this.$store.dispatch("config/fetchProjectSettings", {
-          //   projectname: this.$route.params.projectname,
-          // });
           this.$emit("uploaded:sample"); // tell to the parent that a new sample was uploaded and to fetch all samples
           this.uploadDialModel = false;
           this.uploadSample.submitting = false;

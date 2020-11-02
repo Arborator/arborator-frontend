@@ -15,35 +15,27 @@
     </q-bar>
     <q-card-section class="q-pa-sm row q-gutter-md">
       <q-banner rounded class="col-md-4 offset-md-4 col-xs-12 col-sm-12">
-        <q-img
-          :ratio="16 / 9"
-          :src="
-            imageEmpty
-              ? '../statics/images/niko-photos-tGTVxeOr_Rs-unsplash.jpg'
-              : imageCleaned
-          "
-          basic
-        >
+        <q-img :ratio="16 / 9" :src="cleanedImage" basic>
           <div class="absolute-bottom text-h6">
             <q-icon
-              v-show="infos.visibility == 0"
+              v-show="visibility == 0"
               name="lock"
               :color="$q.dark.isActive ? 'red-13' : 'negative'"
               size="lg"
             ></q-icon>
             <q-icon
-              v-show="infos.visibility == 1"
+              v-show="visibility == 1"
               name="lock"
               :color="$q.dark.isActive ? 'red-13' : 'positive'"
               size="lg"
             ></q-icon>
             <q-icon
-              v-show="infos.visibility == 2"
+              v-show="visibility == 2"
               name="public"
               :color="$q.dark.isActive ? 'red-13' : 'positive'"
               size="lg"
             ></q-icon>
-            {{ infos.name }}
+            {{ name }}
           </div>
         </q-img>
 
@@ -74,8 +66,10 @@
       </q-banner>
     </q-card-section>
     <q-card-section>
+      <!-- v-model="description" -->
+      <!-- @input="updateDescription" -->
       <q-input
-        v-model="infos.description"
+        v-model="description"
         style="height: 100px"
         label="Description"
         filled
@@ -84,7 +78,7 @@
       />
       <q-btn
         color="primary"
-        @click="changeDescription()"
+        @click="saveDescription"
         :label="$t('projectSettings').descriptionSave"
         icon="save"
         dense
@@ -106,10 +100,9 @@
             <q-item-section avatar>
               <div>
                 <q-btn-toggle
-                  @input="changeIsPrivate()"
                   label="Visibility"
                   glossy
-                  v-model="infos.visibility"
+                  v-model="visibility"
                   toggle-color="primary"
                   :options="[
                     { label: 'Private', value: 0 },
@@ -118,7 +111,7 @@
                   ]"
                 />
               </div>
-              <!-- <q-toggle  color="blue" v-model="infos.visibility" checked-icon="check" unchecked-icon="clear" @input="changeIsPrivate()" /> -->
+              <!-- <q-toggle  color="blue" v-model="visibility" checked-icon="check" unchecked-icon="clear" @input="changeIsPrivate()" /> -->
             </q-item-section>
           </q-item>
           <q-item tag="label" v-ripple>
@@ -163,7 +156,7 @@
 						<q-item-label caption>{{$t('projectSettings').toggleOpenProjectCaption}}</q-item-label>
 						</q-item-section>
 						<q-item-section avatar>
-						<q-toggle  color="green" v-model="infos.is_open" checked-icon="check" unchecked-icon="clear" @input="changeOpenProject()" />
+						<q-toggle  color="green" v-model="is_open" checked-icon="check" unchecked-icon="clear" @input="changeOpenProject()" />
 						</q-item-section>
           </q-item>-->
         </q-list>
@@ -189,7 +182,7 @@
         <q-card-section>
           <q-list bordered separator class="list-size">
             <q-item
-              v-for="dut in infos.default_user_trees"
+              v-for="dut in default_user_trees"
               :key="dut.id"
               clickable
               v-ripple
@@ -409,6 +402,7 @@
 
 
 <script>
+import { mapGetters } from "vuex";
 import { codemirror } from "vue-codemirror";
 import "codemirror/mode/python/python.js";
 import "codemirror/lib/codemirror.css";
@@ -423,6 +417,7 @@ export default {
   props: ["projectname"],
   data() {
     return {
+      default_user_trees: [],
       addAdminDial: false,
       addGuestDial: false,
       // addLabelDial: false,
@@ -431,22 +426,10 @@ export default {
       confirmActionDial: false,
       confirmActionCallback: null,
       confirmActionArg1: "",
-      entryCat: "",
-      entryLabel: "",
-      stockid: "",
       uploadImage: { image: null, submitting: false },
-      infos: { admins: [], guests: [], description: "" },
-      // infos: {admins:[], guests:[], labels:[], cats:[], description: ''},
-      projectconfig: {},
       annofjson: "",
       annofok: true,
       annofcomment: "",
-      txtCats: `# please drop your categories here in a comma separated format. For instance:
-VER,DET,NOMcom`,
-      txtLabels: `# please drop your labels here in a comma separated format with one column per line. For instance:
-subj,comp,vocative
-:aux,:caus,:cleft`,
-      config: ``,
       cmOption: {
         tabSize: 8,
         styleActiveLine: true,
@@ -459,16 +442,28 @@ subj,comp,vocative
     };
   },
   mounted() {
-    this.getProjectInfos();
-    // console.log(this.infos);
     this.annofjson = this.$store.getters["config/getAnnofjson"];
   },
   computed: {
+    ...mapGetters("config", ["name"]),
     admins() {
       return this.$store.getters["config/admins"];
     },
     guests() {
       return this.$store.getters["config/guests"];
+    },
+    cleanedImage() {
+      return this.$store.getters["config/cleanedImage"];
+    },
+    description: {
+      get() {
+        return this.$store.getters["config/description"];
+      },
+      set(value) {
+        this.$store.commit("config/set_project_settings", {
+          description: value,
+        });
+      },
     },
     showAllTrees: {
       get() {
@@ -476,7 +471,6 @@ subj,comp,vocative
       },
       set(value) {
         this.$store.dispatch("config/updateProjectSettings", {
-          projectname: this.$props.projectname,
           toUpdateObject: { showAllTrees: value },
         });
       },
@@ -487,8 +481,17 @@ subj,comp,vocative
       },
       set(value) {
         this.$store.dispatch("config/updateProjectSettings", {
-          projectname: this.$props.projectname,
           toUpdateObject: { exerciseMode: value },
+        });
+      },
+    },
+    visibility: {
+      get() {
+        return this.$store.getters["config/visibility"];
+      },
+      set(value) {
+        this.$store.dispatch("config/updateProjectSettings", {
+          toUpdateObject: { visibility: value },
         });
       },
     },
@@ -520,36 +523,7 @@ subj,comp,vocative
         });
       },
     },
-    imageEmpty() {
-      if (this.infos.image == null) {
-        this.infos.image = "b''";
-      }
-      if (this.infos.image == "b''") {
-        return true;
-      } else if (this.infos.image.length < 1) {
-        return true;
-      } else {
-        return false;
-      }
-    },
-    imageCleaned() {
-      var clean = this.infos.image.replace("b", "");
-      clean = clean.replace(/^'/g, "");
-      clean = clean.replace(/'$/g, "");
-      return "data:image/png;base64, " + clean;
-    },
-    guest() {
-      return this.infos.guests.includes(
-        this.$store.getters["user/getUserInfos"].id
-      );
-    },
-    admin() {
-      return (
-        this.infos.admins.includes(
-          this.$store.getters["user/getUserInfos"].id
-        ) || this.$store.getters["user/getUserInfos"].super_admin
-      );
-    },
+
     // create a new computed property `isAdmin` for better clarity
     isAdmin() {
       return (
@@ -562,26 +536,6 @@ subj,comp,vocative
     },
   },
   methods: {
-    /**
-     * Handle project infos request from backend
-     *
-     * @returns void
-     */
-    getProjectInfos() {
-      // this.$store.dispatch("config/fetchProjectConlluSchema", {projectname:this.$props.projectname})
-      // .then(response=> {
-      // 	this.annofjson = this.$store.getters['config/getAnnofjson']
-      // })
-      // this.$store.dispatch("config/fetchConfigShown", {projectname:this.$props.projectname})
-      // 	})
-      // .catch(error => {
-      // 		this.$store.dispatch("notifyError", {error: error});
-      // 		this.$q.notify({message: `${error}`, color:'negative', position: 'bottom'});
-      // });
-      api.getProjectInfos(this.projectname).then((response) => {
-        this.infos = response.data;
-      })
-    },
     /**
      * Parse annotation features. Display a related informative message dependeing on success
      *
@@ -692,15 +646,6 @@ subj,comp,vocative
           this.$store.dispatch("notifyError", { error: error });
         });
     },
-    // addLabel(){  api.addProjectStockLabel(this.$props.projectname, this.stockid, this.entryLabel).then(response => {this.$q.notify({message:`Change saved!`}); this.infos.labels = response.data; this.entryLabel='';}).catch(error => { this.$store.dispatch("notifyError", {error: error}); })  },
-    // removeLabel(item){ api.removeProjectStockLabel(this.$props.projectname, item.id, item.stock_id, item.value).then(response => {this.$q.notify({message:`Change saved!`}); this.infos.labels = response.data; }).catch(error => { this.$store.dispatch("notifyError", {error: error}); })  },
-    // resetLabel(){ this.entryLabel = ''; },
-    // addLabelColumn(){ api.addProjectStock(this.$props.projectname).then(response => {this.$q.notify({message:`Change saved!`}); this.infos.labels = response.data; }).catch(error => { this.$store.dispatch("notifyError", {error: error}); })  },
-    // removeLabelColumn(stockid){ api.removeProjectStock(this.$props.projectname, stockid).then(response => {this.$q.notify({message:`Change saved!`}); this.infos.labels = response.data; }).catch(error => { this.$store.dispatch("notifyError", {error: error}); })  },
-    // addCat(){ api.addProjectCatLabel(this.$props.projectname, this.entryCat).then(response => {this.$q.notify({message:`Change saved!`}); this.infos.cats = response.data; this.entryCat = '';}).catch(error => { this.$store.dispatch("notifyError", {error: error}); }) },
-    // removeCat(cat){ api.removeProjectCatLabel(this.$props.projectname, cat).then(response => {this.$q.notify({message:`Change saved!`}); this.infos.cats = response.data; }).catch(error => { this.$store.dispatch("notifyError", {error: error}); })},
-    // resetCat(){ this.entryCat = ''; },
-
     /**
      * Add a default user for the tree to be uploaded if not specified.
      * @todo change backend function to accept multiple users
@@ -713,7 +658,7 @@ subj,comp,vocative
         .addDefaultUserTree(this.$props.projectname, selected[0])
         .then((response) => {
           this.$q.notify({ message: `Change saved!` });
-          this.infos = response.data;
+          // this.infos = response.data;
         })
         .catch((error) => {
           this.$store.dispatch("notifyError", { error: error });
@@ -730,67 +675,20 @@ subj,comp,vocative
         .removeDefaultUserTree(this.$props.projectname, dutid)
         .then((response) => {
           this.$q.notify({ message: `Change saved!` });
-          this.infos = response.data;
+          // this.infos = response.data;
         })
         .catch((error) => {
           this.$store.dispatch("notifyError", { error: error });
         });
     },
+
     /**
-     * Change the boolean of the project in backend : to show all trees to every users or not
+     * Change the description of the project in backend
      *
      * @returns void
      */
-    changeShowAllTrees() {
-      api
-        .updateProject(this.$props.projectname, {
-          showAllTrees: this.showAllTrees,
-        })
-        .then((response) => {
-          this.$q.notify({ message: "Change saved!" });
-          this.infos = response.data;
-        })
-        .catch((error) => {
-          this.$store.dispatch("notifyError", { error: error });
-        });
-    },
-    // changeOpenProject(){ api.modifyOpenProject(this.$props.projectname, this.infos.is_open).then(response => {this.$q.notify({message:`Change saved!`}); this.infos = response.data; }).catch(error => { this.$store.dispatch("notifyError", {error: error}); }) },
-    /**
-     * Change the project's boolean in backend : whether it is private or not
-     *
-     * @returns void
-     */
-    changeIsPrivate() {
-      api
-        .updateProject(this.$props.projectname, {
-          visibility: this.infos.visibility,
-        })
-        .then((response) => {
-          this.$q.notify({ message: `Change saved!` });
-          this.infos = response.data;
-          this.$forceUpdate();
-        })
-        .catch((error) => {
-          this.$store.dispatch("notifyError", { error: error });
-        });
-    },
-    /**
-     * Change the project description in backend using the infos data
-     *
-     * @returns void
-     */
-    changeDescription() {
-      api
-        .updateProject(this.$props.projectname, {
-          description: this.infos.description,
-        })
-        .then((response) => {
-          this.$q.notify({ message: `Change saved!` });
-          this.infos = response.data;
-        })
-        .catch((error) => {
-          this.$store.dispatch("notifyError", { error: error });
-        });
+    saveDescription() {
+      this.$store.dispatch("config/putProjectDescription");
     },
     /**
      * Upload a project image by creating formdata to be send to the backend
@@ -799,31 +697,17 @@ subj,comp,vocative
      */
     uploadProjectImage() {
       this.uploadImage.submitting = true;
-      var form = new FormData();
-      form.append("files", this.uploadImage.image);
-      // for(const file of this.uploadImage.image){ form.append('files',file); }
-      api
-        .uploadProjectImage(this.$props.projectname, form)
-        .then((response) => {
+      this.$store
+        .dispatch("config/postImage", this.uploadImage.image)
+        .then(() => {
           this.uploadImage.submitting = false;
-          this.uploadImage.image = null;
           this.$q.notify({ message: `Uploaded image saved!` });
-          this.infos = response.data;
-          console.log(this.infos);
         })
         .catch((error) => {
           this.$store.dispatch("notifyError", { error: error });
           this.uploadImage.submitting = false;
         });
     },
-
-    // saveTextCats(){
-    // 	api.saveTxtCats(this.$props.projectname, this.txtCats).then(response => { this.$q.notify({message:`Change saved!`}); this.infos.cats = response.data;}).catch(error => { this.$store.dispatch("notifyError", {error: error}); });
-    // },
-    // saveTextLabels(){
-    // 	api.saveTxtLabels(this.$props.projectname, this.txtLabels).then(response => { console.log(JSON.stringify(response.data)); this.$q.notify({message:`Change saved!`}); this.infos.labels = response.data;}).catch(error => { this.$store.dispatch("notifyError", {error: error}); });
-    // },
-
     /**
      * Wrapper to display the confirm dialog prior to executing the method
      *

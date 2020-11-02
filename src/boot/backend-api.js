@@ -35,10 +35,6 @@ export default {
   getProjects() {
     return API.get("projects");
   },
-  getProjectInfos(projectname) {
-    // this one is slow, asks grew
-    return API.get(`projects/${projectname}/settings_info`);
-  },
   createProject(data) {
     return API.post("projects/", data);
   },
@@ -61,7 +57,6 @@ export default {
     return API.get(`projects/${projectname}/conll-schema`);
   },
   updateProjectConlluSchema(projectname, conlluSchema) {
-    console.log("KK projectname, conlluSchema", conlluSchema);
     return API.put(`projects/${projectname}/conll-schema`, conlluSchema);
   },
   getProjectUsersAccess(projectname) {
@@ -104,8 +99,7 @@ export default {
     return API.get(`/projects/${projectname}/samples`);
   },
   uploadSample(projectname, data) {
-    console.log("KK data", data);
-    return API.post(`/projects/${projectname}/samples`, data, {test:"to"});
+    return API.post(`/projects/${projectname}/samples`, data, { test: "to" });
   },
   exportSamplesZip(samplenames, projectname) {
     let data = { samples: samplenames };
@@ -217,6 +211,4 @@ export default {
   pull(projectname, data) {
     return API.post("projects/" + projectname + "/pull", data);
   },
-
-
 };

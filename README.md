@@ -74,12 +74,12 @@ You can also run jest commands directly
 jest --watch --coverage
 ```
 
-If you receive the following error when you executed 
->npm run test:unit:watchAll
+If you get the following error when you executed the this command `
+npm run test:unit:watchAll`
 
-`Error: ENOSPC: System limit for number of file watchers reached`
+`Error:ENOSPC: System limit for number of file watchers reached`
 
-then execute the following command
+then please run the following command and try again
 ```bash
 echo fs.inotify.max_user_watches=524288 | sudo tee -a /etc/sysctl.conf && sudo sysctl -p
 ```

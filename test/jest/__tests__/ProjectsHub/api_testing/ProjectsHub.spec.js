@@ -34,6 +34,8 @@ describe("backend_api testing getProjects()", () => {
       
       // see if each field's type is correct
       keys.forEach(key => {
+        if(element[key] == null && key == "image") 
+          return;
         if(fields[key] == "array")
           expect(Array.isArray(element[key])).toBeTruthy()
         else

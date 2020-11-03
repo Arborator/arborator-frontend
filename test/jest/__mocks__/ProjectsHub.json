@@ -27,7 +27,8 @@
             "id": "number",
             "admins": "array",
             "number_sentences": "number",
-            "visibility": "number"
+            "visibility": "number",
+            "image": "string"
         }
     }
 }

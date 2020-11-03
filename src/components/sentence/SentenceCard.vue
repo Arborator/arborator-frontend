@@ -49,7 +49,7 @@
           <q-tooltip>Save as teacher</q-tooltip>
         </q-btn>
 
-          <q-btn
+        <q-btn
           v-if="isLoggedIn && $store.getters['config/isTeacher']"
           flat
           round
@@ -79,7 +79,7 @@
           round
           dense
           icon="save"
-          :disable="(tab == '' || !canSave)"
+          :disable="tab == '' || !canSave"
           @click="save('')"
         >
           <q-tooltip>Save this tree {{ this.tab }}</q-tooltip>
@@ -96,6 +96,18 @@
           @click="openMetaDialog()"
         >
           <q-tooltip>Edit this tree's metadata</q-tooltip>
+        </q-btn>
+
+        <q-btn
+          v-if="isLoggedIn && $store.getters['config/isTeacher']"
+          flat
+          round
+          dense
+          icon="filter_9_plus"
+          :disable="tab == ''"
+          @click="openMultiEditDialog"
+        >
+          <q-tooltip>multi edit dialog</q-tooltip>
         </q-btn>
 
         <q-btn-dropdown :disable="tab == ''" icon="more_vert" flat dense>
@@ -161,13 +173,13 @@
             </q-item>
           </q-list>
         </q-btn-dropdown>
-         <q-btn
+        <q-btn
           v-if="isLoggedIn"
           flat
           round
           dense
           icon="undo"
-          :disable="(tab == '' || !canUndo)"
+          :disable="tab == '' || !canUndo"
           @click="undo('user')"
           v-bind:class="'undo-button'"
         >
@@ -178,7 +190,7 @@
           round
           dense
           icon="ion-redo"
-          :disable="(tab == '' || !canRedo)"
+          :disable="tab == '' || !canRedo"
           @click="redo('user')"
           v-bind:class="'redo-button'"
         >
@@ -241,7 +253,7 @@
             >
               <VueDepTree
                 v-if="reactiveSentencesObj"
-                 v-on:statusChanged="handleStatusChange"
+                v-on:statusChanged="handleStatusChange"
                 :cardId="index"
                 :conll="tree"
                 :reactiveSentence="reactiveSentencesObj[user]"
@@ -279,6 +291,10 @@
       :reactiveSentencesObj="reactiveSentencesObj"
       @changed:metaText="changeMetaText"
     />
+    <MultiEditDialog
+      :sentenceBus="sentenceBus"
+      :reactiveSentencesObj="reactiveSentencesObj"
+    />
     <StatisticsDialog
       :sentenceBus="sentenceBus"
       :conlls="sentenceData.conlls"
@@ -291,7 +307,7 @@ import Vue from "vue";
 
 import { mapGetters } from "vuex";
 
-import { LocalStorage } from 'quasar';
+import { LocalStorage } from "quasar";
 
 import api from "../../boot/backend-api";
 
@@ -306,6 +322,7 @@ import ConlluDialog from "./ConlluDialog.vue";
 import ExportSVG from "./ExportSVG.vue";
 import TokenDialog from "./TokenDialog.vue";
 import StatisticsDialog from "./StatisticsDialog.vue";
+import MultiEditDialog from "./MultiEditDialog.vue";
 import user from "src/store/modules/user";
 
 export default {
@@ -320,6 +337,7 @@ export default {
     ExportSVG,
     TokenDialog,
     StatisticsDialog,
+    MultiEditDialog,
   },
   props: ["index", "sentence", "sentenceId", "searchResult", "exerciseLevel"],
   data() {
@@ -347,7 +365,7 @@ export default {
       diffMode: false,
       canUndo: false,
       canRedo: false,
-      canSave: false
+      canSave: false,
     };
   },
 
@@ -450,6 +468,9 @@ export default {
     openConllDialog() {
       this.sentenceBus.$emit("open:conlluDialog", { userId: this.tab });
     },
+    openMultiEditDialog() {
+      this.sentenceBus.$emit("open:openMultiEditDialog", { userId: this.tab });
+    },
     /**
      * Get the SVG by creating it using snap arborator plugin and then replacing the placeholder in the current DOM
      * @todo instead of this long string, read the actual css file and put it there.
@@ -478,11 +499,11 @@ export default {
     /**
      * @todo undo
      */
-       undo(mode) {
+    undo(mode) {
       if (this.tab !== "") {
         this.sentenceBus.$emit("action:undo", {
           userId: this.tab,
-        })
+        });
       }
     },
     /**
@@ -492,7 +513,7 @@ export default {
       if (this.tab !== "") {
         this.sentenceBus.$emit("action:redo", {
           userId: this.tab,
-        })
+        });
       }
     },
     /**
@@ -521,7 +542,7 @@ export default {
       //   changedConllUser = this.EMMETT;
       // }
       if (mode) {
-        changedConllUser = mode
+        changedConllUser = mode;
       }
 
       const metaToReplace = {
@@ -539,11 +560,15 @@ export default {
         user_id: changedConllUser,
       };
       api
-        .updateTree(this.$route.params.projectname, this.$props.sentence.sample_name,  data)
+        .updateTree(
+          this.$route.params.projectname,
+          this.$props.sentence.sample_name,
+          data
+        )
         .then((response) => {
           if (response.status == 200) {
             this.sentenceBus.$emit("action:saved", {
-                userId: this.tab,
+              userId: this.tab,
             });
             if (this.sentenceData.conlls[changedConllUser]) {
               this.sentenceData.conlls[changedConllUser] = exportedConll;

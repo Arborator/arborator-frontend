@@ -85,6 +85,7 @@ export default {
   },
   mounted() {
     this.sentenceBus.$on("open:metaDialog", ({ userId }) => {
+      this.userId = userId
       this.META = this.sentenceBus[userId].metaJson
       this.metaDialogOpened = true;
       this.metal = [];

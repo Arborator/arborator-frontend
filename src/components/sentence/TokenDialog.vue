@@ -183,12 +183,13 @@ export default {
         .filter((x) => x.trim().length > 0);
       this.reactiveSentencesObj[this.userId].replaceArrayOfTokens(
         this.tokidsequence,
-        ttokl.length
-          ? this.tokidsequence[0]
-          : this.tokidsequence[0] - 1,
+        ttokl.length ? this.tokidsequence[0] : this.tokidsequence[0] - 1,
         ttokl
       );
-      this.$emit("changed:metaText", this.sentenceBus[this.userId].metaJson.text);
+      this.$emit(
+        "changed:metaText",
+        this.sentenceBus[this.userId].metaJson.text
+      );
     },
   },
 };

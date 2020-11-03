@@ -139,7 +139,6 @@ export default {
   //   //  nodata(){ return "no "+this.title; }
   // },
   mounted() {
-    // console.log('featdata',this.featdata)
     // console.log('prepend',this.prepend)
   },
   methods: {
@@ -190,7 +189,6 @@ export default {
       else return "String" // if (vs==["String"]) or unknown
      },
     oninput(row) {
-      console.log('oninput this.featdata',this.featdata)
       this.$emit("feature-changed");
       this.key++;
     

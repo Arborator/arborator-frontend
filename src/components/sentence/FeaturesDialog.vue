@@ -111,6 +111,7 @@ export default {
       this.userId = userId;
       this.featuresDialogOpened = true;
 
+      this.featTable.featl = [];
       for (let a in token["FEATS"]) {
         this.featTable.featl.push({ a: a, v: token["FEATS"][a] });
       }
@@ -129,22 +130,21 @@ export default {
     ondialoghide() {},
     onFeatureDialogOk() {
       this.token["LEMMA"] = this.featTable.lemma.reduce(function (obj, r) {
-            if (r.v) obj[r.a] = r.v;
-            return obj;
-          }, {})["Lemma"]
+        if (r.v) obj[r.a] = r.v;
+        return obj;
+      }, {})["Lemma"];
       this.token["FEATS"] = this.featTable.featl.reduce(function (obj, r) {
-            if (r.v) obj[r.a] = r.v;
-            return obj;
-          }, {})
+        if (r.v) obj[r.a] = r.v;
+        return obj;
+      }, {});
       this.token["MISC"] = this.featTable.miscl.reduce(function (obj, r) {
-            if (r.v) obj[r.a] = r.v;
-            return obj;
-          }, {})
+        if (r.v) obj[r.a] = r.v;
+        return obj;
+      }, {});
       this.sentenceBus.$emit("tree-update:token", {
         token: this.token,
         userId: this.userId,
       });
-
     },
     // onChangeUpos() {
     //   this.featuresDialogOpened = false;

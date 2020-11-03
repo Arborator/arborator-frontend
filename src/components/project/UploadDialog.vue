@@ -170,7 +170,7 @@ export default {
   },
   methods: {
     aFunction() {
-      console.log("KK on change");
+      // console.log("KK on change");
     },
     preprocess() {
       if (!this.uploadSample.attachment.file) {

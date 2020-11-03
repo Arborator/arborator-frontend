@@ -49,6 +49,18 @@
           <q-tooltip>Save as teacher</q-tooltip>
         </q-btn>
 
+          <q-btn
+          v-if="isLoggedIn && $store.getters['config/isTeacher']"
+          flat
+          round
+          dense
+          icon="linear_scale"
+          :disable="tab == ''"
+          @click="save('base_tree')"
+        >
+          <q-tooltip>Save as base_tree</q-tooltip>
+        </q-btn>
+
         <q-btn
           v-if="isBernardCaron"
           flat
@@ -68,7 +80,7 @@
           dense
           icon="save"
           :disable="(tab == '' || !canSave)"
-          @click="save('user')"
+          @click="save('')"
         >
           <q-tooltip>Save this tree {{ this.tab }}</q-tooltip>
         </q-btn>
@@ -502,12 +514,16 @@ export default {
       // var conll = this.sentenceBus[currentTreeUser].exportConll();
 
       var changedConllUser = this.$store.getters["user/getUserInfos"].username;
-      if (mode == "teacher") {
-        changedConllUser = "teacher";
+      // if (mode == "teacher") {
+      //   changedConllUser = "teacher";
+      // }
+      // if (mode == this.EMMETT) {
+      //   changedConllUser = this.EMMETT;
+      // }
+      if (mode) {
+        changedConllUser = mode
       }
-      if (mode == this.EMMETT) {
-        changedConllUser = this.EMMETT;
-      }
+
       const metaToReplace = {
         user_id: changedConllUser,
         timestamp: Math.round(Date.now()),

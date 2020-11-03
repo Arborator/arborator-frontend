@@ -80,6 +80,7 @@
             :loading="table.loading"
             loading-label="loading"
             :filter="table.filter"
+            :filter-method="searchSamples"
             binary-state-sort
             :visible-columns="
               exerciseMode
@@ -1331,6 +1332,12 @@ export default {
         timeout: 2000,
       });
     },
+
+    searchSamples(rows, terms, cols, cellValue) {
+      return rows.filter(row => {
+        return row.sample_name.indexOf(terms) != -1;
+      })
+    }
   },
 };
 </script>

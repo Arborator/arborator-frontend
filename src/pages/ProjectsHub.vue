@@ -98,9 +98,29 @@
             v-if="!$q.platform.is.mobile"
             class="q-pa-md row items-start q-gutter-md"
           >
+            <div class="text-h6 col-12" 
+            v-if="isLoggedIn && myProjects.length">
+              <q-chip color="primary" class="category" text-color="white">
+                My projects
+              </q-chip>
+            </div>
             <project-card
               style="max-width: 250px"
-              v-for="project in visibleProjects"
+              v-for="project in myProjects"
+              :props="project"
+              :parentDeleteProject="deleteProject"
+              :parentProjectSettings="showProjectSettings"
+              :key="project.id"
+            ></project-card>
+            <div class="text-h6 col-12" 
+            v-if="isLoggedIn && otherProjects.length">
+              <q-chip color="primary" class="category" text-color="white">
+                Other projects
+              </q-chip>
+            </div>
+            <project-card
+              style="max-width: 250px"
+              v-for="project in otherProjects"
               :props="project"
               :parentDeleteProject="deleteProject"
               :parentProjectSettings="showProjectSettings"
@@ -166,6 +186,12 @@
 .grid-style-transition {
   transition: transform 0.28s, background-color 0.28s;
 }
+
+.category {
+  width: fit-content;
+  padding: 2px 11px;
+  font-size: 18px;
+}
 </style>
 
 <script>
@@ -217,6 +243,17 @@ export default {
     isLoggedIn() {
       return this.$store.getters["user/isLoggedIn"];
     },
+    myProjects() {
+      return this.visibleProjects.filter(project => 
+      this.isCreatedByMe(project));
+    },
+    otherProjects() {
+      return this.visibleProjects.filter(project => 
+      !this.isCreatedByMe(project));
+    },
+    avatar() {
+      return this.$store.getters["user/getUserInfos"].picture_url;
+    }
   },
   methods: {
     openURL,
@@ -225,9 +262,10 @@ export default {
       api
         .getProjects()
         .then((response) => {
-          console.log("here", response.data.projects);
+          console.log("here", response.data);
           this.projects = response.data;
           this.visibleProjects = response.data;
+          this.sortProjects();
           // this.projectDifference = response.data.difference;
           this.loadingProjects = false;
           this.initLoading = false;
@@ -252,6 +290,20 @@ export default {
         }
       });
       this.visibleProjects = filteredProjects;
+    },
+    sortProjects() {
+      if(!this.isLoggedIn) return;
+      this.visibleProjects.sort((a, b) => {
+        const my_a = this.isCreatedByMe(a);
+        const my_b = this.isCreatedByMe(b);
+        if(my_a && my_b) return 0;
+        if(my_a) return -1;
+        return 1;
+      })
+    },
+    isCreatedByMe(project) {
+      const user_id = this.$store.getters["user/getUserInfos"].id;
+      return project.admins[0] == user_id;
     },
     toggleProjectView() {
       this.listMode = !this.listMode;

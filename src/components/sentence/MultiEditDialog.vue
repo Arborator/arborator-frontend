@@ -74,7 +74,7 @@ export default {
       userId: "",
       treeJson: {},
       checkboxes: {},
-      metaLabels: ["UPOS", "DEPREL", "HEAD"],
+      metaLabels: ["UPOS", "DEPREL", "HEAD", "LEMMA"],
       checkboxesAll: { UPOS: false, DEPREL: false, HEAD: false },
     };
   },
@@ -84,12 +84,14 @@ export default {
       this.treeJson = JSON.parse(
         JSON.stringify(this.sentenceBus[this.userId].treeJson)
       );
-
+      for (const metaLabel of this.metaLabels) {
+        this.checkboxesAll[metaLabel] = false
+      }
       for (const token in this.treeJson) {
         const checkboxesToken = {};
-        checkboxesToken["upos"] = false;
-        checkboxesToken["deprel"] = false;
-        checkboxesToken["head"] = false;
+        // checkboxesToken["UPOS"] = false;
+        // checkboxesToken["DEPREL"] = false;
+        // checkboxesToken["HEAD"] = false;
         this.checkboxes[token] = checkboxesToken;
       }
       this.dialogOpened = true;
@@ -123,6 +125,7 @@ export default {
       for (const token in this.treeJson) {
         this.checkboxes[token][metaLabel] = this.checkboxesAll[metaLabel];
       }
+      console.log("KK this.checkboxes", this.checkboxes)
     },
     uncheckToggles() {
       for (const metaLabel of this.metaLabels) {

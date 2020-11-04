@@ -1,6 +1,4 @@
 import { API } from "./axios-adapters/axios-api";
-import { AUTH } from "./axios-adapters/axios-auth";
-import * as config from "./axio-global-config";
 import VueCookies from "vue-cookies";
 VueCookies.config("7d");
 export default {
@@ -12,10 +10,10 @@ export default {
     //     //body: new URLSearchParams(data).toString(),
     //     headers: {'Accept': 'application/json', 'Content-Type': "application/x-www-form-urlencoded" }
     // }).then((res) => res.json())
-    return AUTH.get(provider);
+    return API.get(provider);
   },
   logout() {
-    return axios.get("/logout");
+    return API.get("/logout");
   },
 
   // -------------------------------------------------- //

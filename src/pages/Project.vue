@@ -10,7 +10,6 @@
             class="project-image"
             :src="cleanedImage"
             basic
-            contain
           >
             <div class="absolute-bottom text-h6" style="padding: 6px">
               <q-icon

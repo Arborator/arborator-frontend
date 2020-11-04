@@ -108,10 +108,24 @@
               with the same user_id, the most recent tree will be taken
             </p> -->
 
-          <div v-for="(userId, index) of usersIds" :key="index">
-            <label :for="`f${index}`">{{ userId.old }} :</label>
-            <input :id="`f${index}`" v-model="userId.new" :placeholder="userId.old" />
-          </div>
+          <table>
+            <tr>
+              <th>previous name</th>
+              <th>new name</th>
+            </tr>
+            <tr v-for="(userId, index) of usersIds" :key="index">
+              <td>
+                <label :for="`f${index}`">{{ userId.old }} :</label>
+              </td>
+              <td>
+                <input
+                  :id="`f${index}`"
+                  v-model="userId.new"
+                  :placeholder="userId.old"
+                />
+              </td>
+            </tr>
+          </table>
         </template>
       </q-card-section>
     </q-card>
@@ -176,7 +190,12 @@ export default {
       if (!this.uploadSample.attachment.file) {
         return;
       }
-      this.usersIds = [{ old: "default", new: this.$store.getters["user/getUserInfos"].username }];
+      this.usersIds = [
+        {
+          old: "default",
+          new: this.$store.getters["user/getUserInfos"].username,
+        },
+      ];
       for (const file of this.uploadSample.attachment.file) {
         const reader = new FileReader();
         reader.onload = () => {
@@ -187,7 +206,9 @@ export default {
               if (line.slice(2, 9) == "user_id") {
                 var splitted_meta = line.split(" ");
                 var userId = splitted_meta[splitted_meta.length - 1];
-                if (!this.usersIds.map(userId => userId.old).includes(userId)) {
+                if (
+                  !this.usersIds.map((userId) => userId.old).includes(userId)
+                ) {
                   this.usersIds.push({ old: userId, new: userId });
                   // this.usersIdsList.push(userId);
                 }

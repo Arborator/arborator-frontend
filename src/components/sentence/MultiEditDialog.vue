@@ -75,7 +75,7 @@ export default {
       treeJson: {},
       checkboxes: {},
       metaLabels: ["UPOS", "DEPREL", "HEAD", "LEMMA"],
-      checkboxesAll: { UPOS: false, DEPREL: false, HEAD: false },
+      checkboxesAll: { UPOS: false, DEPREL: false, HEAD: false, LEMMA: false },
     };
   },
   mounted() {

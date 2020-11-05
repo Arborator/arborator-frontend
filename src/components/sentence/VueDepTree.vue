@@ -73,31 +73,49 @@ export default {
         let prevToken = this.reactiveSentence.getToken(token.ID);
 
         this.history[++this.history_index] = {
-          old: prevToken,
-          new: token,
+          old: [ prevToken ],
+          new: [ token ],
         };
         this.history_end = this.history_index;
         this.reactiveSentence.updateToken(token);
         this.statusChangeHadler();
       }
     });
+
     this.sentenceBus.$on("tree-update:tree", ({ tree, userId }) => {
       if (userId == this.userId) {
-        // let prevToken = this.reactiveSentence.getToken(token.ID);
-
-        // this.history[++this.history_index] = {
-        //   old: prevToken,
-        //   new: token,
-        // };
-        // this.history_end = this.history_index;
+        // store current tree into prevToken
+        let prevToken = [], newToken = [];
+        for(const index in tree) {
+          prevToken.push(this.reactiveSentence.getToken(index))
+        }
+        //update tree
         this.reactiveSentence.updateTree(tree);
+
+        // store updated tree into newToken and add into history
+        for(const index in tree) {
+          newToken.push(this.reactiveSentence.getToken(index))
+        }
+        this.history[++this.history_index] = {
+          old: [ ... prevToken ],
+          new: [ ... newToken ],
+        };
+        this.history_end = this.history_index;
+        
         this.statusChangeHadler();
       }
     });
     this.sentenceBus.$on("action:undo", ({ userId }) => {
       if (userId == this.userId && this.history_index != -1) {
         const oldToken = this.history[this.history_index].old;
-        this.reactiveSentence.updateToken(oldToken);
+        const length = oldToken.length;
+        let index;
+        // this is to avoid unneccessary drawing
+        // when updating multiple tokens
+        for(index = 0; index < length - 1; index++)
+          this.reactiveSentence.updateToken(oldToken[index], false);
+        // draw the whole tree when last token is updated
+        this.reactiveSentence.updateToken(oldToken[index]);
         this.history_index--;
         this.statusChangeHadler();
       }
@@ -105,7 +123,14 @@ export default {
     this.sentenceBus.$on("action:redo", ({ userId }) => {
       if (userId == this.userId && this.history_index != this.history_end) {
         const newToken = this.history[++this.history_index].new;
-        this.reactiveSentence.updateToken(newToken);
+        const length = newToken.length;
+        let index;
+        // this is to avoid unneccessary drawing
+        // when updating multiple tokens
+        for(index = 0; index < length - 1; index++)
+          this.reactiveSentence.updateToken(newToken[index], false);
+        // draw the whole tree when last token is updated
+        this.reactiveSentence.updateToken(newToken[index]);
         this.statusChangeHadler();
       }
     });
@@ -206,7 +231,8 @@ export default {
         for (let j in userIds) {
           if (card[userIds[j]] == true) {
             window.onbeforeunload = function (e) {
-              return "aaaa";
+              return `You have some unsaved changes left,
+               please save them before you leave this page`;
             };
             return;
           }

@@ -13,7 +13,7 @@ import { TreeJson, MetaJson } from "./Conll";
 
 export class ReactiveSentence extends EventDispatcher {
   treeJson: TreeJson = {};
-  treeJson_temp: TreeJson = {};
+  treeJsonTemp: TreeJson = {};
   metaJson: MetaJson = {};
   sentenceConll: string = "";
 
@@ -27,19 +27,23 @@ export class ReactiveSentence extends EventDispatcher {
     const sentenceJson = conllToJson(this.sentenceConll);
     Object.assign(this.treeJson, sentenceJson.treeJson);
     Object.assign(this.metaJson, sentenceJson.metaJson);
-    this.treeJson_temp = JSON.parse(JSON.stringify(this.treeJson));
+    this.treeJsonTemp = JSON.parse(
+      JSON.stringify(this.treeJson)
+    );
     this._emitEvent();
   }
 
-  updateToken(tokenJson: TokenJson): void {
+  updateToken(tokenJson: TokenJson, update = true): void {
     this.treeJson[tokenJson.ID] = tokenJson;
-    this.treeJson_temp = JSON.parse(JSON.stringify(this.treeJson));
-    this._emitEvent();
+    this.treeJsonTemp = JSON.parse(
+      JSON.stringify(this.treeJson)
+    );
+    if(update) this._emitEvent();
     // this._emitEvent({ tokenJson: this.treeJson[tokenJson.ID] });
   }
 
   getToken(ID: any) {
-    let token = JSON.parse(JSON.stringify(this.treeJson_temp[ID]));
+    let token = { ... this.treeJsonTemp[ID] };
     return token;
   }
   updateTree(treeJson: TreeJson): void {
@@ -47,12 +51,14 @@ export class ReactiveSentence extends EventDispatcher {
     //   this.treeJson[tokenIndex] = tokenJson;
     //   Object.assign(this.treeJson[tokenIndex], tokenJson);
     // }
-
+    
     for (const tokenIndex in treeJson) {
       // this.treeJson[tokenIndex] = treeJson[tokenIndex];
       Object.assign(this.treeJson[tokenIndex], treeJson[tokenIndex]);
     }
-
+    this.treeJsonTemp = JSON.parse(
+      JSON.stringify(this.treeJson)
+    );
     this._emitEvent();
   }
   
@@ -96,7 +102,9 @@ export class ReactiveSentence extends EventDispatcher {
     // now the case where more tokens were inserted than replaced:
     var basenode = this.treeJson[id2newid[tokenIds[tokenIds.length - 1]]];
     for (var i = tokenIds.length; i < tokensToReplace.length; ++i) {
-      let newnode = JSON.parse(JSON.stringify(basenode));
+      let newnode = JSON.parse(
+        JSON.stringify(basenode)
+      );
       newnode.ID = tokenIds[0] + i;
       newnode.FORM = tokensToReplace[i];
       newnode.HEAD = 0;

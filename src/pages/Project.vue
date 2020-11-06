@@ -898,8 +898,8 @@ export default {
         selected: [],
         loading: false,
         pagination: {
-          sortBy: "name",
-          descending: false,
+          sortBy: "samplename",
+          descending: true,
           page: 1,
           rowsPerPage: 10,
         },

@@ -40,7 +40,8 @@ export default {
         state.annotationFeatures.FEATS.map(
           ({ name }) => "FEATS." + name
         ).concat(
-          state.annotationFeatures.MISC.map(({ name }) => "MISC." + name)
+          state.annotationFeatures.MISC ? 
+          state.annotationFeatures.MISC.map(({ name }) => "MISC." + name) : []
         )
       ),
     cleanedImage: (state) => {

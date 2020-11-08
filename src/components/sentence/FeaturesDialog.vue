@@ -23,7 +23,7 @@
       <AttributeTable
         :featdata="featTable.miscl"
         :columns="featTable.columns"
-        :featOptions="annotationFeatures.MISC"
+        :featOptions="annotationFeatures.MISC ? annotationFeatures.MISC : {}"
         openFeatures="true"
         modifiable="true"
         title="Miscellaneous Features"

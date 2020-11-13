@@ -102,7 +102,6 @@ export default {
   },
   methods: {
     onDialogOk() {
-      console.log("KK this.;tree", this.checkboxes);
       for (var token in this.treeJson) {
         for (var metaLabel of this.metaLabels) {
           var toDeleteBool = this.checkboxes[token][metaLabel];
@@ -120,18 +119,14 @@ export default {
     },
     toggleAll(metaLabel) {
       this.checkboxesAll[metaLabel] = !this.checkboxesAll[metaLabel];
-      console.log("KK metaLabel", metaLabel);
-      console.log("KK event", this.checkboxesAll[metaLabel]);
       for (const token in this.treeJson) {
         this.checkboxes[token][metaLabel] = this.checkboxesAll[metaLabel];
       }
-      console.log("KK this.checkboxes", this.checkboxes)
     },
     uncheckToggles() {
       for (const metaLabel of this.metaLabels) {
         this.checkboxesAll[metaLabel] = false;
       }
-      console.log("KK checkboxesAll", this.checkboxesAll)
     },
   },
 };

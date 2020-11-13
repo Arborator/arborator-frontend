@@ -202,6 +202,7 @@ export function jsonToConll(sentenceJson: SentenceJson): string {
   }
   console.log(sentenceJson.treeJson)
   for (let tokenJson of Object.values(sentenceJson.treeJson)) {
+    console.log("KK tokenJson.HEAD", tokenJson.HEAD)
     conlines.push(
       [
         tokenJson.ID || "_",
@@ -210,7 +211,7 @@ export function jsonToConll(sentenceJson: SentenceJson): string {
         tokenJson.UPOS || "_",
         tokenJson.XPOS || "_",
         makeFeaturestring(tokenJson.FEATS, "=", "|"),
-        tokenJson.HEAD >= 0 ? tokenJson.HEAD : "_",
+        tokenJson.HEAD == null ? "_" : tokenJson.HEAD >= 0 ? tokenJson.HEAD : "_",
         tokenJson.DEPREL || "_",
         makeFeaturestring(tokenJson.DEPS, ":", "|"),
         makeFeaturestring(tokenJson.MISC, "=", "|"),
@@ -218,6 +219,7 @@ export function jsonToConll(sentenceJson: SentenceJson): string {
     );
   }
   const sentenceConll = conlines.join("\n");
+  console.log("KK conll", sentenceConll)
   return sentenceConll;
 }
 

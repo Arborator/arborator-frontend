@@ -180,6 +180,21 @@ export default {
   addValidator(projectname, data) {
     return API.post("projects/" + projectname + "/addvalidator", data);
   },
+
+  // -------------------------------------------------------- //
+  // ---------------        For Klang       --------------- //
+  // -------------------------------------------------------- //
+  getConlls() {
+    return API.get('klang/conlls');
+  },
+  getConll(name, is_admin) {
+    return API.get(`klang/conlls/${name}?is_admin=${is_admin}`);
+  },
+  saveTranscription(name, transcription) {
+    return API.post(`klang/conlls/${name}`, {
+      transcription: transcription
+    });
+  },
   // -------------------------------------------------------- //
   // ---------------        To Refactor       --------------- //
   // -------------------------------------------------------- //
@@ -209,4 +224,5 @@ export default {
   pull(projectname, data) {
     return API.post("projects/" + projectname + "/pull", data);
   },
+
 };

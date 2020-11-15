@@ -148,6 +148,14 @@ export default {
             public: false,
             to: '/settings',
             bottom: true
+          },
+          {
+            icon: 'music_note',
+            label: this.$t('navklang'),
+            separator: false,
+            public: false,
+            to: '/klang',
+            bottom: false
           }
           // {
           //   icon: 'vpn_key',
@@ -191,5 +199,6 @@ export default {
     },
   }
 }
-</script><style>
+</script>
+<style>
 </style>

@@ -167,6 +167,12 @@ module.exports = function(ctx) {
           changeOrigin: false,
           secure: false,
         },
+        "/public": {
+          target: source,
+          ws: true,
+          changeOrigin: false,
+          secure: false,
+        },
       },
     },
 

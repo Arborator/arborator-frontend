@@ -167,7 +167,7 @@ module.exports = function(ctx) {
           changeOrigin: false,
           secure: false,
         },
-        "/public": {
+        "/assets": {
           target: source,
           ws: true,
           changeOrigin: false,

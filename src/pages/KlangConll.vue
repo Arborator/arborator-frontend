@@ -247,23 +247,31 @@ export default {
   },
   created() {
     this.mediaObject =
-      "public/corpussamples/" + this.filename + "/" + this.filename + ".mp3";
+      "assets/corpussamples/" + this.filename + "/" + this.filename + ".mp3";
     this.waveWidth = window.innerWidth;
   },
   mounted() {
     // is not logged in, then go back to the first page
-    if (!this.isLoggedIn) {
-      this.$router.replace("/");
-    } else {
-      this.audioplayer = this.$refs.player.audio;
-      this.$refs.player.audio.ontimeupdate = () => this.onTimeUpdate();
-      document.title = "Klang: " + this.filename;
-      this.getConll();
-    }
+    this.waitForCheckSession();
   },
   methods: {
     btnClick(a, b) {
       this.manualct = 30;
+    },
+    async waitForCheckSession() {
+      try {
+        await this.$store.dispatch('user/checkSession');
+        if (!this.isLoggedIn) {
+          this.$router.replace("/");
+        } else {
+          this.audioplayer = this.$refs.player.audio;
+          this.$refs.player.audio.ontimeupdate = () => this.onTimeUpdate();
+          document.title = "Klang: " + this.filename;
+          this.getConll();
+        }
+      } catch {
+        this.$router.replace('/')
+      }
     },
     save() {
       const data = this.mytrans.map((line) => {

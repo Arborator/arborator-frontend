@@ -61,14 +61,22 @@ export default {
   },
   mounted() {
     // is not logged in, then go back to previous page
-    if(!this.isLoggedIn)
-      this.$router.replace('/');
-    else
-      this.getAllConlls();
+    this.waitForCheckSession();
   },
   methods: {
     btnClick(a, b) {
       this.getAllConlls();
+    },
+    async waitForCheckSession() {
+      try {
+        await this.$store.dispatch('user/checkSession');
+        if(!this.isLoggedIn)
+          this.$router.replace('/');
+        else
+          this.getAllConlls();
+      } catch {
+        this.$router.replace('/');
+      }
     },
     /**
      * Retrieve conll files from backend

@@ -249,7 +249,7 @@ export default {
   },
   created() {
     this.mediaObject =
-      "assets/corpussamples/" + this.filename + "/" + this.filename + ".mp3";
+      "media/corpussamples/" + this.filename + "/" + this.filename + ".mp3";
     this.waveWidth = window.innerWidth;
   },
   mounted() {

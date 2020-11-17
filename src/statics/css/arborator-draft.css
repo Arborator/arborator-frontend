@@ -9,9 +9,8 @@
   z-index: 99;
 }
 
-.interactive > .FORM, .LEMMA {
+.interactive > .FORM, .interactive > .LEMMA , .interactive > .UPOS, .interactive > .DEPREL{
   cursor: pointer;
-  fill: red;
 }
 
 .dark .FORM {

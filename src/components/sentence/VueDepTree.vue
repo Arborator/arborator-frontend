@@ -51,10 +51,8 @@ export default {
 
     let interactive = true;
     if (this.$store.getters["config/isStudent"] == true && this.userId == this.$store.getters["config/TEACHER"]) {
-      console.log("KK is student");
       interactive = false
     }
-    console.log("KK is student", this.$store.getters["config/isStudent"]);
     this.sentenceSVG = new SentenceSVG({
       svgID: this.svgID,
       reactiveSentence: this.reactiveSentence,

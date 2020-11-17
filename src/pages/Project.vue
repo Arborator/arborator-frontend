@@ -537,13 +537,22 @@
                   </q-list>
                 </q-td> -->
                 <q-td key="treesFrom" :props="props">
-                  <q-list dense>
+                  <q-item-label caption v-if="props.row.treesFrom.length >= 5">
+                    {{props.row.treesFrom.length}} users
+                    <q-tooltip>
+                      <p v-for="userId in props.row.treesFrom"
+                      :key="userId"
+                      :props="userId" >{{userId}}</p>
+                    </q-tooltip>
+
+                  </q-item-label>
+                  <q-list v-else dense>
                     <q-item
-                      v-for="source in props.row.treesFrom"
-                      :key="source"
-                      :props="source"
+                      v-for="userId in props.row.treesFrom"
+                      :key="userId"
+                      :props="userId"
                     >
-                      <q-item-label caption>{{ source }}</q-item-label>
+                      <q-item-label caption>{{ userId }}</q-item-label>
                     </q-item>
                   </q-list>
                 </q-td>

@@ -22,11 +22,15 @@ export default {
     isTeacher: (state, getters) => {
       return getters.isAdmin && getters.exerciseMode;
     },
+    isStudent: (state, getters) => {
+      return !getters.isAdmin && getters.exerciseMode;
+    },
     visibility: (state) => state.visibility,
     showAllTrees: (state) => state.showAllTrees,
     description: (state) => state.description,
     exerciseMode: (state) => state.exerciseMode,
     shownfeatures: (state) => state.shownfeatures,
+    TEACHER: (state) => state.TEACHER,
     shownmeta: (state) => state.shownmeta,
     annotationFeatures: (state) => state.annotationFeatures,
     getAnnofjson: (state) => {

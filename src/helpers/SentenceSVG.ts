@@ -33,6 +33,7 @@ interface SentenceSVGOptions {
   usermatches: Array<{ nodes: string; edges: any }>; // TODO : complete this definition
   shownFeatures: string[];
   teacherReactiveSentence: ReactiveSentence;
+  interactive: boolean;
 }
 
 export interface SentenceSVG extends SentenceSVGOptions {}
@@ -72,10 +73,10 @@ export class SentenceSVG extends EventDispatcher {
     this.reactiveSentence.addEventListener("tree-updated", (e) => {
       this.treeJson = this.reactiveSentence.treeJson;
       this.metaJson = this.reactiveSentence.metaJson;
-      this.tokenSVGs = {}
+      this.tokenSVGs = {};
       this.refresh();
     });
-    
+
     //// to refactor (start of drawit)
     this.matchnodes = this.usermatches
       .map(({ nodes }) => Object.values(nodes))
@@ -99,9 +100,13 @@ export class SentenceSVG extends EventDispatcher {
     this.populateTokenSVGs();
     this.drawRelations();
     this.adaptSvgCanvas();
-    this.attachDraggers();
-    this.attachEvents();
-    this.attachHovers();
+
+    if (this.interactive) {
+      this.snapSentence.addClass("interactive")
+      this.attachDraggers();
+      this.attachEvents();
+      this.attachHovers();
+    }
     if (this.teacherTreeJson) {
       this.showDiffs(this.teacherTreeJson);
     }
@@ -235,7 +240,6 @@ export class SentenceSVG extends EventDispatcher {
 
     this.totalHeight = 0;
     for (const tokenSVG of Object.values(this.tokenSVGs)) {
-      tokenSVG.attachEvent();
       const tokenSVGHeight = Math.max(
         ...this.shownFeatures.map(
           (feature) => tokenSVG.snapElements[feature].getBBox().y2
@@ -359,18 +363,6 @@ class TokenSVG {
   constructor(tokenJson: TokenJson, sentenceSVG: SentenceSVG) {
     this.sentenceSVG = sentenceSVG;
     this.tokenJson = tokenJson;
-    // this.id = parseInt(tokenJson["ID"]);
-    // this.head = isNaN(parseInt(tokenJson["HEAD"]))
-    //   ? -1
-    //   : parseInt(tokenJson["HEAD"]);
-    // this.form = tokenJson["FORM"];
-    // this.lemma = tokenJson["LEMMA"];
-    // this.upos = tokenJson["UPOS"];
-    // this.xpos = tokenJson["XPOS"];
-    // this.deprel = tokenJson["DEPREL"];
-    // this.misc = tokenJson["MISC"];
-    // this.feats = tokenJson["FEATS"];
-    // this.deps = tokenJson["DEPS"];
 
     // populate the FEATS and MISC child features
     const listLabels: (keyof TokenJson)[] = ["FEATS", "MISC"];

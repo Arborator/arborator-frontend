@@ -27,7 +27,7 @@
         </template>
         <q-space />
         <q-btn
-          v-if="isLoggedIn && exerciseLevel <= 3 && $store.getters['config/isStudent']"
+          v-if="isLoggedIn && exerciseLevel <= 3 && !$store.getters['config/isTeacher']"
           flat
           round
           dense

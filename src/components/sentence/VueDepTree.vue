@@ -49,12 +49,19 @@ export default {
   mounted() {
     const sentenceJson = conllToJson(this.conll);
 
+    let interactive = true;
+    if (this.$store.getters["config/isStudent"] == true && this.userId == this.$store.getters["config/TEACHER"]) {
+      console.log("KK is student");
+      interactive = false
+    }
+    console.log("KK is student", this.$store.getters["config/isStudent"]);
     this.sentenceSVG = new SentenceSVG({
       svgID: this.svgID,
       reactiveSentence: this.reactiveSentence,
       usermatches: this.usermatches,
       shownFeatures: this.shownFeatures,
       teacherReactiveSentence: this.teacherReactiveSentence,
+      interactive: interactive
     });
     this.sentenceSVG.plugDiffTree(this.teacherReactiveSentence);
 
@@ -73,8 +80,8 @@ export default {
         let prevToken = this.reactiveSentence.getToken(token.ID);
 
         this.history[++this.history_index] = {
-          old: [ prevToken ],
-          new: [ token ],
+          old: [prevToken],
+          new: [token],
         };
         this.history_end = this.history_index;
         this.reactiveSentence.updateToken(token);
@@ -85,23 +92,24 @@ export default {
     this.sentenceBus.$on("tree-update:tree", ({ tree, userId }) => {
       if (userId == this.userId) {
         // store current tree into prevToken
-        let prevToken = [], newToken = [];
-        for(const index in tree) {
-          prevToken.push(this.reactiveSentence.getToken(index))
+        let prevToken = [],
+          newToken = [];
+        for (const index in tree) {
+          prevToken.push(this.reactiveSentence.getToken(index));
         }
         //update tree
         this.reactiveSentence.updateTree(tree);
 
         // store updated tree into newToken and add into history
-        for(const index in tree) {
-          newToken.push(this.reactiveSentence.getToken(index))
+        for (const index in tree) {
+          newToken.push(this.reactiveSentence.getToken(index));
         }
         this.history[++this.history_index] = {
-          old: [ ... prevToken ],
-          new: [ ... newToken ],
+          old: [...prevToken],
+          new: [...newToken],
         };
         this.history_end = this.history_index;
-        
+
         this.statusChangeHadler();
       }
     });
@@ -112,7 +120,7 @@ export default {
         let index;
         // this is to avoid unneccessary drawing
         // when updating multiple tokens
-        for(index = 0; index < length - 1; index++)
+        for (index = 0; index < length - 1; index++)
           this.reactiveSentence.updateToken(oldToken[index], false);
         // draw the whole tree when last token is updated
         this.reactiveSentence.updateToken(oldToken[index]);
@@ -127,7 +135,7 @@ export default {
         let index;
         // this is to avoid unneccessary drawing
         // when updating multiple tokens
-        for(index = 0; index < length - 1; index++)
+        for (index = 0; index < length - 1; index++)
           this.reactiveSentence.updateToken(newToken[index], false);
         // draw the whole tree when last token is updated
         this.reactiveSentence.updateToken(newToken[index]);

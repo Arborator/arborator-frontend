@@ -17,6 +17,7 @@ export default () => ({
     exerciseMode: false,
     shownfeatures: ["FORM", "UPOS", "LEMMA", "MISC.Gloss"],
     shownmeta: ["text_en"],
+    TEACHER: "teacher",
     
     annotationFeatures: {
         "META": [

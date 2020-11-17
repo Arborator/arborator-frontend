@@ -5,9 +5,13 @@
   --wordDistance: 55;
   fill: black;
   text-align: center;
-  cursor: pointer;
   position: relative;
   z-index: 99;
+}
+
+.interactive > .FORM, .LEMMA {
+  cursor: pointer;
+  fill: red;
 }
 
 .dark .FORM {
@@ -26,7 +30,7 @@
   fill: black;
   font-family: sans-serif;
   text-align: center;
-  cursor: pointer;
+  /* cursor: pointer; */
   font-style: italic;
   --wordDistance: 22;
 }
@@ -52,7 +56,7 @@
 .UPOS {
   font: 11px DejaVu Sans;
   fill: rgb(80, 29, 125);
-  cursor: pointer;
+  /* cursor: pointer; */
   text-align: center;
   --wordDistance: 22;
 }
@@ -69,7 +73,7 @@
   fill: #501d7d;
   font-style: oblique;
   font-family: sans-serif;
-  cursor: pointer;
+  /* cursor: pointer; */
   position: relative;
   z-index: 99;
   --funcCurveDist: 3; /* distance between the function name and the curves highest point */
@@ -80,7 +84,7 @@
   fill: #aab3ff;
   font-style: oblique;
   font-family: sans-serif;
-  cursor: pointer;
+  /* cursor: pointer; */
   z-index: 99;
   --funcCurveDist: 3; /* distance between the function name and the curves highest point */
 }

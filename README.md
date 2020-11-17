@@ -52,17 +52,11 @@ See [Configuring quasar.conf.js](https://quasar.dev/quasar-cli/quasar-conf-js).
 
 ### 1. Unit Testing
 
-<<<<<<< HEAD
-<<<<<<< HEAD
  Before you run the api testing files you have to run the following command
 ```bash
 export NODE_TLS_REJECT_UNAUTHORIZED=0
 # It's for communcation with local https server on Linux OS
 ```
-=======
->>>>>>> added: Readme.md for Unit Testing
-=======
->>>>>>> aebfe65479e2cd006bc2e2a6cb15b8171bd04085
 You can use npm scripts to run your testing files
 ```bash
 npm run test:unit # run all your testing files (*.spec.js or *.test.js, etc)
@@ -78,8 +72,6 @@ You can also run jest commands directly
 
 ```bash
 jest --watch --coverage
-<<<<<<< HEAD
-<<<<<<< HEAD
 ```
 
 If you get the following error when you executed the this command `
@@ -90,8 +82,4 @@ npm run test:unit:watchAll`
 then please run the following command and try again
 ```bash
 echo fs.inotify.max_user_watches=524288 | sudo tee -a /etc/sysctl.conf && sudo sysctl -p
-=======
->>>>>>> added: Readme.md for Unit Testing
-=======
->>>>>>> aebfe65479e2cd006bc2e2a6cb15b8171bd04085
 ```

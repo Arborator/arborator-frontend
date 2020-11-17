@@ -144,6 +144,7 @@
           label="admin"
           left-label
           @input="adminchanged"
+          :disable="isLoading"
         />
         <q-btn round no-caps @click="btnClick" color="primary text-white">
           test button
@@ -200,7 +201,7 @@
         <q-space />
         <q-input square v-model="title" label="2 to 3 word title"> </q-input>
         <q-space />
-        <q-btn round dense flat icon="save" @click="save" :disable="admin" />
+        <q-btn round dense flat icon="save" @click="save" :disable="admin || isLoading" />
       </q-toolbar>
     </q-page-sticky>
   </q-page>
@@ -237,6 +238,7 @@ export default {
       monodia: null,
       title: null,
       mytrans: [],
+      isLoading: false,
     };
   },
   computed: {
@@ -274,6 +276,7 @@ export default {
       }
     },
     save() {
+      this.isLoading = true;
       const data = this.mytrans.map((line) => {
         let words = line.split(" ");
         words = words.filter((word) => word !== "");
@@ -291,9 +294,12 @@ export default {
             color: "green",
             icon: "done",
           });
+          this.isLoading = false;
         },
         (error) => {
-          this.$store.dispatch("notifyError", { error: error });
+          this.$store.dispatch("notifyError", { 
+            error: error });
+          this.isLoading = false;
         }
       );
     },
@@ -325,14 +331,18 @@ export default {
       console.log(4444, this.segments["original"][line]);
     },
     getConll() {
+      this.isLoading = true;
       api
         .getConll(this.filename, this.admin)
         .then((response) => {
           this.conll = response.data;
           this.makeSents();
+          this.isLoading = false;
         })
         .catch((error) => {
-          this.$store.dispatch("notifyError", { error: error });
+          this.$store.dispatch("notifyError", { 
+            error: error });
+          this.isLoading = false;
         });
     },
     wordclicked(triple) {

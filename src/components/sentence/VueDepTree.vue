@@ -140,6 +140,13 @@ export default {
         this.statusChangeHadler();
       }
     });
+
+    this.sentenceBus.$on("action:tabSelected", ({ userId }) => {
+      if(userId == this.userId) {
+        this.statusChangeHadler();
+      }
+    });
+
     this.statusChangeHadler();
   },
   methods: {

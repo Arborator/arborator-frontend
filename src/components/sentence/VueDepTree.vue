@@ -78,8 +78,8 @@ export default {
         let prevToken = this.reactiveSentence.getToken(token.ID);
 
         this.history[++this.history_index] = {
-          old: [prevToken],
-          new: [token],
+          old: [{...prevToken}],
+          new: [{...token}],
         };
         this.history_end = this.history_index;
         this.reactiveSentence.updateToken(token);
@@ -114,6 +114,7 @@ export default {
     this.sentenceBus.$on("action:undo", ({ userId }) => {
       if (userId == this.userId && this.history_index != -1) {
         const oldToken = this.history[this.history_index].old;
+
         const length = oldToken.length;
         let index;
         // this is to avoid unneccessary drawing
@@ -133,8 +134,10 @@ export default {
         let index;
         // this is to avoid unneccessary drawing
         // when updating multiple tokens
-        for (index = 0; index < length - 1; index++)
+        for (index = 0; index < length - 1; index++) {
           this.reactiveSentence.updateToken(newToken[index], false);
+
+        }
         // draw the whole tree when last token is updated
         this.reactiveSentence.updateToken(newToken[index]);
         this.statusChangeHadler();

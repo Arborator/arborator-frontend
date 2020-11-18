@@ -218,10 +218,10 @@ export class SentenceSVG extends EventDispatcher {
       } else if (headId === 0) {
         headCoordX = 0;
       } else {
-        console.log(
-          "this nodeTree has no governor, not drawing it",
-          tokenSVG.tokenJson.ID
-        );
+        // console.log(
+        //   "this nodeTree has no governor, not drawing it",
+        //   tokenSVG.tokenJson.ID
+        // );
         continue;
       }
       tokenSVG.drawRelation(
@@ -517,20 +517,20 @@ class TokenSVG {
   }
 
   showDiff(otherTokenJson: TokenJson): void {
-    if (
+    if (this.tokenJson.HEAD &&
       !Object.is(this.tokenJson.HEAD, Number.NaN) &&
       otherTokenJson.HEAD !== this.tokenJson.HEAD
     ) {
       this.snapElements["arc"].addClass("diff");
       this.snapElements["arrowhead"].addClass("diff");
     }
-    if (
+    if (this.tokenJson.DEPREL &&
       this.tokenJson.DEPREL !== "_" &&
       otherTokenJson.DEPREL !== this.tokenJson.DEPREL
     ) {
       this.snapElements["DEPREL"].addClass("diff");
     }
-    if (
+    if (this.tokenJson.UPOS &&
       this.tokenJson.UPOS !== "_" &&
       otherTokenJson.UPOS !== this.tokenJson.UPOS
     ) {

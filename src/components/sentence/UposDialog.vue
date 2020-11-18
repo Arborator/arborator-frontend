@@ -27,16 +27,26 @@
           flat
           label="Cancel"
           v-close-popup
-          style="width: 45%; margin-left: auto; margin-right: auto"
+          style="width: 25%; margin-left: auto; margin-right: auto"
         />
+        <q-space />
+
         <!-- @click="ondialoghide()" -->
+        <q-btn
+          color="negative"
+          @click="onDeleteUpos()"
+          label="Delete"
+          v-close-popup
+          style="width: 25%; margin-left: auto; margin-right: auto"
+        />
+        <q-space />
         <q-btn
           id="catselectvalidate"
           color="primary"
           @click="onChangeUpos()"
           label="Ok"
           v-close-popup
-          style="width: 45%; margin-left: auto; margin-right: auto"
+          style="width: 25%; margin-left: auto; margin-right: auto"
         />
         <!-- :disabled="snap.currentcategory == snap.category" -->
       </q-card-actions>
@@ -79,6 +89,13 @@ export default {
         userId: this.userId,
       });
     },
+    onDeleteUpos() {
+      this.token.UPOS = "_";
+      this.sentenceBus.$emit("tree-update:token", {
+        token: this.token,
+        userId: this.userId,
+      });
+    }
   },
 };
 </script>

@@ -8,26 +8,31 @@
         <div class="col row q-pa-none"><q-space /></div>
         <template v-for="(u, anno) in conll">
           <div v-if="anno != 'original'" class="col q-pa-none">
-            <q-badge> {{ anno }} </q-badge>
+            <q-badge> {{ (admin || wasSaved) ? anno : 'original' }} </q-badge>
           </div>
         </template>
       </div>
-      <div class="row" dense v-for="(sent, i) in conll['original']" :key="i">
-        {{ i }}
+      <div 
+        class="row" dense 
+        v-for="(sent, i) in conll['original']" 
+        :key="i"
+      >
+        <span class="line-number" dense>
+          {{ i }}
+        </span>
         <div class="col row q-pa-none">
-          <q-space />
 
           <span
-            class="justify-end q-pa-none"
+            class="justify-end q-pa-none align-right"
             v-for="(t, j) in sent"
             :key="j"
-            style="text-align: right"
           >
             <!-- {{t[1]/1000}} -->
             <q-chip
               v-if="t[1] / 1000 < ct"
               size="md"
               color="white"
+              text-color="black"
               clickable
               dense
               @click="wordclicked(t)"
@@ -59,6 +64,7 @@
               {{ t[0] }}
             </q-chip>
           </span>
+          <q-space />
           <q-separator spaced />
         </div>
         <template v-for="(u, anno) in conll">
@@ -143,15 +149,10 @@
           v-model="admin"
           label="admin"
           left-label
+          v-if="isAdmin"
           @input="adminchanged"
           :disable="isLoading"
         />
-        <q-btn round no-caps @click="btnClick" color="primary text-white">
-          test button
-          <q-tooltip content-class="bg-primary" content-style="font-size: 16px">
-            to be removed
-          </q-tooltip>
-        </q-btn>
         <q-space />
         <q-select
           no-caps
@@ -201,12 +202,24 @@
         <q-space />
         <q-input square v-model="title" label="2 to 3 word title"> </q-input>
         <q-space />
-        <q-btn round dense flat icon="save" @click="save" :disable="admin || isLoading" />
+        <q-btn round dense flat icon="save" 
+          @click="save" 
+          :disable="admin || isLoading || !isLoggedIn" />
       </q-toolbar>
     </q-page-sticky>
   </q-page>
 </template>
-
+<style>
+  .line-number {
+    vertical-align: middle;
+    line-height: 2.2;
+    margin-left: 5px;
+    margin-right: 3px;
+  }
+  .align-right {
+    text-align: right;
+  }
+</style>
 <script>
 import Vue from "vue";
 import api from "../boot/backend-api";
@@ -239,6 +252,7 @@ export default {
       title: null,
       mytrans: [],
       isLoading: false,
+      wasSaved: true
     };
   },
   computed: {
@@ -246,34 +260,24 @@ export default {
       return this.manualct;
     },
     ...mapGetters("user", ["isLoggedIn"]),
+    isAdmin() {
+      return this.$store.getters["user/getUserInfos"].super_admin;
+    },
   },
   created() {
-    this.mediaObject =
-      "media/corpussamples/" + this.filename + "/" + this.filename + ".mp3";
+    this.mediaObject = "media/corpussamples/" + this.filename + 
+       "/" + this.filename + ".mp3";
     this.waveWidth = window.innerWidth;
   },
   mounted() {
-    // is not logged in, then go back to the first page
-    this.waitForCheckSession();
+    this.audioplayer = this.$refs.player.audio;
+    this.$refs.player.audio.ontimeupdate = () => this.onTimeUpdate();
+    document.title = "Klang: " + this.filename;
+    this.getConll();
   },
   methods: {
     btnClick(a, b) {
       this.manualct = 30;
-    },
-    async waitForCheckSession() {
-      try {
-        await this.$store.dispatch('user/checkSession');
-        if (!this.isLoggedIn) {
-          this.$router.replace("/");
-        } else {
-          this.audioplayer = this.$refs.player.audio;
-          this.$refs.player.audio.ontimeupdate = () => this.onTimeUpdate();
-          document.title = "Klang: " + this.filename;
-          this.getConll();
-        }
-      } catch {
-        this.$router.replace('/')
-      }
     },
     save() {
       this.isLoading = true;
@@ -288,6 +292,7 @@ export default {
           this.mytrans = data.map((line) =>
             line.reduce((total, word) => total + word + " ", "")
           );
+          this.wasSaved = true;
           this.$q.notify({
             message: "The operation was successfully saved.",
             position: "top-right",
@@ -310,25 +315,32 @@ export default {
     makeSents() {
       this.segments = {};
       for (const anno in this.conll) {
-        this.segments[anno] = this.conll[anno].map((sent) =>
-          sent.reduce(
-            (acc, t) => acc + (anno === "original" ? t[0] : t) + " ",
-            ""
-          )
-        );
-        this.diffsegments[anno] = this.segments[anno].map((sent, i) =>
-          Diff.diffWords(this.segments["original"][i], sent)
-        );
+        const isOriginal = anno == 'original';
+        const original = !isOriginal ? this.segments['original'] : [];
+        if(this.conll[anno].length != 0) {
+          this.segments[anno] = this.conll[anno].map((sent) =>
+            sent.reduce(
+              (acc, t) => acc + (isOriginal ? t[0] : t) + " ",
+              ""
+            )
+          );
+        } else {
+          this.segments[anno] = original;
+          if(!this.admin) this.wasSaved = false;
+        }
+        const segments = this.segments[anno];
+        if(!isOriginal)
+            this.diffsegments[anno] = segments.map((sent, i) =>
+              Diff.diffWords(original[i], sent)
+            )
         if (anno != "original" && !this.admin) {
-          this.mytrans = this.segments[anno];
+          this.mytrans = segments;
         }
       }
     },
     takethis(anno, line) {
       // todo: not working. how to change the object so that it shows in the input fields above without reloading the page?
-      console.log(4444, anno, line);
       this.segments["original"][line] = this.segments[anno][line];
-      console.log(4444, this.segments["original"][line]);
     },
     getConll() {
       this.isLoading = true;

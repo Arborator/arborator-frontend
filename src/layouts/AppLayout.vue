@@ -153,7 +153,7 @@ export default {
             icon: 'music_note',
             label: this.$t('navklang'),
             separator: false,
-            public: false,
+            public: true,
             to: '/klang',
             bottom: false
           }

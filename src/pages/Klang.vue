@@ -23,7 +23,7 @@
             color="primary"
             :label="i + '. ' + f"
             icon="music_note"
-            :to="'klang/' + f"
+            :to="'/klang/' + f"
           />
         </div>
       </div>
@@ -60,23 +60,11 @@ export default {
     this.waveWidth = window.innerWidth;
   },
   mounted() {
-    // is not logged in, then go back to previous page
-    this.waitForCheckSession();
+    this.getAllConlls();
   },
   methods: {
     btnClick(a, b) {
       this.getAllConlls();
-    },
-    async waitForCheckSession() {
-      try {
-        await this.$store.dispatch('user/checkSession');
-        if(!this.isLoggedIn)
-          this.$router.replace('/');
-        else
-          this.getAllConlls();
-      } catch {
-        this.$router.replace('/');
-      }
     },
     /**
      * Retrieve conll files from backend

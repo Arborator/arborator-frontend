@@ -231,14 +231,14 @@
           :props="user"
           :label="user"
           :name="user"
-          :alert="hasPendingChanges[user] ? 'orange' : 'green'"
-          alert-icon="save"
+          :alert="hasPendingChanges[user] ? 'orange' : ''"
+          :alert-icon="hasPendingChanges[user] ? 'save' : ''"
           icon="person"
           no-caps
           :ripple="false"
           :ref="'tab' + user"
           @click="handleTabChange"
-        />
+        ><q-tooltip v-if="hasPendingChanges[user]">The tree has some pendings modifications not saved</q-tooltip></q-tab>
       </q-tabs>
       <q-separator />
       <q-tab-panels
@@ -542,7 +542,7 @@ export default {
     handleTabChange() {
       // wait for 10ms until this.tab get changed
       setTimeout(() => {
-        console.log("KK tabSelected", this.tab)
+        console.log("KK tabSelected", this.tab);
         this.sentenceBus.$emit("action:tabSelected", {
           userId: this.tab,
         });
@@ -594,6 +594,7 @@ export default {
               userId: this.tab,
             });
             if (this.sentenceData.conlls[changedConllUser]) {
+              this.hasPendingChanges[changedConllUser] = false;
               this.sentenceData.conlls[changedConllUser] = exportedConll;
               this.reactiveSentencesObj[
                 changedConllUser

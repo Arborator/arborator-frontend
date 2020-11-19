@@ -12,10 +12,32 @@
           <q-space />
           <q-breadcrumbs :active-color="$q.dark.isActive?'white':'primary'" :class="($q.dark.isActive?'text-grey':'text-black') + ' mobile-hide native-mobile-hide within-iframe-hide gt-xs'" style="max-height:20px;max-width:70vh;overflow:y;">
             <q-breadcrumbs-el v-if="notHome" icon="home" to="/" />
-            <q-breadcrumbs-el v-if="$route.path.startsWith('/projects/')" icon="view_module" to="/projects" />
-            <q-breadcrumbs-el v-if="$route.params.projectname != null" :label="$route.params.projectname" icon="fas fa-tree" :to="'/projects/'+$route.params.projectname" />
-            <q-breadcrumbs-el v-if="$route.params.samplename != null && $route.params.projectname != null" :label="$route.params.samplename" icon="assignment" :to="'/projects/'+$route.params.projectname+'/'+$route.params.samplename" />
-          </q-breadcrumbs>          <q-space />          <div class="q-gutter-sm row items-center no-wrap"  size="4rem">
+            <q-breadcrumbs-el 
+              v-if="$route.path.startsWith('/projects/')" 
+              icon="view_module" to="/projects" />
+            <q-breadcrumbs-el 
+              v-if="$route.params.projectname != null" 
+              :label="$route.params.projectname" 
+              icon="fas fa-tree" 
+              :to="'/projects/'+$route.params.projectname" />
+            <q-breadcrumbs-el 
+              v-if="$route.params.samplename != null &&
+                     $route.params.projectname != null" 
+              :label="$route.params.samplename" 
+              icon="assignment" 
+              :to="'/projects/'+$route.params.projectname+'/'+$route.params.samplename" />
+            <q-breadcrumbs-el 
+              v-if="$route.path.startsWith('/klang')" 
+              :label="$route.params.projectname" 
+              icon="music_note" 
+              :to="'/klang'" />
+            <q-breadcrumbs-el 
+              v-if="$route.params.filename != null" 
+              :label="$route.params.filename"  
+              :to="'/klang/'+$route.params.filename"/>
+          </q-breadcrumbs>          
+          <q-space />          
+          <div class="q-gutter-sm row items-center no-wrap"  size="4rem">
           
           <q-select v-model="lang" :options="langOptions" dense borderless options-dense map-options emit-value >
             <template v-slot:append>
@@ -180,7 +202,10 @@ export default {
     }
   },
   computed:{
-    notHome(){ return !Object.values(this.$route.params).every(o => o === null); }  },
+    notHome(){ //return !Object.values(this.$route.params).every(o => o === null); }  
+      return this.$route.fullPath != '/';
+    },
+  },
   methods: {
     openURL,
     toggleDarkMode(){ this.$q.dark.toggle();this.$ls.set('dm', this.$q.dark.isActive); },

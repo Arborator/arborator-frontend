@@ -190,10 +190,8 @@ export default {
   getConll(name, is_admin) {
     return API.get(`klang/conlls/${name}?is_admin=${is_admin}`);
   },
-  saveTranscription(name, transcription) {
-    return API.post(`klang/conlls/${name}`, {
-      transcription: transcription
-    });
+  saveTranscription(name, data) {
+    return API.post(`klang/conlls/${name}`, data);
   },
   // -------------------------------------------------------- //
   // ---------------        To Refactor       --------------- //

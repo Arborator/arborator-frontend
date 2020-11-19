@@ -204,7 +204,8 @@
         <q-space />
         <q-btn round dense flat icon="save" 
           @click="save" 
-          :disable="admin || isLoading || !isLoggedIn" />
+          :disable="admin || isLoading || !isLoggedIn || 
+                    !title || !monodia || !accent || !story || !sound" />
       </q-toolbar>
     </q-page-sticky>
   </q-page>
@@ -281,15 +282,23 @@ export default {
     },
     save() {
       this.isLoading = true;
-      const data = this.mytrans.map((line) => {
+      const trans = this.mytrans.map((line) => {
         let words = line.split(" ");
         words = words.filter((word) => word !== "");
         return words;
       });
+      const data = {
+        transcription: trans,
+        monodia: this.monodia,
+        title: this.title,
+        sound: this.sound,
+        accent: this.accent,
+        story: this.story
+      }
       api.saveTranscription(this.filename, data).then(
         (response) => {
           const data = response.data.transcription;
-          this.mytrans = data.map((line) =>
+          this.mytrans = data.map((line) => 
             line.reduce((total, word) => total + word + " ", "")
           );
           this.wasSaved = true;
@@ -317,11 +326,12 @@ export default {
       for (const anno in this.conll) {
         const isOriginal = anno == 'original';
         const original = !isOriginal ? this.segments['original'] : [];
-        if(this.conll[anno].length != 0) {
-          this.segments[anno] = this.conll[anno].map((sent) =>
-            sent.reduce(
-              (acc, t) => acc + (isOriginal ? t[0] : t) + " ",
-              ""
+        const conllSegment = isOriginal ? 
+            this.conll[anno] : this.conll[anno]['transcription'];
+        if(conllSegment.length != 0) {
+          this.segments[anno] = conllSegment.map(
+            (sent) => sent.reduce(
+              (acc, t) => acc + (isOriginal ? t[0] : t) + " ", ""
             )
           );
         } else {
@@ -335,6 +345,11 @@ export default {
             )
         if (anno != "original" && !this.admin) {
           this.mytrans = segments;
+          this.sound = this.conll[anno].sound;
+          this.story = this.conll[anno].story;
+          this.accent = this.conll[anno].accent;
+          this.monodia = this.conll[anno].monodia;
+          this.title = this.conll[anno].title;
         }
       }
     },

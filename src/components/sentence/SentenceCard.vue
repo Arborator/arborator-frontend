@@ -231,6 +231,7 @@
           no-caps
           :ripple="false"
           :ref="'tab' + user"
+          @click="handleTabChange"
         />
       </q-tabs>
       <q-separator />
@@ -524,6 +525,18 @@ export default {
       this.canUndo = event.canUndo;
       this.canRedo = event.canRedo;
       this.canSave = event.canSave;
+    },
+    /**
+     * triggers when the user selects another tab, and update canUndo, canRedo,
+     * canSave status
+     */
+    handleTabChange() {
+      // wait for 10ms until this.tab get changed
+      setTimeout(() => {
+        this.sentenceBus.$emit("action:tabSelected", {
+          userId: this.tab,
+        });
+      }, 10)
     },
     /**
      * Save the graph to backend after modifying its metadata and changing it into an object

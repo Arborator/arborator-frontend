@@ -60,6 +60,8 @@ export default {
               console.log(error);
               reject()
             });
+        } else {
+          resolve();
         }
       });
     },

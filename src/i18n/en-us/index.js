@@ -17,7 +17,8 @@ export default {
   navhome: "Home",
   navprojects: "Projects",
   navsettings: "Settings",
-
+  navklang: "Klang",
+  
   // first page (the index)
   homepage: {
     accessTreebankBtn: "Access Treebanks",

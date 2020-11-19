@@ -14,6 +14,8 @@ const routes =
       { path: '/projects/:projectname/:samplename/:nr', component: () => import('src/pages/Sample.vue'), props: true },
       { path: '/projects/:projectname/:samplename/:nr/:user', component: () => import('src/pages/Sample.vue'), props: true },
       { path: 'settings', component: () => import('src/pages/Settings'), meta: { requiresAuth: true } },
+      { path: '/klang', component: () => import('src/pages/Klang.vue')},
+      { path: '/klang/:filename', component: () => import('src/pages/KlangConll.vue'), props: true}
     ]
   }
 ]

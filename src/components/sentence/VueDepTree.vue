@@ -21,6 +21,7 @@ export default {
     "reactiveSentence",
     "teacherReactiveSentence",
     "cardId",
+    "hasPendingChanges",
   ],
   watch: {
     conllSavedCounter() {
@@ -225,11 +226,13 @@ export default {
       const status_str = LocalStorage.getItem("save_status");
       let status_obj = status_str ? JSON.parse(status_str) : {};
       let card = status_obj[this.cardId];
-
+      this.hasPendingChanges[this.userId] = needSave
+      
       this.$emit("statusChanged", {
         canUndo: canUndo,
         canRedo: canRedo,
         canSave: needSave,
+        userId: this.userId,
       });
       if (!card) card = {};
       card[this.userId] = needSave;

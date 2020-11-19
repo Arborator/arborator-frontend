@@ -27,7 +27,11 @@
         </template>
         <q-space />
         <q-btn
-          v-if="isLoggedIn && exerciseLevel <= 3 && !$store.getters['config/isTeacher']"
+          v-if="
+            isLoggedIn &&
+            exerciseLevel <= 3 &&
+            !$store.getters['config/isTeacher']
+          "
           flat
           round
           dense
@@ -227,6 +231,8 @@
           :props="user"
           :label="user"
           :name="user"
+          :alert="hasPendingChanges[user] ? 'orange' : 'green'"
+          alert-icon="save"
           icon="person"
           no-caps
           :ripple="false"
@@ -269,6 +275,7 @@
                 :sentenceBus="sentenceBus"
                 :userId="user"
                 :conllSavedCounter="conllSavedCounter"
+                :hasPendingChanges="hasPendingChanges"
               ></VueDepTree>
             </q-card-section>
           </q-card>
@@ -367,6 +374,7 @@ export default {
       canUndo: false,
       canRedo: false,
       canSave: false,
+      hasPendingChanges: {},
     };
   },
 
@@ -427,6 +435,7 @@ export default {
       const reactiveSentence = new ReactiveSentence();
       reactiveSentence.fromConll(conll);
       this.reactiveSentencesObj[userId] = reactiveSentence;
+      this.hasPendingChanges[userId] = false;
     }
   },
   methods: {
@@ -533,10 +542,11 @@ export default {
     handleTabChange() {
       // wait for 10ms until this.tab get changed
       setTimeout(() => {
+        console.log("KK tabSelected", this.tab)
         this.sentenceBus.$emit("action:tabSelected", {
           userId: this.tab,
         });
-      }, 10)
+      }, 10);
     },
     /**
      * Save the graph to backend after modifying its metadata and changing it into an object

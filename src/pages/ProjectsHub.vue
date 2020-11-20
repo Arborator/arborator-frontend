@@ -85,13 +85,13 @@
             :virtual-scroll-item-size="200"
           >
             <template v-slot="{ item, index }">
-              <project-card
+              <ProjectCard
                 style="max-width: 80vw"
                 :props="item"
                 :parentDeleteProject="deleteProject"
                 :parentProjectSettings="showProjectSettings"
                 :key="item.id"
-              ></project-card>
+              ></ProjectCard>
             </template>
           </q-virtual-scroll>
           <div
@@ -104,28 +104,28 @@
                 My projects
               </q-chip>
             </div>
-            <project-card
+            <ProjectCard
               style="max-width: 250px"
               v-for="project in myProjects"
               :props="project"
               :parentDeleteProject="deleteProject"
               :parentProjectSettings="showProjectSettings"
               :key="project.id"
-            ></project-card>
+            ></ProjectCard>
             <div class="text-h6 col-12" 
             v-if="isLoggedIn && otherProjects.length">
               <q-chip color="primary" class="category" text-color="white">
                 Other projects
               </q-chip>
             </div>
-            <project-card
+            <ProjectCard
               style="max-width: 250px"
               v-for="project in otherProjects"
               :props="project"
               :parentDeleteProject="deleteProject"
               :parentProjectSettings="showProjectSettings"
               :key="project.id"
-            ></project-card>
+            ></ProjectCard>
           </div>
         </q-card-section>
         <q-card-section v-if="listMode" style="width: 90vw; height: 60vh">
@@ -155,7 +155,7 @@
       transition-show="fade"
       transition-hide="fade"
     >
-      <crea-project-card :parentGetProjects="getProjects"></crea-project-card>
+      <CreaProjectCard :parentGetProjects="getProjects"></CreaProjectCard>
     </q-dialog>
 
     <q-dialog
@@ -163,10 +163,10 @@
       transition-show="slide-up"
       transition-hide="slide-down"
     >
-      <project-settings-view
+      <ProjectSettingsView
         :projectname="projectnameTarget"
         style="width: 90vw"
-      ></project-settings-view>
+      ></ProjectSettingsView>
     </q-dialog>
 
     <q-dialog v-model="confirmActionDial">
@@ -269,11 +269,6 @@ export default {
           // this.projectDifference = response.data.difference;
           this.loadingProjects = false;
           this.initLoading = false;
-          // if (this.$store.getters["user/getUserInfos"].super_admin) {
-          //   this.$q.notify({
-          //     message: `Projects from Grew and Arborator are different!`,
-          //     type: "warning",
-          //   });
           // }
         })
         .catch((error) => {

@@ -6,11 +6,7 @@
           <q-toolbar class="text-center">
             <!-- <q-toolbar-title><span :class="($q.dark.isActive?'':'text-primary') + ' text-bold'">{.name}}</span> </q-toolbar-title> -->
           </q-toolbar>
-          <q-img
-            class="project-image"
-            :src="cleanedImage"
-            basic
-          >
+          <q-img class="project-image" :src="cleanedImage" basic>
             <div class="absolute-bottom text-h6" style="padding: 6px">
               <q-icon
                 v-show="visibility == 0"
@@ -538,13 +534,16 @@
                 </q-td> -->
                 <q-td key="treesFrom" :props="props">
                   <q-item-label caption v-if="props.row.treesFrom.length >= 5">
-                    {{props.row.treesFrom.length}} users
+                    {{ props.row.treesFrom.length }} users
                     <q-tooltip>
-                      <p v-for="userId in props.row.treesFrom"
-                      :key="userId"
-                      :props="userId" >{{userId}}</p>
+                      <p
+                        v-for="userId in props.row.treesFrom"
+                        :key="userId"
+                        :props="userId"
+                      >
+                        {{ userId }}
+                      </p>
                     </q-tooltip>
-
                   </q-item-label>
                   <q-list v-else dense>
                     <q-item
@@ -574,119 +573,140 @@
         </q-card-section>
       </q-card>
 
-      <q-page-sticky
-        :position="breakpoint ? 'bottom-right' : 'bottom-right'"
-        :offset="breakpoint ? [18, 18] : [30, 80]"
-        style="z-index: 999"
+      <template
+        v-if="
+          !(
+            $store.getters['config/exerciseMode'] &&
+            !$store.getters['config/isTeacher']
+          )
+        "
       >
-        <q-btn
-          size="20px"
-          round
-          @click="searchDialog = !searchDialog"
-          color="primary"
-          icon="img:../statics/svg/g.svg"
+        <q-page-sticky
+          :position="breakpoint ? 'bottom-right' : 'bottom-right'"
+          :offset="breakpoint ? [18, 18] : [30, 80]"
+          style="z-index: 999"
         >
-          <q-tooltip
-            content-class="bg-primary"
-            content-style="font-size: 16px"
-            >{{ $t("projectView").tooltipFabGrew }}</q-tooltip
+          <q-btn
+            size="20px"
+            round
+            @click="searchDialog = !searchDialog"
+            color="primary"
+            icon="img:../statics/svg/g.svg"
           >
-        </q-btn>
-      </q-page-sticky>
+            <q-tooltip
+              content-class="bg-primary"
+              content-style="font-size: 16px"
+              >{{ $t("projectView").tooltipFabGrew }}</q-tooltip
+            >
+          </q-btn>
+        </q-page-sticky>
 
-      <q-page-sticky
-        :position="breakpoint ? 'bottom-right' : 'bottom-right'"
-        :offset="breakpoint ? [18, 88] : [30, 10]"
-        style="z-index: 999"
-      >
-        <q-btn-group push flat rounded v-if="reltablebuttons">
-          <q-btn @click="getRelationTable('user')" push color="primary" no-caps>
-            <q-tooltip
-              content-class="bg-primary"
-              content-style="font-size: 16px"
-              >{{ $t("projectView").tooltipFabGrewUser }}</q-tooltip
-            >
-            <q-avatar v-if="isLoggedIn" size="1.2rem">
-              <img :src="avatar" />
-            </q-avatar>
-            <q-icon v-else name="account_circle" />
-          </q-btn>
-          <q-btn
-            @click="getRelationTable('user_recent')"
-            push
-            color="primary"
-            no-caps
-          >
-            <q-tooltip
-              content-class="bg-primary"
-              content-style="font-size: 16px"
-              >{{ $t("projectView").tooltipFabGrewUserRecent }}</q-tooltip
-            >
-            <q-avatar v-if="isLoggedIn" size="1.2rem">
-              <img :src="avatar" />
-            </q-avatar>
-            <q-icon v-else name="account_circle" />
-            <div>+</div>
-          </q-btn>
-          <q-btn
-            @click="getRelationTable('recent')"
-            push
-            icon="schedule"
-            color="primary"
-            no-caps
-            v-if="isAdmin || isSuperAdmin"
-          >
-            <q-tooltip
-              content-class="bg-primary"
-              content-style="font-size: 16px"
-              >{{ $t("projectView").tooltipFabGrewRecent }}</q-tooltip
-            >
-          </q-btn>
-          <q-btn
-            @click="getRelationTable('all')"
-            push
-            icon="ion-md-globe"
-            color="primary"
-            no-caps
-            v-if="isAdmin || isSuperAdmin"
-          >
-            <q-tooltip
-              content-class="bg-primary"
-              content-style="font-size: 16px"
-              >{{ $t("projectView").tooltipFabGrewAll }}</q-tooltip
-            >
-          </q-btn>
-        </q-btn-group>
-        <q-btn
-          size="20px"
-          round
-          @click="reltablebuttons = !reltablebuttons"
-          color="primary text-green"
-          icon="ion-md-grid"
+        <q-page-sticky
+          :position="breakpoint ? 'bottom-right' : 'bottom-right'"
+          :offset="breakpoint ? [18, 88] : [30, 10]"
+          style="z-index: 999"
         >
-          <q-tooltip
-            content-class="bg-primary"
-            content-style="font-size: 16px"
-            >{{ $t("projectView").tooltipRelationTable }}</q-tooltip
+          <q-btn-group push flat rounded v-if="reltablebuttons">
+            <q-btn
+              @click="getRelationTable('user')"
+              push
+              color="primary"
+              no-caps
+            >
+              <q-tooltip
+                content-class="bg-primary"
+                content-style="font-size: 16px"
+                >{{ $t("projectView").tooltipFabGrewUser }}</q-tooltip
+              >
+              <q-avatar v-if="isLoggedIn" size="1.2rem">
+                <img :src="avatar" />
+              </q-avatar>
+              <q-icon v-else name="account_circle" />
+            </q-btn>
+            <q-btn
+              @click="getRelationTable('user_recent')"
+              push
+              color="primary"
+              no-caps
+            >
+              <q-tooltip
+                content-class="bg-primary"
+                content-style="font-size: 16px"
+                >{{ $t("projectView").tooltipFabGrewUserRecent }}</q-tooltip
+              >
+              <q-avatar v-if="isLoggedIn" size="1.2rem">
+                <img :src="avatar" />
+              </q-avatar>
+              <q-icon v-else name="account_circle" />
+              <div>+</div>
+            </q-btn>
+            <q-btn
+              @click="getRelationTable('recent')"
+              push
+              icon="schedule"
+              color="primary"
+              no-caps
+              v-if="isAdmin || isSuperAdmin"
+            >
+              <q-tooltip
+                content-class="bg-primary"
+                content-style="font-size: 16px"
+                >{{ $t("projectView").tooltipFabGrewRecent }}</q-tooltip
+              >
+            </q-btn>
+            <q-btn
+              @click="getRelationTable('all')"
+              push
+              icon="ion-md-globe"
+              color="primary"
+              no-caps
+              v-if="isAdmin || isSuperAdmin"
+            >
+              <q-tooltip
+                content-class="bg-primary"
+                content-style="font-size: 16px"
+                >{{ $t("projectView").tooltipFabGrewAll }}</q-tooltip
+              >
+            </q-btn>
+          </q-btn-group>
+          <q-btn
+            size="20px"
+            round
+            @click="reltablebuttons = !reltablebuttons"
+            color="primary text-green"
+            icon="ion-md-grid"
           >
-        </q-btn>
-      </q-page-sticky>
+            <q-tooltip
+              content-class="bg-primary"
+              content-style="font-size: 16px"
+              >{{ $t("projectView").tooltipRelationTable }}</q-tooltip
+            >
+          </q-btn>
+        </q-page-sticky>
+        <q-dialog
+          v-model="relationTableDial"
+          transition-show="fade"
+          transition-hide="fade"
+        >
+          <relation-table :edges="relationTableInfos"></relation-table>
+        </q-dialog>
+        <q-dialog v-model="searchDialog" seamless position="right" full-width>
+          <GrewRequestCard
+            :parentOnSearch="onSearch"
+            :parentOnTryRule="onTryRule"
+            :grewquery="$route.query.q || ''"
+          ></GrewRequestCard>
+        </q-dialog>
+        <q-dialog
+          v-model="assignDial"
+          persistent
+          transition-show="slide-up"
+          transition-hide="slide-down"
+        >
+          <user-table :samples="table.selected"></user-table>
+        </q-dialog>
+      </template>
 
-      <q-dialog v-model="searchDialog" seamless position="right" full-width>
-        <grew-request-card
-          :parentOnSearch="onSearch"
-          :parentOnTryRule="onTryRule"
-          :grewquery="$route.query.q || ''"
-        ></grew-request-card>
-      </q-dialog>
-      <q-dialog
-        v-model="assignDial"
-        persistent
-        transition-show="slide-up"
-        transition-hide="slide-down"
-      >
-        <user-table :samples="table.selected"></user-table>
-      </q-dialog>
       <!-- upload dialog start -->
       <UploadDialog
         :uploadDial.sync="uploadDial"
@@ -702,14 +722,6 @@
           searchscope="project"
         ></result-view>
         <!-- :totalsents=.number_sentences" -->
-      </q-dialog>
-
-      <q-dialog
-        v-model="relationTableDial"
-        transition-show="fade"
-        transition-hide="fade"
-      >
-        <relation-table :edges="relationTableInfos"></relation-table>
       </q-dialog>
 
       <q-dialog
@@ -1342,10 +1354,10 @@ export default {
     },
 
     searchSamples(rows, terms, cols, cellValue) {
-      return rows.filter(row => {
+      return rows.filter((row) => {
         return row.sample_name.indexOf(terms) != -1;
-      })
-    }
+      });
+    },
   },
 };
 </script>

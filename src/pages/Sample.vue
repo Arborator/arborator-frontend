@@ -35,8 +35,17 @@
         />
       </div>
     </div>
-    <GrewSearch :sentenceCount="sentenceCount"/>
-
+    <template
+      v-if="
+        !(
+          $store.getters['config/exerciseMode'] &&
+          !$store.getters['config/isTeacher']
+        )
+      "
+    >
+      <GrewSearch :sentenceCount="sentenceCount" />
+      <RelationTableMain/>
+    </template>
   </q-page>
 </template>
 
@@ -53,7 +62,7 @@ import Store from "../store/index";
 
 import SentenceCard from "../components/sentence/SentenceCard";
 import GrewSearch from "../components/grewSearch/GrewSearch";
-
+import RelationTableMain from "../components/relationTable/RelationTableMain";
 
 var heavyList = [];
 
@@ -61,6 +70,7 @@ export default {
   components: {
     SentenceCard,
     GrewSearch,
+    RelationTableMain,
   },
   props: ["projectname", "samplename", "nr", "user"],
   data() {
@@ -73,23 +83,16 @@ export default {
       sentencesFrozen: { list: [], indexes: {} },
       window: { width: 0, height: 0 },
       virtualListIndex: 15,
-      intri: 10, // give the scroll 10 seconds
+      scrolalaTimeStep: 10, // give the scroll 10 seconds
     };
   },
   computed: {
     ...mapGetters("config", [
       "isAdmin",
-      "isGuest",
-      "guests",
-      "admins",
-      "image",
       "exerciseMode",
     ]),
     ...mapGetters("user", [
-      "isLoggedIn",
       "isSuperAdmin",
-      "loggedWithGithub",
-      "avatar",
     ]),
     sentenceCount() {
       return Object.keys(this.sentences).length;
@@ -104,13 +107,11 @@ export default {
   },
   mounted() {
     this.getSampleTrees();
-    // this.getProjectConfig();
     document.title =
       this.$route.params.projectname + "/" + this.$route.params.samplename;
     if (this.$route.query.q && this.$route.query.q.length > 0)
       this.searchDialog = true;
     LocalStorage.remove("save_status");
-    // console.log(this.isAdmin || this.isSuperAdmin,this.isAdmin, this.isSuperAdmin)
   },
   beforeRouteLeave(to, from, next) {
     if (this.$store.getters.getPendingModifications.size > 0) {
@@ -142,7 +143,6 @@ export default {
           this.freezesentences();
           this.$forceUpdate();
           this.loading = false;
-          // console.log(777777,this.$route.params.nr in this.sentences,this.$refs.virtualListRef)
           if (this.$refs && this.$refs.virtualListRef && this.$route.params.nr)
             this.intr = setInterval(() => {
               this.scrolala();
@@ -153,22 +153,7 @@ export default {
           this.loading = false;
         });
     },
-    // getRelationTable(type) {
-    //   // var data = { table_type:type};
-    //   // console.log(type, data);
-    //   var data = { table_type: type };
-    //   api
-    //     .getRelationTable(this.$route.params.projectname, data)
-    //     .then((response) => {
-    //       this.relationTableInfos = response.data;
-    //       this.relationTableDial = true;
-    //     })
-    //     .catch((error) => {
-    //       this.$store.dispatch("notifyError", { error: error });
-    //     });
-    // },
     scrolala() {
-      // console.log("***scrolala", this.$route.params.user) //&& this.$route.params.user!=undefined
       if (
         !this.loading &&
         this.$refs &&
@@ -184,34 +169,9 @@ export default {
             this.$refs["sc" + id].autoopen(this.$route.params.user);
         }, 2000);
       }
-      this.intri--;
-      if (!this.intri) clearInterval(this.intr);
+      this.scrolalaTimeStep--;
+      if (!this.scrolalaTimeStep) clearInterval(this.intr);
     },
-
-    // onSearch(searchPattern) {
-    //   var query = { pattern: searchPattern };
-    //   api
-    //     .searchSample(this.projectname, this.samplename, query)
-    //     .then((response) => {
-    //       // console.log(555,response.data)
-    //       this.resultSearch = response.data;
-    //       this.resultSearchDialog = true;
-    //     })
-    //     .catch((error) => {
-    //       this.$store.dispatch("notifyError", { error: error });
-    //     });
-    // },
-    // closeSearchDialog(searchDialog) { searchDialog = this.searchDialog; },
-    // commit() {
-    //     api.commit(this.projectname, this.samplename)
-    //     .then(response => {console.log("wooohoo");})
-    //     .catch(error => {this.$store.dispatch("notifyError", {error: error}); })
-    //     },
-    // pullSample() {
-    // api.pull(this.projectname, this.samplename)
-    // .then(response => {console.log("wooohoo");})
-    // .catch(error => {this.$store.dispatch("notifyError", {error: error}); })
-    //     },
     freezesentences() {
       var index = 0;
       var listsentences = [];

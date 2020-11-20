@@ -537,7 +537,17 @@
           </q-table>
         </q-card-section>
       </q-card>
-      <GrewSearch :sentenceCount="0" />
+      <template
+        v-if="
+          !(
+            $store.getters['config/exerciseMode'] &&
+            !$store.getters['config/isTeacher']
+          )
+        "
+      >
+        <GrewSearch :sentenceCount="0" />
+        <RelationTableMain />
+      </template>
       <!-- :sentenceCount=.number_sentences" -->
 
       <!-- upload dialog start -->
@@ -617,6 +627,7 @@ import ConfirmAction from "../components/ConfirmAction.vue";
 import UploadDialog from "../components/project/UploadDialog.vue";
 import LexiconTable from "../components/LexiconTable";
 import GrewSearch from "../components/grewSearch/GrewSearch";
+import RelationTableMain from "../components/relationTable/RelationTableMain";
 
 export default {
   components: {
@@ -627,6 +638,7 @@ export default {
     UploadDialog,
     LexiconTable,
     GrewSearch,
+    RelationTableMain,
   },
   data() {
     return {
@@ -883,7 +895,6 @@ export default {
           } else this.$store.dispatch("notifyError", { error: error });
         });
     },
-
     pull(type) {
       var samplenames = [];
       for (const sample of this.table.selected) {
@@ -903,7 +914,6 @@ export default {
           this.$store.dispatch("notifyError", { error: error });
         });
     },
-
     upload() {
       var form = new FormData();
       form.append("robotname", this.robot.name);
@@ -933,7 +943,6 @@ export default {
           this.$store.dispatch("notifyError", { error: error });
         });
     },
-
     exportSamplesZip() {
       this.table.exporting = true;
       var samplenames = [];

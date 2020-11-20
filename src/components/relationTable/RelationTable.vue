@@ -74,7 +74,7 @@
 </template>
 
 <script>
-import ResultView from '../components/ResultView.vue';
+import ResultView from '../ResultView.vue';
 import { QTree } from 'quasar'
 // import dummydata from '../assets/data.json';
 

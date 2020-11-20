@@ -65,13 +65,15 @@
 </template>
 
 <script>
+import store from '../../store';
 
-import grewTemplates from '../assets/grew-templates.json';
+import CodeMirror from 'codemirror'
 import { codemirror } from 'vue-codemirror'
 import 'codemirror/lib/codemirror.css'
+
+import grewTemplates from '../../assets/grew-templates.json';
+
 // import 'codemirror/theme/material.css'
-import CodeMirror from 'codemirror'
-import store from '../store';
   CodeMirror.defineMode('grew', function(_config, parserConfig) {
         var words = {
 	    'global': 'builtin',

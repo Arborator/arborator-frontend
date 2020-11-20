@@ -156,7 +156,7 @@
 import api from '../boot/backend-api';
 import { openURL } from 'quasar'
 import AttributeTable from './sentence/AttributeTable';
-import GrewRequestCard from './GrewRequestCard';
+import GrewRequestCard from './grewSearch/GrewRequestCard';
 import CompareLexicon from './CompareLexicon';
 import grewTemplates from '../assets/grew-templates.json';
 

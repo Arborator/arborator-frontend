@@ -319,15 +319,6 @@
                           }}</q-item-label>
                         </q-item-section>
                       </q-item>
-
-                      <!-- <q-item v-if="admin || isSuperAdmin" clickable v-close-popup @click="pull('user_recent')">
-                                            <q-item-section avatar>
-                                                <q-icon name="ion-md-globe" />
-                                            </q-item-section> 
-                                            <q-item-section>
-                                                <q-item-label>Replace all trees with the ones from GitHub</q-item-label>
-                                            </q-item-section>
-                      </q-item>-->
                     </q-list>
                   </q-btn-dropdown>
                   <q-tooltip
@@ -506,32 +497,6 @@
                     </q-item>
                   </q-list>
                 </q-td>
-                <!-- <q-td key="profs" :props="props">
-                  <TagInput
-                    v-if="isAdmin || isSuperAdmin"
-                    @tag-added="addProf"
-                    @tag-removed="removeProf"
-                    :tag-context="props.row"
-                    :element-id="props.row.sample_name + 'proftag'"
-                    v-model="props.row.roles.prof"
-                    :existing-tags="possiblesUsers"
-                    :typeahead="true"
-                    typeahead-style="badges"
-                    :typeahead-hide-discard="true"
-                    placeholder="add user"
-                    :only-existing-tags="true"
-                    :typeahead-always-show="false"
-                  ></TagInput>
-                  <q-list v-else dense>
-                    <q-item
-                      v-for="source in props.row.roles.prof"
-                      :key="source"
-                      :props="source"
-                    >
-                      <q-item-label caption>{{ source.value }}</q-item-label>
-                    </q-item>
-                  </q-list>
-                </q-td> -->
                 <q-td key="treesFrom" :props="props">
                   <q-item-label caption v-if="props.row.treesFrom.length >= 5">
                     {{ props.row.treesFrom.length }} users
@@ -573,142 +538,7 @@
         </q-card-section>
       </q-card>
       <GrewSearch :sentenceCount="0" />
-      <!-- <template
-        v-if="
-          !(
-            $store.getters['config/exerciseMode'] &&
-            !$store.getters['config/isTeacher']
-          )
-        "
-      >
-        <q-page-sticky
-          :position="breakpoint ? 'bottom-right' : 'bottom-right'"
-          :offset="breakpoint ? [18, 18] : [30, 80]"
-          style="z-index: 999"
-        >
-          <q-btn
-            size="20px"
-            round
-            @click="searchDialog = !searchDialog"
-            color="primary"
-            icon="img:../statics/svg/g.svg"
-          >
-            <q-tooltip
-              content-class="bg-primary"
-              content-style="font-size: 16px"
-              >{{ $t("projectView").tooltipFabGrew }}</q-tooltip
-            >
-          </q-btn>
-        </q-page-sticky>
-
-        <q-page-sticky
-          :position="breakpoint ? 'bottom-right' : 'bottom-right'"
-          :offset="breakpoint ? [18, 88] : [30, 10]"
-          style="z-index: 999"
-        >
-          <q-btn-group push flat rounded v-if="reltablebuttons">
-            <q-btn
-              @click="getRelationTable('user')"
-              push
-              color="primary"
-              no-caps
-            >
-              <q-tooltip
-                content-class="bg-primary"
-                content-style="font-size: 16px"
-                >{{ $t("projectView").tooltipFabGrewUser }}</q-tooltip
-              >
-              <q-avatar v-if="isLoggedIn" size="1.2rem">
-                <img :src="avatar" />
-              </q-avatar>
-              <q-icon v-else name="account_circle" />
-            </q-btn>
-            <q-btn
-              @click="getRelationTable('user_recent')"
-              push
-              color="primary"
-              no-caps
-            >
-              <q-tooltip
-                content-class="bg-primary"
-                content-style="font-size: 16px"
-                >{{ $t("projectView").tooltipFabGrewUserRecent }}</q-tooltip
-              >
-              <q-avatar v-if="isLoggedIn" size="1.2rem">
-                <img :src="avatar" />
-              </q-avatar>
-              <q-icon v-else name="account_circle" />
-              <div>+</div>
-            </q-btn>
-            <q-btn
-              @click="getRelationTable('recent')"
-              push
-              icon="schedule"
-              color="primary"
-              no-caps
-              v-if="isAdmin || isSuperAdmin"
-            >
-              <q-tooltip
-                content-class="bg-primary"
-                content-style="font-size: 16px"
-                >{{ $t("projectView").tooltipFabGrewRecent }}</q-tooltip
-              >
-            </q-btn>
-            <q-btn
-              @click="getRelationTable('all')"
-              push
-              icon="ion-md-globe"
-              color="primary"
-              no-caps
-              v-if="isAdmin || isSuperAdmin"
-            >
-              <q-tooltip
-                content-class="bg-primary"
-                content-style="font-size: 16px"
-                >{{ $t("projectView").tooltipFabGrewAll }}</q-tooltip
-              >
-            </q-btn>
-          </q-btn-group>
-          <q-btn
-            size="20px"
-            round
-            @click="reltablebuttons = !reltablebuttons"
-            color="primary text-green"
-            icon="ion-md-grid"
-          >
-            <q-tooltip
-              content-class="bg-primary"
-              content-style="font-size: 16px"
-              >{{ $t("projectView").tooltipRelationTable }}</q-tooltip
-            >
-          </q-btn>
-        </q-page-sticky>
-        <q-dialog
-          v-model="relationTableDial"
-          transition-show="fade"
-          transition-hide="fade"
-        >
-          <relation-table :edges="relationTableInfos"></relation-table>
-        </q-dialog>
-        <q-dialog v-model="searchDialog" seamless position="right" full-width>
-          <GrewRequestCard
-            :parentOnSearch="onSearch"
-            :parentOnTryRule="onTryRule"
-            :grewquery="$route.query.q || ''"
-          ></GrewRequestCard>
-        </q-dialog>
-        <q-dialog
-          v-model="resultSearchDialog"
-          transition-show="fade"
-          transition-hide="fade"
-        >
-          <result-view
-            :searchresults="resultSearch"
-            searchscope="project"
-          ></result-view>
-        </q-dialog>
-      </template> -->
-      <!-- :totalsents=.number_sentences" -->
+      <!-- :sentenceCount=.number_sentences" -->
 
       <!-- upload dialog start -->
       <q-dialog
@@ -773,26 +603,23 @@
 </template>
 
 <script>
+import { mapGetters } from "vuex";
+
 import { openURL } from "quasar";
+
 import api from "../boot/backend-api";
+
 import Store from "../store/index";
-// import GrewRequestCard from "../components/GrewRequestCard";
-// import ResultView from "../components/ResultView";
-// import RelationTable from "../components/RelationTable";
 import UserTable from "../components/UserTable";
 import TagInput from "../components/TagInput";
 import ProjectSettingsView from "../components/ProjectSettingsView.vue";
 import ConfirmAction from "../components/ConfirmAction.vue";
 import UploadDialog from "../components/project/UploadDialog.vue";
-import { mapGetters } from "vuex";
 import LexiconTable from "../components/LexiconTable";
 import GrewSearch from "../components/grewSearch/GrewSearch";
 
 export default {
   components: {
-    // GrewRequestCard,
-    // ResultView,
-    // RelationTable,
     UserTable,
     TagInput,
     ProjectSettingsView,
@@ -807,13 +634,8 @@ export default {
       btnTopClass: this.$q.dark.isActive ? "white" : "blue-grey-8",
       assignDial: false,
       uploadDial: false,
-      searchDialog: false,
-      reltablebuttons: false,
       projectSettingsDial: false,
       simpleProjectInfoDialog: false,
-      // maximizedUploadToggle: false,
-      // resultSearchDialog: false,
-      // relationTableDial: false,
       confirmActionDial: false,
       confirmActionCallback: null,
       confirmActionArg1: "",
@@ -929,18 +751,11 @@ export default {
         loadingDelete: false,
         exporting: false,
       },
-      // uploadSample: {
-      //   submitting: false,
-      //   attachment: { name: null, file: null },
-      // },
-      // resultSearch: {},
-      // relationTableInfos: {},
       window: { width: 0, height: 0 },
       possiblesUsers: [],
       tagContext: {},
       tableKey: 0,
       initLoad: false,
-      // robot: { active: false, name: "parser" },
     };
   },
   computed: {
@@ -963,9 +778,6 @@ export default {
     routePath() {
       return this.$route.path;
     },
-    // breakpoint() {
-    //   return this.window.width <= 400;
-    // },
     noselect() {
       return this.table.selected.length < 1;
     },
@@ -1008,27 +820,6 @@ export default {
       });
       return tempArray;
     },
-
-    // getProjectInfos() {
-    // this.$store.dispatch("config/fetchProjectSettings", {
-    //   projectname: to.params.projectname,
-    // });
-
-    //     this.table.loading = true;
-    //     api
-    //       .getProjectInfos(this.$route.params.projectname)
-    //       .then((response) => {
-    //         this = response.data;
-    //         // this.initLoad = true;
-    //         this.table.loading = false;
-    //         document.title =
-    //           this.$route.params.projectname + " - 🌳 Arborator-Grew 🌳 Project";
-    //       })
-    //       .catch((error) => {
-    //         this.$store.dispatch("notifyError", { error: error });
-    //         this.table.loading = false;
-    //       });
-    // },
     getProjectSamples() {
       api.getProjectSamples(this.$route.params.projectname).then((response) => {
         this.samples = response.data;
@@ -1058,7 +849,6 @@ export default {
         api
           .deleteSample(this.$route.params.projectname, sample.sample_name)
           .then((response) => {
-            // this = response.data;
             this.table.selected = [];
             this.showNotif("top-right", "deletesuccess");
             this.getProjectSamples();
@@ -1075,27 +865,18 @@ export default {
         samplenames.push(sample.sample_name);
       }
       var data = { samplenames: samplenames, commit_type: type };
-      // console.log(123,data);
       api
         .commit(this.$route.params.projectname, data)
         .then((response) => {
-          // 200 : updaté ou créé
           console.log(777, response);
           this.showNotif("top", "GitHubPushSuccess");
-          // console.log("wooohoo");
         })
         .catch((error) => {
-          // console.log(111,error)
           if (error.response.data.status == 418) {
-            // 418 : app pas installée (ou autre problème ?)
-            // console.log(111,error)
-            // console.log(222, error.response);
             error.response.message = error.response.data.message;
             error.permanent = true;
             this.$store.dispatch("notifyError", { error: error });
           } else if (error.response.data.status == 204) {
-            // 204 : l'utilisateur n'a pas d'arbres
-            // console.log(error, error.response)
             this.$store.dispatch("notifyError", {
               error: error.response.data.message,
             });
@@ -1109,15 +890,12 @@ export default {
         samplenames.push(sample.sample_name);
       }
       var data = { samplenames: samplenames, pull_type: type };
-      // console.log(data);
       api
         .pull(this.$route.params.projectname, data)
         .then((response) => {
           console.log("wooohoo");
         })
         .catch((error) => {
-          // 418 : app pas installée
-          // 404 : pas d'échantillon sur la page indiqué
           console.log(
             "ici il faut un popup utile indiquant comment installer l application"
           );
@@ -1188,22 +966,6 @@ export default {
           return [];
         });
     },
-
-    // getRelationTable(type) {
-    //   // var data = { table_type:type};
-    //   // console.log(type, data);
-    //   var data = { table_type: type };
-    //   api
-    //     .getRelationTable(this.$route.params.projectname, data)
-    //     .then((response) => {
-    //       this.relationTableInfos = response.data;
-    //       this.relationTableDial = true;
-    //     })
-    //     .catch((error) => {
-    //       this.$store.dispatch("notifyError", { error: error });
-    //     });
-    // },
-
     getLexicon(type) {
       this.LexiconTable = true;
       var samplenames = [];
@@ -1211,26 +973,18 @@ export default {
         samplenames.push(sample.sample_name);
       }
       var data = { samplenames: samplenames, treeSelection: type };
-      // console.log(123,data);
       api
         .getLexicon(this.$route.params.projectname, data)
         .then((response) => {
-          // 200 : updaté ou créé
           console.log(777, response);
           this.lexicon = response.data.lexicon;
         })
         .catch((error) => {
-          // console.log(111,error)
           if (error.response.data.status == 418) {
-            // 418 : app pas installée (ou autre problème ?)
-            // console.log(111,error)
-            // console.log(222, error.response);
             error.response.message = error.response.data.message;
             error.permanent = true;
             this.$store.dispatch("notifyError", { error: error });
           } else if (error.response.data.status == 204) {
-            // 204 : l'utilisateur n'a pas d'arbres
-            // console.log(error, error.response)
             this.$store.dispatch("notifyError", {
               error: error.response.data.message,
             });
@@ -1238,32 +992,6 @@ export default {
         });
     },
 
-    // onSearch(searchPattern) {
-    //   var query = { pattern: searchPattern };
-    //   api
-    //     .searchProject(this.$route.params.projectname, query)
-    //     .then((response) => {
-    //       this.resultSearchDialog = true;
-    //       this.resultSearch = response.data;
-    //     })
-    //     .catch((error) => {
-    //       this.$store.dispatch("notifyError", { error: error });
-    //     });
-    // },
-    // onTryRule(searchPattern, rewriteCommands) {
-    //   var query = { pattern: searchPattern, rewriteCommands: rewriteCommands };
-    //   api
-    //     .tryRuleProject(this.$route.params.projectname, query)
-    //     .then((response) => {
-    //       this.resultSearchDialog = true;
-    //       this.resultSearch = response.data;
-    //     })
-    //     .catch((error) => {
-    //       this.$store.dispatch("notifyError", {
-    //         error: error.response.data.message,
-    //       });
-    //     });
-    // },
     // grewquery() {
     //     console.log('projectview',this.grewqueryc)
     //     if (this.grewqueryc==0) return

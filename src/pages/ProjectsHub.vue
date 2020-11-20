@@ -137,12 +137,12 @@
               :virtual-scroll-item-size="200"
             >
               <template v-slot="{ item, index }">
-                <project-item
+                <ProjectItem
                   :props="item"
                   :parentDeleteProject="deleteProject"
                   :parentProjectSettings="showProjectSettings"
                   :key="item.id"
-                ></project-item>
+                ></ProjectItem>
               </template>
             </q-virtual-scroll>
           </q-list>

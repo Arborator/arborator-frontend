@@ -572,8 +572,8 @@
           </q-table>
         </q-card-section>
       </q-card>
-
-      <template
+      <GrewSearch :sentenceCount="0" />
+      <!-- <template
         v-if="
           !(
             $store.getters['config/exerciseMode'] &&
@@ -698,31 +698,31 @@
           ></GrewRequestCard>
         </q-dialog>
         <q-dialog
-          v-model="assignDial"
-          persistent
-          transition-show="slide-up"
-          transition-hide="slide-down"
+          v-model="resultSearchDialog"
+          transition-show="fade"
+          transition-hide="fade"
         >
-          <user-table :samples="table.selected"></user-table>
+          <result-view
+            :searchresults="resultSearch"
+            searchscope="project"
+          ></result-view>
         </q-dialog>
-      </template>
+      </template> -->
+      <!-- :totalsents=.number_sentences" -->
 
       <!-- upload dialog start -->
+      <q-dialog
+        v-model="assignDial"
+        persistent
+        transition-show="slide-up"
+        transition-hide="slide-down"
+      >
+        <user-table :samples="table.selected"></user-table>
+      </q-dialog>
       <UploadDialog
         :uploadDial.sync="uploadDial"
         v-on:uploaded:sample="getProjectSamples()"
       />
-      <q-dialog
-        v-model="resultSearchDialog"
-        transition-show="fade"
-        transition-hide="fade"
-      >
-        <result-view
-          :searchresults="resultSearch"
-          searchscope="project"
-        ></result-view>
-        <!-- :totalsents=.number_sentences" -->
-      </q-dialog>
 
       <q-dialog
         v-model="projectSettingsDial"
@@ -776,9 +776,9 @@
 import { openURL } from "quasar";
 import api from "../boot/backend-api";
 import Store from "../store/index";
-import GrewRequestCard from "../components/GrewRequestCard";
-import ResultView from "../components/ResultView";
-import RelationTable from "../components/RelationTable";
+// import GrewRequestCard from "../components/GrewRequestCard";
+// import ResultView from "../components/ResultView";
+// import RelationTable from "../components/RelationTable";
 import UserTable from "../components/UserTable";
 import TagInput from "../components/TagInput";
 import ProjectSettingsView from "../components/ProjectSettingsView.vue";
@@ -786,18 +786,20 @@ import ConfirmAction from "../components/ConfirmAction.vue";
 import UploadDialog from "../components/project/UploadDialog.vue";
 import { mapGetters } from "vuex";
 import LexiconTable from "../components/LexiconTable";
+import GrewSearch from "../components/grewSearch/GrewSearch";
 
 export default {
   components: {
-    GrewRequestCard,
-    ResultView,
-    RelationTable,
+    // GrewRequestCard,
+    // ResultView,
+    // RelationTable,
     UserTable,
     TagInput,
     ProjectSettingsView,
     ConfirmAction,
     UploadDialog,
     LexiconTable,
+    GrewSearch,
   },
   data() {
     return {
@@ -810,8 +812,8 @@ export default {
       projectSettingsDial: false,
       simpleProjectInfoDialog: false,
       // maximizedUploadToggle: false,
-      resultSearchDialog: false,
-      relationTableDial: false,
+      // resultSearchDialog: false,
+      // relationTableDial: false,
       confirmActionDial: false,
       confirmActionCallback: null,
       confirmActionArg1: "",
@@ -931,8 +933,8 @@ export default {
       //   submitting: false,
       //   attachment: { name: null, file: null },
       // },
-      resultSearch: {},
-      relationTableInfos: {},
+      // resultSearch: {},
+      // relationTableInfos: {},
       window: { width: 0, height: 0 },
       possiblesUsers: [],
       tagContext: {},
@@ -961,9 +963,9 @@ export default {
     routePath() {
       return this.$route.path;
     },
-    breakpoint() {
-      return this.window.width <= 400;
-    },
+    // breakpoint() {
+    //   return this.window.width <= 400;
+    // },
     noselect() {
       return this.table.selected.length < 1;
     },
@@ -1187,20 +1189,20 @@ export default {
         });
     },
 
-    getRelationTable(type) {
-      // var data = { table_type:type};
-      // console.log(type, data);
-      var data = { table_type: type };
-      api
-        .getRelationTable(this.$route.params.projectname, data)
-        .then((response) => {
-          this.relationTableInfos = response.data;
-          this.relationTableDial = true;
-        })
-        .catch((error) => {
-          this.$store.dispatch("notifyError", { error: error });
-        });
-    },
+    // getRelationTable(type) {
+    //   // var data = { table_type:type};
+    //   // console.log(type, data);
+    //   var data = { table_type: type };
+    //   api
+    //     .getRelationTable(this.$route.params.projectname, data)
+    //     .then((response) => {
+    //       this.relationTableInfos = response.data;
+    //       this.relationTableDial = true;
+    //     })
+    //     .catch((error) => {
+    //       this.$store.dispatch("notifyError", { error: error });
+    //     });
+    // },
 
     getLexicon(type) {
       this.LexiconTable = true;
@@ -1236,33 +1238,32 @@ export default {
         });
     },
 
-    onSearch(searchPattern) {
-      var query = { pattern: searchPattern };
-      api
-        .searchProject(this.$route.params.projectname, query)
-        .then((response) => {
-          this.resultSearchDialog = true;
-          this.resultSearch = response.data;
-        })
-        .catch((error) => {
-          this.$store.dispatch("notifyError", { error: error });
-        });
-    },
-    onTryRule(searchPattern, rewriteCommands) {
-      console.log(12121, searchPattern, rewriteCommands);
-      var query = { pattern: searchPattern, rewriteCommands: rewriteCommands };
-      api
-        .tryRuleProject(this.$route.params.projectname, query)
-        .then((response) => {
-          this.resultSearchDialog = true;
-          this.resultSearch = response.data;
-        })
-        .catch((error) => {
-          this.$store.dispatch("notifyError", {
-            error: error.response.data.message,
-          });
-        });
-    },
+    // onSearch(searchPattern) {
+    //   var query = { pattern: searchPattern };
+    //   api
+    //     .searchProject(this.$route.params.projectname, query)
+    //     .then((response) => {
+    //       this.resultSearchDialog = true;
+    //       this.resultSearch = response.data;
+    //     })
+    //     .catch((error) => {
+    //       this.$store.dispatch("notifyError", { error: error });
+    //     });
+    // },
+    // onTryRule(searchPattern, rewriteCommands) {
+    //   var query = { pattern: searchPattern, rewriteCommands: rewriteCommands };
+    //   api
+    //     .tryRuleProject(this.$route.params.projectname, query)
+    //     .then((response) => {
+    //       this.resultSearchDialog = true;
+    //       this.resultSearch = response.data;
+    //     })
+    //     .catch((error) => {
+    //       this.$store.dispatch("notifyError", {
+    //         error: error.response.data.message,
+    //       });
+    //     });
+    // },
     // grewquery() {
     //     console.log('projectview',this.grewqueryc)
     //     if (this.grewqueryc==0) return

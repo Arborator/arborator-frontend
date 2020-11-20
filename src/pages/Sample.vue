@@ -35,8 +35,8 @@
         />
       </div>
     </div>
-
-    <template
+    <GrewSearch :sentenceCount="sentenceCount"/>
+    <!-- <template
       v-if="
         !(
           $store.getters['config/exerciseMode'] &&
@@ -142,14 +142,11 @@
       </q-page-sticky>
 
       <q-dialog v-model="searchDialog" seamless position="right" full-width>
-        <!-- v-if="false" -->
         <GrewRequestCard
           :parentOnSearch="onSearch"
           :grewquery="$route.query.q || ''"
         ></GrewRequestCard>
       </q-dialog>
-    </template>
-
     <q-dialog
       v-model="resultSearchDialog"
       transition-show="fade"
@@ -169,6 +166,8 @@
     >
       <relation-table :edges="relationTableInfos"></relation-table>
     </q-dialog>
+    </template> -->
+
   </q-page>
 </template>
 
@@ -179,9 +178,7 @@ import { LocalStorage, openURL } from "quasar";
 import api from "../boot/backend-api";
 import Store from "../store/index";
 import SentenceCard from "../components/sentence/SentenceCard";
-import RelationTable from "../components/RelationTable";
-import GrewRequestCard from "../components/GrewRequestCard";
-import ResultView from "../components/ResultView";
+import GrewSearch from "../components/grewSearch/GrewSearch";
 
 import { mapGetters } from "vuex";
 
@@ -190,9 +187,10 @@ var heavyList = [];
 export default {
   components: {
     SentenceCard,
-    GrewRequestCard,
-    ResultView,
-    RelationTable,
+    // GrewRequestCard,
+    // ResultView,
+    // RelationTable,
+    GrewSearch,
   },
   props: ["projectname", "samplename", "nr", "user"],
   data() {
@@ -201,12 +199,12 @@ export default {
       svg: "",
       tab: "gold",
       loading: true,
-      searchDialog: false,
-      resultSearchDialog: false,
-      relationTableDial: false,
-      relationTableInfos: {},
-      reltablebuttons: false,
-      resultSearch: {},
+      // searchDialog: false,
+      // resultSearchDialog: false,
+      // relationTableDial: false,
+      // relationTableInfos: {},
+      // reltablebuttons: false,
+      // resultSearch: {},
       sentences: {},
       sentencesFrozen: { list: [], indexes: {} },
       window: { width: 0, height: 0 },
@@ -232,9 +230,9 @@ export default {
     sentenceCount() {
       return Object.keys(this.sentences).length;
     },
-    breakpoint() {
-      return this.window.width <= 400;
-    },
+    // breakpoint() {
+    //   return this.window.width <= 400;
+    // },
   },
   created() {
     window.addEventListener("resize", this.handleResize);
@@ -294,20 +292,20 @@ export default {
           this.loading = false;
         });
     },
-    getRelationTable(type) {
-      // var data = { table_type:type};
-      // console.log(type, data);
-      var data = { table_type: type };
-      api
-        .getRelationTable(this.$route.params.projectname, data)
-        .then((response) => {
-          this.relationTableInfos = response.data;
-          this.relationTableDial = true;
-        })
-        .catch((error) => {
-          this.$store.dispatch("notifyError", { error: error });
-        });
-    },
+    // getRelationTable(type) {
+    //   // var data = { table_type:type};
+    //   // console.log(type, data);
+    //   var data = { table_type: type };
+    //   api
+    //     .getRelationTable(this.$route.params.projectname, data)
+    //     .then((response) => {
+    //       this.relationTableInfos = response.data;
+    //       this.relationTableDial = true;
+    //     })
+    //     .catch((error) => {
+    //       this.$store.dispatch("notifyError", { error: error });
+    //     });
+    // },
     scrolala() {
       // console.log("***scrolala", this.$route.params.user) //&& this.$route.params.user!=undefined
       if (
@@ -329,19 +327,19 @@ export default {
       if (!this.intri) clearInterval(this.intr);
     },
 
-    onSearch(searchPattern) {
-      var query = { pattern: searchPattern };
-      api
-        .searchSample(this.projectname, this.samplename, query)
-        .then((response) => {
-          // console.log(555,response.data)
-          this.resultSearch = response.data;
-          this.resultSearchDialog = true;
-        })
-        .catch((error) => {
-          this.$store.dispatch("notifyError", { error: error });
-        });
-    },
+    // onSearch(searchPattern) {
+    //   var query = { pattern: searchPattern };
+    //   api
+    //     .searchSample(this.projectname, this.samplename, query)
+    //     .then((response) => {
+    //       // console.log(555,response.data)
+    //       this.resultSearch = response.data;
+    //       this.resultSearchDialog = true;
+    //     })
+    //     .catch((error) => {
+    //       this.$store.dispatch("notifyError", { error: error });
+    //     });
+    // },
     // closeSearchDialog(searchDialog) { searchDialog = this.searchDialog; },
     // commit() {
     //     api.commit(this.projectname, this.samplename)

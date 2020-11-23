@@ -66,8 +66,6 @@
       </q-banner>
     </q-card-section>
     <q-card-section>
-      <!-- v-model="description" -->
-      <!-- @input="updateDescription" -->
       <q-input
         v-model="description"
         style="height: 100px"
@@ -111,7 +109,6 @@
                   ]"
                 />
               </div>
-              <!-- <q-toggle  color="blue" v-model="visibility" checked-icon="check" unchecked-icon="clear" @input="changeIsPrivate()" /> -->
             </q-item-section>
           </q-item>
           <q-item tag="label" v-ripple>
@@ -150,21 +147,10 @@
               />
             </q-item-section>
           </q-item>
-          <!-- <q-item tag="label" v-ripple>
-						<q-item-section>
-						<q-item-label>{{$t('projectSettings').toggleOpenProject}}</q-item-label>
-						<q-item-label caption>{{$t('projectSettings').toggleOpenProjectCaption}}</q-item-label>
-						</q-item-section>
-						<q-item-section avatar>
-						<q-toggle  color="green" v-model="is_open" checked-icon="check" unchecked-icon="clear" @input="changeOpenProject()" />
-						</q-item-section>
-          </q-item>-->
         </q-list>
       </q-card>
     </q-card-section>
     <q-card-section class="full row justify-between q-gutter-md">
-      <!-- q-pa-sm row items-start q-gutter-md -->
-      <!-- <div class="fit row  justify-between"> -->
       <q-card class="col">
         <q-card-section>
           <div class="text-h6 text-center">
@@ -204,7 +190,6 @@
         </q-card-section>
       </q-card>
 
-      <!-- <q-card-section class="row items-start q-gutter-md"> -->
       <q-card class="col">
         <q-card-section>
           <div class="text-h6 text-center">
@@ -289,7 +274,6 @@
             :label="$t('projectSettings').shownFeaturesTokens"
           />
         </q-card-section>
-        <!-- @input="saveannofshown" -->
         <q-card-section>
           <q-select
             filled
@@ -301,10 +285,8 @@
             :label="$t('projectSettings').shownFeaturesSentences"
           />
         </q-card-section>
-        <!-- @input="savemetashown" -->
       </q-card>
     </q-card-section>
-    <!-- </div> -->
     <q-card-section class="q-pa-sm row items-start q-gutter-md">
       <q-card class="col col-sm-12">
         <q-card-section>
@@ -420,8 +402,6 @@ export default {
       default_user_trees: [],
       addAdminDial: false,
       addGuestDial: false,
-      // addLabelDial: false,
-      // addCatDial: false,
       addDefaultUserTreeDial: false,
       confirmActionDial: false,
       confirmActionCallback: null,
@@ -445,16 +425,13 @@ export default {
     this.annofjson = this.$store.getters["config/getAnnofjson"];
   },
   computed: {
-    ...mapGetters("config", ["name"]),
-    admins() {
-      return this.$store.getters["config/admins"];
-    },
-    guests() {
-      return this.$store.getters["config/guests"];
-    },
-    cleanedImage() {
-      return this.$store.getters["config/cleanedImage"];
-    },
+    ...mapGetters("config", [
+      "admins",
+      "guests",
+      "cleanedImage",
+      "shownfeatureschoices",
+      "shownmetachoices",
+    ]),
     description: {
       get() {
         return this.$store.getters["config/description"];
@@ -495,9 +472,6 @@ export default {
         });
       },
     },
-    shownfeatureschoices() {
-      return this.$store.getters["config/shownfeatureschoices"];
-    },
     shownfeatures: {
       get() {
         return this.$store.getters["config/shownfeatures"];
@@ -508,9 +482,6 @@ export default {
           toUpdateObject: { shownfeatures: value },
         });
       },
-    },
-    shownmetachoices() {
-      return this.$store.getters["config/shownmetachoices"];
     },
     shownmeta: {
       get() {
@@ -551,14 +522,7 @@ export default {
         this.annofcomment = e;
       }
     },
-    /**
-     * @todo : Save annotation settings : UPOS, relations, features and their values...
-     *
-     * @returns void
-     */
     saveAnnotationSettings() {
-      // send the update to grew
-      // api.updateProjectSettings(this.$props.projectname, {"annotationFeatures":JSON.stringify(config.annotationFeatures)})
       this.$store
         .dispatch("config/updateProjectConlluSchema", {
           annotationFeatures: JSON.parse(this.annofjson),
@@ -582,13 +546,6 @@ export default {
       });
       this.annofjson = this.$store.getters["config/getAnnofjson"];
     },
-    /**
-     * Add an administrator by requesting backend
-     * @todo change backend function to accept multiple users
-     *
-     * @param {Object[]} selected list of selected rows (objects)
-     * @returns void
-     */
     updateAdminsOrGuests(usersArray, targetRole) {
       const newRolesArrayId = [];
       for (const user of usersArray) {
@@ -611,7 +568,6 @@ export default {
           this.$store.dispatch("notifyError", { error: error });
         });
     },
-
     removeAdmin(userid) {
       api
         .deleteProjectUserAccess(this.$props.projectname, userid)
@@ -626,12 +582,6 @@ export default {
           this.$store.dispatch("notifyError", { error: error });
         });
     },
-    /**
-     * Remove a user from the guests using its userId
-     *
-     * @param {String} userId the user id
-     * @returns void
-     */
     removeGuest(userid) {
       api
         .deleteProjectUserAccess(this.$props.projectname, userid)
@@ -646,55 +596,29 @@ export default {
           this.$store.dispatch("notifyError", { error: error });
         });
     },
-    /**
-     * Add a default user for the tree to be uploaded if not specified.
-     * @todo change backend function to accept multiple users
-     *
-     * @param {Object[]} selected list of selected rows (objects)
-     * @returns void
-     */
     addDefaultUserTree(selected) {
       api
         .addDefaultUserTree(this.$props.projectname, selected[0])
         .then((response) => {
           this.$q.notify({ message: `Change saved!` });
-          // this.infos = response.data;
         })
         .catch((error) => {
           this.$store.dispatch("notifyError", { error: error });
         });
     },
-    /**
-     * Remove a default user for the tree to be uploaded if not specified
-     *
-     * @param {String} dutid id of the DUT (defautUserTree Object)
-     * @returns void
-     */
     removeDefaultUserTree(dutid) {
       api
         .removeDefaultUserTree(this.$props.projectname, dutid)
         .then((response) => {
           this.$q.notify({ message: `Change saved!` });
-          // this.infos = response.data;
         })
         .catch((error) => {
           this.$store.dispatch("notifyError", { error: error });
         });
     },
-
-    /**
-     * Change the description of the project in backend
-     *
-     * @returns void
-     */
     saveDescription() {
       this.$store.dispatch("config/putProjectDescription");
     },
-    /**
-     * Upload a project image by creating formdata to be send to the backend
-     *
-     * @returns void
-     */
     uploadProjectImage() {
       this.uploadImage.submitting = true;
       this.$store

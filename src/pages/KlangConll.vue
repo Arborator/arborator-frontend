@@ -323,39 +323,39 @@ export default {
 
     makeSents() {
       this.segments = {};
-      for (const anno in this.conll) {
-        const isOriginal = anno == 'original';
+      for (const annotator in this.conll) {
+        const isOriginal = annotator == 'original';
         const original = !isOriginal ? this.segments['original'] : [];
         const conllSegment = isOriginal ? 
-            this.conll[anno] : this.conll[anno]['transcription'];
+            this.conll[annotator] : this.conll[annotator]['transcription'];
         if(conllSegment.length != 0) {
-          this.segments[anno] = conllSegment.map(
+          this.segments[annotator] = conllSegment.map(
             (sent) => sent.reduce(
               (acc, t) => acc + (isOriginal ? t[0] : t) + " ", ""
             )
           );
         } else {
-          this.segments[anno] = original;
+          this.segments[annotator] = original;
           if(!this.admin) this.wasSaved = false;
         }
-        const segments = this.segments[anno];
+        const segments = this.segments[annotator];
         if(!isOriginal)
-            this.diffsegments[anno] = segments.map((sent, i) =>
+            this.diffsegments[annotator] = segments.map((sent, i) =>
               Diff.diffWords(original[i], sent)
             )
-        if (anno != "original" && !this.admin) {
+        if (annotator != "original" && !this.admin) {
           this.mytrans = segments;
-          this.sound = this.conll[anno].sound;
-          this.story = this.conll[anno].story;
-          this.accent = this.conll[anno].accent;
-          this.monodia = this.conll[anno].monodia;
-          this.title = this.conll[anno].title;
+          this.sound = this.conll[annotator].sound;
+          this.story = this.conll[annotator].story;
+          this.accent = this.conll[annotator].accent;
+          this.monodia = this.conll[annotator].monodia;
+          this.title = this.conll[annotator].title;
         }
       }
     },
-    takethis(anno, line) {
+    takethis(annotator, line) {
       // todo: not working. how to change the object so that it shows in the input fields above without reloading the page?
-      this.segments["original"][line] = this.segments[anno][line];
+      this.segments["original"][line] = this.segments[annotator][line];
     },
     getConll() {
       this.isLoading = true;

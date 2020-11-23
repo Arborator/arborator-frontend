@@ -102,7 +102,7 @@ export class SentenceSVG extends EventDispatcher {
     this.adaptSvgCanvas();
 
     if (this.interactive) {
-      this.snapSentence.addClass("interactive")
+      this.snapSentence.addClass("interactive");
       this.attachDraggers();
       this.attachEvents();
       this.attachHovers();
@@ -307,10 +307,15 @@ export class SentenceSVG extends EventDispatcher {
 
     for (const tokenIndex in teacherTreeJson) {
       for (const tag in corrects) {
-        corrects[tag] += +(
-          teacherTreeJson[tokenIndex][tag] == currentTreeJson[tokenIndex][tag]
-        );
-        totals[tag]++;
+        if (
+          teacherTreeJson[tokenIndex][tag] != "_" &&
+          !Object.is(teacherTreeJson[tokenIndex][tag], NaN)
+        ) {
+          corrects[tag] += +(
+            teacherTreeJson[tokenIndex][tag] == currentTreeJson[tokenIndex][tag]
+          );
+          totals[tag]++;
+        }
       }
     }
 
@@ -517,20 +522,23 @@ class TokenSVG {
   }
 
   showDiff(otherTokenJson: TokenJson): void {
-    if (this.tokenJson.HEAD &&
+    if (
+      this.tokenJson.HEAD &&
       !Object.is(this.tokenJson.HEAD, Number.NaN) &&
       otherTokenJson.HEAD !== this.tokenJson.HEAD
     ) {
       this.snapElements["arc"].addClass("diff");
       this.snapElements["arrowhead"].addClass("diff");
     }
-    if (this.tokenJson.DEPREL &&
+    if (
+      this.tokenJson.DEPREL &&
       this.tokenJson.DEPREL !== "_" &&
       otherTokenJson.DEPREL !== this.tokenJson.DEPREL
     ) {
       this.snapElements["DEPREL"].addClass("diff");
     }
-    if (this.tokenJson.UPOS &&
+    if (
+      this.tokenJson.UPOS &&
       this.tokenJson.UPOS !== "_" &&
       otherTokenJson.UPOS !== this.tokenJson.UPOS
     ) {

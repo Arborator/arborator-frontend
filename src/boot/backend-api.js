@@ -99,6 +99,9 @@ export default {
   uploadSample(projectname, data) {
     return API.post(`/projects/${projectname}/samples`, data, { test: "to" });
   },
+  exportEvaluation(projectName, sampleName) {
+    return API.get(`/projects/${projectName}/samples/${sampleName}/evaluation`);
+  },
   exportSamplesZip(samplenames, projectname) {
     let data = { samples: samplenames };
     return API.post(`/projects/${projectname}/samples/export`, data, {

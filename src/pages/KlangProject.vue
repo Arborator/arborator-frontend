@@ -2,7 +2,7 @@
   <q-page class="full-width row wrap justify-start items-start content-start">
     &nbsp;
     <q-chip
-      label="Available Projects"
+      label="Available Samples"
       color="primary"
       text-color="white"
       style="font-size: 15px"
@@ -13,7 +13,7 @@
       <div
         clickable
         v-ripple
-        v-for="(f, i) in projects"
+        v-for="(f, i) in samples"
         :key="f"
         style="min-width: 300px"
       >
@@ -23,7 +23,7 @@
             color="primary"
             :label="i + '. ' + f"
             icon="music_note"
-            :to="'/klang/' + f"
+            :to="'/klang/' + $route.params.kprojectname + '/' + f"
           />
         </div>
       </div>
@@ -43,7 +43,7 @@ export default {
   data() {
     return {
       // audioplayer: null,
-      projects: [],
+      samples: [],
       mediaObject: "/enregistrement_sonore_Richard_Matthieu.mp3",
       waveWidth: 2500,
       cc: false,
@@ -60,7 +60,7 @@ export default {
     this.waveWidth = window.innerWidth;
   },
   mounted() {
-    this.getProjects();
+    this.getProjectSamples();
   },
   methods: {
     /**
@@ -68,15 +68,15 @@ export default {
      *
      * @returns void
      */
-    getProjects() {
-      api
-        .getKlangProjects()
-        .then((response) => {
-          this.projects = response.data;
-        })
-        .catch((error) => {
-          this.$store.dispatch("notifyError", { error: error });
-        });
+    getProjectSamples() {
+        const projectname = this.$route.params.kprojectname;
+        api.getKlangProjectSamples(projectname)
+            .then((response) => {
+                this.samples = response.data;
+            })
+            .catch((error) => {
+                this.$store.dispatch("notifyError", { error: error });
+            });
     },
   },
 };

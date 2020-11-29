@@ -24,6 +24,7 @@
     "autoprefixer": "^9.6.2",
     "axios": "^0.18.1",
     "diff": "^5.0.0",
+    "jszip": "^3.5.0",
     "quasar": "^1.12.8",
     "snapsvg": "^0.5.1",
     "snapsvg-cjs": "0.0.6",

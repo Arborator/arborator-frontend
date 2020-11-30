@@ -359,6 +359,7 @@ export default {
         return words;
       });
       const data = {
+        user: this.username,
         transcription: trans,
         monodia: this.monodia,
         title: this.title,
@@ -375,8 +376,7 @@ export default {
         )
         .then(
           (response) => {
-            const data = response.data;
-            this.conll[this.username] = data;
+            this.setSampleData(response);
             this.makeSents();
             this.wasSaved = true;
 
@@ -457,7 +457,7 @@ export default {
         let transcription = this.shallowCopy(
           this.conll[username]
         );
-        
+
         if(!isOriginal) {
           transcription = transcription['transcription'];
           let line;
@@ -476,7 +476,6 @@ export default {
             }
             for(transWords --; transWords >= word; transWords --)
               transcription[line].splice(transWords, 1);
-            transcription[line]
           }
         }
         outputString = this.generateConllText(transcription);
@@ -570,8 +569,24 @@ export default {
     },
     setSampleData(response) {
       const data = response.data;
-      this.conll = { ...this.conll, ...data };
+      if(Array.isArray(data)) {
+        let index;
+        for(index in data) {
+          const user = this.makeValid(data[index]);
+          this.conll[user.user] = user;
+        }
+      } else {
+        const user = this.makeValid(data);
+        this.conll[user.user] = user;
+      }
       this.makeSents();
+    },
+    makeValid(data) {
+      if(!data.user) {
+        data.user = this.username;
+        data.transcription = [];
+      }
+      return data;
     },
     wordclicked(triple) {
       this.audioplayer.currentTime = triple[1] / 1000; //-.5;

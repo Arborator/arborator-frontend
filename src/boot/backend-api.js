@@ -187,14 +187,30 @@ export default {
   // -------------------------------------------------------- //
   // ---------------        For Klang       --------------- //
   // -------------------------------------------------------- //
-  getConlls() {
-    return API.get('klang/conlls');
+  getKlangProjects() {
+    return API.get('klang/projects');
   },
-  getConll(name, is_admin) {
-    return API.get(`klang/conlls/${name}?is_admin=${is_admin}`);
+  getKlangProjectSamples(projectname) {
+    return API.get(`klang/projects/${projectname}/samples`);
   },
-  saveTranscription(name, data) {
-    return API.post(`klang/conlls/${name}`, data);
+  getOriginalConll(projectname, samplename) {
+    return API.get(
+      `klang/projects/${projectname}/samples/${samplename}/timed-tokens`
+    );
+  },
+  getTranscription(projectname, samplename, username) {
+    return API.get(
+      `klang/projects/${projectname}/samples/${samplename}/transcription/${username}`
+    );
+  },
+  getAllTranscription(projectname, samplename) {
+    return API.get(
+      `klang/projects/${projectname}/samples/${samplename}/transcriptions`);
+  },
+  saveTranscription(projectname, samplename, username, data) {
+    return API.put(
+      `klang/projects/${projectname}/samples/${samplename}/transcription/${username}`, data
+    )
   },
   // -------------------------------------------------------- //
   // ---------------        To Refactor       --------------- //

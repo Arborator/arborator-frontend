@@ -101,6 +101,7 @@ module.exports = function(ctx) {
         "QSkeleton",
         "QFile",
         "QResponsive",
+        "QOptionGroup"
       ],
 
       directives: ["Ripple", "ClosePopup"],

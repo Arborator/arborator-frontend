@@ -27,14 +27,19 @@
               icon="assignment" 
               :to="'/projects/'+$route.params.projectname+'/'+$route.params.samplename" />
             <q-breadcrumbs-el 
-              v-if="$route.path.startsWith('/klang')" 
-              :label="$route.params.projectname" 
+              v-if="$route.path.startsWith('/klang')"  
               icon="music_note" 
               :to="'/klang'" />
+            <q-breadcrumbs-el
+              v-if="$route.params.kprojectname != null"
+              :label="$route.params.kprojectname"
+              :to="'/klang/' + $route.params.kprojectname"
+              icon="view_module"
+            />
             <q-breadcrumbs-el 
-              v-if="$route.params.filename != null" 
-              :label="$route.params.filename"  
-              :to="'/klang/'+$route.params.filename"/>
+              v-if="$route.params.ksamplename != null" 
+              :label="$route.params.ksamplename"  
+            />
           </q-breadcrumbs>          
           <q-space />          
           <div class="q-gutter-sm row items-center no-wrap"  size="4rem">

@@ -1122,8 +1122,16 @@ export default {
     exportEvaluation() {
       const projectName = this.$route.params.projectname;
       const sampleName = this.table.selected[0].sample_name;
-      const fileName = `${sampleName}_evaluations`
-      window.open(`/api/projects/${projectName}/samples/${sampleName}/evaluation`, '_blank');
+      const fileName = `${sampleName}_evaluations`;
+      api
+        .exportEvaluation(projectName, sampleName)
+        .then((response) => {
+          this.downloadFileAttachement(response.data, fileName);
+        })
+        .catch((error) => {
+          this.$store.dispatch("notifyError", { error: error });
+        });
+      // window.open(`/api/projects/${projectName}/samples/${sampleName}/evaluation`);
       // api.exportEvaluation(projectName, sampleName).then((response) => {
       //   this.downloadFileAttachement(response.data, fileName)
       //   // var evaluations = response.data;
@@ -1139,28 +1147,15 @@ export default {
       //   // a.click();
       // });
     },
-    downloadResponseJson(data, fileName) {
-      var evaluations = data
-      var data =
-        "text/json;charset=utf-8," +
-        encodeURIComponent(JSON.stringify(evaluations));
-
-      var a = document.createElement("a");
-      a.href = "data:" + data;
-      a.setAttribute("download", fileName + ".json");
-
-      document.body.appendChild(a);
-      a.click();
-    },
     downloadFileAttachement(data, fileName) {
-        var fileURL = window.URL.createObjectURL(new Blob([data]));
-        var fileLink = document.createElement("a");
+      var fileURL = window.URL.createObjectURL(new Blob([data]));
+      var fileLink = document.createElement("a");
 
-        fileLink.href = fileURL;
-        fileLink.setAttribute("download", fileName + ".xlsx");
-        document.body.appendChild(fileLink);
+      fileLink.href = fileURL;
+      fileLink.setAttribute("download", fileName + ".tsv");
+      document.body.appendChild(fileLink);
 
-        fileLink.click();
+      fileLink.click();
     },
   },
 };

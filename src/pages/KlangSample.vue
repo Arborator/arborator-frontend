@@ -326,7 +326,7 @@ export default {
     },
     ...mapGetters("user", ["isLoggedIn"]),
     isAdmin() {
-      return this.$store.getters["user/getUserInfos"].super_admin;
+      return this.$store.getters["user/isLoggedIn"];
     },
     username() {
       return this.$store.getters["user/getUserInfos"].username;

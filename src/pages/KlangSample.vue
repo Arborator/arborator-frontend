@@ -116,6 +116,34 @@
           </div>
         </template>
       </div>
+      <template v-if="isAdmin && admin">
+        <div 
+          class="row" 
+          dense 
+          v-for="(meta, i) in metaFormat" 
+          :key="-i - 1"
+        >
+          <span class="line-number" dense>
+          </span>
+          <div class="col row q-pa-none"></div>
+          <div class="col row q-pa-none">
+            <q-chip> {{meta}} </q-chip>
+            <q-space />
+          </div>
+          <template 
+            v-for="(user, anno) in conll"
+          >
+            <div
+              class="col row q-pa none"
+              :key="anno"
+              v-if="anno != 'original'"
+            >
+              <!-- <q-chip>{{anno}}'s {{meta}}: </q-chip> -->
+              <q-chip>{{user[meta]}}</q-chip>
+            </div>
+          </template>
+        </div>
+      </template>
     </div>
     <q-page-sticky
       position="top"
@@ -282,6 +310,7 @@
   line-height: 2.2;
   margin-left: 5px;
   margin-right: 3px;
+  width: 15px;
 }
 .align-right {
   text-align: right;
@@ -333,6 +362,13 @@ export default {
       exportConllDlg: false,
       users: [],
       selectedUsers: [],
+      metaFormat: [
+        "title",
+        "story",
+        "accent",
+        "monodia",
+        "sound"
+      ]
     };
   },
   computed: {

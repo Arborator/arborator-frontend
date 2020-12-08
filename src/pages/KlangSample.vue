@@ -4,7 +4,7 @@
     style="padding-top: 180px; padding-bottom: 80px"
   >
     <div class="q-pa-none full-width" ref="words">
-      <div class="row" dense>
+      <div class="row" dense v-if="isLoggedIn">
         <div class="col row q-pa-none"><q-space /></div>
         <div class="col q-pa-none" v-if="admin"></div>
         <template v-for="(u, anno) in conll">
@@ -61,9 +61,21 @@
             </q-chip>
           </span>
           <q-space />
+          <q-btn
+            v-if="
+              admin && 
+              segments['original'][i] != mytrans[i]
+            "
+            round
+            dense
+            flat
+            icon="east"
+            class="float-right"
+            @click="moveToInputField('original', i)"
+          />
           <q-separator spaced />
         </div>
-        <div class="col q-pa-none">
+        <div class="col q-pa-none" v-if="isLoggedIn">
           <div class="col q-pa-none">
             <q-input dense filled square v-model="mytrans[i]">
             </q-input>
@@ -277,6 +289,9 @@
 .export-dialog {
   min-width: 300px;
 }
+.float-right {
+  margin-left: auto;
+}
 </style>
 <script>
 import Vue from "vue";
@@ -324,14 +339,19 @@ export default {
     ct: function () {
       return this.manualct;
     },
+
     ...mapGetters("user", ["isLoggedIn"]),
+
     isAdmin() {
-      return this.$store.getters["user/getUserInfos"].super_admin;
+      return this.$store.getters["user/isSuperAdmin"] ||
+        this.$store.getters["config/admins"].includes(this.username);
     },
+
     username() {
       return this.$store.getters["user/getUserInfos"].username;
     },
   },
+
   created() {
     this.mediaObject =
       "api/klang/projects/" +
@@ -341,18 +361,22 @@ export default {
       "/mp3";
     this.waveWidth = window.innerWidth;
   },
+
   mounted() {
     this.audioplayer = this.$refs.player.audio;
     this.$refs.player.audio.ontimeupdate = () => this.onTimeUpdate();
     document.title = "Klang: " + this.ksamplename;
     this.getSampleData();
   },
+
   methods: {
     btnClick(a, b) {
       this.manualct = 30;
     },
+
     save() {
       this.isLoading = true;
+      
       const trans = this.mytrans.map((line) => {
         let words = line.split(" ");
         words = words.filter((word) => word !== "");
@@ -367,6 +391,7 @@ export default {
         accent: this.accent,
         story: this.story,
       };
+
       api
         .saveTranscription(
           this.kprojectname,
@@ -396,9 +421,11 @@ export default {
           }
         );
     },
+
     adminchanged(adminvalue) {
       this.getSampleData();
     },
+
     makeSents() {
       this.segments = {};
       this.users = [];
@@ -418,9 +445,7 @@ export default {
           this.segments[annotator] = original;
           if (!this.admin) this.wasSaved = false;
         }
-        const segments = this.shallowCopy(
-          this.segments[annotator]
-        );
+        const segments = this.shallowCopy(this.segments[annotator]);
         if (!isOriginal)
           this.diffsegments[annotator] = segments.map((sent, i) =>
             Diff.diffWords(original[i], sent)
@@ -435,143 +460,157 @@ export default {
         }
       }
     },
-    
+
     shallowCopy(object) {
       return JSON.parse(JSON.stringify(object));
     },
 
     moveToInputField(annotator, line) {
-      Vue.set(this.mytrans,line,this.segments[annotator][line])
+      Vue.set(this.mytrans, line, this.segments[annotator][line]);
     },
-    
+
     exportConll() {
       let index;
       const length = this.selectedUsers.length;
       let zip = new JSZip();
 
-      for(index = 0; index < length; index ++) {
+      for (index = 0; index < length; index++) {
         const username = this.selectedUsers[index];
-        const isOriginal = username === 'original';
+        const isOriginal = username === "original";
         const conllFileName = username + ".conll";
-        let outputString = '';
-        let transcription = this.shallowCopy(
-          this.conll[username]
-        );
+        let outputString = "";
+        let transcription = this.shallowCopy(this.conll[username]);
 
-        if(!isOriginal) {
-          transcription = transcription['transcription'];
+        if (!isOriginal) {
+          transcription = transcription["transcription"];
           let line;
-          const original = this.conll['original'];
+          const original = this.conll["original"];
           const lines = original.length;
-          for(line = 0; line < lines; line ++) {
+          for (line = 0; line < lines; line++) {
             let word;
             const originalWords = original[line].length;
             let transWords = transcription[line].length;
-            for(word = 0; word < originalWords; word ++) {
+            for (word = 0; word < originalWords; word++) {
               transcription[line][word] = [
                 transcription[line][word], 
                 original[line][word][1],
                 original[line][word][2] 
-              ]
+              ];
             }
-            for(transWords --; transWords >= word; transWords --)
+            for (transWords --; transWords >= word; transWords --)
               transcription[line].splice(transWords, 1);
           }
         }
         outputString = this.generateConllText(transcription);
         zip.file(conllFileName, outputString);
       }
-      zip.generateAsync({ type: "blob" }).then((content) => {
-        const zipFileName = this.ksamplename + ".zip";
-        const status = exportFile(zipFileName, content);
-        if(status) {
-          this.$q.notify({
-            message: "Exported conlls successfully.",
-            position: "top-right",
-            color: "green",
-            icon: "done",
-          });
-        } else {
-          this.$store.dispatch("notifyError", {
-            error: "Browser denied file download..."
-          });
-        }
-      }).catch((error) => {
-        this.$store.dispatch("notifyError", { error: error });
-      })
-    },
-    
-    generateConllText(transcription) {
-      let conllString = '';
-      let line = 0;
-      const lines = transcription.length;
-      for(; line < lines; line ++) {
-        let word = 0;
-        const words = transcription[line].length;
-        const lineText = transcription[line].reduce(
-          (acc, t) => acc + (t[0] != "." ? " " : "") + t[0], ""
-        );
-        conllString += "# sent_id = " + this.ksamplename + ".intervals.conll__" 
-          + (line + 1) + "\n";
-        conllString += "# text =" + lineText + "\n";
-        conllString += "# sound_url = " + this.ksamplename + ".mp3\n";
-        for(; word < words; word ++) {
-          const conllWord = transcription[line][word];
-          conllString += (word + 1) + "\t" + conllWord[0] + "\t" 
-            + conllWord[0] + "\t";
-          for(let index = 0; index < 6; index ++)
-            conllString += "_\t";
-          conllString += "AlignBegin=" + conllWord[1] + "|AlignEnd=" 
-            + conllWord[2] + "\n";
-        }
-        conllString += "\n";
-      }
-      return conllString;
-    },
-    getSampleData() {
-      this.isLoading = true;
-      this.conll = {};
-      api
-        .getOriginalConll(this.kprojectname, this.ksamplename)
-        .then((response) => {
-          this.conll["original"] = response.data;
-          if (!this.admin) {
-            api
-              .getTranscription(
-                this.kprojectname,
-                this.ksamplename,
-                this.username
-              )
-              .then((response) => {
-                this.setSampleData(response);
-                this.isLoading = false;
-              })
-              .catch((error) => {
-                this.$store.dispatch("notifyError", { error: error });
-                this.isLoading = false;
-              });
+      zip
+        .generateAsync({ type: "blob" })
+        .then((content) => {
+          const zipFileName = this.ksamplename + ".zip";
+          const status = exportFile(zipFileName, content);
+          if (status) {
+            this.$q.notify({
+              message: "Exported conlls successfully.",
+              position: "top-right",
+              color: "green",
+              icon: "done",
+            });
           } else {
-            api
-              .getAllTranscription(this.kprojectname, this.ksamplename)
-              .then((response) => {
-                this.setSampleData(response);
-                this.isLoading = false;
-              })
-              .catch((error) => {
-                this.$store.dispatch("notifyError", { error: error });
-                this.isLoading = false;
-              });
+            this.$store.dispatch("notifyError", {
+              error: "Browser denied file download...",
+            });
           }
         })
         .catch((error) => {
           this.$store.dispatch("notifyError", { error: error });
         });
     },
+
+    generateConllText(transcription) {
+      let conllString = "";
+      let line = 0;
+      const lines = transcription.length;
+      for (; line < lines; line++) {
+        let word = 0;
+        const words = transcription[line].length;
+        const lineText = transcription[line].reduce(
+          (acc, t) => acc + (t[0] != "." ? " " : "") + t[0],
+          ""
+        );
+        conllString +=
+          "# sent_id = " +
+          this.ksamplename +
+          ".intervals.conll__" +
+          (line + 1) +
+          "\n";
+        conllString += "# text =" + lineText + "\n";
+        conllString += "# sound_url = " + this.ksamplename + ".mp3\n";
+        for (; word < words; word++) {
+          const conllWord = transcription[line][word];
+          conllString +=
+            word + 1 + "\t" + conllWord[0] + "\t" + conllWord[0] + "\t";
+          for (let index = 0; index < 6; index++) conllString += "_\t";
+          conllString +=
+            "AlignBegin=" + conllWord[1] + "|AlignEnd=" + conllWord[2] + "\n";
+        }
+        conllString += "\n";
+      }
+      return conllString;
+    },
+
+    async getSampleData() {
+      // wait to check if logged in
+      await this.$store.dispatch("user/checkSession");
+
+      this.isLoading = true;
+      this.conll = {};
+      api
+        .getOriginalConll(this.kprojectname, this.ksamplename)
+        .then((response) => {
+          this.conll["original"] = response.data;
+          if (this.isLoggedIn) {
+            if (!this.admin) {
+              api
+                .getTranscription(
+                  this.kprojectname,
+                  this.ksamplename,
+                  this.username
+                )
+                .then((response) => {
+                  this.setSampleData(response);
+                  this.isLoading = false;
+                })
+                .catch((error) => {
+                  this.$store.dispatch("notifyError", { error: error });
+                  this.isLoading = false;
+                });
+            } else {
+              api
+                .getAllTranscription(this.kprojectname, this.ksamplename)
+                .then((response) => {
+                  this.setSampleData(response);
+                  this.isLoading = false;
+                })
+                .catch((error) => {
+                  this.$store.dispatch("notifyError", { error: error });
+                  this.isLoading = false;
+                });
+            }
+          } else {
+            this.makeSents();
+          }
+        })
+        .catch((error) => {
+          this.$store.dispatch("notifyError", { error: error });
+        });
+    },
+
     setSampleData(response) {
       const data = response.data;
-      if(Array.isArray(data)) {
+      if (Array.isArray(data)) {
         let index;
-        for(index in data) {
+        for (index in data) {
           const user = this.makeValid(data[index]);
           this.conll[user.user] = user;
         }
@@ -581,18 +620,21 @@ export default {
       }
       this.makeSents();
     },
+
     makeValid(data) {
-      if(!data.user) {
+      if (!data.user) {
         data.user = this.username;
         data.transcription = [];
       }
       return data;
     },
+
     wordclicked(triple) {
       this.audioplayer.currentTime = triple[1] / 1000; //-.5;
       this.manualct = triple[1] / 1000;
       this.audioplayer.play();
     },
+
     onTimeUpdate() {
       if (this.$refs.player == null) return;
       this.currentTime = this.$refs.player.audio.currentTime;

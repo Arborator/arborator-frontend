@@ -187,23 +187,36 @@ export default {
   getKlangProjects() {
     return API.get('klang/projects');
   },
+
+  getKlangProjectAdmins(projectname) {
+    return API.get(`klang/projects/${projectname}/admins`);
+  },
+
+  setKlangProjectAdmins(projectname, admins) {
+    return API.post(`klang/projects/${projectname}/admins`, { admins: admins });
+  },
+
   getKlangProjectSamples(projectname) {
     return API.get(`klang/projects/${projectname}/samples`);
   },
+
   getOriginalConll(projectname, samplename) {
     return API.get(
       `klang/projects/${projectname}/samples/${samplename}/timed-tokens`
     );
   },
+
   getTranscription(projectname, samplename, username) {
     return API.get(
       `klang/projects/${projectname}/samples/${samplename}/transcription/${username}`
     );
   },
+
   getAllTranscription(projectname, samplename) {
     return API.get(
       `klang/projects/${projectname}/samples/${samplename}/transcriptions`);
   },
+
   saveTranscription(projectname, samplename, username, data) {
     return API.put(
       `klang/projects/${projectname}/samples/${samplename}/transcription/${username}`, data

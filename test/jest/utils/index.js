@@ -3,7 +3,31 @@ import { createLocalVue, shallowMount } from 'test-utils'
 
 import Vuex from 'vuex'
 import VueRouter from 'vue-router'
-import Quasar, { Cookies } from 'quasar'
+import { Quasar, Cookies, Notify, Dialog } from 'quasar'
+import Vue from "vue";
+import * as All from "quasar";
+
+// These are to import all Quasar Components
+const components = Object.keys(All).reduce((object, key) => {
+  const val = All[key]
+  if (val && val.component && val.component.name != null) {
+    object[key] = val
+  }
+  return object
+}, {})
+Vue.use(Quasar, { 
+  components, 
+  plugins: { Notify, Cookies, Dialog },
+  directives: All,
+});
+
+// This is to mock up vue-il8n
+export const options = { namespace: "arboratorgrew__", name: "ls", storage: "local" };
+export const $t = jest.fn();
+export const $tc = jest.fn();
+export const $n = jest.fn();
+export const $d = jest.fn();
+$t.mockReturnValue("");
 
 const mockSsrContext = () => {
   return {

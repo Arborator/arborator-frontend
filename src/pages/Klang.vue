@@ -12,7 +12,6 @@
     <div class="row q-col-gutter-md q-pa-lg">
       <div
         clickable
-        v-ripple
         v-for="(f, i) in projects"
         :key="f"
         style="min-width: 300px"
@@ -35,29 +34,12 @@
 <script>
 import Vue from "vue";
 import api from "../boot/backend-api";
-import { mapGetters } from "vuex";
-// import AudioVisual from 'vue-audio-visual'
 
-// Vue.use(AudioVisual)
 export default {
   data() {
     return {
-      // audioplayer: null,
       projects: [],
-      mediaObject: "/enregistrement_sonore_Richard_Matthieu.mp3",
-      waveWidth: 2500,
-      cc: false,
-      currentTime: 121,
-      canvwidth: 0,
     };
-  },
-  computed: {
-    ...mapGetters("user", [
-      "isLoggedIn"
-    ])
-  },
-  created() {
-    this.waveWidth = window.innerWidth;
   },
   mounted() {
     this.getProjects();

@@ -86,6 +86,10 @@ export default {
         defaultState().annotationFeatures
       );
     },
+    // Set admins for klang projects
+    set_klang_project_settings(state, payload) {
+      state.admins = payload.admins;
+    }
   },
   actions: {
     /*
@@ -247,5 +251,17 @@ export default {
     resetAnnotationFeatures({ commit }) {
       commit("reset_annotation_features");
     },
+
+    // method for fetching klang project's settings, currently only admins
+    fetchKlangProjectSettings({ commit, state }, { projectname }) {
+      api.getKlangProjectAdmins(projectname).then(response => {
+        const admins = response.data;
+        commit('set_klang_project_settings', {
+          admins: admins
+        });
+      }).catch(error => {
+        this.$store.dispatch("notifyError", { error: error });
+      })
+    }
   },
 };

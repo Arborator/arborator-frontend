@@ -44,6 +44,11 @@ export default function (/* { store, ssrContext } */) {
     if (to.params.projectname && to.params.projectname !== from.params.projectname) {
       // store.dispatch('config/fetchProjectConlluSchema', {projectname: to.params.projectname})
       store.dispatch("config/fetchProjectSettings", {projectname: to.params.projectname})
+    }
+    if (to.params.kprojectname) {
+      store.dispatch("config/fetchKlangProjectSettings", {
+        projectname: to.params.kprojectname
+      });
     } 
   });
 

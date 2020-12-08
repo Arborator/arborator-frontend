@@ -43,7 +43,11 @@
           </q-breadcrumbs>          
           <q-space />          
           <div class="q-gutter-sm row items-center no-wrap"  size="4rem">
-          
+          <q-icon name="admin_panel_settings" v-show="isProjectAdmin">
+            <q-tooltip>
+              You are admin of this project
+            </q-tooltip>
+          </q-icon>
           <q-select v-model="lang" :options="langOptions" dense borderless options-dense map-options emit-value >
             <template v-slot:append>
               <q-avatar>
@@ -51,7 +55,6 @@
               </q-avatar>
             </template>
           </q-select>
-
           <q-btn flat round @click="toggleDarkMode()"  :icon="$q.dark.isActive?'lightbulb':'brightness_2'"></q-btn>
           <q-btn-dropdown v-show="!store.getters['user/isLoggedIn']" color="secondary" outline label="Log In" icon="account_circle">
             <q-list>
@@ -210,6 +213,19 @@ export default {
     notHome(){ //return !Object.values(this.$route.params).every(o => o === null); }  
       return this.$route.fullPath != '/';
     },
+    isProjectAdmin() {
+      if(this.$route.params.projectname) {
+        return this.$store.getters["config/isAdmin"] ||
+          this.$store.getters["user/isSuperAdmin"];
+      } else if(this.$route.params.kprojectname) {
+        const { username } = this.$store.getters["user/getUserInfos"];
+        console.log(username, this.$store.getters["config/admins"])
+        return this.$store.getters["config/admins"].includes(username) ||
+          this.$store.getters['user/isSuperAdmin'];
+      } else {
+        return false;
+      }
+    }
   },
   methods: {
     openURL,

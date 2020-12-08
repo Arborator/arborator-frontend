@@ -1,0 +1,47 @@
+{
+    "UITesting": {
+        "mockResponse": {
+            "samples": [
+                "Estelle_Andriot", 
+                "Emma_Deloris", 
+                "Emma_Cruz"
+            ],
+            "users": [
+                {
+                    "username": "khoa-ng",
+                    "super_admin": true
+                },
+                {
+                    "username": "sdev-92",
+                    "super_admin": false
+                },
+                {
+                    "username": "sdev-93",
+                    "super_admin": false
+                },
+                {
+                    "username": "sdev-94",
+                    "super_admin": false
+                }
+            ]
+        },
+        "mockProperty": [
+            {
+                "admins": [],
+                "super_admin": true
+            },
+            {
+                "admins": [],
+                "super_admin": true
+            },
+            {
+                "admins": [],
+                "super_admin": false
+            },
+            {
+                "admins": [],
+                "super_admin": true
+            }
+        ]
+    }
+}

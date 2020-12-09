@@ -62,10 +62,7 @@
           </span>
           <q-space />
           <q-btn
-            v-if="
-              admin && 
-              segments['original'][i] != mytrans[i]
-            "
+            v-if="admin && segments['original'][i] != mytrans[i]"
             round
             dense
             flat
@@ -77,8 +74,7 @@
         </div>
         <div class="col q-pa-none" v-if="isLoggedIn">
           <div class="col q-pa-none">
-            <q-input dense filled square v-model="mytrans[i]">
-            </q-input>
+            <q-input dense filled square v-model="mytrans[i]"> </q-input>
           </div>
         </div>
         <template v-for="(u, anno) in conll" v-if="admin">
@@ -117,29 +113,20 @@
         </template>
       </div>
       <template v-if="isAdmin && admin">
-        <div 
-          class="row" 
-          dense 
-          v-for="(meta, i) in metaFormat" 
-          :key="-i - 1"
-        >
-          <span class="line-number" dense>
-          </span>
+        <div class="row meta-row" dense v-for="(meta, i) in metaFormat" :key="-i - 1">
+          <span class="line-number" dense> </span>
           <div class="col row q-pa-none"></div>
           <div class="col row q-pa-none">
-            <q-chip> {{meta}} </q-chip>
+            <span class="meta-label"> {{ meta.label }} </span>
             <q-space />
           </div>
-          <template 
-            v-for="(user, anno) in conll"
-          >
+          <template v-for="(user, anno) in conll">
             <div
               class="col row q-pa none"
               :key="anno"
               v-if="anno != 'original'"
             >
-              <!-- <q-chip>{{anno}}'s {{meta}}: </q-chip> -->
-              <q-chip>{{user[meta]}}</q-chip>
+              <span class="meta-value">{{ user[meta.value] }}</span>
             </div>
           </template>
         </div>
@@ -260,9 +247,7 @@
           flat
           icon="cloud_download"
           @click="exportConllDlg = true"
-          :disable="
-            !(admin)
-          "
+          :disable="!admin"
         >
           <q-tooltip> Click to export conlls </q-tooltip>
         </q-btn>
@@ -312,14 +297,27 @@
   margin-right: 3px;
   width: 15px;
 }
+
 .align-right {
   text-align: right;
 }
+
 .export-dialog {
   min-width: 300px;
 }
+
 .float-right {
   margin-left: auto;
+}
+
+.meta-label {
+  font-weight: 700;
+  font-size: 15px;
+}
+
+.meta-row {
+  background-color: #3466a5;
+  color: white;
 }
 </style>
 <script>
@@ -363,14 +361,30 @@ export default {
       users: [],
       selectedUsers: [],
       metaFormat: [
-        "title",
-        "story",
-        "accent",
-        "monodia",
-        "sound"
-      ]
+        {
+          label: "Title",
+          value: "title",
+        },
+        {
+          label: "Story line",
+          value: "story",
+        },
+        {
+          label: "Accent",
+          value: "accent",
+        },
+        {
+          label: "Monologue/Dialogue",
+          value: "monodia",
+        },
+        {
+          label: "Sound quality",
+          value: "sound",
+        },
+      ],
     };
   },
+
   computed: {
     ct: function () {
       return this.manualct;
@@ -379,8 +393,10 @@ export default {
     ...mapGetters("user", ["isLoggedIn"]),
 
     isAdmin() {
-      return this.$store.getters["user/isSuperAdmin"] ||
-        this.$store.getters["config/admins"].includes(this.username);
+      return (
+        this.$store.getters["user/isSuperAdmin"] ||
+        this.$store.getters["config/admins"].includes(this.username)
+      );
     },
 
     username() {
@@ -412,7 +428,7 @@ export default {
 
     save() {
       this.isLoading = true;
-      
+
       const trans = this.mytrans.map((line) => {
         let words = line.split(" ");
         words = words.filter((word) => word !== "");
@@ -528,12 +544,12 @@ export default {
             let transWords = transcription[line].length;
             for (word = 0; word < originalWords; word++) {
               transcription[line][word] = [
-                transcription[line][word], 
+                transcription[line][word],
                 original[line][word][1],
-                original[line][word][2] 
+                original[line][word][2],
               ];
             }
-            for (transWords --; transWords >= word; transWords --)
+            for (transWords--; transWords >= word; transWords--)
               transcription[line].splice(transWords, 1);
           }
         }

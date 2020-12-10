@@ -112,7 +112,7 @@
           </div>
         </template>
       </div>
-      <template v-if="isAdmin && admin">
+      <template v-if="isAdmin && admin && !isLoading">
         <div class="row meta-row" dense v-for="(meta, i) in metaFormat" :key="-i - 1">
           <span class="line-number" dense> </span>
           <div class="col row q-pa-none"></div>
@@ -497,7 +497,7 @@ export default {
           this.segments[annotator] = original;
           if (!this.admin) this.wasSaved = false;
         }
-        const segments = this.shallowCopy(this.segments[annotator]);
+        const segments = this.deepCopy(this.segments[annotator]);
         if (!isOriginal)
           this.diffsegments[annotator] = segments.map((sent, i) =>
             Diff.diffWords(original[i], sent)
@@ -513,7 +513,7 @@ export default {
       }
     },
 
-    shallowCopy(object) {
+    deepCopy(object) {
       return JSON.parse(JSON.stringify(object));
     },
 
@@ -528,10 +528,10 @@ export default {
 
       for (index = 0; index < length; index++) {
         const username = this.selectedUsers[index];
-        const isOriginal = username === "original";
+        const isOriginal = "original" === username;
         const conllFileName = username + ".conll";
         let outputString = "";
-        let transcription = this.shallowCopy(this.conll[username]);
+        let transcription = this.deepCopy(this.conll[username]);
 
         if (!isOriginal) {
           transcription = transcription["transcription"];
@@ -540,17 +540,26 @@ export default {
           const lines = original.length;
           for (line = 0; line < lines; line++) {
             let word;
-            const originalWords = original[line].length;
-            let transWords = transcription[line].length;
-            for (word = 0; word < originalWords; word++) {
-              transcription[line][word] = [
-                transcription[line][word],
-                original[line][word][1],
-                original[line][word][2],
+            const originalLine = original[line];
+            const originalWords = originalLine.length;
+            const transLine = transcription[line];
+            const transWords = transLine.length;
+            const minMS = originalLine[0][1];
+            const maxMS = originalLine[originalWords - 1][2];
+            const realWordsCount = transLine.reduce(
+              (acc, t) => this.isRealWord(t) ? acc + 1 : acc, 0);
+            const msec = (maxMS  - minMS) / realWordsCount;
+            let startMS = 0, endMS = 0;
+            for(word = 0; word < transWords; word ++) {
+              const isRealWord = this.isRealWord(transLine[word]);
+              if(isRealWord) endMS += msec;
+              transLine[word] = [
+                transLine[word],
+                Math.round(parseFloat(minMS) + startMS),
+                Math.round(parseFloat(minMS) + endMS)
               ];
+              if(isRealWord) startMS += msec;
             }
-            for (transWords--; transWords >= word; transWords--)
-              transcription[line].splice(transWords, 1);
           }
         }
         outputString = this.generateConllText(transcription);
@@ -577,6 +586,10 @@ export default {
         .catch((error) => {
           this.$store.dispatch("notifyError", { error: error });
         });
+    },
+
+    isRealWord(word) {
+      return word.match(/\w+/);
     },
 
     generateConllText(transcription) {

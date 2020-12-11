@@ -70,6 +70,20 @@
             class="float-right"
             @click="moveToInputField('original', i)"
           />
+          <q-btn 
+            dense
+            round 
+            icon="replay" 
+            color="primary"
+            @click="handlePlayLine(i)"
+            v-if="canPlayLine"
+            class="line-play"
+            size="sm"
+          >
+            <q-tooltip>
+              Click to play the sentence
+            </q-tooltip>
+          </q-btn>
           <q-separator spaced />
         </div>
         <div class="col q-pa-none" v-if="isLoggedIn">
@@ -298,6 +312,10 @@
   width: 15px;
 }
 
+.line-play {
+  margin-right: 5px;
+  min-width: 2.6em !important;
+}
 .align-right {
   text-align: right;
 }
@@ -382,6 +400,10 @@ export default {
           value: "sound",
         },
       ],
+      currentLine: 0,
+      isPlayingLine: false,
+      lineStart: 0,
+      lineEnd: 0
     };
   },
 
@@ -402,6 +424,10 @@ export default {
     username() {
       return this.$store.getters["user/getUserInfos"].username;
     },
+
+    canPlayLine() {
+      return this.audioplayer.error === null;
+    }
   },
 
   created() {
@@ -698,11 +724,27 @@ export default {
       this.audioplayer.currentTime = triple[1] / 1000; //-.5;
       this.manualct = triple[1] / 1000;
       this.audioplayer.play();
+      if(this.manualct > this.lineEnd)
+        this.isPlayingLine = false;
+    },
+
+    handlePlayLine(index) {
+      const line = this.conll['original'][index];
+      const length = line.length;
+      this.isPlayingLine = true;
+      this.lineStart = line[0][1] / 1000;
+      this.lineEnd = line[length - 1][2] / 1000;
+      this.audioplayer.currentTime = this.lineStart;
+      this.audioplayer.play();
     },
 
     onTimeUpdate() {
       if (this.$refs.player == null) return;
-      this.currentTime = this.$refs.player.audio.currentTime;
+      if(this.isPlayingLine) {
+        if(this.audioplayer.currentTime > this.lineEnd)
+          this.audioplayer.currentTime = this.lineStart;
+      }
+      this.currentTime = this.audioplayer.currentTime;
       this.manualct = this.currentTime;
       const current = this.$refs.words.querySelector(".current");
       if (current)

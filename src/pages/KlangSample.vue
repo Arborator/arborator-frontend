@@ -25,7 +25,7 @@
           >
             <!-- {{t[1]/1000}} -->
             <q-chip
-              v-if="t[1] / 1000 < ct"
+              v-if="t[2] / 1000 < ct"
               size="md"
               color="white"
               text-color="black"
@@ -37,7 +37,10 @@
               {{ t[0] }}
             </q-chip>
             <q-chip
-              v-else-if="t[1] / 1000 < ct + 0.4"
+              v-else-if="
+                t[1] / 1000 <= ct
+                && t[2] / 1000 >= ct
+              "
               square
               size="md"
               clickable
@@ -733,13 +736,14 @@ export default {
       const length = line.length;
       this.isPlayingLine = true;
       this.lineStart = line[0][1] / 1000;
-      this.lineEnd = line[length - 1][2] / 1000;
+      this.lineEnd = (line[length - 1][2]) / 1000;
       this.audioplayer.currentTime = this.lineStart;
       this.audioplayer.play();
     },
 
     onTimeUpdate() {
       if (this.$refs.player == null) return;
+      console.log(this.audioplayer.currentTime)
       if(this.isPlayingLine) {
         if(this.audioplayer.currentTime > this.lineEnd)
           this.audioplayer.currentTime = this.lineStart;

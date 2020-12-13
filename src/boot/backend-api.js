@@ -293,5 +293,8 @@ export default {
   },
   addValidator(projectname, data){
       return API.post('projects/' + projectname +'/addvalidator', data);
+  },
+  tryRulesProject(projectname, query) {
+    return API.post("projects/" + projectname + "/tryRules", query);
   }
 };

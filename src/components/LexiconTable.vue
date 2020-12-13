@@ -122,6 +122,7 @@
         :parentOnSearch="onSearch"
         :parentOnTryRule="onTryRule"
         :grewquery="$route.query.q || ''"
+        :parentOnTryRules="onTryRules"
       ></grew-request-card>
     </q-dialog>
     <q-dialog
@@ -331,13 +332,11 @@ export default {
     getRulesGrew(){
       if(this.RulesGrew.length!=0){
         var datasample = { data: this.RulesGrew};
-        // console.log(123123,datasample)
+        console.log(123123,datasample)
         api.transformation_grew(this.$route.params.projectname, datasample)
         .then(response => {
           console.log(444555666,response.data)
           var pattern_prov = response.data.patterns+response.data.without;
-          this.rules_grew = response.data.tryRules;
-          console.log(888888, this.rules_grew)
           if ( this.RulesApplied == false ){
             if (response.data.without != ""){
               if ( this.queries.length == 6 || this.queries[6]['name'] != 'Correct lexicon'){
@@ -392,6 +391,22 @@ export default {
           });
         });
     },
+    onTryRules(searchPattern, rewriteCommands) {
+      console.log(12121, searchPattern, rewriteCommands);
+      var query = { pattern: searchPattern, rewriteCommands: rewriteCommands };
+      api
+        .tryRulesProject(this.$route.params.projectname, query)
+        .then((response) => {
+          this.resultSearchDialog = true;
+          this.resultSearch = response.data;
+          this.RulesApplied = true ;
+        })
+        .catch((error) => {
+          this.$store.dispatch("notifyError", {
+            error: error.response.data.message,
+          });
+        });
+    },
     addEntry(){
       if(this.infotochange !=""){
       this.data[this.indexfeat].changed='add_delete'
@@ -419,7 +434,7 @@ export default {
     informFeatureChanged(){
       this.someFeatureChanged=true;
       //console.log(this.featTable.lemma)
-      // console.log(this.featTable.featl.length)
+      console.log(this.featTable.featl.length)
       // console.log(this.featTable.form[0])
       if (this.featTable.featl.length ==0){this.infotochange = this.featTable.form[0]["v"]+' '+this.featTable.lemma[0]["v"]+' '+this.featTable.pos[0]["v"]+' '+this.featTable.gloss[0]["v"]+' _'}
       else { 
@@ -428,8 +443,8 @@ export default {
         else {this.infotochange = this.featTable.form[0]["v"]+' '+this.featTable.lemma[0]["v"]+' '+this.featTable.pos[0]["v"]+' '+this.featTable.gloss[0]['v']+' '
         for (let a in this.featTable.featl){this.tempfeat += this.featTable.featl[a]["a"]+'='+this.featTable.featl[a]['v']
           if (a < this.featTable.featl.length-1){this.tempfeat+='|'}}
-        this.infotochange+= this.tempfeat
-        this.temp_features+=this.tempfeat
+        this.infotochange += this.tempfeat
+        this.temp_features=this.tempfeat
         }}
       this.tempfeat=''
       // console.log(555555,this.infotochange)
@@ -449,11 +464,12 @@ export default {
         key:this.featTable.form[0]['v']+this.featTable.lemma[0]['v']+this.featTable.pos[0]['v']+this.temp_features+this.featTable.gloss[0]['v']
       };
       // console.log(333666999,newRow)
-      //console.log(321321321, this.temp_features)
+      console.log(321321321, this.temp_features)
       this.data.splice(this.indexfeat+1,0, newRow)
       if(this.infotochange != ""){
-      this.RulesGrew.push({currentInfo:this.currentinfo, info2Change:this.infotochange})}
-      // console.log(123, this.currentinfo, this.infotochange, this.RulesGrew)
+        this.RulesGrew.push({currentInfo:this.currentinfo, info2Change:this.infotochange})}
+        console.log(123, this.currentinfo, this.infotochange, this.RulesGrew)
+        this.temp_features = '_'
       }
       
     else{this.showNotif('top', 'noModification');}
@@ -490,23 +506,25 @@ export default {
       this.featTable.gloss = [{'a':'Gloss', 'v':row.gloss}];
       this.indexfeat =this.data.indexOf(row)
       this.featTable.changed=row.changed;
+      console.log(row.features);
       if (row.features == '_'){this.featTable.featl = []}
       else {
-      for (let a in row.features.split("|")) { 
-        {this.featTable.featl.push({'a':row.features.split("|")[a].split("=")[0],'v':row.features.split("|")[a].split("=")[1]})}
-       }
-      }
-      // console.log(this.featTable.form)
-      // console.log(this.featTable.pos)
-      // console.log(this.featTable.lemma)
-      // console.log(this.featTable.gloss)
-      // console.log(this.featTable.featl)
-      //console.log(this.featTable.lemma)
-      if (row.features == '_'){this.currentinfo = row.form+' '+row.lemma+' '+row.POS+' '+row.gloss+' _'}
-      else { 
-        this.currentinfo = row.form+' '+row.lemma+' '+row.POS+' '+row.gloss+' '+row.features
+        for (let a in row.features.split("|")) { 
+          {this.featTable.featl.push({'a':row.features.split("|")[a].split("=")[0],'v':row.features.split("|")[a].split("=")[1]})}
+          }
         }
-      //console.log(111,this.currentinfo)
+        // console.log(this.featTable.form)
+        // console.log(this.featTable.pos)
+        // console.log(this.featTable.lemma)
+        // console.log(this.featTable.gloss)
+        // console.log(this.featTable.featl)
+        // console.log(this.featTable.lemma)
+        if (row.features == '_'){this.currentinfo = row.form+' '+row.lemma+' '+row.POS+' '+row.gloss+' _'}
+        else { 
+          this.currentinfo = row.form+' '+row.lemma+' '+row.POS+' '+row.gloss+' '+row.features
+          }
+      console.log(111,this.currentinfo)
+      console.log(row.features)
 
     },
     exportLexiconTSV(){
@@ -583,6 +601,5 @@ export default {
         }
     }
   }
-  
 
 </script>

@@ -41,6 +41,7 @@
 
                             <q-btn color="primary" type="submit" label="Search" no-caps />
                             <q-btn v-if="rewriteCommands!=''" color="primary" @click="tryRule" label="try Rule" no-caps />
+                            <q-btn v-if="rewriteCommands!=''" color="primary" @click="tryRules" label="try Rules" no-caps />
                             <q-space/>
                             <q-btn icon="ion-md-link" @click="getgrewlink"/>
                             <q-space/>
@@ -162,7 +163,7 @@ import store from '../store';
 export default {
     components: { codemirror },
     name: 'GrewRequestCard',
-    props: ['parentOnSearch', 'parentOnTryRule', 'grewquery'],
+    props: ['parentOnSearch', 'parentOnTryRule', 'grewquery', 'parentOnTryRules'],
     data() {
         return {
             searchPattern: `% Search for a given word form
@@ -207,6 +208,14 @@ pattern { N [form="Form_to_search"] }`,
         tryRule(){
             console.log(78787,this.searchPattern, this.rewriteCommands);
             this.parentOnTryRule(this.searchPattern, this.rewriteCommands);
+
+
+
+        },
+
+        tryRules(){
+            console.log(78787,this.searchPattern, this.rewriteCommands);
+            this.parentOnTryRules(this.searchPattern, this.rewriteCommands);
 
 
 

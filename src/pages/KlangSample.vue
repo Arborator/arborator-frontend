@@ -418,14 +418,7 @@ export default {
     ...mapGetters("user", ["isLoggedIn"]),
 
     isAdmin() {
-<<<<<<< HEAD
-      return (
-        this.$store.getters["user/isSuperAdmin"] ||
-        this.$store.getters["config/admins"].includes(this.username)
-      );
-=======
       return this.$store.getters["user/isLoggedIn"];
->>>>>>> master
     },
 
     username() {

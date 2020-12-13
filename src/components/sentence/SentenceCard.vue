@@ -265,7 +265,7 @@
                 :conll="tree"
                 :reactiveSentence="reactiveSentencesObj[user]"
                 :teacherReactiveSentence="
-                  exerciseMode
+                  showDiffTeacher
                     ? reactiveSentencesObj['teacher']
                     : diffMode
                     ? reactiveSentencesObj[userId]
@@ -386,6 +386,9 @@ export default {
       "admins",
       "exerciseMode",
     ]),
+    showDiffTeacher() {
+      return this.exerciseMode && this.exerciseLevel <= 2
+    },
     /**
      * Never used ?!
      * Check if the graph is dirty (I.E. modified but not saved) or open to see if it's supposed to be possible to save

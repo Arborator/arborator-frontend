@@ -1,5 +1,5 @@
 <template>
-  <q-page :class="$q.dark.isActive ? 'bg-dark' : 'bg-grey-1'">
+  <q-page id="container" :class="$q.dark.isActive ? 'bg-dark' : 'bg-grey-1'">
     <div class="q-pa-md row q-gutter-md flex flex-center">
       <q-card flat style="max-width: 100%">
         <q-card-section>
@@ -138,6 +138,28 @@
                     content-class="text-white bg-primary"
                     >{{ $t("projectView").tooltipExportSample[1] }}</q-tooltip
                   >
+                </div>
+
+                <div>
+                  <q-btn
+                    flat
+                    v-if="$store.getters['config/isTeacher']"
+                    color="default"
+                    icon="analytics"
+                    @click="exportEvaluation()"
+                    :loading="table.exporting"
+                    :disable="
+                      (visibility == 0 &&
+                        !isGuest &&
+                        !isAdmin &&
+                        !isSuperAdmin) ||
+                      table.selected.length != 1
+                    "
+                  ></q-btn>
+                  <q-tooltip content-class="text-white bg-primary"
+                    >export evaluations of the students (only work if only one
+                    sample is selected)
+                  </q-tooltip>
                 </div>
 
                 <q-btn
@@ -1095,6 +1117,45 @@ export default {
       return rows.filter((row) => {
         return row.sample_name.indexOf(terms) != -1;
       });
+    },
+
+    exportEvaluation() {
+      const projectName = this.$route.params.projectname;
+      const sampleName = this.table.selected[0].sample_name;
+      const fileName = `${sampleName}_evaluations`;
+      api
+        .exportEvaluation(projectName, sampleName)
+        .then((response) => {
+          this.downloadFileAttachement(response.data, fileName);
+        })
+        .catch((error) => {
+          this.$store.dispatch("notifyError", { error: error });
+        });
+      // window.open(`/api/projects/${projectName}/samples/${sampleName}/evaluation`);
+      // api.exportEvaluation(projectName, sampleName).then((response) => {
+      //   this.downloadFileAttachement(response.data, fileName)
+      //   // var evaluations = response.data;
+      //   // var data =
+      //   //   "text/json;charset=utf-8," +
+      //   //   encodeURIComponent(JSON.stringify(evaluations));
+
+      //   // var a = document.createElement("a");
+      //   // a.href = "data:" + data;
+      //   // a.setAttribute("download", `${sampleName}_evaluations.json`);
+
+      //   // document.body.appendChild(a);
+      //   // a.click();
+      // });
+    },
+    downloadFileAttachement(data, fileName) {
+      var fileURL = window.URL.createObjectURL(new Blob([data]));
+      var fileLink = document.createElement("a");
+
+      fileLink.href = fileURL;
+      fileLink.setAttribute("download", fileName + ".tsv");
+      document.body.appendChild(fileLink);
+
+      fileLink.click();
     },
   },
 };

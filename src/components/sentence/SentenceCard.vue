@@ -281,10 +281,10 @@
           </q-card>
         </q-tab-panel>
       </q-tab-panels>
-      <q-list dense>
-        <q-item v-for="m in shownmetas" :key="m.a">
-          <q-chip dense size="xs">{{ m.a }}</q-chip
-          >{{ m.v }}
+      <q-list class="sentence__meta-features" v-if="tab" dense>
+        <q-item v-for="meta in shownmeta" :key="meta">
+          <q-chip dense size="xs">{{ meta }}</q-chip
+          >{{ reactiveSentencesObj[tab].metaJson[meta] }}
         </q-item>
       </q-list>
     </q-card-section>
@@ -385,6 +385,7 @@ export default {
       "guests",
       "admins",
       "exerciseMode",
+      "shownmeta",
     ]),
     showDiffTeacher() {
       return this.exerciseMode && this.exerciseLevel <= 2

@@ -35,7 +35,7 @@
               :color="$q.dark.isActive ? 'red-13' : 'positive'"
               size="lg"
             ></q-icon>
-            {{ name }}
+            {{ projectname }}
           </div>
         </q-img>
 
@@ -129,6 +129,7 @@
               />
             </q-item-section>
           </q-item>
+
           <q-item tag="label" v-ripple>
             <q-item-section>
               <q-item-label>{{
@@ -145,6 +146,45 @@
                 checked-icon="check"
                 unchecked-icon="clear"
               />
+            </q-item-section>
+          </q-item>
+
+          <q-item id="option__diff-mode" tag="label" v-ripple>
+            <q-item-section>
+              <q-item-label>{{
+                $t("projectSettings").toggleDiffMode
+              }}</q-item-label>
+              <q-item-label caption>{{
+                $t("projectSettings").toggleDiffModeCaption
+              }}</q-item-label>
+            </q-item-section>
+            <q-item-section avatar>
+              <q-toggle
+                color="blue"
+                v-model="diffMode"
+                checked-icon="check"
+                unchecked-icon="clear"
+              />
+            </q-item-section>
+          </q-item>
+
+          <q-item id="option__usertree-diff" tag="label" v-ripple>
+            <q-item-section>
+              <q-item-label>{{
+                $t("projectSettings").chooseUserDiff
+              }}</q-item-label>
+              <q-item-label caption>{{
+                $t("projectSettings").chooseUserDiffCaption
+              }}</q-item-label>
+            </q-item-section>
+            <q-item-section avatar>
+              <q-select
+                color="blue"
+                v-model="diffUserId"
+                :options="projectTreesFrom"
+              />
+                <!-- checked-icon="check"
+                unchecked-icon="clear" -->
             </q-item-section>
           </q-item>
         </q-list>
@@ -396,7 +436,7 @@ import ConfirmAction from "../components/ConfirmAction.vue";
 export default {
   name: "project-settings-view",
   components: { codemirror, UserSelectTable, ConfirmAction },
-  props: ["projectname"],
+  props: ["projectname", "projectTreesFrom"],
   data() {
     return {
       default_user_trees: [],
@@ -454,11 +494,34 @@ export default {
     },
     exerciseMode: {
       get() {
-        return this.$store.getters["config/exerciseMode"];
+        let value = this.$store.getters["config/exerciseMode"];
+        return value ? value : false;
       },
       set(value) {
         this.$store.dispatch("config/updateProjectSettings", {
           toUpdateObject: { exerciseMode: value },
+        });
+      },
+    },
+    diffMode: {
+      get() {
+        let value = this.$store.getters["config/diffMode"];
+        return value ? value : false;
+      },
+      set(value) {
+        this.$store.dispatch("config/updateProjectSettings", {
+          toUpdateObject: { diffMode: value },
+        });
+      },
+    },
+    diffUserId: {
+      get() {
+        let value = this.$store.getters["config/diffUserId"];
+        return value ? value : "";
+      },
+      set(value) {
+        this.$store.dispatch("config/updateProjectSettings", {
+          toUpdateObject: { diffUserId: value },
         });
       },
     },

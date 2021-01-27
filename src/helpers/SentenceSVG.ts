@@ -523,7 +523,7 @@ class TokenSVG {
 
   showDiff(otherTokenJson: TokenJson): void {
     if (
-      this.tokenJson.HEAD &&
+      (this.tokenJson.HEAD == 0 || this.tokenJson.HEAD) &&
       !Object.is(this.tokenJson.HEAD, Number.NaN) &&
       otherTokenJson.HEAD !== this.tokenJson.HEAD
     ) {

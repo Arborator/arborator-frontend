@@ -33,24 +33,33 @@
     </template>
 
     <template v-slot:top-right>
-          <q-btn-group flat>
-            <q-btn color="default" v-show="table.selected.length<1" flat icon="delete_forever" disable><q-tooltip>Delete seleted samples</q-tooltip></q-btn>
-            <q-btn color="default" v-show="table.selected.length!=0" flat icon-right="delete_forever" @click="deleteSelected"><q-tooltip>Delete seleted samples</q-tooltip></q-btn>
-            <q-btn color="default" flat label="tsv" @click="exportLexiconTSV()" :loading="tableExporting"><q-tooltip :delay="300" content-class="text-white bg-primary">{{$t('projectView').tooltipExportLexicon[0]}}</q-tooltip></q-btn>
-            <q-btn color="default" flat label="json" @click="exportLexiconJSON()" :loading="tableExporting"><q-tooltip :delay="300" content-class="text-white bg-primary">{{$t('projectView').tooltipExportLexicon[1]}}</q-tooltip></q-btn>
-            <q-btn color= "default" flat label="Rule Grew" @click="getRulesGrew()" :disable="RulesGrew.length<0"><q-tooltip :delay="300" content-class="text-white bg-primary">{{$t('projectView').tooltipRuleGrewLexicon}}</q-tooltip></q-btn>
-            <q-btn flat color="default" v-show="CompareDics==false" icon="cloud_upload" @click="uploadDial = true" ><q-tooltip :delay="300" content-class="text-white bg-primary">{{$t('projectView').tooltipValidatorLexicon}}</q-tooltip></q-btn>
-            <q-btn flat color="default" v-show="CompareDics==true" icon="cloud_upload" @click="CompareDics = false" ><q-tooltip :delay="300" content-class="text-white bg-primary">{{$t('projectView').tooltipValidatorLexicon}}</q-tooltip></q-btn>
-          </q-btn-group>
+      <div>
+        <q-input borderless dense debounce="300" v-model="table.filter" placeholder="Search">
+          <template v-slot:append>
+            <q-icon name="search" />
+          </template>
+        </q-input>
+      </div>
+      <div>
+        <q-btn-group flat>
+          <q-btn color="default" v-show="table.selected.length<1" flat icon="delete_forever" disable><q-tooltip>Delete seleted samples</q-tooltip></q-btn>
+          <q-btn color="default" v-show="table.selected.length!=0" flat icon-right="delete_forever" @click="deleteSelected"><q-tooltip>Delete seleted samples</q-tooltip></q-btn>
+          <q-btn color="default" flat label="tsv" @click="exportLexiconTSV()" :loading="tableExporting"><q-tooltip :delay="300" content-class="text-white bg-primary">{{$t('projectView').tooltipExportLexicon[0]}}</q-tooltip></q-btn>
+          <q-btn color="default" flat label="json" @click="exportLexiconJSON()" :loading="tableExporting"><q-tooltip :delay="300" content-class="text-white bg-primary">{{$t('projectView').tooltipExportLexicon[1]}}</q-tooltip></q-btn>
+          <q-btn color= "default" flat label="Rule Grew" @click="getRulesGrew()" :disable="RulesGrew.length<0"><q-tooltip :delay="300" content-class="text-white bg-primary">{{$t('projectView').tooltipRuleGrewLexicon}}</q-tooltip></q-btn>
+          <q-btn flat color="default" v-show="CompareDics==false" icon="cloud_upload" @click="uploadDial = true" ><q-tooltip :delay="300" content-class="text-white bg-primary">{{$t('projectView').tooltipValidatorLexicon}}</q-tooltip></q-btn>
+          <q-btn flat color="default" v-show="CompareDics==true" icon="cloud_upload" @click="CompareDics = false" ><q-tooltip :delay="300" content-class="text-white bg-primary">{{$t('projectView').tooltipValidatorLexicon}}</q-tooltip></q-btn>
+        </q-btn-group>
+      </div>
     </template>
     </q-table>
     <div v-show="CompareDics===true">
       <q-space />
       <q-card>
         <q-separator/>
-        <compare-lexicon
+        <CompareLexicon
           :data="this.dics">
-        </compare-lexicon>
+        </CompareLexicon>
       </q-card>
     </div>
     <q-dialog v-model="openFeatures">
@@ -116,9 +125,16 @@
           </q-card-actions>
       </q-card>
     </q-dialog>
-    <q-dialog v-model="searchDialog" seamless position="right" full-width>
-      <grew-request-card :parentOnSearch="onSearch" :parentOnTryRule="onTryRule" :grewquery="$route.query.q || ''"></grew-request-card>
-    </q-dialog>
+    <template
+      v-if="
+        !(
+          $store.getters['config/exerciseMode'] &&
+          !$store.getters['config/isTeacher']
+        )
+      "
+    >
+      <GrewSearch :sentenceCount="this.data.length" />
+    </template>
 
     <q-dialog v-model="uploadDial" :maximized="maximizedUploadToggle" transition-show="fade" transition-hide="fade" >
       <q-card style=" max-width: 100vw;">
@@ -156,7 +172,7 @@
 import api from '../boot/backend-api';
 import { openURL } from 'quasar'
 import AttributeTable from './sentence/AttributeTable';
-import GrewRequestCard from './grewSearch/GrewRequestCard';
+import GrewSearch from "./grewSearch/GrewSearch";
 import CompareLexicon from './CompareLexicon';
 import grewTemplates from '../assets/grew-templates.json';
 
@@ -164,7 +180,7 @@ export default {
   name: "LexiconTable",
   props: ["data"],
   components: {
-    GrewRequestCard,
+    GrewSearch,
     CompareLexicon,
     AttributeTable
   },
@@ -270,7 +286,6 @@ export default {
         }
       }
       var datasample = { data: this.uploadLexicon, validator : Validator};
-      // console.log(datasample)
       api.addValidator(this.$route.params.projectname, datasample)
       .then( response => { 
         this.CompareDics = true
@@ -313,68 +328,25 @@ export default {
     },
     getRulesGrew(){
       if(this.RulesGrew.length!=0){
-        var datasample = { data: this.RulesGrew};
+        var datasample = { data: this.RulesGrew };
         // console.log(123123,datasample)
         api.transformation_grew(this.$route.params.projectname, datasample)
         .then(response => {
-          console.log(444555666,response.data)
-          var pattern_prov = response.data.patterns+response.data.without
-          // Demander à KIM si without doit être renvoyé sous forme de pattern
-
-          if ( this.RulesApplied == false ){
-            if (response.data.without != ""){
-              if ( this.queries.length == 6 || this.queries[6]['name'] != 'Correct lexicon'){
-              this.queries.push({"name":"Correct lexicon", "pattern":pattern_prov, "commands":response.data.commands, 'without':response.data.without})}
-              else ( this.queries[6] = {"name":"Correct lexicon", "pattern":pattern_prov, "commands":response.data.commands, 'without':response.data.without})
-            // Cette requête est à supprimer après onTryRule !!!!!!!!!!!!!!!!!!!!!
-              }
-            else {
-              if ( this.queries.length == 6 || this.queries[6]['name'] != 'Correct lexicon'){
-              this.queries.push({"name":"Correct lexicon", "pattern":pattern_prov, "commands":response.data.commands})}
-              else ( this.queries[6] = {"name":"Correct lexicon", "pattern":pattern_prov, "commands":response.data.commands})
-              }
-            }
-          else {
-            if (response.data.without != ""){
-              this.queries[6] = {"name":"Correct lexicon", "pattern":pattern_prov, "commands":response.data.commands, "without":response.data.without}
-              this.RulesApplied = false;
-              }
-            else {
-              this.queries[6] = {"name":"Correct lexicon", "pattern":pattern_prov, "commands":response.data.commands, "without":response.data.without}
-              this.RulesApplied = false;
-            }
+          console.log(444555666,response)
+          console.log(888888, this.queries)
+          if ( this.queries.slice(-1)[0]['name'] != 'Correct lexicon'){
+            this.queries.push({"name":"Correct lexicon", "pattern":response.data.rules, "commands":" "})
           }
-        
-        })
+          else (
+            this.queries.slice(-1)[0]['pattern'] = response.data.rules, 
+            this.queries.slice(-1)[0]['commands'] = " "
+            )
+          }
+        )
         this.searchDialog=true;
-        // console.log(789789789,this.queries)
+        console.log(789789789,this.queries)
         }
       else{this.showNotif('top', 'noRuletoApply');}
-    },
-    ondialoghide(){},
-    onSearch(searchPattern){
-      var query = { pattern: searchPattern };
-      api.searchProject(this.$route.params.projectname, query)
-      .then(response => {
-          this.resultSearchDialog = true;
-          this.resultSearch = response.data;
-      }).catch(error => {  this.$store.dispatch("notifyError", {error: error})  });
-    },
-    onTryRule(searchPattern, rewriteCommands){
-      console.log(12121,searchPattern, rewriteCommands)
-      var query = { pattern: searchPattern, rewriteCommands:rewriteCommands };
-      console.log(3333, query);
-      api.tryRuleProject(this.$route.butparams.projectname, query)
-      .then(response => {
-          this.resultSearchDialog = true;
-          this.resultSearch = response.data;
-      }).catch(error => {  this.$store.dispatch("notifyError", {error: error.response.data.message})  });
-      this.RulesGrew=[];
-      this.RulesApplied = true;
-      this.searchDialog=false;
-      this.queries.splice(-1, 1);
-      // console.log(this.queries)
-
     },
     addEntry(){
       if(this.infotochange !=""){

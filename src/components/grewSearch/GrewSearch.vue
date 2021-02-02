@@ -18,9 +18,9 @@
       </q-btn>
     </q-page-sticky>
     <q-dialog v-model="searchDialog" seamless position="right" full-width>
-      <GrewRequestCard
+      <GrewRequestCard                   
         :parentOnSearch="onSearch"
-        :parentOnTryRule="onTryRule"
+        :parentOnTryRules="onTryRules"
         :grewquery="$route.query.q || ''"
       ></GrewRequestCard>
     </q-dialog>
@@ -32,6 +32,7 @@
       <ResultView
         :searchresults="resultSearch"
         :totalsents="sentenceCount"
+        :rulesGrew="rulesGrew"
         searchscope="sample"
       ></ResultView>
     </q-dialog>
@@ -40,12 +41,9 @@
 
 <script>
 import { mapGetters } from "vuex";
-
 import GrewRequestCard from "./GrewRequestCard";
 import ResultView from "../ResultView";
-
 import api from "../../boot/backend-api";
-
 export default {
   components: {
     GrewRequestCard,
@@ -57,6 +55,7 @@ export default {
       searchDialog: false,
       resultSearchDialog: false,
       resultSearch: {},
+      rulesGrew: {},
       window: { width: 0, height: 0 },
     };
   },
@@ -108,14 +107,18 @@ export default {
           });
       }
     },
-    onTryRule(searchPattern, rewriteCommands) {
-      console.log(12121, searchPattern, rewriteCommands);
-      var query = { pattern: searchPattern, rewriteCommands: rewriteCommands };
+    onTryRules(Rules) {
+      // console.log(12121, searchPattern, rewriteCommands);
+      // console.log("ok");
+      var query = { rules: Rules };
       api
-        .tryRuleProject(this.$route.params.projectname, query)
+        .tryRulesProject(this.$route.params.projectname, query)
         .then((response) => {
           this.resultSearchDialog = true;
-          this.resultSearch = response.data;
+          this.resultSearch = response.data.trees;
+          this.rulesGrew = response.data.rules;
+          console.log(99999999,response.data.trees)
+          console.log(998877, response.data.rules)
         })
         .catch((error) => {
           this.$store.dispatch("notifyError", {

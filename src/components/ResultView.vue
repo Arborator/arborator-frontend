@@ -62,7 +62,7 @@
       </div>
     </q-card-section>
     <q-card-section>
-      <q-btn color="primary" @click="onApplyRules" label="Apply Rules" no-caps />
+      <q-btn color="primary" @click="save" label="Save conll" no-caps />
     </q-card-section>
   </q-card>
 </template>
@@ -75,7 +75,7 @@ import SentenceCard from "./sentence/SentenceCard";
 // var heavyListSamples = [];
 export default {
   components: { SentenceCard },
-  props: ["searchresults", "totalsents", "searchscope", "rulesGrew"],
+  props: ["searchresults", "totalsents", "searchscope"],
 
   data() {
     return {
@@ -138,8 +138,13 @@ export default {
     //         this.$store.dispatch("notifyError", {error: error});
     //     });
     // },
-
-    onApplyRules() {
+    /**
+     * Save the graph to backend after modifying its metadata and changing it into an object
+     *
+     * @returns void
+     */
+    save() {
+      console.log(987123654,this.searchresults)
       var changedConllUser = this.$store.getters["user/getUserInfos"].username;
       var sentenceIds = [];
       var objLength = Object.keys(this.samplesFrozen.selected).length;
@@ -149,33 +154,27 @@ export default {
           sentenceIds.push(this.samplesFrozen.list[i][1])
       }
       // console.log(sentenceIds)
-      for (let projectname in this.searchresults){
-        for (let sent_id in this.searchresults[projectname]){
+      for (let samplename in this.searchresults){
+        for (let sent_id in this.searchresults[samplename]){
           if (sentenceIds.includes(sent_id) == false){
             console.log(sent_id)
-            delete this.searchresults[projectname][sent_id]; 
+            delete this.searchresults[samplename][sent_id]; 
           }
-          // else{
-          //   var data = {
-          //     sent_id: sent_id,
-          //     conll: JSON.stringify(this.searchresults[projectname][sent_id]["conlls"]),
-          //     user_id: changedConllUser,
-          //   };
-          //   api.updateTree(
-          //     this.$route.params.projectname,
-          //     projectname,
-          //     data
-          //   )
-          //   .then((response) => {
-          //     this.showNotif("top", "saveSuccess");
-          //   })
-          //   .catch((error) => {
-          //     this.$store.dispatch("notifyError", { error: error });
-          //   });
-          // }
+        }
+        if (Object.keys(this.searchresults[samplename]).length == 0){
+          delete this.searchresults[samplename]
         }
       }
       console.log(555,this.searchresults)
+      if (Object.keys(this.searchresults) != 0){
+        var datasample = { data: this.searchresults};
+        api.saveConll(this.$route.params.projectname, datasample)
+        .then(response => {
+          console.log(456, response)
+        })
+      }
+      else {console.log("not ok")}
+      // console.log(this.searchresults["ABJ_GWA_06_Ugo-Lifestory_MG"]["conlls"])
       
 
       

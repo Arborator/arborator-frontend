@@ -116,9 +116,9 @@ export default {
         .then((response) => {
           this.resultSearchDialog = true;
           this.resultSearch = response.data.trees;
-          this.rulesGrew = response.data.rules;
+          // this.rulesGrew = response.data.rules;
           console.log(99999999,response.data.trees)
-          console.log(998877, response.data.rules)
+          // console.log(998877, response.data.rules)
         })
         .catch((error) => {
           this.$store.dispatch("notifyError", {

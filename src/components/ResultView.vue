@@ -75,14 +75,16 @@ import SentenceCard from "./sentence/SentenceCard";
 // var heavyListSamples = [];
 export default {
   components: { SentenceCard },
-  props: ["searchresults", "totalsents", "searchscope"],
+  props: ["searchresults", "totalsents", "searchscope", "parentOnShowTable"],
 
   data() {
     return {
+      resultSearchDialog: true,
       samplesFrozen: { list: [], indexes: {}, samples: [] },
       loading: false,
       inResult: true,
       selected: [],
+
     };
   },
   computed: {
@@ -171,6 +173,10 @@ export default {
         api.saveConll(this.$route.params.projectname, datasample)
         .then(response => {
           console.log(456, response)
+          this.resultSearchDialog = false;
+          this.parentOnShowTable(this.resultSearchDialog);
+          // console.log(456,"okkk")
+          this.$q.notify({message:`Conll Saved`});
         })
       }
       else {console.log("not ok")}
@@ -213,5 +219,5 @@ export default {
       }
     },
   },
-};
+}
 </script>

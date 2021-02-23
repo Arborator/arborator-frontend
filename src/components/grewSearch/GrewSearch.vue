@@ -34,6 +34,7 @@
         :totalsents="sentenceCount"
         :rulesGrew="rulesGrew"
         searchscope="sample"
+        :parentOnShowTable="onShowTable"
       ></ResultView>
     </q-dialog>
   </div>
@@ -49,7 +50,7 @@ export default {
     GrewRequestCard,
     ResultView,
   },
-  props: ["sentenceCount"],
+  props: ["sentenceCount", "sampleId", "showTable"],
   data() {
     return {
       searchDialog: false,
@@ -58,6 +59,10 @@ export default {
       rulesGrew: {},
       window: { width: 0, height: 0 },
     };
+  },
+  mounted() {
+    this.searchDialog = this.showTable;
+    console.log(this.showTable)
   },
   computed: {
     breakpoint() {
@@ -77,6 +82,11 @@ export default {
     //       this.$store.dispatch("notifyError", { error: error });
     //     });
     // },
+    onShowTable(resultSearchDialog){
+      console.log(941,resultSearchDialog)
+      this.resultSearchDialog = resultSearchDialog;
+      this.searchDialog = false;
+    },
     onSearch(searchPattern) {
       var query = { pattern: searchPattern };
       if (this.$route.params.samplename) {
@@ -107,10 +117,11 @@ export default {
           });
       }
     },
-    onTryRules(Rules) {
+    onTryRules(Rules, SampleIds) {
       // console.log(12121, searchPattern, rewriteCommands);
       // console.log("ok");
-      var query = { rules: Rules };
+      console.log(851, SampleIds)
+      var query = { rules: Rules, sampleId: SampleIds};
       api
         .tryRulesProject(this.$route.params.projectname, query)
         .then((response) => {

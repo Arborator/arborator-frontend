@@ -193,7 +193,7 @@ pattern { N [form="Form_to_search"] }`,
         tryRules(){
             console.log(88888,this.queries[6]['pattern']);
             console.log(7789987)
-            this.parentOnTryRules(this.queries[6]['pattern']);
+            this.parentOnTryRules(this.queries[6]['pattern'], this.queries[6]['sampleIds']);
         },
         /**
          * Modify the search pattern (search string)

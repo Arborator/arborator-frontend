@@ -42,15 +42,15 @@
     </q-table>
     <q-dialog v-model="searchDialog" seamless position="right" full-width>
       <template
-      v-if="
-        !(
-          $store.getters['config/exerciseMode'] &&
-          !$store.getters['config/isTeacher']
-        )
-      "
-    >
-      <GrewSearch :sentenceCount="this.data.length" />
-    </template>
+        v-if="
+          !(
+            $store.getters['config/exerciseMode'] &&
+            !$store.getters['config/isTeacher']
+          )
+        "
+      >
+        <GrewSearch :sentenceCount="this.data.length" :sampleId="this.sampleId" :showTable="this.searchDialog"/>
+      </template>
     </q-dialog>
     
       <!-- :totalsents="project.infos.number_sentences" -->
@@ -67,7 +67,7 @@ import { len } from 'snapsvg-cjs';
 export default {
   components: { GrewSearch },
   name: "CompareLexicon",
-  props: ["data"],
+  props: ["data", "sampleId"],
   component: {
     GrewSearch
     },
@@ -84,6 +84,8 @@ export default {
         table:{
             columns:[
                 { name: 'form', label:'Form', sortable: true, align: 'left', field: 'form'},
+                { name: 'lemma', label:'Lemma', sortable: true, align: 'left', field: 'lemma'},
+                { name: 'pos', label:'POS', sortable: true, align: 'left', field: 'POS'},
                 { name: 'features', label: 'Features', sortable: true, align: 'left', field: 'features' },
                 { name: 'gloss', label: 'Gloss', sortable: true, align: 'left', field: 'gloss' },
                 { name: 'key', label: 'Key', sortable: true, align: 'left', field: 'key' },
@@ -152,6 +154,16 @@ export default {
     
     getRulesGrew(RulesGrew){
       if(RulesGrew.length!=0){
+        var listSampleIds = "";
+        for (let i in this.sampleId){
+          // console.log(112233,this.sampleId[i]["sample_name"])
+          if (i < this.sampleId.length-1){
+            listSampleIds += this.sampleId[i]["sample_name"] + ", "
+          }
+          else{
+            listSampleIds += this.sampleId[i]["sample_name"]
+          }
+        }
         var datasample = { data: RulesGrew };
         console.log(123123,datasample)
         api.transformation_grew(this.$route.params.projectname, datasample)
@@ -159,11 +171,12 @@ export default {
           console.log(444555666,response)
           console.log(888888, this.queries)
           if ( this.queries.slice(-1)[0]['name'] != 'Correct lexicon'){
-            this.queries.push({"name":"Correct lexicon", "pattern":response.data.rules, "commands":" "})
+            this.queries.push({"name":"Correct lexicon", "pattern":response.data.rules, "commands":" ", "sampleIds":listSampleIds})
           }
           else (
             this.queries.slice(-1)[0]['pattern'] = response.data.rules, 
-            this.queries.slice(-1)[0]['commands'] = " "
+            this.queries.slice(-1)[0]['commands'] = " ",
+            this.queries.slice(-1)[0]['sampleIds'] = listSampleIds
             )
           }
         )

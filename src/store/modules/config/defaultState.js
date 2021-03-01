@@ -15,6 +15,8 @@ export default () => ({
     image:"",
     showAllTrees: true,
     exerciseMode: false,
+    diffMode: false,
+    diffUserId: "",
     shownfeatures: ["FORM", "UPOS", "LEMMA", "MISC.Gloss"],
     shownmeta: ["text_en"],
     TEACHER: "teacher",

@@ -276,7 +276,6 @@ export default {
   },
 
   mounted() {
-    // console.log(this.sampleId)
     this.options.annof = this.$store.getters['config/annotationFeatures'];
     this.options.catoptions.push({'name':'POS', 'values':this.options.annof.UPOS});
   },
@@ -293,7 +292,6 @@ export default {
       .then( response => { 
         this.CompareDics = true
         this.dics = response.data.dics ;
-        console.log(this.dics) ;
       }).catch(error => {
           // this.$q.notify({message:`${error}`, color:'negative'});
           this.$store.dispatch("notifyError", {error: error});
@@ -333,7 +331,6 @@ export default {
       if(this.RulesGrew.length!=0){
         var listSampleIds = "";
         for (let i in this.sampleId){
-          // console.log(112233,this.sampleId[i]["sample_name"])
           if (i < this.sampleId.length-1){
             listSampleIds += this.sampleId[i]["sample_name"] + ", "
           }
@@ -342,11 +339,8 @@ export default {
           }
         }
         var datasample = { data: this.RulesGrew };
-        // console.log(123123,datasample)
         api.transformation_grew(this.$route.params.projectname, datasample)
         .then(response => {
-          // console.log(444555666,response)
-          // console.log(888888, this.queries)
           if ( this.queries.slice(-1)[0]['name'] != 'Correct lexicon'){
             this.queries.push({"name":"Correct lexicon", "pattern":response.data.rules, "commands":" ", "sampleIds":listSampleIds})
           }
@@ -358,7 +352,6 @@ export default {
           }
         )
         this.searchDialog=true;
-        console.log(789789789,this.queries)
         }
       else{this.showNotif('top', 'noRuletoApply');}
     },
@@ -374,23 +367,11 @@ export default {
         changed:'add',
         key:this.featTable.form[0]['v']+this.featTable.lemma[0]['v']+this.featTable.pos[0]['v']+this.temp_features+this.featTable.gloss[0]['v']
       };
-      console.log(321321321, newRow)
       this.data.splice(this.indexfeat+1,0, newRow)}
       else{this.showNotif('top', 'noModification');}
-      // console.log(this.data)
-      // console.log(my_object)
-      // this.form = '';
-      // this.lemma = '';
-      // this.pos = '';
-      // this.features = '';
-      // this.gloss = '';
-      // this.changed=null;
     },
     informFeatureChanged(){
       this.someFeatureChanged=true;
-      //console.log(this.featTable.lemma)
-      // console.log(this.featTable.featl.length)
-      // console.log(this.featTable.form[0])
       if (this.featTable.featl.length ==0){this.infotochange = this.featTable.form[0]["v"]+' '+this.featTable.lemma[0]["v"]+' '+this.featTable.pos[0]["v"]+' '+this.featTable.gloss[0]["v"]+' _'}
       else { 
         if(this.featTable.featl.length ==1){this.infotochange = this.featTable.form[0]["v"]+' '+this.featTable.lemma[0]["v"]+' '+this.featTable.pos[0]["v"]+' '+this.featTable.gloss[0]["v"]+' '+this.featTable.featl[0]['a']+'='+this.featTable.featl[0]['v']
@@ -402,7 +383,6 @@ export default {
         this.temp_features+=this.tempfeat
         }}
       this.tempfeat=''
-      //console.log(555555,this.infotochange)
 
     },
 
@@ -418,27 +398,13 @@ export default {
         changed:'replace',
         key:this.featTable.form[0]['v']+this.featTable.lemma[0]['v']+this.featTable.pos[0]['v']+this.temp_features+this.featTable.gloss[0]['v']
       };
-      // console.log(333666999,newRow)
-      //console.log(321321321, this.temp_features)
       this.data.splice(this.indexfeat+1,0, newRow)
       if(this.infotochange != ""){
       this.RulesGrew.push({currentInfo:this.currentinfo, info2Change:this.infotochange})}
-      // console.log(123, this.currentinfo, this.infotochange, this.RulesGrew)
       }
       
     else{this.showNotif('top', 'noModification');}
     },
-    // getProjectConfig(){
-    //       var conf = this.$store.getters.getProjectConfig;
-    //       // console.log(666666,conf)
-    //       this.options.annof = conf.annotationFeatures;
-    //       this.options.shownfeatures = conf.shownfeatures;
-    //       this.options.shownmeta = conf.shownmeta;
-    //       // console.log(this.options.annof)
-    //       // console.log(123123,this.options.annof.UPOS)
-    //       this.options.catoptions.push({'name':'POS', 'values':this.options.annof.UPOS})
-    //       // console.log(777777, this.options.catoptions)
-    //     },
 
     deleteSelected(){
       let self = this;
@@ -466,18 +432,10 @@ export default {
         {this.featTable.featl.push({'a':row.features.split("|")[a].split("=")[0],'v':row.features.split("|")[a].split("=")[1]})}
        }
       }
-      // console.log(this.featTable.form)
-      // console.log(this.featTable.pos)
-      // console.log(this.featTable.lemma)
-      // console.log(this.featTable.gloss)
-      // console.log(this.featTable.featl)
-      //console.log(this.featTable.lemma)
       if (row.features == '_'){this.currentinfo = row.form+' '+row.lemma+' '+row.POS+' '+row.gloss+' _'}
       else { 
         this.currentinfo = row.form+' '+row.lemma+' '+row.POS+' '+row.gloss+' '+row.features
         }
-      //console.log(111,this.currentinfo)
-
     },
     exportLexiconTSV(){
       for (let i = 0; i < this.data.length; i++){
@@ -514,8 +472,6 @@ export default {
         }
       }
       var datasample = { data: this.download};
-      // console.log(123,this.$refs.table.computedRows)
-      // console.log(datasample)       
       api.exportLexiconJSON(this.$route.params.projectname, datasample)
       .then( response => {
           const url = window.URL.createObjectURL(new Blob([response.data], { type: "application/json" }));

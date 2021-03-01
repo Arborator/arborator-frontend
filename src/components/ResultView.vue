@@ -146,16 +146,13 @@ export default {
      * @returns void
      */
     save() {
-      console.log(987123654,this.searchresults)
       var changedConllUser = this.$store.getters["user/getUserInfos"].username;
       var sentenceIds = [];
       var objLength = Object.keys(this.samplesFrozen.selected).length;
-      // console.log(objLength)
       for (let i = 0; i < objLength; i++){
         if (this.samplesFrozen.selected[i] == true)
           sentenceIds.push(this.samplesFrozen.list[i][1])
       }
-      // console.log(sentenceIds)
       for (let samplename in this.searchresults){
         for (let sent_id in this.searchresults[samplename]){
           if (sentenceIds.includes(sent_id) == false){
@@ -167,15 +164,12 @@ export default {
           delete this.searchresults[samplename]
         }
       }
-      console.log(555,this.searchresults)
       if (Object.keys(this.searchresults) != 0){
         var datasample = { data: this.searchresults};
         api.saveConll(this.$route.params.projectname, datasample)
         .then(response => {
-          console.log(456, response)
           this.resultSearchDialog = false;
           this.parentOnShowTable(this.resultSearchDialog);
-          // console.log(456,"okkk")
           this.$q.notify({message:`Conll Saved`});
         })
       }

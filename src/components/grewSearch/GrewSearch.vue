@@ -62,7 +62,6 @@ export default {
   },
   mounted() {
     this.searchDialog = this.showTable;
-    console.log(this.showTable)
   },
   computed: {
     breakpoint() {
@@ -83,7 +82,6 @@ export default {
     //     });
     // },
     onShowTable(resultSearchDialog){
-      console.log(941,resultSearchDialog)
       this.resultSearchDialog = resultSearchDialog;
       this.searchDialog = false;
     },
@@ -97,7 +95,6 @@ export default {
             query
           )
           .then((response) => {
-            // console.log(555,response.data)
             this.resultSearch = response.data;
             this.resultSearchDialog = true;
           })
@@ -108,7 +105,6 @@ export default {
         api
           .searchProject(this.$route.params.projectname, query)
           .then((response) => {
-            // console.log(555,response.data)
             this.resultSearch = response.data;
             this.resultSearchDialog = true;
           })
@@ -118,18 +114,12 @@ export default {
       }
     },
     onTryRules(Rules, SampleIds) {
-      // console.log(12121, searchPattern, rewriteCommands);
-      // console.log("ok");
-      console.log(851, SampleIds)
       var query = { rules: Rules, sampleId: SampleIds};
       api
         .tryRulesProject(this.$route.params.projectname, query)
         .then((response) => {
           this.resultSearchDialog = true;
           this.resultSearch = response.data.trees;
-          // this.rulesGrew = response.data.rules;
-          console.log(99999999,response.data.trees)
-          // console.log(998877, response.data.rules)
         })
         .catch((error) => {
           this.$store.dispatch("notifyError", {

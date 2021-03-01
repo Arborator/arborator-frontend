@@ -115,8 +115,6 @@ export default {
   methods: {
     changeLexicon(){
       var RulesGrew = [];
-      // console.log(123, this.table.selected)
-      // console.log(123, this.table.selected[0]['toChange'])
       if (this.table.selected.length == 0){
         for (let i = 0; i < this.data.length; i++){
           if (this.data[i]['toChange']!= '_' && this.data[i]['toChange']){
@@ -132,7 +130,6 @@ export default {
         }
       }
       if (this.featCheck == false){
-        console.log(123, this.table.selected)
         for (let i = 0; i < this.table.selected.length; i++){
           if (this.table.selected[i]['features'] == '_'){ 
             this.currentinfo = this.table.selected[i]['form']+' '+this.table.selected[i]['lemma']+' '+this.table.selected[i]['POS']+' '+this.table.selected[i]['gloss']+' _';
@@ -143,7 +140,6 @@ export default {
           this.infotochange = this.table.selected[i]['toChange']
           RulesGrew.push({currentInfo:this.currentinfo, info2Change:this.infotochange})
         }
-        console.log(123123123, RulesGrew)
         this.getRulesGrew(RulesGrew);
       }
       else{
@@ -156,7 +152,6 @@ export default {
       if(RulesGrew.length!=0){
         var listSampleIds = "";
         for (let i in this.sampleId){
-          // console.log(112233,this.sampleId[i]["sample_name"])
           if (i < this.sampleId.length-1){
             listSampleIds += this.sampleId[i]["sample_name"] + ", "
           }
@@ -165,11 +160,8 @@ export default {
           }
         }
         var datasample = { data: RulesGrew };
-        console.log(123123,datasample)
         api.transformation_grew(this.$route.params.projectname, datasample)
         .then(response => {
-          console.log(444555666,response)
-          console.log(888888, this.queries)
           if ( this.queries.slice(-1)[0]['name'] != 'Correct lexicon'){
             this.queries.push({"name":"Correct lexicon", "pattern":response.data.rules, "commands":" ", "sampleIds":listSampleIds})
           }
@@ -181,7 +173,6 @@ export default {
           }
         )
         this.searchDialog=true;
-        console.log(789789789,this.queries)
         }
       else{this.showNotif('top', 'noRuletoApply');}
     },

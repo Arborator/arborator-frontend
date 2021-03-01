@@ -56,7 +56,7 @@
           </q-img>
         </q-card-section>
         <q-card-section v-if="LexiconTable">
-          <LexiconTable :data="this.lexicon" @request="getLexicon">
+          <LexiconTable :data="this.lexicon" :sampleId="this.table.selected" @request="getLexicon">
           </LexiconTable>
         </q-card-section>
         <q-card-section>
@@ -363,10 +363,23 @@
 
                 <div>
                   <q-btn
+                    v-show="LexiconTable==false" 
                     flat
                     color="default"
                     icon="playlist_add_check"
                     @click="getLexicon()"
+                    :loading="table.exporting"
+                    :disable="
+                      (!isGuest && !isAdmin && !isSuperAdmin) ||
+                      table.selected.length < 1
+                    "
+                  ></q-btn>
+                  <q-btn
+                    v-show="LexiconTable==true" 
+                    flat
+                    color="default"
+                    icon="playlist_add_check"
+                    @click="LexiconTable=false"
                     :loading="table.exporting"
                     :disable="
                       (!isGuest && !isAdmin && !isSuperAdmin) ||

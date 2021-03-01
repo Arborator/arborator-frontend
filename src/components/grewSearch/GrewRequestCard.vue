@@ -40,7 +40,7 @@
                         <div class="full-width row justify-start  ">
 
                             <q-btn color="primary" type="submit" label="Search" no-caps />
-                            <q-btn v-if="rewriteCommands!=''" color="primary" @click="tryRule" label="try Rule" no-caps />
+                            <q-btn v-if="rewriteCommands!=''" color="primary" @click="tryRules" label="try Rules" no-caps />
                             <q-space/>
                             <q-btn icon="ion-md-link" @click="getgrewlink"/>
                             <q-space/>
@@ -66,13 +66,10 @@
 
 <script>
 import store from '../../store';
-
 import CodeMirror from 'codemirror'
 import { codemirror } from 'vue-codemirror'
 import 'codemirror/lib/codemirror.css'
-
 import grewTemplates from '../../assets/grew-templates.json';
-
 // import 'codemirror/theme/material.css'
   CodeMirror.defineMode('grew', function(_config, parserConfig) {
         var words = {
@@ -81,45 +78,35 @@ import grewTemplates from '../../assets/grew-templates.json';
 	    'commands': 'builtin',
 	    'without': 'builtin',
 	};
-
 	function tokenBase(stream, state) {
 	    var ch = stream.next();
-
 	    if (ch === '"') {
 		state.tokenize = tokenString;
 		return state.tokenize(stream, state);
 	    }
-
 	    if (ch === '%' ) {
 		stream.skipToEnd();
 		return 'comment';
 	    }
-
 	    if (ch === '=' ) {
                 return 'quote';
             }
-
             if (ch === '<') {
 		if (stream.eat('>')) {
                     return 'quote';
                 }
             }
-
 	    if (ch === '-') {
 	    	var next_ch = stream.next();
 	    	if ((next_ch === '[') || (next_ch === ">")) {
 		    return 'quote';
 		}
 	    }
-
             if (ch === ']') {
 		if (stream.eat('-') && stream.eat(">")) {
                     return 'quote';
                 }
             }
-
-
-
 	    if (/\d/.test(ch)) {
 		stream.eatWhile(/[\d]/);
 		if (stream.eat('.')) {
@@ -134,7 +121,6 @@ import grewTemplates from '../../assets/grew-templates.json';
 	    var cur = stream.current();
 	    return words[cur] || 'variable';
 	}
-
 	function tokenString(stream, state) {
 	    var next, end = false, escaped = false;
 	    while ((next = stream.next()) != null) {
@@ -149,7 +135,6 @@ import grewTemplates from '../../assets/grew-templates.json';
 	    }
 	    return 'string';
 	}
-
 	return {
 	    startState: function() {return {tokenize: tokenBase, commentLevel: 0};},
 	    token: function(stream, state) {
@@ -160,11 +145,10 @@ import grewTemplates from '../../assets/grew-templates.json';
 	};
     
   });
-
 export default {
     components: { codemirror },
     name: 'GrewRequestCard',
-    props: ['parentOnSearch', 'parentOnTryRule', 'grewquery'],
+    props: ['parentOnSearch', 'parentOnTryRules', 'grewquery'],
     data() {
         return {
             searchPattern: `% Search for a given word form
@@ -206,14 +190,11 @@ pattern { N [form="Form_to_search"] }`,
          * 
          * @returns void
          */
-        tryRule(){
-            console.log(78787,this.searchPattern, this.rewriteCommands);
-            this.parentOnTryRule(this.searchPattern, this.rewriteCommands);
-
-
-
+        tryRules(){
+            console.log(88888,this.queries[6]['pattern']);
+            console.log(7789987)
+            this.parentOnTryRules(this.queries[6]['pattern'], this.queries[6]['sampleIds']);
         },
-
         /**
          * Modify the search pattern (search string)
          * 
@@ -349,11 +330,6 @@ pattern { N [form="Form_to_search"] }`,
         atou (str) {
             return decodeURIComponent(escape(window.atob(str)))
         }
-
-
-
-
-
     }
 }
 </script>

@@ -18,9 +18,9 @@
       </q-btn>
     </q-page-sticky>
     <q-dialog v-model="searchDialog" seamless position="right" full-width>
-      <GrewRequestCard
+      <GrewRequestCard                   
         :parentOnSearch="onSearch"
-        :parentOnTryRule="onTryRule"
+        :parentOnTryRules="onTryRules"
         :grewquery="$route.query.q || ''"
       ></GrewRequestCard>
     </q-dialog>
@@ -32,7 +32,9 @@
       <ResultView
         :searchresults="resultSearch"
         :totalsents="sentenceCount"
+        :rulesGrew="rulesGrew"
         searchscope="sample"
+        :parentOnShowTable="onShowTable"
       ></ResultView>
     </q-dialog>
   </div>
@@ -40,25 +42,26 @@
 
 <script>
 import { mapGetters } from "vuex";
-
 import GrewRequestCard from "./GrewRequestCard";
 import ResultView from "../ResultView";
-
 import api from "../../boot/backend-api";
-
 export default {
   components: {
     GrewRequestCard,
     ResultView,
   },
-  props: ["sentenceCount"],
+  props: ["sentenceCount", "sampleId", "showTable"],
   data() {
     return {
       searchDialog: false,
       resultSearchDialog: false,
       resultSearch: {},
+      rulesGrew: {},
       window: { width: 0, height: 0 },
     };
+  },
+  mounted() {
+    this.searchDialog = this.showTable;
   },
   computed: {
     breakpoint() {
@@ -78,6 +81,10 @@ export default {
     //       this.$store.dispatch("notifyError", { error: error });
     //     });
     // },
+    onShowTable(resultSearchDialog){
+      this.resultSearchDialog = resultSearchDialog;
+      this.searchDialog = false;
+    },
     onSearch(searchPattern) {
       var query = { pattern: searchPattern };
       if (this.$route.params.samplename) {
@@ -88,7 +95,6 @@ export default {
             query
           )
           .then((response) => {
-            // console.log(555,response.data)
             this.resultSearch = response.data;
             this.resultSearchDialog = true;
           })
@@ -99,7 +105,6 @@ export default {
         api
           .searchProject(this.$route.params.projectname, query)
           .then((response) => {
-            // console.log(555,response.data)
             this.resultSearch = response.data;
             this.resultSearchDialog = true;
           })
@@ -108,14 +113,13 @@ export default {
           });
       }
     },
-    onTryRule(searchPattern, rewriteCommands) {
-      console.log(12121, searchPattern, rewriteCommands);
-      var query = { pattern: searchPattern, rewriteCommands: rewriteCommands };
+    onTryRules(Rules, SampleIds) {
+      var query = { rules: Rules, sampleId: SampleIds};
       api
-        .tryRuleProject(this.$route.params.projectname, query)
+        .tryRulesProject(this.$route.params.projectname, query)
         .then((response) => {
           this.resultSearchDialog = true;
-          this.resultSearch = response.data;
+          this.resultSearch = response.data.trees;
         })
         .catch((error) => {
           this.$store.dispatch("notifyError", {

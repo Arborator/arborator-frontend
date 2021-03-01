@@ -33,24 +33,33 @@
     </template>
 
     <template v-slot:top-right>
-          <q-btn-group flat>
-            <q-btn color="default" v-show="table.selected.length<1" flat icon="delete_forever" disable><q-tooltip>Delete seleted samples</q-tooltip></q-btn>
-            <q-btn color="default" v-show="table.selected.length!=0" flat icon-right="delete_forever" @click="deleteSelected"><q-tooltip>Delete seleted samples</q-tooltip></q-btn>
-            <q-btn color="default" flat label="tsv" @click="exportLexiconTSV()" :loading="tableExporting"><q-tooltip :delay="300" content-class="text-white bg-primary">{{$t('projectView').tooltipExportLexicon[0]}}</q-tooltip></q-btn>
-            <q-btn color="default" flat label="json" @click="exportLexiconJSON()" :loading="tableExporting"><q-tooltip :delay="300" content-class="text-white bg-primary">{{$t('projectView').tooltipExportLexicon[1]}}</q-tooltip></q-btn>
-            <q-btn color= "default" flat label="Rule Grew" @click="getRulesGrew()" :disable="RulesGrew.length<0"><q-tooltip :delay="300" content-class="text-white bg-primary">{{$t('projectView').tooltipRuleGrewLexicon}}</q-tooltip></q-btn>
-            <q-btn flat color="default" v-show="CompareDics==false" icon="cloud_upload" @click="uploadDial = true" ><q-tooltip :delay="300" content-class="text-white bg-primary">{{$t('projectView').tooltipValidatorLexicon}}</q-tooltip></q-btn>
-            <q-btn flat color="default" v-show="CompareDics==true" icon="cloud_upload" @click="CompareDics = false" ><q-tooltip :delay="300" content-class="text-white bg-primary">{{$t('projectView').tooltipValidatorLexicon}}</q-tooltip></q-btn>
-          </q-btn-group>
+      <div>
+        <q-input borderless dense debounce="300" v-model="table.filter" placeholder="Search">
+          <template v-slot:append>
+            <q-icon name="search" />
+          </template>
+        </q-input>
+      </div>
+      <div>
+        <q-btn-group flat>
+          <q-btn color="default" v-show="table.selected.length<1" flat icon="delete_forever" disable><q-tooltip>Delete seleted samples</q-tooltip></q-btn>
+          <q-btn color="default" v-show="table.selected.length!=0" flat icon-right="delete_forever" @click="deleteSelected"><q-tooltip>Delete seleted samples</q-tooltip></q-btn>
+          <q-btn color="default" flat label="tsv" @click="exportLexiconTSV()" :loading="tableExporting"><q-tooltip :delay="300" content-class="text-white bg-primary">{{$t('projectView').tooltipExportLexicon[0]}}</q-tooltip></q-btn>
+          <q-btn color="default" flat label="json" @click="exportLexiconJSON()" :loading="tableExporting"><q-tooltip :delay="300" content-class="text-white bg-primary">{{$t('projectView').tooltipExportLexicon[1]}}</q-tooltip></q-btn>
+          <q-btn color= "default" flat label="Rule Grew" @click="getRulesGrew()" :disable="RulesGrew.length<0"><q-tooltip :delay="300" content-class="text-white bg-primary">{{$t('projectView').tooltipRuleGrewLexicon}}</q-tooltip></q-btn>
+          <q-btn flat color="default" v-show="CompareDics==false" icon="cloud_upload" @click="uploadDial = true" ><q-tooltip :delay="300" content-class="text-white bg-primary">{{$t('projectView').tooltipValidatorLexicon}}</q-tooltip></q-btn>
+          <q-btn flat color="default" v-show="CompareDics==true" icon="cloud_upload" @click="CompareDics = false" ><q-tooltip :delay="300" content-class="text-white bg-primary">{{$t('projectView').tooltipValidatorLexicon}}</q-tooltip></q-btn>
+        </q-btn-group>
+      </div>
     </template>
     </q-table>
     <div v-show="CompareDics===true">
       <q-space />
       <q-card>
         <q-separator/>
-        <compare-lexicon
-          :data="this.dics">
-        </compare-lexicon>
+        <CompareLexicon
+          :data="this.dics" :sampleId="this.sampleId">
+        </CompareLexicon>
       </q-card>
     </div>
     <q-dialog v-model="openFeatures">
@@ -117,7 +126,16 @@
       </q-card>
     </q-dialog>
     <q-dialog v-model="searchDialog" seamless position="right" full-width>
-      <grew-request-card :parentOnSearch="onSearch" :parentOnTryRule="onTryRule" :grewquery="$route.query.q || ''"></grew-request-card>
+      <template
+        v-if="
+          !(
+            $store.getters['config/exerciseMode'] &&
+            !$store.getters['config/isTeacher']
+          )
+        "
+      >
+        <GrewSearch :sentenceCount="this.data.length" :sampleId="this.sampleId" :showTable="this.searchDialog"/>
+      </template>
     </q-dialog>
 
     <q-dialog v-model="uploadDial" :maximized="maximizedUploadToggle" transition-show="fade" transition-hide="fade" >
@@ -156,15 +174,15 @@
 import api from '../boot/backend-api';
 import { openURL } from 'quasar'
 import AttributeTable from './sentence/AttributeTable';
-import GrewRequestCard from './grewSearch/GrewRequestCard';
+import GrewSearch from "./grewSearch/GrewSearch";
 import CompareLexicon from './CompareLexicon';
 import grewTemplates from '../assets/grew-templates.json';
 
 export default {
   name: "LexiconTable",
-  props: ["data"],
+  props: ["data", "sampleId"],
   components: {
-    GrewRequestCard,
+    GrewSearch,
     CompareLexicon,
     AttributeTable
   },
@@ -270,12 +288,10 @@ export default {
         }
       }
       var datasample = { data: this.uploadLexicon, validator : Validator};
-      // console.log(datasample)
       api.addValidator(this.$route.params.projectname, datasample)
       .then( response => { 
         this.CompareDics = true
         this.dics = response.data.dics ;
-        console.log(this.dics) ;
       }).catch(error => {
           // this.$q.notify({message:`${error}`, color:'negative'});
           this.$store.dispatch("notifyError", {error: error});
@@ -313,68 +329,31 @@ export default {
     },
     getRulesGrew(){
       if(this.RulesGrew.length!=0){
-        var datasample = { data: this.RulesGrew};
-        // console.log(123123,datasample)
+        var listSampleIds = "";
+        for (let i in this.sampleId){
+          if (i < this.sampleId.length-1){
+            listSampleIds += this.sampleId[i]["sample_name"] + ", "
+          }
+          else{
+            listSampleIds += this.sampleId[i]["sample_name"]
+          }
+        }
+        var datasample = { data: this.RulesGrew };
         api.transformation_grew(this.$route.params.projectname, datasample)
         .then(response => {
-          console.log(444555666,response.data)
-          var pattern_prov = response.data.patterns+response.data.without
-          // Demander à KIM si without doit être renvoyé sous forme de pattern
-
-          if ( this.RulesApplied == false ){
-            if (response.data.without != ""){
-              if ( this.queries.length == 6 || this.queries[6]['name'] != 'Correct lexicon'){
-              this.queries.push({"name":"Correct lexicon", "pattern":pattern_prov, "commands":response.data.commands, 'without':response.data.without})}
-              else ( this.queries[6] = {"name":"Correct lexicon", "pattern":pattern_prov, "commands":response.data.commands, 'without':response.data.without})
-            // Cette requête est à supprimer après onTryRule !!!!!!!!!!!!!!!!!!!!!
-              }
-            else {
-              if ( this.queries.length == 6 || this.queries[6]['name'] != 'Correct lexicon'){
-              this.queries.push({"name":"Correct lexicon", "pattern":pattern_prov, "commands":response.data.commands})}
-              else ( this.queries[6] = {"name":"Correct lexicon", "pattern":pattern_prov, "commands":response.data.commands})
-              }
-            }
-          else {
-            if (response.data.without != ""){
-              this.queries[6] = {"name":"Correct lexicon", "pattern":pattern_prov, "commands":response.data.commands, "without":response.data.without}
-              this.RulesApplied = false;
-              }
-            else {
-              this.queries[6] = {"name":"Correct lexicon", "pattern":pattern_prov, "commands":response.data.commands, "without":response.data.without}
-              this.RulesApplied = false;
-            }
+          if ( this.queries.slice(-1)[0]['name'] != 'Correct lexicon'){
+            this.queries.push({"name":"Correct lexicon", "pattern":response.data.rules, "commands":" ", "sampleIds":listSampleIds})
           }
-        
-        })
+          else (
+            this.queries.slice(-1)[0]['pattern'] = response.data.rules, 
+            this.queries.slice(-1)[0]['commands'] = " ",
+            this.queries.slice(-1)[0]['sampleIds'] = listSampleIds
+            )
+          }
+        )
         this.searchDialog=true;
-        // console.log(789789789,this.queries)
         }
       else{this.showNotif('top', 'noRuletoApply');}
-    },
-    ondialoghide(){},
-    onSearch(searchPattern){
-      var query = { pattern: searchPattern };
-      api.searchProject(this.$route.params.projectname, query)
-      .then(response => {
-          this.resultSearchDialog = true;
-          this.resultSearch = response.data;
-      }).catch(error => {  this.$store.dispatch("notifyError", {error: error})  });
-    },
-    onTryRule(searchPattern, rewriteCommands){
-      console.log(12121,searchPattern, rewriteCommands)
-      var query = { pattern: searchPattern, rewriteCommands:rewriteCommands };
-      console.log(3333, query);
-      api.tryRuleProject(this.$route.butparams.projectname, query)
-      .then(response => {
-          this.resultSearchDialog = true;
-          this.resultSearch = response.data;
-      }).catch(error => {  this.$store.dispatch("notifyError", {error: error.response.data.message})  });
-      this.RulesGrew=[];
-      this.RulesApplied = true;
-      this.searchDialog=false;
-      this.queries.splice(-1, 1);
-      // console.log(this.queries)
-
     },
     addEntry(){
       if(this.infotochange !=""){
@@ -388,23 +367,11 @@ export default {
         changed:'add',
         key:this.featTable.form[0]['v']+this.featTable.lemma[0]['v']+this.featTable.pos[0]['v']+this.temp_features+this.featTable.gloss[0]['v']
       };
-      console.log(321321321, newRow)
       this.data.splice(this.indexfeat+1,0, newRow)}
       else{this.showNotif('top', 'noModification');}
-      // console.log(this.data)
-      // console.log(my_object)
-      // this.form = '';
-      // this.lemma = '';
-      // this.pos = '';
-      // this.features = '';
-      // this.gloss = '';
-      // this.changed=null;
     },
     informFeatureChanged(){
       this.someFeatureChanged=true;
-      //console.log(this.featTable.lemma)
-      // console.log(this.featTable.featl.length)
-      // console.log(this.featTable.form[0])
       if (this.featTable.featl.length ==0){this.infotochange = this.featTable.form[0]["v"]+' '+this.featTable.lemma[0]["v"]+' '+this.featTable.pos[0]["v"]+' '+this.featTable.gloss[0]["v"]+' _'}
       else { 
         if(this.featTable.featl.length ==1){this.infotochange = this.featTable.form[0]["v"]+' '+this.featTable.lemma[0]["v"]+' '+this.featTable.pos[0]["v"]+' '+this.featTable.gloss[0]["v"]+' '+this.featTable.featl[0]['a']+'='+this.featTable.featl[0]['v']
@@ -416,7 +383,6 @@ export default {
         this.temp_features+=this.tempfeat
         }}
       this.tempfeat=''
-      //console.log(555555,this.infotochange)
 
     },
 
@@ -432,27 +398,13 @@ export default {
         changed:'replace',
         key:this.featTable.form[0]['v']+this.featTable.lemma[0]['v']+this.featTable.pos[0]['v']+this.temp_features+this.featTable.gloss[0]['v']
       };
-      // console.log(333666999,newRow)
-      //console.log(321321321, this.temp_features)
       this.data.splice(this.indexfeat+1,0, newRow)
       if(this.infotochange != ""){
       this.RulesGrew.push({currentInfo:this.currentinfo, info2Change:this.infotochange})}
-      // console.log(123, this.currentinfo, this.infotochange, this.RulesGrew)
       }
       
     else{this.showNotif('top', 'noModification');}
     },
-    // getProjectConfig(){
-    //       var conf = this.$store.getters.getProjectConfig;
-    //       // console.log(666666,conf)
-    //       this.options.annof = conf.annotationFeatures;
-    //       this.options.shownfeatures = conf.shownfeatures;
-    //       this.options.shownmeta = conf.shownmeta;
-    //       // console.log(this.options.annof)
-    //       // console.log(123123,this.options.annof.UPOS)
-    //       this.options.catoptions.push({'name':'POS', 'values':this.options.annof.UPOS})
-    //       // console.log(777777, this.options.catoptions)
-    //     },
 
     deleteSelected(){
       let self = this;
@@ -480,18 +432,10 @@ export default {
         {this.featTable.featl.push({'a':row.features.split("|")[a].split("=")[0],'v':row.features.split("|")[a].split("=")[1]})}
        }
       }
-      // console.log(this.featTable.form)
-      // console.log(this.featTable.pos)
-      // console.log(this.featTable.lemma)
-      // console.log(this.featTable.gloss)
-      // console.log(this.featTable.featl)
-      //console.log(this.featTable.lemma)
       if (row.features == '_'){this.currentinfo = row.form+' '+row.lemma+' '+row.POS+' '+row.gloss+' _'}
       else { 
         this.currentinfo = row.form+' '+row.lemma+' '+row.POS+' '+row.gloss+' '+row.features
         }
-      //console.log(111,this.currentinfo)
-
     },
     exportLexiconTSV(){
       for (let i = 0; i < this.data.length; i++){
@@ -528,8 +472,6 @@ export default {
         }
       }
       var datasample = { data: this.download};
-      // console.log(123,this.$refs.table.computedRows)
-      // console.log(datasample)       
       api.exportLexiconJSON(this.$route.params.projectname, datasample)
       .then( response => {
           const url = window.URL.createObjectURL(new Blob([response.data], { type: "application/json" }));

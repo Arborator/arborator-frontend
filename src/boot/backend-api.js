@@ -151,6 +151,9 @@ export default {
   tryRuleProject(projectname, query) {
     return API.post("projects/" + projectname + "/try-rule", query);
   },
+  tryRulesProject(projectname, query) {
+    return API.post("projects/" + projectname + "/try-rules", query);
+  },
   searchSample(projectname, samplename, query) {
     return API.post(
       "projects/" + projectname + "/sample/" + samplename + "/search",
@@ -182,6 +185,9 @@ export default {
   },
   addValidator(projectname, data) {
     return API.post("projects/" + projectname + "/addvalidator", data);
+  },
+  saveConll(projectname, data) {
+    return API.post(`/projects/${projectname}/saveConll`, data);
   },
 
   // -------------------------------------------------------- //

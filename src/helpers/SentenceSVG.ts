@@ -36,7 +36,7 @@ interface SentenceSVGOptions {
   interactive: boolean;
 }
 
-export interface SentenceSVG extends SentenceSVGOptions {}
+export interface SentenceSVG extends SentenceSVGOptions { }
 
 export class SentenceSVG extends EventDispatcher {
   snapSentence: Snap.Paper;
@@ -158,7 +158,7 @@ export class SentenceSVG extends EventDispatcher {
       })
     );
     this.levelsArray = Array.apply(null, Array(headsIdArray.length)).map(
-      function() {
+      function () {
         return -1;
       }
     );
@@ -393,10 +393,10 @@ class TokenSVG {
     let runningY = this.startY;
 
     let maxFeatureWidth = 0;
+    console.log("KK feature", this.tokenJson)
     for (const feature of shownFeatures) {
       // create new snap node for the feature text
       let featureText: string;
-
       // check if there is a feature and if it's a nested feature (misc and feats)
       if (this.tokenJson[feature]) {
         if (feature.split(".").length >= 2) {
@@ -424,6 +424,7 @@ class TokenSVG {
           featureText === ""
         )
       ) {
+        console.log("KK PPfeature", feature)
         runningY += SVG_CONFIG.spacingY;
       }
     }
@@ -495,7 +496,7 @@ class TokenSVG {
   attachEvent(): void {
     var this_ = this;
     for (const [label, snapElement] of Object.entries(this.snapElements)) {
-      snapElement.click(function(e: Event) {
+      snapElement.click(function (e: Event) {
         // be careful, 'this' is the element because it's normal function
         // const event = new Event("svg-click")
         const event = new CustomEvent("svg-click", {

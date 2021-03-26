@@ -393,7 +393,6 @@ class TokenSVG {
     let runningY = this.startY;
 
     let maxFeatureWidth = 0;
-    console.log("KK feature", this.tokenJson)
     for (const feature of shownFeatures) {
       // create new snap node for the feature text
       let featureText: string;
@@ -424,7 +423,6 @@ class TokenSVG {
           featureText === ""
         )
       ) {
-        console.log("KK PPfeature", feature)
         runningY += SVG_CONFIG.spacingY;
       }
     }

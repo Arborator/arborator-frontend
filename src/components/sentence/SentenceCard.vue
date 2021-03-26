@@ -226,7 +226,7 @@
       >
         <!-- v-for="(tree, user) in filteredConlls" -->
         <q-tab
-          v-for="(tree, user) in filteredConlls"
+          v-for="(tree, user) in orderedConlls"
           :key="user"
           :props="user"
           :label="user"
@@ -419,6 +419,16 @@ export default {
         return this.sentenceData.conlls;
       }
     },
+    orderedConlls() {
+      let users = Object.keys(this.filteredConlls)
+      let sortedUsers = users.sort()
+
+      const orderedConlls = {}
+      for (const user of sortedUsers) {
+        orderedConlls[user] = this.filteredConlls[user]
+      }
+      return orderedConlls
+    },
     userId() {
       return this.$store.getters["user/getUserInfos"].username;
     },
@@ -546,7 +556,6 @@ export default {
     handleTabChange() {
       // wait for 10ms until this.tab get changed
       setTimeout(() => {
-        console.log("KK tabSelected", this.tab);
         this.sentenceBus.$emit("action:tabSelected", {
           userId: this.tab,
         });

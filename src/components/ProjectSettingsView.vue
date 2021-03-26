@@ -35,7 +35,7 @@
               :color="$q.dark.isActive ? 'red-13' : 'positive'"
               size="lg"
             ></q-icon>
-            {{ name }}
+            {{ projectname }}
           </div>
         </q-img>
 

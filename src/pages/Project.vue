@@ -604,10 +604,11 @@
         transition-show="slide-up"
         transition-hide="slide-down"
       >
-        <project-settings-view
+        <ProjectSettingsView
+          :projectTreesFrom="projectTreesFrom"
           :projectname="$route.params.projectname"
           style="width: 90vw"
-        ></project-settings-view>
+        ></ProjectSettingsView>
       </q-dialog>
 
       <q-dialog v-model="simpleProjectInfoDialog">
@@ -719,6 +720,7 @@ export default {
         samples: [],
       },
       samples: [],
+      projectTreesFrom: [],
 
       table: {
         fields: [
@@ -870,7 +872,22 @@ export default {
     getProjectSamples() {
       api.getProjectSamples(this.$route.params.projectname).then((response) => {
         this.samples = response.data;
+        this.projectTreesFrom = this.getProjectTreesFrom(this.samples)
       });
+    },
+    getProjectTreesFrom(samples) {
+        let projectTreesFrom = []
+
+        for (const sample of this.samples) {
+          const sampleTreesFrom = sample.treesFrom
+
+          for (const userId of sampleTreesFrom) {
+            if (!(projectTreesFrom.includes(userId))) {
+              projectTreesFrom.push(userId)
+            }
+          }
+        }
+        return projectTreesFrom
     },
     getUsers() {
       // TODO : change this function as it's downloading all users each time. It should only be users of the project

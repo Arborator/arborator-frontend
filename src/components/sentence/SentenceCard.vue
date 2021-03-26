@@ -233,12 +233,15 @@
           :name="user"
           :alert="hasPendingChanges[user] ? 'orange' : ''"
           :alert-icon="hasPendingChanges[user] ? 'save' : ''"
-          icon="person"
+          :icon="diffMode && user === diffUserId ? 'school' : 'person'"
           no-caps
           :ripple="false"
           :ref="'tab' + user"
           @click="handleTabChange"
-        ><q-tooltip v-if="hasPendingChanges[user]">The tree has some pendings modifications not saved</q-tooltip></q-tab>
+          ><q-tooltip v-if="hasPendingChanges[user]"
+            >The tree has some pendings modifications not saved</q-tooltip
+          ></q-tab
+        >
       </q-tabs>
       <q-separator />
       <q-tab-panels
@@ -268,7 +271,7 @@
                   showDiffTeacher
                     ? reactiveSentencesObj['teacher']
                     : diffMode
-                    ? reactiveSentencesObj[userId]
+                    ? reactiveSentencesObj[diffUserId]
                     : {}
                 "
                 :sentenceId="sentenceId"
@@ -388,7 +391,7 @@ export default {
       "shownmeta",
     ]),
     showDiffTeacher() {
-      return this.exerciseMode && this.exerciseLevel <= 2
+      return this.exerciseMode && this.exerciseLevel <= 2;
     },
     /**
      * Never used ?!
@@ -439,6 +442,10 @@ export default {
         this.$store.getters["user/getUserInfos"].username == "kirianguiller"
       );
     },
+    diffUserId() {
+      let value = this.$store.getters["config/diffUserId"];
+      return value ? value : this.userId;
+    },
   },
   created() {
     this.shownmetanames = this.$store.getters[
@@ -451,6 +458,8 @@ export default {
       this.reactiveSentencesObj[userId] = reactiveSentence;
       this.hasPendingChanges[userId] = false;
     }
+
+    this.diffMode = !!this.$store.getters["config/diffMode"];
   },
   methods: {
     // to delete KK
@@ -678,10 +687,10 @@ export default {
     toggleDiffMode() {
       this.diffMode = !this.diffMode;
       for (const otherUserId in this.reactiveSentencesObj) {
-        if (otherUserId != this.userId) {
+        if (otherUserId != this.diffUserId) {
           if (this.sentenceBus[otherUserId]) {
             this.sentenceBus[otherUserId].plugDiffTree(
-              this.diffMode ? this.reactiveSentencesObj[this.userId] : {}
+              this.diffMode ? this.reactiveSentencesObj[this.diffUserId] : {}
             );
             // this.sentenceBus[otherUserId].drawTree()
           }

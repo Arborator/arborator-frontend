@@ -49,7 +49,6 @@ export default {
   },
   mounted() {
     const sentenceJson = conllToJson(this.conll);
-
     let interactive = true;
     if (this.$store.getters["config/isStudent"] == true && this.userId == this.$store.getters["config/TEACHER"]) {
       interactive = false

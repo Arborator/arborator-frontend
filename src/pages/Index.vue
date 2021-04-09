@@ -86,7 +86,7 @@
             <q-parallax :height="440" :speed="0.0" class="col col-md-5">
               <template v-slot:media>
                 <video width="720" height="440" autoplay loop muted>
-                  <source type="video/webm" src="../statics/videos/annotate.webm">
+                  <source type="video/webm" src="../statics/videos/annotate2.webm">
                 </video>
               </template>
             </q-parallax>

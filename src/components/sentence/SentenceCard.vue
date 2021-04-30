@@ -287,7 +287,7 @@
       <q-list class="sentence__meta-features" v-if="tab" dense>
         <q-item v-for="meta in shownmeta" :key="meta">
           <q-chip dense size="xs">{{ meta }}</q-chip
-          >{{ reactiveSentencesObj[tab].metaJson[meta] }}
+          >{{ reactiveSentencesObj[tab].state.metaJson[meta] }}
         </q-item>
       </q-list>
     </q-card-section>
@@ -322,7 +322,8 @@ import { LocalStorage } from "quasar";
 
 import api from "../../boot/backend-api";
 
-import { ReactiveSentence } from "../../helpers/ReactiveSentence"; // for test ony at the moment
+// import { ReactiveSentence } from "../../helpers/ReactiveSentence"; // for test ony at the moment
+import { ReactiveSentence } from "../../reactiveSentence/ReactiveSentence"; // for test ony at the moment
 
 import VueDepTree from "./VueDepTree.vue";
 import RelationDialog from "./RelationDialog.vue";
@@ -454,12 +455,16 @@ export default {
 
     for (const [userId, conll] of Object.entries(this.sentence.conlls)) {
       const reactiveSentence = new ReactiveSentence();
-      reactiveSentence.fromConll(conll);
+      reactiveSentence.fromSentenceConll(conll);
       this.reactiveSentencesObj[userId] = reactiveSentence;
       this.hasPendingChanges[userId] = false;
     }
 
     this.diffMode = !!this.$store.getters["config/diffMode"];
+
+    this.sentenceBus.$on("changed:metaText", ({newMetaText}) => {
+      this.changeMetaText(newMetaText)
+    })
   },
   methods: {
     // to delete KK
@@ -568,6 +573,8 @@ export default {
         this.sentenceBus.$emit("action:tabSelected", {
           userId: this.tab,
         });
+        const newMetaText = this.reactiveSentencesObj[this.tab].getSentenceText()
+        this.sentenceBus.$emit("changed:metaText", {newMetaText})
       }, 10);
     },
     /**
@@ -623,13 +630,13 @@ export default {
               ].sentenceConll = exportedConll;
             } else {
               const reactiveSentence = new ReactiveSentence();
-              reactiveSentence.fromConll(exportedConll);
+              reactiveSentence.fromSentenceConll(exportedConll);
               this.reactiveSentencesObj[changedConllUser] = reactiveSentence;
               this.sentenceData.conlls[changedConllUser] = exportedConll;
             }
 
             if (this.tab != changedConllUser) {
-              this.reactiveSentencesObj[openedTreeUser].resetRecentChanges();
+              // this.reactiveSentencesObj[openedTreeUser].resetRecentChanges();
               this.tab = changedConllUser;
 
               if (!this.reactiveSentencesObj[changedConllUser]) {
@@ -651,7 +658,7 @@ export default {
     },
     transitioned() {
       if (this.exportedConll) {
-        this.reactiveSentencesObj[this.changedConllUser].fromConll(
+        this.reactiveSentencesObj[this.changedConllUser].fromSentenceConll(
           this.exportedConll
         );
         this.exportedConll = "";

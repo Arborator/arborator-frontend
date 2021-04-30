@@ -40,9 +40,10 @@
 </template>
 
 <script>
-import { conllToJson } from "../../helpers/Conll";
+import {sentenceConllToJson} from 'conllup'
 import { codemirror } from "vue-codemirror";
 import CodeMirror from "codemirror";
+
 
 CodeMirror.defineMode("tsv", function (_config, parserConfig) {
   function tokenBase(stream, state) {
@@ -117,20 +118,25 @@ export default {
       cm.execCommand("selectAll");
     },
     onConllDialogOk() {
-      const sentenceJson = conllToJson(this.conllContent);
+      const sentenceJson = sentenceConllToJson(this.conllContent);
       const oldMeta = this.sentenceBus[this.userId].metaJson;
       const newMeta = sentenceJson.metaJson;
 
       var isMetaChanged = 0;
       for (const [metaKey, metaValue] of Object.entries(newMeta)) {
         if (metaValue != oldMeta[metaKey]) {
+          if (metaKey === "text") {
+            // we don't care if metaKey text change
+            continue
+          }
           isMetaChanged = 1;
         }
       }
       if (!isMetaChanged) {
-        this.sentenceBus[this.userId].treeJson = sentenceJson.treeJson;
-        this.sentenceBus[this.userId].metaJson = sentenceJson.metaJson;
-        this.sentenceBus[this.userId].refresh();
+        this.sentenceBus.$emit("tree-update:tree", {tree: sentenceJson.treeJson, userId: this.userId})
+        // this.sentenceBus[this.userId].treeJson = sentenceJson.treeJson;
+        // this.sentenceBus[this.userId].metaJson = sentenceJson.metaJson;
+        // this.sentenceBus[this.userId].refresh();
         this.$q.notify({
             message: `Conllu changed`,
           });

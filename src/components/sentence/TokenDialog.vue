@@ -50,6 +50,7 @@
 
 <script>
 import AttributeTable from "./AttributeTable.vue";
+import { replaceArrayOfTokens, sentenceConllToJson } from "conllup";
 
 export default {
   components: { AttributeTable },
@@ -181,15 +182,23 @@ export default {
       var ttokl = this.tokl
         .map(({ v }) => v)
         .filter((x) => x.trim().length > 0);
-      this.reactiveSentencesObj[this.userId].replaceArrayOfTokens(
-        this.tokidsequence,
-        ttokl.length ? this.tokidsequence[0] : this.tokidsequence[0] - 1,
-        ttokl
+      const oldTree = this.reactiveSentencesObj[this.userId].state.treeJson;
+      const oldTokensIndexes = this.tokidsequence;
+      const newTokensForm = ttokl;
+      const newTree = replaceArrayOfTokens(
+        oldTree,
+        oldTokensIndexes,
+        newTokensForm
       );
-      this.$emit(
-        "changed:metaText",
-        this.sentenceBus[this.userId].metaJson.text
-      );
+      this.sentenceBus.$emit("tree-update:tree", {
+        tree: newTree,
+        userId: this.userId,
+      });
+
+      // this.$emit(
+      //   "changed:metaText",
+      //   this.sentenceBus[this.userId].metaJson.text
+      // );
     },
   },
 };

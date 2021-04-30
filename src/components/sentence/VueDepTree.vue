@@ -1,15 +1,17 @@
 <template>
   <div>
     <div class="sentencebox">
-      <svg :id="svgID" />
+      <svg ref="svgWrapper"/>
     </div>
   </div>
 </template>
 
 <script>
 import { LocalStorage } from "quasar";
-import { conllToJson } from "../../helpers/Conll";
-import { SentenceSVG } from "../../helpers/SentenceSVG";
+import { SentenceSVG, defaultSentenceSVGOptions } from "../../reactiveSentence/SentenceSVG";
+import {
+  SentenceCaretaker
+} from "../../reactiveSentence/ReactiveSentence.ts";
 
 export default {
   props: [
@@ -33,35 +35,36 @@ export default {
       sentenceSVG: null,
       sentenceJson: {},
       usermatches: [],
-      history: [],
-      history_index: -1,
-      history_end: -1,
-      history_saveIndex: -1,
+      history_saveIndex: 0,
     };
   },
   computed: {
-    svgID() {
-      return `svg-${this.sentenceId}-${this.userId}`.replaceAll(".", "-");
-    },
     shownFeatures() {
       return this.$store.getters["config/shownfeatures"];
     },
   },
   mounted() {
-    const sentenceJson = conllToJson(this.conll);
-    let interactive = true;
+    // attach so this vue comp become an observer of the reactive sent
+    // each time the reactive sentence will change, it will call the function ".update" of all observers
+    this.reactiveSentence.attach(this); 
+    this.reactiveSentence.fromSentenceConll(this.conll);
+    const sentenceSVGOptions = defaultSentenceSVGOptions();
+    sentenceSVGOptions.shownFeatures = this.shownFeatures;
+    sentenceSVGOptions.interactive = true;
     if (this.$store.getters["config/isStudent"] == true && this.userId == this.$store.getters["config/TEACHER"]) {
-      interactive = false
+      sentenceSVGOptions.interactive = false
     }
-    this.sentenceSVG = new SentenceSVG({
-      svgID: this.svgID,
-      reactiveSentence: this.reactiveSentence,
-      usermatches: this.usermatches,
-      shownFeatures: this.shownFeatures,
-      teacherReactiveSentence: this.teacherReactiveSentence,
-      interactive: interactive
-    });
+    const svgWrapper = this.$refs.svgWrapper;
+    this.sentenceSVG = new SentenceSVG(
+      svgWrapper,
+      this.reactiveSentence,
+      sentenceSVGOptions
+    );
+    
     this.sentenceSVG.plugDiffTree(this.teacherReactiveSentence);
+
+    this.sentenceCaretaker = new SentenceCaretaker(this.reactiveSentence);
+    this.sentenceCaretaker.backup()
 
     this.sentenceBus[this.userId] = this.sentenceSVG;
 
@@ -72,80 +75,37 @@ export default {
     this.sentenceSVG.addEventListener("svg-drop", (e) => {
       this.svgDropHandler(e);
     });
-
     this.sentenceBus.$on("tree-update:token", ({ token, userId }) => {
       if (userId == this.userId) {
-        let prevToken = this.reactiveSentence.getToken(token.ID);
-
-        this.history[++this.history_index] = {
-          old: [{...prevToken}],
-          new: [{...token}],
-        };
-        this.history_end = this.history_index;
+        this.history_index ++;
         this.reactiveSentence.updateToken(token);
+        this.sentenceCaretaker.backup();
         this.statusChangeHadler();
       }
     });
 
     this.sentenceBus.$on("tree-update:tree", ({ tree, userId }) => {
       if (userId == this.userId) {
-        // store current tree into prevToken
-        let prevToken = [],
-          newToken = [];
-        for (const index in tree) {
-          prevToken.push(this.reactiveSentence.getToken(index));
-        }
-        //update tree
         this.reactiveSentence.updateTree(tree);
-
-        // store updated tree into newToken and add into history
-        for (const index in tree) {
-          newToken.push(this.reactiveSentence.getToken(index));
-        }
-        this.history[++this.history_index] = {
-          old: [...prevToken],
-          new: [...newToken],
-        };
-        this.history_end = this.history_index;
-
+        this.sentenceCaretaker.backup()
         this.statusChangeHadler();
       }
     });
     this.sentenceBus.$on("action:undo", ({ userId }) => {
-      if (userId == this.userId && this.history_index != -1) {
-        const oldToken = this.history[this.history_index].old;
-
-        const length = oldToken.length;
-        let index;
-        // this is to avoid unneccessary drawing
-        // when updating multiple tokens
-        for (index = 0; index < length - 1; index++)
-          this.reactiveSentence.updateToken(oldToken[index], false);
-        // draw the whole tree when last token is updated
-        this.reactiveSentence.updateToken(oldToken[index]);
-        this.history_index--;
+      if (userId == this.userId) {
+        this.sentenceCaretaker.undo();
         this.statusChangeHadler();
       }
     });
     this.sentenceBus.$on("action:redo", ({ userId }) => {
-      if (userId == this.userId && this.history_index != this.history_end) {
-        const newToken = this.history[++this.history_index].new;
-        const length = newToken.length;
-        let index;
-        // this is to avoid unneccessary drawing
-        // when updating multiple tokens
-        for (index = 0; index < length - 1; index++) {
-          this.reactiveSentence.updateToken(newToken[index], false);
-
-        }
-        // draw the whole tree when last token is updated
-        this.reactiveSentence.updateToken(newToken[index]);
+      if (userId == this.userId) {
+        this.sentenceCaretaker.redo();
         this.statusChangeHadler();
       }
     });
     this.sentenceBus.$on("action:saved", ({ userId }) => {
       if (userId == this.userId) {
-        this.history_saveIndex = this.history_index;
+        this.history_saveIndex = this.sentenceCaretaker.currentStateIndex;
         this.statusChangeHadler();
       }
     });
@@ -161,12 +121,12 @@ export default {
   methods: {
     svgClickHandler(e) {
       const clickedId = e.detail.clicked;
-      const clickedToken = this.sentenceSVG.treeJson[clickedId];
+      const clickedToken = {...this.sentenceSVG.treeJson[clickedId]};
       const targetLabel = e.detail.targetLabel;
 
       if (targetLabel == "DEPREL") {
         const dep = clickedToken;
-        const gov = this.sentenceSVG.treeJson[dep.HEAD] || {
+        const gov = {...this.sentenceSVG.treeJson[dep.HEAD]} || {
           FORM: "ROOT",
           ID: 0,
         }; // handle if head is root
@@ -200,14 +160,13 @@ export default {
       // if the area being hovered is the root (circle on top of the svg), assign the gov object to root
       if (e.detail.isRoot) {
         gov = { ID: 0, FORM: "ROOT" };
-        dep = this.sentenceSVG.treeJson[draggedId];
+        dep = {...this.sentenceSVG.treeJson[draggedId]};
       } else {
-        gov = this.sentenceSVG.treeJson[draggedId];
-        dep = this.sentenceSVG.treeJson[hoveredId];
+        gov = {...this.sentenceSVG.treeJson[draggedId]};
+        dep = {...this.sentenceSVG.treeJson[hoveredId]};
       }
-
       // emit only if dep is defined. If the token is being dragged on nothing, nothing will happen
-      if (dep) {
+      if (dep?.ID) {
         this.sentenceBus.$emit("open:relationDialog", {
           gov,
           dep,
@@ -219,9 +178,9 @@ export default {
      * Update the undo, redo and save status each time user makes changes.
      */
     statusChangeHadler() {
-      const canUndo = this.history_index != -1;
-      const canRedo = this.history_index != this.history_end;
-      const needSave = this.history_saveIndex != this.history_index;
+      const canUndo = this.sentenceCaretaker.canUndo();
+      const canRedo = this.sentenceCaretaker.canRedo();
+      const needSave = this.history_saveIndex != this.sentenceCaretaker.currentStateIndex;
       const status_str = LocalStorage.getItem("save_status");
       let status_obj = status_str ? JSON.parse(status_str) : {};
       let card = status_obj[this.cardId];
@@ -260,6 +219,10 @@ export default {
         delete e["returnValue"];
       };
     },
+    update() {
+      const newMetaText = this.reactiveSentence.getSentenceText()
+      this.sentenceBus.$emit("changed:metaText", {newMetaText})
+    }
   },
 };
 </script>

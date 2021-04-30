@@ -1,3 +1,6 @@
+// KIRIAN : This is an outdated file. In the long term, the conllup node library will replace all the 
+// ... functions of this file
+
 const CONLL_OPTIONS: any = {
   reverseMode: false,
   conlls: {

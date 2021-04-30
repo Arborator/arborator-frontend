@@ -262,7 +262,7 @@ export default {
       api
         .getProjects()
         .then((response) => {
-          console.log("here", response.data);
+          // console.log("here", response.data);
           this.projects = response.data;
           this.visibleProjects = response.data;
           this.sortProjects();

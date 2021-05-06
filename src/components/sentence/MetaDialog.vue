@@ -9,7 +9,7 @@
         <q-btn flat dense icon="close" v-close-popup />
       </q-bar>
       <AttributeTable
-        :featdata="metal"
+        :featdata="metalist"
         :columns="featTable.columns"
         :featOptions="['String']"
         openFeatures="true"
@@ -51,8 +51,8 @@ export default {
       metaDialogOpened: false,
       token: {},
       userId: "",
-      META: {},
-      metal: [],
+      metaJson: {},
+      metalist: [],
       featTable: {
         columns: [
           {
@@ -86,34 +86,44 @@ export default {
   mounted() {
     this.sentenceBus.$on("open:metaDialog", ({ userId }) => {
       this.userId = userId
-      this.META = this.sentenceBus[userId].metaJson
+      this.metaJson = {...this.sentenceBus[userId].metaJson}
       this.metaDialogOpened = true;
-      this.metal = [];
-      for (let a in this.META) {
-        this.metal.push({ a: a, v: this.META[a] });
+      this.metalist = [];
+      for (let a in this.metaJson) {
+        this.metalist.push({ a: a, v: this.metaJson[a] });
       }
-      this.$emit("meta-changed", this.META); // so that the sentenceCard can show the meta feature such as text and text_en
+      this.$emit("meta-changed", this.metaJson); // so that the sentenceCard can show the meta feature such as text and text_en
     });
   },
   beforeDestroy() {
     this.sentenceBus.$off("open:uposDialog");
   },
   methods: {
-    onChangeUpos() {
-      this.uposDialogOpened = false;
-      this.sentenceBus.$emit("tree-update:token", {
-        token: this.token,
-        userId: this.userId,
-      });
-    },
     onMetaDialogOk() {
-      this.META = this.metal.reduce(function (obj, r) {
+      let newMetaJson = this.metalist.reduce(function (obj, r) {
           if (r.v) obj[r.a] = r.v;
           return obj;
         }, {})
+      var isMetaChanged = 0
+      for (const newMetaKey of Object.keys(newMetaJson)) {
+        var newMetaValue = newMetaJson[newMetaKey]
+        if (newMetaValue != this.metaJson[newMetaKey]) {
+          if (["timestamp", "user_id", "sent_id", "text"].includes(newMetaKey)) {
+            isMetaChanged = 1;
+          }
+        }
+      }
+      if (!isMetaChanged) {
+        this.sentenceBus.$emit("tree-update:sentence", {sentenceJson: {metaJson: newMetaJson, treeJson: this.sentenceBus[this.userId].treeJson}, userId: this.userId})
+        this.$q.notify({
+            message: `Conllu changed`,
+          });
+      } else {
+        this.$store.dispatch("notifyError", { error: "Changing timestamp, user_id, sent_id or text is not allowed !" });
+      }
 
-        // TODO : implement META changed (if we really want it to change, 
-        // ... because some of META properties are immutable (sent_id, user_id, etc...))
+        // TODO : implement metaJson changed (if we really want it to change, 
+        // ... because some of metaJson properties are immutable (sent_id, user_id, etc...))
     },
     informFeatureChanged() {},
   },

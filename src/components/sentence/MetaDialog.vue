@@ -121,11 +121,7 @@ export default {
       } else {
         this.$store.dispatch("notifyError", { error: "Changing timestamp, user_id, sent_id or text is not allowed !" });
       }
-
-        // TODO : implement metaJson changed (if we really want it to change, 
-        // ... because some of metaJson properties are immutable (sent_id, user_id, etc...))
     },
-    informFeatureChanged() {},
   },
 };
 </script>

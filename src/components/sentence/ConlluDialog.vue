@@ -125,23 +125,18 @@ export default {
       var isMetaChanged = 0;
       for (const [metaKey, metaValue] of Object.entries(newMeta)) {
         if (metaValue != oldMeta[metaKey]) {
-          if (metaKey === "text") {
-            // we don't care if metaKey text change
-            continue
+          if (["timestamp", "user_id", "sent_id", "text"].includes(metaKey)) {
+            isMetaChanged = 1;
           }
-          isMetaChanged = 1;
         }
       }
       if (!isMetaChanged) {
-        this.sentenceBus.$emit("tree-update:tree", {tree: sentenceJson.treeJson, userId: this.userId})
-        // this.sentenceBus[this.userId].treeJson = sentenceJson.treeJson;
-        // this.sentenceBus[this.userId].metaJson = sentenceJson.metaJson;
-        // this.sentenceBus[this.userId].refresh();
+        this.sentenceBus.$emit("tree-update:sentence", {sentenceJson: sentenceJson, userId: this.userId})
         this.$q.notify({
             message: `Conllu changed`,
           });
       } else {
-        this.$store.dispatch("notifyError", { error: "Changing meta this way is not allowed (yet)" });
+        this.$store.dispatch("notifyError", { error: "Changing timestamp, user_id, sent_id or text is not allowed !" });
       }
     },
   },

@@ -91,6 +91,13 @@ export default {
         this.statusChangeHadler();
       }
     });
+    this.sentenceBus.$on("tree-update:sentence", ({ sentenceJson, userId }) => {
+      if (userId == this.userId) {
+        this.reactiveSentence.updateSentence(sentenceJson);
+        this.sentenceCaretaker.backup()
+        this.statusChangeHadler();
+      }
+    });
     this.sentenceBus.$on("action:undo", ({ userId }) => {
       if (userId == this.userId) {
         this.sentenceCaretaker.undo();

@@ -137,6 +137,11 @@ export class ReactiveSentence implements IOriginator, ISubject {
     this.notify();
   }
 
+  public updateSentence(sentenceJson: SentenceJson): void {
+    this.state = JSON.parse(JSON.stringify(sentenceJson));
+    this.notify();
+  }
+
   public exportConll() {
     return sentenceJsonToConll({
       treeJson: this.state.treeJson,

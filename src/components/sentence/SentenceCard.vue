@@ -26,179 +26,191 @@
           </q-input>
         </template>
         <q-space />
-        <q-btn
-          v-if="
-            isLoggedIn &&
-            exerciseLevel <= 3 &&
-            !$store.getters['config/isTeacher']
-          "
-          flat
-          round
-          dense
-          icon="assessment"
-          @click="openStatisticsDialog"
-          :disable="tab == ''"
-          ><q-tooltip>See your annotation errors</q-tooltip>
-        </q-btn>
+        <template v-if="this.tab!==''">
+          <q-btn
+            v-if="
+              isLoggedIn &&
+              exerciseLevel <= 3 &&
+              !$store.getters['config/isTeacher']
+            "
+            flat
+            round
+            dense
+            icon="assessment"
+            @click="openStatisticsDialog"
+            :disable="tab == ''"
+            ><q-tooltip>See your annotation errors</q-tooltip>
+          </q-btn>
 
-        <q-btn
-          v-if="$store.getters['config/isTeacher']"
-          flat
-          round
-          dense
-          icon="school"
-          :disable="tab == ''"
-          @click="save('teacher')"
-        >
-          <q-tooltip>Save as teacher</q-tooltip>
-        </q-btn>
+          <q-btn
+            v-if="$store.getters['config/isTeacher']"
+            flat
+            round
+            dense
+            icon="school"
+            :disable="tab == ''"
+            @click="save('teacher')"
+          >
+            <q-tooltip>Save as teacher</q-tooltip>
+          </q-btn>
 
-        <q-btn
-          v-if="$store.getters['config/isTeacher']"
-          flat
-          round
-          dense
-          icon="linear_scale"
-          :disable="tab == ''"
-          @click="save('base_tree')"
-        >
-          <q-tooltip>Save as base_tree</q-tooltip>
-        </q-btn>
+          <q-btn
+            v-if="$store.getters['config/isTeacher']"
+            flat
+            round
+            dense
+            icon="linear_scale"
+            :disable="tab == ''"
+            @click="save('base_tree')"
+          >
+            <q-tooltip>Save as base_tree</q-tooltip>
+          </q-btn>
 
-        <q-btn
-          v-if="isBernardCaron"
-          flat
-          round
-          dense
-          icon="face"
-          :disable="tab == ''"
-          @click="save(EMMETT)"
-        >
-          <q-tooltip>Save as Emmett</q-tooltip>
-        </q-btn>
+          <q-btn
+            v-if="isBernardCaron"
+            flat
+            round
+            dense
+            icon="face"
+            :disable="tab == ''"
+            @click="save(EMMETT)"
+          >
+            <q-tooltip>Save as Emmett</q-tooltip>
+          </q-btn>
 
-        <q-btn
-          v-if="isLoggedIn && !$store.getters['config/isTeacher']"
-          flat
-          round
-          dense
-          icon="save"
-          :disable="tab == '' || !canSave"
-          @click="save('')"
-        >
-          <q-tooltip>Save this tree {{ this.tab }}</q-tooltip>
-        </q-btn>
+          <q-btn
+            v-if="isLoggedIn && !$store.getters['config/isTeacher']"
+            flat
+            round
+            dense
+            icon="save"
+            :disable="tab == '' || !canSave"
+            @click="save('')"
+          >
+            <q-tooltip>Save this tree {{ this.tab }}</q-tooltip>
+          </q-btn>
 
-        <!-- TODO : still display the metadata when the user is not logged in, but hide all the buttons for deleting and saving them -->
-        <q-btn
-          v-if="isLoggedIn"
-          flat
-          round
-          dense
-          icon="post_add"
-          :disable="tab == ''"
-          @click="openMetaDialog()"
-        >
-          <q-tooltip>Edit this tree's metadata</q-tooltip>
-        </q-btn>
+          <!-- TODO : still display the metadata when the user is not logged in, but hide all the buttons for deleting and saving them -->
+          <q-btn
+            v-if="isLoggedIn"
+            flat
+            round
+            dense
+            icon="post_add"
+            :disable="tab == ''"
+            @click="openMetaDialog()"
+          >
+            <q-tooltip>Edit this tree's metadata</q-tooltip>
+          </q-btn>
+          <q-btn
+            v-if="isLoggedIn && $store.getters['config/isTeacher']"
+            flat
+            round
+            dense
+            icon="filter_9_plus"
+            :disable="tab == ''"
+            @click="openMultiEditDialog"
+          >
+            <q-tooltip>multi edit dialog</q-tooltip>
+          </q-btn>
 
-        <q-btn
-          v-if="isLoggedIn && $store.getters['config/isTeacher']"
-          flat
-          round
-          dense
-          icon="filter_9_plus"
-          :disable="tab == ''"
-          @click="openMultiEditDialog"
-        >
-          <q-tooltip>multi edit dialog</q-tooltip>
-        </q-btn>
+          <q-btn-dropdown :disable="tab == ''" icon="more_vert" flat dense>
+            <q-tooltip>More</q-tooltip>
+            <q-list>
+              <q-item
+                v-if="!exerciseMode"
+                clickable
+                v-close-popup
+                @click="toggleDiffMode()"
+              >
+                <q-item-section avatar>
+                  <q-avatar
+                    icon="ion-git-network"
+                    color="primary"
+                    text-color="white"
+                  />
+                </q-item-section>
+                <q-item-section>
+                  <q-item-label
+                    >{{ diffMode ? "Leave" : "Enter" }} Diff Mode</q-item-label
+                  >
+                </q-item-section>
+              </q-item>
 
-        <q-btn-dropdown :disable="tab == ''" icon="more_vert" flat dense>
-          <q-tooltip>More</q-tooltip>
-          <q-list>
-            <q-item
-              v-if="!exerciseMode"
-              clickable
-              v-close-popup
-              @click="toggleDiffMode()"
-            >
-              <q-item-section avatar>
-                <q-avatar
-                  icon="ion-git-network"
-                  color="primary"
-                  text-color="white"
-                />
-              </q-item-section>
-              <q-item-section>
-                <q-item-label
-                  >{{ diffMode ? "Leave" : "Enter" }} Diff Mode</q-item-label
-                >
-              </q-item-section>
-            </q-item>
+              <q-item clickable v-close-popup @click="getlink()">
+                <q-item-section avatar>
+                  <q-avatar
+                    icon="ion-md-link"
+                    color="primary"
+                    text-color="white"
+                  />
+                </q-item-section>
+                <q-item-section>
+                  <q-item-label>Get direct link to this tree</q-item-label>
+                </q-item-section>
+              </q-item>
 
-            <q-item clickable v-close-popup @click="getlink()">
-              <q-item-section avatar>
-                <q-avatar
-                  icon="ion-md-link"
-                  color="primary"
-                  text-color="white"
-                />
-              </q-item-section>
-              <q-item-section>
-                <q-item-label>Get direct link to this tree</q-item-label>
-              </q-item-section>
-            </q-item>
+              <q-item clickable v-close-popup @click="openConllDialog()">
+                <q-item-section avatar>
+                  <q-avatar
+                    icon="format_list_numbered"
+                    color="primary"
+                    text-color="white"
+                  />
+                </q-item-section>
+                <q-item-section>
+                  <q-item-label>Get CoNLL-U of this tree</q-item-label>
+                </q-item-section>
+              </q-item>
 
-            <q-item clickable v-close-popup @click="openConllDialog()">
-              <q-item-section avatar>
-                <q-avatar
-                  icon="format_list_numbered"
-                  color="primary"
-                  text-color="white"
-                />
-              </q-item-section>
-              <q-item-section>
-                <q-item-label>Get CoNLL-U of this tree</q-item-label>
-              </q-item-section>
-            </q-item>
-
-            <q-item clickable v-close-popup @click="exportSVG()">
-              <q-item-section avatar>
-                <q-avatar
-                  icon="ion-md-color-palette"
-                  color="primary"
-                  text-color="white"
-                />
-              </q-item-section>
-              <q-item-section>
-                <q-item-label>Get SVG of this tree</q-item-label>
-              </q-item-section>
-            </q-item>
-          </q-list>
-        </q-btn-dropdown>
-        <q-btn
-          v-if="isLoggedIn"
-          flat
-          round
-          dense
-          icon="undo"
-          :disable="tab == '' || !canUndo"
-          @click="undo('user')"
-          v-bind:class="'undo-button'"
-        >
-        </q-btn>
-        <q-btn
-          v-if="isLoggedIn"
-          flat
-          round
-          dense
-          icon="ion-redo"
-          :disable="tab == '' || !canRedo"
-          @click="redo('user')"
-          v-bind:class="'redo-button'"
-        >
-        </q-btn>
+              <q-item clickable v-close-popup @click="exportSVG()">
+                <q-item-section avatar>
+                  <q-avatar
+                    icon="ion-md-color-palette"
+                    color="primary"
+                    text-color="white"
+                  />
+                </q-item-section>
+                <q-item-section>
+                  <q-item-label>Get SVG of this tree</q-item-label>
+                </q-item-section>
+              </q-item>
+            </q-list>
+          </q-btn-dropdown>
+          <q-btn
+            v-if="isLoggedIn"
+            flat
+            round
+            dense
+            icon="undo"
+            :disable="tab == '' || !canUndo"
+            @click="undo('user')"
+            v-bind:class="'undo-button'"
+          >
+          </q-btn>
+          <q-btn
+            v-if="isLoggedIn"
+            flat
+            round
+            dense
+            icon="ion-redo"
+            :disable="tab == '' || !canRedo"
+            @click="redo('user')"
+            v-bind:class="'redo-button'"
+          >
+          </q-btn>
+          <q-btn
+            v-if="isLoggedIn"
+            flat
+            round
+            dense
+            icon="add"
+            :disable="tab == ''"
+            @click="addEmptyToken()"
+          >
+            <q-tooltip>Add an new empty token in the tree</q-tooltip>
+          </q-btn>
+        </template>
       </div>
 
       <div class="full-width row justify-end">
@@ -424,14 +436,14 @@ export default {
       }
     },
     orderedConlls() {
-      let users = Object.keys(this.filteredConlls)
-      let sortedUsers = users.sort()
+      let users = Object.keys(this.filteredConlls);
+      let sortedUsers = users.sort();
 
-      const orderedConlls = {}
+      const orderedConlls = {};
       for (const user of sortedUsers) {
-        orderedConlls[user] = this.filteredConlls[user]
+        orderedConlls[user] = this.filteredConlls[user];
       }
-      return orderedConlls
+      return orderedConlls;
     },
     userId() {
       return this.$store.getters["user/getUserInfos"].username;
@@ -462,9 +474,9 @@ export default {
 
     this.diffMode = !!this.$store.getters["config/diffMode"];
 
-    this.sentenceBus.$on("changed:metaText", ({newMetaText}) => {
-      this.changeMetaText(newMetaText)
-    })
+    this.sentenceBus.$on("changed:metaText", ({ newMetaText }) => {
+      this.changeMetaText(newMetaText);
+    });
   },
   methods: {
     // to delete KK
@@ -554,6 +566,13 @@ export default {
         });
       }
     },
+    addEmptyToken() {
+      if (this.tab !== "") {
+        this.sentenceBus.$emit("action:addEmptyToken", {
+          userId: this.tab,
+        });
+      }
+    },
     /**
      * Receive canUndo, canRedo status from VueDepTree child component and
      * decide whether to disable undo, redo buttons or not
@@ -573,8 +592,10 @@ export default {
         this.sentenceBus.$emit("action:tabSelected", {
           userId: this.tab,
         });
-        const newMetaText = this.reactiveSentencesObj[this.tab].getSentenceText()
-        this.sentenceBus.$emit("changed:metaText", {newMetaText})
+        const newMetaText = this.reactiveSentencesObj[
+          this.tab
+        ].getSentenceText();
+        this.sentenceBus.$emit("changed:metaText", { newMetaText });
       }, 10);
     },
     /**

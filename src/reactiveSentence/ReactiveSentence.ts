@@ -1,5 +1,5 @@
 import conllup from "conllup";
-const { emptySentenceJson, sentenceConllToJson, sentenceJsonToConll } = conllup;
+const { emptySentenceJson, sentenceConllToJson, sentenceJsonToConll, emptyTokenJson } = conllup;
 
 import {
   SentenceJson,
@@ -140,6 +140,21 @@ export class ReactiveSentence implements IOriginator, ISubject {
   public updateSentence(sentenceJson: SentenceJson): void {
     this.state = JSON.parse(JSON.stringify(sentenceJson));
     this.notify();
+  }
+
+  public addEmptyToken(): void {
+    const newToken = emptyTokenJson()
+    let idLastToken = "1"
+    for (const tokenJson of Object.values(this.state.treeJson)) {
+      if (tokenJson.isGroup === false) {
+        idLastToken = (parseInt(tokenJson.ID) + 1).toString()
+      }
+    }
+    newToken.ID = idLastToken
+    newToken.FORM = "new_token"
+    this.state.treeJson[newToken.ID] = newToken
+    this.state.treeJson = JSON.parse(JSON.stringify(this.state.treeJson))
+    this.notify()
   }
 
   public exportConll() {

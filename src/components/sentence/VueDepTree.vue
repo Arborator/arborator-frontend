@@ -122,6 +122,13 @@ export default {
         this.statusChangeHadler();
       }
     });
+    this.sentenceBus.$on("action:addEmptyToken", ({ userId }) => {
+      if(userId == this.userId) {
+        this.reactiveSentence.addEmptyToken()
+        this.sentenceCaretaker.backup()
+        this.statusChangeHadler();
+      }
+    });
 
     this.statusChangeHadler();
   },

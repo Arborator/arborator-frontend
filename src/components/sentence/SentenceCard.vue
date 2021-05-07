@@ -2,7 +2,6 @@
   <q-card :id="index">
     <q-card-section>
       <div class="row items-center">
-        <!-- icon="textsms"  ref="self" -->
         <span class="text-grey">{{ index + 1 }}</span>
         <q-chip
           class="text-center"
@@ -26,7 +25,7 @@
           </q-input>
         </template>
         <q-space />
-        <template v-if="this.tab!==''">
+        <template v-if="this.openTabUser !== ''">
           <q-btn
             v-if="
               isLoggedIn &&
@@ -38,7 +37,7 @@
             dense
             icon="assessment"
             @click="openStatisticsDialog"
-            :disable="tab == ''"
+            :disable="openTabUser == ''"
             ><q-tooltip>See your annotation errors</q-tooltip>
           </q-btn>
 
@@ -48,7 +47,7 @@
             round
             dense
             icon="school"
-            :disable="tab == ''"
+            :disable="openTabUser == ''"
             @click="save('teacher')"
           >
             <q-tooltip>Save as teacher</q-tooltip>
@@ -60,7 +59,7 @@
             round
             dense
             icon="linear_scale"
-            :disable="tab == ''"
+            :disable="openTabUser == ''"
             @click="save('base_tree')"
           >
             <q-tooltip>Save as base_tree</q-tooltip>
@@ -72,7 +71,7 @@
             round
             dense
             icon="face"
-            :disable="tab == ''"
+            :disable="openTabUser == ''"
             @click="save(EMMETT)"
           >
             <q-tooltip>Save as Emmett</q-tooltip>
@@ -84,10 +83,10 @@
             round
             dense
             icon="save"
-            :disable="tab == '' || !canSave"
+            :disable="openTabUser == '' || !canSave"
             @click="save('')"
           >
-            <q-tooltip>Save this tree {{ this.tab }}</q-tooltip>
+            <q-tooltip>Save this tree {{ this.openTabUser }}</q-tooltip>
           </q-btn>
 
           <!-- TODO : still display the metadata when the user is not logged in, but hide all the buttons for deleting and saving them -->
@@ -97,7 +96,7 @@
             round
             dense
             icon="post_add"
-            :disable="tab == ''"
+            :disable="openTabUser == ''"
             @click="openMetaDialog()"
           >
             <q-tooltip>Edit this tree's metadata</q-tooltip>
@@ -108,13 +107,18 @@
             round
             dense
             icon="filter_9_plus"
-            :disable="tab == ''"
+            :disable="openTabUser == ''"
             @click="openMultiEditDialog"
           >
             <q-tooltip>multi edit dialog</q-tooltip>
           </q-btn>
 
-          <q-btn-dropdown :disable="tab == ''" icon="more_vert" flat dense>
+          <q-btn-dropdown
+            :disable="openTabUser == ''"
+            icon="more_vert"
+            flat
+            dense
+          >
             <q-tooltip>More</q-tooltip>
             <q-list>
               <q-item
@@ -183,7 +187,7 @@
             round
             dense
             icon="undo"
-            :disable="tab == '' || !canUndo"
+            :disable="openTabUser == '' || !canUndo"
             @click="undo('user')"
             v-bind:class="'undo-button'"
           >
@@ -194,7 +198,7 @@
             round
             dense
             icon="ion-redo"
-            :disable="tab == '' || !canRedo"
+            :disable="openTabUser == '' || !canRedo"
             @click="redo('user')"
             v-bind:class="'redo-button'"
           >
@@ -205,7 +209,7 @@
             round
             dense
             icon="add"
-            :disable="tab == ''"
+            :disable="openTabUser == ''"
             @click="addEmptyToken()"
           >
             <q-tooltip>Add an new empty token in the tree</q-tooltip>
@@ -228,7 +232,7 @@
       </div>
 
       <q-tabs
-        v-model="tab"
+        v-model="openTabUser"
         :class="
           ($q.dark.isActive ? 'text-grey-5' : 'text-grey-8') + ' shadow-2'
         "
@@ -239,16 +243,15 @@
         <!-- v-for="(tree, user) in filteredConlls" -->
         <q-tab
           v-for="(tree, user) in filteredConlls"
-          :key="user"
+          :key="reactiveSentencesObj[user].state.metaJson.timestamp"
           :props="user"
-          :label="user"
           :name="user"
+          :label="`${user} (${lastModifiedTime[user]})`"
           :alert="hasPendingChanges[user] ? 'orange' : ''"
           :alert-icon="hasPendingChanges[user] ? 'save' : ''"
           :icon="diffMode && user === diffUserId ? 'school' : 'person'"
           no-caps
           :ripple="false"
-          :ref="'tab' + user"
           @click="handleTabChange"
           ><q-tooltip v-if="hasPendingChanges[user]"
             >The tree has some pendings modifications not saved</q-tooltip
@@ -257,7 +260,7 @@
       </q-tabs>
       <q-separator />
       <q-tab-panels
-        v-model="tab"
+        v-model="openTabUser"
         keep-alive
         @transition="transitioned"
         :animated="animated ? true : false"
@@ -296,10 +299,10 @@
           </q-card>
         </q-tab-panel>
       </q-tab-panels>
-      <q-list class="sentence__meta-features" v-if="tab" dense>
+      <q-list class="sentence__meta-features" v-if="openTabUser" dense>
         <q-item v-for="meta in shownmeta" :key="meta">
           <q-chip dense size="xs">{{ meta }}</q-chip
-          >{{ reactiveSentencesObj[tab].state.metaJson[meta] }}
+          >{{ reactiveSentencesObj[openTabUser].state.metaJson[meta] }}
         </q-item>
       </q-list>
     </q-card-section>
@@ -330,11 +333,8 @@ import Vue from "vue";
 
 import { mapGetters } from "vuex";
 
-import { LocalStorage } from "quasar";
-
 import api from "../../boot/backend-api";
 
-// import { ReactiveSentence } from "../../helpers/ReactiveSentence"; // for test ony at the moment
 import { ReactiveSentence } from "../../reactiveSentence/ReactiveSentence"; // for test ony at the moment
 
 import VueDepTree from "./VueDepTree.vue";
@@ -347,7 +347,6 @@ import ExportSVG from "./ExportSVG.vue";
 import TokenDialog from "./TokenDialog.vue";
 import StatisticsDialog from "./StatisticsDialog.vue";
 import MultiEditDialog from "./MultiEditDialog.vue";
-import user from "src/store/modules/user";
 
 export default {
   name: "SentenceCard",
@@ -368,7 +367,7 @@ export default {
     return {
       sentenceBus: new Vue(), // Event/Object Bus that communicate between all components
       reactiveSentencesObj: {},
-      tab: "",
+      openTabUser: "",
       animated: false,
       sentenceData: this.$props.sentence,
       EMMETT: "emmett.strickland",
@@ -391,6 +390,7 @@ export default {
       canRedo: false,
       canSave: false,
       hasPendingChanges: {},
+      forceRerender: 0,
     };
   },
 
@@ -403,8 +403,35 @@ export default {
       "exerciseMode",
       "shownmeta",
     ]),
-    usersConll() {
-      return Object.keys(this.sentenceData.conlls)
+    lastModifiedTime() {
+      this.forceRerender;
+      const lastModifiedTime = {};
+      for (const user of Object.keys(this.reactiveSentencesObj)) {
+        const timestamp = this.reactiveSentencesObj[user].state.metaJson
+          .timestamp;
+        const timeDifferenceNumber =
+          (Math.round(Date.now()) - parseInt(timestamp)) / 1000;
+        let timeDifferenceString;
+        if (timeDifferenceNumber < 10) {
+          timeDifferenceString = "< 10s";
+        } else if (timeDifferenceNumber / 60 < 1) {
+          timeDifferenceString = `${Math.round(timeDifferenceNumber)} seconds`;
+        } else if (timeDifferenceNumber / (60 * 60) < 1) {
+          timeDifferenceString = `${Math.round(
+            timeDifferenceNumber / 60
+          )} minutes`;
+        } else if (timeDifferenceNumber / (60 * 60 * 24) < 1) {
+          timeDifferenceString = `${Math.round(
+            timeDifferenceNumber / (60 * 60)
+          )} hours`;
+        } else if (timeDifferenceNumber / (60 * 60 * 24 * 365) < 1) {
+          timeDifferenceString = `${Math.round(
+            timeDifferenceNumber / (60 * 60 * 24)
+          )} days`;
+        }
+        lastModifiedTime[user] = timeDifferenceString;
+      }
+      return lastModifiedTime;
     },
     showDiffTeacher() {
       return this.exerciseMode && this.exerciseLevel <= 2;
@@ -426,14 +453,14 @@ export default {
       return this.$store.getters["user/isLoggedIn"];
     },
     filteredConlls() {
-      let filteredConlls = this.sentenceData.conlls
+      let filteredConlls = this.sentenceData.conlls;
       if (this.exerciseLevel != 1 && !this.isAdmin && this.exerciseMode) {
         filteredConlls = Object.filter(
           this.sentenceData.conlls,
           ([user, conll]) => user != "teacher"
         );
-      } 
-      return this.orderConlls(filteredConlls)
+      }
+      return this.orderConlls(filteredConlls);
     },
     userId() {
       return this.$store.getters["user/getUserInfos"].username;
@@ -493,7 +520,9 @@ export default {
       }, 500);
     },
     openStatisticsDialog() {
-      this.sentenceBus.$emit("open:statisticsDialog", { userId: this.tab });
+      this.sentenceBus.$emit("open:statisticsDialog", {
+        userId: this.openTabUser,
+      });
     },
     /**
      * Show the conll graph
@@ -501,10 +530,12 @@ export default {
      * @returns void
      */
     openConllDialog() {
-      this.sentenceBus.$emit("open:conlluDialog", { userId: this.tab });
+      this.sentenceBus.$emit("open:conlluDialog", { userId: this.openTabUser });
     },
     openMultiEditDialog() {
-      this.sentenceBus.$emit("open:openMultiEditDialog", { userId: this.tab });
+      this.sentenceBus.$emit("open:openMultiEditDialog", {
+        userId: this.openTabUser,
+      });
     },
     /**
      * Get the SVG by creating it using snap arborator plugin and then replacing the placeholder in the current DOM
@@ -514,7 +545,7 @@ export default {
      */
     exportSVG() {
       // todo: instead of this long string, read the actual css file and put it there.
-      this.sentenceBus.$emit("export:SVG", { userId: this.tab });
+      this.sentenceBus.$emit("export:SVG", { userId: this.openTabUser });
     },
     /**
      * Handle token click event to display the related dialog
@@ -524,31 +555,31 @@ export default {
      */
     ttselect(event) {
       // only if a tab is open
-      if (this.tab !== "") {
+      if (this.openTabUser !== "") {
         this.sentenceBus.$emit("open:tokenDialog", {
-          userId: this.tab,
+          userId: this.openTabUser,
           event: event,
         });
       }
     },
     undo(mode) {
-      if (this.tab !== "") {
+      if (this.openTabUser !== "") {
         this.sentenceBus.$emit("action:undo", {
-          userId: this.tab,
+          userId: this.openTabUser,
         });
       }
     },
     redo(mode) {
-      if (this.tab !== "") {
+      if (this.openTabUser !== "") {
         this.sentenceBus.$emit("action:redo", {
-          userId: this.tab,
+          userId: this.openTabUser,
         });
       }
     },
     addEmptyToken() {
-      if (this.tab !== "") {
+      if (this.openTabUser !== "") {
         this.sentenceBus.$emit("action:addEmptyToken", {
-          userId: this.tab,
+          userId: this.openTabUser,
         });
       }
     },
@@ -566,13 +597,14 @@ export default {
      * canSave status
      */
     handleTabChange() {
-      // wait for 10ms until this.tab get changed
+      // wait for 10ms until this.openTabUser get changed
       setTimeout(() => {
         this.sentenceBus.$emit("action:tabSelected", {
-          userId: this.tab,
+          userId: this.openTabUser,
         });
+
         const newMetaText = this.reactiveSentencesObj[
-          this.tab
+          this.openTabUser
         ].getSentenceText();
         this.sentenceBus.$emit("changed:metaText", { newMetaText });
       }, 10);
@@ -583,7 +615,7 @@ export default {
      * @returns void
      */
     save(mode) {
-      const openedTreeUser = this.tab;
+      const openedTreeUser = this.openTabUser;
 
       var changedConllUser = this.$store.getters["user/getUserInfos"].username;
       if (mode) {
@@ -613,34 +645,42 @@ export default {
         .then((response) => {
           if (response.status == 200) {
             this.sentenceBus.$emit("action:saved", {
-              userId: this.tab,
+              userId: this.openTabUser,
             });
-            if (this.sentenceData.conlls[changedConllUser]) { 
+            if (this.sentenceData.conlls[changedConllUser]) {
               // the user already had a tree
               this.hasPendingChanges[changedConllUser] = false;
               this.sentenceData.conlls[changedConllUser] = exportedConll;
-              this.reactiveSentencesObj[
-                changedConllUser
-              ].fromSentenceConll(exportedConll);
+              this.reactiveSentencesObj[changedConllUser].fromSentenceConll(
+                exportedConll
+              );
             } else {
+              // user still don't has a tree for this sentence, creating it.
+              Vue.set(
+                this.sentenceData.conlls,
+                changedConllUser,
+                exportedConll
+              );
+
               const reactiveSentence = new ReactiveSentence();
               reactiveSentence.fromSentenceConll(exportedConll);
-              Vue.set(this.sentenceData.conlls, changedConllUser, exportedConll)
-              Vue.set(this.reactiveSentencesObj, changedConllUser, reactiveSentence)
+              Vue.set(
+                this.reactiveSentencesObj,
+                changedConllUser,
+                reactiveSentence
+              );
             }
-            if (this.tab !== changedConllUser) {
-              
-              this.tab = changedConllUser;
 
-              if (!this.reactiveSentencesObj[changedConllUser]) {
-                Vue.set(this.reactiveSentencesObj, changedConllUser, reactiveSentence)
-              }
-
-              this.changedConllUser = changedConllUser;
+            if (this.openTabUser !== changedConllUser) {
+              this.reactiveSentencesObj[this.openTabUser].fromSentenceConll(
+                this.sentenceData.conlls[this.openTabUser]
+              );
+              this.openTabUser = changedConllUser;
               this.exportedConll = exportedConll;
             }
             this.graphInfo.dirty = false;
             this.showNotif("top", "saveSuccess");
+            this.forceRerender += 1;
           }
         })
         .catch((error) => {
@@ -649,7 +689,7 @@ export default {
     },
     transitioned() {
       if (this.exportedConll) {
-        this.reactiveSentencesObj[this.changedConllUser].fromSentenceConll(
+        this.reactiveSentencesObj[this.openTabUser].fromSentenceConll(
           this.exportedConll
         );
         this.exportedConll = "";
@@ -667,8 +707,8 @@ export default {
       else this.$store.commit("remove_pending_modification", this.sentenceId);
     },
     openMetaDialog() {
-      // "this.tab" contains the user name
-      this.sentenceBus.$emit("open:metaDialog", { userId: this.tab });
+      // "this.openTabUser" contains the user name
+      this.sentenceBus.$emit("open:metaDialog", { userId: this.openTabUser });
     },
     /**
      * Show a notification. Wrapper considering parameters
@@ -697,12 +737,24 @@ export default {
       }
     },
     orderConlls(filteredConlls) {
-      let users = Object.keys(filteredConlls);
-      let sortedUsers = users.sort();
+      let userAndTimestamps = [];
+      for (const [user, reactiveSentence] of Object.entries(
+        this.reactiveSentencesObj
+      )) {
+        userAndTimestamps.push({
+          user,
+          timestamp: parseInt(reactiveSentence.state.metaJson.timestamp),
+        });
+      }
+      // sort from newest to oldest
+      let orderedUserAndTimestamps = userAndTimestamps.sort(
+        (a, b) => b.timestamp - a.timestamp
+      );
 
       const orderedConlls = {};
-      for (const user of sortedUsers) {
-        orderedConlls[user] = filteredConlls[user];
+      for (const userAndTimestamp of orderedUserAndTimestamps) {
+        orderedConlls[userAndTimestamp.user] =
+          filteredConlls[userAndTimestamp.user];
       }
       return orderedConlls;
     },

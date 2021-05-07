@@ -9,7 +9,7 @@
           :color="$q.dark.isActive ? 'primary' : ''"
           dense
         >
-          {{ sentenceId }}</q-chip
+          {{ sentenceId }} {{usersConll}}</q-chip
         >&nbsp;&nbsp;&nbsp;
         <template>
           <q-input
@@ -238,7 +238,7 @@
       >
         <!-- v-for="(tree, user) in filteredConlls" -->
         <q-tab
-          v-for="(tree, user) in orderedConlls"
+          v-for="(tree, user) in filteredConlls"
           :key="user"
           :props="user"
           :label="user"
@@ -403,6 +403,9 @@ export default {
       "exerciseMode",
       "shownmeta",
     ]),
+    usersConll() {
+      return Object.keys(this.sentenceData.conlls)
+    },
     showDiffTeacher() {
       return this.exerciseMode && this.exerciseLevel <= 2;
     },
@@ -423,27 +426,14 @@ export default {
       return this.$store.getters["user/isLoggedIn"];
     },
     filteredConlls() {
-      Object.filter = (obj, predicate) =>
-        Object.fromEntries(Object.entries(obj).filter(predicate));
-
+      let filteredConlls = this.sentenceData.conlls
       if (this.exerciseLevel != 1 && !this.isAdmin && this.exerciseMode) {
-        return Object.filter(
+        filteredConlls = Object.filter(
           this.sentenceData.conlls,
           ([user, conll]) => user != "teacher"
         );
-      } else {
-        return this.sentenceData.conlls;
-      }
-    },
-    orderedConlls() {
-      let users = Object.keys(this.filteredConlls);
-      let sortedUsers = users.sort();
-
-      const orderedConlls = {};
-      for (const user of sortedUsers) {
-        orderedConlls[user] = this.filteredConlls[user];
-      }
-      return orderedConlls;
+      } 
+      return this.orderConlls(filteredConlls)
     },
     userId() {
       return this.$store.getters["user/getUserInfos"].username;
@@ -479,11 +469,6 @@ export default {
     });
   },
   methods: {
-    // to delete KK
-    refresh() {
-      this.$emit("refresh:trees");
-      this.$forceUpdate();
-    },
     /**
      * Set the sentence link and copy it after 500 ms
      *
@@ -546,9 +531,6 @@ export default {
         });
       }
     },
-    /**
-     * @todo undo
-     */
     undo(mode) {
       if (this.tab !== "") {
         this.sentenceBus.$emit("action:undo", {
@@ -556,9 +538,6 @@ export default {
         });
       }
     },
-    /**
-     * @todo redo
-     */
     redo(mode) {
       if (this.tab !== "") {
         this.sentenceBus.$emit("action:redo", {
@@ -605,15 +584,8 @@ export default {
      */
     save(mode) {
       const openedTreeUser = this.tab;
-      // var conll = this.sentenceBus[currentTreeUser].exportConll();
 
       var changedConllUser = this.$store.getters["user/getUserInfos"].username;
-      // if (mode == "teacher") {
-      //   changedConllUser = "teacher";
-      // }
-      // if (mode == this.EMMETT) {
-      //   changedConllUser = this.EMMETT;
-      // }
       if (mode) {
         changedConllUser = mode;
       }
@@ -643,27 +615,25 @@ export default {
             this.sentenceBus.$emit("action:saved", {
               userId: this.tab,
             });
-            if (this.sentenceData.conlls[changedConllUser]) {
+            if (this.sentenceData.conlls[changedConllUser]) { 
+              // the user already had a tree
               this.hasPendingChanges[changedConllUser] = false;
               this.sentenceData.conlls[changedConllUser] = exportedConll;
               this.reactiveSentencesObj[
                 changedConllUser
-              ].sentenceConll = exportedConll;
+              ].fromSentenceConll(exportedConll);
             } else {
               const reactiveSentence = new ReactiveSentence();
               reactiveSentence.fromSentenceConll(exportedConll);
-              this.reactiveSentencesObj[changedConllUser] = reactiveSentence;
-              this.sentenceData.conlls[changedConllUser] = exportedConll;
+              Vue.set(this.sentenceData.conlls, changedConllUser, exportedConll)
+              Vue.set(this.reactiveSentencesObj, changedConllUser, reactiveSentence)
             }
-
-            if (this.tab != changedConllUser) {
-              // this.reactiveSentencesObj[openedTreeUser].resetRecentChanges();
+            if (this.tab !== changedConllUser) {
+              
               this.tab = changedConllUser;
 
               if (!this.reactiveSentencesObj[changedConllUser]) {
-                this.reactiveSentencesObj[
-                  changedConllUser
-                ] = new ReactiveSentence();
+                Vue.set(this.reactiveSentencesObj, changedConllUser, reactiveSentence)
               }
 
               this.changedConllUser = changedConllUser;
@@ -726,7 +696,16 @@ export default {
         }
       }
     },
+    orderConlls(filteredConlls) {
+      let users = Object.keys(filteredConlls);
+      let sortedUsers = users.sort();
 
+      const orderedConlls = {};
+      for (const user of sortedUsers) {
+        orderedConlls[user] = filteredConlls[user];
+      }
+      return orderedConlls;
+    },
     showNotif(position, alert) {
       const {
         color,

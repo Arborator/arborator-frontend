@@ -31,6 +31,16 @@
       ></AttributeTable
       ><q-separator />
       <AttributeTable
+        :featdata="featTable.form"
+        :columns="featTable.columns"
+        :featOptions="options.formoptions"
+        openFeatures="false"
+        modifiable="false"
+        title="Form"
+        @feature-changed="informFeatureChanged()"
+      ></AttributeTable>
+      <q-separator />
+      <AttributeTable
         :featdata="featTable.lemma"
         :columns="featTable.columns"
         :featOptions="options.lemmaoptions"
@@ -74,11 +84,15 @@ export default {
       featuresDialogOpened: false,
       token: {},
       userId: "",
-      options: { lemmaoptions: [{ name: "Lemma", values: "String" }] },
+      options: {
+        lemmaoptions: [{ name: "Lemma", values: "String" }],
+        formoptions: [{ name: "Form", values: "String" }],
+      },
       featTable: {
         featl: [],
         miscl: [],
         lemma: [],
+        form: [],
         columns: [
           {
             name: "a",
@@ -120,6 +134,7 @@ export default {
         this.featTable.miscl.push({ a: a, v: token["MISC"][a] });
       }
       this.featTable.lemma = [{ a: "Lemma", v: token["LEMMA"] }];
+      this.featTable.form = [{ a: "Form", v: token["FORM"] }];
     });
   },
   beforeDestroy() {
@@ -133,6 +148,10 @@ export default {
         if (r.v) obj[r.a] = r.v;
         return obj;
       }, {})["Lemma"];
+      this.token["FORM"] = this.featTable.form.reduce(function (obj, r) {
+        if (r.v) obj[r.a] = r.v;
+        return obj;
+      }, {})["Form"];
       this.token["FEATS"] = this.featTable.featl.reduce(function (obj, r) {
         if (r.v) obj[r.a] = r.v;
         return obj;
@@ -146,13 +165,6 @@ export default {
         userId: this.userId,
       });
     },
-    // onChangeUpos() {
-    //   this.featuresDialogOpened = false;
-    //   this.sentenceBus.$emit("tree-update:upos", {
-    //     token: this.token,
-    //     userId: this.userId,
-    //   });
-    // },
   },
 };
 </script>

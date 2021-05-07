@@ -9,7 +9,7 @@
           :color="$q.dark.isActive ? 'primary' : ''"
           dense
         >
-          {{ sentenceId }} {{usersConll}}</q-chip
+          {{ sentenceId }}</q-chip
         >&nbsp;&nbsp;&nbsp;
         <template>
           <q-input
@@ -776,16 +776,4 @@ export default {
 .easeOutSine .q-transition--slide-left-leave-from {
   opacity: 1 !important;
 }
-
-/* .easeOutCubic .q-transition--slide-right-enter-active,
-.easeOutCubic .q-transition--slide-left-enter-active,
-.easeOutCubic .q-transition--slide-up-enter-active,
-.easeOutCubic .q-transition--slide-down-enter-active,
-.easeOutCubic .q-transition--slide-right-leave-active,
-.easeOutCubic .q-transition--slide-left-leave-active,
-.easeOutCubic .q-transition--slide-up-leave-active,
-.easeOutCubic .q-transition--slide-down-leave-active { */
-/* easeOutCubic */
-/* transition: transform 0.3s cubic-bezier(0.215, 0.61, 0.355, 1) !important;
-} */
 </style>

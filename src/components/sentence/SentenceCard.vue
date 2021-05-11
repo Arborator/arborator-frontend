@@ -86,7 +86,7 @@
             :disable="openTabUser == '' || !canSave"
             @click="save('')"
           >
-            <q-tooltip>Save this tree {{ this.openTabUser }}</q-tooltip>
+            <q-tooltip>Save the tree of {{ this.openTabUser }} as <b>{{this.userId}}</b></q-tooltip>
           </q-btn>
 
           <!-- TODO : still display the metadata when the user is not logged in, but hide all the buttons for deleting and saving them -->
@@ -388,7 +388,7 @@ export default {
       diffMode: false,
       canUndo: false,
       canRedo: false,
-      canSave: false,
+      canSave: true,
       hasPendingChanges: {},
       forceRerender: 0,
     };
@@ -590,7 +590,7 @@ export default {
     handleStatusChange(event) {
       this.canUndo = event.canUndo;
       this.canRedo = event.canRedo;
-      this.canSave = event.canSave;
+      // this.canSave = event.canSave;
     },
     /**
      * triggers when the user selects another tab, and update canUndo, canRedo,
@@ -680,7 +680,7 @@ export default {
             }
             this.graphInfo.dirty = false;
             this.showNotif("top", "saveSuccess");
-            this.forceRerender += 1;
+            this.forceRerender += 1; // nasty trick to rerender the indication of last time
           }
         })
         .catch((error) => {

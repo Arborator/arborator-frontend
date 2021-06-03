@@ -8,10 +8,11 @@
 
 <script>
 import { LocalStorage } from "quasar";
-import { SentenceSVG, defaultSentenceSVGOptions } from "../../reactiveSentence/SentenceSVG";
-import {
+import { 
+  SentenceSVG, 
+  defaultSentenceSVGOptions,
   SentenceCaretaker
-} from "../../reactiveSentence/ReactiveSentence.ts";
+} from "dependencytreejs/lib";
 
 export default {
   props: [

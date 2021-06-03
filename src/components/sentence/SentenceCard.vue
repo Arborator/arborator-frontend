@@ -335,7 +335,7 @@ import { mapGetters } from "vuex";
 
 import api from "../../boot/backend-api";
 
-import { ReactiveSentence } from "../../reactiveSentence/ReactiveSentence"; // for test ony at the moment
+import { ReactiveSentence } from "dependencytreejs/lib"; // for test ony at the moment
 
 import VueDepTree from "./VueDepTree.vue";
 import RelationDialog from "./RelationDialog.vue";

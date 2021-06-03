@@ -97,7 +97,7 @@ export default {
     return API.get(`/projects/${projectname}/samples`);
   },
   uploadSample(projectname, data) {
-    return API.post(`/projects/${projectname}/samples`, data, { test: "to" });
+    return API.post(`/projects/${projectname}/samples`, data, { timeout: 400000 });
   },
   exportEvaluation(projectName, sampleName) {
     return API.get(`/projects/${projectName}/samples/${sampleName}/evaluation`);

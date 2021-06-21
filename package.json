@@ -24,7 +24,7 @@
     "autoprefixer": "^9.6.2",
     "axios": ">=0.21.1",
     "conllup": "^1.1.4",
-    "dependencytreejs": "^1.0.2",
+    "dependencytreejs": "^1.0.4",
     "diff": "^5.0.0",
     "jszip": "^3.5.0",
     "quasar": "^1.12.8",

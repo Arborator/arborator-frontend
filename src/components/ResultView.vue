@@ -61,9 +61,9 @@
         </div>
       </div>
     </q-card-section>
-    <q-card-section>
+    <!-- <q-card-section>
       <q-btn color="primary" @click="save" label="Save conll" no-caps />
-    </q-card-section>
+    </q-card-section> -->
   </q-card>
 </template>
 

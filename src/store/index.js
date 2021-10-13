@@ -66,7 +66,6 @@ export default new Vuex.Store({
         notifyError({commit}, {error}){
             var msg;
             var caption="";
-            console.log(7777,error.message)
             if(error.message!=undefined) 
                 {msg = error.message;}
             else if (error.response) {

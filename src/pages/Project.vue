@@ -459,6 +459,7 @@
                 </q-td>
                 <q-td key="samplename" :props="props">
                   <q-btn
+                    :disable="props.row.sentences==0"
                     outline
                     color="white"
                     :text-color="$q.dark.isActive ? 'white' : 'black'"

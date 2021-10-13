@@ -248,12 +248,12 @@ export default {
         })
         .catch((error) => {
           if (error.response) {
-            error.response.message = error.response.data.message;
+            error.message = error.response.data.message;
             error.permanent = true;
           }
           this.$emit("uploaded:sample"); // tell to the parent that a new sample was uploaded and to fetch all samples
 
-          error.caption = "Check your file please!";
+          error.caption = "Check your file please and try again.";
           this.uploadSample.submitting = false;
           this.uploadDialModel = false;
           this.$store.dispatch("notifyError", { error: error });

@@ -109,6 +109,11 @@
             </p> -->
 
           <table>
+              <q-tooltip>
+                For each of the following user ids, choose a name that will replace
+              it. If the same sentence with two differents user ids gets renamed
+              with the same user_id, the most recent tree will be taken.
+            </q-tooltip>
             <tr>
               <th>previous name</th>
               <th>new name</th>

@@ -119,7 +119,7 @@
             flat
             dense
           >
-            <q-tooltip>More</q-tooltip>
+            <!-- <q-tooltip>More</q-tooltip> -->
             <q-list>
               <q-item
                 v-if="!exerciseMode"
@@ -246,7 +246,7 @@
           :key="reactiveSentencesObj[user].state.metaJson.timestamp"
           :props="user"
           :name="user"
-          :label="`${user} (${lastModifiedTime[user]})`"
+          :label="`${user}`"
           :alert="hasPendingChanges[user] ? 'orange' : ''"
           :alert-icon="hasPendingChanges[user] ? 'save' : ''"
           :icon="diffMode && user === diffUserId ? 'school' : 'person'"
@@ -255,7 +255,14 @@
           @click="handleTabChange"
           ><q-tooltip v-if="hasPendingChanges[user]"
             >The tree has some pendings modifications not saved</q-tooltip
-          ></q-tab
+          >
+          <q-tooltip v-else><q-icon color="primary"
+              name="schedule"
+              size="14px"
+              class="q-ml-xs"
+            /> modified {{lastModifiedTime[user]}} ago
+            </q-tooltip>
+          </q-tab
         >
       </q-tabs>
       <q-separator />

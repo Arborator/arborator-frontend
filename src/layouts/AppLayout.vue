@@ -54,8 +54,15 @@
                 <q-icon name="fas fa-globe" />
               </q-avatar>
             </template>
+            <q-tooltip>
+              Switch the language of the user interface
+            </q-tooltip>
           </q-select>
-          <q-btn flat round @click="toggleDarkMode()"  :icon="$q.dark.isActive?'lightbulb':'brightness_2'"></q-btn>
+          <q-btn flat round @click="toggleDarkMode()"  :icon="$q.dark.isActive?'lightbulb':'brightness_2'">
+              <q-tooltip>
+              Toggle dark mode
+            </q-tooltip>
+          </q-btn>
           <q-btn-dropdown v-show="!store.getters['user/isLoggedIn']" color="secondary" outline label="Log In" icon="account_circle">
             <q-list>
               <q-item clickable v-close-popup @click="tologin(store.getters.getSource + '/login/google')">
@@ -77,8 +84,12 @@
                 </q-item-section>
               </q-item>
             </q-list>
+            
           </q-btn-dropdown>
           <q-btn v-show="store.getters['user/isLoggedIn']" round flat dense color="purple"  >
+          <q-tooltip>
+              User information
+            </q-tooltip>
             <q-avatar >
               <q-icon v-show="store.getters['user/getUserInfos'].avatar == ''" name="account_circle" />
               <q-avatar v-show="store.getters['user/getUserInfos'].picture_url != ''" :key="store.getters['user/getAvatarKey']" color="default" text-color="white"  size="xs"  >
@@ -113,15 +124,17 @@
             <q-tooltip :delay="300" content-class="bg-white text-primary">{{$t('fullscreen')}}</q-tooltip>
           </q-btn>
         </div>      </q-bar>    </q-header>    <q-page-container>
-      <router-view />    </q-page-container>    <q-footer >
-      <q-item-label caption class="text-center text-grey-3">
+      <router-view />    </q-page-container>    
+      <!-- <q-footer > -->
+      <!-- <q-item-label caption class="text-center text-grey-3">
        {{$t('footer')[0]}} <q-icon name="favorite" style="font-size:22px;color: #dd137b;height:18px;vertical-align:text-bottom"/> {{$t('footer')[1]}}        <img aria-hidden="true" role="presentation" src="../statics/svg/paris.svg" class="" style="color: #dd137b;height:18px;">
         {{$t('footer')[2]}}
       <a href="https://team.inria.fr/almanach" target="_blank">
         <img aria-hidden="true" role="presentation" src="../statics/svg/almanachInria.svg" class="" style="height:18px;">
       </a>
-       v1.0 beta (20200515)</q-item-label>
-    </q-footer>    <q-drawer
+       v1.0 beta (20200515)</q-item-label> -->
+    <!-- </q-footer>     -->
+    <q-drawer
         v-model="drawerLeft"
         :width="200" :breakpoint="400" :content-class="$q.dark.isActive?'bg-dark':'bg-white'"
         :mini="miniState"  @mouseover="miniState = false"  @mouseout="miniState = true"

@@ -1,48 +1,28 @@
 <template>
-        <q-card style="width: 100%" :class="$q.dark.isActive?'bg-dark':'bg-grey-1'">
+    <q-card style="width: 100%" :class="$q.dark.isActive?'bg-dark':'bg-grey-1'">
 
-            <q-bar class="bg-primary text-white">
-                <q-icon name="img:../statics/svg/grew.svg"  size="7rem" />
-                <q-space />
-                <q-btn flat dense icon="close" v-close-popup/>
-            </q-bar>
-            
-            <q-card-section style="width:80vw;">
-                <q-form @submit="onSearch" @reset="onResetSearch" class="q-gutter-md" >
-                <div class="q-pa-xs">
-                    <div class="row">
-                        
-                        <div class="col-10" >
-                            <codemirror v-model="searchPattern" :options="cmOption"></codemirror>
-                        </div> 
-                        <q-space />
-                        <div class="col-2" >
-                            <q-list bordered separator >
-                                <q-item v-for="query in queries" :key="query.name" clickable v-ripple @click="changeSearchPattern(query.pattern, query.commands)">
-                                    <q-item-section>
-                                        {{query.name}}
-                                    </q-item-section>
-                                </q-item>
-                            </q-list>
-                        </div>
-                    </div>
-
-
-                    <div class="row">
-                        <div v-if="rewriteCommands!=''" class="col-10" >
-                            <codemirror v-model="rewriteCommands" :options="cmOption"></codemirror>
-                        </div>
-                    </div>
-
-
-
-                    <div class="row">
+        <q-bar class="bg-primary text-white">
+            <q-icon name="img:../statics/svg/grew.svg"  size="7rem" />
+            <q-space />
+            <q-btn flat dense icon="close" v-close-popup/>
+        </q-bar>
+        
+        <q-card-section style="width:80vw;">
+            <q-form @submit="onSearch" @reset="onResetSearch" class="q-gutter-md" >
+            <div class="q-pa-xs">
+                <div class="row">
+                    
+                    <div class="col-10" >
+                        <codemirror v-model="searchPattern" :options="cmOption"></codemirror>
+                        <q-separator />
+                        <codemirror v-if="rewriteCommands!=''" v-model="rewriteCommands" :options="cmOption"></codemirror>
                         <div class="full-width row justify-start  ">
 
-                            <q-btn color="primary" type="submit" label="Search" no-caps />
-                            <q-btn v-if="rewriteCommands!=''" color="primary" @click="tryRules" label="try Rules" no-caps />
+                            <q-btn color="primary" type="submit" label="Search" no-caps icon="search" />
                             <q-space/>
-                            <q-btn icon="ion-md-link" @click="getgrewlink"/>
+                            <q-btn v-if="rewriteCommands!=''" color="primary" @click="tryRules" label="Try Rules" no-caps icon="autorenew" />
+                            <q-space/>
+                            <q-btn label="Get link"  no-caps icon="ion-md-link" @click="getgrewlink"/>
                             <q-space/>
                             <q-input 
                                 ref='grewlinkinput'
@@ -55,13 +35,79 @@
                                     <q-icon name="ion-md-link" />
                                 </template>
                             </q-input>  
-                            </div>
                         </div>
+                    </div>
+                
+
+                    <div class="col-2 bg-primary"> 
+                       
+                        <q-tabs
+                            v-model="searchreplacetab"
+                            dense no-caps
+                            class="bg-grey-2 primary text-primary"
+                        >
+                            <q-tab name="search" icon="search" label="Search">
+                                <q-tooltip content-class="bg-primary" anchor="top middle" self="bottom middle" :offset="[10, 10]">
+                                    Examples of Grew search statements
+                                </q-tooltip>
+                            </q-tab>
+                            <q-tab name="replace" icon="autorenew" label="Replace">
+                                <q-tooltip content-class="bg-primary" anchor="top middle" self="bottom middle" :offset="[10, 10]">
+                                    Examples of Grew search and replacement statements
+                                </q-tooltip>
+                            </q-tab>
+                        </q-tabs>
+                        <q-separator />
+                        
+
+                        <q-tab-panels v-model="searchreplacetab" animated class="shadow-2">
+                            
+                            <q-tab-panel name="search">
+ 
+                                <q-tabs
+                                    v-model="searchquerytab"
+                                    dense no-caps vertical switch-indicator
+                                    class="bg-grey-2 primary"
+                                    indicator-color="primary"
+                                    >
+                                    <q-tab :name="query.name"  :label="query.name" 
+                                    v-for="query in queries" 
+                                    v-if="query.commands==''"
+                                    :key="query.name" 
+                                    clickable v-ripple @click="changeSearchPattern(query.pattern, query.commands)"
+                                    />
+                                </q-tabs>
+
+                        
+                            </q-tab-panel>
+
+                            <q-tab-panel name="replace">
+                                <q-tabs
+                                    v-model="searchquerytab"
+                                    dense no-caps vertical switch-indicator
+                                    class="bg-grey-2 primary"
+                                    indicator-color="primary"
+                                    >
+                                    <q-tab :name="query.name"  :label="query.name" 
+                                    v-for="query in queries" 
+                                    v-if="query.commands!=''"
+                                    :key="query.name" 
+                                    clickable v-ripple @click="changeSearchPattern(query.pattern, query.commands)"
+                                    />
+                                </q-tabs>
+                                 
+                            </q-tab-panel>
+                           
+
+                        </q-tab-panels>                     
+                        
+                    </div>
                 </div>
-                </q-form>
-            </q-card-section>
-            
-        </q-card>
+            </div>
+            </q-form>
+        </q-card-section>
+        
+    </q-card>
 </template>
 
 <script>
@@ -151,6 +197,8 @@ export default {
     props: ['parentOnSearch', 'parentOnTryRules', 'grewquery'],
     data() {
         return {
+            searchreplacetab:"search",
+            searchquerytab:grewTemplates[0].name,
             searchPattern: `% Search for a given word form
 pattern { N [form="Form_to_search"] }`,
             rewriteCommands: '',

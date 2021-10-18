@@ -157,7 +157,7 @@
                     "
                   ></q-btn>
                   <q-tooltip content-class="text-white bg-primary"
-                    >export evaluations of the students (only work if only one
+                    >export evaluations of the students (only works if only one
                     sample is selected)
                   </q-tooltip>
                 </div>

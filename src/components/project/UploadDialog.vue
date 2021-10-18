@@ -9,11 +9,11 @@
       <q-bar>
         <q-space />
         <q-btn
+          v-if="maximizedUploadToggle"
           dense
           flat
           icon="minimize"
           @click="maximizedUploadToggle = false"
-          :disable="!maximizedUploadToggle"
         >
           <q-tooltip
             v-if="maximizedUploadToggle"
@@ -22,11 +22,11 @@
           >
         </q-btn>
         <q-btn
-          dense
-          flat
-          icon="crop_square"
-          @click="maximizedUploadToggle = true"
-          :disable="maximizedUploadToggle"
+            v-if="!maximizedUploadToggle"
+            dense
+            flat
+            icon="crop_square"
+            @click="maximizedUploadToggle = true"
         >
           <q-tooltip
             v-if="!maximizedUploadToggle"
@@ -47,7 +47,108 @@
         </div>
       </q-card-section>
 
+      
+
       <q-card-section>
+        <!-- <input type="file" id="input-conllu" multiple /> -->
+        <q-file
+          v-model="uploadSample.attachment.file"
+          @input="preprocess"
+          label="Pick or drop files"
+          outlined
+          use-chips
+          clearable
+          :loading="uploadSample.submitting"
+          multiple
+          style="max-width: 600px, min-height:1300px"
+        >
+          <template v-slot:after>
+            <q-btn
+              color="primary"
+              dense
+              icon="cloud_upload"
+              round
+              @click="upload()"
+              :loading="uploadSample.submitting"
+              :disable="uploadSample.attachment.file == null"
+            />
+          </template>
+        </q-file>
+        <template >
+          <!-- <p> 
+              v-if="uploadSample.attachment.file"
+              For each of the following user_id, choose a name that will replace
+              it. If one single sentence for two differents user_id get rename
+              with the same user_id, the most recent tree will be taken
+            </p> -->
+
+          <!-- <table>
+              <q-tooltip>
+                For each of the following user ids, choose a name that will replace
+              it. <br>If the same sentence with two differents user ids gets renamed
+              with the same user_id, the most recent tree will be taken.
+            </q-tooltip>
+            <tr>
+              <th>previous name</th>
+              <th>new name</th>
+            </tr>
+            <tr v-for="(userId, index) of userIds" :key="index">
+              <td>
+                <label :for="`f${index}`">{{ userId.old }} :</label>
+              </td>
+              <td>
+                <input
+                  :id="`f${index}`"
+                  v-model="userId.new"
+                  :placeholder="userId.old"
+                />
+              </td>
+            </tr>
+          </table> -->
+          <!-- columns{{columns}}<br>
+          rows{{rows}}<br> -->
+          <q-space/>&nbsp;
+          <q-expansion-item
+                v-if="userIds.length>0"
+                icon="perm_identity"
+                label="Custom user id on import"
+                :caption="'By default we use your user name ' + userid"
+                header-class="primary"
+            >
+            <div class="q-pa-md">
+                <q-table
+                hide-pagination
+                title="Old and new user ids when importing"
+                :data="userIds"
+                row-key="old"
+                :columns="columns"
+                    >
+                <template v-slot:body="props">
+                    <q-tr :props="props">
+                    <q-td key="old" :props="props">
+                        {{ props.row.old }}
+                    </q-td>
+                    <q-td key="new" :props="props">
+                        {{ props.row.new }}
+                        <q-popup-edit v-model="props.row.new"  dense>
+                            <q-input color="primary" v-model="props.row.new" dense autofocus/>
+                        </q-popup-edit>
+                    </q-td>
+                    
+                    </q-tr>
+                </template>
+
+                
+                <!-- <template slot="col-message" slot-scope="cell">
+                    <q-input :v-model="userIds[cell.row.__index].message" ></q-input>
+                </template> -->
+                </q-table>
+                </div>
+            </q-expansion-item>
+        </template>
+
+    <q-card-section>
+        <q-tooltip>TODO: to be removed? </q-tooltip>
         <template v-if="!$store.getters['config/exerciseMode']">
           <!-- v-model="robot.active" -->
           <q-toggle
@@ -66,72 +167,6 @@
         <!-- TODO : add proper styling for the following paragraph -->
       </q-card-section>
 
-      <q-card-section>
-        <!-- <input type="file" id="input-conllu" multiple /> -->
-        <q-file
-          v-model="uploadSample.attachment.file"
-          @input="preprocess"
-          label="Pick files"
-          outlined
-          use-chips
-          clearable
-          :loading="uploadSample.submitting"
-          multiple
-          style="max-width: 400px"
-        >
-          <template v-slot:after>
-            <!-- <q-btn
-              v-if="$store.getters['config/exerciseMode']"
-
-              color="primary"
-              dense
-              icon="mediation"
-              round
-              :disable="uploadSample.attachment.file == null"
-              @click="preprocess()"
-            /> -->
-            <q-btn
-              color="primary"
-              dense
-              icon="cloud_upload"
-              round
-              @click="upload()"
-              :loading="uploadSample.submitting"
-              :disable="uploadSample.attachment.file == null"
-            />
-          </template>
-        </q-file>
-        <template v-if="uploadSample.attachment.file">
-          <!-- <p>
-              For each of the following user_id, choose a name that will replace
-              it. If one single sentence for two differents user_id get rename
-              with the same user_id, the most recent tree will be taken
-            </p> -->
-
-          <table>
-              <q-tooltip>
-                For each of the following user ids, choose a name that will replace
-              it. If the same sentence with two differents user ids gets renamed
-              with the same user_id, the most recent tree will be taken.
-            </q-tooltip>
-            <tr>
-              <th>previous name</th>
-              <th>new name</th>
-            </tr>
-            <tr v-for="(userId, index) of usersIds" :key="index">
-              <td>
-                <label :for="`f${index}`">{{ userId.old }} :</label>
-              </td>
-              <td>
-                <input
-                  :id="`f${index}`"
-                  v-model="userId.new"
-                  :placeholder="userId.old"
-                />
-              </td>
-            </tr>
-          </table>
-        </template>
       </q-card-section>
     </q-card>
   </q-dialog>
@@ -150,9 +185,34 @@ export default {
         submitting: false,
         attachment: { name: null, file: null },
       },
-      usersIds: [],
-      usersIdsList: [],
-      usersIdsPreprocessed: false,
+      userIds: [],
+      userIdsList: [],
+      userIdsPreprocessed: false,
+      columns:    [
+        {
+            name: 'old',
+            required: true,
+            label: 'Original',
+            align: 'left',
+            field: row => row.old,
+            format: val => `${val}`,
+            sortable: true
+        },
+          { 
+            name: 'new',
+            required: true,
+            label: 'New',
+            align: 'left',
+            field: row => row.new,
+            format: val => `${val}`,
+            sortable: true
+         },
+      ],
+
+
+
+
+
       alerts: {
         uploadsuccess: { color: "positive", message: "Upload success" },
         uploadfail: {
@@ -177,6 +237,7 @@ export default {
       },
     };
   },
+  
   computed: {
     uploadDialModel: {
       get() {
@@ -186,16 +247,19 @@ export default {
         this.$emit("update:uploadDial", newValue);
       },
     },
-  },
-  methods: {
-    aFunction() {
-      // console.log("KK on change");
+    userid: {
+      get() {return this.$store.getters["user/getUserInfos"].username;
+      },
     },
-    preprocess() {
+ },
+
+  methods: {
+    async preprocess() {
       if (!this.uploadSample.attachment.file) {
         return;
       }
-      this.usersIds = [
+      
+      this.userIds = [
         {
           old: "default",
           new: this.$store.getters["user/getUserInfos"].username,
@@ -212,10 +276,9 @@ export default {
                 var splitted_meta = line.split(" ");
                 var userId = splitted_meta[splitted_meta.length - 1];
                 if (
-                  !this.usersIds.map((userId) => userId.old).includes(userId)
+                  !this.userIds.map((userId) => userId.old).includes(userId)
                 ) {
-                  this.usersIds.push({ old: userId, new: userId });
-                  // this.usersIdsList.push(userId);
+                  this.userIds.push({ old: userId, new: userId });
                 }
               }
             }
@@ -223,7 +286,8 @@ export default {
         };
         reader.readAsText(file);
       }
-      this.usersIdsPreprocessed = true;
+      this.userIdsPreprocessed = true;
+
     },
     upload() {
       var form = new FormData();
@@ -241,7 +305,7 @@ export default {
         "import_user",
         this.$store.getters["user/getUserInfos"].username
       );
-      form.append("usersIdsConvertor", JSON.stringify(this.usersIds));
+      form.append("userIdsConvertor", JSON.stringify(this.userIds));
       api
         .uploadSample(this.$route.params.projectname, form)
         .then((response) => {

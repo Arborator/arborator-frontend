@@ -75,38 +75,6 @@
           </template>
         </q-file>
         <template >
-          <!-- <p> 
-              v-if="uploadSample.attachment.file"
-              For each of the following user_id, choose a name that will replace
-              it. If one single sentence for two differents user_id get rename
-              with the same user_id, the most recent tree will be taken
-            </p> -->
-
-          <!-- <table>
-              <q-tooltip>
-                For each of the following user ids, choose a name that will replace
-              it. <br>If the same sentence with two differents user ids gets renamed
-              with the same user_id, the most recent tree will be taken.
-            </q-tooltip>
-            <tr>
-              <th>previous name</th>
-              <th>new name</th>
-            </tr>
-            <tr v-for="(userId, index) of userIds" :key="index">
-              <td>
-                <label :for="`f${index}`">{{ userId.old }} :</label>
-              </td>
-              <td>
-                <input
-                  :id="`f${index}`"
-                  v-model="userId.new"
-                  :placeholder="userId.old"
-                />
-              </td>
-            </tr>
-          </table> -->
-          <!-- columns{{columns}}<br>
-          rows{{rows}}<br> -->
           <q-space/>&nbsp;
           <q-expansion-item
                 v-if="userIds.length>0"
@@ -116,7 +84,8 @@
                 header-class="primary"
             >
             <div class="q-pa-md">
-                <q-table
+                <q-table dense table-class="text-grey-8"
+                table-header-class="text-primary"
                 hide-pagination
                 title="Old and new user ids when importing"
                 :data="userIds"
@@ -124,16 +93,36 @@
                 :columns="columns"
                     >
                 <template v-slot:body="props">
-                    <q-tr :props="props">
-                    <q-td key="old" :props="props">
-                        {{ props.row.old }}
-                    </q-td>
-                    <q-td key="new" :props="props">
-                        {{ props.row.new }}
-                        <q-popup-edit v-model="props.row.new"  dense>
-                            <q-input color="primary" v-model="props.row.new" dense autofocus/>
-                        </q-popup-edit>
-                    </q-td>
+                    <q-tr v-if="props.row.old=='default'" :props="props" dense class="bg-blue-grey-1">
+                        
+                        <q-td key="old" :props="props" dense class="text-italic">
+                            <q-tooltip>to be used for all trees without user_id</q-tooltip>
+                            {{ props.row.old }}
+                        </q-td>
+                        <q-td key="new" :props="props" dense style="cursor: pointer">
+                            <q-tooltip>click to modify</q-tooltip>
+                            {{ props.row.new }}
+                            <q-popup-edit v-model="props.row.new"  dense>
+                                <q-input color="primary" v-model="props.row.new" dense autofocus/>
+                            </q-popup-edit>
+                            
+                        </q-td>
+                    
+                    </q-tr>
+                    <q-tr v-else :props="props" dense>
+
+                        <q-td key="old" :props="props" dense>
+                            <q-tooltip>user_id found in files</q-tooltip>
+                            {{ props.row.old }}
+                        </q-td>
+                        <q-td key="new" :props="props" dense style="cursor: pointer">
+                            <q-tooltip>click to modify</q-tooltip>
+                            {{ props.row.new }}
+                            <q-popup-edit v-model="props.row.new"  dense>
+                                <q-input color="primary" v-model="props.row.new" dense autofocus/>
+                            </q-popup-edit>
+                            
+                        </q-td>
                     
                     </q-tr>
                 </template>
@@ -147,25 +136,7 @@
             </q-expansion-item>
         </template>
 
-    <q-card-section>
-        <q-tooltip>TODO: to be removed? </q-tooltip>
-        <template v-if="!$store.getters['config/exerciseMode']">
-          <!-- v-model="robot.active" -->
-          <q-toggle
-            v-model="robot.active"
-            checked-icon="check"
-            color="warning"
-            label="Choose a custom import name?"
-            unchecked-icon="clear"
-          />
-          <q-input
-            v-show="robot.active"
-            v-model="robot.name"
-            label="Custom Name for non real user import"
-          />
-        </template>
-        <!-- TODO : add proper styling for the following paragraph -->
-      </q-card-section>
+ 
 
       </q-card-section>
     </q-card>
@@ -278,7 +249,7 @@ export default {
                 if (
                   !this.userIds.map((userId) => userId.old).includes(userId)
                 ) {
-                  this.userIds.push({ old: userId, new: userId });
+                  this.userIds.unshift({ old: userId, new: userId });
                 }
               }
             }

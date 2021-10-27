@@ -5,12 +5,13 @@ Frontend for arborator draft
 ## Install the dependencies
 ```bash
 npm install
-sudo npm install -g @quasar/cli
 ```
 
 ### Start the app in development mode (hot-code reloading, error reporting, etc.)
 ```bash
-quasar dev
+node_modules/.bin/quasar dev
+# or
+npm run start
 ```
 
 ### Test the interface
@@ -24,7 +25,7 @@ npm run test:e2e
 
 ### Build the app for production
 ```bash
-quasar build
+npm run buildProd
 ```
 
 ### Deploy a New Version

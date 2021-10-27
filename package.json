@@ -7,13 +7,15 @@
   "author": "gguibon <gael.guibon@inria.fr>",
   "private": true,
   "scripts": {
+    "start": "node_modules/.bin/quasar dev",
     "test": "echo \"See package.json => scripts for available tests.\" && exit 0",
+    "buildProd": "mv dist/ dist_backup/ ; quasar build && rm -r dist_backup/ || mv dist_backup/ dist/",
     "test:unit": "jest --updateSnapshot",
     "test:unit:coverage": "jest --coverage",
     "test:unit:watch": "jest --watch",
     "test:unit:watchAll": "jest --watchAll",
-    "serve:test:coverage": "quasar serve test/jest/coverage/lcov-report/ --port 8788",
-    "concurrently:dev:jest": "concurrently \"quasar dev\" \"jest --watch\"",
+    "serve:test:coverage": "node_modules/.bin/quasar serve test/jest/coverage/lcov-report/ --port 8788",
+    "concurrently:dev:jest": "concurrently \"node_modules/.bin/quasar dev\" \"jest --watch\"",
     "test:e2e": "cypress open",
     "test:e2e:CI": "cypress run"
   },

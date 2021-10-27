@@ -18,7 +18,7 @@
       </q-btn>
     </q-page-sticky>
     <q-dialog v-model="searchDialog" seamless position="right" full-width>
-      <GrewRequestCard                   
+      <GrewRequestCard
         :parentOnSearch="onSearch"
         :parentOnTryRules="onTryRules"
         :grewquery="$route.query.q || ''"
@@ -53,7 +53,6 @@ export default {
   props: ["sentenceCount", "sampleId", "showTable"],
   data() {
     return {
-      searchDialog: false,
       resultSearchDialog: false,
       resultSearch: {},
       rulesGrew: {},
@@ -66,6 +65,14 @@ export default {
   computed: {
     breakpoint() {
       return this.window.width <= 400;
+    },
+    searchDialog: {
+      get() {
+        return this.$store.getters["grewSearch/grewDialog"];
+      },
+      set(value) {
+        this.$store.dispatch("grewSearch/switch_grew_dialog", value);
+      },
     },
   },
   methods: {
@@ -81,7 +88,7 @@ export default {
     //       this.$store.dispatch("notifyError", { error: error });
     //     });
     // },
-    onShowTable(resultSearchDialog){
+    onShowTable(resultSearchDialog) {
       this.resultSearchDialog = resultSearchDialog;
       this.searchDialog = false;
     },
@@ -114,7 +121,7 @@ export default {
       }
     },
     onTryRules(Rules, SampleIds) {
-      var query = { rules: Rules, sampleId: SampleIds};
+      var query = { rules: Rules, sampleId: SampleIds };
       api
         .tryRulesProject(this.$route.params.projectname, query)
         .then((response) => {

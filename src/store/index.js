@@ -4,6 +4,7 @@ import api from '../boot/backend-api'
 
 import config from './modules/config'
 import user from './modules/user'
+import grewSearch from './modules/grewSearch'
 import sample from './modules/sample'
 
 Vue.use(Vuex);
@@ -89,5 +90,6 @@ export default new Vuex.Store({
         config,
         sample,
         user,
+        grewSearch,
     }
 })

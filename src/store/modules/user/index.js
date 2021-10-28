@@ -3,14 +3,17 @@ import api from "boot/backend-api";
 import defaultState from "./defaultState";
 
 // import { Notify } from "quasar";
-import VueCookies from "vue-cookies";
+import {cookies} from "../../../boot/vue-cookies.js";
 
 export default {
   namespaced: true,
   state: defaultState(),
 
   getters: {
-    getUserInfos: (state) => state,
+    getUserInfos: (state) => {
+      console.log("KK state user", state)
+      return state
+    },
     isSuperAdmin: (state) => state.super_admin,
     isLoggedIn: (state) => state.loginSuccess,
     hasLoginErrored: (state) => state.loginError,
@@ -44,9 +47,10 @@ export default {
   },
   actions: {
     checkSession({ commit }) {
+      console.log("KK checkSession")
       return new Promise((resolve, reject) => {
         //var token = VueCookies.get("authomatic");
-        var session = VueCookies.get("session");
+        var session = cookies.get("session");
         //if (token != null) console.log("token", token);
         if (session != null) {
           api
@@ -77,8 +81,8 @@ export default {
           .catch((error) => {
             console.log(error);
           });
-        VueCookies.remove("session");
-        VueCookies.remove("remember_token");
+        cookies.remove("session");
+        cookies.remove("remember_token");
         commit("logout_success");
         resolve({ status: "disconnected" });
       });

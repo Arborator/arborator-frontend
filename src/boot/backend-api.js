@@ -1,6 +1,4 @@
 import { API } from "./axios-adapters/axios-api";
-import VueCookies from "vue-cookies";
-VueCookies.config("7d");
 export default {
   // -------------------------------------------------- //
   // ---------------        AUTH       ---------------- //

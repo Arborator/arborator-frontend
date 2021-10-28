@@ -40,10 +40,20 @@
 </template>
 
 <script>
-import {sentenceConllToJson} from 'conllup'
-import { codemirror } from "vue-codemirror";
-import CodeMirror from "codemirror";
+import { sentenceConllToJson } from "conllup";
+// import { codemirror } from "vue-codemirror";
+// import CodeMirror from "codemirror";
 
+import Codemirror from "codemirror-editor-vue3";
+
+// plugin-style
+import "codemirror-editor-vue3/dist/style.css";
+
+// language
+import "codemirror/mode/javascript/javascript.js";
+
+// theme
+import "codemirror/theme/dracula.css";
 
 CodeMirror.defineMode("tsv", function (_config, parserConfig) {
   function tokenBase(stream, state) {
@@ -99,7 +109,7 @@ export default {
         line: true,
         mode: "tsv",
 
-        theme: "default",
+        theme: "dracula",
       },
     };
   },
@@ -131,12 +141,18 @@ export default {
         }
       }
       if (!isMetaChanged) {
-        this.sentenceBus.$emit("tree-update:sentence", {sentenceJson: sentenceJson, userId: this.userId})
+        this.sentenceBus.$emit("tree-update:sentence", {
+          sentenceJson: sentenceJson,
+          userId: this.userId,
+        });
         this.$q.notify({
-            message: `Conllu changed`,
-          });
+          message: `Conllu changed`,
+        });
       } else {
-        this.$store.dispatch("notifyError", { error: "Changing timestamp, user_id, sent_id or text is not allowed !" });
+        this.$store.dispatch("notifyError", {
+          error:
+            "Changing timestamp, user_id, sent_id or text is not allowed !",
+        });
       }
     },
   },

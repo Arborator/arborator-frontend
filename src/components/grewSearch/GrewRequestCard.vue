@@ -157,9 +157,11 @@
 </template>
 
 <script>
-import store from "../../store";
-import CodeMirror from "codemirror";
-import { codemirror } from "vue-codemirror";
+// import CodeMirror from "codemirror";
+// import { codemirror } from "vue-codemirror";
+import Codemirror from "codemirror-editor-vue3";
+import { useStorage } from "vue3-storage";
+
 import "codemirror/lib/codemirror.css";
 import grewTemplates from "../../assets/grew-templates.json";
 // import 'codemirror/theme/material.css'
@@ -246,6 +248,7 @@ export default {
   props: ["parentOnSearch", "parentOnTryRules", "grewquery"],
   data() {
     return {
+      storage: null,
       searchreplacetab: "search",
       searchquerytab: grewTemplates[0].name,
       searchPattern: `% Search for a given word form
@@ -265,8 +268,13 @@ pattern { N [form="Form_to_search"] }`,
     };
   },
   mounted() {
-    if (this.$ls.get("grewHistory", "").length > 0)
-      this.$store.commit("change_last_grew_query", this.$ls.get("grewHistory"));
+    this.storage = useStorage();
+
+    if (this.storage.getStorageSync("grewHistory", "").length > 0)
+      this.$store.commit(
+        "change_last_grew_query",
+        this.storage.getStorageSync("grewHistory")
+      );
     if (this.$store.getters.getLastGrewQuery.length > 0)
       this.searchPattern = this.$store.getters.getLastGrewQuery;
     if (this.$store.getters.getLastGrewCommand.length > 0)
@@ -283,7 +291,7 @@ pattern { N [form="Form_to_search"] }`,
       this.parentOnSearch(this.searchPattern);
       this.$store.commit("change_last_grew_query", this.searchPattern);
       this.$store.commit("change_last_grew_command", this.rewriteCommands);
-      this.$ls.set("grewHistory", this.searchPattern);
+      this.storage.setStorageSync("grewHistory", this.searchPattern);
     },
     /**
      * Call parent onsearch function and update store and history

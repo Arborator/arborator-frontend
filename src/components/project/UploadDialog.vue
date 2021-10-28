@@ -18,36 +18,34 @@
           <q-tooltip
             v-if="maximizedUploadToggle"
             content-class="bg-white text-primary"
-            >{{ $t("projectView").tooltipWindows[0] }}</q-tooltip
+            >{{ $t("projectView.tooltipWindows[0]") }}</q-tooltip
           >
         </q-btn>
         <q-btn
-            v-if="!maximizedUploadToggle"
-            dense
-            flat
-            icon="crop_square"
-            @click="maximizedUploadToggle = true"
+          v-if="!maximizedUploadToggle"
+          dense
+          flat
+          icon="crop_square"
+          @click="maximizedUploadToggle = true"
         >
           <q-tooltip
             v-if="!maximizedUploadToggle"
             content-class="bg-white text-primary"
-            >{{ $t("projectView").tooltipWindows[1] }}</q-tooltip
+            >{{ $t("projectView.tooltipWindows[1]") }}</q-tooltip
           >
         </q-btn>
         <q-btn dense flat icon="close" v-close-popup>
           <q-tooltip content-class="bg-white text-primary">{{
-            $t("projectView").tooltipWindows[2]
+            $t("projectView.tooltipWindows[2]")
           }}</q-tooltip>
         </q-btn>
       </q-bar>
 
       <q-card-section>
         <div class="text-h6 text-blue-grey-8">
-          {{ $t("projectView").uploadSelectDial }}
+          {{ $t("projectView.uploadSelectDial") }}
         </div>
       </q-card-section>
-
-      
 
       <q-card-section>
         <!-- <input type="file" id="input-conllu" multiple /> -->
@@ -74,70 +72,89 @@
             />
           </template>
         </q-file>
-        <template >
-          <q-space/>&nbsp;
+        <template>
+          <q-space />&nbsp;
           <q-expansion-item
-                v-if="userIds.length>0"
-                icon="perm_identity"
-                label="Custom user id on import"
-                :caption="'By default we use your user name ' + userid"
-                header-class="primary"
-            >
+            v-if="userIds.length > 0"
+            icon="perm_identity"
+            label="Custom user id on import"
+            :caption="'By default we use your user name ' + userid"
+            header-class="primary"
+          >
             <div class="q-pa-md">
-                <q-table dense table-class="text-grey-8"
+              <q-table
+                dense
+                table-class="text-grey-8"
                 table-header-class="text-primary"
                 hide-pagination
                 title="Old and new user ids when importing"
                 :data="userIds"
                 row-key="old"
                 :columns="columns"
-                    >
+              >
                 <template v-slot:body="props">
-                    <q-tr v-if="props.row.old=='default'" :props="props" dense class="bg-blue-grey-1">
-                        
-                        <q-td key="old" :props="props" dense class="text-italic">
-                            <q-tooltip>to be used for all trees without user_id</q-tooltip>
-                            {{ props.row.old }}
-                        </q-td>
-                        <q-td key="new" :props="props" dense style="cursor: pointer">
-                            <q-tooltip>click to modify</q-tooltip>
-                            {{ props.row.new }}
-                            <q-popup-edit v-model="props.row.new"  dense>
-                                <q-input color="primary" v-model="props.row.new" dense autofocus/>
-                            </q-popup-edit>
-                            
-                        </q-td>
-                    
-                    </q-tr>
-                    <q-tr v-else :props="props" dense>
-
-                        <q-td key="old" :props="props" dense>
-                            <q-tooltip>user_id found in files</q-tooltip>
-                            {{ props.row.old }}
-                        </q-td>
-                        <q-td key="new" :props="props" dense style="cursor: pointer">
-                            <q-tooltip>click to modify</q-tooltip>
-                            {{ props.row.new }}
-                            <q-popup-edit v-model="props.row.new"  dense>
-                                <q-input color="primary" v-model="props.row.new" dense autofocus/>
-                            </q-popup-edit>
-                            
-                        </q-td>
-                    
-                    </q-tr>
+                  <q-tr
+                    v-if="props.row.old == 'default'"
+                    :props="props"
+                    dense
+                    class="bg-blue-grey-1"
+                  >
+                    <q-td key="old" :props="props" dense class="text-italic">
+                      <q-tooltip
+                        >to be used for all trees without user_id</q-tooltip
+                      >
+                      {{ props.row.old }}
+                    </q-td>
+                    <q-td
+                      key="new"
+                      :props="props"
+                      dense
+                      style="cursor: pointer"
+                    >
+                      <q-tooltip>click to modify</q-tooltip>
+                      {{ props.row.new }}
+                      <q-popup-edit v-model="props.row.new" dense>
+                        <q-input
+                          color="primary"
+                          v-model="props.row.new"
+                          dense
+                          autofocus
+                        />
+                      </q-popup-edit>
+                    </q-td>
+                  </q-tr>
+                  <q-tr v-else :props="props" dense>
+                    <q-td key="old" :props="props" dense>
+                      <q-tooltip>user_id found in files</q-tooltip>
+                      {{ props.row.old }}
+                    </q-td>
+                    <q-td
+                      key="new"
+                      :props="props"
+                      dense
+                      style="cursor: pointer"
+                    >
+                      <q-tooltip>click to modify</q-tooltip>
+                      {{ props.row.new }}
+                      <q-popup-edit v-model="props.row.new" dense>
+                        <q-input
+                          color="primary"
+                          v-model="props.row.new"
+                          dense
+                          autofocus
+                        />
+                      </q-popup-edit>
+                    </q-td>
+                  </q-tr>
                 </template>
 
-                
                 <!-- <template slot="col-message" slot-scope="cell">
                     <q-input :v-model="userIds[cell.row.__index].message" ></q-input>
                 </template> -->
-                </q-table>
-                </div>
-            </q-expansion-item>
+              </q-table>
+            </div>
+          </q-expansion-item>
         </template>
-
- 
-
       </q-card-section>
     </q-card>
   </q-dialog>
@@ -159,30 +176,26 @@ export default {
       userIds: [],
       userIdsList: [],
       userIdsPreprocessed: false,
-      columns:    [
+      columns: [
         {
-            name: 'old',
-            required: true,
-            label: 'Original',
-            align: 'left',
-            field: row => row.old,
-            format: val => `${val}`,
-            sortable: true
+          name: "old",
+          required: true,
+          label: "Original",
+          align: "left",
+          field: (row) => row.old,
+          format: (val) => `${val}`,
+          sortable: true,
         },
-          { 
-            name: 'new',
-            required: true,
-            label: 'New',
-            align: 'left',
-            field: row => row.new,
-            format: val => `${val}`,
-            sortable: true
-         },
+        {
+          name: "new",
+          required: true,
+          label: "New",
+          align: "left",
+          field: (row) => row.new,
+          format: (val) => `${val}`,
+          sortable: true,
+        },
       ],
-
-
-
-
 
       alerts: {
         uploadsuccess: { color: "positive", message: "Upload success" },
@@ -208,7 +221,7 @@ export default {
       },
     };
   },
-  
+
   computed: {
     uploadDialModel: {
       get() {
@@ -219,17 +232,18 @@ export default {
       },
     },
     userid: {
-      get() {return this.$store.getters["user/getUserInfos"].username;
+      get() {
+        return this.$store.getters["user/getUserInfos"].username;
       },
     },
- },
+  },
 
   methods: {
     async preprocess() {
       if (!this.uploadSample.attachment.file) {
         return;
       }
-      
+
       this.userIds = [
         {
           old: "default",
@@ -258,7 +272,6 @@ export default {
         reader.readAsText(file);
       }
       this.userIdsPreprocessed = true;
-
     },
     upload() {
       var form = new FormData();
@@ -301,15 +314,8 @@ export default {
     },
     // TODO : refactor all of these $q.notify in a proper single file
     showNotif(position, alert) {
-      const {
-        color,
-        textColor,
-        multiLine,
-        icon,
-        message,
-        avatar,
-        actions,
-      } = this.alerts[alert];
+      const { color, textColor, multiLine, icon, message, avatar, actions } =
+        this.alerts[alert];
       const buttonColor = color ? "white" : void 0;
       this.$q.notify({
         color,

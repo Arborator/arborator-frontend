@@ -1,0 +1,184 @@
+.FORM {
+  font: 18px "DejaVu Sans";
+  fill: black;
+  /* 	font-family:sans-serif; */
+  --wordDistance: 55;
+  fill: black;
+  text-align: center;
+  position: relative;
+  z-index: 99;
+}
+
+.interactive {
+  cursor: pointer;
+}
+
+.dark .FORM {
+  /* 	font: 18px DejaVu Sans; */
+  /* 	fill: black; */
+  /* 	font-family:sans-serif; */
+  --wordDistance: 55;
+  fill: rgb(255, 255, 255);
+  text-align: center;
+  position: relative;
+  z-index: 99;
+}
+
+.LEMMA {
+  font: 15px "DejaVu Sans";
+  fill: black;
+  font-family: sans-serif;
+  text-align: center;
+  /* cursor: pointer; */
+  font-style: italic;
+  --wordDistance: 22;
+}
+
+.dark .LEMMA {
+  font: 15px "DejaVu Sans";
+  fill: rgb(238, 232, 232);
+  font-family: sans-serif;
+  text-align: center;
+  font-style: italic;
+  --wordDistance: 22;
+}
+
+.MISC-Gloss {
+  font: 15px DejaVu Sans;
+  fill: rgb(124, 96, 86);
+  font-family: sans-serif;
+  text-align: center;
+  font-style: italic;
+  --wordDistance: 11;
+}
+
+.UPOS {
+  font: 11px DejaVu Sans;
+  fill: rgb(80, 29, 125);
+  /* cursor: pointer; */
+  text-align: center;
+  --wordDistance: 22;
+}
+
+.UPOSselected {
+  font: 11px DejaVu Sans;
+  fill: #dd137bff;
+  font-weight: bold;
+  text-align: center;
+}
+
+.DEPREL {
+  font: 12px Arial;
+  fill: #501d7d;
+  font-style: oblique;
+  font-family: sans-serif;
+  /* cursor: pointer; */
+  position: relative;
+  z-index: 99;
+  --funcCurveDist: 3; /* distance between the function name and the curves highest point */
+}
+
+.dark .DEPREL {
+  font: 12px Arial;
+  fill: #aab3ff;
+  font-style: oblique;
+  font-family: sans-serif;
+  /* cursor: pointer; */
+  z-index: 99;
+  --funcCurveDist: 3; /* distance between the function name and the curves highest point */
+}
+
+.glossy {
+  font: 15px DejaVu Sans;
+  fill: coral;
+  font-family: sans-serif;
+  text-align: center;
+  font-style: italic;
+  --wordDistance: 11;
+}
+
+.xdeprel {
+  fill: #21ba45;
+  z-index: 99;
+}
+
+.xdep {
+  stroke: #21ba45;
+  fill: none;
+}
+
+.DEPRELselected {
+  fill: #dd137b;
+  z-index: 99;
+  /* font-weight: bold; */
+}
+
+.arrowhead {
+  fill: white;
+  stroke: black;
+  stroke-width: 0.8;
+}
+
+.curve {
+  stroke: black;
+  stroke-width: 1;
+  fill: none;
+  position: relative;
+  z-index: 0;
+  --startOffset: 8;
+  --tokDepDist: 15; /* distance between tokens and depdendency relation */
+  --depMinHeight: 15; /* minimum height for dependency */
+  --wordDistanceFactor: -1; /* distant words get higher curves. this factor fixes how much higher */
+}
+
+.dark .curve {
+  stroke: rgb(248, 244, 244);
+  stroke-width: 1;
+  fill: none;
+  --startOffset: 8;
+  --tokDepDist: 15; /* distance between tokens and depdendency relation */
+  --depMinHeight: 15; /* minimum height for dependency */
+  --wordDistanceFactor: -1; /* distant words get higher curves. this factor fixes how much higher */
+}
+
+.dragcurve {
+  stroke: #dd137bff;
+  stroke-width: 1.5;
+  fill: none;
+}
+.draggov {
+  fill: #dd137bff;
+  text-align: center;
+}
+
+/* logo animation transitions */
+.arboratorlogo {
+  transition: all 0.4s ease-in-out;
+  -webkit-transition: all 0.4s ease-in-out;
+}
+
+.arboratorlogo:hover {
+  transform: scale(1.1);
+  transition: all 0.2s ease-in-out;
+  -webkit-transition: all 0.2s ease-in-out;
+  opacity: 0.9;
+}
+
+.curve.diff,
+.arrowhead.diff {
+  stroke: red;
+  stroke-width: 1;
+  fill: none;
+  position: relative;
+}
+
+.UPOS.diff,
+.DEPREL.diff {
+  fill: red;
+}
+
+.FEATS,
+.MISC {
+  font-size: 10px;
+  fill: #6d346d;
+}

@@ -1,28 +1,31 @@
 <template>
-  <div id="q-app">
+  <div>
     <router-view />
   </div>
 </template>
 
 <script>
-import Vue from "vue";
-import { openURL } from "quasar";
-import VueCookies from "vue-cookies";
-import Store from "./store/index";
-import api from "./boot/backend-api";
-// import EventBus from './event-bus.js';
-VueCookies.config("7d");
+import { createApp, defineComponent } from "vue";
 
-import Storage from "vue-ls";
+import { openURL } from "quasar";
+import VueCookies from "vue3-cookies";
+import Store from "./store/index";
+// VueCookies.config("7d");
+// import Storage from "vue-ls";
+import Vue3Storage, { useStorage } from "vue3-storage";
+import { i18n } from "./i18n/index";
 
 var options = { namespace: "arboratorgrew__", name: "ls", storage: "local" };
-Vue.use(Storage, options);
 
-export default {
+export default defineComponent({
+  setup() {
+    console.log("KK Setup");
+  },
   name: "App",
   data() {
     return {
       store: Store,
+      storage: null,
       alerts: {
         welcomeback: {
           color: "primary",
@@ -34,23 +37,25 @@ export default {
     };
   },
   mounted() {
+    console.log();
     this.$store.dispatch("user/checkSession");
+    this.storage = useStorage();
 
     // this.store.dispatch("checkSession", {});
     // .then(() => {
     //   this.$router.push('/');
     // })
     try {
-      this.$q.dark.set(this.$ls.get("dm"));
+      this.$q.dark.set(this.storage.getStorageSync("dm"));
     } catch (error) {
       console.log("ls not found");
     }
 
     try {
-      this.$i18n.locale = this.$ls.get("arbolang");
+      this.$i18n.locale = this.storage.getStorageSync("arbolang");
     } catch (error) {
       this.$i18n.locale = this.$q.lang.getLocale();
-      this.$ls.set("arbolang", this.$i18n.locale);
+      this.storage.setStorageSync("arbolang", this.$i18n.locale);
     }
   },
   methods: {
@@ -93,11 +98,12 @@ export default {
       });
     },
   },
-};
+});
 </script>
 
 <style>
-svg[xmlns="http://www.w3.org/2000/svg"] {
+svg[xmlns="http://www.w3.org/2000/svg"]
+{
   display: none;
 }
 </style>

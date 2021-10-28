@@ -37,10 +37,7 @@
               {{ t[0] }}
             </q-chip>
             <q-chip
-              v-else-if="
-                t[1] / 1000 <= ct
-                && t[2] / 1000 >= ct
-              "
+              v-else-if="t[1] / 1000 <= ct && t[2] / 1000 >= ct"
               square
               size="md"
               clickable
@@ -73,19 +70,17 @@
             class="float-right"
             @click="moveToInputField('original', i)"
           />
-          <q-btn 
+          <q-btn
             dense
-            round 
-            icon="replay" 
+            round
+            icon="replay"
             color="primary"
             @click="handlePlayLine(i)"
             v-if="canPlayLine"
             class="line-play"
             size="sm"
           >
-            <q-tooltip>
-              Click to play the sentence
-            </q-tooltip>
+            <q-tooltip> Click to play the sentence </q-tooltip>
           </q-btn>
           <q-separator spaced />
         </div>
@@ -130,7 +125,12 @@
         </template>
       </div>
       <template v-if="isAdmin && admin && !isLoading">
-        <div class="row meta-row" dense v-for="(meta, i) in metaFormat" :key="-i - 1">
+        <div
+          class="row meta-row"
+          dense
+          v-for="(meta, i) in metaFormat"
+          :key="-i - 1"
+        >
           <span class="line-number" dense> </span>
           <div class="col row q-pa-none"></div>
           <div class="col row q-pa-none">
@@ -342,6 +342,7 @@
 }
 </style>
 <script>
+import app from "../App.vue";
 import Vue from "vue";
 import api from "../boot/backend-api";
 import AudioVisual from "vue-audio-visual";
@@ -353,7 +354,7 @@ import { exportFile } from "quasar";
 const JSZip = require("jszip");
 const Diff = require("diff");
 
-Vue.use(AudioVisual);
+app.use(AudioVisual);
 export default {
   props: ["kprojectname", "ksamplename"],
   data() {
@@ -406,7 +407,7 @@ export default {
       currentLine: 0,
       isPlayingLine: false,
       lineStart: 0,
-      lineEnd: 0
+      lineEnd: 0,
     };
   },
 
@@ -427,7 +428,7 @@ export default {
 
     canPlayLine() {
       return this.audioplayer.error === null;
-    }
+    },
   },
 
   created() {
@@ -573,18 +574,21 @@ export default {
             const minMS = originalLine[0][1];
             const maxMS = originalLine[originalWords - 1][2];
             const realWordsCount = transLine.reduce(
-              (acc, t) => this.isRealWord(t) ? acc + 1 : acc, 0);
-            const msec = (maxMS  - minMS) / realWordsCount;
-            let startMS = 0, endMS = 0;
-            for(word = 0; word < transWords; word ++) {
+              (acc, t) => (this.isRealWord(t) ? acc + 1 : acc),
+              0
+            );
+            const msec = (maxMS - minMS) / realWordsCount;
+            let startMS = 0,
+              endMS = 0;
+            for (word = 0; word < transWords; word++) {
               const isRealWord = this.isRealWord(transLine[word]);
-              if(isRealWord) endMS += msec;
+              if (isRealWord) endMS += msec;
               transLine[word] = [
                 transLine[word],
                 Math.round(parseFloat(minMS) + startMS),
-                Math.round(parseFloat(minMS) + endMS)
+                Math.round(parseFloat(minMS) + endMS),
               ];
-              if(isRealWord) startMS += msec;
+              if (isRealWord) startMS += msec;
             }
           }
         }
@@ -724,25 +728,24 @@ export default {
       this.audioplayer.currentTime = triple[1] / 1000; //-.5;
       this.manualct = triple[1] / 1000;
       this.audioplayer.play();
-      if(this.manualct > this.lineEnd)
-        this.isPlayingLine = false;
+      if (this.manualct > this.lineEnd) this.isPlayingLine = false;
     },
 
     handlePlayLine(index) {
-      const line = this.conll['original'][index];
+      const line = this.conll["original"][index];
       const length = line.length;
       this.isPlayingLine = true;
       this.lineStart = line[0][1] / 1000;
-      this.lineEnd = (line[length - 1][2]) / 1000;
+      this.lineEnd = line[length - 1][2] / 1000;
       this.audioplayer.currentTime = this.lineStart;
       this.audioplayer.play();
     },
 
     onTimeUpdate() {
       if (this.$refs.player == null) return;
-      console.log(this.audioplayer.currentTime)
-      if(this.isPlayingLine) {
-        if(this.audioplayer.currentTime > this.lineEnd)
+      console.log(this.audioplayer.currentTime);
+      if (this.isPlayingLine) {
+        if (this.audioplayer.currentTime > this.lineEnd)
           this.audioplayer.currentTime = this.lineStart;
       }
       this.currentTime = this.audioplayer.currentTime;

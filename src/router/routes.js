@@ -1,6 +1,3 @@
-import Store from '../store/index';
-
-
 const routes = 
 [
   {
@@ -16,17 +13,25 @@ const routes =
       { path: 'settings', component: () => import('src/pages/Settings'), meta: { requiresAuth: true } },
       { path: '/klang', component: () => import('src/pages/Klang.vue')},
       { path: '/klang/:kprojectname', component: () => import('src/pages/KlangProject.vue'), props: true},
-      { path: '/klang/:kprojectname/:ksamplename', component: () => import('src/pages/KlangSample.vue'), props: true}
+      { path: '/klang/:kprojectname/:ksamplename', component: () => import('src/pages/KlangSample.vue'), props: true},
+      { path: '/statics'} // Ignore or pass on to server },
+    
     ]
-  }
+  },
+    // Always leave this as last one,
+  // but you can also remove it
+  {
+    path: '/:catchAll(.*)*',
+    component: () => import('pages/Error404.vue'),
+  },
 ]
-// Always leave this as last one
-if (process.env.MODE !== 'ssr') {
-  routes.push({
-    path: '*', 
-    // redirect: '/',
-    component: () => import('src/pages/Error404.vue')
-  })
-}
+// // Always leave this as last one
+// if (process.env.MODE !== 'ssr') {
+//   routes.push({
+//     path: '*', 
+//     // redirect: '/',
+//     component: () => import('src/pages/Error404.vue')
+//   })
+// }
 
 export default routes

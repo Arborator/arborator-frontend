@@ -86,7 +86,7 @@
               @click="exportLexiconTSV()"
               :loading="tableExporting"
               ><q-tooltip :delay="300" content-class="text-white bg-primary">{{
-                $t("projectView").tooltipExportLexicon[0]
+                $t("projectView.tooltipExportLexicon[0]")
               }}</q-tooltip></q-btn
             >
             <q-btn
@@ -96,7 +96,7 @@
               @click="exportLexiconJSON()"
               :loading="tableExporting"
               ><q-tooltip :delay="300" content-class="text-white bg-primary">{{
-                $t("projectView").tooltipExportLexicon[1]
+                $t("projectView.tooltipExportLexicon[1]")
               }}</q-tooltip></q-btn
             >
             <q-btn
@@ -106,7 +106,7 @@
               @click="getRulesGrew()"
               :disable="RulesGrew.length < 0"
               ><q-tooltip :delay="300" content-class="text-white bg-primary">{{
-                $t("projectView").tooltipRuleGrewLexicon
+                $t("projectView.tooltipRuleGrewLexicon")
               }}</q-tooltip></q-btn
             >
             <q-btn
@@ -116,7 +116,7 @@
               icon="cloud_upload"
               @click="uploadDial = true"
               ><q-tooltip :delay="300" content-class="text-white bg-primary">{{
-                $t("projectView").tooltipValidatorLexicon
+                $t("projectView.tooltipValidatorLexicon")
               }}</q-tooltip></q-btn
             >
             <q-btn
@@ -126,7 +126,7 @@
               icon="cloud_upload"
               @click="CompareDics = false"
               ><q-tooltip :delay="300" content-class="text-white bg-primary">{{
-                $t("projectView").tooltipValidatorLexicon
+                $t("projectView.tooltipValidatorLexicon")
               }}</q-tooltip></q-btn
             >
           </q-btn-group>
@@ -258,7 +258,7 @@
             <q-tooltip
               v-if="maximizedUploadToggle"
               content-class="bg-white text-primary"
-              >{{ $t("projectView").tooltipWindows[0] }}</q-tooltip
+              >{{ $t("projectView".tooltipWindows[0]) }}</q-tooltip
             >
           </q-btn>
           <q-btn
@@ -271,19 +271,19 @@
             <q-tooltip
               v-if="!maximizedUploadToggle"
               content-class="bg-white text-primary"
-              >{{ $t("projectView").tooltipWindows[1] }}</q-tooltip
+              >{{ $t("projectView.tooltipWindows[1]") }}</q-tooltip
             >
           </q-btn>
           <q-btn dense flat icon="close" v-close-popup>
             <q-tooltip content-class="bg-white text-primary">{{
-              $t("projectView").tooltipWindows[2]
+              $t("projectView.tooltipWindows[2]")
             }}</q-tooltip>
           </q-btn>
         </q-bar>
 
         <q-card-section>
           <div class="text-h6 text-blue-grey-8">
-            {{ $t("projectView").tooltipSelectValidator }}
+            {{ $t("projectView.tooltipSelectValidator") }}
           </div>
         </q-card-section>
 

@@ -14,13 +14,13 @@
               @click="creaProjectDial = true"
             >
               <q-tooltip :delay="300" content-class="text-white bg-primary">{{
-                $t("projectHub").tooltipCreaProject
+                $t("projectHub.tooltipCreaProject")
               }}</q-tooltip>
             </q-btn>
             <q-toolbar-title
               :class="($q.dark.isActive ? '' : 'text-primary') + ' text-bold'"
             >
-              {{ $t("projectHub").title }}
+              {{ $t("projectHub.title") }}
             </q-toolbar-title>
             <q-btn
               flat
@@ -30,7 +30,7 @@
               @click="toggleProjectView()"
             >
               <q-tooltip :delay="300" content-class="text-white bg-primary">{{
-                $t("projectHub").tooltipChangeView
+                $t("projectHub.tooltipChangeView")
               }}</q-tooltip>
             </q-btn>
           </q-toolbar>
@@ -98,8 +98,7 @@
             v-if="!$q.platform.is.mobile"
             class="q-pa-md row items-start q-gutter-md"
           >
-            <div class="text-h6 col-12" 
-            v-if="isLoggedIn && myProjects.length">
+            <div class="text-h6 col-12" v-if="isLoggedIn && myProjects.length">
               <q-chip color="primary" class="category" text-color="white">
                 My projects
               </q-chip>
@@ -112,8 +111,10 @@
               :parentProjectSettings="showProjectSettings"
               :key="project.id"
             ></ProjectCard>
-            <div class="text-h6 col-12" 
-            v-if="isLoggedIn && otherProjects.length">
+            <div
+              class="text-h6 col-12"
+              v-if="isLoggedIn && otherProjects.length"
+            >
               <q-chip color="primary" class="category" text-color="white">
                 Other projects
               </q-chip>
@@ -203,6 +204,7 @@ import ProjectItem from "../components/ProjectItem.vue";
 import CreaProjectCard from "../components/CreaProjectCard.vue";
 import ProjectSettingsView from "../components/ProjectSettingsView.vue";
 import ConfirmAction from "../components/ConfirmAction";
+import { useStorage } from "vue3-storage";
 
 export default {
   components: {
@@ -232,11 +234,15 @@ export default {
       confirmActionDial: false,
       confirmActionCallback: null,
       confirmActionArg1: "",
+      storage: null,
     };
   },
   mounted() {
+    this.storage = useStorage();
     this.initLoading = true;
-    this.listMode = this.$ls.get("project_view", false);
+    // this.listMode = this.$storage.getStorageSync("project_view", false);
+    this.listMode = this.storage.getStorageSync("project_view", false);
+
     this.getProjects();
   },
   computed: {
@@ -244,16 +250,18 @@ export default {
       return this.$store.getters["user/isLoggedIn"];
     },
     myProjects() {
-      return this.visibleProjects.filter(project => 
-      this.isCreatedByMe(project));
+      return this.visibleProjects.filter((project) =>
+        this.isCreatedByMe(project)
+      );
     },
     otherProjects() {
-      return this.visibleProjects.filter(project => 
-      !this.isCreatedByMe(project));
+      return this.visibleProjects.filter(
+        (project) => !this.isCreatedByMe(project)
+      );
     },
     avatar() {
       return this.$store.getters["user/getUserInfos"].picture_url;
-    }
+    },
   },
   methods: {
     openURL,
@@ -287,14 +295,14 @@ export default {
       this.visibleProjects = filteredProjects;
     },
     sortProjects() {
-      if(!this.isLoggedIn) return;
+      if (!this.isLoggedIn) return;
       this.visibleProjects.sort((a, b) => {
         const my_a = this.isCreatedByMe(a);
         const my_b = this.isCreatedByMe(b);
-        if(my_a && my_b) return 0;
-        if(my_a) return -1;
+        if (my_a && my_b) return 0;
+        if (my_a) return -1;
         return 1;
-      })
+      });
     },
     isCreatedByMe(project) {
       const user_id = this.$store.getters["user/getUserInfos"].id;
@@ -302,7 +310,7 @@ export default {
     },
     toggleProjectView() {
       this.listMode = !this.listMode;
-      this.$ls.set("project_view", this.listMode);
+      this.storage.setStorageSync("project_view", this.listMode);
     },
     showProjectSettings(projectName) {
       this.projectnameTarget = projectName;

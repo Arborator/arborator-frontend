@@ -3,9 +3,11 @@
 
 const source = "https://127.0.0.1:5000";
 // const source = "https://arboratorgrew.elizia.net:8888";
+const { configure } = require('quasar/wrappers');
 
-module.exports = function(ctx) {
-  return {
+
+module.exports = configure((ctx)  =>({
+  
     // app boot file (/src/boot)
     // --> boot files are part of "main.js"
     boot: ["i18n", "axios"],
@@ -128,12 +130,12 @@ module.exports = function(ctx) {
       env: ctx.dev
         ? {
             // so on dev we'll have
-            API: JSON.stringify("https://127.0.0.1:5000"),
+            API: "https://127.0.0.1:5000",
           }
         : {
             // and on build (production):
             // API: JSON.stringify("https://arboratorgrew.elizia.net:8888"),
-            API: JSON.stringify("https://arboratorgrew.elizia.net"),
+            API: "https://arboratorgrew.elizia.net",
           },
       scopeHoisting: true,
       devtool: 'source-map',
@@ -254,5 +256,4 @@ module.exports = function(ctx) {
         // appId: 'arborator-frontend'
       },
     },
-  };
-};
+}));

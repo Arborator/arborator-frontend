@@ -37,7 +37,7 @@
               >
                 <!-- <q-btn v-if="1" flat round :color="$q.dark.isActive?'primary':''" icon="settings" @click="projectSettingsDial=true"> -->
                 <q-tooltip :delay="300" content-class="text-white bg-primary">{{
-                  $t("projectView").tooltipSettings
+                  $t("projectView.tooltipSettings")
                 }}</q-tooltip>
               </q-btn>
               <q-btn
@@ -49,14 +49,18 @@
                 @click="simpleProjectInfoDialog = true"
               >
                 <q-tooltip :delay="300" content-class="text-white bg-primary">{{
-                  $t("projectView").tooltipViewAdmin
+                  $t("projectView.tooltipViewAdmin")
                 }}</q-tooltip>
               </q-btn>
             </div>
           </q-img>
         </q-card-section>
         <q-card-section v-if="LexiconTable">
-          <LexiconTable :data="this.lexicon" :sampleId="this.table.selected" @request="getLexicon">
+          <LexiconTable
+            :data="this.lexicon"
+            :sampleId="this.table.selected"
+            @request="getLexicon"
+          >
           </LexiconTable>
         </q-card-section>
         <q-card-section>
@@ -107,7 +111,7 @@
                     v-if="isSuperAdmin || isAdmin"
                     :delay="300"
                     content-class="text-white bg-primary"
-                    >{{ $t("projectView").tooltipAddSample }}</q-tooltip
+                    >{{ $t("projectView.tooltipAddSample") }}</q-tooltip
                   >
                 </q-btn>
 
@@ -130,13 +134,13 @@
                     v-if="table.selected.length < 1"
                     :delay="300"
                     content-class="text-white bg-primary"
-                    >{{ $t("projectView").tooltipExportSample[0] }}</q-tooltip
+                    >{{ $t("projectView.tooltipExportSample[0]") }}</q-tooltip
                   >
                   <q-tooltip
                     v-else
                     :delay="300"
                     content-class="text-white bg-primary"
-                    >{{ $t("projectView").tooltipExportSample[1] }}</q-tooltip
+                    >{{ $t("projectView.tooltipExportSample[1]") }}</q-tooltip
                   >
                 </div>
 
@@ -174,13 +178,13 @@
                     v-if="table.selected.length < 1"
                     :delay="300"
                     content-class="text-white bg-primary"
-                    >{{ $t("projectView").tooltipDeleteSample[0] }}</q-tooltip
+                    >{{ $t("projectView.tooltipDeleteSample[0]") }}</q-tooltip
                   >
                   <q-tooltip
                     v-else
                     :delay="300"
                     content-class="text-white bg-primary"
-                    >{{ $t("projectView").tooltipDeleteSample[1] }}</q-tooltip
+                    >{{ $t("projectView.tooltipDeleteSample[1]") }}</q-tooltip
                   >
                 </q-btn>
 
@@ -198,7 +202,7 @@
                   <q-tooltip
                     :delay="300"
                     content-class="text-white bg-primary"
-                    >{{ $t("projectView").tooltipDeleteSample[1] }}</q-tooltip
+                    >{{ $t("projectView.tooltipDeleteSample[1]") }}</q-tooltip
                   >
                 </q-btn>
 
@@ -221,7 +225,7 @@
                         </q-item-section>
                         <q-item-section>
                           <q-item-label>{{
-                            $t("projectView").tooltipGitPush[0]
+                            $t("projectView.tooltipGitPush[0]")
                           }}</q-item-label>
                         </q-item-section>
                       </q-item>
@@ -243,7 +247,7 @@
                         </q-item-section>
                         <q-item-section>
                           <q-item-label>{{
-                            $t("projectView").tooltipGitPush[1]
+                            $t("projectView.tooltipGitPush[1]")
                           }}</q-item-label>
                         </q-item-section>
                       </q-item>
@@ -259,7 +263,7 @@
                         </q-item-section>
                         <q-item-section>
                           <q-item-label>{{
-                            $t("projectView").tooltipGitPush[2]
+                            $t("projectView.tooltipGitPush[2]")
                           }}</q-item-label>
                         </q-item-section>
                       </q-item>
@@ -275,7 +279,7 @@
                         </q-item-section>
                         <q-item-section>
                           <q-item-label>{{
-                            $t("projectView").tooltipGitPush[3]
+                            $t("projectView.tooltipGitPush[3]")
                           }}</q-item-label>
                         </q-item-section>
                       </q-item>
@@ -287,13 +291,13 @@
                     v-if="table.selected.length < 1"
                     :delay="300"
                     content-class="text-white bg-primary"
-                    >{{ $t("projectView").tooltipGitPush[4] }}</q-tooltip
+                    >{{ $t("projectView.tooltipGitPush[4]") }}</q-tooltip
                   >
                   <q-tooltip
                     v-else
                     :delay="300"
                     content-class="text-white bg-primary"
-                    >{{ $t("projectView").tooltipGitPush[5] }}</q-tooltip
+                    >{{ $t("projectView.tooltipGitPush[5]") }}</q-tooltip
                   >
                 </div>
 
@@ -320,7 +324,7 @@
                         </q-item-section>
                         <q-item-section>
                           <q-item-label>{{
-                            $t("projectView").gitPullUser
+                            $t("projectView.gitPullUser")
                           }}</q-item-label>
                         </q-item-section>
                       </q-item>
@@ -337,7 +341,7 @@
                         </q-item-section>
                         <q-item-section>
                           <q-item-label>{{
-                            $t("projectView").gitPullAll
+                            $t("projectView.gitPullAll")
                           }}</q-item-label>
                         </q-item-section>
                       </q-item>
@@ -347,13 +351,13 @@
                     v-if="table.selected.length < 1"
                     :delay="300"
                     content-class="text-white bg-primary"
-                    >{{ $t("projectView").tooltipGitPullSelect[0] }}</q-tooltip
+                    >{{ $t("projectView.tooltipGitPullSelect[0]") }}</q-tooltip
                   >
                   <q-tooltip
                     v-else
                     :delay="300"
                     content-class="text-white bg-primary"
-                    >{{ $t("projectView").tooltipGitPullSelect[1] }}</q-tooltip
+                    >{{ $t("projectView.tooltipGitPullSelect[1]") }}</q-tooltip
                   >
                   <q-tooltip
                     :delay="300"
@@ -363,7 +367,7 @@
 
                 <div>
                   <q-btn
-                    v-show="LexiconTable==false" 
+                    v-show="LexiconTable == false"
                     flat
                     color="default"
                     icon="playlist_add_check"
@@ -375,11 +379,11 @@
                     "
                   ></q-btn>
                   <q-btn
-                    v-show="LexiconTable==true" 
+                    v-show="LexiconTable == true"
                     flat
                     color="default"
                     icon="playlist_add_check"
-                    @click="LexiconTable=false"
+                    @click="LexiconTable = false"
                     :loading="table.exporting"
                     :disable="
                       (!isGuest && !isAdmin && !isSuperAdmin) ||
@@ -414,7 +418,7 @@
                   <q-icon name="search" />
                 </template>
                 <q-tooltip :delay="300" content-class="text-white bg-primary">{{
-                  $t("projectView").tooltipSearch
+                  $t("projectView.tooltipSearch")
                 }}</q-tooltip>
               </q-input>
 
@@ -434,7 +438,7 @@
                 style="min-width: 100px"
               >
                 <q-tooltip :delay="300" content-class="text-white bg-primary">{{
-                  $t("projectView").tooltipSelectVisible
+                  $t("projectView.tooltipSelectVisible")
                 }}</q-tooltip>
               </q-select>
 
@@ -447,7 +451,7 @@
                 class="q-ml-md"
               >
                 <q-tooltip :delay="300" content-class="text-white bg-primary">{{
-                  $t("projectView").tooltipFullscreen
+                  $t("projectView.tooltipFullscreen")
                 }}</q-tooltip>
               </q-btn>
             </template>
@@ -459,7 +463,7 @@
                 </q-td>
                 <q-td key="samplename" :props="props">
                   <q-btn
-                    :disable="props.row.sentences==0"
+                    :disable="props.row.sentences == 0"
                     outline
                     color="white"
                     :text-color="$q.dark.isActive ? 'white' : 'black'"
@@ -616,15 +620,15 @@
         <q-card style="width: 300px">
           <q-card-section>
             <div class="text-h6">
-              {{ $t("projectView").projectInfoDial.title }}
+              {{ $t("projectView.projectInfoDial.title") }}
             </div>
           </q-card-section>
 
           <q-card-section class="q-pt-none">
             <div v-if="admins.length > 1">
-              {{ $t("projectView").projectInfoDial.ifAdmin }}
+              {{ $t("projectView.projectInfoDial.ifAdmin") }}
             </div>
-            <div v-else>{{ $t("projectView").projectInfoDial.else }}</div>
+            <div v-else>{{ $t("projectView.projectInfoDial.else") }}</div>
           </q-card-section>
           <q-card-section>
             <q-list>
@@ -873,22 +877,22 @@ export default {
     getProjectSamples() {
       api.getProjectSamples(this.$route.params.projectname).then((response) => {
         this.samples = response.data;
-        this.projectTreesFrom = this.getProjectTreesFrom(this.samples)
+        this.projectTreesFrom = this.getProjectTreesFrom(this.samples);
       });
     },
     getProjectTreesFrom(samples) {
-        let projectTreesFrom = []
+      let projectTreesFrom = [];
 
-        for (const sample of this.samples) {
-          const sampleTreesFrom = sample.treesFrom
+      for (const sample of this.samples) {
+        const sampleTreesFrom = sample.treesFrom;
 
-          for (const userId of sampleTreesFrom) {
-            if (!(projectTreesFrom.includes(userId))) {
-              projectTreesFrom.push(userId)
-            }
+        for (const userId of sampleTreesFrom) {
+          if (!projectTreesFrom.includes(userId)) {
+            projectTreesFrom.push(userId);
           }
         }
-        return projectTreesFrom
+      }
+      return projectTreesFrom;
     },
     getUsers() {
       // TODO : change this function as it's downloading all users each time. It should only be users of the project
@@ -1121,15 +1125,8 @@ export default {
     },
 
     showNotif(position, alert) {
-      const {
-        color,
-        textColor,
-        multiLine,
-        icon,
-        message,
-        avatar,
-        actions,
-      } = this.alerts[alert];
+      const { color, textColor, multiLine, icon, message, avatar, actions } =
+        this.alerts[alert];
       const buttonColor = color ? "white" : void 0;
       this.$q.notify({
         color,

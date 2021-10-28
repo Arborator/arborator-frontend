@@ -1,24 +1,23 @@
 import Vue from 'vue'
-import Vuex from 'vuex'
-import api from '../boot/backend-api'
+// import Vuex from 'vuex' //vue2
+import { createStore } from 'vuex'
 
 import config from './modules/config'
 import user from './modules/user'
 import grewSearch from './modules/grewSearch'
 import sample from './modules/sample'
 
-Vue.use(Vuex);
 
-import VueCookies from 'vue-cookies';
-VueCookies.config('7d');
-Vue.use(VueCookies);
+// Vue.use(Vuex);
+
+
 
 import { Notify } from 'quasar'
 
 import { i18n } from 'src/boot/i18n'
 
 
-export default new Vuex.Store({
+export default createStore(({
     state: {
         // source: "https://127.0.0.1:5000",
         // source: "https://arboratorgrew.elizia.net:8888",
@@ -81,7 +80,9 @@ export default new Vuex.Store({
         },
     },
     getters: {
-        getSource: state => state.source,
+        getSource: state => {
+            console.log("KK getSource", state.source)
+            return state.source},
         getLastGrewQuery: state => state.lastGrewQuery,
         getLastGrewCommand: state => state.lastGrewCommand,
         getPendingModifications: state => state.pendingModifications,
@@ -92,4 +93,4 @@ export default new Vuex.Store({
         user,
         grewSearch,
     }
-})
+}))

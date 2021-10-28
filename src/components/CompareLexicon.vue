@@ -27,7 +27,7 @@
       <template v-slot:top-right>
         <q-btn color="default" flat label="Rule Grew" @click="changeLexicon()"
           ><q-tooltip :delay="300" content-class="text-white bg-primary">{{
-            $t("projectView").tooltipRuleGrewLexicon
+            $t("projectView.tooltipRuleGrewLexicon")
           }}</q-tooltip></q-btn
         >
         <q-input

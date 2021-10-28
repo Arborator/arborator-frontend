@@ -5,11 +5,11 @@
   >
     <q-bar class="bg-primary text-white">
       <q-space />
-      <div class="text-weight-bold">{{ $t("projectSettings").title }}</div>
+      <div class="text-weight-bold">{{ $t("projectSettings.title") }}</div>
       <q-space />
       <q-btn dense flat icon="close" v-close-popup>
         <q-tooltip content-class="bg-white text-primary">{{
-          $t("projectSettings").windowClose
+          $t("projectSettings.windowClose")
         }}</q-tooltip>
       </q-btn>
     </q-bar>
@@ -89,10 +89,10 @@
           <q-item tag="label" v-ripple>
             <q-item-section>
               <q-item-label>{{
-                $t("projectSettings").togglePrivate
+                $t("projectSettings.togglePrivate")
               }}</q-item-label>
               <q-item-label caption>{{
-                $t("projectSettings").togglePrivateCaption
+                $t("projectSettings.togglePrivateCaption")
               }}</q-item-label>
             </q-item-section>
             <q-item-section avatar>
@@ -114,10 +114,10 @@
           <q-item tag="label" v-ripple>
             <q-item-section>
               <q-item-label>{{
-                $t("projectSettings").toggleAllVisible
+                $t("projectSettings.toggleAllVisible")
               }}</q-item-label>
               <q-item-label caption>{{
-                $t("projectSettings").toggleAllVisibleCaption
+                $t("projectSettings.toggleAllVisibleCaption")
               }}</q-item-label>
             </q-item-section>
             <q-item-section avatar>
@@ -133,10 +133,10 @@
           <q-item tag="label" v-ripple>
             <q-item-section>
               <q-item-label>{{
-                $t("projectSettings").toggleExerciseMode
+                $t("projectSettings.toggleExerciseMode")
               }}</q-item-label>
               <q-item-label caption>{{
-                $t("projectSettings").toggleExerciseModeCaption
+                $t("projectSettings.toggleExerciseModeCaption")
               }}</q-item-label>
             </q-item-section>
             <q-item-section avatar>
@@ -152,10 +152,10 @@
           <q-item id="option__diff-mode" tag="label" v-ripple>
             <q-item-section>
               <q-item-label>{{
-                $t("projectSettings").toggleDiffMode
+                $t("projectSettings.toggleDiffMode")
               }}</q-item-label>
               <q-item-label caption>{{
-                $t("projectSettings").toggleDiffModeCaption
+                $t("projectSettings.toggleDiffModeCaption")
               }}</q-item-label>
             </q-item-section>
             <q-item-section avatar>
@@ -171,10 +171,10 @@
           <q-item id="option__usertree-diff" tag="label" v-ripple>
             <q-item-section>
               <q-item-label>{{
-                $t("projectSettings").chooseUserDiff
+                $t("projectSettings.chooseUserDiff")
               }}</q-item-label>
               <q-item-label caption>{{
-                $t("projectSettings").chooseUserDiffCaption
+                $t("projectSettings.chooseUserDiffCaption")
               }}</q-item-label>
             </q-item-section>
             <q-item-section avatar>
@@ -183,7 +183,7 @@
                 v-model="diffUserId"
                 :options="projectTreesFrom"
               />
-                <!-- checked-icon="check"
+              <!-- checked-icon="check"
                 unchecked-icon="clear" -->
             </q-item-section>
           </q-item>
@@ -194,7 +194,7 @@
       <q-card class="col">
         <q-card-section>
           <div class="text-h6 text-center">
-            {{ $t("projectSettings").defaultUserTreePanel }}
+            {{ $t("projectSettings.defaultUserTreePanel") }}
             <q-btn
               v-show="isAdmin"
               flat
@@ -233,7 +233,7 @@
       <q-card class="col">
         <q-card-section>
           <div class="text-h6 text-center">
-            {{ $t("projectSettings").adminsPanel }}
+            {{ $t("projectSettings.adminsPanel") }}
             <q-btn
               v-show="isAdmin"
               flat
@@ -266,7 +266,7 @@
       <q-card class="col">
         <q-card-section>
           <div class="text-h6 text-center">
-            {{ $t("projectSettings").guestsPanel }}
+            {{ $t("projectSettings.guestsPanel") }}
             <q-btn
               v-show="isAdmin"
               flat
@@ -300,7 +300,7 @@
       <q-card class="col">
         <q-card-section>
           <div class="text-h6 text-center">
-            {{ $t("projectSettings").shownFeaturesPanel }}
+            {{ $t("projectSettings.shownFeaturesPanel") }}
           </div>
         </q-card-section>
         <q-card-section>
@@ -331,15 +331,15 @@
       <q-card class="col col-sm-12">
         <q-card-section>
           <div class="text-h6 text-center">
-            {{ $t("projectSettings").annotationSettingsInput }}
+            {{ $t("projectSettings.annotationSettingsInput") }}
           </div>
         </q-card-section>
         <q-card-section>
-          <codemirror
+          <Codemirror
             v-model="annofjson"
             :options="cmOption"
             @input="checkAnnotationFeatures"
-          ></codemirror>
+          ></Codemirror>
         </q-card-section>
         <q-btn
           color="bg-primary"
@@ -425,17 +425,29 @@
 
 <script>
 import { mapGetters } from "vuex";
-import { codemirror } from "vue-codemirror";
-import "codemirror/mode/python/python.js";
-import "codemirror/lib/codemirror.css";
-import "codemirror/theme/material-darker.css";
+// import { codemirror } from "vue-codemirror";
+// import "codemirror/mode/python/python.js";
+// import "codemirror/lib/codemirror.css";
+// import "codemirror/theme/material-darker.css";
+
+import Codemirror from "codemirror-editor-vue3";
+
+// plugin-style
+import "codemirror-editor-vue3/dist/style.css";
+
+// language
+import "codemirror/mode/javascript/javascript.js";
+
+// theme
+import "codemirror/theme/dracula.css";
+
 import api from "../boot/backend-api.js";
 import UserSelectTable from "../components/UserSelectTable.vue";
 import ConfirmAction from "../components/ConfirmAction.vue";
 
 export default {
   name: "project-settings-view",
-  components: { codemirror, UserSelectTable, ConfirmAction },
+  components: { Codemirror, UserSelectTable, ConfirmAction },
   props: ["projectname", "projectTreesFrom"],
   data() {
     return {
@@ -579,7 +591,7 @@ export default {
       try {
         JSON.parse(this.annofjson);
         this.annofok = true;
-        this.annofcomment = this.$t("projectSettings").checkAnnotation;
+        this.annofcomment = this.$t("projectSettings.checkAnnotation");
       } catch (e) {
         this.annofok = false;
         this.annofcomment = e;

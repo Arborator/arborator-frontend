@@ -37,7 +37,7 @@
                 node-key="label"
                 :filter="filter"
                 default-expand-all
-                :v-model:selected="currentEdge"
+                v-model:selected="currentEdge"
                 selected-color="primary"
                 @update:selected="getTable($event)"
               />
@@ -65,7 +65,7 @@
           <q-table
             ref="relationTable"
             class="rounded-borders"
-            :data="table.rows"
+            :rows="table.rows"
             :columns="table.columns"
             :v-model:pagination="table.pagination"
             row-key="gov"

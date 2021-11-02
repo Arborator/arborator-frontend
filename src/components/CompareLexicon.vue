@@ -8,7 +8,7 @@
           ? 'my-sticky-header-table-dark'
           : 'my-sticky-header-table') + ' rounded-borders'
       "
-      :data="this.data"
+      :rows="this.data"
       :columns="table.columns"
       row-key="key"
       :v-model:pagination="table.pagination"
@@ -21,7 +21,7 @@
       card-class="shadow-8"
       :key="tableKey"
       selection="multiple"
-      :v-model:selected="table.selected"
+      v-model:selected="table.selected"
       table-style="max-height:80vh"
     >
       <template v-slot:top-right>

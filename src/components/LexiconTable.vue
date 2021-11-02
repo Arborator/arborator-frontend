@@ -8,7 +8,7 @@
           ? 'my-sticky-header-table-dark'
           : 'my-sticky-header-table') + ' rounded-borders'
       "
-      :data="this.data"
+      :rows="this.data"
       :columns="table.columns"
       row-key="key"
       :v-model:pagination="table.pagination"
@@ -19,7 +19,7 @@
       :rows-per-page-options="[0]"
       :visible-columns="table.visibleColumns"
       selection="multiple"
-      :v-model:selected="table.selected"
+      v-model:selected="table.selected"
       :table-header-class="$q.dark.isActive ? 'text-white' : 'text-primary'"
       virtual-scroll
       card-class="shadow-8"

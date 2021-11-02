@@ -2,11 +2,16 @@
   <q-page id="container" :class="$q.dark.isActive ? 'bg-dark' : 'bg-grey-1'">
     <div class="q-pa-md row q-gutter-md flex flex-center">
       <q-card flat style="max-width: 100%">
-        <q-card-section>
+        <q-card-section class="project-header">
           <q-toolbar class="text-center">
             <!-- <q-toolbar-title><span :class="($q.dark.isActive?'':'text-primary') + ' text-bold'">{.name}}</span> </q-toolbar-title> -->
           </q-toolbar>
-          <q-img class="project-image" :src="cleanedImage" basic>
+          <q-img
+            class="project-image"
+            src="https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fisleblue.co%2Fmagazine%2Fwp-content%2Fuploads%2F2017%2F05%2FPuntaCanaBeachLife-e1496088219763.jpg&f=1&nofb=1"
+            basic
+          >
+            <!-- :src="cleanedImage" FIXME, replace by this line when statics will works again -->
             <div class="absolute-bottom text-h6" style="padding: 6px">
               <q-icon
                 v-show="visibility == 0"
@@ -55,6 +60,7 @@
             </div>
           </q-img>
         </q-card-section>
+
         <q-card-section v-if="LexiconTable">
           <LexiconTable
             :data="this.lexicon"
@@ -72,10 +78,10 @@
                 : 'my-sticky-header-table') + ' rounded-borders'
             "
             title="Samples"
-            :data="samples"
+            :rows="samples"
             :columns="table.fields"
             row-key="sample_name"
-            :v-model:pagination="table.pagination"
+            v-model:pagination="table.pagination"
             :loading="table.loading"
             loading-label="loading"
             :filter="table.filter"
@@ -87,14 +93,14 @@
                 : table.visibleColumns
             "
             selection="multiple"
-            :v-model:selected="table.selected"
+            v-model:selected="table.selected"
             :table-header-class="
               $q.dark.isActive ? 'text-white' : 'text-primary'
             "
             card-class="shadow-8"
             virtual-scroll
             table-style="max-height:80vh"
-            :rows-per-page-options="[0]"
+            :rows-per-page-options="[30]"
             :key="tableKey"
           >
             <!-- @request="getProjectInfos" -->

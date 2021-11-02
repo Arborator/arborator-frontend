@@ -20,7 +20,7 @@
         ref="usersTable"
         class="dark rounded-borders"
         title="Users"
-        :data="table.data"
+        :rows="table.data"
         :columns="table.fields"
         row-key="username"
         :v-model:pagination="table.pagination"
@@ -30,7 +30,7 @@
         binary-state-sort
         :visible-columns="table.visibleColumns"
         selection="multiple"
-        :v-model:selected="table.selected"
+        v-model:selected="table.selected"
         dense
         table-header-class="text-primary"
         card-class="shadow-8"

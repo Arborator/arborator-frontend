@@ -96,7 +96,7 @@
                 table-header-class="text-primary"
                 hide-pagination
                 title="Old and new user ids when importing"
-                :data="userIds"
+                :rows="userIds"
                 row-key="old"
                 :columns="columns"
               >

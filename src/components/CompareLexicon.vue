@@ -11,7 +11,7 @@
       :data="this.data"
       :columns="table.columns"
       row-key="key"
-      :pagination.sync="table.pagination"
+      :v-model:pagination="table.pagination"
       :filter="table.filter"
       binary-state-sort
       :rows-per-page-options="[0]"
@@ -21,7 +21,7 @@
       card-class="shadow-8"
       :key="tableKey"
       selection="multiple"
-      :selected.sync="table.selected"
+      :v-model:selected="table.selected"
       table-style="max-height:80vh"
     >
       <template v-slot:top-right>
@@ -106,12 +106,10 @@
 </template>
 
 <script>
-import Vue from "vue";
 import api from "../boot/backend-api";
-import { openURL } from "quasar";
 import GrewSearch from "./grewSearch/GrewSearch";
 import grewTemplates from "../assets/grew-templates.json";
-import { len } from "snapsvg-cjs";
+
 export default {
   components: { GrewSearch },
   name: "CompareLexicon",

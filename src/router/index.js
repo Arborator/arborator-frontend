@@ -1,4 +1,3 @@
-// import VueRouter from 'vue-router' // vue2
 import { createRouter, createMemoryHistory, createWebHistory, createWebHashHistory } from 'vue-router'
 import store from "../store/index.js"
 import { route } from 'quasar/wrappers';

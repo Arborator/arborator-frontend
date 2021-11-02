@@ -11,7 +11,7 @@
       :data="this.data"
       :columns="table.columns"
       row-key="key"
-      :pagination.sync="table.pagination"
+      :v-model:pagination="table.pagination"
       :loading="table.loading"
       loading-label="loading"
       :filter="table.filter"
@@ -19,7 +19,7 @@
       :rows-per-page-options="[0]"
       :visible-columns="table.visibleColumns"
       selection="multiple"
-      :selected.sync="table.selected"
+      :v-model:selected="table.selected"
       :table-header-class="$q.dark.isActive ? 'text-white' : 'text-primary'"
       virtual-scroll
       card-class="shadow-8"

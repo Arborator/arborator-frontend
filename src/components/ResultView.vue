@@ -33,7 +33,8 @@
                 <q-toggle
                   v-model="samplesFrozen.selected[index]"
                   checked-icon="check"
-                  unchecked-icon="clear"/>
+                  unchecked-icon="clear"
+                />
               </td>
               <td>
                 <sentence-card
@@ -68,11 +69,9 @@
 </template>
 
 <script>
-import { select } from 'snapsvg-cjs';
 import api from "../boot/backend-api";
 import SentenceCard from "./sentence/SentenceCard";
-// var heavyList = [];
-// var heavyListSamples = [];
+
 export default {
   components: { SentenceCard },
   props: ["searchresults", "totalsents", "searchscope", "parentOnShowTable"],
@@ -84,7 +83,6 @@ export default {
       loading: false,
       inResult: true,
       selected: [],
-
     };
   },
   computed: {
@@ -122,7 +120,11 @@ export default {
       }
       // heavyList = listIds;
       Object.freeze(listIds);
-      this.samplesFrozen = { list: listIds, indexes: index2Ids, selected: selectedIndex };
+      this.samplesFrozen = {
+        list: listIds,
+        indexes: index2Ids,
+        selected: selectedIndex,
+      };
       // console.log(this.samplesFrozen)
     },
     /**
@@ -149,50 +151,48 @@ export default {
       var changedConllUser = this.$store.getters["user/getUserInfos"].username;
       var sentenceIds = [];
       var objLength = Object.keys(this.samplesFrozen.selected).length;
-      for (let i = 0; i < objLength; i++){
+      for (let i = 0; i < objLength; i++) {
         if (this.samplesFrozen.selected[i] == true)
-          sentenceIds.push(this.samplesFrozen.list[i][1])
+          sentenceIds.push(this.samplesFrozen.list[i][1]);
       }
-      for (let samplename in this.searchresults){
-        for (let sent_id in this.searchresults[samplename]){
-          if (sentenceIds.includes(sent_id) == false){
-            console.log(sent_id)
-            delete this.searchresults[samplename][sent_id]; 
+      for (let samplename in this.searchresults) {
+        for (let sent_id in this.searchresults[samplename]) {
+          if (sentenceIds.includes(sent_id) == false) {
+            console.log(sent_id);
+            delete this.searchresults[samplename][sent_id];
           }
         }
-        if (Object.keys(this.searchresults[samplename]).length == 0){
-          delete this.searchresults[samplename]
+        if (Object.keys(this.searchresults[samplename]).length == 0) {
+          delete this.searchresults[samplename];
         }
       }
-      if (Object.keys(this.searchresults) != 0){
-        var datasample = { data: this.searchresults};
-        api.saveConll(this.$route.params.projectname, datasample)
-        .then(response => {
-          this.resultSearchDialog = false;
-          this.parentOnShowTable(this.resultSearchDialog);
-          this.$q.notify({message:`Conll Saved`});
-        })
+      if (Object.keys(this.searchresults) != 0) {
+        var datasample = { data: this.searchresults };
+        api
+          .saveConll(this.$route.params.projectname, datasample)
+          .then((response) => {
+            this.resultSearchDialog = false;
+            this.parentOnShowTable(this.resultSearchDialog);
+            this.$q.notify({ message: `Conll Saved` });
+          });
+      } else {
+        console.log("not ok");
       }
-      else {console.log("not ok")}
       // console.log(this.searchresults["ABJ_GWA_06_Ugo-Lifestory_MG"]["conlls"])
-      
-
-      
-      
     },
-      // var query = { results: this.searchresults, sentenceIds: sentenceIds };
-      // api
-      //   .applyRulesProject(this.$route.params.projectname, query)
-      //   .then((response) => {
-      //     // this.resultSearchDialog = true;
-      //     // this.resultSearch = response.data;
-      //     console.log(response.data)
-      //   })
-      //   .catch((error) => {
-      //     this.$store.dispatch("notifyError", {
-      //       error: error.response.data.message,
-      //     });
-      //   });
+    // var query = { results: this.searchresults, sentenceIds: sentenceIds };
+    // api
+    //   .applyRulesProject(this.$route.params.projectname, query)
+    //   .then((response) => {
+    //     // this.resultSearchDialog = true;
+    //     // this.resultSearch = response.data;
+    //     console.log(response.data)
+    //   })
+    //   .catch((error) => {
+    //     this.$store.dispatch("notifyError", {
+    //       error: error.response.data.message,
+    //     });
+    //   });
     getProjectSamples() {
       api.getProjectSamples(this.$route.params.projectname).then((response) => {
         this.samples = response.data;
@@ -213,5 +213,5 @@ export default {
       }
     },
   },
-}
+};
 </script>

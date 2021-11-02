@@ -398,7 +398,6 @@ export default {
         });
     },
     tologin(url) {
-      console.log("KK url", url);
       window.location.assign(url);
       // console.log(this.store.getters.getSource + '/login/google'); openURL(this.store.getters.getSource + '/login/google');
       // window.location.href = 'https://arboratorgrew.elizia.net/login/google';

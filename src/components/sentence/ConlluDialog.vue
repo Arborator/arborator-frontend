@@ -10,13 +10,13 @@
       </q-header>
       <q-page-container>
         <q-page>
-          <codemirror
+          <Codemirror
             v-model="conllContent"
             :options="cmOption"
             class="CodeMirror"
             @focus="codefocus"
           >
-          </codemirror>
+          </Codemirror>
           <!-- </codemirror> -->
           <!-- @input="codechange($event)"  ($event)-->
         </q-page>
@@ -42,7 +42,7 @@
 <script>
 import { sentenceConllToJson } from "conllup";
 // import { codemirror } from "vue-codemirror";
-// import CodeMirror from "codemirror";
+import CodeMirror2 from "codemirror";
 
 import Codemirror from "codemirror-editor-vue3";
 
@@ -55,7 +55,7 @@ import "codemirror/mode/javascript/javascript.js";
 // theme
 import "codemirror/theme/dracula.css";
 
-CodeMirror.defineMode("tsv", function (_config, parserConfig) {
+CodeMirror2.defineMode("tsv", function (_config, parserConfig) {
   function tokenBase(stream, state) {
     if (stream.string.match(/^#.+/)) {
       stream.skipToEnd();
@@ -94,7 +94,7 @@ CodeMirror.defineMode("tsv", function (_config, parserConfig) {
 }); // end codemirror
 
 export default {
-  components: { codemirror },
+  components: { Codemirror },
   props: ["sentenceBus"],
   data() {
     return {

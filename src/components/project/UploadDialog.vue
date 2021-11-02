@@ -1,6 +1,6 @@
 <template>
   <q-dialog
-    v-model="uploadDialModel"
+    :model-value="uploadDialModel"
     :maximized="maximizedUploadToggle"
     transition-show="fade"
     transition-hide="fade"
@@ -34,7 +34,13 @@
             >{{ $t("projectView.tooltipWindows[1]") }}</q-tooltip
           >
         </q-btn>
-        <q-btn dense flat icon="close" v-close-popup>
+        <q-btn
+          dense
+          flat
+          icon="close"
+          v-close-popup="10"
+          @click="uploadDialModel = false"
+        >
           <q-tooltip content-class="bg-white text-primary">{{
             $t("projectView.tooltipWindows[2]")
           }}</q-tooltip>
@@ -51,9 +57,8 @@
         <!-- <input type="file" id="input-conllu" multiple /> -->
         <q-file
           v-model="uploadSample.attachment.file"
-          @input="preprocess"
+          @update:model-value="preprocess"
           label="Pick or drop files"
-          outlined
           use-chips
           clearable
           :loading="uploadSample.submitting"
@@ -68,7 +73,10 @@
               round
               @click="upload()"
               :loading="uploadSample.submitting"
-              :disable="uploadSample.attachment.file == null"
+              :disable="
+                uploadSample.attachment.file == null ||
+                uploadSample.attachment.file === []
+              "
             />
           </template>
         </q-file>
@@ -162,11 +170,19 @@
 
 <script>
 import api from "../../boot/backend-api.js";
+import { useModelWrapper } from "../../composables/modelWrapper.js";
 
 export default {
   props: ["uploadDial"],
+  setup(props, { emit }) {
+    return {
+      uploadDialModel: useModelWrapper(props, emit, "uploadDial"),
+    };
+  },
+
   data() {
     return {
+      files: null,
       maximizedUploadToggle: false,
       robot: { active: false, name: "parser", exerciseModeName: "teacher" },
       uploadSample: {
@@ -223,14 +239,14 @@ export default {
   },
 
   computed: {
-    uploadDialModel: {
-      get() {
-        return this.uploadDial;
-      },
-      set(newValue) {
-        this.$emit("update:uploadDial", newValue);
-      },
-    },
+    //   uploadDialModel: {
+    //     get() {
+    //       return this.uploadDial;
+    //     },
+    //     set(newValue) {
+    //       this.$emit("update:uploadDial", newValue);
+    //     },
+    //   },
     userid: {
       get() {
         return this.$store.getters["user/getUserInfos"].username;
@@ -293,7 +309,7 @@ export default {
       api
         .uploadSample(this.$route.params.projectname, form)
         .then((response) => {
-          this.uploadSample.attachment.file = [];
+          this.uploadSample.attachment.file = null;
           this.$emit("uploaded:sample"); // tell to the parent that a new sample was uploaded and to fetch all samples
           this.uploadDialModel = false;
           this.uploadSample.submitting = false;

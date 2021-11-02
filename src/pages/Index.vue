@@ -440,12 +440,8 @@
 <script>
 import { openURL } from "quasar";
 import { copyToClipboard } from "quasar";
-import ProjectCard from "../components/ProjectCard.vue";
 
 export default {
-  components: {
-    ProjectCard,
-  },
   name: "PageIndex",
   data() {
     return {
@@ -461,9 +457,6 @@ export default {
       search: "",
       slide: "style",
     };
-  },
-  mounted() {
-    console.log("KK MOUNDED");
   },
   methods: {
     openURL,

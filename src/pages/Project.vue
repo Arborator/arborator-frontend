@@ -75,7 +75,7 @@
             :data="samples"
             :columns="table.fields"
             row-key="sample_name"
-            :pagination.sync="table.pagination"
+            :v-model:pagination="table.pagination"
             :loading="table.loading"
             loading-label="loading"
             :filter="table.filter"
@@ -87,7 +87,7 @@
                 : table.visibleColumns
             "
             selection="multiple"
-            :selected.sync="table.selected"
+            :v-model:selected="table.selected"
             :table-header-class="
               $q.dark.isActive ? 'text-white' : 'text-primary'
             "
@@ -600,7 +600,7 @@
         <user-table :samples="table.selected"></user-table>
       </q-dialog>
       <UploadDialog
-        :uploadDial.sync="uploadDial"
+        v-model:uploadDial="uploadDial"
         v-on:uploaded:sample="getProjectSamples()"
       />
 
@@ -968,35 +968,6 @@ export default {
             "ici il faut un popup utile indiquant comment installer l application"
           );
 
-          this.$store.dispatch("notifyError", { error: error });
-        });
-    },
-    upload() {
-      var form = new FormData();
-      form.append("robotname", this.robot.name);
-      form.append("robot", this.robot.active);
-      this.uploadSample.submitting = true;
-      for (const file of this.uploadSample.attachment.file) {
-        form.append("files", file);
-      }
-      form.append("import_user", Store.getters["user/getUserInfos"].username);
-      api
-        .uploadSample(this.$route.params.projectname, form)
-        .then((response) => {
-          this.uploadSample.attachment.file = [];
-          // this.getProjectInfos();
-          this.uploadDial = false;
-          this.uploadSample.submitting = false;
-          this.showNotif("top-right", "uploadsuccess");
-        })
-        .catch((error) => {
-          if (error.response) {
-            error.message = error.response.data.message;
-            error.permanent = true;
-          }
-          error.caption = "Check your file please!";
-          this.uploadSample.submitting = false;
-          this.uploadDial = false;
           this.$store.dispatch("notifyError", { error: error });
         });
     },

@@ -86,7 +86,10 @@
             :disable="openTabUser == '' || !canSave"
             @click="save('')"
           >
-            <q-tooltip>Save the tree of {{ this.openTabUser }} as <b>{{this.userId}}</b></q-tooltip>
+            <q-tooltip
+              >Save the tree of {{ this.openTabUser }} as
+              <b>{{ this.userId }}</b></q-tooltip
+            >
           </q-btn>
 
           <!-- TODO : still display the metadata when the user is not logged in, but hide all the buttons for deleting and saving them -->
@@ -256,14 +259,16 @@
           ><q-tooltip v-if="hasPendingChanges[user]"
             >The tree has some pendings modifications not saved</q-tooltip
           >
-          <q-tooltip v-else><q-icon color="primary"
+          <q-tooltip v-else
+            ><q-icon
+              color="primary"
               name="schedule"
               size="14px"
               class="q-ml-xs"
-            /> modified {{lastModifiedTime[user]}} ago
-            </q-tooltip>
-          </q-tab
-        >
+            />
+            modified {{ lastModifiedTime[user] }} ago
+          </q-tooltip>
+        </q-tab>
       </q-tabs>
       <q-separator />
       <q-tab-panels
@@ -336,7 +341,8 @@
 </template>
 
 <script>
-import Vue from "vue";
+// import Vue from "vue";
+import mitt from "mitt";
 
 import { mapGetters } from "vuex";
 
@@ -372,7 +378,7 @@ export default {
   props: ["index", "sentence", "sentenceId", "searchResult", "exerciseLevel"],
   data() {
     return {
-      sentenceBus: new Vue(), // Event/Object Bus that communicate between all components
+      sentenceBus: new mitt(), // Event/Object Bus that communicate between all components
       reactiveSentencesObj: {},
       openTabUser: "",
       animated: false,
@@ -414,8 +420,8 @@ export default {
       this.forceRerender;
       const lastModifiedTime = {};
       for (const user of Object.keys(this.reactiveSentencesObj)) {
-        const timestamp = this.reactiveSentencesObj[user].state.metaJson
-          .timestamp;
+        const timestamp =
+          this.reactiveSentencesObj[user].state.metaJson.timestamp;
         const timeDifferenceNumber =
           (Math.round(Date.now()) - parseInt(timestamp)) / 1000;
         let timeDifferenceString;
@@ -485,9 +491,8 @@ export default {
     },
   },
   created() {
-    this.shownmetanames = this.$store.getters[
-      "config/getProjectConfig"
-    ].shownmeta;
+    this.shownmetanames =
+      this.$store.getters["config/getProjectConfig"].shownmeta;
 
     for (const [userId, conll] of Object.entries(this.sentence.conlls)) {
       const reactiveSentence = new ReactiveSentence();
@@ -610,9 +615,8 @@ export default {
           userId: this.openTabUser,
         });
 
-        const newMetaText = this.reactiveSentencesObj[
-          this.openTabUser
-        ].getSentenceText();
+        const newMetaText =
+          this.reactiveSentencesObj[this.openTabUser].getSentenceText();
         this.sentenceBus.$emit("changed:metaText", { newMetaText });
       }, 10);
     },
@@ -634,9 +638,10 @@ export default {
         timestamp: Math.round(Date.now()),
       };
 
-      const exportedConll = this.reactiveSentencesObj[
-        openedTreeUser
-      ].exportConllWithModifiedMeta(metaToReplace);
+      const exportedConll =
+        this.reactiveSentencesObj[openedTreeUser].exportConllWithModifiedMeta(
+          metaToReplace
+        );
 
       var data = {
         sent_id: this.sentenceId,
@@ -766,15 +771,8 @@ export default {
       return orderedConlls;
     },
     showNotif(position, alert) {
-      const {
-        color,
-        textColor,
-        multiLine,
-        icon,
-        message,
-        avatar,
-        actions,
-      } = this.alerts[alert];
+      const { color, textColor, multiLine, icon, message, avatar, actions } =
+        this.alerts[alert];
       const buttonColor = color ? "white" : void 0;
       this.$q.notify({
         color,

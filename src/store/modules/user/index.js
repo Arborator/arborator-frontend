@@ -10,10 +10,7 @@ export default {
   state: defaultState(),
 
   getters: {
-    getUserInfos: (state) => {
-      console.log("KK state user", state)
-      return state
-    },
+    getUserInfos: (state) => state,
     isSuperAdmin: (state) => state.super_admin,
     isLoggedIn: (state) => state.loginSuccess,
     hasLoginErrored: (state) => state.loginError,
@@ -47,7 +44,6 @@ export default {
   },
   actions: {
     checkSession({ commit }) {
-      console.log("KK checkSession")
       return new Promise((resolve, reject) => {
         //var token = VueCookies.get("authomatic");
         var session = cookies.get("session");

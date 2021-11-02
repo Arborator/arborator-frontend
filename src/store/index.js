@@ -1,16 +1,9 @@
-import Vue from 'vue'
-// import Vuex from 'vuex' //vue2
 import { createStore } from 'vuex'
 
 import config from './modules/config'
 import user from './modules/user'
 import grewSearch from './modules/grewSearch'
 import sample from './modules/sample'
-
-
-// Vue.use(Vuex);
-
-
 
 import { Notify } from 'quasar'
 
@@ -80,9 +73,7 @@ export default createStore(({
         },
     },
     getters: {
-        getSource: state => {
-            console.log("KK getSource", state.source)
-            return state.source},
+        getSource: state => state.source,
         getLastGrewQuery: state => state.lastGrewQuery,
         getLastGrewCommand: state => state.lastGrewCommand,
         getPendingModifications: state => state.pendingModifications,

@@ -14,16 +14,16 @@
         <div class="q-pa-xs">
           <div class="row">
             <div class="col-10">
-              <codemirror
+              <Codemirror
                 v-model="searchPattern"
                 :options="cmOption"
-              ></codemirror>
+              ></Codemirror>
               <q-separator />
-              <codemirror
+              <Codemirror
                 v-if="rewriteCommands != ''"
                 v-model="rewriteCommands"
                 :options="cmOption"
-              ></codemirror>
+              ></Codemirror>
               <div class="full-width row justify-start">
                 <q-btn
                   color="primary"
@@ -157,7 +157,7 @@
 </template>
 
 <script>
-// import CodeMirror from "codemirror";
+import CodeMirror2 from "codemirror";
 // import { codemirror } from "vue-codemirror";
 import Codemirror from "codemirror-editor-vue3";
 import { useStorage } from "vue3-storage";
@@ -165,7 +165,8 @@ import { useStorage } from "vue3-storage";
 import "codemirror/lib/codemirror.css";
 import grewTemplates from "../../assets/grew-templates.json";
 // import 'codemirror/theme/material.css'
-CodeMirror.defineMode("grew", function (_config, parserConfig) {
+
+CodeMirror2.defineMode("grew", function (_config, parserConfig) {
   var words = {
     global: "builtin",
     pattern: "builtin",
@@ -243,7 +244,7 @@ CodeMirror.defineMode("grew", function (_config, parserConfig) {
   };
 });
 export default {
-  components: { codemirror },
+  components: { Codemirror },
   name: "GrewRequestCard",
   props: ["parentOnSearch", "parentOnTryRules", "grewquery"],
   data() {

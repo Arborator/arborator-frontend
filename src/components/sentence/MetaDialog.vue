@@ -84,9 +84,9 @@ export default {
     },
   },
   mounted() {
-    this.sentenceBus.$on("open:metaDialog", ({ userId }) => {
-      this.userId = userId
-      this.metaJson = {...this.sentenceBus[userId].metaJson}
+    this.sentenceBus.on("open:metaDialog", ({ userId }) => {
+      this.userId = userId;
+      this.metaJson = { ...this.sentenceBus[userId].metaJson };
       this.metaDialogOpened = true;
       this.metalist = [];
       for (let a in this.metaJson) {
@@ -96,30 +96,41 @@ export default {
     });
   },
   beforeDestroy() {
-    this.sentenceBus.$off("open:uposDialog");
+    this.sentenceBus.off("open:uposDialog");
   },
   methods: {
     onMetaDialogOk() {
       let newMetaJson = this.metalist.reduce(function (obj, r) {
-          if (r.v) obj[r.a] = r.v;
-          return obj;
-        }, {})
-      var isMetaChanged = 0
+        if (r.v) obj[r.a] = r.v;
+        return obj;
+      }, {});
+      var isMetaChanged = 0;
       for (const newMetaKey of Object.keys(newMetaJson)) {
-        var newMetaValue = newMetaJson[newMetaKey]
+        var newMetaValue = newMetaJson[newMetaKey];
         if (newMetaValue != this.metaJson[newMetaKey]) {
-          if (["timestamp", "user_id", "sent_id", "text"].includes(newMetaKey)) {
+          if (
+            ["timestamp", "user_id", "sent_id", "text"].includes(newMetaKey)
+          ) {
             isMetaChanged = 1;
           }
         }
       }
       if (!isMetaChanged) {
-        this.sentenceBus.$emit("tree-update:sentence", {sentenceJson: {metaJson: newMetaJson, treeJson: this.sentenceBus[this.userId].treeJson}, userId: this.userId})
+        this.sentenceBus.emit("tree-update:sentence", {
+          sentenceJson: {
+            metaJson: newMetaJson,
+            treeJson: this.sentenceBus[this.userId].treeJson,
+          },
+          userId: this.userId,
+        });
         this.$q.notify({
-            message: `Conllu changed`,
-          });
+          message: `Conllu changed`,
+        });
       } else {
-        this.$store.dispatch("notifyError", { error: "Changing timestamp, user_id, sent_id or text is not allowed !" });
+        this.$store.dispatch("notifyError", {
+          error:
+            "Changing timestamp, user_id, sent_id or text is not allowed !",
+        });
       }
     },
   },

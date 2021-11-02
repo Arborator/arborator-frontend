@@ -12,7 +12,7 @@
         <q-btn flat dense icon="close" v-close-popup />
       </q-bar>
       <q-card-section style="height: 200px">
-        <div >
+        <div>
           <p v-for="(tag, index) of ['UPOS', 'DEPREL', 'HEAD']" :key="index">
             {{ tag }} correct : {{ corrects[tag] }}/{{ totals[tag] }} ({{
               (100 * corrects[tag]) / totals[tag]
@@ -54,12 +54,11 @@ export default {
     },
   },
   mounted() {
-    this.sentenceBus.$on("open:statisticsDialog", ({ userId }) => {
+    this.sentenceBus.on("open:statisticsDialog", ({ userId }) => {
       this.userId = userId;
       const stats = this.sentenceBus[this.userId].getDiffStats(
         this.conlls.teacher
       );
-
 
       this.corrects = stats.corrects;
       this.totals = stats.totals;
@@ -68,7 +67,7 @@ export default {
     });
   },
   beforeDestroy() {
-    this.sentenceBus.$off("open:statisticsDialog");
+    this.sentenceBus.off("open:statisticsDialog");
   },
   methods: {},
 };

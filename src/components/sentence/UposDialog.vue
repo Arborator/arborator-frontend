@@ -72,30 +72,30 @@ export default {
     },
   },
   mounted() {
-    this.sentenceBus.$on("open:uposDialog", ({ token, userId }) => {
+    this.sentenceBus.on("open:uposDialog", ({ token, userId }) => {
       this.token = token;
       this.userId = userId;
       this.uposDialogOpened = true;
     });
   },
   beforeDestroy() {
-    this.sentenceBus.$off("open:uposDialog");
+    this.sentenceBus.off("open:uposDialog");
   },
   methods: {
     onChangeUpos() {
       this.uposDialogOpened = false;
-      this.sentenceBus.$emit("tree-update:token", {
+      this.sentenceBus.emit("tree-update:token", {
         token: this.token,
         userId: this.userId,
       });
     },
     onDeleteUpos() {
       this.token.UPOS = "_";
-      this.sentenceBus.$emit("tree-update:token", {
+      this.sentenceBus.emit("tree-update:token", {
         token: this.token,
         userId: this.userId,
       });
-    }
+    },
   },
 };
 </script>

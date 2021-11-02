@@ -1,5 +1,4 @@
-<template>
-</template>
+<template></template>
 
 <script>
 export default {
@@ -10,13 +9,13 @@ export default {
     };
   },
   mounted() {
-    this.sentenceBus.$on("export:SVG", ({ userId }) => {
+    this.sentenceBus.on("export:SVG", ({ userId }) => {
       this.userId = userId;
       this.getSVG();
     });
   },
   beforeDestroy() {
-    this.sentenceBus.$off("export:SVG");
+    this.sentenceBus.off("export:SVG");
   },
   methods: {
     /**
@@ -28,7 +27,7 @@ export default {
     getSVG() {
       // todo: instead of this long string, read the actual css file and put it there.
       // var svg = this.graphInfo.conllGraph.snap.treedata.s.toString();
-      const sentenceSVG = this.sentenceBus[this.userId]
+      const sentenceSVG = this.sentenceBus[this.userId];
       var svg = sentenceSVG.snapSentence.toString();
       var style = `<style> 
 <![CDATA[  

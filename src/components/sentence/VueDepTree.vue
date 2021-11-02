@@ -1,17 +1,17 @@
 <template>
   <div>
     <div class="sentencebox">
-      <svg ref="svgWrapper"/>
+      <svg ref="svgWrapper" />
     </div>
   </div>
 </template>
 
 <script>
 import { LocalStorage } from "quasar";
-import { 
-  SentenceSVG, 
+import {
+  SentenceSVG,
   defaultSentenceSVGOptions,
-  SentenceCaretaker
+  SentenceCaretaker,
 } from "dependencytreejs/lib";
 
 export default {
@@ -47,13 +47,16 @@ export default {
   mounted() {
     // attach so this vue comp become an observer of the reactive sent
     // each time the reactive sentence will change, it will call the function ".update" of all observers
-    this.reactiveSentence.attach(this); 
+    this.reactiveSentence.attach(this);
     this.reactiveSentence.fromSentenceConll(this.conll);
     const sentenceSVGOptions = defaultSentenceSVGOptions();
     sentenceSVGOptions.shownFeatures = this.shownFeatures;
     sentenceSVGOptions.interactive = true;
-    if (this.$store.getters["config/isStudent"] == true && this.userId == this.$store.getters["config/TEACHER"]) {
-      sentenceSVGOptions.interactive = false
+    if (
+      this.$store.getters["config/isStudent"] == true &&
+      this.userId == this.$store.getters["config/TEACHER"]
+    ) {
+      sentenceSVGOptions.interactive = false;
     }
     const svgWrapper = this.$refs.svgWrapper;
     this.sentenceSVG = new SentenceSVG(
@@ -61,11 +64,11 @@ export default {
       this.reactiveSentence,
       sentenceSVGOptions
     );
-    
+
     this.sentenceSVG.plugDiffTree(this.teacherReactiveSentence);
 
     this.sentenceCaretaker = new SentenceCaretaker(this.reactiveSentence);
-    this.sentenceCaretaker.backup()
+    this.sentenceCaretaker.backup();
 
     this.sentenceBus[this.userId] = this.sentenceSVG;
 
@@ -76,57 +79,57 @@ export default {
     this.sentenceSVG.addEventListener("svg-drop", (e) => {
       this.svgDropHandler(e);
     });
-    this.sentenceBus.$on("tree-update:token", ({ token, userId }) => {
+    this.sentenceBus.on("tree-update:token", ({ token, userId }) => {
       if (userId == this.userId) {
-        this.history_index ++;
+        this.history_index++;
         this.reactiveSentence.updateToken(token);
         this.sentenceCaretaker.backup();
         this.statusChangeHadler();
       }
     });
 
-    this.sentenceBus.$on("tree-update:tree", ({ tree, userId }) => {
+    this.sentenceBus.on("tree-update:tree", ({ tree, userId }) => {
       if (userId == this.userId) {
         this.reactiveSentence.updateTree(tree);
-        this.sentenceCaretaker.backup()
+        this.sentenceCaretaker.backup();
         this.statusChangeHadler();
       }
     });
-    this.sentenceBus.$on("tree-update:sentence", ({ sentenceJson, userId }) => {
+    this.sentenceBus.on("tree-update:sentence", ({ sentenceJson, userId }) => {
       if (userId == this.userId) {
         this.reactiveSentence.updateSentence(sentenceJson);
-        this.sentenceCaretaker.backup()
+        this.sentenceCaretaker.backup();
         this.statusChangeHadler();
       }
     });
-    this.sentenceBus.$on("action:undo", ({ userId }) => {
+    this.sentenceBus.on("action:undo", ({ userId }) => {
       if (userId == this.userId) {
         this.sentenceCaretaker.undo();
         this.statusChangeHadler();
       }
     });
-    this.sentenceBus.$on("action:redo", ({ userId }) => {
+    this.sentenceBus.on("action:redo", ({ userId }) => {
       if (userId == this.userId) {
         this.sentenceCaretaker.redo();
         this.statusChangeHadler();
       }
     });
-    this.sentenceBus.$on("action:saved", ({ userId }) => {
+    this.sentenceBus.on("action:saved", ({ userId }) => {
       if (userId == this.userId) {
         this.history_saveIndex = this.sentenceCaretaker.currentStateIndex;
         this.statusChangeHadler();
       }
     });
 
-    this.sentenceBus.$on("action:tabSelected", ({ userId }) => {
-      if(userId == this.userId) {
+    this.sentenceBus.on("action:tabSelected", ({ userId }) => {
+      if (userId == this.userId) {
         this.statusChangeHadler();
       }
     });
-    this.sentenceBus.$on("action:addEmptyToken", ({ userId }) => {
-      if(userId == this.userId) {
-        this.reactiveSentence.addEmptyToken()
-        this.sentenceCaretaker.backup()
+    this.sentenceBus.on("action:addEmptyToken", ({ userId }) => {
+      if (userId == this.userId) {
+        this.reactiveSentence.addEmptyToken();
+        this.sentenceCaretaker.backup();
         this.statusChangeHadler();
       }
     });
@@ -136,16 +139,16 @@ export default {
   methods: {
     svgClickHandler(e) {
       const clickedId = e.detail.clicked;
-      const clickedToken = {...this.sentenceSVG.treeJson[clickedId]};
+      const clickedToken = { ...this.sentenceSVG.treeJson[clickedId] };
       const targetLabel = e.detail.targetLabel;
 
       if (targetLabel == "DEPREL") {
         const dep = clickedToken;
-        const gov = {...this.sentenceSVG.treeJson[dep.HEAD]} || {
+        const gov = { ...this.sentenceSVG.treeJson[dep.HEAD] } || {
           FORM: "ROOT",
           ID: 0,
         }; // handle if head is root
-        this.sentenceBus.$emit("open:relationDialog", {
+        this.sentenceBus.emit("open:relationDialog", {
           gov,
           dep,
           userId: this.userId,
@@ -154,12 +157,12 @@ export default {
         targetLabel == "FORM" ||
         ["MISC.", "FEATS", "LEMMA"].includes(targetLabel.slice(0, 5))
       ) {
-        this.sentenceBus.$emit(`open:featuresDialog`, {
+        this.sentenceBus.emit(`open:featuresDialog`, {
           token: clickedToken,
           userId: this.userId,
         });
       } else {
-        this.sentenceBus.$emit(`open:${targetLabel.toLowerCase()}Dialog`, {
+        this.sentenceBus.emit(`open:${targetLabel.toLowerCase()}Dialog`, {
           token: clickedToken,
           userId: this.userId,
         });
@@ -175,14 +178,14 @@ export default {
       // if the area being hovered is the root (circle on top of the svg), assign the gov object to root
       if (e.detail.isRoot) {
         gov = { ID: 0, FORM: "ROOT" };
-        dep = {...this.sentenceSVG.treeJson[draggedId]};
+        dep = { ...this.sentenceSVG.treeJson[draggedId] };
       } else {
-        gov = {...this.sentenceSVG.treeJson[draggedId]};
-        dep = {...this.sentenceSVG.treeJson[hoveredId]};
+        gov = { ...this.sentenceSVG.treeJson[draggedId] };
+        dep = { ...this.sentenceSVG.treeJson[hoveredId] };
       }
       // emit only if dep is defined. If the token is being dragged on nothing, nothing will happen
       if (dep?.ID) {
-        this.sentenceBus.$emit("open:relationDialog", {
+        this.sentenceBus.emit("open:relationDialog", {
           gov,
           dep,
           userId: this.userId,
@@ -195,12 +198,13 @@ export default {
     statusChangeHadler() {
       const canUndo = this.sentenceCaretaker.canUndo();
       const canRedo = this.sentenceCaretaker.canRedo();
-      const needSave = this.history_saveIndex != this.sentenceCaretaker.currentStateIndex;
+      const needSave =
+        this.history_saveIndex != this.sentenceCaretaker.currentStateIndex;
       const status_str = LocalStorage.getItem("save_status");
       let status_obj = status_str ? JSON.parse(status_str) : {};
       let card = status_obj[this.cardId];
-      this.hasPendingChanges[this.userId] = needSave
-      
+      this.hasPendingChanges[this.userId] = needSave;
+
       this.$emit("statusChanged", {
         canUndo: canUndo,
         canRedo: canRedo,
@@ -235,9 +239,9 @@ export default {
       };
     },
     update() {
-      const newMetaText = this.reactiveSentence.getSentenceText()
-      this.sentenceBus.$emit("changed:metaText", {newMetaText})
-    }
+      const newMetaText = this.reactiveSentence.getSentenceText();
+      this.sentenceBus.emit("changed:metaText", { newMetaText });
+    },
   },
 };
 </script>

@@ -93,7 +93,7 @@ export default {
     },
   },
   mounted() {
-    this.sentenceBus.$on("open:tokenDialog", ({ userId, event }) => {
+    this.sentenceBus.on("open:tokenDialog", ({ userId, event }) => {
       this.userId = userId;
       this.startIndex = event.srcElement.selectionStart;
       this.endIndex = event.srcElement.selectionEnd;
@@ -105,7 +105,7 @@ export default {
     });
   },
   beforeDestroy() {
-    this.sentenceBus.$off("open:tokenDialog");
+    this.sentenceBus.off("open:tokenDialog");
   },
   methods: {
     openTokenDialog(b, e, t) {
@@ -190,7 +190,7 @@ export default {
         oldTokensIndexes,
         newTokensForm
       );
-      this.sentenceBus.$emit("tree-update:tree", {
+      this.sentenceBus.emit("tree-update:tree", {
         tree: newTree,
         userId: this.userId,
       });

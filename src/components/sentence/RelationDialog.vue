@@ -19,7 +19,6 @@
       ></AttributeTable>
       <!-- @feature-changed="informFeatureChanged()" -->
       <q-space />
-      
 
       <q-card-actions>
         <q-btn
@@ -30,14 +29,14 @@
         />
         <!-- @click="ondialoghide()" -->
         <q-space />
-                      <q-btn
+        <q-btn
           color="negative"
           @click="onDeleteRelation()"
           label="Delete"
           v-close-popup
           style="width: 25%; margin-left: auto"
         />
-      <q-space />
+        <q-space />
         <q-btn
           color="primary"
           @click="onChangeRelation(options.extendedrel)"
@@ -45,7 +44,6 @@
           v-close-popup
           style="width: 25%; margin-left: auto; margin-right: auto"
         />
-
       </q-card-actions>
       <!-- :disabled="!someFeatureChanged" -->
     </q-card>
@@ -123,7 +121,7 @@ export default {
     ); // = /[:@]/g
   },
   mounted() {
-    this.sentenceBus.$on("open:relationDialog", ({ dep, gov, userId }) => {
+    this.sentenceBus.on("open:relationDialog", ({ dep, gov, userId }) => {
       this.dep = dep;
       this.gov = gov;
       this.userId = userId;
@@ -160,7 +158,7 @@ export default {
     });
   },
   beforeDestroy() {
-    this.sentenceBus.$off("open:relationDialog");
+    this.sentenceBus.off("open:relationDialog");
   },
   methods: {
     onChangeRelation() {
@@ -174,21 +172,21 @@ export default {
       );
       this.dep.DEPREL = newDeprel;
       this.dep.HEAD = this.gov.ID;
-      this.sentenceBus.$emit("tree-update:token", {
+      this.sentenceBus.emit("tree-update:token", {
         token: this.dep,
         // gov: this.gov,
-        userId: this.userId
+        userId: this.userId,
       });
     },
     onDeleteRelation() {
       this.dep.DEPREL = "";
       this.dep.HEAD = null;
-      this.sentenceBus.$emit("tree-update:token", {
+      this.sentenceBus.emit("tree-update:token", {
         token: this.dep,
         // gov: this.gov,
-        userId: this.userId
+        userId: this.userId,
       });
-    }
+    },
   },
 };
 </script>

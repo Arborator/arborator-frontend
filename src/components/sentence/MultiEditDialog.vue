@@ -79,13 +79,13 @@ export default {
     };
   },
   mounted() {
-    this.sentenceBus.$on("open:openMultiEditDialog", ({ userId, event }) => {
+    this.sentenceBus.on("open:openMultiEditDialog", ({ userId, event }) => {
       this.userId = userId;
       this.treeJson = JSON.parse(
         JSON.stringify(this.sentenceBus[this.userId].treeJson)
       );
       for (const metaLabel of this.metaLabels) {
-        this.checkboxesAll[metaLabel] = false
+        this.checkboxesAll[metaLabel] = false;
       }
       for (const token in this.treeJson) {
         const checkboxesToken = {};
@@ -98,7 +98,7 @@ export default {
     });
   },
   beforeDestroy() {
-    this.sentenceBus.$off("open:openMultiEditDialog");
+    this.sentenceBus.off("open:openMultiEditDialog");
   },
   methods: {
     onDialogOk() {
@@ -111,7 +111,7 @@ export default {
           }
         }
       }
-      this.sentenceBus.$emit("tree-update:tree", {
+      this.sentenceBus.emit("tree-update:tree", {
         tree: this.treeJson,
         userId: this.userId,
       });

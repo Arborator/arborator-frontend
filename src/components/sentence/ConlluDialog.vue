@@ -115,7 +115,7 @@ export default {
   },
   computed: {},
   mounted() {
-    this.sentenceBus.$on("open:conlluDialog", ({ userId }) => {
+    this.sentenceBus.on("open:conlluDialog", ({ userId }) => {
       this.userId = userId;
       this.conlluDialogOpened = true;
       this.currentConllContent = this.sentenceBus[this.userId].exportConll();
@@ -141,7 +141,7 @@ export default {
         }
       }
       if (!isMetaChanged) {
-        this.sentenceBus.$emit("tree-update:sentence", {
+        this.sentenceBus.emit("tree-update:sentence", {
           sentenceJson: sentenceJson,
           userId: this.userId,
         });

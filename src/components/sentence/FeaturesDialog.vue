@@ -120,7 +120,7 @@ export default {
     },
   },
   mounted() {
-    this.sentenceBus.$on("open:featuresDialog", ({ token, userId }) => {
+    this.sentenceBus.on("open:featuresDialog", ({ token, userId }) => {
       this.token = token;
       this.userId = userId;
       this.featuresDialogOpened = true;
@@ -138,7 +138,7 @@ export default {
     });
   },
   beforeDestroy() {
-    this.sentenceBus.$off("open:featuresDialog");
+    this.sentenceBus.off("open:featuresDialog");
   },
   methods: {
     informFeatureChanged() {},
@@ -160,7 +160,7 @@ export default {
         if (r.v) obj[r.a] = r.v;
         return obj;
       }, {});
-      this.sentenceBus.$emit("tree-update:token", {
+      this.sentenceBus.emit("tree-update:token", {
         token: this.token,
         userId: this.userId,
       });

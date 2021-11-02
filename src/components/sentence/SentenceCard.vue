@@ -503,7 +503,7 @@ export default {
 
     this.diffMode = !!this.$store.getters["config/diffMode"];
 
-    this.sentenceBus.$on("changed:metaText", ({ newMetaText }) => {
+    this.sentenceBus.on("changed:metaText", ({ newMetaText }) => {
       this.changeMetaText(newMetaText);
     });
   },
@@ -532,7 +532,7 @@ export default {
       }, 500);
     },
     openStatisticsDialog() {
-      this.sentenceBus.$emit("open:statisticsDialog", {
+      this.sentenceBus.emit("open:statisticsDialog", {
         userId: this.openTabUser,
       });
     },
@@ -542,10 +542,10 @@ export default {
      * @returns void
      */
     openConllDialog() {
-      this.sentenceBus.$emit("open:conlluDialog", { userId: this.openTabUser });
+      this.sentenceBus.emit("open:conlluDialog", { userId: this.openTabUser });
     },
     openMultiEditDialog() {
-      this.sentenceBus.$emit("open:openMultiEditDialog", {
+      this.sentenceBus.emit("open:openMultiEditDialog", {
         userId: this.openTabUser,
       });
     },
@@ -557,7 +557,7 @@ export default {
      */
     exportSVG() {
       // todo: instead of this long string, read the actual css file and put it there.
-      this.sentenceBus.$emit("export:SVG", { userId: this.openTabUser });
+      this.sentenceBus.emit("export:SVG", { userId: this.openTabUser });
     },
     /**
      * Handle token click event to display the related dialog
@@ -568,7 +568,7 @@ export default {
     ttselect(event) {
       // only if a tab is open
       if (this.openTabUser !== "") {
-        this.sentenceBus.$emit("open:tokenDialog", {
+        this.sentenceBus.emit("open:tokenDialog", {
           userId: this.openTabUser,
           event: event,
         });
@@ -576,21 +576,21 @@ export default {
     },
     undo(mode) {
       if (this.openTabUser !== "") {
-        this.sentenceBus.$emit("action:undo", {
+        this.sentenceBus.emit("action:undo", {
           userId: this.openTabUser,
         });
       }
     },
     redo(mode) {
       if (this.openTabUser !== "") {
-        this.sentenceBus.$emit("action:redo", {
+        this.sentenceBus.emit("action:redo", {
           userId: this.openTabUser,
         });
       }
     },
     addEmptyToken() {
       if (this.openTabUser !== "") {
-        this.sentenceBus.$emit("action:addEmptyToken", {
+        this.sentenceBus.emit("action:addEmptyToken", {
           userId: this.openTabUser,
         });
       }
@@ -611,13 +611,13 @@ export default {
     handleTabChange() {
       // wait for 10ms until this.openTabUser get changed
       setTimeout(() => {
-        this.sentenceBus.$emit("action:tabSelected", {
+        this.sentenceBus.emit("action:tabSelected", {
           userId: this.openTabUser,
         });
 
         const newMetaText =
           this.reactiveSentencesObj[this.openTabUser].getSentenceText();
-        this.sentenceBus.$emit("changed:metaText", { newMetaText });
+        this.sentenceBus.emit("changed:metaText", { newMetaText });
       }, 10);
     },
     /**
@@ -656,7 +656,7 @@ export default {
         )
         .then((response) => {
           if (response.status == 200) {
-            this.sentenceBus.$emit("action:saved", {
+            this.sentenceBus.emit("action:saved", {
               userId: this.openTabUser,
             });
             if (this.sentenceData.conlls[changedConllUser]) {
@@ -720,7 +720,7 @@ export default {
     },
     openMetaDialog() {
       // "this.openTabUser" contains the user name
-      this.sentenceBus.$emit("open:metaDialog", { userId: this.openTabUser });
+      this.sentenceBus.emit("open:metaDialog", { userId: this.openTabUser });
     },
     /**
      * Show a notification. Wrapper considering parameters

@@ -10,7 +10,7 @@ module.exports = configure((ctx)  =>({
   
     // app boot file (/src/boot)
     // --> boot files are part of "main.js"
-    boot: ["i18n", "axios", "vue-cookies", "allOtherBoots"],
+    boot: ["i18n", "axios", "vue-cookies", "vue-storage"],
     supportTS: true, // added for TS support
 
     css: ["app.styl"],

@@ -108,18 +108,18 @@
                     class="bg-grey-2 primary"
                     indicator-color="primary"
                   >
-                    <q-tab
-                      :name="query.name"
-                      :label="query.name"
-                      v-for="query in queries"
-                      v-if="query.commands == ''"
-                      :key="query.name"
-                      clickable
-                      v-ripple
-                      @click="
-                        changeSearchPattern(query.pattern, query.commands)
-                      "
-                    />
+                    <template v-for="query in queries" :key="query.name">
+                      <q-tab
+                        :name="query.name"
+                        :label="query.name"
+                        v-if="query.commands == ''"
+                        clickable
+                        v-ripple
+                        @click="
+                          changeSearchPattern(query.pattern, query.commands)
+                        "
+                      />
+                    </template>
                   </q-tabs>
                 </q-tab-panel>
 
@@ -133,18 +133,18 @@
                     class="bg-grey-2 primary"
                     indicator-color="primary"
                   >
-                    <q-tab
-                      :name="query.name"
-                      :label="query.name"
-                      v-for="query in queries"
-                      v-if="query.commands != ''"
-                      :key="query.name"
-                      clickable
-                      v-ripple
-                      @click="
-                        changeSearchPattern(query.pattern, query.commands)
-                      "
-                    />
+                    <template v-for="query in queries" :key="query.name">
+                      <q-tab
+                        :name="query.name"
+                        :label="query.name"
+                        v-if="query.commands != ''"
+                        clickable
+                        v-ripple
+                        @click="
+                          changeSearchPattern(query.pattern, query.commands)
+                        "
+                      />
+                    </template>
                   </q-tabs>
                 </q-tab-panel>
               </q-tab-panels>
@@ -160,7 +160,6 @@
 import CodeMirror2 from "codemirror";
 // import { codemirror } from "vue-codemirror";
 import Codemirror from "codemirror-editor-vue3";
-import { useStorage } from "vue3-storage";
 
 import "codemirror/lib/codemirror.css";
 import grewTemplates from "../../assets/grew-templates.json";
@@ -249,7 +248,6 @@ export default {
   props: ["parentOnSearch", "parentOnTryRules", "grewquery"],
   data() {
     return {
-      storage: null,
       searchreplacetab: "search",
       searchquerytab: grewTemplates[0].name,
       searchPattern: `% Search for a given word form
@@ -269,17 +267,17 @@ pattern { N [form="Form_to_search"] }`,
     };
   },
   mounted() {
-    this.storage = useStorage();
+    let grewHistory = this.$storage.getStorageSync("grewHistory");
+    if (grewHistory !== undefined && grewHistory.length > 0) {
+      this.$store.commit("change_last_grew_query", grewHistory);
+    }
 
-    if (this.storage.getStorageSync("grewHistory", "").length > 0)
-      this.$store.commit(
-        "change_last_grew_query",
-        this.storage.getStorageSync("grewHistory")
-      );
-    if (this.$store.getters.getLastGrewQuery.length > 0)
+    if (this.$store.getters.getLastGrewQuery.length > 0) {
       this.searchPattern = this.$store.getters.getLastGrewQuery;
-    if (this.$store.getters.getLastGrewCommand.length > 0)
+    }
+    if (this.$store.getters.getLastGrewCommand.length > 0) {
       this.rewriteCommands = this.$store.getters.getLastGrewCommand;
+    }
     this.checkgrewquery();
   },
   methods: {
@@ -292,7 +290,7 @@ pattern { N [form="Form_to_search"] }`,
       this.parentOnSearch(this.searchPattern);
       this.$store.commit("change_last_grew_query", this.searchPattern);
       this.$store.commit("change_last_grew_command", this.rewriteCommands);
-      this.storage.setStorageSync("grewHistory", this.searchPattern);
+      this.$storage.setStorageSync("grewHistory", this.searchPattern);
     },
     /**
      * Call parent onsearch function and update store and history

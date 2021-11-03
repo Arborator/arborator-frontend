@@ -15,13 +15,13 @@
           <div class="row">
             <div class="col-10">
               <Codemirror
-                v-model="searchPattern"
+                v-model:value="searchPattern"
                 :options="cmOption"
               ></Codemirror>
               <q-separator />
               <Codemirror
                 v-if="rewriteCommands != ''"
-                v-model="rewriteCommands"
+                v-model:value="rewriteCommands"
                 :options="cmOption"
               ></Codemirror>
               <div class="full-width row justify-start">

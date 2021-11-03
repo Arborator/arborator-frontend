@@ -11,7 +11,7 @@
       <q-page-container>
         <q-page>
           <Codemirror
-            v-model="conllContent"
+            v-model:value="conllContent"
             :options="cmOption"
             class="CodeMirror"
             @focus="codefocus"

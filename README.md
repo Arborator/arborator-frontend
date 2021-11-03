@@ -32,7 +32,7 @@ It should works without any changes on the backend. So you can continue to use t
 ### TODO LIST
 
 - [ ] <estetic> improve estetics of our code mirror instances (font, color, font-size)
-- [ ] <estetic> Some global app styling doesn't work (we can see a light blue instead of the purple arboragrew theme)
+- [ ] <estetic> Some global app styling doesn't work (we can see a light blue instead of the purple arboragrew theme, ;aybe our stylus loader/compiler is not working. )
 - [ ] <broken> When modifying a lexic in lexicon lila code, we have the error : `no modification`
 - [ ] <adapting> Page Settings.vue (name modification doesnt work)
 - [ ] <adapting> Page Klang.vue (need to provide data_dev in backend to see if working)

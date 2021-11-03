@@ -2,6 +2,33 @@
 
 ## Migration to quasar v2 (vue3)
 
+### Installation
+
+BE CAREFUL !!! CLONE THIS BRANCH IN A NEW FOLDER !
+Indeed, most of the dependencies changed, so if you just chckout from your actual quasarv1 branch to this one, you will need to delete all node_modules, package-lock.json and rerun `npm install`
+
+#### Procedure
+
+1 - Clone in a new folder Arborator
+
+```
+git clone https://github.com/Arborator/arborator-frontend/
+```
+
+2 - checkout quasar_v2 branch
+
+```
+git checkout quasar_v2
+```
+
+3 - install node packages
+
+```
+npm install
+```
+
+It should works without any changes on the backend. So you can continue to use the same dev backend for both version of Arborator frontend
+
 ### TODO LIST
 
 - [ ] Make statics files serving work (it doesn't work when referencing to them with `icon="img:../statics/svg/g.svg"` in a <q-btn> for instance)

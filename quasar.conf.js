@@ -146,7 +146,11 @@ module.exports = configure((ctx)  =>({
       // extractCSS: false,
       extendWebpack(cfg) {},
     },
+    dev: {
 
+      assetsSubDirectory: 'static',
+      assetsPublicPath: '/',
+    },
     devServer: {
       https: true,
       // port: 8080,

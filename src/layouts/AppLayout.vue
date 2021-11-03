@@ -287,6 +287,8 @@ import { openURL } from "quasar";
 import api from "../boot/backend-api";
 import Store from "../store/index";
 import { useStorage } from "vue3-storage";
+import "../assets/css/tags-style.css";
+import "../assets/css/arborator-draft.css";
 
 export default {
   name: "TempLayout",

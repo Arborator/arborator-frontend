@@ -1,8 +1,7 @@
-import api from "boot/backend-api";
+import api from 'boot/backend-api';
 
-import defaultState from "./defaultState";
-
-import { Notify } from "quasar";
+import { Notify } from 'quasar';
+import defaultState from './defaultState';
 
 export default {
   namespaced: true,
@@ -18,10 +17,7 @@ export default {
       state = Object.assign(state, payload);
     },
     reset_annotation_features(state) {
-      Object.assign(
-        state.annotationFeatures,
-        defaultState().annotationFeatures
-      );
+      Object.assign(state.annotationFeatures, defaultState().annotationFeatures);
     },
   },
   actions: {
@@ -35,7 +31,7 @@ export default {
       api
         .getProjectSettings(projectname)
         .then((response) => {
-          commit("set_project_settings", {
+          commit('set_project_settings', {
             shownfeatures: response.data.config.shownfeatures,
             admins: response.data.admins,
             guests: response.data.guests,
@@ -46,7 +42,7 @@ export default {
           });
         })
         .catch((error) => {
-          this.$store.dispatch("notifyError", { error: error });
+          this.$store.dispatch('notifyError', { error });
           // this.$q.notify({
           // message: `${error}`,
           // color: "negative",
@@ -79,26 +75,23 @@ export default {
     // ... so we have to get a proper data structure of the whole setting for then having better
     // ... separation of conscerns for API calls
     // KK TODO
-    updateProjectSettings(
-      { commit, dispatch },
-      { projectname, toUpdateObject }
-    ) {
+    updateProjectSettings({ commit, dispatch }, { projectname, toUpdateObject }) {
       return new Promise((resolve, reject) => {
         api
           .updateProjectSettings(projectname, toUpdateObject)
           .then((response) => {
-            commit("set_project_settings", { ...toUpdateObject });
+            commit('set_project_settings', { ...toUpdateObject });
             Notify.create({
-              message: `Change saved!`,
+              message: 'Change saved!',
             });
             resolve(response);
           })
           .catch((error) => {
-            dispatch("notifyError", { error: error }, { root: true });
+            dispatch('notifyError', { error }, { root: true });
             Notify.create({
               message: `${error}`,
-              color: "negative",
-              position: "bottom",
+              color: 'negative',
+              position: 'bottom',
             });
             reject(error);
           });
@@ -110,16 +103,13 @@ export default {
         api
           .getProjectConlluSchema(projectname)
           .then((response) => {
-            var fetchedAnnotationFeatures = response.data.data;
+            let fetchedAnnotationFeatures = response.data.data;
             // check if there is a json in proper format, otherwise use default ConfigConllu
-            if (
-              typeof fetchedAnnotationFeatures !== "object" ||
-              fetchedAnnotationFeatures === null
-            ) {
-              commit("reset_project_config");
+            if (typeof fetchedAnnotationFeatures !== 'object' || fetchedAnnotationFeatures === null) {
+              commit('reset_project_config');
               fetchedAnnotationFeatures = state.annotationFeatures;
             }
-            commit("set_project_conllu_schema", {
+            commit('set_project_conllu_schema', {
               annotationFeatures: fetchedAnnotationFeatures,
             });
             resolve(response);
@@ -136,8 +126,8 @@ export default {
             config: annotationFeatures,
           })
           .then((response) => {
-            commit("set_project_conllu_schema", {
-              annotationFeatures: annotationFeatures,
+            commit('set_project_conllu_schema', {
+              annotationFeatures,
             });
             resolve(response);
           })
@@ -146,9 +136,9 @@ export default {
           });
       });
     },
-    //// for now, AnnotationFeatures is the same thing as configConllu. We need to find an appropriate short name
+    /// / for now, AnnotationFeatures is the same thing as configConllu. We need to find an appropriate short name
     resetAnnotationFeatures({ commit }) {
-      commit("reset_annotation_features");
+      commit('reset_annotation_features');
     },
   },
 };

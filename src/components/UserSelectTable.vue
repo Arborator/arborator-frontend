@@ -1,8 +1,5 @@
 <template>
-  <q-card
-    :class="$q.dark.isActive ? '' : 'bg-blue-grey-1 text-black'"
-    style="max-width: 100vw"
-  >
+  <q-card :class="$q.dark.isActive ? '' : 'bg-blue-grey-1 text-black'" style="max-width: 100vw">
     <q-bar class="bg-primary text-white">
       <q-space />
       <div class="text-weight-bold">{{ selectiontype }} Selection Table</div>
@@ -55,27 +52,17 @@
               @click="parentCallback(table.selected, targetRole)"
               v-close-popup
             >
-              <q-tooltip :delay="300" content-class="text-white bg-primary"
-                >Validate the selection</q-tooltip
-              >
+              <q-tooltip :delay="300" content-class="text-white bg-primary">Validate the selection</q-tooltip>
             </q-btn>
           </q-btn-group>
 
           <q-space />
 
-          <q-input
-            dense
-            debounce="300"
-            v-model="table.filter"
-            placeholder="Search"
-            text-color="blue-grey-8"
-          >
+          <q-input dense debounce="300" v-model="table.filter" placeholder="Search" text-color="blue-grey-8">
             <template v-slot:append>
               <q-icon name="search" />
             </template>
-            <q-tooltip :delay="300" content-class="bg-white text-primary"
-              >Search a user</q-tooltip
-            >
+            <q-tooltip :delay="300" content-class="bg-white text-primary">Search a user</q-tooltip>
           </q-input>
 
           <q-space />
@@ -93,9 +80,7 @@
             option-value="name"
             style="min-width: 100px"
           >
-            <q-tooltip :delay="300" content-class="bg-white text-primary"
-              >Select visible columns</q-tooltip
-            >
+            <q-tooltip :delay="300" content-class="bg-white text-primary">Select visible columns</q-tooltip>
           </q-select>
 
           <q-btn
@@ -113,17 +98,12 @@
           <q-tr :props="props">
             <q-td auto-width><q-toggle dense v-model="props.selected" /></q-td>
             <q-td key="picture_url" :props="props"
-              ><q-avatar size="24px"
-                ><img :src="props.row.picture_url" /></q-avatar
+              ><q-avatar size="24px"><img :src="props.row.picture_url" /></q-avatar
             ></q-td>
             <q-td key="name" :props="props">{{ props.row.username }}</q-td>
             <q-td key="email" :props="props">{{ props.row.id }}</q-td>
-            <q-td key="super_admin" :props="props">{{
-              props.row.super_admin
-            }}</q-td>
-            <q-td key="last_seen" :props="props">{{
-              props.row.last_seen
-            }}</q-td>
+            <q-td key="super_admin" :props="props">{{ props.row.super_admin }}</q-td>
+            <q-td key="last_seen" :props="props">{{ props.row.last_seen }}</q-td>
           </q-tr>
         </template>
       </q-table>
@@ -132,47 +112,48 @@
 </template>
 
 <script>
-import api from "../boot/backend-api";
+import api from '../boot/backend-api';
 
 export default {
-  props: [
-    "parentCallback",
-    "general",
-    "projectname",
-    "robot",
-    "selectiontype",
-    "singlemultiple",
-    "preselected",
-    "targetRole",
-  ],
+  props: ['parentCallback', 'general', 'projectname', 'robot', 'selectiontype', 'singlemultiple', 'preselected', 'targetRole'],
   data() {
     return {
       table: {
         data: [],
         fields: [
           // { name: 'selection', label: 'selection', field: 'selection' },
-          { name: "picture_url", label: "Avatar", field: "picture_url" },
-          { name: "name", label: "Name", field: "username", sortable: true },
-          { name: "email", label: "Mail or ID", field: "id", sortable: true },
+          { name: 'picture_url', label: 'Avatar', field: 'picture_url' },
           {
-            name: "super_admin",
-            label: "Admin",
-            field: "super_admin",
+            name: 'name',
+            label: 'Name',
+            field: 'username',
             sortable: true,
           },
           {
-            name: "last_seen",
-            label: "Last Seen",
-            field: "last_seen",
+            name: 'email',
+            label: 'Mail or ID',
+            field: 'id',
+            sortable: true,
+          },
+          {
+            name: 'super_admin',
+            label: 'Admin',
+            field: 'super_admin',
+            sortable: true,
+          },
+          {
+            name: 'last_seen',
+            label: 'Last Seen',
+            field: 'last_seen',
             sortable: true,
           },
         ],
-        visibleColumns: ["picture_url", "name", "email"],
-        filter: "",
+        visibleColumns: ['picture_url', 'name', 'email'],
+        filter: '',
         selected: [],
         loading: false,
         pagination: {
-          sortBy: "name",
+          sortBy: 'name',
           descending: false,
           page: 1,
           rowsPerPage: 10,
@@ -196,13 +177,7 @@ export default {
      * @returns {Array} array of fields
      */
     filterFields(tableJson) {
-      var tempArray = tableJson.fields.filter(function (obj) {
-        return (
-          obj.field !== "syntInfo" &&
-          obj.field !== "cat" &&
-          obj.field !== "redistributions"
-        );
-      });
+      const tempArray = tableJson.fields.filter((obj) => obj.field !== 'syntInfo' && obj.field !== 'cat' && obj.field !== 'redistributions');
       return tempArray;
     },
     /**
@@ -215,12 +190,10 @@ export default {
         .getUsers()
         .then((response) => {
           this.table.data = response.data;
-          this.table.selected = this.table.data.filter((u) =>
-            this.preselected.includes(u.id)
-          );
+          this.table.selected = this.table.data.filter((u) => this.preselected.includes(u.id));
         })
         .catch((error) => {
-          this.$store.dispatch("notifyError", { error: error });
+          this.$store.dispatch('notifyError', { error });
         });
     },
     /**
@@ -235,7 +208,7 @@ export default {
           this.table.data = response.data;
         })
         .catch((error) => {
-          this.$store.dispatch("notifyError", { error: error });
+          this.$store.dispatch('notifyError', { error });
         });
     },
   },

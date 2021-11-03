@@ -6,95 +6,46 @@
         <!--   :class="$q.dark.isActive ? 'text-white' : 'text-primary'" -->
         <q-btn flat @click="drawerLeft = !drawerLeft" round icon="menu" />
         <q-btn flat to="/" :ripple="false" type="a">
-          <div
-            class="
-              q-btn__content
-              text-center
-              col
-              items-center
-              q-anchor--skip
-              row
-            "
-          >
-            <img
-              v-if="$q.dark.isActive"
-              alt="Arborator"
-              src="/svg/arborator.grew.white.svg"
-              style="height: 2.3vw"
-            />
-            <img
-              v-else
-              alt="Arborator"
-              src="/svg/arborator.grew.svg"
-              style="height: 2.3vw"
-            />
+          <div class="q-btn__content text-center col items-center q-anchor--skip row">
+            <img v-if="$q.dark.isActive" alt="Arborator" src="/svg/arborator.grew.white.svg" style="height: 2.3vw" />
+            <img v-else alt="Arborator" src="/svg/arborator.grew.svg" style="height: 2.3vw" />
           </div>
         </q-btn>
         <q-space />
         <q-breadcrumbs
           :active-color="$q.dark.isActive ? 'white' : 'primary'"
-          :class="
-            ($q.dark.isActive ? 'text-grey' : 'text-black') +
-            ' mobile-hide native-mobile-hide within-iframe-hide gt-xs'
-          "
+          :class="($q.dark.isActive ? 'text-grey' : 'text-black') + ' mobile-hide native-mobile-hide within-iframe-hide gt-xs'"
           style="max-height: 20px; max-width: 70vh; overflow: y"
         >
           <q-breadcrumbs-el v-if="notHome" icon="home" to="/" />
+          <q-breadcrumbs-el v-if="$route.path.startsWith('/projects/')" icon="view_module" to="/projects" />
           <q-breadcrumbs-el
-            v-if="$route.path.startsWith('/projects/')"
-            icon="view_module"
-            to="/projects"
-          />
-          <q-breadcrumbs-el
-            v-if="$route.params.projectname != null"
+            v-if="$route.params.projectname !== null"
             :label="$route.params.projectname"
             icon="fas fa-tree"
             :to="'/projects/' + $route.params.projectname"
           />
           <q-breadcrumbs-el
-            v-if="
-              $route.params.samplename != null &&
-              $route.params.projectname != null
-            "
+            v-if="$route.params.samplename !== null && $route.params.projectname !== null"
             :label="$route.params.samplename"
             icon="assignment"
-            :to="
-              '/projects/' +
-              $route.params.projectname +
-              '/' +
-              $route.params.samplename
-            "
+            :to="'/projects/' + $route.params.projectname + '/' + $route.params.samplename"
           />
+          <q-breadcrumbs-el v-if="$route.path.startsWith('/klang')" icon="music_note" :to="'/klang'" />
           <q-breadcrumbs-el
-            v-if="$route.path.startsWith('/klang')"
-            icon="music_note"
-            :to="'/klang'"
-          />
-          <q-breadcrumbs-el
-            v-if="$route.params.kprojectname != null"
+            v-if="$route.params.kprojectname !== null"
             :label="$route.params.kprojectname"
             :to="'/klang/' + $route.params.kprojectname"
             icon="view_module"
           />
-          <q-breadcrumbs-el
-            v-if="$route.params.ksamplename != null"
-            :label="$route.params.ksamplename"
-          />
+          <q-breadcrumbs-el v-if="$route.params.ksamplename !== null" :label="$route.params.ksamplename" />
         </q-breadcrumbs>
         <q-space />
         <div class="q-gutter-sm row items-center no-wrap" size="4rem">
           <q-icon name="admin_panel_settings" v-show="isProjectAdmin">
             <q-tooltip> You are admin of this project </q-tooltip>
           </q-icon>
-          <q-select
-            v-model="lang"
-            :options="langOptions"
-            dense
-            borderless
-            options-dense
-            map-options
-            emit-value
-          >
+          <q-select v-model="lang" :options="langOptions" dense borderless options-dense map-options emit-value>
             <template v-slot:append>
               <q-avatar>
                 <q-icon name="fas fa-globe" />
@@ -102,27 +53,12 @@
             </template>
             <q-tooltip> Switch the language of the user interface </q-tooltip>
           </q-select>
-          <q-btn
-            flat
-            round
-            @click="toggleDarkMode()"
-            :icon="$q.dark.isActive ? 'lightbulb' : 'brightness_2'"
-          >
+          <q-btn flat round @click="toggleDarkMode()" :icon="$q.dark.isActive ? 'lightbulb' : 'brightness_2'">
             <q-tooltip> Toggle dark mode </q-tooltip>
           </q-btn>
-          <q-btn-dropdown
-            v-show="!store.getters['user/isLoggedIn']"
-            color="secondary"
-            outline
-            label="Log In"
-            icon="account_circle"
-          >
+          <q-btn-dropdown v-show="!store.getters['user/isLoggedIn']" color="secondary" outline label="Log In" icon="account_circle">
             <q-list>
-              <q-item
-                clickable
-                v-close-popup
-                @click="tologin(store.getters.getSource + '/login/google')"
-              >
+              <q-item clickable v-close-popup @click="tologin(store.getters.getSource + '/login/google')">
                 <q-item-section avatar>
                   <q-icon name="fab fa-google" />
                 </q-item-section>
@@ -131,11 +67,7 @@
                   <q-item-label>Google</q-item-label>
                 </q-item-section>
               </q-item>
-              <q-item
-                clickable
-                v-close-popup
-                @click="tologin(store.getters.getSource + '/login/github')"
-              >
+              <q-item clickable v-close-popup @click="tologin(store.getters.getSource + '/login/github')">
                 <q-item-section avatar>
                   <q-icon name="fab fa-github" />
                 </q-item-section>
@@ -146,21 +78,12 @@
               </q-item>
             </q-list>
           </q-btn-dropdown>
-          <q-btn
-            v-show="store.getters['user/isLoggedIn']"
-            round
-            flat
-            dense
-            color="purple"
-          >
+          <q-btn v-show="store.getters['user/isLoggedIn']" round flat dense color="purple">
             <q-tooltip> User information </q-tooltip>
             <q-avatar>
-              <q-icon
-                v-show="store.getters['user/getUserInfos'].avatar == ''"
-                name="account_circle"
-              />
+              <q-icon v-show="store.getters['user/getUserInfos'].avatar === ''" name="account_circle" />
               <q-avatar
-                v-show="store.getters['user/getUserInfos'].picture_url != ''"
+                v-show="store.getters['user/getUserInfos'].picture_url !== ''"
                 :key="store.getters['user/getAvatarKey']"
                 color="default"
                 text-color="white"
@@ -177,49 +100,31 @@
                       <q-item-section avatar>
                         <q-icon name="settings" />
                       </q-item-section>
-                      <q-item-section> {{ $t("settings") }} </q-item-section>
+                      <q-item-section> {{ $t('settings') }} </q-item-section>
                     </q-item>
-                    <q-item
-                      v-show="store.getters['user/getUserInfos'].super_admin"
-                      clickable
-                      v-ripple
-                      to="/admin"
-                    >
+                    <q-item v-show="store.getters['user/getUserInfos'].super_admin" clickable v-ripple to="/admin">
                       <q-item-section avatar>
                         <q-icon name="vpn_key" />
                       </q-item-section>
-                      <q-item-section> {{ $t("admin") }} </q-item-section>
+                      <q-item-section> {{ $t('admin') }} </q-item-section>
                     </q-item>
                   </q-list>
                 </div>
                 <q-separator vertical inset class="q-mx-lg" />
                 <div class="column items-center">
-                  <q-icon
-                    v-show="store.getters['user/getUserInfos'].avatar == ''"
-                    name="account_circle"
-                  />
+                  <q-icon v-show="store.getters['user/getUserInfos'].avatar === ''" name="account_circle" />
                   <q-avatar
-                    v-show="
-                      store.getters['user/getUserInfos'].picture_url != ''
-                    "
+                    v-show="store.getters['user/getUserInfos'].picture_url !== ''"
                     :key="store.getters['user/getAvatarKey']"
                     color="default"
                     text-color="white"
                   >
-                    <img
-                      :src="store.getters['user/getUserInfos'].picture_url"
-                    />
+                    <img :src="store.getters['user/getUserInfos'].picture_url" />
                   </q-avatar>
                   <div class="text-subtitle1 q-mt-md q-mb-xs">
-                    {{ store.getters["user/getUserInfos"].username }}
+                    {{ store.getters['user/getUserInfos'].username }}
                   </div>
-                  <q-btn
-                    color="negative"
-                    label="Logout"
-                    size="sm"
-                    v-close-popup
-                    @click="logout()"
-                  />
+                  <q-btn color="negative" label="Logout" size="sm" v-close-popup @click="logout()" />
                 </div>
               </div>
             </q-menu>
@@ -231,9 +136,7 @@
             :icon="$q.fullscreen.isActive ? 'fullscreen_exit' : 'fullscreen'"
             :label="$q.fullscreen.isActive ? '' : ''"
           >
-            <q-tooltip :delay="300" content-class="bg-white text-primary">{{
-              $t("fullscreen")
-            }}</q-tooltip>
+            <q-tooltip :delay="300" content-class="bg-white text-primary">{{ $t('fullscreen') }}</q-tooltip>
           </q-btn>
         </div>
       </q-bar>
@@ -266,7 +169,7 @@
               v-show="store.getters['user/isLoggedIn'] || menuItem.public"
               :to="menuItem.to"
               clickable
-              :active="menuItem.label == $route.currentRoute"
+              :active="menuItem.label === $route.currentRoute"
               v-ripple
             >
               <q-item-section avatar>
@@ -282,55 +185,57 @@
       </q-scroll-area>
     </q-drawer>
   </q-layout>
-</template><script>
-import { openURL } from "quasar";
-import api from "../boot/backend-api";
-import Store from "../store/index";
-import { useStorage } from "vue3-storage";
-import "../assets/css/tags-style.css";
-import "../assets/css/arborator-draft.css";
+</template>
+
+<script>
+import { openURL } from 'quasar';
+import { useStorage } from 'vue3-storage';
+import api from '../boot/backend-api';
+import Store from '../store/index';
+import '../assets/css/tags-style.css';
+import '../assets/css/arborator-draft.css';
 
 export default {
-  name: "TempLayout",
+  name: 'TempLayout',
   data() {
     return {
       store: Store,
       storage: null,
-      drawerLeft: false, //this.$q.platform.is.mobile?false:true,
+      drawerLeft: false, // this.$q.platform.is.mobile?false:true,
       miniState: true,
       isAdmin: false,
-      search: "",
+      search: '',
       menuList: [
         {
-          icon: "house",
-          label: this.$t("navhome"),
+          icon: 'house',
+          label: this.$t('navhome'),
           separator: false,
           public: true,
-          to: "/#",
+          to: '/#',
           bottom: false,
         },
         {
-          icon: "library_books",
-          label: this.$t("navprojects"),
+          icon: 'library_books',
+          label: this.$t('navprojects'),
           separator: true,
           public: true,
-          to: "/projects",
+          to: '/projects',
           bottom: false,
         },
         {
-          icon: "settings",
-          label: this.$t("navsettings"),
+          icon: 'settings',
+          label: this.$t('navsettings'),
           separator: false,
           public: false,
-          to: "/settings",
+          to: '/settings',
           bottom: true,
         },
         {
-          icon: "music_note",
-          label: this.$t("navklang"),
+          icon: 'music_note',
+          label: this.$t('navklang'),
           separator: false,
           public: true,
-          to: "/klang",
+          to: '/klang',
           bottom: false,
         },
         // {
@@ -344,11 +249,11 @@ export default {
       ],
       lang: this.$i18n.locale,
       langOptions: [
-        { value: "en-us", label: "EN", img: "/images/usflag.svg" },
+        { value: 'en-us', label: 'EN', img: '/images/usflag.svg' },
         {
-          value: "fr-fra",
-          label: "FR",
-          img: "/images/frenchflag.svg",
+          value: 'fr-fra',
+          label: 'FR',
+          img: '/images/frenchflag.svg',
         },
       ],
     };
@@ -359,44 +264,38 @@ export default {
   watch: {
     lang(lang) {
       this.$i18n.locale = lang;
-      this.storage.setStorageSync("arbolang", lang);
+      this.storage.setStorageSync('arbolang', lang);
     },
   },
   computed: {
     notHome() {
-      //return !Object.values(this.$route.params).every(o => o === null); }
-      return this.$route.fullPath != "/";
+      // return !Object.values(this.$route.params).every(o => o === null); }
+      return this.$route.fullPath !== '/';
     },
     isProjectAdmin() {
       if (this.$route.params.projectname) {
-        return (
-          this.$store.getters["config/isAdmin"] ||
-          this.$store.getters["user/isSuperAdmin"]
-        );
-      } else if (this.$route.params.kprojectname) {
-        const { username } = this.$store.getters["user/getUserInfos"];
-        console.log(username, this.$store.getters["config/admins"]);
-        return (
-          this.$store.getters["config/admins"].includes(username) ||
-          this.$store.getters["user/isSuperAdmin"]
-        );
-      } else {
-        return false;
+        return this.$store.getters['config/isAdmin'] || this.$store.getters['user/isSuperAdmin'];
       }
+      if (this.$route.params.kprojectname) {
+        const { username } = this.$store.getters['user/getUserInfos'];
+        console.log(username, this.$store.getters['config/admins']);
+        return this.$store.getters['config/admins'].includes(username) || this.$store.getters['user/isSuperAdmin'];
+      }
+      return false;
     },
   },
   methods: {
     openURL,
     toggleDarkMode() {
       this.$q.dark.toggle();
-      this.storage.setStorageSync("dm", this.$q.dark.isActive);
+      this.storage.setStorageSync('dm', this.$q.dark.isActive);
     },
     login(provider) {
       api
         .auth(provider)
         .then((response) => {})
         .catch((error) => {
-          this.$store.dispatch("notifyError", { error: error });
+          this.$store.dispatch('notifyError', { error });
         });
     },
     tologin(url) {
@@ -408,18 +307,17 @@ export default {
     },
     logout() {
       this.store
-        .dispatch("user/logout", {
-          user: this.store.getters["user/getUserInfos"].username,
+        .dispatch('user/logout', {
+          user: this.store.getters['user/getUserInfos'].username,
         })
         .then(() => {
-          this.$router.push("/").catch((error) => {});
+          this.$router.push('/').catch((error) => {});
         })
         .catch((error) => {
-          this.$store.dispatch("notifyError", { error: error });
+          this.$store.dispatch('notifyError', { error });
         });
     },
   },
 };
 </script>
-<style>
-</style>
+<style></style>

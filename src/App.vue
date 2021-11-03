@@ -3,23 +3,23 @@
 </template>
 
 <script>
-import { defineComponent } from "vue";
+import { defineComponent } from 'vue';
 
-import Store from "./store/index";
-import { useStorage } from "vue3-storage";
+import { useStorage } from 'vue3-storage';
+import Store from './store/index';
 
 export default defineComponent({
-  name: "App",
+  name: 'App',
   data() {
     return {
       store: Store,
       storage: null,
       alerts: {
         welcomeback: {
-          color: "primary",
-          message: this.$t("welcomeback"),
+          color: 'primary',
+          message: this.$t('welcomeback'),
           progress: true,
-          icon: "mood",
+          icon: 'mood',
         },
       },
     };
@@ -27,19 +27,19 @@ export default defineComponent({
   mounted() {
     console.log();
     this.storage = useStorage();
-    this.$store.dispatch("user/checkSession", {}).then(() => {
-      this.$router.push("/");
+    this.$store.dispatch('user/checkSession', {}).then(() => {
+      this.$router.push('/');
     });
     try {
-      this.$q.dark.set(this.storage.getStorageSync("dm"));
+      this.$q.dark.set(this.storage.getStorageSync('dm'));
     } catch (error) {
-      console.log("ls not found");
+      console.log('ls not found');
     }
     try {
-      this.$i18n.locale = this.storage.getStorageSync("arbolang");
+      this.$i18n.locale = this.storage.getStorageSync('arbolang');
     } catch (error) {
       this.$i18n.locale = this.$q.lang.getLocale();
-      this.storage.setStorageSync("arbolang", this.$i18n.locale);
+      this.storage.setStorageSync('arbolang', this.$i18n.locale);
     }
   },
 });

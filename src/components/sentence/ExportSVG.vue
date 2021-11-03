@@ -1,21 +1,23 @@
-<template></template>
+<template>
+  <div></div>
+</template>
 
 <script>
 export default {
-  props: ["sentenceBus"],
+  props: ['sentenceBus'],
   data() {
     return {
-      userId: "",
+      userId: '',
     };
   },
   mounted() {
-    this.sentenceBus.on("export:SVG", ({ userId }) => {
+    this.sentenceBus.on('export:SVG', ({ userId }) => {
       this.userId = userId;
       this.getSVG();
     });
   },
-  beforeDestroy() {
-    this.sentenceBus.off("export:SVG");
+  beforeUnmount() {
+    this.sentenceBus.off('export:SVG');
   },
   methods: {
     /**
@@ -28,8 +30,8 @@ export default {
       // todo: instead of this long string, read the actual css file and put it there.
       // var svg = this.graphInfo.conllGraph.snap.treedata.s.toString();
       const sentenceSVG = this.sentenceBus[this.userId];
-      var svg = sentenceSVG.snapSentence.toString();
-      var style = `<style> 
+      let svg = sentenceSVG.snapSentence.toString();
+      const style = `<style> 
 <![CDATA[  
    .curve {
 	stroke: black;
@@ -105,23 +107,18 @@ export default {
     ]]>  
 </style> `;
 
-      svg = svg.replace(
-        /<desc>Created with Snap<\/desc>/g,
-        "<desc>Created with Snap on Arborator</desc>"
-      );
-      svg = svg.replace(/>/g, ">\n");
-      svg = svg.replace(/(<svg.*>)/, "$1\n" + style);
-      const url = window.URL.createObjectURL(
-        new Blob([svg], { type: "image/svg+xml" })
-      );
-      const link = document.createElement("a");
+      svg = svg.replace(/<desc>Created with Snap<\/desc>/g, '<desc>Created with Snap on Arborator</desc>');
+      svg = svg.replace(/>/g, '>\n');
+      svg = svg.replace(/(<svg.*>)/, `$1\n${style}`);
+      const url = window.URL.createObjectURL(new Blob([svg], { type: 'image/svg+xml' }));
+      const link = document.createElement('a');
       link.href = url;
-      link.setAttribute("download", sentenceSVG.svgID + ".svg");
+      link.setAttribute('download', `${sentenceSVG.svgID}.svg`);
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
       // this.table.exporting = false;
-      this.$q.notify({ message: `Files downloaded` });
+      this.$q.notify({ message: 'Files downloaded' });
     },
     /**
      * Handle token click event to display the related dialog
@@ -130,22 +127,21 @@ export default {
      * @returns void
      */
     ttselect(event) {
+      let cg;
       // triggered if some letters of the sentence are selected
-      if ("conllGraph" in this.$refs)
-        var cg = this.$refs.conllGraph.filter((c) => c.user == this.tab)[0];
-      if (cg)
+      if ('conllGraph' in this.$refs) {
+        [cg] = this.$refs.conllGraph.filter((c) => c.user === this.tab);
+      }
+      if (cg) {
         cg.openTokenDialog(
           // if the user's conllGraph is open:
           event.srcElement.selectionStart,
           event.srcElement.selectionEnd,
-          event.srcElement.value.substring(
-            event.srcElement.selectionStart,
-            event.srcElement.selectionEnd
-          )
+          event.srcElement.value.substring(event.srcElement.selectionStart, event.srcElement.selectionEnd)
         );
+      }
     },
   },
 };
 </script>
-<style>
-</style>
+<style></style>

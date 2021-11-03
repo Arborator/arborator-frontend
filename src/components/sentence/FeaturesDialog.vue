@@ -6,7 +6,7 @@
     <!-- @hide="ondialoghide()" @keyup.enter="onFeatureDialogOk()" @keyup.enter="ononefeaturemodified()"-->
     <q-card style="height: 90vh">
       <q-bar class="bg-primary text-white">
-        <div class="text-weight-bold">Features of "{{ token["FORM"] }}"</div>
+        <div class="text-weight-bold">Features of "{{ token['FORM'] }}"</div>
         <q-space />
         <q-btn flat dense icon="close" v-close-popup />
       </q-bar>
@@ -51,20 +51,8 @@
       ></AttributeTable>
       <q-separator />
       <q-card-actions align="around">
-        <q-btn
-          flat
-          @click="ondialoghide()"
-          label="Cancel"
-          v-close-popup
-          style="width: 45%; margin-left: auto; margin-right: auto"
-        />
-        <q-btn
-          color="primary"
-          @click="onFeatureDialogOk()"
-          label="Ok"
-          v-close-popup
-          style="width: 45%; margin-left: auto; margin-right: auto"
-        />
+        <q-btn flat @click="ondialoghide()" label="Cancel" v-close-popup style="width: 45%; margin-left: auto; margin-right: auto" />
+        <q-btn color="primary" @click="onFeatureDialogOk()" label="Ok" v-close-popup style="width: 45%; margin-left: auto; margin-right: auto" />
         <!-- :disabled="!someFeatureChanged" -->
       </q-card-actions>
     </q-card>
@@ -72,21 +60,21 @@
   <!----------------- END FeaturesDialog ------------------->
 </template>
 <script>
-import AttributeTable from "./AttributeTable.vue";
+import AttributeTable from './AttributeTable.vue';
 
 export default {
   components: {
     AttributeTable,
   },
-  props: ["sentenceBus"],
+  props: ['sentenceBus'],
   data() {
     return {
       featuresDialogOpened: false,
       token: {},
-      userId: "",
+      userId: '',
       options: {
-        lemmaoptions: [{ name: "Lemma", values: "String" }],
-        formoptions: [{ name: "Form", values: "String" }],
+        lemmaoptions: [{ name: 'Lemma', values: 'String' }],
+        formoptions: [{ name: 'Form', values: 'String' }],
       },
       featTable: {
         featl: [],
@@ -95,20 +83,25 @@ export default {
         form: [],
         columns: [
           {
-            name: "a",
-            align: "center",
-            label: "Attribute",
-            field: "a",
+            name: 'a',
+            align: 'center',
+            label: 'Attribute',
+            field: 'a',
             sortable: true,
-            style: "width: 33%",
+            style: 'width: 33%',
           },
-          { name: "v", label: "Value", field: "v", sortable: true },
           {
-            name: "actions",
-            label: "Actions",
-            field: "",
-            align: "center",
-            style: "width: 8%",
+            name: 'v',
+            label: 'Value',
+            field: 'v',
+            sortable: true,
+          },
+          {
+            name: 'actions',
+            label: 'Actions',
+            field: '',
+            align: 'center',
+            style: 'width: 8%',
           },
         ],
       },
@@ -116,51 +109,51 @@ export default {
   },
   computed: {
     annotationFeatures() {
-      return this.$store.getters["config/annotationFeatures"];
+      return this.$store.getters['config/annotationFeatures'];
     },
   },
   mounted() {
-    this.sentenceBus.on("open:featuresDialog", ({ token, userId }) => {
+    this.sentenceBus.on('open:featuresDialog', ({ token, userId }) => {
       this.token = token;
       this.userId = userId;
       this.featuresDialogOpened = true;
 
       this.featTable.featl = [];
-      for (let a in token["FEATS"]) {
-        this.featTable.featl.push({ a: a, v: token["FEATS"][a] });
+      for (const a in token.FEATS) {
+        this.featTable.featl.push({ a, v: token.FEATS[a] });
       }
       this.featTable.miscl = [];
-      for (let a in token["MISC"]) {
-        this.featTable.miscl.push({ a: a, v: token["MISC"][a] });
+      for (const a in token.MISC) {
+        this.featTable.miscl.push({ a, v: token.MISC[a] });
       }
-      this.featTable.lemma = [{ a: "Lemma", v: token["LEMMA"] }];
-      this.featTable.form = [{ a: "Form", v: token["FORM"] }];
+      this.featTable.lemma = [{ a: 'Lemma', v: token.LEMMA }];
+      this.featTable.form = [{ a: 'Form', v: token.FORM }];
     });
   },
-  beforeDestroy() {
-    this.sentenceBus.off("open:featuresDialog");
+  beforeUnmount() {
+    this.sentenceBus.off('open:featuresDialog');
   },
   methods: {
     informFeatureChanged() {},
     ondialoghide() {},
     onFeatureDialogOk() {
-      this.token["LEMMA"] = this.featTable.lemma.reduce(function (obj, r) {
+      this.token.LEMMA = this.featTable.lemma.reduce((obj, r) => {
         if (r.v) obj[r.a] = r.v;
         return obj;
-      }, {})["Lemma"];
-      this.token["FORM"] = this.featTable.form.reduce(function (obj, r) {
+      }, {}).Lemma;
+      this.token.FORM = this.featTable.form.reduce((obj, r) => {
         if (r.v) obj[r.a] = r.v;
         return obj;
-      }, {})["Form"];
-      this.token["FEATS"] = this.featTable.featl.reduce(function (obj, r) {
-        if (r.v) obj[r.a] = r.v;
-        return obj;
-      }, {});
-      this.token["MISC"] = this.featTable.miscl.reduce(function (obj, r) {
+      }, {}).Form;
+      this.token.FEATS = this.featTable.featl.reduce((obj, r) => {
         if (r.v) obj[r.a] = r.v;
         return obj;
       }, {});
-      this.sentenceBus.emit("tree-update:token", {
+      this.token.MISC = this.featTable.miscl.reduce((obj, r) => {
+        if (r.v) obj[r.a] = r.v;
+        return obj;
+      }, {});
+      this.sentenceBus.emit('tree-update:token', {
         token: this.token,
         userId: this.userId,
       });
@@ -168,5 +161,4 @@ export default {
   },
 };
 </script>
-<style>
-</style>
+<style></style>

@@ -26,45 +26,32 @@
     </div>
     <div v-show="loading" class="q-pa-md row justify-center">
       <div class="absolute-center">
-        <q-circular-progress
-          indeterminate
-          size="70px"
-          :thickness="0.22"
-          color="primary"
-          track-color="grey-3"
-        />
+        <q-circular-progress indeterminate size="70px" :thickness="0.22" color="primary" track-color="grey-3" />
       </div>
     </div>
-    <template
-      v-if="
-        !(
-          $store.getters['config/exerciseMode'] &&
-          !$store.getters['config/isTeacher']
-        )
-      "
-    >
+    <template v-if="!($store.getters['config/exerciseMode'] && !$store.getters['config/isTeacher'])">
       <GrewSearch :sentenceCount="sentenceCount" />
-      <RelationTableMain/>
+      <RelationTableMain />
     </template>
   </q-page>
 </template>
 
 <script>
-import Vue from "vue";
+import Vue from 'vue';
 
-import { mapGetters } from "vuex";
+import { mapGetters } from 'vuex';
 
-import { LocalStorage, openURL } from "quasar";
+import { LocalStorage, openURL } from 'quasar';
 
-import api from "../boot/backend-api";
+import api from '../boot/backend-api';
 
-import Store from "../store/index";
+import Store from '../store/index';
 
-import SentenceCard from "../components/sentence/SentenceCard";
-import GrewSearch from "../components/grewSearch/GrewSearch";
-import RelationTableMain from "../components/relationTable/RelationTableMain";
+import SentenceCard from '../components/sentence/SentenceCard';
+import GrewSearch from '../components/grewSearch/GrewSearch';
+import RelationTableMain from '../components/relationTable/RelationTableMain';
 
-var heavyList = [];
+let heavyList = [];
 
 export default {
   components: {
@@ -72,12 +59,12 @@ export default {
     GrewSearch,
     RelationTableMain,
   },
-  props: ["projectname", "samplename", "nr", "user"],
+  props: ['projectname', 'samplename', 'nr', 'user'],
   data() {
     return {
       exerciseLevel: 4,
-      svg: "",
-      tab: "gold",
+      svg: '',
+      tab: 'gold',
       loading: true,
       sentences: {},
       sentencesFrozen: { list: [], indexes: {} },
@@ -87,39 +74,30 @@ export default {
     };
   },
   computed: {
-    ...mapGetters("config", [
-      "isAdmin",
-      "exerciseMode",
-    ]),
-    ...mapGetters("user", [
-      "isSuperAdmin",
-    ]),
+    ...mapGetters('config', ['isAdmin', 'exerciseMode']),
+    ...mapGetters('user', ['isSuperAdmin']),
     sentenceCount() {
       return Object.keys(this.sentences).length;
     },
   },
   created() {
-    window.addEventListener("resize", this.handleResize);
+    window.addEventListener('resize', this.handleResize);
     this.handleResize();
   },
-  destroyed() {
-    window.removeEventListener("resize", this.handleResize);
+  unmounted() {
+    window.removeEventListener('resize', this.handleResize);
   },
   mounted() {
     this.getSampleTrees();
-    document.title =
-      this.$route.params.projectname + "/" + this.$route.params.samplename;
-    if (this.$route.query.q && this.$route.query.q.length > 0)
-      this.searchDialog = true;
-    LocalStorage.remove("save_status");
+    document.title = `${this.$route.params.projectname}/${this.$route.params.samplename}`;
+    if (this.$route.query.q && this.$route.query.q.length > 0) this.searchDialog = true;
+    LocalStorage.remove('save_status');
   },
   beforeRouteLeave(to, from, next) {
     if (this.$store.getters.getPendingModifications.size > 0) {
-      const answer = window.confirm(
-        "Do you really want to leave? you have unsaved changes!"
-      );
+      const answer = window.confirm('Do you really want to leave? you have unsaved changes!');
       if (answer) {
-        this.$store.commit("empty_pending_modification");
+        this.$store.commit('empty_pending_modification');
         next();
       } else {
         next(false);
@@ -143,13 +121,14 @@ export default {
           this.freezesentences();
           this.$forceUpdate();
           this.loading = false;
-          if (this.$refs && this.$refs.virtualListRef && this.$route.params.nr)
+          if (this.$refs && this.$refs.virtualListRef && this.$route.params.nr) {
             this.intr = setInterval(() => {
               this.scrolala();
             }, 1000);
+          }
         })
         .catch((error) => {
-          this.$store.dispatch("notifyError", { error: error });
+          this.$store.dispatch('notifyError', { error });
           this.loading = false;
         });
     },
@@ -158,28 +137,29 @@ export default {
         !this.loading &&
         this.$refs &&
         this.$refs.virtualListRef &&
-        this.$route.params.nr != undefined &&
-        parseInt(this.$route.params.nr) <= this.sentencesFrozen.list.length
+        this.$route.params.nr !== undefined &&
+        parseInt(this.$route.params.nr, 10) <= this.sentencesFrozen.list.length
       ) {
-        var id = parseInt(this.$route.params.nr) - 1;
+        const id = parseInt(this.$route.params.nr, 10) - 1;
         this.$refs.virtualListRef.scrollTo(id);
         clearInterval(this.intr);
         setTimeout(() => {
-          if ("sc" + id in this.$refs)
-            this.$refs["sc" + id].autoopen(this.$route.params.user);
+          if (`sc${id}` in this.$refs) this.$refs[`sc${id}`].autoopen(this.$route.params.user);
         }, 2000);
       }
-      this.scrolalaTimeStep--;
+      this.scrolalaTimeStep -= 1;
       if (!this.scrolalaTimeStep) clearInterval(this.intr);
     },
     freezesentences() {
-      var index = 0;
-      var listsentences = [];
-      var index2sentId = {};
-      for (let sentId in this.sentences) {
-        listsentences.push(sentId);
-        index2sentId[index] = sentId;
-        index++;
+      let index = 0;
+      const listsentences = [];
+      const index2sentId = {};
+      for (const sentId in this.sentences) {
+        if (Object.prototype.hasOwnProperty.call(this.sentences, sentId)) {
+          listsentences.push(sentId);
+          index2sentId[index] = sentId;
+          index += 1;
+        }
       }
       heavyList = listsentences;
       Object.freeze(heavyList);
@@ -188,4 +168,3 @@ export default {
   },
 };
 </script>
-

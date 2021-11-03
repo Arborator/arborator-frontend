@@ -3,11 +3,7 @@
     <q-table
       ref="table"
       title="Lexicon"
-      :class="
-        ($q.dark.isActive
-          ? 'my-sticky-header-table-dark'
-          : 'my-sticky-header-table') + ' rounded-borders'
-      "
+      :class="($q.dark.isActive ? 'my-sticky-header-table-dark' : 'my-sticky-header-table') + ' rounded-borders'"
       :rows="this.data"
       :columns="table.columns"
       row-key="key"
@@ -29,19 +25,13 @@
     >
       >
       <template v-slot:body-cell="props">
-        <td
-          v-if="props.row.changed == 'replace'"
-          style="background: mediumseagreen"
-        >
+        <td v-if="props.row.changed === 'replace'" style="background: mediumseagreen">
           {{ props.value }}
         </td>
-        <td v-else-if="props.row.changed == 'add'" style="background: orange">
+        <td v-else-if="props.row.changed === 'add'" style="background: orange">
           {{ props.value }}
         </td>
-        <td
-          v-else-if="props.row.changed == 'delete'"
-          style="background: #f34336"
-        >
+        <td v-else-if="props.row.changed === 'delete'" style="background: #f34336">
           {{ props.value }}
         </td>
         <td v-else>{{ props.value }}</td>
@@ -49,13 +39,7 @@
 
       <template v-slot:top-right>
         <div>
-          <q-input
-            borderless
-            dense
-            debounce="300"
-            v-model="table.filter"
-            placeholder="Search"
-          >
+          <q-input borderless dense debounce="300" v-model="table.filter" placeholder="Search">
             <template v-slot:append>
               <q-icon name="search" />
             </template>
@@ -63,71 +47,26 @@
         </div>
         <div>
           <q-btn-group flat>
-            <q-btn
-              color="default"
-              v-show="table.selected.length < 1"
-              flat
-              icon="delete_forever"
-              disable
+            <q-btn color="default" v-show="table.selected.length < 1" flat icon="delete_forever" disable
               ><q-tooltip>Delete seleted samples</q-tooltip></q-btn
             >
-            <q-btn
-              color="default"
-              v-show="table.selected.length != 0"
-              flat
-              icon-right="delete_forever"
-              @click="deleteSelected"
+            <q-btn color="default" v-show="table.selected.length !== 0" flat icon-right="delete_forever" @click="deleteSelected"
               ><q-tooltip>Delete seleted samples</q-tooltip></q-btn
             >
-            <q-btn
-              color="default"
-              flat
-              label="tsv"
-              @click="exportLexiconTSV()"
-              :loading="tableExporting"
-              ><q-tooltip :delay="300" content-class="text-white bg-primary">{{
-                $t("projectView.tooltipExportLexicon[0]")
-              }}</q-tooltip></q-btn
+            <q-btn color="default" flat label="tsv" @click="exportLexiconTSV()" :loading="tableExporting"
+              ><q-tooltip :delay="300" content-class="text-white bg-primary">{{ $t('projectView.tooltipExportLexicon[0]') }}</q-tooltip></q-btn
             >
-            <q-btn
-              color="default"
-              flat
-              label="json"
-              @click="exportLexiconJSON()"
-              :loading="tableExporting"
-              ><q-tooltip :delay="300" content-class="text-white bg-primary">{{
-                $t("projectView.tooltipExportLexicon[1]")
-              }}</q-tooltip></q-btn
+            <q-btn color="default" flat label="json" @click="exportLexiconJSON()" :loading="tableExporting"
+              ><q-tooltip :delay="300" content-class="text-white bg-primary">{{ $t('projectView.tooltipExportLexicon[1]') }}</q-tooltip></q-btn
             >
-            <q-btn
-              color="default"
-              flat
-              label="Rule Grew"
-              @click="getRulesGrew()"
-              :disable="RulesGrew.length < 0"
-              ><q-tooltip :delay="300" content-class="text-white bg-primary">{{
-                $t("projectView.tooltipRuleGrewLexicon")
-              }}</q-tooltip></q-btn
+            <q-btn color="default" flat label="Rule Grew" @click="getRulesGrew()" :disable="RulesGrew.length < 0"
+              ><q-tooltip :delay="300" content-class="text-white bg-primary">{{ $t('projectView.tooltipRuleGrewLexicon') }}</q-tooltip></q-btn
             >
-            <q-btn
-              flat
-              color="default"
-              v-show="CompareDics == false"
-              icon="cloud_upload"
-              @click="uploadDial = true"
-              ><q-tooltip :delay="300" content-class="text-white bg-primary">{{
-                $t("projectView.tooltipValidatorLexicon")
-              }}</q-tooltip></q-btn
+            <q-btn flat color="default" v-show="CompareDics === false" icon="cloud_upload" @click="uploadDial = true"
+              ><q-tooltip :delay="300" content-class="text-white bg-primary">{{ $t('projectView.tooltipValidatorLexicon') }}</q-tooltip></q-btn
             >
-            <q-btn
-              flat
-              color="default"
-              v-show="CompareDics == true"
-              icon="cloud_upload"
-              @click="CompareDics = false"
-              ><q-tooltip :delay="300" content-class="text-white bg-primary">{{
-                $t("projectView.tooltipValidatorLexicon")
-              }}</q-tooltip></q-btn
+            <q-btn flat color="default" v-show="CompareDics === true" icon="cloud_upload" @click="CompareDics = false"
+              ><q-tooltip :delay="300" content-class="text-white bg-primary">{{ $t('projectView.tooltipValidatorLexicon') }}</q-tooltip></q-btn
             >
           </q-btn-group>
         </div>
@@ -137,8 +76,7 @@
       <q-space />
       <q-card>
         <q-separator />
-        <CompareLexicon :data="this.dics" :sampleId="this.sampleId">
-        </CompareLexicon>
+        <CompareLexicon :data="this.dics" :sampleId="this.sampleId"> </CompareLexicon>
       </q-card>
     </div>
     <q-dialog v-model="openFeatures">
@@ -196,22 +134,10 @@
         />
         <q-separator />
         <q-card-actions align="around">
+          <q-btn flat @click="ondialoghide()" label="Cancel" v-close-popup style="width: 35%; margin-left: auto; margin-right: auto" />
+          <q-btn flat @click="addEntry()" label="Add entry" v-close-popup style="width: 45%; margin-left: auto; margin-right: auto" />
           <q-btn
-            flat
-            @click="ondialoghide()"
-            label="Cancel"
-            v-close-popup
-            style="width: 35%; margin-left: auto; margin-right: auto"
-          />
-          <q-btn
-            flat
-            @click="addEntry()"
-            label="Add entry"
-            v-close-popup
-            style="width: 45%; margin-left: auto; margin-right: auto"
-          />
-          <q-btn
-            v-if="featTable.changed != 'add'"
+            v-if="featTable.changed !== 'add'"
             color="primary"
             @click="replaceEntry()"
             :loading="exporting"
@@ -223,67 +149,29 @@
       </q-card>
     </q-dialog>
     <q-dialog v-model="searchDialog" seamless position="right" full-width>
-      <template
-        v-if="
-          !(
-            $store.getters['config/exerciseMode'] &&
-            !$store.getters['config/isTeacher']
-          )
-        "
-      >
-        <GrewSearch
-          :sentenceCount="this.data.length"
-          :sampleId="this.sampleId"
-          :showTable="this.searchDialog"
-        />
+      <template v-if="!($store.getters['config/exerciseMode'] && !$store.getters['config/isTeacher'])">
+        <GrewSearch :sentenceCount="this.data.length" :sampleId="this.sampleId" :showTable="this.searchDialog" />
       </template>
     </q-dialog>
 
-    <q-dialog
-      v-model="uploadDial"
-      :maximized="maximizedUploadToggle"
-      transition-show="fade"
-      transition-hide="fade"
-    >
+    <q-dialog v-model="uploadDial" :maximized="maximizedUploadToggle" transition-show="fade" transition-hide="fade">
       <q-card style="max-width: 100vw">
         <q-bar>
           <q-space />
-          <q-btn
-            dense
-            flat
-            icon="minimize"
-            @click="maximizedUploadToggle = false"
-            :disable="!maximizedUploadToggle"
-          >
-            <q-tooltip
-              v-if="maximizedUploadToggle"
-              content-class="bg-white text-primary"
-              >{{ $t("projectView".tooltipWindows[0]) }}</q-tooltip
-            >
+          <q-btn dense flat icon="minimize" @click="maximizedUploadToggle = false" :disable="!maximizedUploadToggle">
+            <q-tooltip v-if="maximizedUploadToggle" content-class="bg-white text-primary">{{ $t('projectView'.tooltipWindows[0]) }}</q-tooltip>
           </q-btn>
-          <q-btn
-            dense
-            flat
-            icon="crop_square"
-            @click="maximizedUploadToggle = true"
-            :disable="maximizedUploadToggle"
-          >
-            <q-tooltip
-              v-if="!maximizedUploadToggle"
-              content-class="bg-white text-primary"
-              >{{ $t("projectView.tooltipWindows[1]") }}</q-tooltip
-            >
+          <q-btn dense flat icon="crop_square" @click="maximizedUploadToggle = true" :disable="maximizedUploadToggle">
+            <q-tooltip v-if="!maximizedUploadToggle" content-class="bg-white text-primary">{{ $t('projectView.tooltipWindows[1]') }}</q-tooltip>
           </q-btn>
           <q-btn dense flat icon="close" v-close-popup>
-            <q-tooltip content-class="bg-white text-primary">{{
-              $t("projectView.tooltipWindows[2]")
-            }}</q-tooltip>
+            <q-tooltip content-class="bg-white text-primary">{{ $t('projectView.tooltipWindows[2]') }}</q-tooltip>
           </q-btn>
         </q-bar>
 
         <q-card-section>
           <div class="text-h6 text-blue-grey-8">
-            {{ $t("projectView.tooltipSelectValidator") }}
+            {{ $t('projectView.tooltipSelectValidator') }}
           </div>
         </q-card-section>
 
@@ -306,7 +194,7 @@
                 round
                 @click="upload()"
                 :loading="uploadSample.submitting"
-                :disable="uploadSample.attachment.file == null"
+                :disable="uploadSample.attachment.file === null"
               />
             </template>
           </q-file>
@@ -317,16 +205,15 @@
 </template>
 
 <script>
-import api from "../boot/backend-api";
-import { openURL } from "quasar";
-import AttributeTable from "./sentence/AttributeTable";
-import GrewSearch from "./grewSearch/GrewSearch";
-import CompareLexicon from "./CompareLexicon";
-import grewTemplates from "../assets/grew-templates.json";
+import api from '../boot/backend-api';
+import AttributeTable from './sentence/AttributeTable';
+import GrewSearch from './grewSearch/GrewSearch';
+import CompareLexicon from './CompareLexicon';
+import grewTemplates from '../assets/grew-templates.json';
 
 export default {
-  name: "LexiconTable",
-  props: ["data", "sampleId"],
+  name: 'LexiconTable',
+  props: ['data', 'sampleId'],
   components: {
     GrewSearch,
     CompareLexicon,
@@ -344,9 +231,9 @@ export default {
       exporting: false,
       RulesGrew: [],
       currentinfo: null,
-      tempfeat: "",
+      tempfeat: '',
       infotochange: null,
-      temp_features: "",
+      temp_features: '',
       indexfeat: 0,
       resultSearchDialog: false,
       // searchDialog: false,
@@ -368,20 +255,25 @@ export default {
         changed: null,
         columns: [
           {
-            name: "a",
-            align: "center",
-            label: "Attribute",
-            field: "a",
+            name: 'a',
+            align: 'center',
+            label: 'Attribute',
+            field: 'a',
             sortable: true,
-            style: "width: 33%",
+            style: 'width: 33%',
           },
-          { name: "v", label: "Value", field: "v", sortable: true },
           {
-            name: "actions",
-            label: "Actions",
-            field: "",
-            align: "center",
-            style: "width: 8%",
+            name: 'v',
+            label: 'Value',
+            field: 'v',
+            sortable: true,
+          },
+          {
+            name: 'actions',
+            label: 'Actions',
+            field: '',
+            align: 'center',
+            style: 'width: 8%',
           },
         ],
       },
@@ -390,78 +282,71 @@ export default {
         annof: [], // = annotationFeatures from conf!!!
         annofFEATS: {}, // obj version (instead of list)
         annofMISC: {}, // obj version (instead of list)
-        splitregex: "",
+        splitregex: '',
         relav: [],
         currentoptions: [],
         extendedrel: false,
-        lemmaoptions: [{ name: "Lemma", values: "String" }],
+        lemmaoptions: [{ name: 'Lemma', values: 'String' }],
         catoptions: [],
       },
       table: {
         columns: [
           {
-            name: "form",
-            label: "Form",
+            name: 'form',
+            label: 'Form',
             sortable: true,
-            align: "left",
-            field: "form",
+            align: 'left',
+            field: 'form',
           },
           {
-            name: "lemma",
-            label: "Lemma",
+            name: 'lemma',
+            label: 'Lemma',
             sortable: true,
-            align: "left",
-            field: "lemma",
+            align: 'left',
+            field: 'lemma',
           },
           {
-            name: "pos",
-            label: "POS",
+            name: 'pos',
+            label: 'POS',
             sortable: true,
-            align: "left",
-            field: "POS",
+            align: 'left',
+            field: 'POS',
           },
           {
-            name: "features",
-            label: "Features",
+            name: 'features',
+            label: 'Features',
             sortable: true,
-            align: "left",
-            field: "features",
+            align: 'left',
+            field: 'features',
           },
           {
-            name: "gloss",
-            label: "Gloss",
+            name: 'gloss',
+            label: 'Gloss',
             sortable: true,
-            align: "left",
-            field: "gloss",
+            align: 'left',
+            field: 'gloss',
           },
           {
-            name: "frequency",
-            label: "Frequency",
+            name: 'frequency',
+            label: 'Frequency',
             sortable: true,
-            align: "left",
-            field: "frequency",
+            align: 'left',
+            field: 'frequency',
           },
           {
-            name: "key",
-            label: "Key",
+            name: 'key',
+            label: 'Key',
             sortable: true,
-            align: "left",
-            field: "key",
+            align: 'left',
+            field: 'key',
           },
         ],
-        visibleColumns: [
-          "form",
-          "lemma",
-          "pos",
-          "features",
-          "gloss",
-          "frequency",
-        ],
-        filter: "",
+        visibleColumns: ['form', 'lemma', 'pos', 'features', 'gloss', 'frequency'],
+        filter: '',
         selected: [],
         loading: false,
         pagination: {
-          sortBy: "name",
+          sortBy: 'name',
           descending: false,
           page: 1,
           rowsPerPage: 10,
@@ -470,11 +355,11 @@ export default {
         exporting: false,
       },
       alerts: {
-        noRuletoApply: { color: "negative", message: "No rule to apply" },
-        noModification: { color: "negative", message: "No modification" },
-        getRulegrewSuccess: { color: "positive", message: "got rule grew." },
-        onlyOneFile: { color: "negative", message: "One file is expected" },
-        onlyTSVFile: { color: "negative", message: "TSV file is expected" },
+        noRuletoApply: { color: 'negative', message: 'No rule to apply' },
+        noModification: { color: 'negative', message: 'No modification' },
+        getRulegrewSuccess: { color: 'positive', message: 'got rule grew.' },
+        onlyOneFile: { color: 'negative', message: 'One file is expected' },
+        onlyTSVFile: { color: 'negative', message: 'TSV file is expected' },
       },
       uploadSample: {
         submitting: false,
@@ -486,31 +371,31 @@ export default {
   computed: {
     searchDialog: {
       get() {
-        return this.$store.getters["grewSearch/grewDialog"];
+        return this.$store.getters['grewSearch/grewDialog'];
       },
       set(value) {
-        this.$store.dispatch("grewSearch/switch_grew_dialog", value);
+        this.$store.dispatch('grewSearch/switch_grew_dialog', value);
       },
     },
   },
   mounted() {
-    this.options.annof = this.$store.getters["config/annotationFeatures"];
+    this.options.annof = this.$store.getters['config/annotationFeatures'];
     this.options.catoptions.push({
-      name: "POS",
+      name: 'POS',
       values: this.options.annof.UPOS,
     });
   },
   methods: {
     addValidator(Validator) {
-      for (let i = 0; i < this.data.length; i++) {
-        if (this.data[i]["changed"] != "delete") {
-          if (!("frequency" in this.data[i])) {
-            this.data[i].frequency = "_";
+      for (let i = 0; i < this.data.length; i += 1) {
+        if (this.data[i].changed !== 'delete') {
+          if (!('frequency' in this.data[i])) {
+            this.data[i].frequency = '_';
           }
           this.uploadLexicon.push(this.data[i]);
         }
       }
-      var datasample = { data: this.uploadLexicon, validator: Validator };
+      const datasample = { data: this.uploadLexicon, validator: Validator };
       api
         .addValidator(this.$route.params.projectname, datasample)
         .then((response) => {
@@ -519,22 +404,22 @@ export default {
         })
         .catch((error) => {
           // this.$q.notify({message:`${error}`, color:'negative'});
-          this.$store.dispatch("notifyError", { error: error });
+          this.$store.dispatch('notifyError', { error });
           return [];
         });
       this.uploadLexicon = [];
     },
     upload() {
-      var form = new FormData();
+      const form = new FormData();
       this.uploadSample.submitting = true;
-      if (this.uploadSample.attachment.file.length == 1) {
+      if (this.uploadSample.attachment.file.length === 1) {
         for (const file of this.uploadSample.attachment.file) {
-          form.append("files", file);
-          if (file["type"] == ("text/tab-separated-values" || "tsv")) {
+          form.append('files', file);
+          if (file.type === ('text/tab-separated-values' || 'tsv')) {
             this.tsvOK = true;
           }
         }
-        if (this.tsvOK == true) {
+        if (this.tsvOK === true) {
           api
             .uploadValidator(this.$route.params.projectname, form)
             .then((response) => {
@@ -548,161 +433,117 @@ export default {
                 error.response.message = error.response.data.message;
                 error.permanent = true;
               }
-              error.caption = "Check your file please!";
+              error.caption = 'Check your file please!';
               this.uploadSample.submitting = false;
               this.uploadDial = false;
-              this.$store.dispatch("notifyError", { error: error });
+              this.$store.dispatch('notifyError', { error });
             });
           this.tsvOK = false;
         } else {
-          this.showNotif("top", "onlyTSVFile");
+          this.showNotif('top', 'onlyTSVFile');
         }
       } else {
-        this.showNotif("top", "onlyOneFile");
+        this.showNotif('top', 'onlyOneFile');
       }
     },
     getRulesGrew() {
-      console.log("getRulesGrew() (LexiconTable.vue)");
-      if (this.RulesGrew.length != 0) {
-        var listSampleIds = "";
-        for (let i in this.sampleId) {
+      console.log('getRulesGrew() (LexiconTable.vue)');
+      if (this.RulesGrew.length !== 0) {
+        let listSampleIds = '';
+        for (const i in this.sampleId) {
           if (i < this.sampleId.length - 1) {
-            listSampleIds += this.sampleId[i]["sample_name"] + ", ";
+            listSampleIds += `${this.sampleId[i].sample_name}, `;
           } else {
-            listSampleIds += this.sampleId[i]["sample_name"];
+            listSampleIds += this.sampleId[i].sample_name;
           }
         }
-        var datasample = { data: this.RulesGrew };
-        api
-          .transformation_grew(this.$route.params.projectname, datasample)
-          .then((response) => {
-            if (this.queries.slice(-1)[0]["name"] != "Correct lexicon") {
-              this.queries.push({
-                name: "Correct lexicon",
-                pattern: response.data.rules,
-                commands: " ",
-                sampleIds: listSampleIds,
-              });
-            } else
-              (this.queries.slice(-1)[0]["pattern"] = response.data.rules),
-                (this.queries.slice(-1)[0]["commands"] = " "),
-                (this.queries.slice(-1)[0]["sampleIds"] = listSampleIds);
-          });
+        const datasample = { data: this.RulesGrew };
+        api.transformation_grew(this.$route.params.projectname, datasample).then((response) => {
+          if (this.queries.slice(-1)[0].name !== 'Correct lexicon') {
+            this.queries.push({
+              name: 'Correct lexicon',
+              pattern: response.data.rules,
+              commands: ' ',
+              sampleIds: listSampleIds,
+            });
+          } else {
+            this.queries.slice(-1)[0].pattern = response.data.rules;
+            this.queries.slice(-1)[0].commands = ' ';
+            this.queries.slice(-1)[0].sampleIds = listSampleIds;
+          }
+        });
         this.searchDialog = true;
       } else {
-        this.showNotif("top", "noRuletoApply");
+        this.showNotif('top', 'noRuletoApply');
       }
     },
     addEntry() {
-      if (this.infotochange != "") {
-        this.data[this.indexfeat].changed = "delete";
-        var newRow = {
-          form: this.featTable.form[0]["v"],
-          lemma: this.featTable.lemma[0]["v"],
-          POS: this.featTable.pos[0]["v"],
+      if (this.infotochange !== '') {
+        this.data[this.indexfeat].changed = 'delete';
+        const newRow = {
+          form: this.featTable.form[0].v,
+          lemma: this.featTable.lemma[0].v,
+          POS: this.featTable.pos[0].v,
           features: this.temp_features,
-          gloss: this.featTable.gloss[0]["v"],
-          changed: "add",
-          key:
-            this.featTable.form[0]["v"] +
-            this.featTable.lemma[0]["v"] +
-            this.featTable.pos[0]["v"] +
-            this.temp_features +
-            this.featTable.gloss[0]["v"],
+          gloss: this.featTable.gloss[0].v,
+          changed: 'add',
+          key: this.featTable.form[0].v + this.featTable.lemma[0].v + this.featTable.pos[0].v + this.temp_features + this.featTable.gloss[0].v,
         };
         this.data.splice(this.indexfeat + 1, 0, newRow);
       } else {
-        this.showNotif("top", "noModification");
+        this.showNotif('top', 'noModification');
       }
     },
     informFeatureChanged() {
       this.someFeatureChanged = true;
-      if (
-        this.featTable.featl.length == 0 ||
-        (this.featTable.featl.length === 1 &&
-          this.featTable.featl[0]["a"] === "")
-      ) {
-        this.infotochange =
-          this.featTable.form[0]["v"] +
-          " " +
-          this.featTable.lemma[0]["v"] +
-          " " +
-          this.featTable.pos[0]["v"] +
-          " " +
-          this.featTable.gloss[0]["v"] +
-          " _";
+      if (this.featTable.featl.length === 0 || (this.featTable.featl.length === 1 && this.featTable.featl[0].a === '')) {
+        this.infotochange = `${this.featTable.form[0].v} ${this.featTable.lemma[0].v} ${this.featTable.pos[0].v} ${this.featTable.gloss[0].v} _`;
+      } else if (this.featTable.featl.length === 1) {
+        this.infotochange = `${this.featTable.form[0].v} ${this.featTable.lemma[0].v} ${this.featTable.pos[0].v} ${this.featTable.gloss[0].v} ${this.featTable.featl[0].a}=${this.featTable.featl[0].v}`;
+        this.temp_features = `${this.featTable.featl[0].a}=${this.featTable.featl[0].v}`;
       } else {
-        if (this.featTable.featl.length == 1) {
-          this.infotochange =
-            this.featTable.form[0]["v"] +
-            " " +
-            this.featTable.lemma[0]["v"] +
-            " " +
-            this.featTable.pos[0]["v"] +
-            " " +
-            this.featTable.gloss[0]["v"] +
-            " " +
-            this.featTable.featl[0]["a"] +
-            "=" +
-            this.featTable.featl[0]["v"];
-          this.temp_features =
-            this.featTable.featl[0]["a"] + "=" + this.featTable.featl[0]["v"];
-        } else {
-          this.infotochange =
-            this.featTable.form[0]["v"] +
-            " " +
-            this.featTable.lemma[0]["v"] +
-            " " +
-            this.featTable.pos[0]["v"] +
-            " " +
-            this.featTable.gloss[0]["v"] +
-            " ";
-          for (let a in this.featTable.featl) {
-            this.tempfeat +=
-              this.featTable.featl[a]["a"] + "=" + this.featTable.featl[a]["v"];
+        this.infotochange = `${this.featTable.form[0].v} ${this.featTable.lemma[0].v} ${this.featTable.pos[0].v} ${this.featTable.gloss[0].v} `;
+        for (const a in this.featTable.featl) {
+          if (Object.prototype.hasOwnProperty.call(this.featTable.featl, a)) {
+            this.tempfeat += `${this.featTable.featl[a].a}=${this.featTable.featl[a].v}`;
             if (a < this.featTable.featl.length - 1) {
-              this.tempfeat += "|";
+              this.tempfeat += '|';
             }
           }
-          this.infotochange += this.tempfeat;
-          this.temp_features += this.tempfeat;
         }
+        this.infotochange += this.tempfeat;
+        this.temp_features += this.tempfeat;
       }
-      this.tempfeat = "";
+      this.tempfeat = '';
     },
 
     replaceEntry() {
-      if (this.infotochange != "") {
-        this.data[this.indexfeat].changed = "delete";
-        var newRow = {
-          form: this.featTable.form[0]["v"],
-          lemma: this.featTable.lemma[0]["v"],
-          POS: this.featTable.pos[0]["v"],
+      if (this.infotochange !== '') {
+        this.data[this.indexfeat].changed = 'delete';
+        const newRow = {
+          form: this.featTable.form[0].v,
+          lemma: this.featTable.lemma[0].v,
+          POS: this.featTable.pos[0].v,
           features: this.temp_features,
-          gloss: this.featTable.gloss[0]["v"],
-          changed: "replace",
-          key:
-            this.featTable.form[0]["v"] +
-            this.featTable.lemma[0]["v"] +
-            this.featTable.pos[0]["v"] +
-            this.temp_features +
-            this.featTable.gloss[0]["v"],
+          gloss: this.featTable.gloss[0].v,
+          changed: 'replace',
+          key: this.featTable.form[0].v + this.featTable.lemma[0].v + this.featTable.pos[0].v + this.temp_features + this.featTable.gloss[0].v,
         };
         this.data.splice(this.indexfeat + 1, 0, newRow);
-        if (this.infotochange != "") {
+        if (this.infotochange !== '') {
           this.RulesGrew.push({
             currentInfo: this.currentinfo,
             info2Change: this.infotochange,
           });
         }
       } else {
-        this.showNotif("top", "noModification");
+        this.showNotif('top', 'noModification');
       }
     },
 
     deleteSelected() {
-      let self = this;
-      this.table.selected.filter(function (item) {
+      const self = this;
+      this.table.selected.filter((item) => {
         self.data.splice(self.data.indexOf(item), 1);
         return item;
       });
@@ -710,129 +551,108 @@ export default {
     },
     onRowClick(evt, row) {
       this.someFeatureChanged = false;
-      this.infotochange = "";
+      this.infotochange = '';
       this.currentword = row.form;
       this.openFeatures = true;
       this.featTable.featl = [];
-      this.featTable.form = [{ a: "Form", v: row.form }];
-      this.featTable.pos = [{ a: "POS", v: row.POS }];
-      this.featTable.lemma = [{ a: "Lemma", v: row.lemma }];
-      this.featTable.gloss = [{ a: "Gloss", v: row.gloss }];
+      this.featTable.form = [{ a: 'Form', v: row.form }];
+      this.featTable.pos = [{ a: 'POS', v: row.POS }];
+      this.featTable.lemma = [{ a: 'Lemma', v: row.lemma }];
+      this.featTable.gloss = [{ a: 'Gloss', v: row.gloss }];
       this.indexfeat = this.data.indexOf(row);
       this.featTable.changed = row.changed;
-      if (row.features == "_") {
+      if (row.features === '_') {
         this.featTable.featl = [];
       } else {
-        for (let a in row.features.split("|")) {
-          {
+        for (const a in row.features.split('|')) {
+          if (Object.prototype.hasOwnProperty.call(row.features.split('|'), a)) {
             this.featTable.featl.push({
-              a: row.features.split("|")[a].split("=")[0],
-              v: row.features.split("|")[a].split("=")[1],
+              a: row.features.split('|')[a].split('=')[0],
+              v: row.features.split('|')[a].split('=')[1],
             });
           }
         }
       }
-      if (row.features == "_" || row.features == "") {
-        this.currentinfo =
-          row.form + " " + row.lemma + " " + row.POS + " " + row.gloss + " _";
+      if (row.features === '_' || row.features === '') {
+        this.currentinfo = `${row.form} ${row.lemma} ${row.POS} ${row.gloss} _`;
       } else {
-        this.currentinfo =
-          row.form +
-          " " +
-          row.lemma +
-          " " +
-          row.POS +
-          " " +
-          row.gloss +
-          " " +
-          row.features;
+        this.currentinfo = `${row.form} ${row.lemma} ${row.POS} ${row.gloss} ${row.features}`;
       }
     },
     exportLexiconTSV() {
-      for (let i = 0; i < this.data.length; i++) {
-        if (this.data[i]["changed"] != "delete") {
-          if (!("frequency" in this.data[i])) {
-            this.data[i].frequency = "_";
+      for (let i = 0; i < this.data.length; i += 1) {
+        if (this.data[i].changed !== 'delete') {
+          if (!('frequency' in this.data[i])) {
+            this.data[i].frequency = '_';
           }
           this.download.push(this.data[i]);
         }
       }
-      var datasample = { data: this.download };
+      const datasample = { data: this.download };
       api
         .exportLexiconTSV(this.$route.params.projectname, datasample)
         .then((response) => {
-          const url = window.URL.createObjectURL(
-            new Blob([response.data], { type: "text/tab-separated-values" })
-          );
-          const link = document.createElement("a");
+          const url = window.URL.createObjectURL(new Blob([response.data], { type: 'text/tab-separated-values' }));
+          const link = document.createElement('a');
           link.href = url;
-          link.setAttribute(
-            "download",
-            "lexicon_" + this.$route.params.projectname + ".tsv"
-          );
+          link.setAttribute('download', `lexicon_${this.$route.params.projectname}.tsv`);
           document.body.appendChild(link);
           link.click();
           document.body.removeChild(link);
           this.table.exporting = false;
-          this.$q.notify({ message: `File downloaded` });
+          this.$q.notify({ message: 'File downloaded' });
           return [];
         })
         .catch((error) => {
           // this.$q.notify({message:`${error}`, color:'negative'});
-          this.$store.dispatch("notifyError", { error: error });
+          this.$store.dispatch('notifyError', { error });
           return [];
         });
       this.download = [];
     },
     exportLexiconJSON() {
-      for (let i = 0; i < this.data.length; i++) {
-        if (this.data[i]["changed"] != "delete") {
-          if (!("frequency" in this.data[i])) {
-            this.data[i].frequency = "_";
+      for (let i = 0; i < this.data.length; i += 1) {
+        if (this.data[i].changed !== 'delete') {
+          if (!('frequency' in this.data[i])) {
+            this.data[i].frequency = '_';
           }
           this.download.push(this.data[i]);
         }
       }
-      var datasample = { data: this.download };
+      const datasample = { data: this.download };
       api
         .exportLexiconJSON(this.$route.params.projectname, datasample)
         .then((response) => {
-          const url = window.URL.createObjectURL(
-            new Blob([response.data], { type: "application/json" })
-          );
-          const link = document.createElement("a");
+          const url = window.URL.createObjectURL(new Blob([response.data], { type: 'application/json' }));
+          const link = document.createElement('a');
           link.href = url;
-          link.setAttribute(
-            "download",
-            "lexicon_" + this.$route.params.projectname + ".json"
-          );
+          link.setAttribute('download', `lexicon_${this.$route.params.projectname}.json`);
           document.body.appendChild(link);
           link.click();
           document.body.removeChild(link);
           this.table.exporting = false;
-          this.$q.notify({ message: `File downloaded` });
+          this.$q.notify({ message: 'File downloaded' });
           return [];
         })
         .catch((error) => {
           // this.$q.notify({message:`${error}`, color:'negative'});
-          this.$store.dispatch("notifyError", { error: error });
+          this.$store.dispatch('notifyError', { error });
           return [];
         });
       this.download = [];
     },
     showNotif(position, alert) {
-      const { color, textColor, multiLine, icon, message, avatar, actions } =
-        this.alerts[alert];
-      const buttonColor = color ? "white" : void 0;
+      const { color, textColor, multiLine, icon, message, avatar, actions } = this.alerts[alert];
+      // const buttonColor = color ? 'white' : void 0;
       this.$q.notify({
         color,
         textColor,
-        icon: icon,
+        icon,
         message,
         position,
         avatar,
         multiLine,
-        actions: actions,
+        actions,
         timeout: 2000,
       });
     },

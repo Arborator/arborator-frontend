@@ -8,27 +8,18 @@
     @click="goTo()"
     :style="hover ? 'transform: scale(0.95);' : ''"
   >
-    <q-popup-proxy
-      v-if="canSeeSettings"
-      transition-show="flip-up"
-      transition-hide="flip-down"
-      context-menu
-    >
+    <q-popup-proxy v-if="canSeeSettings" transition-show="flip-up" transition-hide="flip-down" context-menu>
       <q-card>
         <q-card-section>
           <q-list>
             <q-item clickable @click="projectSettings()">
-              <q-item-section>{{
-                $t("projectHub").rightClickSettings
-              }}</q-item-section>
+              <q-item-section>{{ $t('projectHub').rightClickSettings }}</q-item-section>
               <q-item-section side>
                 <q-icon name="settings" />
               </q-item-section>
             </q-item>
             <q-item clickable @click="triggerConfirm(deleteProject)">
-              <q-item-section>{{
-                $t("projectHub").rightClickDelete
-              }}</q-item-section>
+              <q-item-section>{{ $t('projectHub').rightClickDelete }}</q-item-section>
               <q-item-section side>
                 <q-icon name="delete_forever" color="negative" />
               </q-item-section>
@@ -37,34 +28,11 @@
         </q-card-section>
       </q-card>
     </q-popup-proxy>
-    <q-img
-      :ratio="16 / 9"
-      :src="
-        imageEmpty
-          ? '/images/niko-photos-tGTVxeOr_Rs-unsplash.jpg'
-          : imageCleaned
-      "
-      basic
-    >
+    <q-img :ratio="16 / 9" :src="imageEmpty() ? '/images/niko-photos-tGTVxeOr_Rs-unsplash.jpg' : imageCleaned" basic>
       <div class="absolute-bottom text-h6">
-        <q-icon
-          v-show="project.visibility == 0"
-          name="lock"
-          color="negative"
-          size="lg"
-        ></q-icon>
-        <q-icon
-          v-show="project.visibility == 1"
-          name="lock"
-          color="positive"
-          size="lg"
-        ></q-icon>
-        <q-icon
-          v-show="project.visibility == 2"
-          name="public"
-          color="positive"
-          size="lg"
-        ></q-icon>
+        <q-icon v-show="project.visibility === 0" name="lock" color="negative" size="lg"></q-icon>
+        <q-icon v-show="project.visibility === 1" name="lock" color="positive" size="lg"></q-icon>
+        <q-icon v-show="project.visibility === 2" name="public" color="positive" size="lg"></q-icon>
         {{ project.project_name }}
       </div>
     </q-img>
@@ -74,77 +42,57 @@
       </q-item>
 
       <q-card-actions vertical class="justify-around q-px-md">
-        <q-badge :color="$q.dark.isActive ? 'grey' : 'secondary'">
-          {{ project.number_samples }} {{ $t("projectHub").samples }}
-        </q-badge>
+        <q-badge :color="$q.dark.isActive ? 'grey' : 'secondary'"> {{ project.number_samples }} {{ $t('projectHub').samples }} </q-badge>
       </q-card-actions>
     </q-card-section>
 
     <q-dialog v-model="confirmActionDial">
-      <confirm-action
-        :parentAction="confirmActionCallback"
-        :arg1="confirmActionArg1"
-      ></confirm-action>
+      <confirm-action :parentAction="confirmActionCallback" :arg1="confirmActionArg1"></confirm-action>
     </q-dialog>
   </q-card>
 </template>
 
 <script>
-import ConfirmAction from "../components/ConfirmAction";
+import ConfirmAction from '../components/ConfirmAction';
 
 export default {
   components: { ConfirmAction },
-  props: ["props", "parentDeleteProject", "parentProjectSettings"],
+  props: ['props', 'parentDeleteProject', 'parentProjectSettings'],
   data() {
     return {
       project: this.props,
       hover: false,
       confirmActionDial: false,
       confirmActionCallback: null,
-      confirmActionArg1: "",
+      confirmActionArg1: '',
     };
   },
   computed: {
     canSeeSettings() {
-      if (!this.$store.getters["user/isLoggedIn"]) {
+      if (!this.$store.getters['user/isLoggedIn']) {
         return false;
       }
-      if (
-        this.project.admins.includes(
-          this.$store.getters["user/getUserInfos"].id
-        )
-      ) {
+      if (this.project.admins.includes(this.$store.getters['user/getUserInfos'].id)) {
         return true;
-      } else if (this.$store.getters["user/getUserInfos"].super_admin) {
-        return true;
-      } else {
-        return false;
       }
+      if (this.$store.getters['user/getUserInfos'].super_admin) {
+        return true;
+      }
+      return false;
     },
-    imageEmpty() {
-      if (this.project.image == null) {
-        this.project.image = "b''";
-      }
-      if (this.project.image == "b''") {
-        return true;
-      } else if (this.project.image.length < 1) {
-        return true;
-      } else {
-        return false;
-      }
-    },
+
     imageCleaned() {
-      var clean = this.project.image.replace("b", "");
-      clean = clean.replace(/^'/g, "");
-      clean = clean.replace(/'$/g, "");
-      return "data:image/png;base64, " + clean;
+      let clean = this.project.image.replace('b', '');
+      clean = clean.replace(/^'/g, '');
+      clean = clean.replace(/'$/g, '');
+      return `data:image/png;base64, ${clean}`;
     },
     visible() {
       // show all projects regardless of their visibility status
       return true;
 
       // only show non-private projects
-      // if(!this.project.visibility == 0){ return true; }
+      // if(!this.project.visibility === 0){ return true; }
       // else{
       //     if(this.project.admins.includes(this.$store.getters['user/getUserInfos'].id)){ return true; }
       //     else if(this.project.guests.includes(this.$store.getters['user/getUserInfos'].id)){ return true; }
@@ -161,7 +109,7 @@ export default {
      */
     goTo() {
       this.$router.push({
-        name: "project",
+        name: 'project',
         params: {
           projectname: this.project.project_name,
           infos: this.project,
@@ -196,10 +144,21 @@ export default {
       this.confirmActionCallback = method;
       this.confirmActionArg1 = arg;
     },
+    imageEmpty() {
+      if (this.project.image === null) {
+        this.project.image = "b''";
+      }
+      if (this.project.image === "b''") {
+        return true;
+      }
+      if (this.project.image.length < 1) {
+        return true;
+      }
+      return false;
+    },
   },
 };
 </script>
-
 
 <style scoped lang="stylus">
 .clickable:hover {

@@ -18,12 +18,7 @@
           <th>0</th>
           <th>All :</th>
           <td v-for="metaLabel in metaLabels" :key="metaLabel">
-            <input
-              type="checkbox"
-              :name="metaLabel"
-              :checked="checkboxesAll[metaLabel]"
-              @input="toggleAll(metaLabel)"
-            />
+            <input type="checkbox" :name="metaLabel" :checked="checkboxesAll[metaLabel]" @input="toggleAll(metaLabel)" />
           </td>
         </tr>
         <tr>
@@ -33,12 +28,7 @@
           <th>{{ token.ID }}</th>
           <th>{{ token.FORM }}</th>
           <td v-for="metaLabel in metaLabels" :key="metaLabel">
-            <input
-              type="checkbox"
-              :name="metaLabel"
-              :class="metaLabel"
-              v-model="checkboxes[token.ID][metaLabel]"
-            />
+            <input type="checkbox" :name="metaLabel" :class="metaLabel" v-model="checkboxes[token.ID][metaLabel]" />
           </td>
         </tr>
       </table>
@@ -46,19 +36,8 @@
       <q-separator />
       <q-card-actions align="around">
         <!-- @click="ondialoghide()" -->
-        <q-btn
-          flat
-          label="Cancel"
-          v-close-popup
-          style="width: 45%; margin-left: auto; margin-right: auto"
-        />
-        <q-btn
-          color="primary"
-          @click="onDialogOk()"
-          label="Ok"
-          v-close-popup
-          style="width: 45%; margin-left: auto; margin-right: auto"
-        />
+        <q-btn flat label="Cancel" v-close-popup style="width: 45%; margin-left: auto; margin-right: auto" />
+        <q-btn color="primary" @click="onDialogOk()" label="Ok" v-close-popup style="width: 45%; margin-left: auto; margin-right: auto" />
         <!-- :disabled="!someFeatureChanged" -->
       </q-card-actions>
     </q-card>
@@ -67,23 +46,26 @@
 
 <script>
 export default {
-  props: ["sentenceBus", "reactiveSentencesObj"],
+  props: ['sentenceBus', 'reactiveSentencesObj'],
   data() {
     return {
       dialogOpened: false,
-      userId: "",
+      userId: '',
       treeJson: {},
       checkboxes: {},
-      metaLabels: ["UPOS", "DEPREL", "HEAD", "LEMMA"],
-      checkboxesAll: { UPOS: false, DEPREL: false, HEAD: false, LEMMA: false },
+      metaLabels: ['UPOS', 'DEPREL', 'HEAD', 'LEMMA'],
+      checkboxesAll: {
+        UPOS: false,
+        DEPREL: false,
+        HEAD: false,
+        LEMMA: false,
+      },
     };
   },
   mounted() {
-    this.sentenceBus.on("open:openMultiEditDialog", ({ userId, event }) => {
+    this.sentenceBus.on('open:openMultiEditDialog', ({ userId, event }) => {
       this.userId = userId;
-      this.treeJson = JSON.parse(
-        JSON.stringify(this.sentenceBus[this.userId].treeJson)
-      );
+      this.treeJson = JSON.parse(JSON.stringify(this.sentenceBus[this.userId].treeJson));
       for (const metaLabel of this.metaLabels) {
         this.checkboxesAll[metaLabel] = false;
       }
@@ -97,21 +79,20 @@ export default {
       this.dialogOpened = true;
     });
   },
-  beforeDestroy() {
-    this.sentenceBus.off("open:openMultiEditDialog");
+  beforeUnmount() {
+    this.sentenceBus.off('open:openMultiEditDialog');
   },
   methods: {
     onDialogOk() {
-      for (var token in this.treeJson) {
-        for (var metaLabel of this.metaLabels) {
-          var toDeleteBool = this.checkboxes[token][metaLabel];
+      for (const token in this.treeJson) {
+        for (const metaLabel of this.metaLabels) {
+          const toDeleteBool = this.checkboxes[token][metaLabel];
           if (toDeleteBool) {
-            this.treeJson[token][metaLabel] =
-              typeof this.treeJson[token][metaLabel] === "string" ? "_" : NaN;
+            this.treeJson[token][metaLabel] = typeof this.treeJson[token][metaLabel] === 'string' ? '_' : NaN;
           }
         }
       }
-      this.sentenceBus.emit("tree-update:tree", {
+      this.sentenceBus.emit('tree-update:tree', {
         tree: this.treeJson,
         userId: this.userId,
       });
@@ -131,5 +112,4 @@ export default {
   },
 };
 </script>
-<style>
-</style>
+<style></style>

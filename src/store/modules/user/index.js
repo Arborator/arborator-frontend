@@ -1,9 +1,9 @@
-import api from "boot/backend-api";
+import api from 'boot/backend-api';
 
-import defaultState from "./defaultState";
+import defaultState from './defaultState';
 
 // import { Notify } from "quasar";
-import {cookies} from "../../../boot/vue-cookies.js";
+import { cookies } from '../../../boot/vue-cookies.js';
 
 export default {
   namespaced: true,
@@ -16,12 +16,10 @@ export default {
     hasLoginErrored: (state) => state.loginError,
     getFailedAccess: (state) => state.failedAccess,
     getAvatarKey: (state) => state.avatarKey,
-    loggedWithGithub: (state) => {
-      return state.auth_provider == 4;
-    },
+    loggedWithGithub: (state) => state.auth_provider === 4,
     avatar: (state) => {
       if (state.picture_url) return state.picture_url;
-      return "perm_identity";
+      return 'perm_identity';
     },
   },
   mutations: {
@@ -45,20 +43,20 @@ export default {
   actions: {
     checkSession({ commit }) {
       return new Promise((resolve, reject) => {
-        //var token = VueCookies.get("authomatic");
-        var session = cookies.get("session");
-        //if (token != null) console.log("token", token);
-        if (session != null) {
+        // var token = VueCookies.get("authomatic");
+        const session = cookies.get('session');
+        // if (token !== null) console.log("token", token);
+        if (session !== null) {
           api
             .whoAmI()
             .then((response) => {
-              commit("login_success", {});
-              commit("update_user", response.data);
-              resolve()
+              commit('login_success', {});
+              commit('update_user', response.data);
+              resolve();
             })
             .catch((error) => {
               console.log(error);
-              reject()
+              reject();
             });
         } else {
           resolve();
@@ -67,20 +65,20 @@ export default {
     },
     logout({ commit }, { user }) {
       return new Promise((resolve, reject) => {
-        console.log("logging out user: " + user);
+        console.log(`logging out user: ${user}`);
         api
           .logout()
           .then((response) => {
             console.log(response);
-            commit("logout_success");
+            commit('logout_success');
           })
           .catch((error) => {
             console.log(error);
           });
-        cookies.remove("session");
-        cookies.remove("remember_token");
-        commit("logout_success");
-        resolve({ status: "disconnected" });
+        cookies.remove('session');
+        cookies.remove('remember_token');
+        commit('logout_success');
+        resolve({ status: 'disconnected' });
       });
     },
   },

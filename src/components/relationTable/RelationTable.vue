@@ -16,19 +16,9 @@
           </q-toolbar>
           <q-scroll-area visible style="height: 80vh">
             <div>
-              <q-input
-                ref="filter"
-                filled
-                v-model="filter"
-                label="filter dependency relations"
-              >
+              <q-input ref="filter" filled v-model="filter" label="filter dependency relations">
                 <template v-slot:append>
-                  <q-icon
-                    v-if="filter !== ''"
-                    name="clear"
-                    class="cursor-pointer"
-                    @click="resetFilter"
-                  />
+                  <q-icon v-if="filter !== ''" name="clear" class="cursor-pointer" @click="resetFilter" />
                 </template>
               </q-input>
               <q-tree
@@ -44,7 +34,7 @@
             </div>
 
             <!-- <q-list separator>
-                        <q-item v-for="e in edgesList" :key="e" clickable v-ripple :active="e == currentEdge" active-class="bg-grey-4 text-primary text-bold">
+                        <q-item v-for="e in edgesList" :key="e" clickable v-ripple :active="e === currentEdge" active-class="bg-grey-4 text-primary text-bold">
                             <q-item-section @click="select(e)" >{{e}}</q-item-section>
                         </q-item>
                     </q-list> -->
@@ -54,11 +44,7 @@
           <q-toolbar class="text-center">
             <q-toolbar-title>
               <span class="text-primary text-bold">{{
-                'Relation Table for "' +
-                currentEdge +
-                '" containing a total of ' +
-                relationstotal[currentEdge] +
-                " occurrences"
+                'Relation Table for "' + currentEdge + '" containing a total of ' + relationstotal[currentEdge] + ' occurrences'
               }}</span>
             </q-toolbar-title>
           </q-toolbar>
@@ -74,61 +60,45 @@
             <template v-slot:body-cell="props">
               <q-td :props="props">
                 <span v-if="isString(props.value)">
-                  <span class="primary" style="font-weight: 500"
-                    >{{ props.value }}
-                  </span>
+                  <span class="primary" style="font-weight: 500">{{ props.value }} </span>
                 </span>
                 <span v-else-if="Object.keys(props.value).length < 1"> </span>
-                <q-btn
-                  v-else
-                  color="primary"
-                  :label="Object.keys(props.value).length"
-                  @click="showTrees(props.value)"
-                />
+                <q-btn v-else color="primary" :label="Object.keys(props.value).length" @click="showTrees(props.value)" />
               </q-td>
             </template>
           </q-table>
         </div>
       </div>
     </q-card-section>
-    <q-dialog
-      v-model="visuTreeDial"
-      maximized
-      transition-show="fade"
-      transition-hide="fade"
-    >
-      <result-view
-        :searchresults="selectedResults"
-        :totalsents="relationstotal[currentEdge]"
-        :searchscope="tablename"
-      ></result-view>
+    <q-dialog v-model="visuTreeDial" maximized transition-show="fade" transition-hide="fade">
+      <result-view :searchresults="selectedResults" :totalsents="relationstotal[currentEdge]" :searchscope="tablename"></result-view>
     </q-dialog>
   </q-card>
 </template>
 
 <script>
-import ResultView from "../ResultView.vue";
-import { QTree } from "quasar";
+import { QTree } from 'quasar';
+import ResultView from '../ResultView.vue';
 // import dummydata from '../assets/data.json';
 
 export default {
   components: { ResultView, QTree },
-  props: ["edges"],
+  props: ['edges'],
   data() {
     return {
-      currentEdge: "",
+      currentEdge: '',
       visuTreeDial: false,
       selectedResults: {},
       relationstotal: {},
       relationtree: [],
-      filter: "",
-      tablename: "",
+      filter: '',
+      tablename: '',
       edgesList: Object.keys(this.edges).sort(),
       table: {
         rows: [],
         columns: [],
         pagination: {
-          sortBy: "name",
+          sortBy: 'name',
           descending: false,
           page: 2,
           rowsPerPage: 50,
@@ -149,38 +119,40 @@ export default {
      */
     getTable(eve) {
       // console.log(444,eve,this.edges, this.currentEdge)
-      var keyset = new Set();
+      const keyset = new Set();
       // var table = {};
-      for (let gov of Object.keys(this.edges[this.currentEdge])) {
+      for (const gov of Object.keys(this.edges[this.currentEdge])) {
         keyset.add(gov);
-        for (let dep of Object.keys(this.edges[this.currentEdge][gov]))
-          keyset.add(dep);
+        for (const dep of Object.keys(this.edges[this.currentEdge][gov])) keyset.add(dep);
       }
       // construct fields
       // let fields = [{ name: 'gov', label: row => 'Governor: ' + row.gov, 'field': row => row.gov}];
-      let fields = [{ name: "gov", label: "↗", field: (row) => row.gov }];
-      for (let key of keyset) {
-        fields.push({ name: key, align: "center", label: key, field: key });
+      const fields = [{ name: 'gov', label: '↗', field: (row) => row.gov }];
+      for (const key of keyset) {
+        fields.push({
+          name: key,
+          align: 'center',
+          label: key,
+          field: key,
+        });
       }
       this.table.columns = fields;
       this.relationstotal[this.currentEdge] = 0;
       // construct rows
-      let rows = [];
-      for (let gov of keyset) {
-        let row = { gov: gov };
-        for (let dep of keyset) {
-          if (!this.edges[this.currentEdge].hasOwnProperty(gov)) {
+      const rows = [];
+      for (const gov of keyset) {
+        const row = { gov };
+        for (const dep of keyset) {
+          if (!Object.prototype.hasOwnProperty.call(this.edges[this.currentEdge], gov)) {
             row[dep] = {};
             continue;
           }
-          if (!this.edges[this.currentEdge][gov].hasOwnProperty(dep)) {
+          if (!Object.prototype.hasOwnProperty.call(this.edges[this.currentEdge], dep)) {
             row[dep] = {};
             continue;
           }
           row[dep] = this.edges[this.currentEdge][gov][dep];
-          this.relationstotal[this.currentEdge] += Object.keys(
-            this.edges[this.currentEdge][gov][dep]
-          ).length;
+          this.relationstotal[this.currentEdge] += Object.keys(this.edges[this.currentEdge][gov][dep]).length;
         }
         rows.push(row);
       }
@@ -219,7 +191,7 @@ export default {
      * @returns void
      */
     resetFilter() {
-      this.filter = "";
+      this.filter = '';
     },
     // select(){
     //     console.log(33);
@@ -235,7 +207,7 @@ export default {
      * @returns void
      */
     showTrees(props) {
-      this.tablename = this.currentEdge + " relation table";
+      this.tablename = `${this.currentEdge} relation table`;
       this.selectedResults = props;
       this.visuTreeDial = true;
     },
@@ -245,29 +217,29 @@ export default {
      * @param {*} s
      * @returns {Boolean}
      */
-    isString: function (s) {
-      return typeof s === "string" || s instanceof String;
+    isString(s) {
+      return typeof s === 'string' || s instanceof String;
     },
   },
   mounted() {
-    const splitters = this.$store.getters[
-      "config/getProjectConfig"
-    ].annotationFeatures.DEPREL.map(({ join }) => join).join("");
-    const splitregex = new RegExp("[" + splitters + "]", "g"); // = /[:@]/g
+    const splitters = this.$store.getters['config/getProjectConfig'].annotationFeatures.DEPREL.map(({ join }) => join).join('');
+    const splitregex = new RegExp(`[${splitters}]`, 'g'); // = /[:@]/g
 
     this.relationtree = [];
-    var lasta = this.relationtree;
-    var match;
-    for (let edge of this.edgesList) {
-      while ((match = splitregex.exec(edge + splitters[0]))) {
+    let lasta = this.relationtree;
+    let match;
+    let newo;
+    for (const edge of this.edgesList) {
+      match = splitregex.exec(edge + splitters[0]);
+      if (match) {
         const r = edge.substr(0, match.index);
-        var alr = lasta.filter((rr) => rr.label == r);
-        if (alr.length == 0) {
-          var newo = { label: r, children: [] };
-          newo.selectable = r == edge; // some labels don't exist without children
-          newo.icon = r == edge ? "view_module" : null;
+        const alr = lasta.filter((rr) => rr.label === r);
+        if (alr.length === 0) {
+          newo = { label: r, children: [] };
+          newo.selectable = r === edge; // some labels don't exist without children
+          newo.icon = r === edge ? 'view_module' : null;
           lasta.push(newo);
-        } else newo = alr[0];
+        } else [newo] = alr;
         lasta = newo.children;
       }
       lasta = this.relationtree;

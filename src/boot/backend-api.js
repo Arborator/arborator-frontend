@@ -1,4 +1,5 @@
-import { API } from "./axios-adapters/axios-api";
+import { API } from './axios-adapters/axios-api';
+
 export default {
   // -------------------------------------------------- //
   // ---------------        AUTH       ---------------- //
@@ -11,7 +12,7 @@ export default {
     return API.get(provider);
   },
   logout() {
-    return API.get("/logout");
+    return API.get('/logout');
   },
 
   // -------------------------------------------------- //
@@ -19,20 +20,20 @@ export default {
   // -------------------------------------------------- //
 
   getUsers() {
-    return API.get("users/");
+    return API.get('users/');
   },
   whoAmI() {
-    return API.get("users/me");
+    return API.get('users/me');
   },
 
   // ---------------------------------------------------- //
   // ---------------        Project       --------------- //
   // ---------------------------------------------------- //
   getProjects() {
-    return API.get("projects");
+    return API.get('projects');
   },
   createProject(data) {
-    return API.post("projects/", data);
+    return API.post('projects/', data);
   },
   getProject(projectname) {
     return API.get(`projects/${projectname}`);
@@ -41,7 +42,7 @@ export default {
     return API.put(`projects/${projectname}`, data);
   },
   deleteProject(projectname) {
-    return API.delete("projects/" + projectname);
+    return API.delete(`projects/${projectname}`);
   },
   getProjectFeatures(projectname) {
     return API.get(`projects/${projectname}/features`);
@@ -59,7 +60,7 @@ export default {
     return API.get(`projects/${projectname}/access`);
   },
   updateManyProjectUserAccess(projectname, targetrole, userIds) {
-    let data = { user_ids: userIds, targetrole: targetrole };
+    const data = { user_ids: userIds, targetrole };
     return API.put(`projects/${projectname}/access/many`, data);
   },
   deleteProjectUserAccess(projectname, userId) {
@@ -68,21 +69,21 @@ export default {
 
   /// --- deprecated ? ----
   modifyOpenProject(projectname, value) {
-    return API.post("projects/" + projectname + "/openproject", {
-      value: value,
+    return API.post(`projects/${projectname}/openproject`, {
+      value,
     });
   },
   modifyShowAllTrees(projectname, value) {
-    return API.post("projects/" + projectname + "/showalltrees", {
-      value: value,
+    return API.post(`projects/${projectname}/showalltrees`, {
+      value,
     });
   },
   modifyPrivate(projectname, value) {
-    return API.post("projects/" + projectname + "/private", { value: value });
+    return API.post(`projects/${projectname}/private`, { value });
   },
   modifyDescription(projectname, value) {
-    return API.post("projects/" + projectname + "/description", {
-      value: value,
+    return API.post(`projects/${projectname}/description`, {
+      value,
     });
   },
   /// ---end deprecated ? ----
@@ -101,9 +102,9 @@ export default {
     return API.get(`/projects/${projectName}/samples/${sampleName}/evaluation`);
   },
   exportSamplesZip(samplenames, projectname) {
-    let data = { samples: samplenames };
+    const data = { samples: samplenames };
     return API.post(`/projects/${projectname}/samples/export`, data, {
-      responseType: "arraybuffer",
+      responseType: 'arraybuffer',
     });
   },
   deleteSample(projectname, samplename) {
@@ -118,10 +119,7 @@ export default {
   },
   updateSampleExerciseLevel(projectname, samplename, exerciseLevel) {
     const data = { exerciseLevel };
-    return API.post(
-      `/projects/${projectname}/samples/${samplename}/exercise-level`,
-      { exerciseLevel }
-    );
+    return API.post(`/projects/${projectname}/samples/${samplename}/exercise-level`, { exerciseLevel });
   },
 
   // ---------------------------------------------------- //
@@ -131,10 +129,7 @@ export default {
     return API.get(`/projects/${projectname}/samples/${samplename}/trees`);
   },
   updateTree(projectname, samplename, data) {
-    return API.post(
-      `/projects/${projectname}/samples/${samplename}/trees`,
-      data
-    );
+    return API.post(`/projects/${projectname}/samples/${samplename}/trees`, data);
   },
 
   // ----------------------------------------------------- //
@@ -144,45 +139,42 @@ export default {
     return API.post(`projects/${projectname}/lexicon`, data);
   },
   searchProject(projectname, query) {
-    return API.post("projects/" + projectname + "/search", query);
+    return API.post(`projects/${projectname}/search`, query);
   },
   tryRuleProject(projectname, query) {
-    return API.post("projects/" + projectname + "/try-rule", query);
+    return API.post(`projects/${projectname}/try-rule`, query);
   },
   tryRulesProject(projectname, query) {
-    return API.post("projects/" + projectname + "/try-rules", query);
+    return API.post(`projects/${projectname}/try-rules`, query);
   },
   searchSample(projectname, samplename, query) {
-    return API.post(
-      "projects/" + projectname + "/sample/" + samplename + "/search",
-      query
-    );
+    return API.post(`projects/${projectname}/sample/${samplename}/search`, query);
   },
   // -------------------------------------------------------- //
   // ---------------          Lexicon         --------------- //
   // -------------------------------------------------------- //
   getRelationTable(projectname, data) {
-    return API.post("projects/" + projectname + "/relation-table", data);
+    return API.post(`projects/${projectname}/relation-table`, data);
   },
 
   exportLexiconJSON(projectname, data) {
-    return API.post("projects/" + projectname + "/export/json", data, {
-      responseType: "arraybuffer",
+    return API.post(`projects/${projectname}/export/json`, data, {
+      responseType: 'arraybuffer',
     });
   },
   exportLexiconTSV(projectname, data) {
-    return API.post("projects/" + projectname + "/export/tsv", data, {
-      responseType: "arraybuffer",
+    return API.post(`projects/${projectname}/export/tsv`, data, {
+      responseType: 'arraybuffer',
     });
   },
   transformation_grew(projectname, data) {
-    return API.post("projects/" + projectname + "/transformationgrew", data);
+    return API.post(`projects/${projectname}/transformationgrew`, data);
   },
   uploadValidator(projectname, data) {
-    return API.post("projects/" + projectname + "/upload/validator", data);
+    return API.post(`projects/${projectname}/upload/validator`, data);
   },
   addValidator(projectname, data) {
-    return API.post("projects/" + projectname + "/addvalidator", data);
+    return API.post(`projects/${projectname}/addvalidator`, data);
   },
   saveConll(projectname, data) {
     return API.post(`/projects/${projectname}/saveConll`, data);
@@ -200,7 +192,7 @@ export default {
   },
 
   setKlangProjectAdmins(projectname, admins) {
-    return API.post(`klang/projects/${projectname}/admins`, { admins: admins });
+    return API.post(`klang/projects/${projectname}/admins`, { admins });
   },
 
   getKlangProjectSamples(projectname) {
@@ -208,55 +200,44 @@ export default {
   },
 
   getOriginalConll(projectname, samplename) {
-    return API.get(
-      `klang/projects/${projectname}/samples/${samplename}/timed-tokens`
-    );
+    return API.get(`klang/projects/${projectname}/samples/${samplename}/timed-tokens`);
   },
 
   getTranscription(projectname, samplename, username) {
-    return API.get(
-      `klang/projects/${projectname}/samples/${samplename}/transcription/${username}`
-    );
+    return API.get(`klang/projects/${projectname}/samples/${samplename}/transcription/${username}`);
   },
 
   getAllTranscription(projectname, samplename) {
-    return API.get(
-      `klang/projects/${projectname}/samples/${samplename}/transcriptions`);
+    return API.get(`klang/projects/${projectname}/samples/${samplename}/transcriptions`);
   },
 
   saveTranscription(projectname, samplename, username, data) {
-    return API.put(
-      `klang/projects/${projectname}/samples/${samplename}/transcription/${username}`, data
-    )
+    return API.put(`klang/projects/${projectname}/samples/${samplename}/transcription/${username}`, data);
   },
   // -------------------------------------------------------- //
   // ---------------        To Refactor       --------------- //
   // -------------------------------------------------------- //
 
   getUsersTreeFrom(projectname) {
-    return API.get("projects/" + projectname + "/treesfrom");
+    return API.get(`projects/${projectname}/treesfrom`);
   },
   addDefaultUserTree(projectname, user) {
-    let data = { user: JSON.stringify(user) };
-    return API.post("projects/" + projectname + "/defaultusertrees/add", data);
+    const data = { user: JSON.stringify(user) };
+    return API.post(`projects/${projectname}/defaultusertrees/add`, data);
   },
   removeDefaultUserTree(projectname, dutid) {
-    let data = { dut_id: dutid };
-    return API.post(
-      "projects/" + projectname + "/defaultusertrees/remove",
-      data
-    );
+    const data = { dut_id: dutid };
+    return API.post(`projects/${projectname}/defaultusertrees/remove`, data);
   },
   uploadProjectImage(projectname, form) {
-    return API.post("projects/" + projectname + "/image", form);
+    return API.post(`projects/${projectname}/image`, form);
   },
 
   // These following two are not used
   commit(projectname, data) {
-    return API.post("projects/" + projectname + "/commit", data);
+    return API.post(`projects/${projectname}/commit`, data);
   },
   pull(projectname, data) {
-    return API.post("projects/" + projectname + "/pull", data);
+    return API.post(`projects/${projectname}/pull`, data);
   },
-
 };

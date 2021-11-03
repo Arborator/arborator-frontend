@@ -472,7 +472,6 @@ export default {
   },
   mounted() {
     this.annofjson = this.$store.getters["config/getAnnofjson"];
-    console.log("KK annofjson", this.annofjson);
   },
   computed: {
     ...mapGetters("config", [
@@ -586,7 +585,6 @@ export default {
      * @returns void
      */
     checkAnnotationFeatures() {
-      console.log("KK checkAnnotationFeatures()");
       try {
         JSON.parse(this.annofjson);
         this.annofok = true;

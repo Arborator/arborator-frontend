@@ -61,7 +61,7 @@ export default {
       }
 
       var ifImageEmpty =
-        "../statics/images/niko-photos-tGTVxeOr_Rs-unsplash.jpg";
+        "/images/niko-photos-tGTVxeOr_Rs-unsplash.jpg";
 
       if (state.image == null) {
         state.image = "b''";

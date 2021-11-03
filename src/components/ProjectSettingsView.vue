@@ -15,13 +15,7 @@
     </q-bar>
     <q-card-section class="q-pa-sm row q-gutter-md">
       <q-banner rounded class="col-md-4 offset-md-4 col-xs-12 col-sm-12">
-        <q-img
-          :ratio="16 / 9"
-          src="https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fisleblue.co%2Fmagazine%2Fwp-content%2Fuploads%2F2017%2F05%2FPuntaCanaBeachLife-e1496088219763.jpg&f=1&nofb=1"
-          basic
-        >
-          <!-- :src="cleanedImage" FIXME, replace by this line when statics will works again -->
-
+        <q-img :ratio="16 / 9" :src="cleanedImage" basic>
           <div class="absolute-bottom text-h6">
             <q-icon
               v-show="visibility == 0"

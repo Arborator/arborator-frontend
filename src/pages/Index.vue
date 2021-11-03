@@ -8,13 +8,13 @@
               <img
                 v-if="$q.dark.isActive"
                 alt="Arborator"
-                src="../statics/svg/arborator.grew.white.svg"
+                src="/svg/arborator.grew.white.svg"
                 class="brandinglogo"
               />
               <img
                 v-else
                 alt="Arborator"
-                src="../statics/svg/arborator.grew.svg"
+                src="/svg/arborator.grew.svg"
                 class="brandinglogo"
               />
             </div>
@@ -114,10 +114,7 @@
               <q-parallax :height="440" :speed="0.0" class="col col-md-5">
                 <template v-slot:media>
                   <video width="720" height="440" autoplay loop muted>
-                    <source
-                      type="video/webm"
-                      src="../statics/videos/annotate2.webm"
-                    />
+                    <source type="video/webm" src="/videos/annotate2.webm" />
                   </video>
                 </template>
               </q-parallax>
@@ -140,7 +137,7 @@
                         href="https://surfacesyntacticud.github.io"
                         target="_blank"
                       >
-                        <q-icon name="../statics/svg/sud.svg" size="md" />
+                        <q-icon name="/svg/sud.svg" size="md" />
                         <q-tooltip
                           content-class="bg-accent"
                           content-style="font-size: 16px"
@@ -153,7 +150,7 @@
                         href="https://universaldependencies.org/"
                         target="_blank"
                       >
-                        <q-icon name="../statics/svg/ud.svg" size="sm" />
+                        <q-icon name="/svg/ud.svg" size="sm" />
                         <q-tooltip
                           content-class="bg-accent"
                           content-style="font-size: 16px"
@@ -203,7 +200,7 @@
                   <div class="text-justify text-body1">
                     {{ $t("homepage.grewCard.content[0]") }}
                     <a href="http://grew.fr//" target="_blank">
-                      <q-icon name="../statics/svg/grew.svg" size="md" />
+                      <q-icon name="/svg/grew.svg" size="md" />
                       <q-tooltip
                         content-class="bg-accent"
                         content-style="font-size: 15px"
@@ -219,10 +216,7 @@
               <q-parallax :height="440" :speed="0.0" class="col col-md-5">
                 <template v-slot:media>
                   <video width="720" height="440" autoplay loop muted>
-                    <source
-                      type="video/webm"
-                      src="../statics/videos/grew.webm"
-                    />
+                    <source type="video/webm" src="/videos/grew.webm" />
                   </video>
                 </template>
               </q-parallax>
@@ -358,10 +352,7 @@
                     {{ $t("homepage.toolsCard.content[0]") }}
                   </q-card-section>
                   <q-card-section>
-                    <img
-                      src="../statics/svg/arborator.quick.svg"
-                      width="100em"
-                    />
+                    <img src="/svg/arborator.quick.svg" width="100em" />
                     <q-badge align="top" color="positive">{{
                       $t("homepage.toolsCard.content[1]")
                     }}</q-badge>
@@ -422,13 +413,13 @@
         <img
           aria-hidden="true"
           role="presentation"
-          src="../statics/svg/paris.svg"
+          src="/svg/paris.svg"
           class=""
           style="color: #dd137b; height: 18px"
         />
         <!-- {{t('footer')[2]}} -->
         <!-- <a href="https://team.inria.fr/almanach" target="_blank">
-        <img aria-hidden="true" role="presentation" src="../statics/svg/almanachInria.svg" class="" style="height:18px;">
+        <img aria-hidden="true" role="presentation" src="/svg/almanachInria.svg" class="" style="height:18px;">
       </a> -->
         — v1.0 (20211015)</q-item-label
       >

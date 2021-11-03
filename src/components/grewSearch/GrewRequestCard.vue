@@ -4,7 +4,7 @@
     :class="$q.dark.isActive ? 'bg-dark' : 'bg-grey-1'"
   >
     <q-bar class="bg-primary text-white">
-      <q-icon name="img:../statics/svg/grew.svg" size="7rem" />
+      <q-icon name="img:/svg/grew.svg" size="7rem" />
       <q-space />
       <q-btn flat dense icon="close" v-close-popup />
     </q-bar>

@@ -6,12 +6,7 @@
           <q-toolbar class="text-center">
             <!-- <q-toolbar-title><span :class="($q.dark.isActive?'':'text-primary') + ' text-bold'">{.name}}</span> </q-toolbar-title> -->
           </q-toolbar>
-          <q-img
-            class="project-image"
-            src="https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fisleblue.co%2Fmagazine%2Fwp-content%2Fuploads%2F2017%2F05%2FPuntaCanaBeachLife-e1496088219763.jpg&f=1&nofb=1"
-            basic
-          >
-            <!-- :src="cleanedImage" FIXME, replace by this line when statics will works again -->
+          <q-img class="project-image" :src="cleanedImage" basic>
             <div class="absolute-bottom text-h6" style="padding: 6px">
               <q-icon
                 v-show="visibility == 0"

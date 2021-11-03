@@ -10,7 +10,7 @@
         round
         @click="searchDialog = !searchDialog"
         color="primary"
-        icon="img:../statics/svg/g.svg"
+        icon="img:/svg/g.svg"
       >
         <q-tooltip content-class="bg-primary" content-style="font-size: 16px">
           Search with Grew in this sample

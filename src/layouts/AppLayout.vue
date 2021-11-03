@@ -19,13 +19,13 @@
             <img
               v-if="$q.dark.isActive"
               alt="Arborator"
-              src="../statics/svg/arborator.grew.white.svg"
+              src="/svg/arborator.grew.white.svg"
               style="height: 2.3vw"
             />
             <img
               v-else
               alt="Arborator"
-              src="../statics/svg/arborator.grew.svg"
+              src="/svg/arborator.grew.svg"
               style="height: 2.3vw"
             />
           </div>
@@ -241,10 +241,10 @@
     <q-page-container> <router-view /> </q-page-container>
     <!-- <q-footer > -->
     <!-- <q-item-label caption class="text-center text-grey-3">
-       {{$t('footer')[0]}} <q-icon name="favorite" style="font-size:22px;color: #dd137b;height:18px;vertical-align:text-bottom"/> {{$t('footer')[1]}}        <img aria-hidden="true" role="presentation" src="../statics/svg/paris.svg" class="" style="color: #dd137b;height:18px;">
+       {{$t('footer')[0]}} <q-icon name="favorite" style="font-size:22px;color: #dd137b;height:18px;vertical-align:text-bottom"/> {{$t('footer')[1]}}        <img aria-hidden="true" role="presentation" src="/svg/paris.svg" class="" style="color: #dd137b;height:18px;">
         {{$t('footer')[2]}}
       <a href="https://team.inria.fr/almanach" target="_blank">
-        <img aria-hidden="true" role="presentation" src="../statics/svg/almanachInria.svg" class="" style="height:18px;">
+        <img aria-hidden="true" role="presentation" src="/svg/almanachInria.svg" class="" style="height:18px;">
       </a>
        v1.0 beta (20200515)</q-item-label> -->
     <!-- </q-footer>     -->
@@ -344,11 +344,11 @@ export default {
       ],
       lang: this.$i18n.locale,
       langOptions: [
-        { value: "en-us", label: "EN", img: "../statics/images/usflag.svg" },
+        { value: "en-us", label: "EN", img: "/images/usflag.svg" },
         {
           value: "fr-fra",
           label: "FR",
-          img: "../statics/images/frenchflag.svg",
+          img: "/images/frenchflag.svg",
         },
       ],
     };

@@ -31,7 +31,6 @@ It should works without any changes on the backend. So you can continue to use t
 
 ### TODO LIST
 
-- [ ] Make statics files serving work (it doesn't work when referencing to them with `icon="img:../statics/svg/g.svg"` in a <q-btn> for instance)
 - [ ] Some global app styling doesn't work (we can see a light blue instead of the purple arboragrew theme)
 - [ ] When modifying a lexic in lexicon lila code, we have the error : `no modification`
 - [ ] When importing conll files in a project, we don't see the userId convertor form
@@ -39,6 +38,7 @@ It should works without any changes on the backend. So you can continue to use t
 - [ ] Page Klang.vue (need to provide data_dev in backend to see if working)
 - [ ] Page KlangProject.vue (same as Klang.vue above)
 - [ ] Page KlangSample.vue (same as Klang.vue above)
+- [x] Make statics files serving work (it doesn't work when referencing to them with `icon="img:svg/g.svg"` in a <q-btn> for instance)
 - [x] Page AppLayout.vue
 - [x] Page ProjectsHub.vue
 - [x] Page Project.vue

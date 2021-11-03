@@ -1,7 +1,7 @@
 <template>
   <q-card style="max-width: 100vw">
     <q-bar class="bg-primary text-white">
-      <q-icon name="img:../statics/svg/grew.svg" size="7rem" />
+      <q-icon name="img:/svg/grew.svg" size="7rem" />
       <q-space />
       <div class="text-weight-bold">
         {{ sentenceCount }} <span v-if="sentenceCount == 1">result</span

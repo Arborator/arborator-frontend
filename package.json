@@ -8,6 +8,7 @@
   "private": true,
   "scripts": {
     "start": "node_modules/.bin/quasar dev",
+    "lint": "eslint --ext .js,.vue ./ --fix",
     "test": "echo \"See package.json => scripts for available tests.\" && exit 0",
     "buildProd": "mv dist/ dist_backup/ ; quasar build && rm -r dist_backup/ || mv dist_backup/ dist/",
     "test:unit": "jest --updateSnapshot",
@@ -40,8 +41,19 @@
     "vuex": "^4.0.1"
   },
   "devDependencies": {
+    "@babel/eslint-parser": "^7.13.14",
     "@quasar/app": "^3.0.0",
+    "eslint": "^7.14.0",
+    "eslint-config-airbnb-base": "^14.0.0",
+    "eslint-config-prettier": "^8.3.0",
+    "eslint-plugin-cypress": "^2.12.1",
+    "eslint-plugin-import": "^2.20.1",
+    "eslint-plugin-jest": "^25.2.2",
+    "eslint-plugin-prettier": "^4.0.0",
+    "eslint-plugin-vue": "^7.0.0",
+    "eslint-webpack-plugin": "^2.4.0",
     "postcss": "^8.3.11",
+    "prettier-eslint": "^13.0.0",
     "stylus": "^0.55.0",
     "stylus-loader": "^6.2.0"
   },

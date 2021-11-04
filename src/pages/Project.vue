@@ -30,8 +30,8 @@
           </q-img>
         </q-card-section>
 
-        <q-card-section v-if="LexiconTable">
-          <LexiconTable :data="this.lexicon" :sampleId="this.table.selected" @request="getLexicon"> </LexiconTable>
+        <q-card-section v-if="isShowLexiconPanel">
+          <LexiconPanel :lexiconItems="lexiconItems" :sampleId="table.selected" @request="fetchLexicon"> </LexiconPanel>
         </q-card-section>
         <q-card-section>
           <q-table
@@ -208,20 +208,20 @@
 
                 <div>
                   <q-btn
-                    v-show="LexiconTable === false"
+                    v-show="isShowLexiconPanel === false"
                     flat
                     color="default"
                     icon="playlist_add_check"
-                    @click="getLexicon()"
+                    @click="fetchLexicon()"
                     :loading="table.exporting"
                     :disable="(!isGuest && !isAdmin && !isSuperAdmin) || table.selected.length < 1"
                   ></q-btn>
                   <q-btn
-                    v-show="LexiconTable === true"
+                    v-show="isShowLexiconPanel === true"
                     flat
                     color="default"
                     icon="playlist_add_check"
-                    @click="LexiconTable = false"
+                    @click="isShowLexiconPanel = false"
                     :loading="table.exporting"
                     :disable="(!isGuest && !isAdmin && !isSuperAdmin) || table.selected.length < 1"
                   ></q-btn>
@@ -425,7 +425,7 @@ import TagInput from '../components/TagInput';
 import ProjectSettingsView from '../components/ProjectSettingsView.vue';
 import ConfirmAction from '../components/ConfirmAction.vue';
 import UploadDialog from '../components/project/UploadDialog.vue';
-import LexiconTable from '../components/LexiconTable';
+import LexiconPanel from '../components/lexicon/LexiconPanel';
 import GrewSearch from '../components/grewSearch/GrewSearch';
 import RelationTableMain from '../components/relationTable/RelationTableMain';
 
@@ -436,7 +436,7 @@ export default {
     ProjectSettingsView,
     ConfirmAction,
     UploadDialog,
-    LexiconTable,
+    LexiconPanel,
     GrewSearch,
     RelationTableMain,
   },
@@ -451,8 +451,7 @@ export default {
       confirmActionDial: false,
       confirmActionCallback: null,
       confirmActionArg1: '',
-      LexiconTable: false,
-      lexicon: [],
+      lexiconItems: [],
       alerts: {
         uploadsuccess: { color: 'positive', message: 'Upload success' },
         uploadfail: {
@@ -561,6 +560,8 @@ export default {
   computed: {
     ...mapGetters('config', ['visibility', 'isAdmin', 'isGuest', 'guests', 'admins', 'image', 'exerciseMode', 'cleanedImage']),
     ...mapGetters('user', ['isLoggedIn', 'isSuperAdmin', 'loggedWithGithub', 'avatar']),
+    ...mapGetters('lexicon', ['isShowLexiconPanel']),
+
     routePath() {
       return this.$route.path;
     },
@@ -719,30 +720,13 @@ export default {
           return [];
         });
     },
-    getLexicon(type) {
-      this.LexiconTable = true;
+    fetchLexicon(type) {
       const samplenames = [];
       for (const sample of this.table.selected) {
         samplenames.push(sample.sample_name);
       }
-      const data = { samplenames, treeSelection: type };
-      api
-        .getLexicon(this.$route.params.projectname, data)
-        .then((response) => {
-          console.log(777, response);
-          this.lexicon = response.data.lexicon;
-        })
-        .catch((error) => {
-          if (error.response.data.status === 418) {
-            error.response.message = error.response.data.message;
-            error.permanent = true;
-            this.$store.dispatch('notifyError', { error });
-          } else if (error.response.data.status === 204) {
-            this.$store.dispatch('notifyError', {
-              error: error.response.data.message,
-            });
-          } else this.$store.dispatch('notifyError', { error });
-        });
+
+      this.$store.dispatch('lexicon/fetchLexicon', { projectname: this.$route.params.projectname, samplenames, treeSelection: type });
     },
 
     // grewquery() {

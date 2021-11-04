@@ -136,7 +136,7 @@ export default {
   // ---------------          Grew         --------------- //
   // ----------------------------------------------------- //
   getLexicon(projectname, data) {
-    return API.post(`projects/${projectname}/lexicon`, data);
+    return API.post(`projects/V2/${projectname}/lexicon`, data);
   },
   searchProject(projectname, query) {
     return API.post(`projects/${projectname}/search`, query);

@@ -1,41 +1,98 @@
 <template>
   <div>
-    <q-table
+    <LexiconModificationDialog />
+    <LexiconTableBase
+      title="Modified Lexicon"
+      v-show="lexiconItemsModified.length >= 1"
+      :compareWithBefore="true"
+      :passedLexiconItems="lexiconItemsModified"
+      :lexiconLoading="false"
+    >
+    </LexiconTableBase>
+    <LexiconTableBase title="Lexicon" :passedLexiconItems="lexiconItems" :lexiconLoading="lexiconLoading"> </LexiconTableBase>
+
+    <!-- <q-table
       ref="table"
       title="Lexicon"
-      :class="($q.dark.isActive ? 'my-sticky-header-table-dark' : 'my-sticky-header-table') + ' rounded-borders'"
-      :rows="this.data"
-      :columns="table.columns"
-      row-key="key"
-      :v-model:pagination="table.pagination"
-      :loading="table.loading"
-      loading-label="loading"
-      :filter="table.filter"
-      binary-state-sort
-      :rows-per-page-options="[0]"
-      :visible-columns="table.visibleColumns"
-      selection="multiple"
       v-model:selected="table.selected"
-      :table-header-class="$q.dark.isActive ? 'text-white' : 'text-primary'"
-      virtual-scroll
+      selection="multiple"
+      :rows="lexiconItems"
+      :row-key="(row) => `${row.form}-${row.lemma}-${row.gloss}-${row.pos}`"
+      :columns="table.columns"
+      :visible-columns="table.visibleColumns"
+      @row-click="onRowClick"
       card-class="shadow-8"
       :key="tableKey"
       table-style="max-height:80vh"
-      @row-click="onRowClick"
+      :rows-per-page-options="[50]"
+      :loading="lexiconLoading"
+      loading-label="loading"
+      :filter="table.filter"
+      binary-state-sort
+      :class="($q.dark.isActive ? 'my-sticky-header-table-dark' : 'my-sticky-header-table') + ' rounded-borders'"
+      :v-model:pagination="table.pagination"
     >
-      >
-      <template v-slot:body-cell="props">
-        <td v-if="props.row.changed === 'replace'" style="background: mediumseagreen">
-          {{ props.value }}
-        </td>
-        <td v-else-if="props.row.changed === 'add'" style="background: orange">
-          {{ props.value }}
-        </td>
-        <td v-else-if="props.row.changed === 'delete'" style="background: #f34336">
-          {{ props.value }}
-        </td>
-        <td v-else>{{ props.value }}</td>
+
+      <template #header-selection="scope">
+        <q-checkbox v-model="scope.selected" />
       </template>
+
+      <template #body-selection="scope">
+        <q-checkbox v-model="scope.selected" />
+      </template>
+
+      <template #body-cell-form="props">
+        <q-td key="form" :props="props">
+          <q-badge color="green">
+            {{ props.row.form }}
+          </q-badge>
+        </q-td>
+      </template>
+
+      <template #body-cell-pos="props">
+        <q-td key="pos" :props="props">
+          <q-badge color="red">
+            {{ props.row.pos }}
+          </q-badge>
+        </q-td>
+      </template>
+
+      <template #body-cell-lemma="props">
+        <q-td key="lemma" :props="props">
+          <q-badge color="brown">
+            {{ props.row.lemma }}
+          </q-badge>
+        </q-td>
+      </template>
+
+      <template #body-cell-frequency="props">
+        <q-td key="frequency" :props="props">
+          <q-badge color="orange">
+            {{ props.row.frequency }}
+          </q-badge>
+        </q-td>
+      </template>
+
+      <template #body-cell-gloss="props">
+        <q-td key="gloss" :props="props">
+          <q-badge color="blue">
+            {{ props.row.gloss }}
+          </q-badge>
+        </q-td>
+      </template>
+
+      <template #body-cell-features="props">
+        <q-td key="form" :props="props">
+          <q-badge color="purple">
+            {{
+              Object.entries(props.row.features)
+                .map((keyValue) => `${keyValue[0]}=${keyValue[1]}`)
+                .join('|')
+            }}
+          </q-badge>
+        </q-td>
+      </template>
+
 
       <template v-slot:top-right>
         <div>
@@ -71,7 +128,7 @@
           </q-btn-group>
         </div>
       </template>
-    </q-table>
+    </q-table> -->
     <div v-show="CompareDics === true">
       <q-space />
       <q-card>
@@ -79,7 +136,7 @@
         <CompareLexicon :data="this.dics" :sampleId="this.sampleId"> </CompareLexicon>
       </q-card>
     </div>
-    <q-dialog v-model="openFeatures">
+    <!-- <q-dialog v-model="openFeatures">
       <q-card>
         <q-bar class="bg-primary text-white">
           <div class="text-weight-bold">Features of "{{ currentword }}"</div>
@@ -147,10 +204,10 @@
           />
         </q-card-actions>
       </q-card>
-    </q-dialog>
+    </q-dialog> -->
     <q-dialog v-model="searchDialog" seamless position="right" full-width>
       <template v-if="!($store.getters['config/exerciseMode'] && !$store.getters['config/isTeacher'])">
-        <GrewSearch :sentenceCount="this.data.length" :sampleId="this.sampleId" :showTable="this.searchDialog" />
+        <GrewSearch :sentenceCount="this.lexiconItems.length" :sampleId="this.sampleId" :showTable="this.searchDialog" />
       </template>
     </q-dialog>
 
@@ -205,19 +262,22 @@
 </template>
 
 <script>
-import api from '../boot/backend-api';
-import AttributeTable from './sentence/AttributeTable';
-import GrewSearch from './grewSearch/GrewSearch';
+import { mapGetters } from 'vuex';
+import api from '../../boot/backend-api';
+import LexiconTableBase from './LexiconTableBase';
+import GrewSearch from '../grewSearch/GrewSearch';
+import LexiconModificationDialog from './LexiconModificationDialog';
 import CompareLexicon from './CompareLexicon';
-import grewTemplates from '../assets/grew-templates.json';
+import grewTemplates from '../../assets/grew-templates.json';
 
 export default {
   name: 'LexiconTable',
-  props: ['data', 'sampleId'],
+  props: ['sampleId'],
   components: {
     GrewSearch,
     CompareLexicon,
-    AttributeTable,
+    LexiconTableBase,
+    LexiconModificationDialog,
   },
 
   data() {
@@ -245,38 +305,7 @@ export default {
       uploadLexicon: [],
       CompareDics: false,
       dics: [],
-      featTable: {
-        form: [],
-        pos: [],
-        featl: [],
-        miscl: [],
-        lemma: [],
-        gloss: [],
-        changed: null,
-        columns: [
-          {
-            name: 'a',
-            align: 'center',
-            label: 'Attribute',
-            field: 'a',
-            sortable: true,
-            style: 'width: 33%',
-          },
-          {
-            name: 'v',
-            label: 'Value',
-            field: 'v',
-            sortable: true,
-          },
-          {
-            name: 'actions',
-            label: 'Actions',
-            field: '',
-            align: 'center',
-            style: 'width: 8%',
-          },
-        ],
-      },
+
       options: {
         // attribute table dialog specific stuff
         annof: [], // = annotationFeatures from conf!!!
@@ -291,6 +320,11 @@ export default {
       },
       table: {
         columns: [
+          {
+            name: 'expand',
+            label: 'expand',
+            field: 'expand',
+          },
           {
             name: 'form',
             label: 'Form',
@@ -310,12 +344,11 @@ export default {
             label: 'POS',
             sortable: true,
             align: 'left',
-            field: 'POS',
+            field: 'pos',
           },
           {
             name: 'features',
             label: 'Features',
-            sortable: true,
             align: 'left',
             field: 'features',
           },
@@ -332,13 +365,6 @@ export default {
             sortable: true,
             align: 'left',
             field: 'frequency',
-          },
-          {
-            name: 'key',
-            label: 'Key',
-            sortable: true,
-            align: 'left',
-            field: 'key',
           },
         ],
         visibleColumns: ['form', 'lemma', 'pos', 'features', 'gloss', 'frequency'],
@@ -369,6 +395,7 @@ export default {
     };
   },
   computed: {
+    ...mapGetters('lexicon', ['isShowLexiconPanel', 'lexiconItems', 'lexiconLoading', 'lexiconItemsModified']),
     searchDialog: {
       get() {
         return this.$store.getters['grewSearch/grewDialog'];
@@ -387,12 +414,12 @@ export default {
   },
   methods: {
     addValidator(Validator) {
-      for (let i = 0; i < this.data.length; i += 1) {
-        if (this.data[i].changed !== 'delete') {
-          if (!('frequency' in this.data[i])) {
-            this.data[i].frequency = '_';
+      for (let i = 0; i < this.lexiconItems.length; i += 1) {
+        if (this.lexiconItems[i].changed !== 'delete') {
+          if (!('frequency' in this.lexiconItems[i])) {
+            this.lexiconItems[i].frequency = '_';
           }
-          this.uploadLexicon.push(this.data[i]);
+          this.uploadLexicon.push(this.lexiconItems[i]);
         }
       }
       const datasample = { data: this.uploadLexicon, validator: Validator };
@@ -489,7 +516,7 @@ export default {
           changed: 'add',
           key: this.featTable.form[0].v + this.featTable.lemma[0].v + this.featTable.pos[0].v + this.temp_features + this.featTable.gloss[0].v,
         };
-        this.data.splice(this.indexfeat + 1, 0, newRow);
+        this.lexiconItems.splice(this.indexfeat + 1, 0, newRow);
       } else {
         this.showNotif('top', 'noModification');
       }
@@ -529,7 +556,7 @@ export default {
           changed: 'replace',
           key: this.featTable.form[0].v + this.featTable.lemma[0].v + this.featTable.pos[0].v + this.temp_features + this.featTable.gloss[0].v,
         };
-        this.data.splice(this.indexfeat + 1, 0, newRow);
+        this.lexiconItems.splice(this.indexfeat + 1, 0, newRow);
         if (this.infotochange !== '') {
           this.RulesGrew.push({
             currentInfo: this.currentinfo,
@@ -549,43 +576,14 @@ export default {
       });
       this.table.selected = [];
     },
-    onRowClick(evt, row) {
-      this.someFeatureChanged = false;
-      this.infotochange = '';
-      this.currentword = row.form;
-      this.openFeatures = true;
-      this.featTable.featl = [];
-      this.featTable.form = [{ a: 'Form', v: row.form }];
-      this.featTable.pos = [{ a: 'POS', v: row.POS }];
-      this.featTable.lemma = [{ a: 'Lemma', v: row.lemma }];
-      this.featTable.gloss = [{ a: 'Gloss', v: row.gloss }];
-      this.indexfeat = this.data.indexOf(row);
-      this.featTable.changed = row.changed;
-      if (row.features === '_') {
-        this.featTable.featl = [];
-      } else {
-        for (const a in row.features.split('|')) {
-          if (Object.prototype.hasOwnProperty.call(row.features.split('|'), a)) {
-            this.featTable.featl.push({
-              a: row.features.split('|')[a].split('=')[0],
-              v: row.features.split('|')[a].split('=')[1],
-            });
-          }
-        }
-      }
-      if (row.features === '_' || row.features === '') {
-        this.currentinfo = `${row.form} ${row.lemma} ${row.POS} ${row.gloss} _`;
-      } else {
-        this.currentinfo = `${row.form} ${row.lemma} ${row.POS} ${row.gloss} ${row.features}`;
-      }
-    },
+
     exportLexiconTSV() {
-      for (let i = 0; i < this.data.length; i += 1) {
-        if (this.data[i].changed !== 'delete') {
-          if (!('frequency' in this.data[i])) {
-            this.data[i].frequency = '_';
+      for (let i = 0; i < this.lexiconItems.length; i += 1) {
+        if (this.lexiconItems[i].changed !== 'delete') {
+          if (!('frequency' in this.lexiconItems[i])) {
+            this.lexiconItems[i].frequency = '_';
           }
-          this.download.push(this.data[i]);
+          this.download.push(this.lexiconItems[i]);
         }
       }
       const datasample = { data: this.download };
@@ -611,12 +609,12 @@ export default {
       this.download = [];
     },
     exportLexiconJSON() {
-      for (let i = 0; i < this.data.length; i += 1) {
-        if (this.data[i].changed !== 'delete') {
-          if (!('frequency' in this.data[i])) {
-            this.data[i].frequency = '_';
+      for (let i = 0; i < this.lexiconItems.length; i += 1) {
+        if (this.lexiconItems[i].changed !== 'delete') {
+          if (!('frequency' in this.lexiconItems[i])) {
+            this.lexiconItems[i].frequency = '_';
           }
-          this.download.push(this.data[i]);
+          this.download.push(this.lexiconItems[i]);
         }
       }
       const datasample = { data: this.download };

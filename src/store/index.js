@@ -6,6 +6,7 @@ import config from './modules/config';
 import user from './modules/user';
 import grewSearch from './modules/grewSearch';
 import sample from './modules/sample';
+import lexicon from './modules/lexicon';
 
 export default createStore({
   state: {
@@ -105,5 +106,6 @@ export default createStore({
     sample,
     user,
     grewSearch,
+    lexicon,
   },
 });

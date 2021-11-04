@@ -6,8 +6,8 @@
       hide-bottom
       dense
       :title="title"
-      :rows="this.featdata"
-      :columns="this.columns"
+      :rows="featdata"
+      :columns="columns"
       row-key="name"
       :v-model:pagination="pagination"
     >
@@ -177,6 +177,7 @@ export default {
       return 'String'; // if (vs==["String"]) or unknown
     },
     oninput(row) {
+      console.log('KK on input');
       this.$emit('feature-changed');
       this.key += 1;
     },

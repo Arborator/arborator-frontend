@@ -37,15 +37,12 @@ export default {
     set_lexicon_modification_item(state, lexiconItem) {
       state.lexiconModificationItemBefore = lexiconItem;
       state.lexiconModificationItemAfter = lexiconItem;
-      console.log('KK set_lexicon_modification_item lexiconModificationItemBefore', state.lexiconModificationItemBefore);
-      console.log('KK set_lexicon_modification_item lexiconModificationItemAfter', state.lexiconModificationItemAfter);
     },
     set_lexicon_modified_item(state, modifedLexiconItem) {
       state.lexiconModificationItemAfter = modifedLexiconItem;
     },
     show_lexicon_modification_item(state) {
       state.isShowLexiconModification = true;
-      console.log('KK isShowLexiconModification', state.isShowLexiconModification);
     },
   },
   actions: {
@@ -65,7 +62,6 @@ export default {
             lexiconItem.key = computeUniqueKey(lexiconItem);
             lexiconItems.push(lexiconItem);
           }
-          console.log('KK store lexiconItems', lexiconItems);
           commit('show_lexicon_table');
           commit('set_lexicon_items', { lexiconItems });
           state.lexiconLoading = false;
@@ -88,14 +84,13 @@ export default {
       state.isShowLexiconModification = false;
     },
     setLexiconModificationItem({ commit }, lexiconItem) {
-      console.log('KK setModifyingLexicon', lexiconItem);
       commit('set_lexicon_modification_item', lexiconItem);
       commit('show_lexicon_modification_item');
     },
     setLexiconModifiedItem({ commit }, modifiedLexiconItem) {
       commit('set_lexicon_modified_item', modifiedLexiconItem);
     },
-    addCoupleLexiconItemBeforeAfter({ commit, state }) {
+    addCoupleLexiconItemBeforeAfter({ dispatch, state }) {
       const before = state.lexiconModificationItemBefore;
       const after = state.lexiconModificationItemAfter;
       if (deepEqual(before, after)) {
@@ -103,11 +98,15 @@ export default {
         return;
       }
       for (const couple of state.couplesLexiconItemsBeforeAfter) {
-        if ((before.key, couple.before.key)) {
+        if (before.key === couple.before.key) {
           // we already have this entry, rewrite on it
           console.log('KK rewriting');
+          if (deepEqual(couple.before, after)) {
+            console.log('KK After became first before aain, deleting couple');
+            dispatch('removeCoupleLexiconItemBeforeAfter', couple.before.key);
+            return;
+          }
           couple.after = JSON.parse(JSON.stringify(after));
-          console.log('KK state.couplesLexiconItemsBeforeAfter', state.couplesLexiconItemsBeforeAfter);
           return;
         }
         // if (Object.prototype.hasOwnProperty.call(state.couplesLexiconItemsBeforeAfter, couple.before))
@@ -117,7 +116,9 @@ export default {
         before: JSON.parse(JSON.stringify(before)),
         after: JSON.parse(JSON.stringify(after)),
       });
-      console.log('KK state.couplesLexiconItemsBeforeAfter', state.couplesLexiconItemsBeforeAfter);
+    },
+    removeCoupleLexiconItemBeforeAfter({ state }, key) {
+      state.couplesLexiconItemsBeforeAfter = state.couplesLexiconItemsBeforeAfter.filter((couple) => couple.before.key !== key);
     },
   },
 };

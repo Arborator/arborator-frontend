@@ -1,5 +1,4 @@
 export function computeFeatureString(featuresObject) {
-  console.log('KK Call computeFeatureString');
   return Object.entries(featuresObject)
     .map((keyValue) => `${keyValue[0]}=${keyValue[1]}`)
     .join('|');

@@ -33,66 +33,6 @@
       :v-model:pagination="table.pagination"
     >
 
-      <template #header-selection="scope">
-        <q-checkbox v-model="scope.selected" />
-      </template>
-
-      <template #body-selection="scope">
-        <q-checkbox v-model="scope.selected" />
-      </template>
-
-      <template #body-cell-form="props">
-        <q-td key="form" :props="props">
-          <q-badge color="green">
-            {{ props.row.form }}
-          </q-badge>
-        </q-td>
-      </template>
-
-      <template #body-cell-pos="props">
-        <q-td key="pos" :props="props">
-          <q-badge color="red">
-            {{ props.row.pos }}
-          </q-badge>
-        </q-td>
-      </template>
-
-      <template #body-cell-lemma="props">
-        <q-td key="lemma" :props="props">
-          <q-badge color="brown">
-            {{ props.row.lemma }}
-          </q-badge>
-        </q-td>
-      </template>
-
-      <template #body-cell-frequency="props">
-        <q-td key="frequency" :props="props">
-          <q-badge color="orange">
-            {{ props.row.frequency }}
-          </q-badge>
-        </q-td>
-      </template>
-
-      <template #body-cell-gloss="props">
-        <q-td key="gloss" :props="props">
-          <q-badge color="blue">
-            {{ props.row.gloss }}
-          </q-badge>
-        </q-td>
-      </template>
-
-      <template #body-cell-features="props">
-        <q-td key="form" :props="props">
-          <q-badge color="purple">
-            {{
-              Object.entries(props.row.features)
-                .map((keyValue) => `${keyValue[0]}=${keyValue[1]}`)
-                .join('|')
-            }}
-          </q-badge>
-        </q-td>
-      </template>
-
 
       <template v-slot:top-right>
         <div>
@@ -103,7 +43,7 @@
           </q-input>
         </div>
         <div>
-          <q-btn-group flat>
+          <q-btn-group compareWithBefore flat>
             <q-btn color="default" v-show="table.selected.length < 1" flat icon="delete_forever" disable
               ><q-tooltip>Delete seleted samples</q-tooltip></q-btn
             >

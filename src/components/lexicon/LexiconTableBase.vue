@@ -45,93 +45,96 @@
 
     <template #body-cell-form="props">
       <q-td key="form" :props="props">
-        <q-badge color="green">
-          {{ props.row.form }}
-        </q-badge>
+        <span :class="compareWithBefore ? 'added-prop' : ''"> {{ props.row.form }} </span>
         <template v-if="compareWithBefore && lexiconItems.length >= 1">
           <br />
-          <del>
-            {{ myFilter(props.row).form }}
-          </del>
-        </template>
-      </q-td>
-    </template>
-
-    <template #body-cell-pos="props">
-      <q-td key="pos" :props="props">
-        <q-badge color="red">
-          {{ props.row.pos }}
-        </q-badge>
-        <template v-if="compareWithBefore && lexiconItems.length >= 1">
-          <br />
-          <del>
-            {{ myFilter(props.row).pos }}
-          </del>
+          <span class="removed-prop">
+            <del>
+              {{ findOriginalLexiconItem(props.row).form }}
+            </del>
+          </span>
         </template>
       </q-td>
     </template>
 
     <template #body-cell-lemma="props">
       <q-td key="lemma" :props="props">
-        <q-badge color="brown">
-          {{ props.row.lemma }}
-        </q-badge>
+        <span :class="compareWithBefore ? 'added-prop' : ''"> {{ props.row.lemma }} </span>
         <template v-if="compareWithBefore && lexiconItems.length >= 1">
           <br />
-          <del>
-            {{ myFilter(props.row).lemma }}
-          </del>
+          <span class="removed-prop">
+            <del>
+              {{ findOriginalLexiconItem(props.row).lemma }}
+            </del>
+          </span>
         </template>
       </q-td>
     </template>
 
-    <template #body-cell-frequency="props">
-      <q-td key="frequency" :props="props">
-        <q-badge color="orange">
-          {{ props.row.frequency }}
-        </q-badge>
+    <template #body-cell-pos="props">
+      <q-td key="pos" :props="props">
+        <span :class="compareWithBefore ? 'added-prop' : ''"> {{ props.row.pos }} </span>
         <template v-if="compareWithBefore && lexiconItems.length >= 1">
           <br />
-          <del>
-            {{ myFilter(props.row).frequency }}
-          </del>
+          <span class="removed-prop">
+            <del>
+              {{ findOriginalLexiconItem(props.row).pos }}
+            </del>
+          </span>
         </template>
       </q-td>
     </template>
-
     <template #body-cell-gloss="props">
       <q-td key="gloss" :props="props">
-        <q-badge color="blue">
-          {{ props.row.gloss }}
-        </q-badge>
+        <span :class="compareWithBefore ? 'added-prop' : ''"> {{ props.row.gloss }} </span>
         <template v-if="compareWithBefore && lexiconItems.length >= 1">
           <br />
-          <del>
-            {{ myFilter(props.row).gloss }}
-          </del>
+          <span class="removed-prop">
+            <del>
+              {{ findOriginalLexiconItem(props.row).gloss }}
+            </del>
+          </span>
         </template>
       </q-td>
     </template>
-
     <template #body-cell-features="props">
-      <q-td key="form" :props="props">
-        <q-badge color="purple"> {{ computeFeatureStringWrapper(props.row.features) }} </q-badge>
+      <q-td key="features" :props="props">
+        <span :class="compareWithBefore ? 'added-prop' : ''"> {{ computeFeatureStringWrapper(props.row.features) }} </span>
+        <template v-if="compareWithBefore && lexiconItems.length >= 1">
+          <br />
+          <span class="removed-prop">
+            <del>
+              {{ computeFeatureStringWrapper(findOriginalLexiconItem(props.row).features) }}
+            </del>
+          </span>
+        </template>
       </q-td>
-      <template v-if="compareWithBefore && lexiconItems.length >= 1">
-        <br />
-        <del>
-          {{ computeFeatureStringWrapper(myFilter(props.row).form) }}
-        </del>
-      </template>
     </template>
+    <template #body-cell-frequency="props">
+      <q-td key="frequency" :props="props">
+        {{ props.row.frequency }}
+      </q-td>
+    </template>
+
     <template v-slot:top-right>
       <div>
         <q-input borderless dense debounce="300" v-model="table.filter" placeholder="Search">
           <template v-slot:append>
             <q-icon name="search" />
           </template>
-        </q-input></div
-    ></template>
+        </q-input>
+      </div>
+      <div>
+        <q-btn-group v-if="compareWithBefore" flat>
+          <!-- <q-btn color="default" v-show="table.selected.length < 1" flat icon="delete_forever" disable
+            ><q-tooltip>Delete seleted samples</q-tooltip></q-btn
+          > -->
+          <q-btn color="default" @click="deleteSelected()" :disable="table.selected.length === 0" flat icon-right="delete_forever"
+            ><q-tooltip>Unstage selected lexicon changes</q-tooltip></q-btn
+          >
+        </q-btn-group>
+      </div>
+    </template>
 
     <!-- <template v-slot:body-cell="props">
         <td v-if="props.row.changed === 'replace'" style="background: mediumseagreen">
@@ -317,45 +320,9 @@ export default {
       return computeFeatureString(featureObj);
     },
     onRowClick(evt, row) {
-      console.log('KK onRowClick', row);
-      //   this.someFeatureChanged = false;
-      //   this.infotochange = '';
-      //   this.currentword = row.form;
-      //   this.openFeatures = true;
-      // const formattedItem = {};
-      // formattedItem.form = [{ a: 'Form', v: row.form }];
-      // formattedItem.lemma = [{ a: 'Lemma', v: row.lemma }];
-      // formattedItem.pos = [{ a: 'POS', v: row.pos }];
-      // formattedItem.gloss = [{ a: 'Gloss', v: row.gloss }];
-      // formattedItem.features = [];
-      // for (const keyValue of Object.entries(row.features)) {
-      //   formattedItem.features.push({
-      //     a: keyValue[0],
-      //     v: keyValue[1],
-      //   });
-      // }
-
       this.$store.dispatch('lexicon/setLexiconModificationItem', row);
-      //   this.featTable.changed = row.changed;
-      //   if (row.features === '_') {
-      //     this.featTable.featl = [];
-      //   } else {
-      //     for (const a in row.features.split('|')) {
-      //       if (Object.prototype.hasOwnProperty.call(row.features.split('|'), a)) {
-      //         this.featTable.featl.push({
-      //           a: row.features.split('|')[a].split('=')[0],
-      //           v: row.features.split('|')[a].split('=')[1],
-      //         });
-      //       }
-      //     }
-      //   }
-      //   if (row.features === '_' || row.features === '') {
-      //     this.currentinfo = `${row.form} ${row.lemma} ${row.POS} ${row.gloss} _`;
-      //   } else {
-      //     this.currentinfo = `${row.form} ${row.lemma} ${row.POS} ${row.gloss} ${row.features}`;
-      //   }
     },
-    myFilter({ key }) {
+    findOriginalLexiconItem({ key }) {
       const matchLexiconItem = this.lexiconItems.filter((lexiconItem) => {
         if (lexiconItem.key === key) {
           return true;
@@ -364,6 +331,22 @@ export default {
       })[0];
       return matchLexiconItem;
     },
+    deleteSelected() {
+      for (const selectedModifiedItem of this.table.selected) {
+        this.$store.dispatch('lexicon/removeCoupleLexiconItemBeforeAfter', selectedModifiedItem.key);
+      }
+      this.table.selected = [];
+    },
   },
 };
 </script>
+
+<style scoped>
+.added-prop {
+  color: #33aa28;
+}
+
+.removed-prop {
+  color: #ff0000;
+}
+</style>

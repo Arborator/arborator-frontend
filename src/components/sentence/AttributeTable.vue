@@ -177,7 +177,6 @@ export default {
       return 'String'; // if (vs==["String"]) or unknown
     },
     oninput(row) {
-      console.log('KK on input');
       this.$emit('feature-changed');
       this.key += 1;
     },

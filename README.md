@@ -37,6 +37,7 @@ It should works without any changes on the backend. So you can continue to use t
 - [ ] <adapting> Page Klang.vue (need to provide data_dev in backend to see if working)
 - [ ] <adapting> Page KlangProject.vue (same as Klang.vue above)
 - [ ] <adapting> Page KlangSample.vue (same as Klang.vue above)
+- [ ] <broken> when refresh page, we should not be redirected to home page, but stay on the sama page
   ***
 - [x] fix breadcrumbs not working
 - [x] <estetic> Some global app styling doesn't work (we can see a light blue instead of the purple arboragrew theme, ;aybe our stylus loader/compiler is not working. )

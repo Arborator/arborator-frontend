@@ -32,13 +32,14 @@ It should works without any changes on the backend. So you can continue to use t
 ### TODO LIST
 
 - [ ] <estetic> improve estetics of our code mirror instances (font, color, font-size)
-- [ ] <estetic> Some global app styling doesn't work (we can see a light blue instead of the purple arboragrew theme, ;aybe our stylus loader/compiler is not working. )
 - [ ] <broken> When modifying a lexic in lexicon lila code, we have the error : `no modification`
 - [ ] <adapting> Page Settings.vue (name modification doesnt work)
 - [ ] <adapting> Page Klang.vue (need to provide data_dev in backend to see if working)
 - [ ] <adapting> Page KlangProject.vue (same as Klang.vue above)
 - [ ] <adapting> Page KlangSample.vue (same as Klang.vue above)
   ***
+- [x] fix breadcrumbs not working
+- [x] <estetic> Some global app styling doesn't work (we can see a light blue instead of the purple arboragrew theme, ;aybe our stylus loader/compiler is not working. )
 - [x] When importing conll files in a project, we don't see the userId convertor form
 - [x] fix codemirror 2 way binding (in the differents 4 instances of CM we have)
 - [x] Make statics files serving work (it doesn't work when referencing to them with `icon="img:svg/g.svg"` in a <q-btn> for instance)

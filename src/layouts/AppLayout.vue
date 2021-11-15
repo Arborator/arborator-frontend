@@ -18,27 +18,27 @@
           style="max-height: 20px; max-width: 70vh; overflow: y"
         >
           <q-breadcrumbs-el v-if="notHome" icon="home" to="/" />
-          <q-breadcrumbs-el v-if="$route.path.startsWith('/projects/')" icon="view_module" to="/projects" />
+          <q-breadcrumbs-el v-if="$route.path.startsWith('/projects')" icon="view_module" to="/projects" />
           <q-breadcrumbs-el
-            v-if="$route.params.projectname !== null"
+            v-if="$route.params.projectname"
             :label="$route.params.projectname"
             icon="fas fa-tree"
             :to="'/projects/' + $route.params.projectname"
           />
           <q-breadcrumbs-el
-            v-if="$route.params.samplename !== null && $route.params.projectname !== null"
+            v-if="$route.params.samplename && $route.params.projectname"
             :label="$route.params.samplename"
             icon="assignment"
             :to="'/projects/' + $route.params.projectname + '/' + $route.params.samplename"
           />
           <q-breadcrumbs-el v-if="$route.path.startsWith('/klang')" icon="music_note" :to="'/klang'" />
           <q-breadcrumbs-el
-            v-if="$route.params.kprojectname !== null"
+            v-if="$route.params.kprojectname"
             :label="$route.params.kprojectname"
             :to="'/klang/' + $route.params.kprojectname"
             icon="view_module"
           />
-          <q-breadcrumbs-el v-if="$route.params.ksamplename !== null" :label="$route.params.ksamplename" />
+          <q-breadcrumbs-el v-if="$route.params.ksamplename" :label="$route.params.ksamplename" />
         </q-breadcrumbs>
         <q-space />
         <div class="q-gutter-sm row items-center no-wrap" size="4rem">

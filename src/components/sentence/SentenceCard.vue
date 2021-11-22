@@ -515,11 +515,10 @@ export default {
               this.reactiveSentencesObj[changedConllUser].fromSentenceConll(exportedConll);
             } else {
               // user still don't have a tree for this sentence, creating it.
-              this.$set(this.sentenceData.conlls, changedConllUser, exportedConll);
+              this.sentenceData.conlls[changedConllUser] = exportedConll;
 
               const reactiveSentence = new ReactiveSentence();
-              reactiveSentence.fromSentenceConll(exportedConll);
-              this.$set(this.reactiveSentencesObj, changedConllUser, reactiveSentence);
+              this.reactiveSentencesObj[changedConllUser] = reactiveSentence;
             }
 
             if (this.openTabUser !== changedConllUser) {

@@ -9,26 +9,26 @@
 // to match your app's branding.
 // Tip: Use the "Theme Builder" on Quasar's documentation website.
 
-$primary   = #4a2769
-$secondary = #4a45f5
-$accent    = #713ad6
+$primary   : #4a2769;
+$secondary : #4a45f5;
+$accent    : #713ad6;
 // #713ad6
 // #dd137b
 
-$positive  = #21BA45
-$negative  = #C10015
-$info      = #31CCEC
-$warning   = #F2C037
+$positive  : #21BA45;
+$negative  : #C10015;
+$info      : #31CCEC;
+$warning   : #F2C037;
 
 
-dprimary   = #4a2769
-dsecondary = #4a45f5
-daccent    = $purple-14
+$dprimary   : #4a2769;
+$dsecondary : #4a45f5;
+$daccent    : purple-14;
 
-dpositive = $positive
-dnegative = $red-13
-dinfo     = $info
-dwarning  = $amber-13
+$dpositive : $positive;
+$dnegative : red-13;
+$dinfo     : $info;
+$dwarning  : amber-13;
 
 
-// $dimmed-background       ?= rgba(0, 0, 0, .1)
+// $dimmed-background       ?: rgba(0, 0, 0, .1)

@@ -30,7 +30,7 @@ npm install
 It should works without any changes on the backend. So you can continue to use the same dev backend for both version of Arborator frontend
 
 ### TODO LIST
-
+- [ ] <fix>Lexicon : have only one way to delete a feature 
 - [ ] <estetic> improve estetics of our code mirror instances (font, color, font-size)
 - [ ] <broken> When modifying a lexic in lexicon lila code, we have the error : `no modification`
 - [ ] <adapting> Page Settings.vue (name modification doesnt work)
@@ -39,6 +39,7 @@ It should works without any changes on the backend. So you can continue to use t
 - [ ] <adapting> Page KlangSample.vue (same as Klang.vue above)
 - [ ] <broken> when refresh page, we should not be redirected to home page, but stay on the sama page
   ***
+- [X] <broken>if user save a tree and has no tree yet, we have ERROR this4.$set is undefined  
 - [x] fix breadcrumbs not working
 - [x] <estetic> Some global app styling doesn't work (we can see a light blue instead of the purple arboragrew theme, ;aybe our stylus loader/compiler is not working. )
 - [x] When importing conll files in a project, we don't see the userId convertor form

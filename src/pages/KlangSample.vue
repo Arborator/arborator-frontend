@@ -17,6 +17,9 @@
         <span class="line-number" dense>
           {{ i }}
         </span>
+        <q-badge v-if="speakers[i] && speakers[i]=='L1'" :label="speakers[i]" dense outline style="height:3px" color="primary" rounded />
+        <q-badge v-if="speakers[i] && speakers[i]!='L1'" :label="speakers[i]" dense outline style="height:3px" :color="'purple-'+speakers[i].slice(-1)" rounded />
+  
         <div class="col row q-pa-none">
           <span
             class="justify-end q-pa-none align-right"
@@ -364,6 +367,7 @@ export default {
       waveWidth: 2500,
       canvwidth: 0,
       conll: {},
+      speakers: [],
       segments: {},
       diffsegments: {},
       currentTime: -1,
@@ -659,7 +663,8 @@ export default {
       api
         .getOriginalConll(this.kprojectname, this.ksamplename)
         .then((response) => {
-          this.conll["original"] = response.data;
+          this.conll["original"] = response.data.tokens;
+          this.speakers = response.data.speakers;
           if (this.isLoggedIn) {
             if (!this.admin) {
               api

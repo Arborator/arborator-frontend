@@ -34,9 +34,6 @@ It should works without any changes on the backend. So you can continue to use t
 - [ ] <estetic> improve estetics of our code mirror instances (font, color, font-size)
 - [ ] <broken> When modifying a lexic in lexicon lila code, we have the error : `no modification`
 - [ ] <adapting> Page Settings.vue (name modification doesnt work)
-- [ ] <adapting> Page Klang.vue (need to provide data_dev in backend to see if working)
-- [ ] <adapting> Page KlangProject.vue (same as Klang.vue above)
-- [ ] <adapting> Page KlangSample.vue (same as Klang.vue above)
 - [ ] <broken> when refresh page, we should not be redirected to home page, but stay on the sama page
   ***
 - [X] <broken>if user save a tree and has no tree yet, we have ERROR this4.$set is undefined  
@@ -45,10 +42,13 @@ It should works without any changes on the backend. So you can continue to use t
 - [x] When importing conll files in a project, we don't see the userId convertor form
 - [x] fix codemirror 2 way binding (in the differents 4 instances of CM we have)
 - [x] Make statics files serving work (it doesn't work when referencing to them with `icon="img:svg/g.svg"` in a <q-btn> for instance)
-- [x] Page AppLayout.vue
-- [x] Page ProjectsHub.vue
-- [x] Page Project.vue
-- [x] Page Sample.vue
+- [x] <adapting> Page AppLayout.vue
+- [x] <adapting> Page ProjectsHub.vue
+- [x] <adapting> Page Project.vue
+- [x] <adapting> Page Sample.vue
+- [X] <adapting> Page KlangProject.vue (same as Klang.vue above)
+- [X] <adapting> Page KlangSample.vue (same as Klang.vue above)
+- [X] <adapting> Page Klang.vue (need to provide data_dev in backend to see if working)
 - [x] vue3 codemirror
 - [x] vue3 local storage
 - [x] vue3 cookies

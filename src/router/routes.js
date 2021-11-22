@@ -16,9 +16,8 @@ const routes = [
       { path: '/projects/:projectname/:samplename/:nr/:user', component: () => import('src/pages/Sample.vue'), props: true },
       { path: 'settings', component: () => import('src/pages/Settings.vue'), meta: { requiresAuth: true } },
       { path: '/klang', component: () => import('src/pages/Klang.vue') },
-      // { path: '/klang/:kprojectname', component: () => import('src/pages/KlangProject.vue'), props: true},
-      // { path: '/klang/:kprojectname/:ksamplename', component: () => import('src/pages/KlangSample.vue'), props: true},
-      // { path: '/statics'} // Ignore or pass on to server }, TO DELETE ???
+      { path: '/klang/:kprojectname', component: () => import('src/pages/KlangProject.vue'), props: true },
+      { path: '/klang/:kprojectname/:ksamplename', component: () => import('src/pages/KlangSample.vue'), props: true },
     ],
   },
   // Always leave this as last one,

@@ -242,7 +242,6 @@ import app from '../App.vue';
 const JSZip = require('jszip');
 const Diff = require('diff');
 
-app.use(AudioVisual);
 export default {
   props: ['kprojectname', 'ksamplename'],
   data() {

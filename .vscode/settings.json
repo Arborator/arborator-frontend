@@ -20,5 +20,8 @@
     },
     "editor.suggest.insertMode": "replace"
   },
-  "editor.formatOnSave": true
+  "editor.formatOnSave": true,
+  "[vue]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  }
 }

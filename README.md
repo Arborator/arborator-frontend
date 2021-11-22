@@ -30,6 +30,7 @@ npm install
 It should works without any changes on the backend. So you can continue to use the same dev backend for both version of Arborator frontend
 
 ### TODO LIST
+- [ ] <broken> re-add lexicon import and export logic (in LexiconTableBase.vue ? before was in LexiconPanel.vue) and compareLexicon.vue
 - [ ] <fix>Lexicon : have only one way to delete a feature 
 - [ ] <estetic> improve estetics of our code mirror instances (font, color, font-size)
 - [ ] <broken> When modifying a lexic in lexicon lila code, we have the error : `no modification`

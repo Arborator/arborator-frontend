@@ -6,8 +6,8 @@
       hide-bottom
       dense
       :title="title"
-      :rows="this.featdata"
-      :columns="this.columns"
+      :rows="featdata"
+      :columns="columns"
       row-key="name"
       :v-model:pagination="pagination"
     >

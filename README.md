@@ -31,6 +31,7 @@ It should works without any changes on the backend. So you can continue to use t
 
 ### TODO LIST
 
+- [ ] <broken> re-add lexicon import and export logic (in LexiconTableBase.vue ? before was in LexiconPanel.vue) and compareLexicon.vue
 - [ ] <estetic> improve estetics of our code mirror instances (font, color, font-size)
 - [ ] <estetic> Some global app styling doesn't work (we can see a light blue instead of the purple arboragrew theme, ;aybe our stylus loader/compiler is not working. )
 - [ ] <broken> When modifying a lexic in lexicon lila code, we have the error : `no modification`

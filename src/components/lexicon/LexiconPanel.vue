@@ -47,9 +47,6 @@
             <q-btn color="default" v-show="table.selected.length < 1" flat icon="delete_forever" disable
               ><q-tooltip>Delete seleted samples</q-tooltip></q-btn
             >
-            <q-btn color="default" v-show="table.selected.length !== 0" flat icon-right="delete_forever" @click="deleteSelected"
-              ><q-tooltip>Delete seleted samples</q-tooltip></q-btn
-            >
             <q-btn color="default" flat label="tsv" @click="exportLexiconTSV()" :loading="tableExporting"
               ><q-tooltip :delay="300" content-class="text-white bg-primary">{{ $t('projectView.tooltipExportLexicon[0]') }}</q-tooltip></q-btn
             >
@@ -69,13 +66,13 @@
         </div>
       </template>
     </q-table> -->
-    <div v-show="CompareDics === true">
+    <!-- <div v-show="CompareDics === true">
       <q-space />
       <q-card>
         <q-separator />
         <CompareLexicon :data="this.dics" :sampleId="this.sampleId"> </CompareLexicon>
       </q-card>
-    </div>
+    </div> -->
     <!-- <q-dialog v-model="openFeatures">
       <q-card>
         <q-bar class="bg-primary text-white">
@@ -207,7 +204,7 @@ import api from '../../boot/backend-api';
 import LexiconTableBase from './LexiconTableBase';
 import GrewSearch from '../grewSearch/GrewSearch';
 import LexiconModificationDialog from './LexiconModificationDialog';
-import CompareLexicon from './CompareLexicon';
+// import CompareLexicon from './CompareLexicon';
 import grewTemplates from '../../assets/grew-templates.json';
 
 export default {
@@ -215,7 +212,7 @@ export default {
   props: ['sampleId'],
   components: {
     GrewSearch,
-    CompareLexicon,
+    // CompareLexicon,
     LexiconTableBase,
     LexiconModificationDialog,
   },
@@ -353,232 +350,137 @@ export default {
     });
   },
   methods: {
-    addValidator(Validator) {
-      for (let i = 0; i < this.lexiconItems.length; i += 1) {
-        if (this.lexiconItems[i].changed !== 'delete') {
-          if (!('frequency' in this.lexiconItems[i])) {
-            this.lexiconItems[i].frequency = '_';
-          }
-          this.uploadLexicon.push(this.lexiconItems[i]);
-        }
-      }
-      const datasample = { data: this.uploadLexicon, validator: Validator };
-      api
-        .addValidator(this.$route.params.projectname, datasample)
-        .then((response) => {
-          this.CompareDics = true;
-          this.dics = response.data.dics;
-        })
-        .catch((error) => {
-          // this.$q.notify({message:`${error}`, color:'negative'});
-          this.$store.dispatch('notifyError', { error });
-          return [];
-        });
-      this.uploadLexicon = [];
-    },
-    upload() {
-      const form = new FormData();
-      this.uploadSample.submitting = true;
-      if (this.uploadSample.attachment.file.length === 1) {
-        for (const file of this.uploadSample.attachment.file) {
-          form.append('files', file);
-          if (file.type === ('text/tab-separated-values' || 'tsv')) {
-            this.tsvOK = true;
-          }
-        }
-        if (this.tsvOK === true) {
-          api
-            .uploadValidator(this.$route.params.projectname, form)
-            .then((response) => {
-              this.uploadSample.attachment.file = [];
-              this.uploadDial = false;
-              this.addValidator(response.data.validator);
-              this.uploadSample.submitting = false;
-            })
-            .catch((error) => {
-              if (error.response) {
-                error.response.message = error.response.data.message;
-                error.permanent = true;
-              }
-              error.caption = 'Check your file please!';
-              this.uploadSample.submitting = false;
-              this.uploadDial = false;
-              this.$store.dispatch('notifyError', { error });
-            });
-          this.tsvOK = false;
-        } else {
-          this.showNotif('top', 'onlyTSVFile');
-        }
-      } else {
-        this.showNotif('top', 'onlyOneFile');
-      }
-    },
-    getRulesGrew() {
-      console.log('getRulesGrew() (LexiconTable.vue)');
-      if (this.RulesGrew.length !== 0) {
-        let listSampleIds = '';
-        for (const i in this.sampleId) {
-          if (i < this.sampleId.length - 1) {
-            listSampleIds += `${this.sampleId[i].sample_name}, `;
-          } else {
-            listSampleIds += this.sampleId[i].sample_name;
-          }
-        }
-        const datasample = { data: this.RulesGrew };
-        api.transformation_grew(this.$route.params.projectname, datasample).then((response) => {
-          if (this.queries.slice(-1)[0].name !== 'Correct lexicon') {
-            this.queries.push({
-              name: 'Correct lexicon',
-              pattern: response.data.rules,
-              commands: ' ',
-              sampleIds: listSampleIds,
-            });
-          } else {
-            this.queries.slice(-1)[0].pattern = response.data.rules;
-            this.queries.slice(-1)[0].commands = ' ';
-            this.queries.slice(-1)[0].sampleIds = listSampleIds;
-          }
-        });
-        this.searchDialog = true;
-      } else {
-        this.showNotif('top', 'noRuletoApply');
-      }
-    },
-    addEntry() {
-      if (this.infotochange !== '') {
-        this.data[this.indexfeat].changed = 'delete';
-        const newRow = {
-          form: this.featTable.form[0].v,
-          lemma: this.featTable.lemma[0].v,
-          POS: this.featTable.pos[0].v,
-          features: this.temp_features,
-          gloss: this.featTable.gloss[0].v,
-          changed: 'add',
-          key: this.featTable.form[0].v + this.featTable.lemma[0].v + this.featTable.pos[0].v + this.temp_features + this.featTable.gloss[0].v,
-        };
-        this.lexiconItems.splice(this.indexfeat + 1, 0, newRow);
-      } else {
-        this.showNotif('top', 'noModification');
-      }
-    },
-    informFeatureChanged() {
-      this.someFeatureChanged = true;
-      if (this.featTable.featl.length === 0 || (this.featTable.featl.length === 1 && this.featTable.featl[0].a === '')) {
-        this.infotochange = `${this.featTable.form[0].v} ${this.featTable.lemma[0].v} ${this.featTable.pos[0].v} ${this.featTable.gloss[0].v} _`;
-      } else if (this.featTable.featl.length === 1) {
-        this.infotochange = `${this.featTable.form[0].v} ${this.featTable.lemma[0].v} ${this.featTable.pos[0].v} ${this.featTable.gloss[0].v} ${this.featTable.featl[0].a}=${this.featTable.featl[0].v}`;
-        this.temp_features = `${this.featTable.featl[0].a}=${this.featTable.featl[0].v}`;
-      } else {
-        this.infotochange = `${this.featTable.form[0].v} ${this.featTable.lemma[0].v} ${this.featTable.pos[0].v} ${this.featTable.gloss[0].v} `;
-        for (const a in this.featTable.featl) {
-          if (Object.prototype.hasOwnProperty.call(this.featTable.featl, a)) {
-            this.tempfeat += `${this.featTable.featl[a].a}=${this.featTable.featl[a].v}`;
-            if (a < this.featTable.featl.length - 1) {
-              this.tempfeat += '|';
-            }
-          }
-        }
-        this.infotochange += this.tempfeat;
-        this.temp_features += this.tempfeat;
-      }
-      this.tempfeat = '';
-    },
+    // upload() {
+    //   const form = new FormData();
+    //   this.uploadSample.submitting = true;
+    //   if (this.uploadSample.attachment.file.length === 1) {
+    //     for (const file of this.uploadSample.attachment.file) {
+    //       form.append('files', file);
+    //       if (file.type === ('text/tab-separated-values' || 'tsv')) {
+    //         this.tsvOK = true;
+    //       }
+    //     }
+    //     if (this.tsvOK === true) {
+    //       api
+    //         .uploadValidator(this.$route.params.projectname, form)
+    //         .then((response) => {
+    //           this.uploadSample.attachment.file = [];
+    //           this.uploadDial = false;
+    //           this.addValidator(response.data.validator);
+    //           this.uploadSample.submitting = false;
+    //         })
+    //         .catch((error) => {
+    //           if (error.response) {
+    //             error.response.message = error.response.data.message;
+    //             error.permanent = true;
+    //           }
+    //           error.caption = 'Check your file please!';
+    //           this.uploadSample.submitting = false;
+    //           this.uploadDial = false;
+    //           this.$store.dispatch('notifyError', { error });
+    //         });
+    //       this.tsvOK = false;
+    //     } else {
+    //       this.showNotif('top', 'onlyTSVFile');
+    //     }
+    //   } else {
+    //     this.showNotif('top', 'onlyOneFile');
+    //   }
+    // },
+    // getRulesGrew() {
+    //   console.log('getRulesGrew() (LexiconTable.vue)');
+    //   if (this.RulesGrew.length !== 0) {
+    //     let listSampleIds = '';
+    //     for (const i in this.sampleId) {
+    //       if (i < this.sampleId.length - 1) {
+    //         listSampleIds += `${this.sampleId[i].sample_name}, `;
+    //       } else {
+    //         listSampleIds += this.sampleId[i].sample_name;
+    //       }
+    //     }
+    //     const datasample = { data: this.RulesGrew };
+    //     api.transformation_grew(this.$route.params.projectname, datasample).then((response) => {
+    //       if (this.queries.slice(-1)[0].name !== 'Correct lexicon') {
+    //         this.queries.push({
+    //           name: 'Correct lexicon',
+    //           pattern: response.data.rules,
+    //           commands: ' ',
+    //           sampleIds: listSampleIds,
+    //         });
+    //       } else {
+    //         this.queries.slice(-1)[0].pattern = response.data.rules;
+    //         this.queries.slice(-1)[0].commands = ' ';
+    //         this.queries.slice(-1)[0].sampleIds = listSampleIds;
+    //       }
+    //     });
+    //     this.searchDialog = true;
+    //   } else {
+    //     this.showNotif('top', 'noRuletoApply');
+    //   }
+    // },
 
-    replaceEntry() {
-      if (this.infotochange !== '') {
-        this.data[this.indexfeat].changed = 'delete';
-        const newRow = {
-          form: this.featTable.form[0].v,
-          lemma: this.featTable.lemma[0].v,
-          POS: this.featTable.pos[0].v,
-          features: this.temp_features,
-          gloss: this.featTable.gloss[0].v,
-          changed: 'replace',
-          key: this.featTable.form[0].v + this.featTable.lemma[0].v + this.featTable.pos[0].v + this.temp_features + this.featTable.gloss[0].v,
-        };
-        this.lexiconItems.splice(this.indexfeat + 1, 0, newRow);
-        if (this.infotochange !== '') {
-          this.RulesGrew.push({
-            currentInfo: this.currentinfo,
-            info2Change: this.infotochange,
-          });
-        }
-      } else {
-        this.showNotif('top', 'noModification');
-      }
-    },
-
-    deleteSelected() {
-      const self = this;
-      this.table.selected.filter((item) => {
-        self.data.splice(self.data.indexOf(item), 1);
-        return item;
-      });
-      this.table.selected = [];
-    },
-
-    exportLexiconTSV() {
-      for (let i = 0; i < this.lexiconItems.length; i += 1) {
-        if (this.lexiconItems[i].changed !== 'delete') {
-          if (!('frequency' in this.lexiconItems[i])) {
-            this.lexiconItems[i].frequency = '_';
-          }
-          this.download.push(this.lexiconItems[i]);
-        }
-      }
-      const datasample = { data: this.download };
-      api
-        .exportLexiconTSV(this.$route.params.projectname, datasample)
-        .then((response) => {
-          const url = window.URL.createObjectURL(new Blob([response.data], { type: 'text/tab-separated-values' }));
-          const link = document.createElement('a');
-          link.href = url;
-          link.setAttribute('download', `lexicon_${this.$route.params.projectname}.tsv`);
-          document.body.appendChild(link);
-          link.click();
-          document.body.removeChild(link);
-          this.table.exporting = false;
-          this.$q.notify({ message: 'File downloaded' });
-          return [];
-        })
-        .catch((error) => {
-          // this.$q.notify({message:`${error}`, color:'negative'});
-          this.$store.dispatch('notifyError', { error });
-          return [];
-        });
-      this.download = [];
-    },
-    exportLexiconJSON() {
-      for (let i = 0; i < this.lexiconItems.length; i += 1) {
-        if (this.lexiconItems[i].changed !== 'delete') {
-          if (!('frequency' in this.lexiconItems[i])) {
-            this.lexiconItems[i].frequency = '_';
-          }
-          this.download.push(this.lexiconItems[i]);
-        }
-      }
-      const datasample = { data: this.download };
-      api
-        .exportLexiconJSON(this.$route.params.projectname, datasample)
-        .then((response) => {
-          const url = window.URL.createObjectURL(new Blob([response.data], { type: 'application/json' }));
-          const link = document.createElement('a');
-          link.href = url;
-          link.setAttribute('download', `lexicon_${this.$route.params.projectname}.json`);
-          document.body.appendChild(link);
-          link.click();
-          document.body.removeChild(link);
-          this.table.exporting = false;
-          this.$q.notify({ message: 'File downloaded' });
-          return [];
-        })
-        .catch((error) => {
-          // this.$q.notify({message:`${error}`, color:'negative'});
-          this.$store.dispatch('notifyError', { error });
-          return [];
-        });
-      this.download = [];
-    },
+    // exportLexiconTSV() {
+    //   for (let i = 0; i < this.lexiconItems.length; i += 1) {
+    //     if (this.lexiconItems[i].changed !== 'delete') {
+    //       if (!('frequency' in this.lexiconItems[i])) {
+    //         this.lexiconItems[i].frequency = '_';
+    //       }
+    //       this.download.push(this.lexiconItems[i]);
+    //     }
+    //   }
+    //   const datasample = { data: this.download };
+    //   api
+    //     .exportLexiconTSV(this.$route.params.projectname, datasample)
+    //     .then((response) => {
+    //       const url = window.URL.createObjectURL(new Blob([response.data], { type: 'text/tab-separated-values' }));
+    //       const link = document.createElement('a');
+    //       link.href = url;
+    //       link.setAttribute('download', `lexicon_${this.$route.params.projectname}.tsv`);
+    //       document.body.appendChild(link);
+    //       link.click();
+    //       document.body.removeChild(link);
+    //       this.table.exporting = false;
+    //       this.$q.notify({ message: 'File downloaded' });
+    //       return [];
+    //     })
+    //     .catch((error) => {
+    //       // this.$q.notify({message:`${error}`, color:'negative'});
+    //       this.$store.dispatch('notifyError', { error });
+    //       return [];
+    //     });
+    //   this.download = [];
+    // },
+    // exportLexiconJSON() {
+    //   for (let i = 0; i < this.lexiconItems.length; i += 1) {
+    //     if (this.lexiconItems[i].changed !== 'delete') {
+    //       if (!('frequency' in this.lexiconItems[i])) {
+    //         this.lexiconItems[i].frequency = '_';
+    //       }
+    //       this.download.push(this.lexiconItems[i]);
+    //     }
+    //   }
+    //   const datasample = { data: this.download };
+    //   api
+    //     .exportLexiconJSON(this.$route.params.projectname, datasample)
+    //     .then((response) => {
+    //       const url = window.URL.createObjectURL(new Blob([response.data], { type: 'application/json' }));
+    //       const link = document.createElement('a');
+    //       link.href = url;
+    //       link.setAttribute('download', `lexicon_${this.$route.params.projectname}.json`);
+    //       document.body.appendChild(link);
+    //       link.click();
+    //       document.body.removeChild(link);
+    //       this.table.exporting = false;
+    //       this.$q.notify({ message: 'File downloaded' });
+    //       return [];
+    //     })
+    //     .catch((error) => {
+    //       // this.$q.notify({message:`${error}`, color:'negative'});
+    //       this.$store.dispatch('notifyError', { error });
+    //       return [];
+    //     });
+    //   this.download = [];
+    // },
     showNotif(position, alert) {
       const { color, textColor, multiLine, icon, message, avatar, actions } = this.alerts[alert];
       // const buttonColor = color ? 'white' : void 0;

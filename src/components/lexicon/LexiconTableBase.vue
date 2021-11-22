@@ -126,9 +126,7 @@
       </div>
       <div>
         <q-btn-group v-if="compareWithBefore" flat>
-          <!-- <q-btn color="default" v-show="table.selected.length < 1" flat icon="delete_forever" disable
-            ><q-tooltip>Delete seleted samples</q-tooltip></q-btn
-          > -->
+          <q-btn color="default" @click="getRulesGrew()" flat icon="compare_arrows"><q-tooltip>Generate Grew Rule</q-tooltip></q-btn>
           <q-btn color="default" @click="deleteSelected()" :disable="table.selected.length === 0" flat icon-right="delete_forever"
             ><q-tooltip>Unstage selected lexicon changes</q-tooltip></q-btn
           >
@@ -159,6 +157,7 @@
 import { computed } from 'vue';
 import { mapGetters } from 'vuex';
 import { computeFeatureString } from './lexiconHelper';
+import api from '../../boot/backend-api';
 
 export default {
   name: 'LexiconTable',
@@ -337,6 +336,68 @@ export default {
       }
       this.table.selected = [];
     },
+    getRulesGrew() {
+      this.$store.dispatch('grewSearch/switch_grew_dialog', true);
+      // TODO : handle grew command generation logic
+    },
+
+    // exportLexiconTSV() {
+    //   for (let i = 0; i < this.passedLexiconItems.length; i += 1) {
+    //     this.download.push(this.passedLexiconItems[i]);
+    //   }
+    //   const datasample = { data: this.download };
+    //   api
+    //     .exportLexiconTSV(this.$route.params.projectname, datasample)
+    //     .then((response) => {
+    //       const url = window.URL.createObjectURL(new Blob([response.data], { type: 'text/tab-separated-values' }));
+    //       const link = document.createElement('a');
+    //       link.href = url;
+    //       link.setAttribute('download', `lexicon_${this.$route.params.projectname}.tsv`);
+    //       document.body.appendChild(link);
+    //       link.click();
+    //       document.body.removeChild(link);
+    //       this.table.exporting = false;
+    //       this.$q.notify({ message: 'File downloaded' });
+    //       return [];
+    //     })
+    //     .catch((error) => {
+    //       // this.$q.notify({message:`${error}`, color:'negative'});
+    //       this.$store.dispatch('notifyError', { error });
+    //       return [];
+    //     });
+    //   this.download = [];
+    // },
+    // exportLexiconJSON() {
+    //   for (let i = 0; i < this.lexiconItems.length; i += 1) {
+    //     if (this.lexiconItems[i].changed !== 'delete') {
+    //       if (!('frequency' in this.lexiconItems[i])) {
+    //         this.lexiconItems[i].frequency = '_';
+    //       }
+    //       this.download.push(this.lexiconItems[i]);
+    //     }
+    //   }
+    //   const datasample = { data: this.download };
+    //   api
+    //     .exportLexiconJSON(this.$route.params.projectname, datasample)
+    //     .then((response) => {
+    //       const url = window.URL.createObjectURL(new Blob([response.data], { type: 'application/json' }));
+    //       const link = document.createElement('a');
+    //       link.href = url;
+    //       link.setAttribute('download', `lexicon_${this.$route.params.projectname}.json`);
+    //       document.body.appendChild(link);
+    //       link.click();
+    //       document.body.removeChild(link);
+    //       this.table.exporting = false;
+    //       this.$q.notify({ message: 'File downloaded' });
+    //       return [];
+    //     })
+    //     .catch((error) => {
+    //       // this.$q.notify({message:`${error}`, color:'negative'});
+    //       this.$store.dispatch('notifyError', { error });
+    //       return [];
+    //     });
+    //   this.download = [];
+    // },
   },
 };
 </script>

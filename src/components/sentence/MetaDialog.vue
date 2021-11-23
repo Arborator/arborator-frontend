@@ -20,12 +20,7 @@
       <q-separator />
       <!-- todo: adapt informFeatureChanged also to metadata -->
       <q-card-actions align="around">
-        <q-btn
-          flat
-          label="Cancel"
-          v-close-popup
-          style="width: 45%; margin-left: auto; margin-right: auto"
-        />
+        <q-btn flat label="Cancel" v-close-popup style="width: 45%; margin-left: auto; margin-right: auto" />
         <q-btn
           color="primary"
           @click="onMetaDialogOk()"
@@ -40,36 +35,41 @@
 
   <!----------------- End MetaDialog ------------------->
 </template>
-<script >
-import AttributeTable from "./AttributeTable";
+<script>
+import AttributeTable from './AttributeTable';
 
 export default {
   components: { AttributeTable },
-  props: ["sentenceBus"],
+  props: ['sentenceBus'],
   data() {
     return {
       metaDialogOpened: false,
       token: {},
-      userId: "",
+      userId: '',
       metaJson: {},
       metalist: [],
       featTable: {
         columns: [
           {
-            name: "a",
-            align: "center",
-            label: "Attribute",
-            field: "a",
+            name: 'a',
+            align: 'center',
+            label: 'Attribute',
+            field: 'a',
             sortable: true,
-            style: "width: 33%",
+            style: 'width: 33%',
           },
-          { name: "v", label: "Value", field: "v", sortable: true },
           {
-            name: "actions",
-            label: "Actions",
-            field: "",
-            align: "center",
-            style: "width: 8%",
+            name: 'v',
+            label: 'Value',
+            field: 'v',
+            sortable: true,
+          },
+          {
+            name: 'actions',
+            label: 'Actions',
+            field: '',
+            align: 'center',
+            style: 'width: 8%',
           },
         ],
       },
@@ -77,53 +77,60 @@ export default {
   },
   computed: {
     annotationFeatures() {
-      return this.$store.getters["config/annotationFeatures"];
+      return this.$store.getters['config/annotationFeatures'];
     },
     someFeatureChanged() {
       return true;
     },
   },
   mounted() {
-    this.sentenceBus.$on("open:metaDialog", ({ userId }) => {
-      this.userId = userId
-      this.metaJson = {...this.sentenceBus[userId].metaJson}
+    this.sentenceBus.on('open:metaDialog', ({ userId }) => {
+      this.userId = userId;
+      this.metaJson = { ...this.sentenceBus[userId].metaJson };
       this.metaDialogOpened = true;
       this.metalist = [];
-      for (let a in this.metaJson) {
-        this.metalist.push({ a: a, v: this.metaJson[a] });
+      for (const a in this.metaJson) {
+        this.metalist.push({ a, v: this.metaJson[a] });
       }
-      this.$emit("meta-changed", this.metaJson); // so that the sentenceCard can show the meta feature such as text and text_en
+      this.$emit('meta-changed', this.metaJson); // so that the sentenceCard can show the meta feature such as text and text_en
     });
   },
-  beforeDestroy() {
-    this.sentenceBus.$off("open:uposDialog");
+  beforeUnmount() {
+    this.sentenceBus.off('open:uposDialog');
   },
   methods: {
     onMetaDialogOk() {
-      let newMetaJson = this.metalist.reduce(function (obj, r) {
-          if (r.v) obj[r.a] = r.v;
-          return obj;
-        }, {})
-      var isMetaChanged = 0
+      const newMetaJson = this.metalist.reduce((obj, r) => {
+        if (r.v) obj[r.a] = r.v;
+        return obj;
+      }, {});
+      let isMetaChanged = 0;
       for (const newMetaKey of Object.keys(newMetaJson)) {
-        var newMetaValue = newMetaJson[newMetaKey]
-        if (newMetaValue != this.metaJson[newMetaKey]) {
-          if (["timestamp", "user_id", "sent_id", "text"].includes(newMetaKey)) {
+        const newMetaValue = newMetaJson[newMetaKey];
+        if (newMetaValue !== this.metaJson[newMetaKey]) {
+          if (['timestamp', 'user_id', 'sent_id', 'text'].includes(newMetaKey)) {
             isMetaChanged = 1;
           }
         }
       }
       if (!isMetaChanged) {
-        this.sentenceBus.$emit("tree-update:sentence", {sentenceJson: {metaJson: newMetaJson, treeJson: this.sentenceBus[this.userId].treeJson}, userId: this.userId})
+        this.sentenceBus.emit('tree-update:sentence', {
+          sentenceJson: {
+            metaJson: newMetaJson,
+            treeJson: this.sentenceBus[this.userId].treeJson,
+          },
+          userId: this.userId,
+        });
         this.$q.notify({
-            message: `Conllu changed`,
-          });
+          message: 'Conllu changed',
+        });
       } else {
-        this.$store.dispatch("notifyError", { error: "Changing timestamp, user_id, sent_id or text is not allowed !" });
+        this.$store.dispatch('notifyError', {
+          error: 'Changing timestamp, user_id, sent_id or text is not allowed !',
+        });
       }
     },
   },
 };
 </script>
-<style>
-</style>
+<style></style>

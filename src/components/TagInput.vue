@@ -1,18 +1,10 @@
 <template>
   <div class="tags-input-root">
     <div :class="wrapperClass + ' tags-input'">
-      <span
-        class="tags-input-badge tags-input-badge-pill tags-input-badge-selected-default"
-        v-for="(tag, index) in tags"
-        :key="index"
-      >
+      <span class="tags-input-badge tags-input-badge-pill tags-input-badge-selected-default" v-for="(tag, index) in tags" :key="index">
         <span v-html="tag.value"></span>
 
-        <i
-          href="#"
-          class="tags-input-remove"
-          @click.prevent="removeTag(index)"
-        ></i>
+        <i href="#" class="tags-input-remove" @click.prevent="removeTag(index)"></i>
       </span>
 
       <input
@@ -32,21 +24,12 @@
         @value="tags"
       />
 
-      <input
-        type="hidden"
-        v-if="elementId"
-        :name="elementId"
-        :id="elementId"
-        v-model="hiddenInput"
-      />
+      <input type="hidden" v-if="elementId" :name="elementId" :id="elementId" v-model="hiddenInput" />
     </div>
 
     <!-- Typeahead/Autocomplete -->
     <div v-show="searchResults.length">
-      <p
-        v-if="typeaheadStyle === 'badges'"
-        :class="`typeahead-${typeaheadStyle}`"
-      >
+      <p v-if="typeaheadStyle === 'badges'" :class="`typeahead-${typeaheadStyle}`">
         <span
           v-if="!typeaheadHideDiscard"
           class="tags-input-badge typeahead-hide-btn tags-input-typeahead-item-default"
@@ -62,17 +45,13 @@
           @mousedown.prevent="tagFromSearchOnClick(tag)"
           class="tags-input-badge"
           v-bind:class="{
-            'tags-input-typeahead-item-default': index != searchSelection,
-            'tags-input-typeahead-item-highlighted-default':
-              index == searchSelection,
+            'tags-input-typeahead-item-default': index !== searchSelection,
+            'tags-input-typeahead-item-highlighted-default': index === searchSelection,
           }"
         ></span>
       </p>
 
-      <ul
-        v-else-if="typeaheadStyle === 'dropdown'"
-        :class="`typeahead-${typeaheadStyle}`"
-      >
+      <ul v-else-if="typeaheadStyle === 'dropdown'" :class="`typeahead-${typeaheadStyle}`">
         <li
           v-if="!typeaheadHideDiscard"
           class="tags-input-typeahead-item-default typeahead-hide-btn"
@@ -87,9 +66,8 @@
           @mouseover="searchSelection = index"
           @mousedown.prevent="tagFromSearchOnClick(tag)"
           v-bind:class="{
-            'tags-input-typeahead-item-default': index != searchSelection,
-            'tags-input-typeahead-item-highlighted-default':
-              index == searchSelection,
+            'tags-input-typeahead-item-default': index !== searchSelection,
+            'tags-input-typeahead-item-highlighted-default': index === searchSelection,
           }"
         ></li>
       </ul>
@@ -105,16 +83,12 @@ export default {
 
     existingTags: {
       type: Array,
-      default: () => {
-        return [];
-      },
+      default: () => [],
     },
 
     value: {
       type: Array,
-      default: () => {
-        return [];
-      },
+      default: () => [],
     },
 
     typeahead: {
@@ -124,7 +98,7 @@ export default {
 
     typeaheadStyle: {
       type: String,
-      default: "badges",
+      default: 'badges',
     },
 
     typeaheadActivationThreshold: {
@@ -149,12 +123,12 @@ export default {
 
     placeholder: {
       type: String,
-      default: "Add a tag",
+      default: 'Add a tag',
     },
 
     discardSearchText: {
       type: String,
-      default: "Discard Search Results",
+      default: 'Discard Search Results',
     },
 
     limit: {
@@ -199,7 +173,7 @@ export default {
 
     wrapperClass: {
       type: String,
-      default: "tags-input-wrapper-default",
+      default: 'tags-input-wrapper-default',
     },
 
     sortSearchResults: {
@@ -233,9 +207,9 @@ export default {
       badgeId: 0,
       tags: [],
 
-      input: "",
-      oldInput: "",
-      hiddenInput: "",
+      input: '',
+      oldInput: '',
+      hiddenInput: '',
 
       searchResults: [],
       searchSelection: 0,
@@ -252,18 +226,18 @@ export default {
     }
 
     // Emit an event
-    this.$emit("initialized");
+    this.$emit('initialized');
   },
 
   watch: {
     input(newVal, oldVal) {
       this.searchTag(false);
 
-      if (newVal.length && newVal != oldVal) {
+      if (newVal.length && newVal !== oldVal) {
         const diff = newVal.substring(oldVal.length, newVal.length);
 
         if (this.addTagsOnSpace) {
-          if (newVal.endsWith(" ")) {
+          if (newVal.endsWith(' ')) {
             // The space shouldn't actually be inserted
             this.input = newVal.trim();
 
@@ -275,7 +249,7 @@ export default {
         if (this.addTagsOnComma) {
           newVal = newVal.trim();
 
-          if (newVal.endsWith(",")) {
+          if (newVal.endsWith(',')) {
             // The comma shouldn't actually be inserted
             this.input = newVal.substring(0, newVal.length - 1);
 
@@ -284,7 +258,7 @@ export default {
           }
         }
 
-        this.$emit("change", newVal);
+        this.$emit('change', newVal);
       }
     },
 
@@ -293,7 +267,7 @@ export default {
       this.hiddenInput = JSON.stringify(this.tags);
 
       // Update the bound v-model value
-      this.$emit("input", this.tags);
+      this.$emit('input', this.tags);
     },
 
     value() {
@@ -318,7 +292,7 @@ export default {
      * @returns String
      */
     escapeRegExp(string) {
-      return string.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+      return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
     },
 
     /**
@@ -329,40 +303,32 @@ export default {
      */
     tagFromInput(ignoreSearchResults = false) {
       // If we're choosing a tag from the search results
-      if (
-        this.searchResults.length &&
-        this.searchSelection >= 0 &&
-        !ignoreSearchResults
-      ) {
+      if (this.searchResults.length && this.searchSelection >= 0 && !ignoreSearchResults) {
         this.tagFromSearch(this.searchResults[this.searchSelection]);
 
-        this.input = "";
+        this.input = '';
       } else {
         // If we're adding an unexisting tag
-        let text = this.input.trim();
+        const text = this.input.trim();
 
         // If the new tag is not an empty string and passes validation
         if (!this.onlyExistingTags && text.length && this.validate(text)) {
-          this.input = "";
+          this.input = '';
 
           // Determine if the inputted tag exists in the existingTags
           // array
           let newTag = {
-            key: "",
+            key: '',
             value: text,
           };
 
-          const searchQuery = this.escapeRegExp(
-            this.caseSensitiveTags ? newTag.value : newTag.value.toLowerCase()
-          );
+          const searchQuery = this.escapeRegExp(this.caseSensitiveTags ? newTag.value : newTag.value.toLowerCase());
 
-          for (let tag of this.existingTags) {
-            const compareable = this.caseSensitiveTags
-              ? tag.value
-              : tag.value.toLowerCase();
+          for (const tag of this.existingTags) {
+            const compareable = this.caseSensitiveTags ? tag.value : tag.value.toLowerCase();
 
             if (searchQuery === compareable) {
-              newTag = Object.assign({}, tag);
+              newTag = { ...tag };
 
               break;
             }
@@ -382,7 +348,7 @@ export default {
     tagFromSearchOnClick(tag) {
       this.tagFromSearch(tag);
 
-      this.$refs["taginput"].blur();
+      this.$refs.taginput.blur();
     },
 
     /**
@@ -398,8 +364,8 @@ export default {
       this.addTag(tag);
 
       this.$nextTick(() => {
-        this.input = "";
-        this.oldInput = "";
+        this.input = '';
+        this.oldInput = '';
       });
     },
 
@@ -416,7 +382,7 @@ export default {
 
       // Check if the limit has been reached
       if (this.limit > 0 && this.tags.length >= this.limit) {
-        this.$emit("limit-reached");
+        this.$emit('limit-reached');
 
         return false;
       }
@@ -427,16 +393,11 @@ export default {
 
         // Emit events
         this.$nextTick(() => {
-          this.$emit(
-            "tag-added",
-            tag,
-            this.$props.tagContext,
-            this.role,
-            "add"
-          );
-          this.$emit("tags-updated");
+          this.$emit('tag-added', tag, this.$props.tagContext, this.role, 'add');
+          this.$emit('tags-updated');
         });
       }
+      return null;
     },
 
     /**
@@ -452,7 +413,7 @@ export default {
 
       // Check if the limit has been reached
       if (this.limit > 0 && this.tags.length >= this.limit) {
-        this.$emit("limit-reached");
+        this.$emit('limit-reached');
         return false;
       }
 
@@ -460,6 +421,7 @@ export default {
       if (!this.tagSelected(tag)) {
         this.tags.push(tag);
       }
+      return null;
     },
 
     /**
@@ -480,7 +442,7 @@ export default {
      * @returns void
      */
     removeTag(index) {
-      let tag = this.tags[index];
+      const tag = this.tags[index];
 
       if (!this.beforeRemovingTag(tag)) {
         return false;
@@ -490,19 +452,14 @@ export default {
 
       // Emit events
       this.$nextTick(() => {
-        this.$emit(
-          "tag-removed",
-          tag,
-          this.$props.tagContext,
-          this.role,
-          "remove"
-        );
-        this.$emit("tags-updated");
+        this.$emit('tag-removed', tag, this.$props.tagContext, this.role, 'remove');
+        this.$emit('tags-updated');
 
         if (this.typeaheadAlwaysShow) {
           this.searchTag();
         }
       });
+      return null;
     },
 
     /**
@@ -515,35 +472,23 @@ export default {
         return false;
       }
 
-      if (
-        this.oldInput != this.input ||
-        (!this.searchResults.length &&
-          this.typeaheadActivationThreshold == 0) ||
-        this.typeaheadAlwaysShow
-      ) {
+      if (this.oldInput !== this.input || (!this.searchResults.length && this.typeaheadActivationThreshold === 0) || this.typeaheadAlwaysShow) {
         this.searchResults = [];
         this.searchSelection = 0;
-        let input = this.input.trim();
+        const input = this.input.trim();
 
         if (
           (input.length && input.length >= this.typeaheadActivationThreshold) ||
-          this.typeaheadActivationThreshold == 0 ||
+          this.typeaheadActivationThreshold === 0 ||
           this.typeaheadAlwaysShow
         ) {
           // Find all the existing tags which include the search text
-          const searchQuery = this.escapeRegExp(
-            this.caseSensitiveTags ? input : input.toLowerCase()
-          );
+          const searchQuery = this.escapeRegExp(this.caseSensitiveTags ? input : input.toLowerCase());
 
-          for (let tag of this.existingTags) {
-            const compareable = this.caseSensitiveTags
-              ? tag.value
-              : tag.value.toLowerCase();
+          for (const tag of this.existingTags) {
+            const compareable = this.caseSensitiveTags ? tag.value : tag.value.toLowerCase();
 
-            if (
-              compareable.search(searchQuery) > -1 &&
-              !this.tagSelected(tag)
-            ) {
+            if (compareable.search(searchQuery) > -1 && !this.tagSelected(tag)) {
               this.searchResults.push(tag);
             }
           }
@@ -560,15 +505,13 @@ export default {
 
           // Shorten Search results to desired length
           if (this.typeaheadMaxResults > 0) {
-            this.searchResults = this.searchResults.slice(
-              0,
-              this.typeaheadMaxResults
-            );
+            this.searchResults = this.searchResults.slice(0, this.typeaheadMaxResults);
           }
         }
 
         this.oldInput = this.input;
       }
+      return null;
     },
 
     /**
@@ -591,7 +534,7 @@ export default {
      */
     nextSearchResult() {
       if (this.searchSelection + 1 <= this.searchResults.length - 1) {
-        this.searchSelection++;
+        this.searchSelection += 1;
       }
     },
 
@@ -602,7 +545,7 @@ export default {
      */
     prevSearchResult() {
       if (this.searchSelection > 0) {
-        this.searchSelection--;
+        this.searchSelection -= 1;
       }
     },
 
@@ -639,28 +582,26 @@ export default {
     tagsFromValue() {
       if (this.value && this.value.length) {
         if (!Array.isArray(this.value)) {
-          console.error(
-            "Voerro Tags Input: the v-model value must be an array!"
-          );
+          console.error('Voerro Tags Input: the v-model value must be an array!');
 
           return;
         }
 
-        let tags = this.value;
+        const tags = this.value;
 
         // Don't update if nothing has changed
-        if (this.tags == tags) {
+        if (this.tags === tags) {
           return;
         }
 
         this.clearTags();
 
-        for (let tag of tags) {
+        for (const tag of tags) {
           // this.addTag(tag);
           this.addTagInit(tag);
         }
       } else {
-        if (this.tags.length == 0) {
+        if (this.tags.length === 0) {
           return;
         }
 
@@ -683,19 +624,12 @@ export default {
         return false;
       }
 
-      const searchQuery = this.escapeRegExp(
-        this.caseSensitiveTags ? tag.value : tag.value.toLowerCase()
-      );
+      const searchQuery = this.escapeRegExp(this.caseSensitiveTags ? tag.value : tag.value.toLowerCase());
 
-      for (let selectedTag of this.tags) {
-        const compareable = this.caseSensitiveTags
-          ? selectedTag.value
-          : selectedTag.value.toLowerCase();
+      for (const selectedTag of this.tags) {
+        const compareable = this.caseSensitiveTags ? selectedTag.value : selectedTag.value.toLowerCase();
 
-        if (
-          selectedTag.key === tag.key &&
-          compareable.search(searchQuery) > -1
-        ) {
+        if (selectedTag.key === tag.key && compareable.search(searchQuery) > -1) {
           return true;
         }
       }
@@ -709,7 +643,7 @@ export default {
      * @returns void
      */
     clearInput() {
-      this.input = "";
+      this.input = '';
     },
 
     /**
@@ -719,7 +653,7 @@ export default {
      * @returns void
      */
     onKeyUp(e) {
-      this.$emit("keyup", e);
+      this.$emit('keyup', e);
     },
 
     /**
@@ -729,7 +663,7 @@ export default {
      * @returns void
      */
     onKeyDown(e) {
-      this.$emit("keydown", e);
+      this.$emit('keydown', e);
     },
 
     /**
@@ -739,7 +673,7 @@ export default {
      * @returns void
      */
     onFocus(e) {
-      this.$emit("focus", e);
+      this.$emit('focus', e);
 
       this.searchTag();
     },
@@ -751,7 +685,7 @@ export default {
      * @returns void
      */
     onBlur(e) {
-      this.$emit("blur", e);
+      this.$emit('blur', e);
 
       if (this.addTagsOnBlur) {
         // Add the inputed tag

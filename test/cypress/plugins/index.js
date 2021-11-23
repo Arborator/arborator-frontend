@@ -19,7 +19,6 @@ module.exports = (on, config) => {
   // `config` is the resolved Cypress config
   // console.log(config); // see what all is in here!
 
-
   // Chrome:: Hack for shaking AUT. Cypress Issue: https://github.com/cypress-io/cypress/issues/1620
   on('before:browser:launch', (browser = {}, args) => {
     if (browser.name === 'chrome') {
@@ -29,10 +28,9 @@ module.exports = (on, config) => {
     return true;
   });
 
-  const {GoogleSocialLogin} = require('cypress-social-logins').plugins
+  const { GoogleSocialLogin } = require('cypress-social-logins').plugins;
 
   on('task', {
-    GoogleSocialLogin: GoogleSocialLogin
-  })
+    GoogleSocialLogin,
+  });
 };
-

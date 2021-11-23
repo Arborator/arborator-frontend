@@ -1,15 +1,15 @@
 // No console.log() / setTimeout
 // console.log = jest.fn(() => { throw new Error('Do not use console.log() in production') })
-jest.setTimeout(10000)
+jest.setTimeout(10000);
 
 // jest speedup when errors are part of the game
 // Error.stackTraceLimit = 0
 
-global.Promise = require('promise')
+global.Promise = require('promise');
 
-process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
+process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
 // process.env.DEV = "0";
-process.env.API = "https://127.0.0.1:5000";
+process.env.API = 'https://127.0.0.1:5000';
 /*
 import chai from 'chai'
 // Make sure chai and jasmine ".not" play nice together
@@ -50,6 +50,6 @@ Object.keys(originalExpect).forEach(key => (global.expect[key] = originalExpect[
 */
 
 // do this to make sure we don't get multiple hits from both webpacks when running SSR
-setTimeout(()=>{
+setTimeout(() => {
   // do nothing
-}, 1)
+}, 1);

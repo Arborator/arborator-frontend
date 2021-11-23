@@ -10,13 +10,7 @@
       </q-header>
       <q-page-container>
         <q-page>
-          <codemirror
-            v-model="conllContent"
-            :options="cmOption"
-            class="CodeMirror"
-            @focus="codefocus"
-          >
-          </codemirror>
+          <Codemirror v-model:value="conllContent" :options="cmOption" class="CodeMirror" @focus="codefocus"> </Codemirror>
           <!-- </codemirror> -->
           <!-- @input="codechange($event)"  ($event)-->
         </q-page>
@@ -25,13 +19,7 @@
         <q-toolbar inset>
           <!-- <q-toolbar-title>Footer</q-toolbar-title> --><q-space />
           <q-btn flat no-caps label="Cancel" v-close-popup />
-          <q-btn
-            color="primary"
-            @click="onConllDialogOk()"
-            label="Ok"
-            v-close-popup
-            :disabled="currentConllContent == conllContent"
-          />
+          <q-btn color="primary" @click="onConllDialogOk()" label="Ok" v-close-popup :disabled="currentConllContent === conllContent" />
         </q-toolbar>
       </q-footer>
     </q-layout>
@@ -40,72 +28,82 @@
 </template>
 
 <script>
-import {sentenceConllToJson} from 'conllup'
-import { codemirror } from "vue-codemirror";
-import CodeMirror from "codemirror";
+import { sentenceConllToJson } from 'conllup';
+// import { codemirror } from "vue-codemirror";
+import CodeMirror2 from 'codemirror';
 
+import Codemirror from 'codemirror-editor-vue3';
 
-CodeMirror.defineMode("tsv", function (_config, parserConfig) {
+// plugin-style
+import 'codemirror-editor-vue3/dist/style.css';
+
+// language
+import 'codemirror/mode/javascript/javascript.js';
+
+// theme
+import 'codemirror/theme/dracula.css';
+
+CodeMirror2.defineMode('tsv', (_config, parserConfig) => {
   function tokenBase(stream, state) {
     if (stream.string.match(/^#.+/)) {
       stream.skipToEnd();
-      return "comment";
+      return 'comment';
     }
 
-    var ch = stream.next();
+    const ch = stream.next();
 
     if (/\d/.test(ch)) {
       stream.eatWhile(/[\d]/);
-      if (stream.eat(".")) {
+      if (stream.eat('.')) {
         stream.eatWhile(/[\d]/);
       }
-      return "number";
+      return 'number';
     }
     if (/[+\-*&%=<>!?|:]/.test(ch)) {
-      return "operator";
+      return 'operator';
     }
     stream.eatWhile(/\w/);
-    var cur = stream.current();
-    return "variable";
+    const cur = stream.current();
+    return 'variable';
   }
 
   // function tokenString(stream, state) {	}
 
   return {
-    startState: function () {
+    startState() {
       return { tokenize: tokenBase, commentLevel: 0 };
     },
-    token: function (stream, state) {
+    token(stream, state) {
       if (stream.eatSpace()) return null;
       return state.tokenize(stream, state);
     },
-    lineComment: "#",
+    lineComment: '#',
   };
 }); // end codemirror
 
 export default {
-  components: { codemirror },
-  props: ["sentenceBus"],
+  components: { Codemirror },
+  props: ['sentenceBus'],
   data() {
     return {
       conlluDialogOpened: false,
-      currentConllContent: "",
-      conllContent: "",
+      currentConllContent: '',
+      conllContent: '',
       cmOption: {
         tabSize: 8,
         styleActiveLine: true,
         // lineNumbers: true,
         lineWrapping: true,
         line: true,
-        mode: "tsv",
+        mode: 'tsv',
 
-        theme: "default",
+        theme: 'dracula',
       },
     };
   },
   computed: {},
   mounted() {
-    this.sentenceBus.$on("open:conlluDialog", ({ userId }) => {
+    this.sentenceBus.on('open:conlluDialog', ({ userId }) => {
       this.userId = userId;
       this.conlluDialogOpened = true;
       this.currentConllContent = this.sentenceBus[this.userId].exportConll();
@@ -115,35 +113,37 @@ export default {
   methods: {
     codefocus(cm, ev) {
       cm.refresh();
-      cm.execCommand("selectAll");
+      cm.execCommand('selectAll');
     },
     onConllDialogOk() {
       const sentenceJson = sentenceConllToJson(this.conllContent);
       const oldMeta = this.sentenceBus[this.userId].metaJson;
       const newMeta = sentenceJson.metaJson;
 
-      var isMetaChanged = 0;
+      let isMetaChanged = 0;
       for (const [metaKey, metaValue] of Object.entries(newMeta)) {
-        if (metaValue != oldMeta[metaKey]) {
-          if (["timestamp", "user_id", "sent_id", "text"].includes(metaKey)) {
+        if (metaValue !== oldMeta[metaKey]) {
+          if (['timestamp', 'user_id', 'sent_id', 'text'].includes(metaKey)) {
             isMetaChanged = 1;
           }
         }
       }
       if (!isMetaChanged) {
-        this.sentenceBus.$emit("tree-update:sentence", {sentenceJson: sentenceJson, userId: this.userId})
+        this.sentenceBus.emit('tree-update:sentence', {
+          sentenceJson,
+          userId: this.userId,
+        });
         this.$q.notify({
-            message: `Conllu changed`,
-          });
+          message: 'Conllu changed',
+        });
       } else {
-        this.$store.dispatch("notifyError", { error: "Changing timestamp, user_id, sent_id or text is not allowed !" });
+        this.$store.dispatch('notifyError', {
+          error: 'Changing timestamp, user_id, sent_id or text is not allowed !',
+        });
       }
     },
   },
 };
 </script>
 
-
-
-<style>
-</style>
+<style></style>

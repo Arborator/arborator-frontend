@@ -1,103 +1,53 @@
 <template>
-  <div id="q-app">
-    <router-view />
-  </div>
+  <router-view />
 </template>
 
 <script>
-import Vue from "vue";
-import { openURL } from "quasar";
-import VueCookies from "vue-cookies";
-import Store from "./store/index";
-import api from "./boot/backend-api";
-// import EventBus from './event-bus.js';
-VueCookies.config("7d");
+import { defineComponent } from 'vue';
 
-import Storage from "vue-ls";
+import { useStorage } from 'vue3-storage';
+import Store from './store/index';
 
-var options = { namespace: "arboratorgrew__", name: "ls", storage: "local" };
-Vue.use(Storage, options);
-
-export default {
-  name: "App",
+export default defineComponent({
+  name: 'App',
   data() {
     return {
       store: Store,
+      storage: null,
       alerts: {
         welcomeback: {
-          color: "primary",
-          message: this.$t("welcomeback"),
+          color: 'primary',
+          message: this.$t('welcomeback'),
           progress: true,
-          icon: "mood",
+          icon: 'mood',
         },
       },
     };
   },
   mounted() {
-    this.$store.dispatch("user/checkSession");
-
-    // this.store.dispatch("checkSession", {});
-    // .then(() => {
-    //   this.$router.push('/');
-    // })
+    console.log();
+    this.storage = useStorage();
+    this.$store.dispatch('user/checkSession', {}).then(() => {
+      this.$router.push('/');
+    });
     try {
-      this.$q.dark.set(this.$ls.get("dm"));
+      this.$q.dark.set(this.storage.getStorageSync('dm'));
     } catch (error) {
-      console.log("ls not found");
+      console.log('ls not found');
     }
-
     try {
-      this.$i18n.locale = this.$ls.get("arbolang");
+      this.$i18n.locale = this.storage.getStorageSync('arbolang');
     } catch (error) {
       this.$i18n.locale = this.$q.lang.getLocale();
-      this.$ls.set("arbolang", this.$i18n.locale);
+      this.storage.setStorageSync('arbolang', this.$i18n.locale);
     }
   },
-  methods: {
-    parseJwt: function (token) {
-      var base64Url = token.split(".")[1];
-      var base64 = base64Url.replace(/-/g, "+").replace(/_/g, "/");
-      var jsonPayload = decodeURIComponent(
-        atob(base64)
-          .split("")
-          .map(function (c) {
-            return "%" + ("00" + c.charCodeAt(0).toString(16)).slice(-2);
-          })
-          .join("")
-      );
-      return JSON.parse(jsonPayload);
-    },
-    showNotif(position, alert) {
-      const {
-        color,
-        textColor,
-        multiLine,
-        icon,
-        message,
-        avatar,
-        actions,
-        progress,
-      } = this.alerts[alert];
-      const buttonColor = color ? "white" : void 0;
-      this.$q.notify({
-        color,
-        textColor,
-        icon: icon,
-        message,
-        position,
-        avatar,
-        multiLine,
-        actions: actions,
-        progress: progress,
-        timeout: 2000,
-      });
-    },
-  },
-};
+});
 </script>
 
 <style>
-svg[xmlns="http://www.w3.org/2000/svg"] {
+svg[xmlns="http://www.w3.org/2000/svg"]
+{
   display: none;
 }
 </style>

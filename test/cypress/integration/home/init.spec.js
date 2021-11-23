@@ -1,14 +1,13 @@
-import * as ctx from  '../../../../quasar.conf.js'
-
+import * as ctx from '../../../../quasar.conf.js';
 
 describe('Landing', () => {
   beforeEach(() => {
-    cy.visit('/')
-  })
+    cy.visit('/');
+  });
 
   it('.should() - assert that <title> is correct', () => {
-    cy.title().should('include', 'arborator')
-  })
+    cy.title().should('include', 'arborator');
+  });
   it('check access treebank button', () => {
     cy.get('#accesstreebank').click();
     cy.url().should('include', '/projects');
@@ -16,7 +15,7 @@ describe('Landing', () => {
     cy.get('#createprojectform input').first().type('iamaproject');
     cy.get('#createprojectform input:eq( 1 )').type('iamadescription');
     cy.get('#submitproject').click();
-  })
+  });
   it('check test project manipulation', () => {
     cy.get('#accesstreebank').click();
     cy.contains('test').first().click();
@@ -28,8 +27,8 @@ describe('Landing', () => {
     cy.get('div.q-item:eq(0)').click();
     cy.get('#catselectvalidate').click();
     cy.get('svg:eq( 0 )').get('text.UPOS:eq(0)').should('contain', 'ADJ');
-  })
-})
+  });
+});
 
 // describe('Home page tests', () => {
 //   beforeEach(() => {

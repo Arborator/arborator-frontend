@@ -349,7 +349,9 @@
                   <q-select
                     @input="updateExerciseLevel(props.row)"
                     outlined
-                    :options="[1, 2, 3, 4]"
+                    :options="exerciceModeOptions"
+                    map-options
+                    emit-value
                     v-model="props.row.exerciseLevel"
                     label="exercise level"
                     :dense="false"
@@ -550,6 +552,24 @@ export default {
         loadingDelete: false,
         exporting: false,
       },
+      exerciceModeOptions:[
+        {
+          label: '1: teacher_visible',
+          value: 1
+        },
+        {
+          label: '2: local_feedback',
+          value: 2
+        },
+        {
+          label: '3: global_feedback',
+          value: 3
+        },
+        {
+          label: '4: no_feedback',
+          value: 4
+        },
+      ],
       window: { width: 0, height: 0 },
       possiblesUsers: [],
       tagContext: {},

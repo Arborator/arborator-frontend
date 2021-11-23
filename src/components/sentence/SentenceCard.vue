@@ -159,7 +159,7 @@
         <!-- v-for="(tree, user) in filteredConlls" -->
         <q-tab
           v-for="(tree, user) in filteredConlls"
-          :key="reactiveSentencesObj[user].state.metaJson.timestamp"
+          :key="`${reactiveSentencesObj[user].state.metaJson.timestamp}-${user}`"
           :props="user"
           :name="user"
           :label="`${user}`"
@@ -341,7 +341,6 @@ export default {
       if (this.exerciseLevel !== 1 && !this.isAdmin && this.exerciseMode) {
         filteredConlls = Object.filter(this.sentenceData.conlls, ([user, conll]) => user !== 'teacher');
       }
-      return this.orderConlls(filteredConlls);
     },
     userId() {
       return this.$store.getters['user/getUserInfos'].username;

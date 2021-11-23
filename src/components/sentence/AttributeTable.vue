@@ -28,7 +28,6 @@
             </div>
             <q-select
               v-else-if="openFeatures=='true'"
-              clearable
               use-input
               input-debounce="1000"
               new-value-mode="add-unique"

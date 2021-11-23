@@ -1,4 +1,4 @@
 // default config state
 export default () => ({
-    exerciseLevel: 1,
-})
+  exerciseLevel: 1,
+});

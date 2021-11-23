@@ -7,12 +7,7 @@
       </q-btn>
     </q-bar>
     <q-card-section>
-      <q-form
-        @submit="onSubmit"
-        @reset="onReset"
-        class="q-gutter-md"
-        id="createprojectform"
-      >
+      <q-form @submit="onSubmit" @reset="onReset" class="q-gutter-md" id="createprojectform">
         <q-input
           id="projectnameinput"
           filled
@@ -21,12 +16,7 @@
           lazy-rules
           :rules="[(val) => (val && val.length > 0) || 'Please type something']"
         />
-        <q-input
-          id="descriptioninput"
-          filled
-          v-model="project.description"
-          label="Description"
-        />
+        <q-input id="descriptioninput" filled v-model="project.description" label="Description" />
         <div>
           <q-btn-toggle
             label="Visibility"
@@ -41,27 +31,10 @@
           />
         </div>
         <q-toggle v-model="project.showAllTrees" label="Show All Trees" />
-        <q-toggle
-          v-model="project.exerciseMode"
-          :label="$t('createProjectCard').exerciseMode"
-        />
+        <q-toggle v-model="project.exerciseMode" :label="$t('createProjectCard').exerciseMode" />
         <div>
-          <q-btn
-            id="submitproject"
-            type="submit"
-            :loading="submitting"
-            label="create"
-            color="primary"
-            class="q-mt-md"
-            v-close-popup
-          />
-          <q-btn
-            label="Reset"
-            type="reset"
-            color="primary"
-            flat
-            class="q-ml-sm"
-          />
+          <q-btn id="submitproject" type="submit" :loading="submitting" label="create" color="primary" class="q-mt-md" v-close-popup />
+          <q-btn label="Reset" type="reset" color="primary" flat class="q-ml-sm" />
         </div>
       </q-form>
     </q-card-section>
@@ -69,16 +42,16 @@
 </template>
 
 <script>
-import api from "../boot/backend-api";
+import api from '../boot/backend-api';
 
 export default {
-  props: ["parentGetProjects"],
+  props: ['parentGetProjects'],
   data() {
     return {
       submitting: false,
       project: {
-        projectName: "",
-        description: "",
+        projectName: '',
+        description: '',
         visibility: 2,
         // isOpen: true,
         showAllTrees: true,
@@ -89,11 +62,10 @@ export default {
   },
   computed: {
     getUserInfos() {
-      return this.$store.getters["user/getUserInfos"];
+      return this.$store.getters['user/getUserInfos'];
     },
   },
   methods: {
-   
     /**
      * Handle project submission by creating form data and sending to backend
      *
@@ -101,10 +73,10 @@ export default {
      */
     onSubmit() {
       this.submitting = true;
-      this.$store.dispatch("config/resetAnnotationFeatures"); // reset annotationFeature object
-      var data = {
+      this.$store.dispatch('config/resetAnnotationFeatures'); // reset annotationFeature object
+      const data = {
         ...this.project,
-        username: this.$store.getters["user/getUserInfos"].username,
+        username: this.$store.getters['user/getUserInfos'].username,
       };
       api
         .createProject(data)
@@ -117,7 +89,7 @@ export default {
           });
         })
         .catch((error) => {
-          this.$store.dispatch("notifyError", { error: error });
+          this.$store.dispatch('notifyError', { error });
           this.submitting = false;
         });
     },

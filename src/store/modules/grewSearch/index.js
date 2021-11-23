@@ -1,8 +1,7 @@
-
 export default {
   namespaced: true,
   state: {
-    grewDialog: false
+    grewDialog: false,
   },
   getters: {
     grewDialog: (state) => state.grewDialog,
@@ -14,7 +13,7 @@ export default {
   },
   actions: {
     switch_grew_dialog({ commit }, payload) {
-      commit("SWITCH_GREW_DIALOG", payload)
+      commit('SWITCH_GREW_DIALOG', payload);
     },
   },
 };

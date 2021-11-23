@@ -4,34 +4,14 @@
       <q-card flat>
         <q-card-section class="q-pa-md row items-start q-gutter-md">
           <q-toolbar class="text-center">
-            <q-btn
-              :disable="!isLoggedIn"
-              id="createproject"
-              color="primary"
-              round
-              dense
-              icon="add"
-              @click="creaProjectDial = true"
-            >
-              <q-tooltip :delay="300" content-class="text-white bg-primary">{{
-                $t("projectHub").tooltipCreaProject
-              }}</q-tooltip>
+            <q-btn :disable="!isLoggedIn" id="createproject" color="primary" round dense icon="add" @click="creaProjectDial = true">
+              <q-tooltip :delay="300" content-class="text-white bg-primary">{{ $t('projectHub.tooltipCreaProject') }}</q-tooltip>
             </q-btn>
-            <q-toolbar-title
-              :class="($q.dark.isActive ? '' : 'text-primary') + ' text-bold'"
-            >
-              {{ $t("projectHub").title }}
+            <q-toolbar-title :class="($q.dark.isActive ? '' : 'text-primary') + ' text-bold'">
+              {{ $t('projectHub.title') }}
             </q-toolbar-title>
-            <q-btn
-              flat
-              round
-              dense
-              :icon="listMode ? 'view_module' : 'list'"
-              @click="toggleProjectView()"
-            >
-              <q-tooltip :delay="300" content-class="text-white bg-primary">{{
-                $t("projectHub").tooltipChangeView
-              }}</q-tooltip>
+            <q-btn flat round dense :icon="listMode ? 'view_module' : 'list'" @click="toggleProjectView()">
+              <q-tooltip :delay="300" content-class="text-white bg-primary">{{ $t('projectHub.tooltipChangeView') }}</q-tooltip>
             </q-btn>
           </q-toolbar>
           <q-toolbar class="text-center">
@@ -53,16 +33,8 @@
             </q-toolbar-title>
           </q-toolbar>
         </q-card-section>
-        <q-card-section
-          v-if="initLoading"
-          class="row q-pa-md items-start q-gutter-md"
-          style="width: 90vw; height: 60vh"
-        >
-          <q-card
-            style="max-width: 250px; width: 250px"
-            v-for="i in skelNumber"
-            :key="i"
-          >
+        <q-card-section v-if="initLoading" class="row q-pa-md items-start q-gutter-md" style="width: 90vw; height: 60vh">
+          <q-card style="max-width: 250px; width: 250px" v-for="i in skelNumber" :key="i">
             <q-skeleton height="150px" square />
             <q-item>
               <q-item-section>
@@ -84,7 +56,7 @@
             :virtual-scroll-slice-size="30"
             :virtual-scroll-item-size="200"
           >
-            <template v-slot="{ item, index }">
+            <template v-slot="{ item }">
               <ProjectCard
                 style="max-width: 80vw"
                 :props="item"
@@ -94,15 +66,9 @@
               ></ProjectCard>
             </template>
           </q-virtual-scroll>
-          <div
-            v-if="!$q.platform.is.mobile"
-            class="q-pa-md row items-start q-gutter-md"
-          >
-            <div class="text-h6 col-12" 
-            v-if="isLoggedIn && myProjects.length">
-              <q-chip color="primary" class="category" text-color="white">
-                My projects
-              </q-chip>
+          <div v-if="!$q.platform.is.mobile" class="q-pa-md row items-start q-gutter-md">
+            <div class="text-h6 col-12" v-if="isLoggedIn && myProjects.length">
+              <q-chip color="primary" class="category" text-color="white"> My projects </q-chip>
             </div>
             <ProjectCard
               style="max-width: 250px"
@@ -112,11 +78,8 @@
               :parentProjectSettings="showProjectSettings"
               :key="project.id"
             ></ProjectCard>
-            <div class="text-h6 col-12" 
-            v-if="isLoggedIn && otherProjects.length">
-              <q-chip color="primary" class="category" text-color="white">
-                Other projects
-              </q-chip>
+            <div class="text-h6 col-12" v-if="isLoggedIn && otherProjects.length">
+              <q-chip color="primary" class="category" text-color="white"> Other projects </q-chip>
             </div>
             <ProjectCard
               style="max-width: 250px"
@@ -136,7 +99,7 @@
               :virtual-scroll-slice-size="30"
               :virtual-scroll-item-size="200"
             >
-              <template v-slot="{ item, index }">
+              <template v-slot="{ item }">
                 <ProjectItem
                   :props="item"
                   :parentDeleteProject="deleteProject"
@@ -150,30 +113,16 @@
       </q-card>
     </div>
 
-    <q-dialog
-      v-model="creaProjectDial"
-      transition-show="fade"
-      transition-hide="fade"
-    >
+    <q-dialog v-model="creaProjectDial" transition-show="fade" transition-hide="fade">
       <CreaProjectCard :parentGetProjects="getProjects"></CreaProjectCard>
     </q-dialog>
 
-    <q-dialog
-      v-model="projectSettingsDial"
-      transition-show="slide-up"
-      transition-hide="slide-down"
-    >
-      <ProjectSettingsView
-        :projectname="projectnameTarget"
-        style="width: 90vw"
-      ></ProjectSettingsView>
+    <q-dialog v-model="projectSettingsDial" transition-show="slide-up" transition-hide="slide-down">
+      <ProjectSettingsView :projectname="projectnameTarget" style="width: 90vw"></ProjectSettingsView>
     </q-dialog>
 
     <q-dialog v-model="confirmActionDial">
-      <confirm-action
-        :parentAction="confirmActionCallback"
-        :arg1="confirmActionArg1"
-      ></confirm-action>
+      <confirm-action :parentAction="confirmActionCallback" :arg1="confirmActionArg1"></confirm-action>
     </q-dialog>
   </q-page>
 </template>
@@ -195,14 +144,15 @@
 </style>
 
 <script>
-import { openURL } from "quasar";
-import api from "../boot/backend-api";
-import Store from "../store/index";
-import ProjectCard from "../components/ProjectCard.vue";
-import ProjectItem from "../components/ProjectItem.vue";
-import CreaProjectCard from "../components/CreaProjectCard.vue";
-import ProjectSettingsView from "../components/ProjectSettingsView.vue";
-import ConfirmAction from "../components/ConfirmAction";
+import { openURL } from 'quasar';
+import { useStorage } from 'vue3-storage';
+import api from '../boot/backend-api';
+import Store from '../store/index';
+import ProjectCard from '../components/ProjectCard.vue';
+import ProjectItem from '../components/ProjectItem.vue';
+import CreaProjectCard from '../components/CreaProjectCard.vue';
+import ProjectSettingsView from '../components/ProjectSettingsView.vue';
+import ConfirmAction from '../components/ConfirmAction';
 
 export default {
   components: {
@@ -212,48 +162,49 @@ export default {
     ProjectSettingsView,
     ConfirmAction,
   },
-  name: "ProjectHub",
+  name: 'ProjectHub',
   data() {
     return {
-      lorem:
-        "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
+      lorem: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.',
       projects: [],
       visibleProjects: [],
       projectDifference: false,
       hover: false,
-      search: "",
+      search: '',
       listMode: true,
       creaProjectDial: false,
       projectSettingsDial: false,
-      projectnameTarget: "",
+      projectnameTarget: '',
       initLoading: false,
       loadingProjects: true,
       skelNumber: [...Array(5).keys()],
       confirmActionDial: false,
       confirmActionCallback: null,
-      confirmActionArg1: "",
+      confirmActionArg1: '',
+      storage: null,
     };
   },
   mounted() {
+    this.storage = useStorage();
     this.initLoading = true;
-    this.listMode = this.$ls.get("project_view", false);
+    // this.listMode = this.$storage.getStorageSync("project_view", false);
+    this.listMode = this.storage.getStorageSync('project_view', false);
+
     this.getProjects();
   },
   computed: {
     isLoggedIn() {
-      return this.$store.getters["user/isLoggedIn"];
+      return this.$store.getters['user/isLoggedIn'];
     },
     myProjects() {
-      return this.visibleProjects.filter(project => 
-      this.isCreatedByMe(project));
+      return this.visibleProjects.filter((project) => this.isCreatedByMe(project));
     },
     otherProjects() {
-      return this.visibleProjects.filter(project => 
-      !this.isCreatedByMe(project));
+      return this.visibleProjects.filter((project) => !this.isCreatedByMe(project));
     },
     avatar() {
-      return this.$store.getters["user/getUserInfos"].picture_url;
-    }
+      return this.$store.getters['user/getUserInfos'].picture_url;
+    },
   },
   methods: {
     openURL,
@@ -272,37 +223,33 @@ export default {
           // }
         })
         .catch((error) => {
-          this.$store.dispatch("notifyError", { error: error });
+          this.$store.dispatch('notifyError', { error });
           this.loadingProjects = false;
         });
     },
     searchProject(pattern) {
-      var filteredProjects = this.projects.filter(function (project) {
-        if (
-          project.project_name.toLowerCase().includes(pattern.toLowerCase())
-        ) {
-          return project;
-        }
+      const filteredProjects = this.projects.filter((project) => {
+        return project.project_name.toLowerCase().includes(pattern.toLowerCase()) === true;
       });
       this.visibleProjects = filteredProjects;
     },
     sortProjects() {
-      if(!this.isLoggedIn) return;
+      if (!this.isLoggedIn) return;
       this.visibleProjects.sort((a, b) => {
-        const my_a = this.isCreatedByMe(a);
-        const my_b = this.isCreatedByMe(b);
-        if(my_a && my_b) return 0;
-        if(my_a) return -1;
+        const myProjectA = this.isCreatedByMe(a);
+        const myProjectB = this.isCreatedByMe(b);
+        if (myProjectA && myProjectB) return 0;
+        if (myProjectA) return -1;
         return 1;
-      })
+      });
     },
     isCreatedByMe(project) {
-      const user_id = this.$store.getters["user/getUserInfos"].id;
-      return project.admins[0] == user_id;
+      const userId = this.$store.getters['user/getUserInfos'].id;
+      return project.admins[0] === userId;
     },
     toggleProjectView() {
       this.listMode = !this.listMode;
-      this.$ls.set("project_view", this.listMode);
+      this.storage.setStorageSync('project_view', this.listMode);
     },
     showProjectSettings(projectName) {
       this.projectnameTarget = projectName;
@@ -316,7 +263,7 @@ export default {
           this.getProjects();
         })
         .catch((error) => {
-          this.$store.dispatch("notifyError", { error: error });
+          this.$store.dispatch('notifyError', { error });
         });
     },
     triggerConfirm(method, arg) {

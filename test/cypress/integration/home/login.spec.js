@@ -1,6 +1,5 @@
 // import * as ctx from  '../../../../quasar.conf.js'
 
-
 // describe('Login', () => {
 //   it('Login through Google', () => {
 //     const username = Cypress.env('')
@@ -16,7 +15,7 @@
 //       loginSelector: 'a[href="/auth/auth0/google-oauth2"]',
 //       postLoginSelector: '.account-panel'
 // 	}
-	
+
 // 	cy.clearCookies()
 
 // 	return cy.task('GoogleSocialLogin', socialLoginOptions).then(({cookies}) => {
@@ -35,10 +34,10 @@
 // 			})
 // 		}
 // 	})
-	
+
 //     // return cy.task('GoogleSocialLogin', socialLoginOptions).then(({cookies}) => {
 //     //   cy.clearCookies()
- 
+
 //     //   const cookie = cookies.filter(cookie => cookie.name === cookieName).pop()
 //     //   if (cookie) {
 //     //     cy.setCookie(cookie.name, cookie.value, {
@@ -48,7 +47,7 @@
 //     //       path: cookie.path,
 //     //       secure: cookie.secure
 //     //     })
- 
+
 //     //     Cypress.Cookies.defaults({
 //     //       whitelist: cookieName
 //     //     })

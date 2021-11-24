@@ -30,13 +30,13 @@ npm install
 It should works without any changes on the backend. So you can continue to use the same dev backend for both version of Arborator frontend
 
 ### TODO LIST
-- [ ] change the conll in the codemirror editor should not being apply if the new tree is unvalid
 - [ ] <URGENT> re-add lexicon import and export logic (in LexiconTableBase.vue ? before was in LexiconPanel.vue) and compareLexicon.vue
 - [ ] <fix> when refresh page, we should not be redirected to home page, but stay on the sama page
 - [ ] <fix>Lexicon : have only one way to delete a feature 
 - [ ] <estetic> improve estetics of our code mirror instances (font, color, font-size)
 - [ ] <URGENT> Page Settings.vue (name modification doesnt work)
   ***
+- [X] change the conll in the codemirror editor should not being apply if the new tree is unvalid
 - [X] <broken>if user save a tree and has no tree yet, we have ERROR this4.$set is undefined  
 - [x] fix breadcrumbs not working
 - [x] <estetic> Some global app styling doesn't work (we can see a light blue instead of the purple arboragrew theme, ;aybe our stylus loader/compiler is not working. )

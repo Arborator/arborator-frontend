@@ -54,7 +54,7 @@ export default createStore({
     updateUser({ commit }, payload) {
       commit('update_user', payload);
     },
-    notifyError({ commit }, { error }) {
+    notifyError({ commit }, { error, timeout }) {
       let msg;
       let caption = '';
       if (error.message !== undefined) {
@@ -85,12 +85,14 @@ export default createStore({
           html: true,
         });
       } else {
+        timeout = timeout || 5000;
         Notify.create({
           message: msg,
           position: 'top-right',
           color: 'negative',
           icon: 'warning',
           caption,
+          timeout,
         });
       }
     },

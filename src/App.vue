@@ -25,10 +25,9 @@ export default defineComponent({
     };
   },
   mounted() {
-    console.log();
     this.storage = useStorage();
     this.$store.dispatch('user/checkSession', {}).then(() => {
-      this.$router.push('/');
+      console.log('Session checked');
     });
     try {
       this.$q.dark.set(this.storage.getStorageSync('dm'));

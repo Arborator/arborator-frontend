@@ -54,12 +54,7 @@ export default {
       treeJson: {},
       checkboxes: {},
       metaLabels: ['UPOS', 'DEPREL', 'HEAD', 'LEMMA'],
-      checkboxesAll: {
-        UPOS: false,
-        DEPREL: false,
-        HEAD: false,
-        LEMMA: false,
-      },
+      checkboxesAll: { UPOS: false, DEPREL: false, HEAD: false, LEMMA: false },
     };
   },
   mounted() {
@@ -88,7 +83,10 @@ export default {
         for (const metaLabel of this.metaLabels) {
           const toDeleteBool = this.checkboxes[token][metaLabel];
           if (toDeleteBool) {
-            this.treeJson[token][metaLabel] = typeof this.treeJson[token][metaLabel] === 'string' ? '_' : NaN;
+            this.treeJson[token][metaLabel] = typeof this.treeJson[token][metaLabel] === 'string' ? '_' : '_';
+            if (metaLabel === 'HEAD') {
+              this.treeJson[token].DEPREL = '_';
+            }
           }
         }
       }

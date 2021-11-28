@@ -31,11 +31,11 @@ It should works without any changes on the backend. So you can continue to use t
 
 ### TODO LIST
 - [ ] <URGENT> re-add lexicon import and export logic (in LexiconTableBase.vue ? before was in LexiconPanel.vue) and compareLexicon.vue
-- [ ] <fix> when refresh page, we should not be redirected to home page, but stay on the sama page
 - [ ] <fix>Lexicon : have only one way to delete a feature 
 - [ ] <estetic> improve estetics of our code mirror instances (font, color, font-size)
 - [ ] <URGENT> Page Settings.vue (name modification doesnt work)
   ***
+- [x] <fix> when refresh page, we should not be redirected to home page, but stay on the sama page
 - [X] change the conll in the codemirror editor should not being apply if the new tree is unvalid
 - [X] <broken>if user save a tree and has no tree yet, we have ERROR this4.$set is undefined  
 - [x] fix breadcrumbs not working

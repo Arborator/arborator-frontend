@@ -339,7 +339,7 @@ export default {
     filteredConlls() {
       let filteredConlls = this.sentenceData.conlls;
       if (this.exerciseLevel !== 1 && !this.isAdmin && this.exerciseMode) {
-        filteredConlls = Object.filter(this.sentenceData.conlls, ([user, conll]) => user !== 'teacher');
+        filteredConlls = Object.entries(this.sentenceData.conlls).filter(([user, conll]) => user !== 'teacher');
       }
       return this.orderConlls(filteredConlls);
     },

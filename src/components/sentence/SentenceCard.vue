@@ -339,7 +339,11 @@ export default {
     filteredConlls() {
       let filteredConlls = this.sentenceData.conlls;
       if (this.exerciseLevel !== 1 && !this.isAdmin && this.exerciseMode) {
-        filteredConlls = Object.entries(this.sentenceData.conlls).filter(([user, conll]) => user !== 'teacher');
+        const filteredConllsTemp = Object.entries(this.sentenceData.conlls).filter(([user, conll]) => user !== 'teacher');
+        filteredConlls = {};
+        for (const [user, conll] of filteredConllsTemp) {
+          filteredConlls[user] = conll;
+        }
       }
       return this.orderConlls(filteredConlls);
     },

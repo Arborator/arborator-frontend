@@ -116,7 +116,16 @@ export default {
       cm.execCommand('selectAll');
     },
     onConllDialogOk() {
-      const sentenceJson = sentenceConllToJson(this.conllContent);
+      let sentenceJson;
+      try {
+        sentenceJson = sentenceConllToJson(this.conllContent);
+      } catch (error) {
+        this.$store.dispatch('notifyError', {
+          error,
+          timeout: 10000,
+        });
+        return;
+      }
       const oldMeta = this.sentenceBus[this.userId].metaJson;
       const newMeta = sentenceJson.metaJson;
 

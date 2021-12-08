@@ -150,8 +150,13 @@ export default {
         tot += this.options.relav[i].v ? this.options.annof.DEPREL[i].join + cur.v : '';
         return tot;
       }, '');
-      this.dep.DEPREL = newDeprel;
-      this.dep.HEAD = this.gov.ID;
+      if (this.gov.ID === undefined || this.gov.ID === null) {
+        this.dep.DEPREL = '_';
+        this.dep.HEAD = '_';
+      } else {
+        this.dep.DEPREL = newDeprel || '_';
+        this.dep.HEAD = this.gov.ID;
+      }
       this.sentenceBus.emit('tree-update:token', {
         token: this.dep,
         // gov: this.gov,
@@ -159,8 +164,8 @@ export default {
       });
     },
     onDeleteRelation() {
-      this.dep.DEPREL = '';
-      this.dep.HEAD = null;
+      this.dep.DEPREL = '_';
+      this.dep.HEAD = '_';
       this.sentenceBus.emit('tree-update:token', {
         token: this.dep,
         // gov: this.gov,

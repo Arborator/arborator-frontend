@@ -25,7 +25,7 @@
     "axios": "^0.24.0",
     "codemirror": "^5.63.3",
     "codemirror-editor-vue3": "^0.2.4",
-    "conllup": "^1.1.6",
+    "conllup": "^1.1.7",
     "core-js": "^3.6.5",
     "dependencytreejs": "^1.0.5",
     "diff": "^5.0.0",

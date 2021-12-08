@@ -250,16 +250,13 @@ export default {
       lang: this.$i18n.locale,
       langOptions: [
         { value: 'en-us', label: 'EN', img: '/images/usflag.svg' },
-        {
-          value: 'fr-fra',
-          label: 'FR',
-          img: '/images/frenchflag.svg',
-        },
+        { value: 'fr-fra', label: 'FR', img: '/images/frenchflag.svg' },
       ],
     };
   },
   mounted() {
     this.storage = useStorage();
+    this.setStartingLanguage();
   },
   watch: {
     lang(lang) {
@@ -282,7 +279,7 @@ export default {
         return this.$store.getters['config/admins'].includes(username) || this.$store.getters['user/isSuperAdmin'];
       }
       return false;
-    },
+    }
   },
   methods: {
     openURL,
@@ -317,6 +314,17 @@ export default {
           this.$store.dispatch('notifyError', { error });
         });
     },
+    setStartingLanguage() {
+      const defaultLang = navigator.language
+      var langStorage = this.storage.setStorageSync('arbolang', this.lang);
+      if (langStorage == null) {
+        if(defaultLang.includes("fr")){
+          this.lang = { value: 'fr-fra', label: 'FR', img: '/images/frenchflag.svg' };
+        }else{ this.lang = { value: 'en-us', label: 'EN', img: '/images/usflag.svg' }; }
+      }else {
+        this.lang = langStorage;
+      }
+    }
   },
 };
 </script>

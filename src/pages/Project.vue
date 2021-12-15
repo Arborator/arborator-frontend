@@ -347,7 +347,7 @@
                 </q-td>
                 <q-td key="exerciseLevel" :props="props">
                   <q-select
-                    @input="updateExerciseLevel(props.row)"
+                    @update:model-value="updateExerciseLevel(props.row)"
                     outlined
                     :options="exerciceModeOptions"
                     map-options
@@ -419,6 +419,7 @@ import { mapGetters } from 'vuex';
 
 import { openURL } from 'quasar';
 
+import { nextTick } from 'vue';
 import api from '../boot/backend-api';
 
 import Store from '../store/index';
@@ -552,22 +553,22 @@ export default {
         loadingDelete: false,
         exporting: false,
       },
-      exerciceModeOptions:[
+      exerciceModeOptions: [
         {
           label: '1: teacher_visible',
-          value: 1
+          value: 1,
         },
         {
           label: '2: local_feedback',
-          value: 2
+          value: 2,
         },
         {
           label: '3: global_feedback',
-          value: 3
+          value: 3,
         },
         {
           label: '4: no_feedback',
-          value: 4
+          value: 4,
         },
       ],
       window: { width: 0, height: 0 },
@@ -795,7 +796,11 @@ export default {
         });
     },
     updateExerciseLevel(sample) {
-      api.updateSampleExerciseLevel(this.$route.params.projectname, sample.sample_name, sample.exerciseLevel);
+      setTimeout(() => {
+        // IMPORTANT : Since quasar v2 (vue v3), the update method (in q-select) occurs BEFORE the value is updated
+        // So we need to use this hack of setTimeout if we want to access to the updated sample.exerciseLevel
+        api.updateSampleExerciseLevel(this.$route.params.projectname, sample.sample_name, sample.exerciseLevel);
+      }, 0);
     },
     triggerConfirm(method, arg) {
       this.confirmActionDial = true;

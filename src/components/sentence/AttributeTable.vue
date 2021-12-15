@@ -26,11 +26,11 @@
               {{ props.row.a }}
             </div>
             <q-select
-              v-else-if="openFeatures=='true'"
+              v-else-if="openFeatures == 'true'"
               use-input
               input-debounce="1000"
               new-value-mode="add-unique"
-              @input="oninput(props.row)"
+              @input-value="oninput(props.row)"
               dense
               v-model="props.row.a"
               :options="computeAttributeOptions(props.row)"
@@ -50,7 +50,7 @@
               filled
               dense
               use-input
-              @input="oninput(props.row)"
+              @input-value="oninput(props.row)"
               :rules="[(val) => !!val || 'Field is required']"
             />
             <q-input
@@ -58,7 +58,7 @@
               v-model.number="props.row.v"
               filled
               dense
-              @input="oninput(props.row)"
+              @input-value="oninput(props.row)"
               :rules="[(val) => !!val || 'Field is required']"
             />
 
@@ -71,7 +71,7 @@
               input-debounce="1000"
               new-value-mode="add-unique"
               clearable
-              @input="oninput(props.row)"
+              @input-value="oninput(props.row)"
               :options="computeValueOptions(props.row)"
               :options-sanitize="true"
             />
@@ -83,7 +83,7 @@
               clearable
               v-model="props.row.v"
               :options="computeValueOptions(props.row)"
-              @input="oninput(props.row)"
+              @input-value="oninput(props.row)"
             >
               <!-- removed fill-input to allow to erase functions -->
               <template v-if="prepend !== undefined" v-slot:prepend>{{ props.row.join }}</template>

@@ -12,7 +12,6 @@ export default {
   settings: 'Settings',
   admin: 'Admin',
   fullscreen: 'Fullscreen',
-  footer: ['Made with', 'in', 'at'], // reaaallllll basic one, not good enough but still buggy using span and html parse
   navhome: 'Home',
   navprojects: 'Projects',
   navsettings: 'Settings',
@@ -65,7 +64,7 @@ export default {
       content: [
         'Head over to',
         'to have a look and grab the code.',
-        'Get involved give us feedback on the',
+        'Get involved and give us feedback on the',
         'issue page of this Arborator front-end',
         'A guide to install Arborator-Grew on your own server will be provided here shortly...',
       ],
@@ -93,6 +92,8 @@ export default {
         'The legacy Arborator is still running here',
       ],
     },
+    footertextmadewith: 'Made with',
+    footertextin: 'in', // reaaallllll basic one, not good enough but still buggy using span and html parse
   },
 
   // list of projects page

@@ -11,8 +11,6 @@ export default {
   settings: 'Paramètres',
   admin: 'Admin',
   fullscreen: 'Plein écran',
-  footer: ['Fait avec', 'in', 'at'], // reaaallllll basic one, not good enough but still buggy using span and html parse
-  navhome: 'Accueil',
   navprojects: 'Projets',
   navsettings: 'Paramètres',
 
@@ -91,6 +89,8 @@ export default {
         "La version historique d'Arborator est toujours utilisable ici",
       ],
     },
+    footertextmadewith: "Créé avec beaucoup d'",
+    footertextin: 'à', // reaaallllll basic one, not good enough but still buggy using span and html parse  navhome: 'Accueil',
   },
 
   // list of projects page

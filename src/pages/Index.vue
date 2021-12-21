@@ -1,7 +1,7 @@
 <template>
   <q-page :class="$q.dark.isActive ? 'bg-dark' : 'bg-white'">
     <div class="q-pa-md q-gutter-sm">
-      <section class="sectionfscreen">
+      <section class="sectionfscreen" @mousemove="xCoordinate">
         <q-card flat class="fixed-center">
           <q-card-section>
             <div class="text-center">
@@ -16,7 +16,7 @@
             </div>
           </q-card-section>
 
-          <q-card-actions align="around">
+          <q-card-actions align="center">
             <q-btn id="accesstreebank" rounded to="/projects" color="primary" no-caps>{{ $t('homepage.accessTreebankBtn') }}</q-btn>
           </q-card-actions>
 
@@ -37,12 +37,12 @@
               :class="$q.dark.isActive ? 'bg-grey-10 text-white' : 'text-blue-grey-8'"
               class="rounded-borders"
             >
-              <q-carousel-slide name="style" class="column no-wrap flex-center">
+              <!-- <q-carousel-slide name="style" class="column no-wrap flex-center">
                 <q-icon name="fas fa-edit" size="56px" />
                 <div class="q-mt-md text-center text-body1">
                   {{ $t('homepage') }}
                 </div>
-              </q-carousel-slide>
+              </q-carousel-slide> -->
               <q-carousel-slide name="tv" class="column no-wrap flex-center">
                 <q-icon name="fas fa-search" size="56px" />
                 <div class="q-mt-md text-center text-body1">
@@ -66,14 +66,14 @@
 
           <q-separator vertical />
 
-          <q-card-actions align="around" vertical>
-            <span class="text-center text-caption text-grey">{{ $t('homepage.scroll') }}</span>
-            <q-icon name="fas fa-angle-double-down" />
+          <q-card-actions align="around" vertical @click="scrolldown()" class="clickable clickhl">
+            <span class="text-center text-caption">{{ $t('homepage.scroll') }}</span>
+            <q-icon name="fas fa-angle-double-down" style="font-size: 44px" :style="`color: ${myColor}`" />
           </q-card-actions>
         </q-card>
       </section>
 
-      <q-card flat class="q-pa-md q-gutter-y-xl">
+      <q-card flat class="q-pa-md q-gutter-y-lg" id="arboheadline">
         <q-separator inset />
 
         <section class="row sectionsize">
@@ -107,19 +107,21 @@
                     <p>
                       {{ $t('homepage.descriptionCard.content[0]') }}
                       <a href="https://surfacesyntacticud.github.io" target="_blank">
-                        <q-icon name="/svg/sud.svg" size="md" />
-                        <q-tooltip content-class="bg-accent" content-style="font-size: 16px">
-                          {{ $t('homepage.descriptionCard.tooltipSud') }}
-                        </q-tooltip>
+                        <q-icon name="img:/svg/sud.svg" size="md">
+                          <q-tooltip content-class="bg-accent" content-style="font-size: 16px">
+                            {{ $t('homepage.descriptionCard.tooltipSud') }}
+                          </q-tooltip>
+                        </q-icon>
                       </a>
                       {{ $t('homepage.descriptionCard.content[1]') }}
                       <a href="https://universaldependencies.org/" target="_blank">
-                        <q-icon name="/svg/ud.svg" size="sm" />
+                        <q-icon name="img:/svg/ud.svg" size="sm" />
                         <q-tooltip content-class="bg-accent" content-style="font-size: 16px">
                           {{ $t('homepage.descriptionCard.tooltipUd') }}
                         </q-tooltip> </a
                       >.
                     </p>
+
                     <p class="text-center text-body1">
                       {{ $t('homepage.collaborativeCard.content[2]') }}
                       <q-btn push to="/projects/Playground/en_gum-sud-dev/665" color="primary" no-caps>{{
@@ -155,7 +157,7 @@
                   <div class="text-justify text-body1">
                     {{ $t('homepage.grewCard.content[0]') }}
                     <a href="http://grew.fr//" target="_blank">
-                      <q-icon name="/svg/grew.svg" size="md" />
+                      <q-icon name="img:/svg/grew.svg" size="xl" />
                       <q-tooltip content-class="bg-accent" content-style="font-size: 15px">
                         {{ $t('homepage.grewCard.tooltipGrew') }}
                       </q-tooltip>
@@ -248,13 +250,14 @@
                   flat
                   :class="hoverdraft ? 'bg-grey-2' : 'hover'"
                   class="clickable clickhl col-1 grid-style-transition shadow-7"
-                  @click="openURL('https://arborator.github.io/draft')"
+                  @click="openURL('https://arborator.github.io/draft/live.html')"
                 >
                   <q-card-section>
+                    <q-img src="images/arboratorNano.png" style="width: 52px" loading="lazy" />
+
                     {{ $t('homepage.toolsCard.content[0]') }}
                   </q-card-section>
                   <q-card-section>
-                    <img src="/svg/arborator.quick.svg" width="100em" />
                     <q-badge align="top" color="positive">{{ $t('homepage.toolsCard.content[1]') }}</q-badge>
                     <q-item-section>
                       <q-item-label lines="1"> </q-item-label>
@@ -273,6 +276,10 @@
                 >
                   <q-card-section>
                     {{ $t('homepage.toolsCard.content[3]') }}
+                    <q-badge align="top" color="positive">{{ $t('homepage.toolsCard.content[1]') }}</q-badge>
+                  </q-card-section>
+                  <q-card-section>
+                    <q-img src="svg/arborator.quick.svg" spinner-color="white" style="width: 140px" loading="lazy" />
                     {{ $t('homepage.toolsCard.content[4]') }}
                   </q-card-section>
                 </q-card>
@@ -284,6 +291,7 @@
                   @click="openURL('https://arborator.ilpga.fr/')"
                 >
                   <q-card-section>
+                    <q-img src="images/arboratorNano.png" style="width: 52px" loading="lazy" />
                     {{ $t('homepage.toolsCard.content[5]') }}
                   </q-card-section>
                 </q-card>
@@ -295,9 +303,9 @@
     </div>
     <q-footer>
       <q-item-label caption class="text-center text-grey-3">
-        {{ $t('footer')[0] }}
+        {{ $t('homepage.footertextmadewith') }}
         <q-icon name="favorite" style="font-size: 22px; color: #dd137b; height: 18px; vertical-align: text-bottom" />
-        {{ $t('footer')[1] }}
+        {{ $t('homepage.footertextin') }}
         <img aria-hidden="true" role="presentation" src="/svg/paris.svg" class="" style="color: #dd137b; height: 18px" />
         <!-- {{t('footer')[2]}} -->
         <!-- <a href="https://team.inria.fr/almanach" target="_blank">
@@ -326,7 +334,15 @@ export default {
       hoverlegacy: false,
       search: '',
       slide: 'style',
+      xcursor: 111,
     };
+  },
+  computed: {
+    myColor: {
+      get() {
+        return `hsl(${this.xcursor}, 50%, 50%)`;
+      },
+    },
   },
   methods: {
     openURL,
@@ -348,6 +364,12 @@ export default {
         .catch(() => {
           this.$q.notify({ message: 'Failed to copy.' });
         });
+    },
+    xCoordinate(e) {
+      this.xcursor = e.clientX;
+    },
+    scrolldown() {
+      document.getElementById('arboheadline').scrollIntoView({ behavior: 'smooth' });
     },
   },
 };

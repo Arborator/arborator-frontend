@@ -42,7 +42,9 @@
       </q-item>
 
       <q-card-actions vertical class="justify-around q-px-md">
-        <q-badge :color="$q.dark.isActive ? 'grey' : 'secondary'"> {{ project.number_samples }} {{ $t('projectHub.samples') }} </q-badge>
+        <q-badge :color="$q.dark.isActive ? 'grey' : 'secondary'">
+          {{ project.number_samples }} {{ project.number_samples == 1 ? $t('projectHub.sample') : $t('projectHub.samples') }}
+        </q-badge>
       </q-card-actions>
     </q-card-section>
 

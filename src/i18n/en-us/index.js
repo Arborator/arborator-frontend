@@ -101,9 +101,13 @@ export default {
     tooltipCreaProject: 'Create a new project',
     tooltipChangeView: 'Change view',
     title: 'Projects',
+    sample: 'sample',
     samples: 'samples',
     rightClickSettings: 'Settings',
     rightClickDelete: 'Delete',
+    emptySearch: 'Search for project',
+    myProjects: 'My Projects',
+    otherProjects: 'Other Projects',
   },
 
   // page when you enter a project ( samples info, etc)

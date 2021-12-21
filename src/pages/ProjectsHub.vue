@@ -21,7 +21,7 @@
                 filled
                 bottom-slots
                 v-model="search"
-                label="Search Project"
+                :label="$t('projectHub.emptySearch')"
                 type="text"
                 @input="searchProject(search)"
                 @keyup.enter="searchProject(search)"
@@ -68,7 +68,7 @@
           </q-virtual-scroll>
           <div v-if="!$q.platform.is.mobile" class="q-pa-md row items-start q-gutter-md">
             <div class="text-h6 col-12" v-if="isLoggedIn && myProjects.length">
-              <q-chip color="primary" class="category" text-color="white"> My projects </q-chip>
+              <q-chip color="primary" class="category" text-color="white"> {{ $t('projectHub.myProjects') }} </q-chip>
             </div>
             <ProjectCard
               style="max-width: 250px"
@@ -79,7 +79,7 @@
               :key="project.id"
             ></ProjectCard>
             <div class="text-h6 col-12" v-if="isLoggedIn && otherProjects.length">
-              <q-chip color="primary" class="category" text-color="white"> Other projects </q-chip>
+              <q-chip color="primary" class="category" text-color="white"> $t('projectHub.otherProjects') </q-chip>
             </div>
             <ProjectCard
               style="max-width: 250px"

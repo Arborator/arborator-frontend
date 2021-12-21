@@ -38,7 +38,7 @@
     </q-card-section>
     <q-card-section>
       <q-input v-model="description" style="height: 100px" label="Description" filled clearable type="textarea" />
-      <q-btn color="primary" @click="saveDescription" :label="$t('projectSettings').descriptionSave" icon="save" dense flat></q-btn>
+      <q-btn color="primary" @click="saveDescription" :label="$t('projectSettings.descriptionSave')" icon="save" dense flat></q-btn>
     </q-card-section>
     <q-card-section class="q-pa-sm row items-start q-gutter-md">
       <q-card class="col col-sm-12">

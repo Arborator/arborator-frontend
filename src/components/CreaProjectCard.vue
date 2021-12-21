@@ -31,7 +31,7 @@
           />
         </div>
         <q-toggle v-model="project.showAllTrees" label="Show All Trees" />
-        <q-toggle v-model="project.exerciseMode" :label="$t('createProjectCard').exerciseMode" />
+        <q-toggle v-model="project.exerciseMode" :label="$t('createProjectCard.exerciseMode')" />
         <div>
           <q-btn id="submitproject" type="submit" :loading="submitting" label="create" color="primary" class="q-mt-md" v-close-popup />
           <q-btn label="Reset" type="reset" color="primary" flat class="q-ml-sm" />

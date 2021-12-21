@@ -13,13 +13,13 @@
         <q-card-section>
           <q-list>
             <q-item clickable @click="projectSettings()">
-              <q-item-section>{{ $t('projectHub').rightClickSettings }}</q-item-section>
+              <q-item-section>{{ $t('projectHub.rightClickSettings') }}</q-item-section>
               <q-item-section side>
                 <q-icon name="settings" />
               </q-item-section>
             </q-item>
             <q-item clickable @click="triggerConfirm(deleteProject)">
-              <q-item-section>{{ $t('projectHub').rightClickDelete }}</q-item-section>
+              <q-item-section>{{ $t('projectHub.rightClickDelete') }}</q-item-section>
               <q-item-section side>
                 <q-icon name="delete_forever" color="negative" />
               </q-item-section>
@@ -42,7 +42,7 @@
       </q-item>
 
       <q-card-actions vertical class="justify-around q-px-md">
-        <q-badge :color="$q.dark.isActive ? 'grey' : 'secondary'"> {{ project.number_samples }} {{ $t('projectHub').samples }} </q-badge>
+        <q-badge :color="$q.dark.isActive ? 'grey' : 'secondary'"> {{ project.number_samples }} {{ $t('projectHub.samples') }} </q-badge>
       </q-card-actions>
     </q-card-section>
 

@@ -279,7 +279,7 @@ export default {
         return this.$store.getters['config/admins'].includes(username) || this.$store.getters['user/isSuperAdmin'];
       }
       return false;
-    }
+    },
   },
   methods: {
     openURL,
@@ -315,16 +315,18 @@ export default {
         });
     },
     setStartingLanguage() {
-      const defaultLang = navigator.language
-      var langStorage = this.storage.setStorageSync('arbolang', this.lang);
+      const defaultLang = navigator.language;
+      const langStorage = this.storage.setStorageSync('arbolang', this.lang);
       if (langStorage == null) {
-        if(defaultLang.includes("fr")){
+        if (defaultLang.includes('fr')) {
           this.lang = { value: 'fr-fra', label: 'FR', img: '/images/frenchflag.svg' };
-        }else{ this.lang = { value: 'en-us', label: 'EN', img: '/images/usflag.svg' }; }
-      }else {
+        } else {
+          this.lang = { value: 'en-us', label: 'EN', img: '/images/usflag.svg' };
+        }
+      } else {
         this.lang = langStorage;
       }
-    }
+    },
   },
 };
 </script>

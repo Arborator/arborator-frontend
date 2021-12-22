@@ -99,7 +99,7 @@ export default {
     tooltipChangeView: "Changer l'affichage",
     title: 'Projets',
     sample: 'échantillon',
-    samples: 'échantillon(s)',
+    samples: 'échantillons',
     rightClickSettings: 'Paramètres',
     rightClickDelete: 'Supprimer',
     emptySearch: 'chercher un projet',
@@ -187,5 +187,9 @@ export default {
     annotationSettingsInput: 'Annotation settings',
     annotationSettingsSave: 'save annotation settings',
     checkAnnotation: 'This looks like reasonable Json',
+  },
+  // Klang
+  Klang: {
+    projects: 'Les projets Klang',
   },
 };

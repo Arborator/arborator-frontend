@@ -191,4 +191,8 @@ export default {
     annotationSettingsSave: 'save annotation settings',
     checkAnnotation: 'This looks like reasonable Json',
   },
+  // Klang
+  Klang: {
+    projects: 'Klang Projects',
+  },
 };

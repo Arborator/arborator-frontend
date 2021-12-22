@@ -185,6 +185,7 @@ export default {
     };
   },
   mounted() {
+    document.title = `ArboratorGrew: ${this.$t('projectHub.title')}`;
     this.storage = useStorage();
     this.initLoading = true;
     // this.listMode = this.$storage.getStorageSync("project_view", false);

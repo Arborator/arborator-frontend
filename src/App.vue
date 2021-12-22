@@ -27,12 +27,12 @@ export default defineComponent({
   mounted() {
     this.storage = useStorage();
     this.$store.dispatch('user/checkSession', {}).then(() => {
-      console.log('Session checked');
+      console.log('App.vue Session checked');
     });
     try {
       this.$q.dark.set(this.storage.getStorageSync('dm'));
     } catch (error) {
-      console.log('ls not found');
+      console.log('App.vue ls not found');
     }
     try {
       this.$i18n.locale = this.storage.getStorageSync('arbolang');

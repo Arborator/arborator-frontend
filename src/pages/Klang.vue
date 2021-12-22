@@ -2,7 +2,7 @@
   <q-page class="full-width justify-start items-start content-start">
     &nbsp;
     <div class="q-pa-xl q-gutter-lg">
-      <div class="text-h3 text-primary">Available Projects</div>
+      <div class="text-h3 text-primary">{{ $t('Klang.projects') }}</div>
     </div>
 
     <div class="q-pa-lg row items-start q-gutter-lg">
@@ -32,6 +32,7 @@ export default {
   },
   mounted() {
     this.getProjects();
+    document.title = `Klang`;
   },
   methods: {
     /**

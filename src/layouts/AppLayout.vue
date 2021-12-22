@@ -275,7 +275,7 @@ export default {
       }
       if (this.$route.params.kprojectname) {
         const { username } = this.$store.getters['user/getUserInfos'];
-        console.log(username, this.$store.getters['config/admins']);
+        console.log(1111, username, this.$store.getters['config/admins']);
         return this.$store.getters['config/admins'].includes(username) || this.$store.getters['user/isSuperAdmin'];
       }
       return false;

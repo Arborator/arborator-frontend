@@ -601,7 +601,7 @@ export default {
     this.getUsers();
     this.getProjectSamples();
 
-    document.title = this.$route.params.projectname;
+    document.title = `ArboratorGrew: ${this.$route.params.projectname}`;
     if (this.$route.query.q && this.$route.query.q.length > 0) this.searchDialog = true;
   },
   methods: {

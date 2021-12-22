@@ -1,12 +1,15 @@
 <template>
-  <q-page class="full-width row wrap justify-start items-start content-start">
+  <q-page class="full-width column wrap justify-start items-start content-start">
     &nbsp;
     <div class="q-pa-xl q-gutter-lg">
-      <div class="text-h3 text-primary">Available Samples</div>
+      <div class="text-h3 text-primary">Klang: {{ kprojectname }}</div>
+      <q-badge :color="$q.dark.isActive ? 'grey' : 'primary'">
+        {{ samples.length }} {{ samples.length == 1 ? $t('projectHub.sample') : $t('projectHub.samples') }}
+      </q-badge>
     </div>
     &nbsp;
     <div class="q-pa-lg row items-start q-gutter-lg">
-      <q-card style="max-width: 250px; width: 250px" clickable v-for="(f, i) in samples" :key="f" class="text-primary cursor-pointer q-hoverable">
+      <q-card style="max-width: 300px; width: 300px" clickable v-for="(f, i) in samples" :key="f" class="text-primary cursor-pointer q-hoverable">
         <span class="q-focus-helper"></span>
         <q-item clickable :to="'/klang/' + kprojectname + '/' + f">
           <q-icon name="music_note" size="lg" />
@@ -17,7 +20,8 @@
         </q-item>
       </q-card>
     </div>
-    {{ isSuperAdmin }}
+    <!-- {{ isSuperAdmin }}
+    11 {{ isProjectAdmin }}22 11 {{ users }}22 -->
     <q-separator spaced />
     <div class="q-pa-md">
       <q-btn dense color="primary" icon="add" label="Add admins for the project" ref="addAdmins" @click="openAdminsDialog" v-if="isSuperAdmin" />
@@ -77,6 +81,7 @@ export default {
   mounted() {
     this.getProjectSamples();
     this.getAllUsers();
+    document.title = `Klang: ${this.kprojectname}`;
   },
 
   methods: {

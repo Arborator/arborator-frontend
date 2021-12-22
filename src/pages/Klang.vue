@@ -1,17 +1,22 @@
 <template>
-  <q-page class="full-width row wrap justify-start items-start content-start">
+  <q-page class="full-width justify-start items-start content-start">
     &nbsp;
-    <q-chip label="Available Projects" color="primary" text-color="white" style="font-size: 15px"></q-chip>
-    <q-separator spaced />
-    &nbsp;
-    <div class="row q-col-gutter-md q-pa-lg">
-      <div clickable v-for="(f, i) in projects" :key="f" style="min-width: 300px">
-        <div>
-          <q-btn no-caps color="primary" :label="i + '. ' + f" icon="music_note" :to="'/klang/' + f" />
-        </div>
-      </div>
+    <div class="q-pa-xl q-gutter-lg">
+      <div class="text-h3 text-primary">Available Projects</div>
     </div>
-    <q-separator spaced />
+
+    <div class="q-pa-lg row items-start q-gutter-lg">
+      <q-card style="max-width: 250px; width: 250px" clickable v-for="(f, i) in projects" :key="f" class="text-primary cursor-pointer q-hoverable">
+        <span class="q-focus-helper"></span>
+        <q-item clickable :to="'/klang/' + f">
+          <q-icon name="music_note" size="lg" />
+          <q-item-section>
+            <q-item-label caption> {{ i + 1 }}. </q-item-label>
+            <q-item-label> {{ f }} </q-item-label>
+          </q-item-section>
+        </q-item>
+      </q-card>
+    </div>
   </q-page>
 </template>
 

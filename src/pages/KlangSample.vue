@@ -3,12 +3,18 @@
     <div class="q-pa-none full-width" ref="words">
       <div class="row" dense v-if="isLoggedIn">
         <div class="col row q-pa-none"><q-space /></div>
-        <div class="col q-pa-none" v-if="viewAllTranscriptions"></div>
-        <template v-for="(u, anno) in conll" :key="u">
-          <div v-if="anno !== 'original'" class="col q-pa-none">
-            <q-badge> {{ viewAllTranscriptions || wasSaved ? anno : 'original' }} </q-badge>
-          </div>
+        <!-- <div class="col q-pa-none" v-if="viewAllTranscriptions"> -->
+        <div class="col q-pa-none">
+          <q-badge> {{ viewAllTranscriptions ? 'new proposal' : username }} </q-badge>
+        </div>
+        <template v-if="viewAllTranscriptions">
+          <template v-for="(u, anno) in conll" :key="u">
+            <div v-if="anno !== 'original'" class="col q-pa-none">
+              <q-badge> {{ viewAllTranscriptions || wasSaved ? anno : 'original' }} </q-badge>
+            </div>
+          </template>
         </template>
+        <!-- </div> -->
       </div>
       <div class="row" dense v-for="(sent, i) in conll['original']" :key="i">
         <span class="line-number" dense>
@@ -82,6 +88,7 @@
             <q-input dense filled square v-model="mytrans[i]"> </q-input>
           </div>
         </div>
+        <!-- ADMIN TABLE : OTHER ANNOTATOR -->
         <template v-if="viewAllTranscriptions">
           <template v-for="(u, anno) in conll" :key="u">
             <div class="col q-pa-none" v-if="anno !== 'original'">
@@ -452,7 +459,7 @@ export default {
     },
 
     moveToInputField(annotator, line) {
-      Vue.set(this.mytrans, line, this.segments[annotator][line]);
+      this.mytrans[line] = this.segments[annotator][line];
     },
 
     exportConll() {
@@ -556,7 +563,7 @@ export default {
           this.conll.original = response.data.tokens;
           this.speakers = response.data.speakers;
           if (this.isLoggedIn) {
-            if (!this.viewAllTranscriptions) {
+            if (!this.isAdmin) {
               api
                 .getTranscription(this.kprojectname, this.ksamplename, this.username)
                 .then((response2) => {
@@ -597,6 +604,12 @@ export default {
             const user = this.makeValid(data[index]);
             this.conll[user.user] = user;
           }
+        }
+        if (!this.conll[this.username]) {
+          this.conll[this.username] = {
+            user: this.username,
+            transcription: [],
+          };
         }
       } else {
         const user = this.makeValid(data);

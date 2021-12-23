@@ -293,7 +293,7 @@ export default {
     //   });
     // },
     sortProjects() {
-      if (!this.isLoggedIn) return;
+      // if (!this.isLoggedIn) return;
       this.visibleProjects.sort((a, b) => b.last_access - a.last_access);
     },
     isCreatedByMe(project) {

@@ -117,6 +117,7 @@ export default {
   },
   methods: {
     timeAgo(secsAgo) {
+      if (secsAgo < -7 * 3600 * 24 * 365) return 'a long time ago';
       const formatter = new Intl.RelativeTimeFormat(this.locale, { style: 'long' });
       const ranges = {
         years: 3600 * 24 * 365,

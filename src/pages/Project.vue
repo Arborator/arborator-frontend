@@ -207,7 +207,7 @@
                   <q-tooltip :delay="300" content-class="text-white bg-primary"></q-tooltip>
                 </div>
 
-                <div>
+                <div v-if="isGuest || isAdmin || isSuperAdmin">
                   <q-btn
                     v-show="isShowLexiconPanel === false"
                     flat
@@ -215,16 +215,17 @@
                     icon="playlist_add_check"
                     @click="fetchLexicon()"
                     :loading="table.exporting"
-                    :disable="(!isGuest && !isAdmin && !isSuperAdmin) || table.selected.length < 1"
+                    :disable="table.selected.length < 1"
                   ></q-btn>
                   <q-btn
+                    v-if="isGuest || isAdmin || isSuperAdmin"
                     v-show="isShowLexiconPanel === true"
                     flat
                     color="default"
                     icon="playlist_add_check"
                     @click="isShowLexiconPanel = false"
                     :loading="table.exporting"
-                    :disable="(!isGuest && !isAdmin && !isSuperAdmin) || table.selected.length < 1"
+                    :disable="table.selected.length < 1"
                   ></q-btn>
                   <q-tooltip v-if="table.selected.length < 1" :delay="300" content-class="text-white bg-primary"
                     >Select the samples to create a lexicon</q-tooltip

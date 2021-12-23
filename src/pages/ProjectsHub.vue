@@ -48,7 +48,9 @@
             </q-item>
           </q-card>
         </q-card-section>
+        <!-- here starts the actual project presentation -->
         <q-card-section v-if="!listMode" style="width: 90vw; height: 60vh">
+          <!-- if mobile:  -->
           <q-virtual-scroll
             v-if="$q.platform.is.mobile"
             :items="visibleProjects"
@@ -66,20 +68,36 @@
               ></ProjectCard>
             </template>
           </q-virtual-scroll>
-          <div v-if="!$q.platform.is.mobile" class="q-pa-md row items-start q-gutter-md">
-            <div class="text-h6 col-12" v-if="isLoggedIn && myProjects.length">
+          <!-- if not mobile: -->
+          <!-- four groups: my projects, my old projects, other projects, other old projects: -->
+          <div v-if="isLoggedIn && !$q.platform.is.mobile" class="q-pa-md row items-start q-gutter-md">
+            <div class="text-h6 col-12" v-if="myProjects.length">
               <q-chip color="primary" class="category" text-color="white"> {{ $t('projectHub.myProjects') }} </q-chip>
             </div>
             <ProjectCard
-              style="max-width: 250px"
+              style="max-width: 270px"
               v-for="project in myProjects"
               :props="project"
               :parentDeleteProject="deleteProject"
               :parentProjectSettings="showProjectSettings"
               :key="project.id"
             ></ProjectCard>
+            <div class="text-h6 col-12" v-if="myOldProjects.length">
+              <q-chip color="primary" class="category" text-color="white"> {{ $t('projectHub.myOldProjects') }} </q-chip><br />
+              <q-chip outline color="negative" class="bg-white text-negative">{{ $t('projectHub.myOldProjectInfo') }}</q-chip>
+            </div>
+            <ProjectCard
+              style="max-width: 270px"
+              v-for="project in myOldProjects"
+              :props="project"
+              :parentDeleteProject="deleteProject"
+              :parentProjectSettings="showProjectSettings"
+              :key="project.id"
+            ></ProjectCard>
+          </div>
+          <div v-if="!$q.platform.is.mobile" class="q-pa-md row items-start q-gutter-md">
             <div class="text-h6 col-12" v-if="isLoggedIn && otherProjects.length">
-              <q-chip color="primary" class="category" text-color="white"> $t('projectHub.otherProjects') </q-chip>
+              <q-chip color="primary" class="category" text-color="white"> {{ $t('projectHub.otherProjects') }} </q-chip>
             </div>
             <ProjectCard
               style="max-width: 250px"
@@ -89,8 +107,22 @@
               :parentProjectSettings="showProjectSettings"
               :key="project.id"
             ></ProjectCard>
+            <div class="text-h6 col-12" v-if="otherOldProjects.length">
+              <q-chip color="primary" class="category" text-color="white">{{ $t('projectHub.otherOldProjects') }}</q-chip
+              ><br />
+              <q-chip outline color="negative" class="bg-white text-negative">{{ $t('projectHub.otherOldProjectInfo') }}</q-chip>
+            </div>
+            <ProjectCard
+              style="max-width: 250px"
+              v-for="project in otherOldProjects"
+              :props="project"
+              :parentDeleteProject="deleteProject"
+              :parentProjectSettings="showProjectSettings"
+              :key="project.id"
+            ></ProjectCard>
           </div>
         </q-card-section>
+        <!-- here starts the list mode -->
         <q-card-section v-if="listMode" style="width: 90vw; height: 60vh">
           <q-list style="width: 100%" bordered>
             <q-virtual-scroll
@@ -182,15 +214,17 @@ export default {
       confirmActionCallback: null,
       confirmActionArg1: '',
       storage: null,
+      ayear: -3600 * 24 * 365,
+      userId: '',
     };
   },
   mounted() {
     document.title = `ArboratorGrew: ${this.$t('projectHub.title')}`;
     this.storage = useStorage();
     this.initLoading = true;
+    this.userId = this.$store.getters['user/getUserInfos'].id;
     // this.listMode = this.$storage.getStorageSync("project_view", false);
     this.listMode = this.storage.getStorageSync('project_view', false);
-
     this.getProjects();
   },
   computed: {
@@ -198,10 +232,24 @@ export default {
       return this.$store.getters['user/isLoggedIn'];
     },
     myProjects() {
-      return this.visibleProjects.filter((project) => this.isCreatedByMe(project));
+      return this.visibleProjects.filter((project) => {
+        return this.isCreatedByMe(project) && !this.isOld(project);
+      });
+    },
+    myOldProjects() {
+      return this.visibleProjects.filter((project) => {
+        return this.isCreatedByMe(project) && this.isOld(project);
+      });
     },
     otherProjects() {
-      return this.visibleProjects.filter((project) => !this.isCreatedByMe(project));
+      return this.visibleProjects.filter((project) => {
+        return !this.isCreatedByMe(project) && !this.isOld(project);
+      });
+    },
+    otherOldProjects() {
+      return this.visibleProjects.filter((project) => {
+        return !this.isCreatedByMe(project) && this.isOld(project);
+      });
     },
     avatar() {
       return this.$store.getters['user/getUserInfos'].picture_url;
@@ -214,7 +262,7 @@ export default {
       api
         .getProjects()
         .then((response) => {
-          // console.log("here", response.data);
+          // console.log('here', response.data);
           this.projects = response.data;
           this.visibleProjects = response.data;
           this.sortProjects();
@@ -234,19 +282,26 @@ export default {
       });
       this.visibleProjects = filteredProjects;
     },
+    // oldsortProjects() {
+    //   if (!this.isLoggedIn) return;
+    //   this.visibleProjects.sort((a, b) => {
+    //     const myProjectA = this.isCreatedByMe(a);
+    //     const myProjectB = this.isCreatedByMe(b);
+    //     if (myProjectA && myProjectB) return 0;
+    //     if (myProjectA) return -1;
+    //     return 1;
+    //   });
+    // },
     sortProjects() {
       if (!this.isLoggedIn) return;
-      this.visibleProjects.sort((a, b) => {
-        const myProjectA = this.isCreatedByMe(a);
-        const myProjectB = this.isCreatedByMe(b);
-        if (myProjectA && myProjectB) return 0;
-        if (myProjectA) return -1;
-        return 1;
-      });
+      this.visibleProjects.sort((a, b) => b.last_access - a.last_access);
     },
     isCreatedByMe(project) {
-      const userId = this.$store.getters['user/getUserInfos'].id;
-      return project.admins[0] === userId;
+      return project.admins[0] === this.userId;
+    },
+    isOld(project) {
+      // either not used since more than a year or empty and older than an hour
+      return project.last_access < this.ayear || (project.number_samples < 1 && project.last_access < 3600);
     },
     toggleProjectView() {
       this.listMode = !this.listMode;

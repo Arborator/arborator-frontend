@@ -28,6 +28,7 @@
               </q-btn>
             </div>
           </q-img>
+          <div class="text-primary">{{ description }}</div>
         </q-card-section>
 
         <q-card-section v-if="isShowLexiconPanel">
@@ -474,6 +475,7 @@ export default {
         },
       },
       project: {
+        // todo: this seems to be useless
         infos: {
           name: '',
           visibility: 2,
@@ -579,7 +581,7 @@ export default {
     };
   },
   computed: {
-    ...mapGetters('config', ['visibility', 'isAdmin', 'isGuest', 'guests', 'admins', 'image', 'exerciseMode', 'cleanedImage']),
+    ...mapGetters('config', ['visibility', 'isAdmin', 'isGuest', 'guests', 'admins', 'image', 'exerciseMode', 'cleanedImage', 'description']),
     ...mapGetters('user', ['isLoggedIn', 'isSuperAdmin', 'loggedWithGithub', 'avatar']),
     ...mapGetters('lexicon', ['isShowLexiconPanel']),
 
@@ -600,7 +602,6 @@ export default {
   mounted() {
     this.getUsers();
     this.getProjectSamples();
-
     document.title = `ArboratorGrew: ${this.$route.params.projectname}`;
     if (this.$route.query.q && this.$route.query.q.length > 0) this.searchDialog = true;
   },

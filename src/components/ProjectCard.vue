@@ -41,10 +41,19 @@
         <q-item-label>{{ project.description }}</q-item-label>
       </q-item>
 
-      <q-card-actions vertical class="justify-around q-px-md">
-        <q-badge :color="$q.dark.isActive ? 'grey' : 'secondary'">
+      <q-card-actions vertical class="q-pa-md">
+        <q-chip size="md" icon="fas fa-vial" color="secondary" text-color="white">
           {{ project.number_samples }} {{ project.number_samples == 1 ? $t('projectHub.sample') : $t('projectHub.samples') }}
-        </q-badge>
+        </q-chip>
+
+        <q-space />
+        <!-- v-if="project.last_access > project.last_write_access" -->
+        <q-chip size="sm" icon="fingerprint" :color="project.last_access > project.last_write_access ? 'info' : 'white'" text-color="white">
+          {{ $t('projectHub.lastAccess') }} {{ timeAgo(project.last_access) }}
+        </q-chip>
+        <q-chip size="sm" icon="edit" color="primary" text-color="white">
+          {{ $t('projectHub.lastWriteAccess') }} {{ timeAgo(project.last_write_access) }}
+        </q-chip>
       </q-card-actions>
     </q-card-section>
 
@@ -102,8 +111,30 @@ export default {
       //     else { return false; }
       // }
     },
+    locale() {
+      return ({ ...this.$i18n.locale }.value || this.$i18n.locale).substring(0, 2); // TODO: strange bug: this.$i18n.locale is a Promess and on switching locals this.$i18n.locale becomes a string, its value. The value is fr-fra, not accepted by Intl.RelativeTimeFormat -> take the substring
+    },
   },
   methods: {
+    timeAgo(secsAgo) {
+      const formatter = new Intl.RelativeTimeFormat(this.locale, { style: 'long' });
+      const ranges = {
+        years: 3600 * 24 * 365,
+        months: 3600 * 24 * 30,
+        weeks: 3600 * 24 * 7,
+        days: 3600 * 24,
+        hours: 3600,
+        minutes: 60,
+        seconds: 1,
+      };
+      for (const key in ranges) {
+        if (ranges[key] < Math.abs(secsAgo)) {
+          const delta = secsAgo / ranges[key];
+          return formatter.format(Math.round(delta), key);
+        }
+      }
+      return formatter.format(secsAgo, 'seconds'); // should be useless
+    },
     /**
      * Use the router to push (i.e. got to) a new route
      *

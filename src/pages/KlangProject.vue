@@ -20,8 +20,8 @@
         </q-item>
       </q-card>
     </div>
-    <!-- {{ isSuperAdmin }}
-    11 {{ isProjectAdmin }}22 11 {{ users }}22 -->
+    {{ isSuperAdmin }}
+    11 {{ isProjectAdmin }}22 11 {{ users }}22
     <q-separator spaced />
     <div class="q-pa-md">
       <q-btn dense color="primary" icon="add" label="Add admins for the project" ref="addAdmins" @click="openAdminsDialog" v-if="isSuperAdmin" />

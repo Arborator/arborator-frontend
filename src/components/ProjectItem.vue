@@ -1,5 +1,6 @@
 <template>
-  <q-item v-show="visible" clickable @click="goTo()">
+  <!-- removed: v-show="visible"  -->
+  <q-item clickable @click="goTo()">
     <q-popup-proxy transition-show="flip-up" transition-hide="flip-down" context-menu>
       <q-card>
         <q-card-section>
@@ -34,8 +35,27 @@
         {{ project.description }}
       </q-item-label>
     </q-item-section>
+    <q-item-section thumbnail>
+      <q-chip v-if="project.last_access > project.last_write_access" size="sm" icon="fingerprint" color="info" text-color="white">
+        {{ $t('projectHub.lastAccess') }} {{ timeAgo(project.last_access) }}
+      </q-chip>
+      <q-chip size="sm" icon="edit" color="primary" text-color="white">
+        {{ $t('projectHub.lastWriteAccess') }} {{ timeAgo(project.last_write_access) }}
+      </q-chip>
+    </q-item-section>
+    <q-item-section side v-for="adm in project.admins" :key="adm">
+      <q-chip v-if="userid == adm" size="sm">
+        <q-avatar>
+          <img :src="store.getters['user/getUserInfos'].picture_url" />
+        </q-avatar>
+        {{ adm }}
+      </q-chip>
+      <q-chip v-else icon="account_circle" :label="adm" size="sm" />
+    </q-item-section>
     <q-item-section side>
-      <q-badge :color="$q.dark.isActive ? 'grey' : 'secondary'"> {{ project.number_samples }} {{ $t('projectHub.samples') }} </q-badge>
+      <q-badge :color="$q.dark.isActive ? 'grey' : 'secondary'">
+        {{ project.number_samples }} {{ project.number_samples == 1 ? $t('projectHub.sample') : $t('projectHub.samples') }}
+      </q-badge>
     </q-item-section>
     <q-item-section side>
       <div class="absolute-bottom text-h6">
@@ -54,12 +74,14 @@
 <script>
 import api from '../boot/backend-api.js';
 import ConfirmAction from '../components/ConfirmAction';
+import Store from '../store/index';
 
 export default {
   components: { ConfirmAction },
   props: ['props', 'parentDeleteProject', 'parentProjectSettings'],
   data() {
     return {
+      store: Store,
       project: this.props,
       confirmActionDial: false,
       confirmActionCallback: null,
@@ -73,22 +95,25 @@ export default {
       clean = clean.replace(/'$/g, '');
       return `data:image/png;base64, ${clean}`;
     },
-    visible() {
-      if (!this.project.visibility === 0) {
-        return true;
-      }
-
-      if (this.project.admins.includes(this.$store.getters['user/getUserInfos'].id)) {
-        return true;
-      }
-      if (this.project.guests.includes(this.$store.getters['user/getUserInfos'].id)) {
-        return true;
-      }
-      if (this.$store.getters['user/getUserInfos'].super_admin) {
-        return true;
-      }
-      return false;
+    userid() {
+      return this.$store.getters['user/getUserInfos'].id;
     },
+    // visible() {
+    //   if (!this.project.visibility === 1) {
+    //     return true;
+    //   }
+
+    //   if (this.project.admins.includes(this.$store.getters['user/getUserInfos'].id)) {
+    //     return true;
+    //   }
+    //   if (this.project.guests.includes(this.$store.getters['user/getUserInfos'].id)) {
+    //     return true;
+    //   }
+    //   if (this.$store.getters['user/getUserInfos'].super_admin) {
+    //     return true;
+    //   }
+    //   return false;
+    // },
   },
   methods: {
     imageEmpty() {
@@ -102,6 +127,25 @@ export default {
         return true;
       }
       return false;
+    },
+    timeAgo(secsAgo) {
+      const formatter = new Intl.RelativeTimeFormat(this.locale, { style: 'long' });
+      const ranges = {
+        years: 3600 * 24 * 365,
+        months: 3600 * 24 * 30,
+        weeks: 3600 * 24 * 7,
+        days: 3600 * 24,
+        hours: 3600,
+        minutes: 60,
+        seconds: 1,
+      };
+      for (const key in ranges) {
+        if (ranges[key] < Math.abs(secsAgo)) {
+          const delta = secsAgo / ranges[key];
+          return formatter.format(Math.round(delta), key);
+        }
+      }
+      return formatter.format(secsAgo, 'seconds'); // should be useless
     },
     /**
      * Use the router to push (i.e. got to) a new route

@@ -104,7 +104,15 @@ export default {
     rightClickDelete: 'Supprimer',
     emptySearch: 'chercher un projet',
     myProjects: 'mes projets',
+    myOldProjects: 'Mon purgatoire des projets',
+    myOldProjectInfo:
+      "Ces anciens projets n'ont pas été utilisés depuis longtemps. Nous sommes susceptibles de les supprimer à tout moment. Utilisez-les ou téléchargez les données et effacez le projet (clic droit).",
     otherProjects: "d'autres projets",
+    otherOldProjects: 'Le purgatoire des projets',
+    otherOldProjectInfo:
+      "Ces anciens projets n'ont pas été utilisés depuis longtemps. Nous sommes susceptibles de les supprimer à tout moment. Utilisez-les ou prevenez les créateurs.",
+    lastAccess: 'dernier accès',
+    lastWriteAccess: 'dernière modification',
   },
 
   // page when you enter a project ( samples info, etc)

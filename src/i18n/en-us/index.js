@@ -107,7 +107,14 @@ export default {
     rightClickDelete: 'Delete',
     emptySearch: 'Search for project',
     myProjects: 'My Projects',
+    myOldProjects: 'My Project Purgatory',
+    myOldProjectInfo:
+      'These old projects have not been used for a long time. We might delete them anytime. Use them or download the data and erase the project (right click).',
     otherProjects: 'Other Projects',
+    otherOldProjects: 'The Project Purgatory',
+    otherOldProjectInfo: 'These old projects have not been used for a long time. We may delete them at any time. Use them or notify the creators.',
+    lastAccess: 'last access',
+    lastWriteAccess: 'last modification',
   },
 
   // page when you enter a project ( samples info, etc)

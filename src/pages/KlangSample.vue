@@ -3,10 +3,10 @@
     <div class="q-pa-none full-width" ref="words">
       <div class="row" dense v-if="isLoggedIn">
         <div class="col row q-pa-none"><q-space /></div>
-        <div class="col q-pa-none" v-if="admin"></div>
+        <div class="col q-pa-none" v-if="viewAllTranscriptions"></div>
         <template v-for="(u, anno) in conll" :key="u">
           <div v-if="anno !== 'original'" class="col q-pa-none">
-            <q-badge> {{ admin || wasSaved ? anno : 'original' }} </q-badge>
+            <q-badge> {{ viewAllTranscriptions || wasSaved ? anno : 'original' }} </q-badge>
           </div>
         </template>
       </div>
@@ -48,7 +48,7 @@
           </span>
           <q-space />
           <q-btn
-            v-if="admin && segments['original'][i] !== mytrans[i]"
+            v-if="viewAllTranscriptions && segments['original'][i] !== mytrans[i]"
             round
             dense
             flat
@@ -56,9 +56,25 @@
             class="float-right"
             @click="moveToInputField('original', i)"
           />
-          <q-btn dense round icon="replay" color="primary" @click="handlePlayLine(i)" v-if="canPlayLine" class="line-play" size="sm">
+          <q-btn
+            dense
+            round
+            :icon="isPlayingLine ? 'replay' : 'east'"
+            color="primary"
+            @click="handlePlayLine(i)"
+            v-if="canPlayLine"
+            class="line-play"
+            size="sm"
+          >
             <q-tooltip> Click to play the sentence </q-tooltip>
           </q-btn>
+
+          <!-- <q-btn round :loading="loading[4]" color="brown" @click="isPlayingLine = !isPlayingLine" icon="camera_front">
+            <template v-slot:loading>
+              <q-spinner-facebook />
+            </template>
+          </q-btn> -->
+
           <q-separator spaced />
         </div>
         <div class="col q-pa-none" v-if="isLoggedIn">
@@ -66,7 +82,7 @@
             <q-input dense filled square v-model="mytrans[i]"> </q-input>
           </div>
         </div>
-        <template v-if="admin">
+        <template v-if="viewAllTranscriptions">
           <template v-for="(u, anno) in conll" :key="u">
             <div class="col q-pa-none" v-if="anno !== 'original'">
               <span>
@@ -87,7 +103,7 @@
           </template>
         </template>
       </div>
-      <template v-if="isAdmin && admin && !isLoading">
+      <template v-if="isAdmin && viewAllTranscriptions && !isLoading">
         <div class="row meta-row" dense v-for="(meta, i) in metaFormat" :key="-i - 1">
           <span class="line-number" dense> </span>
           <div class="col row q-pa-none"></div>
@@ -126,8 +142,15 @@
     </q-page-sticky>
     <q-page-sticky position="bottom" expand class="bg-white text-primary">
       <q-toolbar>
-        <q-toggle v-model="admin" label="admin" left-label v-if="isAdmin" @input="adminchanged" :disable="isLoading" />
-        <q-toggle v-model="admin" label="Saved Trancription" left-label v-else :disable="isLoading" />
+        <q-toggle
+          v-model="viewAllTranscriptions"
+          label="view all transcriptions"
+          left-label
+          v-if="isAdmin"
+          @input="adminchanged"
+          :disable="isLoading"
+        />
+        <q-toggle v-model="viewAllTranscriptions" label="Saved Trancription" left-label v-else :disable="isLoading" />
         <q-space />
         <q-select
           no-caps
@@ -180,7 +203,7 @@
           :disable="isLoading || !isLoggedIn || !title || !monodia || !accent || !story || !sound"
         />
         <q-space />
-        <q-btn round dense flat icon="cloud_download" @click="exportConllDlg = true" :disable="!admin">
+        <q-btn round dense flat icon="cloud_download" @click="exportConllDlg = true" :disable="!viewAllTranscriptions">
           <q-tooltip> Click to export conlls </q-tooltip>
         </q-btn>
       </q-toolbar>
@@ -268,7 +291,7 @@ export default {
       diffsegments: {},
       currentTime: -1,
       manualct: -1,
-      admin: false,
+      viewAllTranscriptions: false,
       showSaved: false,
       sound: null,
       story: null,
@@ -406,13 +429,13 @@ export default {
             this.users.push({ label: annotator, value: annotator });
           } else {
             this.segments[annotator] = original;
-            if (!this.admin) this.wasSaved = false;
+            if (!this.viewAllTranscriptions) this.wasSaved = false;
           }
           const segments = this.deepCopy(this.segments[annotator]);
           if (!isOriginal) {
             this.diffsegments[annotator] = segments.map((sent, i) => Diff.diffWords(original[i], sent));
           }
-          if (annotator === this.username && !this.admin) {
+          if (annotator === this.username && !this.viewAllTranscriptions) {
             this.mytrans = segments;
             this.sound = this.conll[annotator].sound;
             this.story = this.conll[annotator].story;
@@ -530,10 +553,10 @@ export default {
       api
         .getOriginalConll(this.kprojectname, this.ksamplename)
         .then((response) => {
-          this.conll['original'] = response.data.tokens;
+          this.conll.original = response.data.tokens;
           this.speakers = response.data.speakers;
           if (this.isLoggedIn) {
-            if (!this.admin) {
+            if (!this.viewAllTranscriptions) {
               api
                 .getTranscription(this.kprojectname, this.ksamplename, this.username)
                 .then((response2) => {
@@ -598,13 +621,16 @@ export default {
     },
 
     handlePlayLine(index) {
-      const line = this.conll.original[index];
-      const { length } = line;
-      this.isPlayingLine = true;
-      this.lineStart = line[0][1] / 1000;
-      this.lineEnd = line[length - 1][2] / 1000;
-      this.audioplayer.currentTime = this.lineStart;
-      this.audioplayer.play();
+      this.isPlayingLine = !this.isPlayingLine;
+      if (this.isPlayingLine) {
+        const line = this.conll.original[index];
+        const { length } = line;
+
+        this.lineStart = line[0][1] / 1000;
+        this.lineEnd = line[length - 1][2] / 1000;
+        this.audioplayer.currentTime = this.lineStart;
+        this.audioplayer.play();
+      } else this.audioplayer.pause();
     },
 
     onTimeUpdate() {

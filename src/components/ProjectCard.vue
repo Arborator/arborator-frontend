@@ -28,7 +28,7 @@
         </q-card-section>
       </q-card>
     </q-popup-proxy>
-    <q-img :ratio="16 / 9" :src="imageEmpty() ? '/images/niko-photos-tGTVxeOr_Rs-unsplash.jpg' : imageCleaned" basic>
+    <q-img :ratio="16 / 9" :src="imageEmpty() ? '/images/small.niko-photos-tGTVxeOr_Rs-unsplash.jpg' : imageCleaned" basic>
       <div class="absolute-bottom text-h6">
         <q-icon v-show="project.visibility === 0" name="lock" color="negative" size="lg"></q-icon>
         <q-icon v-show="project.visibility === 1" name="lock" color="positive" size="lg"></q-icon>

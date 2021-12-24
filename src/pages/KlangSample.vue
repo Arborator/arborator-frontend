@@ -65,7 +65,8 @@
           <q-btn
             dense
             round
-            :icon="isPlayingLine ? 'replay' : 'east'"
+            flat
+            :icon="isPlayingLine == i ? 'pause' : 'replay'"
             color="primary"
             @click="handlePlayLine(i)"
             v-if="canPlayLine"
@@ -74,12 +75,6 @@
           >
             <q-tooltip> Click to play the sentence </q-tooltip>
           </q-btn>
-
-          <!-- <q-btn round :loading="loading[4]" color="brown" @click="isPlayingLine = !isPlayingLine" icon="camera_front">
-            <template v-slot:loading>
-              <q-spinner-facebook />
-            </template>
-          </q-btn> -->
 
           <q-separator spaced />
         </div>
@@ -126,7 +121,7 @@
         </div>
       </template>
     </div>
-    <q-page-sticky position="top" expand class="bg-white text-primary" style="z-index: 999">
+    <q-page-sticky position="top" expand class="bg-white text-primary shadow-2" style="z-index: 999">
       <av-waveform
         class="col-grow"
         ref="player"
@@ -144,11 +139,13 @@
         :playtime-slider-width="1"
         :audio-src="mediaObject"
         v-bind:currentTime.prop="currentTime"
+        played-line-color="#4a2769"
+        noplayed-line-color="#15a700"
       >
       </av-waveform>
     </q-page-sticky>
     <q-page-sticky position="bottom" expand class="bg-white text-primary">
-      <q-toolbar>
+      <q-toolbar class="shadow-5">
         <q-toggle
           v-model="viewAllTranscriptions"
           label="view all transcriptions"
@@ -266,7 +263,7 @@
 }
 
 .meta-row {
-  background-color: #3466a5;
+  background-color: #4a2769;
   color: white;
 }
 </style>
@@ -334,7 +331,7 @@ export default {
         },
       ],
       currentLine: 0,
-      isPlayingLine: false,
+      isPlayingLine: -1,
       lineStart: 0,
       lineEnd: 0,
     };
@@ -630,26 +627,28 @@ export default {
       this.audioplayer.currentTime = triple[1] / 1000; // -.5;
       this.manualct = triple[1] / 1000;
       this.audioplayer.play();
-      if (this.manualct > this.lineEnd) this.isPlayingLine = false;
+      if (this.manualct > this.lineEnd) this.isPlayingLine = -1;
     },
 
     handlePlayLine(index) {
-      this.isPlayingLine = !this.isPlayingLine;
-      if (this.isPlayingLine) {
+      if (this.isPlayingLine === index) {
+        this.audioplayer.pause();
+        this.isPlayingLine = -1;
+      } else {
+        this.isPlayingLine = index;
         const line = this.conll.original[index];
         const { length } = line;
-
         this.lineStart = line[0][1] / 1000;
         this.lineEnd = line[length - 1][2] / 1000;
         this.audioplayer.currentTime = this.lineStart;
         this.audioplayer.play();
-      } else this.audioplayer.pause();
+      }
     },
 
     onTimeUpdate() {
       if (this.$refs.player === null) return;
-      console.log(this.audioplayer.currentTime);
-      if (this.isPlayingLine) {
+      // console.log(this.audioplayer.currentTime);
+      if (this.isPlayingLine >= 0) {
         if (this.audioplayer.currentTime > this.lineEnd) this.audioplayer.currentTime = this.lineStart;
       }
       this.currentTime = this.audioplayer.currentTime;

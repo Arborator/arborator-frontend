@@ -5,11 +5,16 @@
         <span class="text-grey">{{ index + 1 }}</span>
         <q-chip class="text-center" :color="$q.dark.isActive ? 'primary' : ''" dense> {{ sentenceId }}</q-chip
         >&nbsp;&nbsp;&nbsp;
-        <template>
-          <q-input style="width: 65%" class="row items-center justify-center" :value="sentenceData.sentence" v-bind="$attrs" @select="ttselect">
-            <template v-slot:prepend> <q-icon name="chat_bubble_outline" /><!-- 言 --> </template>
-          </q-input>
-        </template>
+        <q-input
+          style="width: 65%"
+          class="row items-center justify-center"
+          v-model="sentenceData.sentence"
+          v-bind="$attrs"
+          @select="ttselect"
+          readonly
+        >
+          <template v-slot:prepend> <q-icon name="chat_bubble_outline" /><!-- 言 --> </template>
+        </q-input>
         <q-space />
         <template v-if="this.openTabUser !== ''">
           <q-btn
@@ -111,6 +116,15 @@
                   <q-item-label>Get SVG of this tree</q-item-label>
                 </q-item-section>
               </q-item>
+
+              <q-item :disable="openTabUser === ''" clickable v-close-popup @click="addEmptyToken()">
+                <q-item-section avatar>
+                  <q-avatar icon="add" color="primary" text-color="white" />
+                </q-item-section>
+                <q-item-section>
+                  <q-item-label>Add a new token</q-item-label>
+                </q-item-section>
+              </q-item>
             </q-list>
           </q-btn-dropdown>
           <q-btn
@@ -134,9 +148,6 @@
             @click="redo('user')"
             v-bind:class="'redo-button'"
           >
-          </q-btn>
-          <q-btn v-if="isLoggedIn" flat round dense icon="add" :disable="openTabUser === ''" @click="addEmptyToken()">
-            <q-tooltip>Add an new empty token in the tree</q-tooltip>
           </q-btn>
         </template>
       </div>

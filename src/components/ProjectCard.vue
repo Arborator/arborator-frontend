@@ -30,8 +30,8 @@
     </q-popup-proxy>
     <q-img :ratio="16 / 9" :src="imageEmpty() ? '/images/small.niko-photos-tGTVxeOr_Rs-unsplash.jpg' : imageCleaned" basic>
       <div class="absolute-bottom text-h6">
-        <q-icon v-show="project.visibility === 0" name="lock" color="negative" size="lg"></q-icon>
-        <q-icon v-show="project.visibility === 1" name="lock" color="positive" size="lg"></q-icon>
+        <q-icon v-show="project.visibility === 0" name="fas fa-lock" color="negative" size="lg"></q-icon>
+        <q-icon v-show="project.visibility === 1" name="fas fa-unlock-alt" color="positive" size="lg"></q-icon>
         <q-icon v-show="project.visibility === 2" name="public" color="positive" size="lg"></q-icon>
         {{ project.project_name }}
       </div>
@@ -117,7 +117,7 @@ export default {
   },
   methods: {
     timeAgo(secsAgo) {
-      if (secsAgo < -7 * 3600 * 24 * 365) return 'a long time ago';
+      if (secsAgo < -7 * 3600 * 24 * 365) return this.$t('projectHub.longtime');
       const formatter = new Intl.RelativeTimeFormat(this.locale, { style: 'long' });
       const ranges = {
         years: 3600 * 24 * 365,

@@ -113,6 +113,7 @@ export default {
       "Ces anciens projets n'ont pas été utilisés depuis longtemps. Nous sommes susceptibles de les supprimer à tout moment. Utilisez-les ou prevenez les créateurs.",
     lastAccess: 'dernier accès',
     lastWriteAccess: 'dernière modification',
+    longtime: 'ça fait une éternité',
   },
 
   // page when you enter a project ( samples info, etc)

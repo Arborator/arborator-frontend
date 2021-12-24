@@ -115,6 +115,7 @@ export default {
     otherOldProjectInfo: 'These old projects have not been used for a long time. We may delete them at any time. Use them or notify the creators.',
     lastAccess: 'last access',
     lastWriteAccess: 'last modification',
+    longtime: 'a long time ago',
   },
 
   // page when you enter a project ( samples info, etc)

@@ -11,7 +11,7 @@ export default {
     infos: (state) => state,
     admins: (state) => state.admins,
     guests: (state) => state.guests,
-    isAdmin: (state, getters, rootSate) => state.admins.includes(rootSate.user.id), // return state.admins.includes(getters["getUserInfos"].id);
+    isAdmin: (state, getters, rootState) => state.admins.includes(rootState.user.id), // return state.admins.includes(getters["getUserInfos"].id);
 
     isGuest: (state, getters, rootState) => state.guests.includes(rootState.user.id),
     isTeacher: (state, getters) => getters.isAdmin && getters.exerciseMode,

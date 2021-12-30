@@ -139,7 +139,7 @@ export default {
       api
         .setKlangProjectAdmins(this.kprojectname, this.selectedAdmins)
         .then((response) => {
-          this.$store.dispatch('config/fetchKlangProjectSettings', {
+          this.$store.dispatch('klang/fetchKlangProjectSettings', {
             projectname: this.kprojectname,
           });
           this.$q.notify({

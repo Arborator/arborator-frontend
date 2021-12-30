@@ -50,7 +50,7 @@ export default route((/* { store, ssrContext } */) => {
       store.dispatch('config/fetchProjectSettings', { projectname: to.params.projectname });
     }
     if (to.params.kprojectname) {
-      store.dispatch('config/fetchKlangProjectSettings', {
+      store.dispatch('klang/fetchKlangProjectSettings', {
         projectname: to.params.kprojectname,
       });
     }

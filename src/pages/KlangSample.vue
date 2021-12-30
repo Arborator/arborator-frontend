@@ -154,7 +154,7 @@
           @input="adminchanged"
           :disable="isLoading"
         />
-        <q-toggle v-model="viewAllTranscriptions" label="Saved Trancription" left-label v-else :disable="isLoading" />
+        <q-toggle v-else v-model="viewAllTranscriptions" label="View diffs" left-label :disable="isLoading" />
         <q-space />
         <q-select
           no-caps
@@ -345,7 +345,7 @@ export default {
     ...mapGetters('user', ['isLoggedIn']),
 
     isAdmin() {
-      return this.$store.getters['user/isLoggedIn'];
+      return this.$store.getters['klang/isAdmin'];
     },
 
     username() {

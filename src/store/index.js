@@ -7,6 +7,7 @@ import user from './modules/user';
 import grewSearch from './modules/grewSearch';
 import sample from './modules/sample';
 import lexicon from './modules/lexicon';
+import klang from './modules/klang';
 
 export default createStore({
   state: {
@@ -109,5 +110,6 @@ export default createStore({
     user,
     grewSearch,
     lexicon,
+    klang,
   },
 });

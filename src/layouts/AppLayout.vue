@@ -270,15 +270,7 @@ export default {
       return this.$route.fullPath !== '/';
     },
     isProjectAdmin() {
-      if (this.$route.params.projectname) {
-        return this.$store.getters['config/isAdmin'] || this.$store.getters['user/isSuperAdmin'];
-      }
-      if (this.$route.params.kprojectname) {
-        const { username } = this.$store.getters['user/getUserInfos'];
-        console.log(1111, username, this.$store.getters['config/admins']);
-        return this.$store.getters['config/admins'].includes(username) || this.$store.getters['user/isSuperAdmin'];
-      }
-      return false;
+      return this.$store.getters['user/isProjectAdmin'];
     },
   },
   methods: {

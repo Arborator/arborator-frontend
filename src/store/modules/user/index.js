@@ -1,5 +1,7 @@
 import api from 'boot/backend-api';
 
+import { useRoute } from 'vue-router';
+
 import defaultState from './defaultState';
 
 // import { Notify } from "quasar";
@@ -12,6 +14,28 @@ export default {
   getters: {
     getUserInfos: (state) => state,
     isSuperAdmin: (state) => state.super_admin,
+    /**
+     * This defines if a user is admin for a Arborator or Klang page. It will check in order if :
+     * - user is super admin
+     * - user is on an Arborator project page and is admin of this project
+     * - user is on an Klang project page and is admin of this project
+     */
+    isProjectAdmin: (state, getters, rootState, rootGetters) => {
+      if (state.super_admin) {
+        return true;
+      }
+
+      const route = useRoute();
+      // Arborator
+      if (route.params.projectname) {
+        return rootGetters['config/isAdmin'];
+      }
+      // Klang
+      if (route.params.kprojectname) {
+        return rootGetters['klang/isAdmin'];
+      }
+      return false;
+    },
     isLoggedIn: (state) => state.loginSuccess,
     hasLoginErrored: (state) => state.loginError,
     getFailedAccess: (state) => state.failedAccess,

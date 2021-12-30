@@ -199,7 +199,7 @@ export default {
     return API.get(`klang/projects/${projectname}/samples`);
   },
 
-  getOriginalConll(projectname, samplename) {
+  getOriginalTranscription(projectname, samplename) {
     return API.get(`klang/projects/${projectname}/samples/${samplename}/timed-tokens`);
   },
 

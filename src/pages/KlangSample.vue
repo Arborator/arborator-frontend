@@ -8,15 +8,15 @@
           <q-badge> {{ viewAllTranscriptions ? 'new proposal' : username }} </q-badge>
         </div>
         <template v-if="viewAllTranscriptions">
-          <template v-for="(u, anno) in conll" :key="u">
-            <div v-if="anno !== 'original'" class="col q-pa-none">
-              <q-badge> {{ viewAllTranscriptions || wasSaved ? anno : 'original' }} </q-badge>
+          <template v-for="(transcription, username) in transcriptions" :key="username">
+            <div v-if="username !== 'original'" class="col q-pa-none">
+              <q-badge> {{ viewAllTranscriptions || wasSaved ? username : 'original' }} </q-badge>
             </div>
           </template>
         </template>
         <!-- </div> -->
       </div>
-      <div class="row" dense v-for="(sent, i) in conll['original']" :key="i">
+      <div class="row" dense v-for="(sent, i) in transcriptions['original']" :key="i">
         <span class="line-number" dense>
           {{ i }}
         </span>
@@ -85,11 +85,12 @@
         </div>
         <!-- ADMIN TABLE : OTHER ANNOTATOR -->
         <template v-if="viewAllTranscriptions">
-          <template v-for="(u, anno) in conll" :key="u">
-            <div class="col q-pa-none" v-if="anno !== 'original'">
+          <template v-for="(transcription, username) in transcriptions" :key="username">
+            <div class="col q-pa-none" v-if="username !== 'original'">
               <span>
-                <q-btn v-if="diffsegments[anno][i].length !== 1" round dense flat icon="west" @click="moveToInputField(anno, i)"> </q-btn>
-                <span v-for="(part, index) in diffsegments[anno][i]" style="padding: 0px; margin: 0px" :key="index">
+                <q-btn v-if="diffsegments[username][i].length !== 1" round dense flat icon="west" @click="moveToInputField(transcription, i)">
+                </q-btn>
+                <span v-for="(part, index) in diffsegments[username][i]" style="padding: 0px; margin: 0px" :key="index">
                   <span v-if="part.added" style="color: green; padding: 0px; margin: 0px">
                     {{ part.value }}
                   </span>
@@ -113,9 +114,9 @@
             <span class="meta-label"> {{ meta.label }} </span>
             <q-space />
           </div>
-          <template v-for="(user, anno) in conll">
-            <div class="col row q-pa none" :key="anno" v-if="anno !== 'original'">
-              <span class="meta-value">{{ user[meta.value] }}</span>
+          <template v-for="(transcription, username) in transcriptions">
+            <div class="col row q-pa none" :key="username" v-if="username !== 'original'">
+              <span class="meta-value">{{ transcription[meta.value] }}</span>
             </div>
           </template>
         </div>
@@ -289,7 +290,7 @@ export default {
       mediaObject: null,
       waveWidth: 2500,
       canvwidth: 0,
-      conll: {},
+      transcriptions: {},
       speakers: [],
       segments: {},
       diffsegments: {},
@@ -426,11 +427,11 @@ export default {
       this.segments = {};
       this.users = [];
       this.selectedUsers = [];
-      for (const annotator in this.conll) {
-        if (Object.prototype.hasOwnProperty.call(this.conll, annotator)) {
+      for (const annotator in this.transcriptions) {
+        if (Object.prototype.hasOwnProperty.call(this.transcriptions, annotator)) {
           const isOriginal = annotator === 'original';
           const original = !isOriginal ? this.segments.original : [];
-          const conllSegments = isOriginal ? this.conll[annotator] : this.conll[annotator].transcription;
+          const conllSegments = isOriginal ? this.transcriptions[annotator] : this.transcriptions[annotator].transcription;
           if (conllSegments.length !== 0) {
             this.segments[annotator] = conllSegments.map((sent) => sent.reduce((acc, t) => `${acc + (isOriginal ? t[0] : t)} `, ''));
             this.users.push({ label: annotator, value: annotator });
@@ -455,11 +456,11 @@ export default {
 
           if (annotator === this.username && !this.viewAllTranscriptions) {
             this.mytrans = segments;
-            this.sound = this.conll[annotator].sound;
-            this.story = this.conll[annotator].story;
-            this.accent = this.conll[annotator].accent;
-            this.monodia = this.conll[annotator].monodia;
-            this.title = this.conll[annotator].title;
+            this.sound = this.transcriptions[annotator].sound;
+            this.story = this.transcriptions[annotator].story;
+            this.accent = this.transcriptions[annotator].accent;
+            this.monodia = this.transcriptions[annotator].monodia;
+            this.title = this.transcriptions[annotator].title;
           }
         }
       }
@@ -483,12 +484,12 @@ export default {
         const isOriginal = username === 'original';
         const conllFileName = `${username}.conll`;
         let outputString = '';
-        let transcription = this.deepCopy(this.conll[username]);
+        let transcription = this.deepCopy(this.transcriptions[username]);
 
         if (!isOriginal) {
           transcription = transcription.transcription;
           let line;
-          const { original } = this.conll;
+          const { original } = this.transcriptions;
           const lines = original.length;
           for (line = 0; line < lines; line += 1) {
             let word;
@@ -567,11 +568,11 @@ export default {
       await this.$store.dispatch('user/checkSession');
 
       this.isLoading = true;
-      this.conll = {};
+      this.transcriptions = {};
       api
-        .getOriginalConll(this.kprojectname, this.ksamplename)
+        .getOriginalTranscription(this.kprojectname, this.ksamplename)
         .then((response) => {
-          this.conll.original = response.data.tokens;
+          this.transcriptions.original = response.data.tokens;
           this.speakers = response.data.speakers;
           if (this.isLoggedIn) {
             if (!this.isAdmin) {
@@ -613,18 +614,18 @@ export default {
         for (index in data) {
           if (Object.prototype.hasOwnProperty.call(data, index)) {
             const user = this.makeValid(data[index]);
-            this.conll[user.user] = user;
+            this.transcriptions[user.user] = user;
           }
         }
-        if (!this.conll[this.username]) {
-          this.conll[this.username] = {
+        if (!this.transcriptions[this.username]) {
+          this.transcriptions[this.username] = {
             user: this.username,
             transcription: [],
           };
         }
       } else {
         const user = this.makeValid(data);
-        this.conll[user.user] = user;
+        this.transcriptions[user.user] = user;
       }
       this.makeSents();
     },
@@ -650,7 +651,7 @@ export default {
         this.isPlayingLine = -1;
       } else {
         this.isPlayingLine = index;
-        const line = this.conll.original[index];
+        const line = this.transcriptions.original[index];
         const { length } = line;
         this.lineStart = line[0][1] / 1000;
         this.lineEnd = line[length - 1][2] / 1000;

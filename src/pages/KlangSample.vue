@@ -399,7 +399,7 @@ export default {
       api.saveTranscription(this.kprojectname, this.ksamplename, this.username, data).then(
         (response) => {
           this.setSampleData(response);
-          this.makeSents();
+          this.populateSegmentsForAll();
           this.wasSaved = true;
 
           this.$q.notify({
@@ -423,44 +423,51 @@ export default {
       this.getSampleData();
     },
 
-    makeSents() {
+    popultateSegmentsForAnnotator(annotator) {
+      const isOriginal = annotator === 'original';
+      const original = !isOriginal ? this.segments.original : [];
+      const conllSegments = isOriginal ? this.transcriptions[annotator] : this.transcriptions[annotator].transcription;
+      if (conllSegments.length !== 0) {
+        this.segments[annotator] = conllSegments.map((sent) => sent.reduce((acc, t) => `${acc + (isOriginal ? t[0] : t)} `, ''));
+        this.users.push({ label: annotator, value: annotator });
+      } else {
+        this.segments[annotator] = original;
+        if (!this.viewAllTranscriptions) this.wasSaved = false;
+      }
+
+      let segments = this.deepCopy(this.segments[annotator]);
+      if (!isOriginal) {
+        // Nasty debegging for the bug that inserts empty list in transcriptions
+        if (segments.length !== original.length) {
+          this.$store.dispatch('notifyError', {
+            error:
+              ' Your transcription is corrupted, can you notify the admin of this website please ? ERROR CODE GITHUB : 105 : https://github.com/Arborator/arborator-frontend/issues/105',
+            timeout: 25000,
+          });
+          segments = segments.filter((segment) => segment.length > 0); // <- Kim and Kirian : Quick debugging to make it printing, but we don't know if it will then break all the saving logic !!!!
+        }
+        this.diffsegments[annotator] = segments.map((sent, i) => Diff.diffWords(original[i] || 'FINISHED !!', sent));
+      }
+
+      if (annotator === this.username && !this.viewAllTranscriptions) {
+        this.mytrans = segments;
+        this.sound = this.transcriptions[annotator].sound;
+        this.story = this.transcriptions[annotator].story;
+        this.accent = this.transcriptions[annotator].accent;
+        this.monodia = this.transcriptions[annotator].monodia;
+        this.title = this.transcriptions[annotator].title;
+      }
+    },
+
+    populateSegmentsForAll() {
       this.segments = {};
       this.users = [];
       this.selectedUsers = [];
+      this.popultateSegmentsForAnnotator('original');
       for (const annotator in this.transcriptions) {
         if (Object.prototype.hasOwnProperty.call(this.transcriptions, annotator)) {
-          const isOriginal = annotator === 'original';
-          const original = !isOriginal ? this.segments.original : [];
-          const conllSegments = isOriginal ? this.transcriptions[annotator] : this.transcriptions[annotator].transcription;
-          if (conllSegments.length !== 0) {
-            this.segments[annotator] = conllSegments.map((sent) => sent.reduce((acc, t) => `${acc + (isOriginal ? t[0] : t)} `, ''));
-            this.users.push({ label: annotator, value: annotator });
-          } else {
-            this.segments[annotator] = original;
-            if (!this.viewAllTranscriptions) this.wasSaved = false;
-          }
-
-          const segments = this.deepCopy(this.segments[annotator]);
-          if (!isOriginal) {
-            // Nasty debegging for the bug that inserts empty list in transcriptions
-            if (segments.length !== original.length) {
-              this.$store.dispatch('notifyError', {
-                error:
-                  ' Your transcription is corrupted, can you notify the admin of this website please ? ERROR CODE GITHUB : 105 : https://github.com/Arborator/arborator-frontend/issues/105',
-                timeout: 25000,
-              });
-              // segments = segments.filter((segment) => segment.length > 0); // <- Kim and Kirian : Quick debugging to make it printing, but we don't know if it will then break all the saving logic !!!!
-            }
-            this.diffsegments[annotator] = segments.map((sent, i) => Diff.diffWords(original[i] || 'FINISHED !!', sent));
-          }
-
-          if (annotator === this.username && !this.viewAllTranscriptions) {
-            this.mytrans = segments;
-            this.sound = this.transcriptions[annotator].sound;
-            this.story = this.transcriptions[annotator].story;
-            this.accent = this.transcriptions[annotator].accent;
-            this.monodia = this.transcriptions[annotator].monodia;
-            this.title = this.transcriptions[annotator].title;
+          if (annotator !== 'original') {
+            this.popultateSegmentsForAnnotator(annotator);
           }
         }
       }
@@ -599,7 +606,7 @@ export default {
                 });
             }
           } else {
-            this.makeSents();
+            this.populateSegmentsForAll();
           }
         })
         .catch((error) => {
@@ -627,7 +634,7 @@ export default {
         const user = this.makeValid(data);
         this.transcriptions[user.user] = user;
       }
-      this.makeSents();
+      this.populateSegmentsForAll();
     },
 
     makeValid(data) {

@@ -7,8 +7,8 @@ export default {
   },
   getters: {
     admins: (state) => state.admins,
-    isAdmin: (state, getters, rootSate, rootGetters) => state.admins.includes(rootSate.user.id) || rootGetters['user/isSuperAdmin'],
-  }, // return state.admins.includes(getters["getUserInfos"].id);
+    isAdmin: (state, getters, rootState, rootGetters) => state.admins.includes(rootState.user.id) || rootGetters['user/isSuperAdmin'],
+  },
   mutations: {
     // Set admins for klang projects
     set_klang_project_settings(state, newAdmins) {

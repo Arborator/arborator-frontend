@@ -380,6 +380,9 @@ export default {
       const trans = this.mytrans.map((line) => {
         let words = line.split(' ');
         words = words.filter((word) => word !== '');
+        if (words.length === 0) {
+          words.push('');
+        }
         return words;
       });
       const data = {
@@ -427,18 +430,29 @@ export default {
         if (Object.prototype.hasOwnProperty.call(this.conll, annotator)) {
           const isOriginal = annotator === 'original';
           const original = !isOriginal ? this.segments.original : [];
-          const conllSegment = isOriginal ? this.conll[annotator] : this.conll[annotator].transcription;
-          if (conllSegment.length !== 0) {
-            this.segments[annotator] = conllSegment.map((sent) => sent.reduce((acc, t) => `${acc + (isOriginal ? t[0] : t)} `, ''));
+          const conllSegments = isOriginal ? this.conll[annotator] : this.conll[annotator].transcription;
+          if (conllSegments.length !== 0) {
+            this.segments[annotator] = conllSegments.map((sent) => sent.reduce((acc, t) => `${acc + (isOriginal ? t[0] : t)} `, ''));
             this.users.push({ label: annotator, value: annotator });
           } else {
             this.segments[annotator] = original;
             if (!this.viewAllTranscriptions) this.wasSaved = false;
           }
+
           const segments = this.deepCopy(this.segments[annotator]);
           if (!isOriginal) {
-            this.diffsegments[annotator] = segments.map((sent, i) => Diff.diffWords(original[i], sent));
+            // Nasty debegging for the bug that inserts empty list in transcriptions
+            if (segments.length !== original.length) {
+              this.$store.dispatch('notifyError', {
+                error:
+                  ' Your transcription is corrupted, can you notify the admin of this website please ? ERROR CODE GITHUB : 105 : https://github.com/Arborator/arborator-frontend/issues/105',
+                timeout: 25000,
+              });
+              // segments = segments.filter((segment) => segment.length > 0); // <- Kim and Kirian : Quick debugging to make it printing, but we don't know if it will then break all the saving logic !!!!
+            }
+            this.diffsegments[annotator] = segments.map((sent, i) => Diff.diffWords(original[i] || 'FINISHED !!', sent));
           }
+
           if (annotator === this.username && !this.viewAllTranscriptions) {
             this.mytrans = segments;
             this.sound = this.conll[annotator].sound;

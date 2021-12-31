@@ -27,10 +27,10 @@ export default route((/* { store, ssrContext } */) => {
     // quasar.conf.js -> build -> vueRouterMode
     // quasar.conf.js -> build -> publicPath
     // mode: process.env.VUE_ROUTER_MODE,
-    base: process.env.VUE_ROUTER_BASE,
-    afterEach: (to) => {
-      // aftereach is outsideshow_all_trees
-    },
+    // base: process.env.VUE_ROUTER_BASE,
+    // afterEach: (to) => {
+    //   // aftereach is outsideshow_all_trees
+    // },
   });
 
   // Router.onError(error => {

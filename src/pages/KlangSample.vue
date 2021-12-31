@@ -1,5 +1,6 @@
 <template>
   <q-page class="full-width row wrap" style="padding-top: 220px; padding-bottom: 80px">
+    {{ JSON.stringify(segments['kimgerdes']) !== JSON.stringify(mytrans) }}
     <div class="q-pa-none full-width" ref="words">
       <!-- <div class="row" dense v-for="(sent, i) in transcriptions['original']" :key="i"> -->
       <div class="row justify-evenly" dense v-for="(sent, i) in mytrans" :key="i">
@@ -70,7 +71,7 @@
         <!-- ADMIN TABLE : OTHER ANNOTATORS -->
         <template v-if="viewAllTranscriptions">
           <template v-for="(transcription, username) in transcriptions" :key="username">
-            <div class="col q-pa-none" v-if="username !== 'original'">
+            <div class="col q-pa-none" v-if="username !== 'original' && JSON.stringify(segments[username]) !== JSON.stringify(mytrans)">
               <span>
                 <q-btn v-if="segments[username][i] !== mytrans[i]" round dense flat icon="west" @click="moveToInputField(username, i)"> </q-btn>
                 <span v-for="(part, index) in diffsegments[username][i]" style="padding: 0px; margin: 0px" :key="index">
@@ -96,12 +97,16 @@
           <span class="line-number" dense> </span>
           <div class="col row q-pa-none"></div>
           <div class="col row q-pa-none meta-label">
-            <span> {{ meta.label }} </span>
+            <span class="meta-text"> {{ meta.label }} </span>
             <q-space />
           </div>
           <template v-for="(transcription, username) in transcriptions">
-            <div class="col row q-pa none" :key="username" v-if="username !== 'original'">
-              <span class="meta-value">{{ transcription[meta.value] }}</span>
+            <div
+              class="col row q-pa none"
+              :key="username"
+              v-if="username !== 'original' && JSON.stringify(segments[username]) !== JSON.stringify(mytrans)"
+            >
+              <span class="meta-value meta-text">{{ transcription[meta.value] }}</span>
             </div>
           </template>
         </div>
@@ -142,11 +147,8 @@
             <q-badge color="secondary"> {{ viewAllTranscriptions ? 'new proposal' : username }} </q-badge>
           </div>
           <template v-if="viewAllTranscriptions">
-            <!-- {{ (555555, typeof transcriptions) }} -->
-
             <template v-for="(transcription, username) in transcriptions" :key="username">
-              <!-- {{ (555555, (transcription, username)) }} -->
-              <div v-if="username !== 'original'" class="col q-pa-none">
+              <div class="col q-pa-none" v-if="username !== 'original' && JSON.stringify(segments[username]) !== JSON.stringify(mytrans)">
                 <q-badge> {{ viewAllTranscriptions || wasSaved ? username : 'original' }} </q-badge>
               </div>
             </template>
@@ -272,7 +274,9 @@
   font-size: 15px;
   background-color: #276930;
 }
-
+.meta-text {
+  margin-left: 10px;
+}
 .meta-row {
   background-color: #4a2769;
   color: white;
@@ -280,6 +284,7 @@
 
 .special-column {
   background-color: #27693031;
+  margin-left: 10px;
   /* width: 500px;
   min-width: 500px;
   max-width: 500px; */
@@ -416,7 +421,7 @@ export default {
           this.wasSaved = true;
 
           this.$q.notify({
-            message: 'The operation was successfully saved.',
+            message: 'The information was successfully saved.',
             position: 'top-right',
             color: 'green',
             icon: 'done',
@@ -450,7 +455,7 @@ export default {
 
       let segments = this.deepCopy(this.segments[annotator]);
       if (!isOriginal) {
-        // Nasty debegging for the bug that inserts empty list in transcriptions
+        // Nasty debugging for the bug that inserts empty list in transcriptions
         if (segments.length !== original.length) {
           this.$store.dispatch('notifyError', {
             error:
@@ -629,6 +634,7 @@ export default {
 
     setSampleData(response) {
       const { data } = response;
+
       if (Array.isArray(data)) {
         let index;
         for (index in data) {
@@ -647,6 +653,7 @@ export default {
         const user = this.makeValid(data);
         this.transcriptions[user.user] = user;
       }
+
       this.populateSegmentsForAll();
     },
 

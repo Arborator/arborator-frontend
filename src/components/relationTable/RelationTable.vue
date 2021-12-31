@@ -4,7 +4,7 @@
       <q-space />
       <div class="text-weight-bold">RelationTables</div>
       <q-space />
-      <q-btn flat dense icon="close" v-close-popup />
+      <q-btn v-close-popup flat dense icon="close" />
     </q-bar>
     <q-card-section>
       <div class="row q-gutter-lg" style="height: 80vh; width: 90vw">
@@ -16,18 +16,18 @@
           </q-toolbar>
           <q-scroll-area visible style="height: 80vh">
             <div>
-              <q-input ref="filter" filled v-model="filter" label="filter dependency relations">
-                <template v-slot:append>
+              <q-input ref="filter" v-model="filter" filled label="filter dependency relations">
+                <template #append>
                   <q-icon v-if="filter !== ''" name="clear" class="cursor-pointer" @click="resetFilter" />
                 </template>
               </q-input>
               <q-tree
                 ref="tree"
+                v-model:selected="currentEdge"
                 :nodes="relationtree"
                 node-key="label"
                 :filter="filter"
                 default-expand-all
-                v-model:selected="currentEdge"
                 selected-color="primary"
                 @update:selected="getTable($event)"
               />
@@ -40,7 +40,7 @@
                     </q-list> -->
           </q-scroll-area>
         </div>
-        <div class="col-9" v-show="currentEdge.length > 0" :data="getTable">
+        <div v-show="currentEdge.length > 0" class="col-9" :data="getTable">
           <q-toolbar class="text-center">
             <q-toolbar-title>
               <span class="text-primary text-bold">{{
@@ -57,7 +57,7 @@
             row-key="gov"
             hide-bottom
           >
-            <template v-slot:body-cell="props">
+            <template #body-cell="props">
               <q-td :props="props">
                 <span v-if="isString(props.value)">
                   <span class="primary" style="font-weight: 500">{{ props.value }} </span>
@@ -109,6 +109,35 @@ export default {
   },
   computed: {
     // sentenceCount() {return 17}, // todo get the total number of sentences in the table
+  },
+  mounted() {
+    const splitters = this.$store.getters['config/getProjectConfig'].annotationFeatures.DEPREL.map(({ join }) => join).join('');
+    const splitregex = new RegExp(`[${splitters}]`, 'g'); // = /[:@]/g
+
+    this.relationtree = [];
+    let lasta = this.relationtree;
+    let match;
+    let newo;
+    for (const edge of this.edgesList) {
+      match = splitregex.exec(edge + splitters[0]);
+      if (match) {
+        const r = edge.substr(0, match.index);
+        const alr = lasta.filter((rr) => rr.label === r);
+        if (alr.length === 0) {
+          newo = { label: r, children: [] };
+          newo.selectable = r === edge; // some labels don't exist without children
+          newo.icon = r === edge ? 'view_module' : null;
+          lasta.push(newo);
+        } else [newo] = alr;
+        lasta = newo.children;
+      }
+      lasta = this.relationtree;
+    }
+    // this.$refs.tree.expandAll(); // doesn't seem to work without timeout
+    setTimeout(() => {
+      this.$refs.tree.expandAll();
+      this.$refs.filter.focus();
+    }, 500);
   },
   methods: {
     /**
@@ -220,35 +249,6 @@ export default {
     isString(s) {
       return typeof s === 'string' || s instanceof String;
     },
-  },
-  mounted() {
-    const splitters = this.$store.getters['config/getProjectConfig'].annotationFeatures.DEPREL.map(({ join }) => join).join('');
-    const splitregex = new RegExp(`[${splitters}]`, 'g'); // = /[:@]/g
-
-    this.relationtree = [];
-    let lasta = this.relationtree;
-    let match;
-    let newo;
-    for (const edge of this.edgesList) {
-      match = splitregex.exec(edge + splitters[0]);
-      if (match) {
-        const r = edge.substr(0, match.index);
-        const alr = lasta.filter((rr) => rr.label === r);
-        if (alr.length === 0) {
-          newo = { label: r, children: [] };
-          newo.selectable = r === edge; // some labels don't exist without children
-          newo.icon = r === edge ? 'view_module' : null;
-          lasta.push(newo);
-        } else [newo] = alr;
-        lasta = newo.children;
-      }
-      lasta = this.relationtree;
-    }
-    // this.$refs.tree.expandAll(); // doesn't seem to work without timeout
-    setTimeout(() => {
-      this.$refs.tree.expandAll();
-      this.$refs.filter.focus();
-    }, 500);
   },
 };
 </script>

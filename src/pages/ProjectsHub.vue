@@ -4,7 +4,7 @@
       <q-card flat>
         <q-card-section class="q-pa-md row items-start q-gutter-md">
           <q-toolbar class="text-center">
-            <q-btn :disable="!isLoggedIn" id="createproject" color="primary" round dense icon="add" @click="creaProjectDial = true">
+            <q-btn id="createproject" :disable="!isLoggedIn" color="primary" round dense icon="add" @click="creaProjectDial = true">
               <q-tooltip :delay="300" content-class="text-white bg-primary">{{ $t('projectHub.tooltipCreaProject') }}</q-tooltip>
             </q-btn>
             <q-toolbar-title :class="($q.dark.isActive ? '' : 'text-primary') + ' text-bold'">
@@ -18,15 +18,15 @@
             <q-toolbar-title>
               <!-- <span :class="($q.dark.isActive?'':'text-primary') + ' text-bold'">Projects</span> -->
               <q-input
+                v-model="search"
                 filled
                 bottom-slots
-                v-model="search"
                 :label="$t('projectHub.emptySearch')"
                 type="text"
                 @input="searchProject(search)"
                 @keyup.enter="searchProject(search)"
               >
-                <template v-slot:append>
+                <template #append>
                   <q-icon name="search" />
                 </template>
               </q-input>
@@ -34,7 +34,7 @@
           </q-toolbar>
         </q-card-section>
         <q-card-section v-if="initLoading" class="row q-pa-md items-start q-gutter-md" style="width: 90vw; height: 60vh">
-          <q-card style="max-width: 250px; width: 250px" v-for="i in skelNumber" :key="i">
+          <q-card v-for="i in skelNumber" :key="i" style="max-width: 250px; width: 250px">
             <q-skeleton height="150px" square />
             <q-item>
               <q-item-section>
@@ -58,67 +58,67 @@
             :virtual-scroll-slice-size="30"
             :virtual-scroll-item-size="200"
           >
-            <template v-slot="{ item }">
+            <template #default="{ item }">
               <ProjectCard
+                :key="item.id"
                 style="max-width: 80vw"
                 :props="item"
-                :parentDeleteProject="deleteProject"
-                :parentProjectSettings="showProjectSettings"
-                :key="item.id"
+                :parent-delete-project="deleteProject"
+                :parent-project-settings="showProjectSettings"
               ></ProjectCard>
             </template>
           </q-virtual-scroll>
           <!-- if not mobile: -->
           <!-- four groups: my projects, my old projects, other projects, other old projects: -->
           <div v-if="isLoggedIn && !$q.platform.is.mobile" class="q-pa-md row items-start q-gutter-md">
-            <div class="text-h6 col-12" v-if="myProjects.length">
+            <div v-if="myProjects.length" class="text-h6 col-12">
               <q-chip color="primary" class="category" text-color="white"> {{ $t('projectHub.myProjects') }} </q-chip>
             </div>
             <ProjectCard
-              style="max-width: 270px"
               v-for="project in myProjects"
-              :props="project"
-              :parentDeleteProject="deleteProject"
-              :parentProjectSettings="showProjectSettings"
               :key="project.id"
+              style="max-width: 270px"
+              :props="project"
+              :parent-delete-project="deleteProject"
+              :parent-project-settings="showProjectSettings"
             ></ProjectCard>
-            <div class="text-h6 col-12" v-if="myOldProjects.length">
+            <div v-if="myOldProjects.length" class="text-h6 col-12">
               <q-chip color="primary" class="category" text-color="white"> {{ $t('projectHub.myOldProjects') }} </q-chip><br />
               <q-chip outline color="negative" class="bg-white text-negative">{{ $t('projectHub.myOldProjectInfo') }}</q-chip>
             </div>
             <ProjectCard
-              style="max-width: 270px"
               v-for="project in myOldProjects"
-              :props="project"
-              :parentDeleteProject="deleteProject"
-              :parentProjectSettings="showProjectSettings"
               :key="project.id"
+              style="max-width: 270px"
+              :props="project"
+              :parent-delete-project="deleteProject"
+              :parent-project-settings="showProjectSettings"
             ></ProjectCard>
           </div>
           <div v-if="!$q.platform.is.mobile" class="q-pa-md row items-start q-gutter-md">
-            <div class="text-h6 col-12" v-if="isLoggedIn && otherProjects.length">
+            <div v-if="isLoggedIn && otherProjects.length" class="text-h6 col-12">
               <q-chip color="primary" class="category" text-color="white"> {{ $t('projectHub.otherProjects') }} </q-chip>
             </div>
             <ProjectCard
-              style="max-width: 250px"
               v-for="project in otherProjects"
-              :props="project"
-              :parentDeleteProject="deleteProject"
-              :parentProjectSettings="showProjectSettings"
               :key="project.id"
+              style="max-width: 250px"
+              :props="project"
+              :parent-delete-project="deleteProject"
+              :parent-project-settings="showProjectSettings"
             ></ProjectCard>
-            <div class="text-h6 col-12" v-if="otherOldProjects.length">
+            <div v-if="otherOldProjects.length" class="text-h6 col-12">
               <q-chip color="primary" class="category" text-color="white">{{ $t('projectHub.otherOldProjects') }}</q-chip
               ><br />
               <q-chip outline color="negative" class="bg-white text-negative">{{ $t('projectHub.otherOldProjectInfo') }}</q-chip>
             </div>
             <ProjectCard
-              style="max-width: 250px"
               v-for="project in otherOldProjects"
-              :props="project"
-              :parentDeleteProject="deleteProject"
-              :parentProjectSettings="showProjectSettings"
               :key="project.id"
+              style="max-width: 250px"
+              :props="project"
+              :parent-delete-project="deleteProject"
+              :parent-project-settings="showProjectSettings"
             ></ProjectCard>
           </div>
         </q-card-section>
@@ -131,12 +131,12 @@
               :virtual-scroll-slice-size="30"
               :virtual-scroll-item-size="200"
             >
-              <template v-slot="{ item }">
+              <template #default="{ item }">
                 <ProjectItem
-                  :props="item"
-                  :parentDeleteProject="deleteProject"
-                  :parentProjectSettings="showProjectSettings"
                   :key="item.id"
+                  :props="item"
+                  :parent-delete-project="deleteProject"
+                  :parent-project-settings="showProjectSettings"
                 ></ProjectItem>
               </template>
             </q-virtual-scroll>
@@ -146,7 +146,7 @@
     </div>
 
     <q-dialog v-model="creaProjectDial" transition-show="fade" transition-hide="fade">
-      <CreaProjectCard :parentGetProjects="getProjects"></CreaProjectCard>
+      <CreaProjectCard :parent-get-projects="getProjects"></CreaProjectCard>
     </q-dialog>
 
     <q-dialog v-model="projectSettingsDial" transition-show="slide-up" transition-hide="slide-down">
@@ -154,7 +154,7 @@
     </q-dialog>
 
     <q-dialog v-model="confirmActionDial">
-      <confirm-action :parentAction="confirmActionCallback" :arg1="confirmActionArg1"></confirm-action>
+      <confirm-action :parent-action="confirmActionCallback" :arg1="confirmActionArg1"></confirm-action>
     </q-dialog>
   </q-page>
 </template>
@@ -187,6 +187,7 @@ import ProjectSettingsView from '../components/ProjectSettingsView.vue';
 import ConfirmAction from '../components/ConfirmAction';
 
 export default {
+  name: 'ProjectHub',
   components: {
     ProjectCard,
     ProjectItem,
@@ -194,7 +195,6 @@ export default {
     ProjectSettingsView,
     ConfirmAction,
   },
-  name: 'ProjectHub',
   data() {
     return {
       lorem: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.',
@@ -217,15 +217,6 @@ export default {
       ayear: -3600 * 24 * 365,
       userId: '',
     };
-  },
-  mounted() {
-    document.title = `ArboratorGrew: ${this.$t('projectHub.title')}`;
-    this.storage = useStorage();
-    this.initLoading = true;
-    this.userId = this.$store.getters['user/getUserInfos'].id;
-    // this.listMode = this.$storage.getStorageSync("project_view", false);
-    this.listMode = this.storage.getStorageSync('project_view', false);
-    this.getProjects();
   },
   computed: {
     isLoggedIn() {
@@ -254,6 +245,15 @@ export default {
     avatar() {
       return this.$store.getters['user/getUserInfos'].picture_url;
     },
+  },
+  mounted() {
+    document.title = `ArboratorGrew: ${this.$t('projectHub.title')}`;
+    this.storage = useStorage();
+    this.initLoading = true;
+    this.userId = this.$store.getters['user/getUserInfos'].id;
+    // this.listMode = this.$storage.getStorageSync("project_view", false);
+    this.listMode = this.storage.getStorageSync('project_view', false);
+    this.getProjects();
   },
   methods: {
     openURL,

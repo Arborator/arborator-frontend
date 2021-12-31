@@ -4,7 +4,7 @@
       <q-bar :class="$q.dark.isActive ? 'bg-dark' : 'bg-white text-black'">
         <!-- class="bg-white text-black" -->
         <!--   :class="$q.dark.isActive ? 'text-white' : 'text-primary'" -->
-        <q-btn flat @click="drawerLeft = !drawerLeft" round icon="menu" />
+        <q-btn flat round icon="menu" @click="drawerLeft = !drawerLeft" />
         <q-btn flat to="/projects" :ripple="false" type="a">
           <div class="q-btn__content text-center col items-center q-anchor--skip row">
             <img v-if="$q.dark.isActive" alt="Arborator" src="/svg/arborator.grew.white.svg" style="height: 2.3vw" />
@@ -42,23 +42,23 @@
         </q-breadcrumbs>
         <q-space />
         <div class="q-gutter-sm row items-center no-wrap" size="4rem">
-          <q-icon name="admin_panel_settings" v-show="isProjectAdmin">
+          <q-icon v-show="isProjectAdmin" name="admin_panel_settings">
             <q-tooltip> You are admin of this project </q-tooltip>
           </q-icon>
           <q-select v-model="lang" :options="langOptions" dense borderless options-dense map-options emit-value>
-            <template v-slot:append>
+            <template #append>
               <q-avatar>
                 <q-icon name="fas fa-globe" />
               </q-avatar>
             </template>
             <q-tooltip> Switch the language of the user interface </q-tooltip>
           </q-select>
-          <q-btn flat round @click="toggleDarkMode()" :icon="$q.dark.isActive ? 'lightbulb' : 'brightness_2'">
+          <q-btn flat round :icon="$q.dark.isActive ? 'lightbulb' : 'brightness_2'" @click="toggleDarkMode()">
             <q-tooltip> Toggle dark mode </q-tooltip>
           </q-btn>
           <q-btn-dropdown v-show="!store.getters['user/isLoggedIn']" color="secondary" outline label="Log In" icon="account_circle">
             <q-list>
-              <q-item clickable v-close-popup @click="tologin(store.getters.getSource + '/login/google')">
+              <q-item v-close-popup clickable @click="tologin(store.getters.getSource + '/login/google')">
                 <q-item-section avatar>
                   <q-icon name="fab fa-google" />
                 </q-item-section>
@@ -67,7 +67,7 @@
                   <q-item-label>Google</q-item-label>
                 </q-item-section>
               </q-item>
-              <q-item clickable v-close-popup @click="tologin(store.getters.getSource + '/login/github')">
+              <q-item v-close-popup clickable @click="tologin(store.getters.getSource + '/login/github')">
                 <q-item-section avatar>
                   <q-icon name="fab fa-github" />
                 </q-item-section>
@@ -96,13 +96,13 @@
               <div class="row no-wrap q-pa-md">
                 <div class="column">
                   <q-list>
-                    <q-item clickable v-ripple to="/settings">
+                    <q-item v-ripple clickable to="/settings">
                       <q-item-section avatar>
                         <q-icon name="settings" />
                       </q-item-section>
                       <q-item-section> {{ $t('settings') }} </q-item-section>
                     </q-item>
-                    <q-item v-show="store.getters['user/getUserInfos'].super_admin" clickable v-ripple to="/admin">
+                    <q-item v-show="store.getters['user/getUserInfos'].super_admin" v-ripple clickable to="/admin">
                       <q-item-section avatar>
                         <q-icon name="vpn_key" />
                       </q-item-section>
@@ -124,7 +124,7 @@
                   <div class="text-subtitle1 q-mt-md q-mb-xs">
                     {{ store.getters['user/getUserInfos'].username }}
                   </div>
-                  <q-btn color="negative" label="Logout" size="sm" v-close-popup @click="logout()" />
+                  <q-btn v-close-popup color="negative" label="Logout" size="sm" @click="logout()" />
                 </div>
               </div>
             </q-menu>
@@ -132,9 +132,9 @@
           <q-btn
             flat
             dense
-            @click="$q.fullscreen.toggle()"
             :icon="$q.fullscreen.isActive ? 'fullscreen_exit' : 'fullscreen'"
             :label="$q.fullscreen.isActive ? '' : ''"
+            @click="$q.fullscreen.toggle()"
           >
             <q-tooltip :delay="300" content-class="bg-white text-primary">{{ $t('fullscreen') }}</q-tooltip>
           </q-btn>
@@ -157,20 +157,20 @@
       :breakpoint="400"
       :content-class="$q.dark.isActive ? 'bg-dark' : 'bg-white'"
       :mini="miniState"
-      @mouseover="miniState = false"
-      @mouseout="miniState = true"
       mini-to-overlay
       bordered
+      @mouseover="miniState = false"
+      @mouseout="miniState = true"
     >
       <q-scroll-area style="height: calc(100% - 0px); margin-top: 0px">
         <q-list padding>
           <div v-for="(menuItem, index) in menuList" :key="index">
             <q-item
               v-show="store.getters['user/isLoggedIn'] || menuItem.public"
+              v-ripple
               :to="menuItem.to"
               clickable
               :active="menuItem.label === $route.currentRoute"
-              v-ripple
             >
               <q-item-section avatar>
                 <q-icon :name="menuItem.icon" />
@@ -255,16 +255,6 @@ export default {
       ],
     };
   },
-  mounted() {
-    this.storage = useStorage();
-    this.setStartingLanguage();
-  },
-  watch: {
-    lang(lang) {
-      this.$i18n.locale = lang;
-      this.storage.setStorageSync('arbolang', lang);
-    },
-  },
   computed: {
     notHome() {
       // return !Object.values(this.$route.params).every(o => o === null); }
@@ -273,6 +263,16 @@ export default {
     isProjectAdmin() {
       return this.$store.getters['user/isProjectAdmin'];
     },
+  },
+  watch: {
+    lang(lang) {
+      this.$i18n.locale = lang;
+      this.storage.setStorageSync('arbolang', lang);
+    },
+  },
+  mounted() {
+    this.storage = useStorage();
+    this.setStartingLanguage();
   },
   methods: {
     openURL,

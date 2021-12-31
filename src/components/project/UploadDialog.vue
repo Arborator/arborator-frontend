@@ -9,7 +9,7 @@
         <q-btn v-if="!maximizedUploadToggle" dense flat icon="crop_square" @click="maximizedUploadToggle = true">
           <q-tooltip v-if="!maximizedUploadToggle" content-class="bg-white text-primary">{{ $t('projectView.tooltipWindows[1]') }}</q-tooltip>
         </q-btn>
-        <q-btn dense flat icon="close" v-close-popup="10" @click="uploadDialModel = false">
+        <q-btn v-close-popup="10" dense flat icon="close" @click="uploadDialModel = false">
           <q-tooltip content-class="bg-white text-primary">{{ $t('projectView.tooltipWindows[2]') }}</q-tooltip>
         </q-btn>
       </q-bar>
@@ -24,23 +24,23 @@
         <!-- <input type="file" id="input-conllu" multiple /> -->
         <q-file
           v-model="uploadSample.attachment.file"
-          @update:model-value="preprocess"
           label="Pick or drop files"
           use-chips
           clearable
           :loading="uploadSample.submitting"
           multiple
           style="max-width: 600px, min-height:1300px"
+          @update:model-value="preprocess"
         >
-          <template v-slot:after>
+          <template #after>
             <q-btn
               color="primary"
               dense
               icon="cloud_upload"
               round
-              @click="upload()"
               :loading="uploadSample.submitting"
               :disable="uploadSample.attachment.file === null || uploadSample.attachment.file === []"
+              @click="upload()"
             />
           </template>
         </q-file>
@@ -64,7 +64,7 @@
               row-key="old"
               :columns="columns"
             >
-              <template v-slot:body="props">
+              <template #body="props">
                 <q-tr v-if="props.row.old === 'default'" :props="props" dense class="bg-blue-grey-1">
                   <q-td key="old" :props="props" dense class="text-italic">
                     <q-tooltip>to be used for all trees without user_id</q-tooltip>
@@ -74,7 +74,7 @@
                     <q-tooltip>click to modify</q-tooltip>
                     {{ props.row.new }}
                     <q-popup-edit v-model="props.row.new" dense>
-                      <q-input color="primary" v-model="props.row.new" dense autofocus />
+                      <q-input v-model="props.row.new" color="primary" dense autofocus />
                     </q-popup-edit>
                   </q-td>
                 </q-tr>
@@ -87,7 +87,7 @@
                     <q-tooltip>click to modify</q-tooltip>
                     {{ props.row.new }}
                     <q-popup-edit v-model="props.row.new" dense>
-                      <q-input color="primary" v-model="props.row.new" dense autofocus />
+                      <q-input v-model="props.row.new" color="primary" dense autofocus />
                     </q-popup-edit>
                   </q-td>
                 </q-tr>

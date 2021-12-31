@@ -4,19 +4,19 @@
       <q-space />
       <div class="text-weight-bold">Are you sure?</div>
       <q-space />
-      <q-btn flat dense icon="close" v-close-popup />
+      <q-btn v-close-popup flat dense icon="close" />
     </q-bar>
     <q-card-section> You are about to perform an irrevocable action. Do you really want to proceed? </q-card-section>
     <q-card-actions align="around">
-      <q-btn flat label="Cancel" v-close-popup></q-btn>
-      <q-btn @keyup.enter="confirm()" @click="confirm()" color="primary" label="Confirm" v-close-popup></q-btn>
+      <q-btn v-close-popup flat label="Cancel"></q-btn>
+      <q-btn v-close-popup color="primary" label="Confirm" @keyup.enter="confirm()" @click="confirm()"></q-btn>
     </q-card-actions>
   </q-card>
 </template>
 
 <script>
 export default {
-  name: 'confirm-action',
+  name: 'ConfirmAction',
   props: ['parentAction', 'arg1'],
   data() {
     return {};

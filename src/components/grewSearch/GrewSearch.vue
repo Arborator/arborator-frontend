@@ -1,20 +1,20 @@
 <template>
   <div>
     <q-page-sticky :position="breakpoint ? 'bottom-right' : 'bottom-right'" :offset="breakpoint ? [18, 18] : [30, 80]" style="z-index: 999">
-      <q-btn size="20px" round @click="searchDialog = !searchDialog" color="primary" icon="img:/svg/g.svg">
+      <q-btn size="20px" round color="primary" icon="img:/svg/g.svg" @click="searchDialog = !searchDialog">
         <q-tooltip content-class="bg-primary" content-style="font-size: 16px"> Search with Grew in this sample </q-tooltip>
       </q-btn>
     </q-page-sticky>
     <q-dialog v-model="searchDialog" seamless position="right" full-width>
-      <GrewRequestCard :parentOnSearch="onSearch" :parentOnTryRules="onTryRules" :grewquery="$route.query.q || ''"></GrewRequestCard>
+      <GrewRequestCard :parent-on-search="onSearch" :parent-on-try-rules="onTryRules" :grewquery="$route.query.q || ''"></GrewRequestCard>
     </q-dialog>
     <q-dialog v-model="resultSearchDialog" transition-show="fade" transition-hide="fade">
       <ResultView
         :searchresults="resultSearch"
         :totalsents="sentenceCount"
-        :rulesGrew="rulesGrew"
+        :rules-grew="rulesGrew"
         searchscope="sample"
-        :parentOnShowTable="onShowTable"
+        :parent-on-show-table="onShowTable"
       ></ResultView>
     </q-dialog>
   </div>
@@ -40,9 +40,6 @@ export default {
       window: { width: 0, height: 0 },
     };
   },
-  mounted() {
-    this.searchDialog = this.showTable;
-  },
   computed: {
     breakpoint() {
       return this.window.width <= 400;
@@ -55,6 +52,9 @@ export default {
         this.$store.dispatch('grewSearch/switch_grew_dialog', value);
       },
     },
+  },
+  mounted() {
+    this.searchDialog = this.showTable;
   },
   methods: {
     // getRelationTable(type) {

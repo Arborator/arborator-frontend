@@ -4,7 +4,7 @@
       <q-space />
       <div class="text-weight-bold">{{ selectiontype }} Selection Table</div>
       <q-space />
-      <q-btn dense flat icon="close" v-close-popup>
+      <q-btn v-close-popup dense flat icon="close">
         <q-tooltip content-class="bg-white text-primary">Close</q-tooltip>
       </q-btn>
     </q-bar>
@@ -21,6 +21,7 @@
         ref="usersTable"
         class="dark rounded-borders"
         title="Users"
+        v-model:selected="table.selected"
         :rows="table.data"
         :columns="table.fields"
         row-key="username"
@@ -31,7 +32,6 @@
         binary-state-sort
         :visible-columns="table.visibleColumns"
         :selection="singlemultiple"
-        v-model:selected="table.selected"
         dense
         table-header-class="text-primary"
         card-class="shadow-8"
@@ -41,16 +41,16 @@
         :rows-per-page-options="[0]"
       >
         <!-- selection="single" -->
-        <template v-slot:top="props">
+        <template #top="props">
           <q-btn-group flat>
             <q-btn
+              v-close-popup
               no-caps
               push
               color="primary"
               label="validate"
               :disabled="table.selected.length < 1"
               @click="parentCallback(table.selected, targetRole)"
-              v-close-popup
             >
               <q-tooltip :delay="300" content-class="text-white bg-primary">Validate the selection</q-tooltip>
             </q-btn>
@@ -58,8 +58,8 @@
 
           <q-space />
 
-          <q-input dense debounce="300" v-model="table.filter" placeholder="Search" text-color="blue-grey-8">
-            <template v-slot:append>
+          <q-input v-model="table.filter" dense debounce="300" placeholder="Search" text-color="blue-grey-8">
+            <template #append>
               <q-icon name="search" />
             </template>
             <q-tooltip :delay="300" content-class="bg-white text-primary">Search a user</q-tooltip>
@@ -89,14 +89,14 @@
             dense
             text-color="blue-grey-8"
             :icon="props.inFullscreen ? 'fullscreen_exit' : 'fullscreen'"
-            @click="props.toggleFullscreen"
             class="q-ml-md"
+            @click="props.toggleFullscreen"
           />
         </template>
 
-        <template v-slot:body="props">
+        <template #body="props">
           <q-tr :props="props">
-            <q-td auto-width><q-toggle dense v-model="props.selected" /></q-td>
+            <q-td auto-width><q-toggle v-model="props.selected" dense /></q-td>
             <q-td key="picture_url" :props="props"
               ><q-avatar size="24px"><img :src="props.row.picture_url" /></q-avatar
             ></q-td>

@@ -6,27 +6,27 @@
       <q-bar class="bg-primary text-white">
         <div class="text-weight-bold">Replacing "{{ currentword }}" by:</div>
         <q-space />
-        <q-btn flat dense icon="close" v-close-popup />
+        <q-btn v-close-popup flat dense icon="close" />
       </q-bar>
       <AttributeTable
         :featdata="tokl"
         :columns="featTable.columns"
-        :featOptions="['String']"
-        openFeatures="true"
+        :feat-options="['String']"
+        open-features="true"
         modifiable="true"
         title="Token"
         :numbered="currentword"
       ></AttributeTable>
       <q-separator />
       <q-card-actions align="around">
-        <q-btn flat label="Cancel" v-close-popup style="width: 45%; margin-left: auto; margin-right: auto" />
+        <q-btn v-close-popup flat label="Cancel" style="width: 45%; margin-left: auto; margin-right: auto" />
         <q-btn
-          color="primary"
-          @click="onTokenDialogOk()"
-          label="I know what I'm doing"
           v-close-popup
+          color="primary"
+          label="I know what I'm doing"
           style="width: 45%; margin-left: auto; margin-right: auto"
           no-caps
+          @click="onTokenDialogOk()"
         >
           <q-tooltip content-class="bg-negative" content-style="font-size: 16px" transition-show="rotate" transition-hide="rotate"
             >⚠ Changing tokens breaks the comparability of different annotations of the same sentence!</q-tooltip

@@ -4,13 +4,13 @@
       <q-bar class="bg-primary text-white">
         <div class="text-weight-bold">Select a relation going from "{{ gov.FORM }}" to "{{ dep.FORM }}"</div>
         <q-space />
-        <q-btn flat dense icon="close" v-close-popup />
+        <q-btn v-close-popup flat dense icon="close" />
       </q-bar>
       <AttributeTable
         :featdata="options.relav"
         :columns="featTable.columns"
-        :featOptions="options.currentoptions"
-        openFeatures="false"
+        :feat-options="options.currentoptions"
+        open-features="false"
         modifiable="false"
         title="Dependency relation"
         prepend="true"
@@ -19,17 +19,17 @@
       <q-space />
 
       <q-card-actions>
-        <q-btn flat label="Cancel" v-close-popup style="width: 25%; margin-left: auto; margin-right: auto" />
+        <q-btn v-close-popup flat label="Cancel" style="width: 25%; margin-left: auto; margin-right: auto" />
         <!-- @click="ondialoghide()" -->
         <q-space />
-        <q-btn color="negative" @click="onDeleteRelation()" label="Delete" v-close-popup style="width: 25%; margin-left: auto" />
+        <q-btn v-close-popup color="negative" label="Delete" style="width: 25%; margin-left: auto" @click="onDeleteRelation()" />
         <q-space />
         <q-btn
-          color="primary"
-          @click="onChangeRelation(options.extendedrel)"
-          label="Ok"
           v-close-popup
+          color="primary"
+          label="Ok"
           style="width: 25%; margin-left: auto; margin-right: auto"
+          @click="onChangeRelation(options.extendedrel)"
         />
       </q-card-actions>
       <!-- :disabled="!someFeatureChanged" -->

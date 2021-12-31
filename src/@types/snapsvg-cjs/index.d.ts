@@ -163,7 +163,7 @@ declare module 'snapsvg-cjs' {
       append(el: Snap.Element): Snap.Element;
       append(el: Snap.Set): Snap.Element;
       appendTo(el: Snap.Element): Snap.Element;
-      asPX(attr: string, value?: string): number; //TODO: check what is really returned
+      asPX(attr: string, value?: string): number; // TODO: check what is really returned
       attr(param: 'viewBox'): BBox;
       attr(param: string): string;
       // attr(param: string, num: number): string;
@@ -273,7 +273,7 @@ declare module 'snapsvg-cjs' {
     }
 
     export interface Fragment {
-      //TODO: The documentation says that selectAll returns a set, but the getting started guide
+      // TODO: The documentation says that selectAll returns a set, but the getting started guide
       // uses .attr on the returned object. That's not supported by a set
       select(query: string): Snap.Element;
       selectAll(query?: string): Snap.Set;

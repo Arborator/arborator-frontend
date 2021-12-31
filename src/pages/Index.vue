@@ -66,14 +66,14 @@
 
           <q-separator vertical />
 
-          <q-card-actions align="around" vertical @click="scrolldown()" class="clickable clickhl">
+          <q-card-actions align="around" vertical class="clickable clickhl" @click="scrolldown()">
             <span class="text-center text-caption">{{ $t('homepage.scroll') }}</span>
             <q-icon name="fas fa-angle-double-down" style="font-size: 44px" :style="`color: ${myColor}`" />
           </q-card-actions>
         </q-card>
       </section>
 
-      <q-card flat class="q-pa-md q-gutter-y-lg" id="arboheadline">
+      <q-card id="arboheadline" flat class="q-pa-md q-gutter-y-lg">
         <q-separator inset />
 
         <section class="row sectionsize">
@@ -85,7 +85,7 @@
             </q-card-section>
             <q-card-section horizontal>
               <q-parallax :height="440" :speed="0.0" class="col col-md-5">
-                <template v-slot:media>
+                <template #media>
                   <video width="720" height="440" autoplay loop muted>
                     <source type="video/webm" src="/videos/annotate2.webm" />
                   </video>
@@ -168,7 +168,7 @@
               </q-card-section>
               <div class="col"></div>
               <q-parallax :height="440" :speed="0.0" class="col col-md-5">
-                <template v-slot:media>
+                <template #media>
                   <video width="720" height="440" autoplay loop muted>
                     <source type="video/webm" src="/videos/grew.webm" />
                   </video>

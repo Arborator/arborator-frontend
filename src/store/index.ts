@@ -1,12 +1,6 @@
-import { UserStateInterface } from './modules/user/defaultState';
 import { InjectionKey } from 'vue';
-import { MutationTree } from 'vuex';
-import { store } from 'quasar/wrappers';
-import { GetterTree } from 'vuex';
-import { ActionTree } from 'vuex';
-
-import { createStore, Store as VuexStore, useStore as vuexUseStore } from 'vuex';
-
+import { MutationTree, Store as VuexStore } from 'vuex';
+import { GetterTree, ActionTree, createStore } from 'vuex';
 import { Notify } from 'quasar';
 import { i18n } from 'src/boot/i18n';
 import config from './modules/config';
@@ -17,7 +11,7 @@ import lexicon from './modules/lexicon';
 import klang from './modules/klang';
 
 export interface StateInterface {
-  //root state
+  // root state
   source: string | undefined;
   lastGrewQuery: string;
   lastGrewCommand: string;
@@ -70,7 +64,7 @@ const rootActions: ActionTree<StateInterface, unknown> = {
     commit('change_pending_modifications', { value });
   },
   // seems to be not used
-  accessFailed({ commit }, { value }) {
+  accessFailed({ commit }) {
     commit('access_failed');
   },
   // seems to be not used

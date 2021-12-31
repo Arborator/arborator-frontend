@@ -5,7 +5,7 @@
       <q-header class="bg-primary">
         <q-toolbar>
           <q-toolbar-title>CoNLL of TODO : sentenceId </q-toolbar-title>
-          <q-btn flat v-close-popup round dense icon="close" />
+          <q-btn v-close-popup flat round dense icon="close" />
         </q-toolbar>
       </q-header>
       <q-page-container>
@@ -18,8 +18,8 @@
       <q-footer>
         <q-toolbar inset>
           <!-- <q-toolbar-title>Footer</q-toolbar-title> --><q-space />
-          <q-btn flat no-caps label="Cancel" v-close-popup />
-          <q-btn color="primary" @click="onConllDialogOk()" label="Ok" v-close-popup :disabled="currentConllContent === conllContent" />
+          <q-btn v-close-popup flat no-caps label="Cancel" />
+          <q-btn v-close-popup color="primary" label="Ok" :disabled="currentConllContent === conllContent" @click="onConllDialogOk()" />
         </q-toolbar>
       </q-footer>
     </q-layout>

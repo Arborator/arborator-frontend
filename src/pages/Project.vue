@@ -32,34 +32,34 @@
         </q-card-section>
 
         <q-card-section v-if="isShowLexiconPanel">
-          <LexiconPanel :lexiconItems="lexiconItems" :sampleId="table.selected" @request="fetchLexicon"> </LexiconPanel>
+          <LexiconPanel :lexicon-items="lexiconItems" :sample-id="table.selected" @request="fetchLexicon"> </LexiconPanel>
         </q-card-section>
         <q-card-section>
           <q-table
             ref="textsTable"
+            v-model:pagination="table.pagination"
             :class="($q.dark.isActive ? 'my-sticky-header-table-dark' : 'my-sticky-header-table') + ' rounded-borders'"
             title="Samples"
+            v-model:selected="table.selected"
             :rows="samples"
             :columns="table.fields"
             row-key="sample_name"
-            v-model:pagination="table.pagination"
             :loading="table.loading"
             loading-label="loading"
+            :key="tableKey"
             :filter="table.filter"
             :filter-method="searchSamples"
             binary-state-sort
             :visible-columns="exerciseMode ? table.visibleColumnsExerciseMode : table.visibleColumns"
             selection="multiple"
-            v-model:selected="table.selected"
             :table-header-class="$q.dark.isActive ? 'text-white' : 'text-primary'"
             card-class="shadow-8"
             virtual-scroll
             table-style="max-height:80vh"
             :rows-per-page-options="[30]"
-            :key="tableKey"
           >
             <!-- @request="getProjectInfos" -->
-            <template v-slot:top="props">
+            <template #top="props">
               <q-btn-group flat>
                 <q-btn v-if="isAdmin || isSuperAdmin" flat color="default" icon="cloud_upload" @click="uploadDial = true">
                   <q-tooltip v-if="isSuperAdmin || isAdmin" :delay="300" content-class="text-white bg-primary">{{
@@ -72,9 +72,9 @@
                     flat
                     color="default"
                     icon="cloud_download"
-                    @click="exportSamplesZip()"
                     :loading="table.exporting"
                     :disable="(visibility === 0 && !isGuest && !isAdmin && !isSuperAdmin) || table.selected.length < 1"
+                    @click="exportSamplesZip()"
                   ></q-btn>
                   <q-tooltip v-if="table.selected.length < 1" :delay="300" content-class="text-white bg-primary">{{
                     $t('projectView.tooltipExportSample[0]')
@@ -84,13 +84,13 @@
 
                 <div>
                   <q-btn
-                    flat
                     v-if="$store.getters['config/isTeacher']"
+                    flat
                     color="default"
                     icon="analytics"
-                    @click="exportEvaluation()"
                     :loading="table.exporting"
                     :disable="(visibility === 0 && !isGuest && !isAdmin && !isSuperAdmin) || table.selected.length !== 1"
+                    @click="exportEvaluation()"
                   ></q-btn>
                   <q-tooltip content-class="text-white bg-primary"
                     >export evaluations of the students (only works if only one sample is selected)
@@ -112,8 +112,8 @@
                   color="default"
                   text-color="red"
                   icon="delete_forever"
-                  @click="triggerConfirm(deleteSamples)"
                   :disable="!isAdmin && !isSuperAdmin"
+                  @click="triggerConfirm(deleteSamples)"
                 >
                   <q-tooltip :delay="300" content-class="text-white bg-primary">{{ $t('projectView.tooltipDeleteSample[1]') }}</q-tooltip>
                 </q-btn>
@@ -122,7 +122,7 @@
                 <div>
                   <q-btn-dropdown v-if="loggedWithGithub" :disable="table.selected.length < 1" icon="ion-md-git-commit" flat dense>
                     <q-list>
-                      <q-item clickable v-close-popup @click="commit('user')">
+                      <q-item v-close-popup clickable @click="commit('user')">
                         <q-item-section avatar>
                           <q-avatar v-if="isLoggedIn" size="1.2rem">
                             <img :src="avatar" />
@@ -134,7 +134,7 @@
                         </q-item-section>
                       </q-item>
 
-                      <q-item clickable v-close-popup @click="commit('user_recent')">
+                      <q-item v-close-popup clickable @click="commit('user_recent')">
                         <q-item-section avatar>
                           <q-avatar v-if="isLoggedIn" size="1.2rem">
                             <img :src="avatar" />
@@ -148,7 +148,7 @@
                         </q-item-section>
                       </q-item>
 
-                      <q-item v-if="isAdmin || isSuperAdmin" clickable v-close-popup @click="commit('recent')">
+                      <q-item v-if="isAdmin || isSuperAdmin" v-close-popup clickable @click="commit('recent')">
                         <q-item-section avatar>
                           <q-icon name="schedule" />
                         </q-item-section>
@@ -157,7 +157,7 @@
                         </q-item-section>
                       </q-item>
 
-                      <q-item v-if="isAdmin || isSuperAdmin" clickable v-close-popup @click="commit('all')">
+                      <q-item v-if="isAdmin || isSuperAdmin" v-close-popup clickable @click="commit('all')">
                         <q-item-section avatar>
                           <q-icon name="ion-md-globe" />
                         </q-item-section>
@@ -178,7 +178,7 @@
                 <div>
                   <q-btn-dropdown v-if="loggedWithGithub" :disable="false" icon="ion-md-git-pull-request" flat dense>
                     <q-list>
-                      <q-item clickable v-close-popup @click="pull('user')" :disable="table.selected.length < 1">
+                      <q-item v-close-popup clickable :disable="table.selected.length < 1" @click="pull('user')">
                         <q-item-section avatar>
                           <q-avatar v-if="isLoggedIn" size="1.2rem">
                             <img :src="avatar" />
@@ -190,7 +190,7 @@
                         </q-item-section>
                       </q-item>
 
-                      <q-item v-if="isAdmin || isSuperAdmin" clickable v-close-popup @click="pull('all')" :disable="table.selected.length < 1">
+                      <q-item v-if="isAdmin || isSuperAdmin" v-close-popup clickable :disable="table.selected.length < 1" @click="pull('all')">
                         <q-item-section avatar>
                           <q-icon name="ion-md-globe" />
                         </q-item-section>
@@ -213,9 +213,9 @@
                     flat
                     color="default"
                     icon="playlist_add_check"
-                    @click="fetchLexicon()"
                     :loading="table.exporting"
                     :disable="table.selected.length < 1"
+                    @click="fetchLexicon()"
                   ></q-btn>
                   <q-btn
                     v-if="isGuest || isAdmin || isSuperAdmin"
@@ -223,9 +223,9 @@
                     flat
                     color="default"
                     icon="playlist_add_check"
-                    @click="isShowLexiconPanel = false"
                     :loading="table.exporting"
                     :disable="table.selected.length < 1"
+                    @click="isShowLexiconPanel = false"
                   ></q-btn>
                   <q-tooltip v-if="table.selected.length < 1" :delay="300" content-class="text-white bg-primary"
                     >Select the samples to create a lexicon</q-tooltip
@@ -236,8 +236,8 @@
 
               <q-space />
 
-              <q-input dense debounce="300" v-model="table.filter" placeholder="Search" text-color="blue-grey-8">
-                <template v-slot:append>
+              <q-input v-model="table.filter" dense debounce="300" placeholder="Search" text-color="blue-grey-8">
+                <template #append>
                   <q-icon name="search" />
                 </template>
                 <q-tooltip :delay="300" content-class="text-white bg-primary">{{ $t('projectView.tooltipSearch') }}</q-tooltip>
@@ -261,15 +261,15 @@
                 <q-tooltip :delay="300" content-class="text-white bg-primary">{{ $t('projectView.tooltipSelectVisible') }}</q-tooltip>
               </q-select>
 
-              <q-btn flat round dense :icon="props.inFullscreen ? 'fullscreen_exit' : 'fullscreen'" @click="props.toggleFullscreen" class="q-ml-md">
+              <q-btn flat round dense :icon="props.inFullscreen ? 'fullscreen_exit' : 'fullscreen'" class="q-ml-md" @click="props.toggleFullscreen">
                 <q-tooltip :delay="300" content-class="text-white bg-primary">{{ $t('projectView.tooltipFullscreen') }}</q-tooltip>
               </q-btn>
             </template>
 
-            <template v-slot:body="props">
+            <template #body="props">
               <q-tr :props="props">
                 <q-td auto-width>
-                  <q-toggle dense v-model="props.selected" />
+                  <q-toggle v-model="props.selected" dense />
                 </q-td>
                 <q-td key="samplename" :props="props">
                   <q-btn
@@ -289,19 +289,19 @@
                 <q-td key="annotators" :props="props">
                   <TagInput
                     v-if="isAdmin || isSuperAdmin"
+                    v-model="props.row.roles.annotator"
                     role="annotator"
-                    @tag-added="modifyRole"
-                    @tag-removed="modifyRole"
                     :tag-context="props.row"
                     :element-id="props.row.sample_name + 'annotatortag'"
-                    v-model="props.row.roles.annotator"
                     :existing-tags="possiblesUsers"
                     :typeahead="true"
                     typeahead-style="badges"
                     :typeahead-hide-discard="true"
                     placeholder="add user"
                     :only-existing-tags="true"
+                    @tag-added="modifyRole"
                     :typeahead-always-show="false"
+                    @tag-removed="modifyRole"
                   ></TagInput>
                   <q-list v-else dense>
                     <q-item v-for="source in props.row.roles.annotator" :key="source" :props="source">
@@ -312,19 +312,19 @@
                 <q-td key="validators" :props="props">
                   <TagInput
                     v-if="isAdmin || isSuperAdmin"
+                    v-model="props.row.roles.validator"
                     role="validator"
-                    @tag-added="modifyRole"
-                    @tag-removed="modifyRole"
                     :tag-context="props.row"
                     :element-id="props.row.sample_name + 'validatortag'"
-                    v-model="props.row.roles.validator"
                     :existing-tags="possiblesUsers"
                     :typeahead="true"
                     typeahead-style="badges"
                     :typeahead-hide-discard="true"
                     placeholder="add user"
                     :only-existing-tags="true"
+                    @tag-added="modifyRole"
                     :typeahead-always-show="false"
+                    @tag-removed="modifyRole"
                   ></TagInput>
                   <q-list v-else dense>
                     <q-item v-for="source in props.row.roles.validator" :key="source" :props="source">
@@ -333,7 +333,7 @@
                   </q-list>
                 </q-td>
                 <q-td key="treesFrom" :props="props">
-                  <q-item-label caption v-if="props.row.treesFrom.length >= 5">
+                  <q-item-label v-if="props.row.treesFrom.length >= 5" caption>
                     {{ props.row.treesFrom.length }} users
                     <q-tooltip>
                       <p v-for="userId in props.row.treesFrom" :key="userId" :props="userId">
@@ -349,15 +349,15 @@
                 </q-td>
                 <q-td key="exerciseLevel" :props="props">
                   <q-select
-                    @update:model-value="updateExerciseLevel(props.row)"
+                    v-model="props.row.exerciseLevel"
                     outlined
                     :options="exerciceModeOptions"
                     map-options
                     emit-value
-                    v-model="props.row.exerciseLevel"
                     label="exercise level"
                     :dense="false"
                     :disable="!isAdmin"
+                    @update:model-value="updateExerciseLevel(props.row)"
                   />
                 </q-td>
                 <!-- <q-td key="exo" :props="props">{{ props.row.exo }}</q-td> -->
@@ -367,7 +367,7 @@
         </q-card-section>
       </q-card>
       <template v-if="!($store.getters['config/exerciseMode'] && !$store.getters['config/isTeacher'])">
-        <GrewSearch :sentenceCount="0" />
+        <GrewSearch :sentence-count="0" />
         <RelationTableMain />
       </template>
       <!-- :sentenceCount=.number_sentences" -->
@@ -376,10 +376,14 @@
       <q-dialog v-model="assignDial" persistent transition-show="slide-up" transition-hide="slide-down">
         <user-table :samples="table.selected"></user-table>
       </q-dialog>
-      <UploadDialog v-model:uploadDial="uploadDial" v-on:uploaded:sample="getProjectSamples()" />
+      <UploadDialog v-model:uploadDial="uploadDial" @uploaded:sample="getProjectSamples()" />
 
       <q-dialog v-model="projectSettingsDial" transition-show="slide-up" transition-hide="slide-down">
-        <ProjectSettingsView :projectTreesFrom="projectTreesFrom" :projectname="$route.params.projectname" style="width: 90vw"></ProjectSettingsView>
+        <ProjectSettingsView
+          :project-trees-from="projectTreesFrom"
+          :projectname="$route.params.projectname"
+          style="width: 90vw"
+        ></ProjectSettingsView>
       </q-dialog>
 
       <q-dialog v-model="simpleProjectInfoDialog">
@@ -404,13 +408,13 @@
             </q-list>
           </q-card-section>
           <q-card-actions align="right" class="bg-white text-teal">
-            <q-btn flat label="OK" v-close-popup />
+            <q-btn v-close-popup flat label="OK" />
           </q-card-actions>
         </q-card>
       </q-dialog>
 
       <q-dialog v-model="confirmActionDial">
-        <confirm-action :parentAction="confirmActionCallback" :arg1="confirmActionArg1"></confirm-action>
+        <confirm-action :parent-action="confirmActionCallback" :arg1="confirmActionArg1"></confirm-action>
       </q-dialog>
     </div>
   </q-page>

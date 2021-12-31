@@ -2,14 +2,14 @@
   <div>
     <LexiconModificationDialog />
     <LexiconTableBase
-      title="Modified Lexicon"
       v-show="lexiconItemsModified.length >= 1"
-      :compareWithBefore="true"
-      :passedLexiconItems="lexiconItemsModified"
-      :lexiconLoading="false"
+      title="Modified Lexicon"
+      :compare-with-before="true"
+      :passed-lexicon-items="lexiconItemsModified"
+      :lexicon-loading="false"
     >
     </LexiconTableBase>
-    <LexiconTableBase title="Lexicon" :passedLexiconItems="lexiconItems" :lexiconLoading="lexiconLoading"> </LexiconTableBase>
+    <LexiconTableBase title="Lexicon" :passed-lexicon-items="lexiconItems" :lexicon-loading="lexiconLoading"> </LexiconTableBase>
 
     <!-- <q-table
       ref="table"
@@ -144,7 +144,7 @@
     </q-dialog> -->
     <q-dialog v-model="searchDialog" seamless position="right" full-width>
       <template v-if="!($store.getters['config/exerciseMode'] && !$store.getters['config/isTeacher'])">
-        <GrewSearch :sentenceCount="this.lexiconItems.length" :sampleId="this.sampleId" :showTable="this.searchDialog" />
+        <GrewSearch :sentence-count="lexiconItems.length" :sample-id="sampleId" :show-table="searchDialog" />
       </template>
     </q-dialog>
 
@@ -152,13 +152,13 @@
       <q-card style="max-width: 100vw">
         <q-bar>
           <q-space />
-          <q-btn dense flat icon="minimize" @click="maximizedUploadToggle = false" :disable="!maximizedUploadToggle">
+          <q-btn dense flat icon="minimize" :disable="!maximizedUploadToggle" @click="maximizedUploadToggle = false">
             <q-tooltip v-if="maximizedUploadToggle" content-class="bg-white text-primary">{{ $t('projectView'.tooltipWindows[0]) }}</q-tooltip>
           </q-btn>
-          <q-btn dense flat icon="crop_square" @click="maximizedUploadToggle = true" :disable="maximizedUploadToggle">
+          <q-btn dense flat icon="crop_square" :disable="maximizedUploadToggle" @click="maximizedUploadToggle = true">
             <q-tooltip v-if="!maximizedUploadToggle" content-class="bg-white text-primary">{{ $t('projectView.tooltipWindows[1]') }}</q-tooltip>
           </q-btn>
-          <q-btn dense flat icon="close" v-close-popup>
+          <q-btn v-close-popup dense flat icon="close">
             <q-tooltip content-class="bg-white text-primary">{{ $t('projectView.tooltipWindows[2]') }}</q-tooltip>
           </q-btn>
         </q-bar>
@@ -180,15 +180,15 @@
             multiple
             style="max-width: 400px"
           >
-            <template v-slot:after>
+            <template #after>
               <q-btn
                 color="primary"
                 dense
                 icon="cloud_upload"
                 round
-                @click="upload()"
                 :loading="uploadSample.submitting"
                 :disable="uploadSample.attachment.file === null"
+                @click="upload()"
               />
             </template>
           </q-file>
@@ -209,13 +209,13 @@ import grewTemplates from '../../assets/grew-templates.json';
 
 export default {
   name: 'LexiconTable',
-  props: ['sampleId'],
   components: {
     GrewSearch,
     // CompareLexicon,
     LexiconTableBase,
     LexiconModificationDialog,
   },
+  props: ['sampleId'],
 
   data() {
     return {

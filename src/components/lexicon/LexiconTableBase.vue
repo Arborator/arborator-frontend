@@ -2,6 +2,7 @@
   <q-table
     v-bind="$attrs"
     ref="table"
+    :key="tableKey"
     v-model:selected="table.selected"
     selection="multiple"
     :rows="passedLexiconItems"
@@ -9,7 +10,6 @@
     :columns="table.columns"
     :visible-columns="table.visibleColumns"
     card-class="shadow-8"
-    :key="tableKey"
     table-style="max-height:80vh"
     :rows-per-page-options="[50]"
     :loading="lexiconLoading"
@@ -116,18 +116,18 @@
       </q-td>
     </template>
 
-    <template v-slot:top-right>
+    <template #top-right>
       <div>
-        <q-input borderless dense debounce="300" v-model="table.filter" placeholder="Search">
-          <template v-slot:append>
+        <q-input v-model="table.filter" borderless dense debounce="300" placeholder="Search">
+          <template #append>
             <q-icon name="search" />
           </template>
         </q-input>
       </div>
       <div>
         <q-btn-group v-if="compareWithBefore" flat>
-          <q-btn color="default" @click="getRulesGrew()" flat icon="compare_arrows"><q-tooltip>Generate Grew Rule</q-tooltip></q-btn>
-          <q-btn color="default" @click="deleteSelected()" :disable="table.selected.length === 0" flat icon-right="delete_forever"
+          <q-btn color="default" flat icon="compare_arrows" @click="getRulesGrew()"><q-tooltip>Generate Grew Rule</q-tooltip></q-btn>
+          <q-btn color="default" :disable="table.selected.length === 0" flat icon-right="delete_forever" @click="deleteSelected()"
             ><q-tooltip>Unstage selected lexicon changes</q-tooltip></q-btn
           >
         </q-btn-group>
@@ -161,12 +161,12 @@ import api from '../../api/backend-api';
 
 export default {
   name: 'LexiconTable',
+  props: ['passedLexiconItems', 'lexiconLoading', 'compareWithBefore'],
   setup(props, ctx) {
     const parentSlots = computed(() => Object.keys(ctx.slots));
 
     return { parentSlots };
   },
-  props: ['passedLexiconItems', 'lexiconLoading', 'compareWithBefore'],
   computed: {
     ...mapGetters('lexicon', ['lexiconItems']),
   },

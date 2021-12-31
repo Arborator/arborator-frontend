@@ -6,13 +6,13 @@
       <q-bar class="bg-primary text-white">
         <div class="text-weight-bold">Metadata of this sentence</div>
         <q-space />
-        <q-btn flat dense icon="close" v-close-popup />
+        <q-btn v-close-popup flat dense icon="close" />
       </q-bar>
       <AttributeTable
         :featdata="metalist"
         :columns="featTable.columns"
-        :featOptions="['String']"
-        openFeatures="true"
+        :feat-options="['String']"
+        open-features="true"
         modifiable="true"
         title="Meta Sentence Features"
         @feature-changed="informFeatureChanged()"
@@ -20,14 +20,14 @@
       <q-separator />
       <!-- todo: adapt informFeatureChanged also to metadata -->
       <q-card-actions align="around">
-        <q-btn flat label="Cancel" v-close-popup style="width: 45%; margin-left: auto; margin-right: auto" />
+        <q-btn v-close-popup flat label="Cancel" style="width: 45%; margin-left: auto; margin-right: auto" />
         <q-btn
-          color="primary"
-          @click="onMetaDialogOk()"
-          label="Ok"
           v-close-popup
+          color="primary"
+          label="Ok"
           style="width: 45%; margin-left: auto; margin-right: auto"
           :disabled="!someFeatureChanged"
+          @click="onMetaDialogOk()"
         />
       </q-card-actions>
     </q-card>

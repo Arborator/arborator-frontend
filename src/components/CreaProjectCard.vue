@@ -2,26 +2,26 @@
   <q-card :class="$q.dark.isActive ? 'bg-dark' : 'bg-grey-1'">
     <q-bar>
       <q-space />
-      <q-btn dense flat icon="close" v-close-popup>
+      <q-btn v-close-popup dense flat icon="close">
         <q-tooltip content-class="bg-white text-primary">Close</q-tooltip>
       </q-btn>
     </q-bar>
     <q-card-section>
-      <q-form @submit="onSubmit" @reset="onReset" class="q-gutter-md" id="createprojectform">
+      <q-form id="createprojectform" class="q-gutter-md" @submit="onSubmit" @reset="onReset">
         <q-input
           id="projectnameinput"
-          filled
           v-model="project.projectName"
+          filled
           label="Project name"
           lazy-rules
           :rules="[(val) => (val && val.length > 0) || 'Please type something']"
         />
-        <q-input id="descriptioninput" filled v-model="project.description" label="Description" />
+        <q-input id="descriptioninput" v-model="project.description" filled label="Description" />
         <div>
           <q-btn-toggle
+            v-model="project.visibility"
             label="Visibility"
             glossy
-            v-model="project.visibility"
             toggle-color="primary"
             :options="[
               { label: 'Private', value: 0 },
@@ -33,7 +33,7 @@
         <q-toggle v-model="project.showAllTrees" label="Show All Trees" />
         <q-toggle v-model="project.exerciseMode" :label="$t('createProjectCard.exerciseMode')" />
         <div>
-          <q-btn id="submitproject" type="submit" :loading="submitting" label="create" color="primary" class="q-mt-md" v-close-popup />
+          <q-btn id="submitproject" v-close-popup type="submit" :loading="submitting" label="create" color="primary" class="q-mt-md" />
           <q-btn label="Reset" type="reset" color="primary" flat class="q-ml-sm" />
         </div>
       </q-form>

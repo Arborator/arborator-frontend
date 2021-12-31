@@ -22,11 +22,6 @@ export default {
     'cardId',
     'hasPendingChanges',
   ],
-  watch: {
-    conllSavedCounter() {
-      this.sentenceSVG.drawTree();
-    },
-  },
   data() {
     return {
       sentenceSVG: null,
@@ -38,6 +33,11 @@ export default {
   computed: {
     shownFeatures() {
       return this.$store.getters['config/shownfeatures'];
+    },
+  },
+  watch: {
+    conllSavedCounter() {
+      this.sentenceSVG.drawTree();
     },
   },
   mounted() {

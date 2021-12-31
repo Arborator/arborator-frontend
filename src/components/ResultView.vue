@@ -8,7 +8,7 @@
         <span v-if="totalsents === 1">sentence</span><span v-else>sentences</span> in the {{ searchscope }})
       </div>
       <q-space />
-      <q-btn flat dense icon="close" v-close-popup />
+      <q-btn v-close-popup flat dense icon="close" />
     </q-bar>
     <!-- <q-bar class="bg-primary text-white">
         <q-space />
@@ -19,25 +19,25 @@
     <q-card-section>
       <div v-show="!loading" class="q-pa-md row q-gutter-md">
         <q-virtual-scroll
-          :items="this.samplesFrozen.list"
+          :items="samplesFrozen.list"
           style="height: 80vh; width: 90vw"
           :virtual-scroll-slice-size="5"
           :virtual-scroll-item-size="200"
           type="table"
         >
-          <template v-slot="{ item, index }">
+          <template #default="{ item, index }">
             <tr :key="index">
               <td>
                 <q-toggle v-model="samplesFrozen.selected[index]" checked-icon="check" unchecked-icon="clear" />
               </td>
               <td>
                 <sentence-card
-                  :key="index"
                   :id="item[1]"
+                  :key="index"
                   :sentence="searchresults[item[0]][item[1]]"
                   :index="index"
-                  :sentenceId="item[1]"
-                  searchResult="searchResult"
+                  :sentence-id="item[1]"
+                  search-result="searchResult"
                 ></sentence-card>
               </td>
             </tr>

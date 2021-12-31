@@ -4,7 +4,7 @@
       <div class="col-md-1"></div>
       <div class="col items-center">
         <q-banner rounded :class="$q.dark.isActive ? '' : 'bg-grey-3'">
-          <template v-slot:avatar>
+          <template #avatar>
             <q-avatar :key="store.getters['user/getAvatarKey']" color="default" text-color="white" size="100px">
               <img :src="user.picture_url" />
             </q-avatar>
@@ -35,9 +35,9 @@
             </q-card-section>
             <q-card-section>
               <div class="q-gutter-lg">
-                <q-input type="email" v-model="user.id" label="Email" />
-                <q-input type="text" v-model="user.first_name" label="First Name" />
-                <q-input type="text" v-model="user.family_name" label="Last Name" />
+                <q-input v-model="user.id" type="email" label="Email" />
+                <q-input v-model="user.first_name" type="text" label="First Name" />
+                <q-input v-model="user.family_name" type="text" label="Last Name" />
               </div>
             </q-card-section>
             <q-card-actions align="right">
@@ -56,7 +56,7 @@ import api from '../api/backend-api';
 import Store from '../store/index';
 
 export default {
-  name: 'settings',
+  name: 'Settings',
   data() {
     return {
       user: this.$store.getters['user/getUserInfos'],

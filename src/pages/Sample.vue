@@ -8,17 +8,17 @@
         :virtual-scroll-slice-size="7"
         :virtual-scroll-item-size="200"
       >
-        <template v-slot="{ item, index }">
+        <template #default="{ item, index }">
           <SentenceCard
+            :id="'sc' + index"
             :key="index"
             :ref="'sc' + index"
-            :id="'sc' + index"
             :sentence="sentences[item]"
             :index="index"
-            :sentenceId="item"
-            searchResult=""
-            v-on:refresh:trees="getSampleTrees"
-            :exerciseLevel="exerciseLevel"
+            :sentence-id="item"
+            search-result=""
+            :exercise-level="exerciseLevel"
+            @refresh:trees="getSampleTrees"
           >
           </SentenceCard>
         </template>
@@ -30,7 +30,7 @@
       </div>
     </div>
     <template v-if="!($store.getters['config/exerciseMode'] && !$store.getters['config/isTeacher'])">
-      <GrewSearch :sentenceCount="sentenceCount" />
+      <GrewSearch :sentence-count="sentenceCount" />
       <RelationTableMain />
     </template>
   </q-page>

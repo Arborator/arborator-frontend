@@ -1,15 +1,12 @@
-import api from '../../../api/backend-api';
-import { GetterTree } from 'vuex';
+import { GetterTree, MutationTree, ActionTree, Module } from 'vuex';
 
-import { MutationTree } from 'vuex';
 import { useRoute } from 'vue-router';
 
 import defaultState, { UserStateInterface } from './defaultState';
 
- import { cookies } from '../../../boot/vue-cookies';
-import { ActionTree } from 'vuex';
+import { cookies } from '../../../boot/vue-cookies';
 
-import { Module } from 'vuex';
+import api from '../../../api/backend-api';
 
 const userGetters: GetterTree<UserStateInterface, unknown> = {
   getUserInfos: (state) => state,

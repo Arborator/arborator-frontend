@@ -6,25 +6,25 @@
         <q-chip class="text-center" :color="$q.dark.isActive ? 'primary' : ''" dense> {{ sentenceId }}</q-chip
         >&nbsp;&nbsp;&nbsp;
         <q-input
+          v-model="sentenceData.sentence"
           style="width: 65%"
           class="row items-center justify-center"
-          v-model="sentenceData.sentence"
           v-bind="$attrs"
-          @select="ttselect"
           readonly
+          @select="ttselect"
         >
-          <template v-slot:prepend> <q-icon name="chat_bubble_outline" /><!-- 言 --> </template>
+          <template #prepend> <q-icon name="chat_bubble_outline" /><!-- 言 --> </template>
         </q-input>
         <q-space />
-        <template v-if="this.openTabUser !== ''">
+        <template v-if="openTabUser !== ''">
           <q-btn
             v-if="isLoggedIn && exerciseLevel <= 3 && !$store.getters['config/isTeacher']"
             flat
             round
             dense
             icon="assessment"
-            @click="openStatisticsDialog"
             :disable="openTabUser === ''"
+            @click="openStatisticsDialog"
             ><q-tooltip>See your annotation errors</q-tooltip>
           </q-btn>
 
@@ -58,7 +58,7 @@
             @click="save('')"
           >
             <q-tooltip
-              >Save the tree of {{ this.openTabUser }} as <b>{{ this.userId }}</b></q-tooltip
+              >Save the tree of {{ openTabUser }} as <b>{{ userId }}</b></q-tooltip
             >
           </q-btn>
 
@@ -81,7 +81,7 @@
           <q-btn-dropdown :disable="openTabUser === ''" icon="more_vert" flat dense>
             <!-- <q-tooltip>More</q-tooltip> -->
             <q-list>
-              <q-item v-if="!exerciseMode" clickable v-close-popup @click="toggleDiffMode()">
+              <q-item v-if="!exerciseMode" v-close-popup clickable @click="toggleDiffMode()">
                 <q-item-section avatar>
                   <q-avatar icon="ion-git-network" color="primary" text-color="white" />
                 </q-item-section>
@@ -90,7 +90,7 @@
                 </q-item-section>
               </q-item>
 
-              <q-item clickable v-close-popup @click="getlink()">
+              <q-item v-close-popup clickable @click="getlink()">
                 <q-item-section avatar>
                   <q-avatar icon="ion-md-link" color="primary" text-color="white" />
                 </q-item-section>
@@ -99,7 +99,7 @@
                 </q-item-section>
               </q-item>
 
-              <q-item clickable v-close-popup @click="openConllDialog()">
+              <q-item v-close-popup clickable @click="openConllDialog()">
                 <q-item-section avatar>
                   <q-avatar icon="format_list_numbered" color="primary" text-color="white" />
                 </q-item-section>
@@ -108,7 +108,7 @@
                 </q-item-section>
               </q-item>
 
-              <q-item clickable v-close-popup @click="exportSVG()">
+              <q-item v-close-popup clickable @click="exportSVG()">
                 <q-item-section avatar>
                   <q-avatar icon="ion-md-color-palette" color="primary" text-color="white" />
                 </q-item-section>
@@ -117,7 +117,7 @@
                 </q-item-section>
               </q-item>
 
-              <q-item :disable="openTabUser === ''" clickable v-close-popup @click="addEmptyToken()">
+              <q-item v-close-popup :disable="openTabUser === ''" clickable @click="addEmptyToken()">
                 <q-item-section avatar>
                   <q-avatar icon="add" color="primary" text-color="white" />
                 </q-item-section>
@@ -134,8 +134,8 @@
             dense
             icon="undo"
             :disable="openTabUser === '' || !canUndo"
+            :class="'undo-button'"
             @click="undo('user')"
-            v-bind:class="'undo-button'"
           >
           </q-btn>
           <q-btn
@@ -145,16 +145,16 @@
             dense
             icon="ion-redo"
             :disable="openTabUser === '' || !canRedo"
+            :class="'redo-button'"
             @click="redo('user')"
-            v-bind:class="'redo-button'"
           >
           </q-btn>
         </template>
       </div>
 
       <div class="full-width row justify-end">
-        <q-input ref="linkinput" dense v-show="sentenceLink.length !== 0" class="col-4 self-stretch" :value="sentenceLink">
-          <template v-slot:prepend>
+        <q-input v-show="sentenceLink.length !== 0" ref="linkinput" dense class="col-4 self-stretch" :value="sentenceLink">
+          <template #prepend>
             <q-icon name="ion-md-link" />
           </template>
         </q-input>
@@ -190,46 +190,46 @@
       <q-tab-panels
         v-model="openTabUser"
         keep-alive
-        @transition="transitioned"
         :animated="animated ? true : false"
         :class="animated ? 'easeOutSine' : ''"
+        @transition="transitioned"
       >
         <q-tab-panel v-for="(tree, user) in filteredConlls" :key="user" :props="tree" :name="user">
           <q-card flat>
             <q-card-section :class="($q.dark.isActive ? '' : '') + ' scrollable'">
               <VueDepTree
                 v-if="reactiveSentencesObj"
-                v-on:statusChanged="handleStatusChange"
-                :cardId="index"
+                :card-id="index"
                 :conll="tree"
-                :reactiveSentence="reactiveSentencesObj[user]"
-                :teacherReactiveSentence="showDiffTeacher ? reactiveSentencesObj['teacher'] : diffMode ? reactiveSentencesObj[diffUserId] : {}"
-                :sentenceId="sentenceId"
-                :sentenceBus="sentenceBus"
-                :userId="user"
-                :conllSavedCounter="conllSavedCounter"
-                :hasPendingChanges="hasPendingChanges"
+                :reactive-sentence="reactiveSentencesObj[user]"
+                :teacher-reactive-sentence="showDiffTeacher ? reactiveSentencesObj['teacher'] : diffMode ? reactiveSentencesObj[diffUserId] : {}"
+                :sentence-id="sentenceId"
+                :sentence-bus="sentenceBus"
+                :user-id="user"
+                :conll-saved-counter="conllSavedCounter"
+                :has-pending-changes="hasPendingChanges"
+                @statusChanged="handleStatusChange"
               ></VueDepTree>
             </q-card-section>
           </q-card>
         </q-tab-panel>
       </q-tab-panels>
-      <q-list class="sentence__meta-features" v-if="openTabUser" dense>
+      <q-list v-if="openTabUser" class="sentence__meta-features" dense>
         <q-item v-for="meta in shownmeta" :key="meta">
           <q-chip dense size="xs">{{ meta }}</q-chip
           >{{ reactiveSentencesObj[openTabUser].state.metaJson[meta] }}
         </q-item>
       </q-list>
     </q-card-section>
-    <RelationDialog :sentenceBus="sentenceBus" />
-    <UposDialog :sentenceBus="sentenceBus" />
-    <FeaturesDialog :sentenceBus="sentenceBus" />
-    <MetaDialog :sentenceBus="sentenceBus" />
-    <ConlluDialog :sentenceBus="sentenceBus" />
-    <ExportSVG :sentenceBus="sentenceBus" />
-    <TokenDialog :sentenceBus="sentenceBus" :reactiveSentencesObj="reactiveSentencesObj" @changed:metaText="changeMetaText" />
-    <MultiEditDialog :sentenceBus="sentenceBus" :reactiveSentencesObj="reactiveSentencesObj" />
-    <StatisticsDialog :sentenceBus="sentenceBus" :conlls="sentenceData.conlls" />
+    <RelationDialog :sentence-bus="sentenceBus" />
+    <UposDialog :sentence-bus="sentenceBus" />
+    <FeaturesDialog :sentence-bus="sentenceBus" />
+    <MetaDialog :sentence-bus="sentenceBus" />
+    <ConlluDialog :sentence-bus="sentenceBus" />
+    <ExportSVG :sentence-bus="sentenceBus" />
+    <TokenDialog :sentence-bus="sentenceBus" :reactive-sentences-obj="reactiveSentencesObj" @changed:metaText="changeMetaText" />
+    <MultiEditDialog :sentence-bus="sentenceBus" :reactive-sentences-obj="reactiveSentencesObj" />
+    <StatisticsDialog :sentence-bus="sentenceBus" :conlls="sentenceData.conlls" />
   </q-card>
 </template>
 

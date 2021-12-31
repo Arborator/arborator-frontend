@@ -3,11 +3,11 @@
     <q-bar class="bg-primary text-white">
       <q-icon name="img:/svg/grew.svg" size="7rem" />
       <q-space />
-      <q-btn flat dense icon="close" v-close-popup />
+      <q-btn v-close-popup flat dense icon="close" />
     </q-bar>
 
     <q-card-section style="width: 80vw">
-      <q-form @submit="onSearch" @reset="onResetSearch" class="q-gutter-md">
+      <q-form class="q-gutter-md" @submit="onSearch" @reset="onResetSearch">
         <div class="q-pa-xs">
           <div class="row">
             <div class="col-10">
@@ -17,12 +17,12 @@
               <div class="full-width row justify-start">
                 <q-btn color="primary" type="submit" label="Search" no-caps icon="search" />
                 <q-space />
-                <q-btn v-if="rewriteCommands !== ''" color="primary" @click="tryRules" label="Try Rules" no-caps icon="autorenew" />
+                <q-btn v-if="rewriteCommands !== ''" color="primary" label="Try Rules" no-caps icon="autorenew" @click="tryRules" />
                 <q-space />
                 <q-btn label="Get link" no-caps icon="ion-md-link" @click="getgrewlink" />
                 <q-space />
-                <q-input ref="grewlinkinput" dense v-show="grewlink.length !== 0" class="col-10 self-stretch" :value="grewlink">
-                  <template v-slot:prepend>
+                <q-input v-show="grewlink.length !== 0" ref="grewlinkinput" dense class="col-10 self-stretch" :value="grewlink">
+                  <template #prepend>
                     <q-icon name="ion-md-link" />
                   </template>
                 </q-input>
@@ -49,11 +49,11 @@
                   <q-tabs v-model="searchquerytab" dense no-caps vertical switch-indicator class="bg-grey-2 primary" indicator-color="primary">
                     <template v-for="query in queries" :key="query.name">
                       <q-tab
+                        v-if="query.commands === ''"
+                        v-ripple
                         :name="query.name"
                         :label="query.name"
-                        v-if="query.commands === ''"
                         clickable
-                        v-ripple
                         @click="changeSearchPattern(query.pattern, query.commands)"
                       />
                     </template>
@@ -64,11 +64,11 @@
                   <q-tabs v-model="searchquerytab" dense no-caps vertical switch-indicator class="bg-grey-2 primary" indicator-color="primary">
                     <template v-for="query in queries" :key="query.name">
                       <q-tab
+                        v-if="query.commands !== ''"
+                        v-ripple
                         :name="query.name"
                         :label="query.name"
-                        v-if="query.commands !== ''"
                         clickable
-                        v-ripple
                         @click="changeSearchPattern(query.pattern, query.commands)"
                       />
                     </template>
@@ -170,8 +170,8 @@ CodeMirror2.defineMode('grew', (_config, parserConfig) => {
   };
 });
 export default {
-  components: { Codemirror },
   name: 'GrewRequestCard',
+  components: { Codemirror },
   props: ['parentOnSearch', 'parentOnTryRules', 'grewquery'],
   data() {
     return {

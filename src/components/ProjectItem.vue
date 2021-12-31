@@ -43,7 +43,7 @@
         {{ $t('projectHub.lastWriteAccess') }} {{ timeAgo(project.last_write_access) }}
       </q-chip>
     </q-item-section>
-    <q-item-section side v-for="adm in project.admins" :key="adm">
+    <q-item-section v-for="adm in project.admins" :key="adm" side>
       <q-chip v-if="userid == adm" size="sm">
         <q-avatar>
           <img :src="store.getters['user/getUserInfos'].picture_url" />
@@ -66,7 +66,7 @@
     </q-item-section>
 
     <q-dialog v-model="confirmActionDial">
-      <confirm-action :parentAction="confirmActionCallback" :arg1="confirmActionArg1"></confirm-action>
+      <confirm-action :parent-action="confirmActionCallback" :arg1="confirmActionArg1"></confirm-action>
     </q-dialog>
   </q-item>
 </template>

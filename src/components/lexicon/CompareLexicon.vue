@@ -4,8 +4,10 @@
       ref="table"
       title="Dictionaries"
       :class="($q.dark.isActive ? 'my-sticky-header-table-dark' : 'my-sticky-header-table') + ' rounded-borders'"
-      :rows="this.data"
+      :rows="data"
+      :key="tableKey"
       :columns="table.columns"
+      v-model:selected="table.selected"
       row-key="key"
       :v-model:pagination="table.pagination"
       :filter="table.filter"
@@ -15,22 +17,20 @@
       :table-header-class="$q.dark.isActive ? 'text-white' : 'text-primary'"
       virtual-scroll
       card-class="shadow-8"
-      :key="tableKey"
       selection="multiple"
-      v-model:selected="table.selected"
       table-style="max-height:80vh"
     >
-      <template v-slot:top-right>
+      <template #top-right>
         <q-btn color="default" flat label="Rule Grew" @click="changeLexicon()"
           ><q-tooltip :delay="300" content-class="text-white bg-primary">{{ $t('projectView.tooltipRuleGrewLexicon') }}</q-tooltip></q-btn
         >
-        <q-input borderless dense debounce="300" v-model="table.filter" placeholder="Search">
-          <template v-slot:append>
+        <q-input v-model="table.filter" borderless dense debounce="300" placeholder="Search">
+          <template #append>
             <q-icon name="search" />
           </template>
         </q-input>
       </template>
-      <template v-slot:body-cell="props">
+      <template #body-cell="props">
         <td v-if="props.row.type === 'In the two dictionaries with the same information'" style="background: mediumseagreen">
           {{ props.value }}
         </td>
@@ -50,7 +50,7 @@
     </q-table>
     <q-dialog v-model="searchDialog" seamless position="right" full-width>
       <template v-if="!($store.getters['config/exerciseMode'] && !$store.getters['config/isTeacher'])">
-        <GrewSearch :sentenceCount="this.data.length" :sampleId="this.sampleId" :showTable="this.searchDialog" />
+        <GrewSearch :sentence-count="data.length" :sample-id="sampleId" :show-table="searchDialog" />
       </template>
     </q-dialog>
 
@@ -64,8 +64,8 @@ import GrewSearch from '../grewSearch/GrewSearch';
 import grewTemplates from '../../assets/grew-templates.json';
 
 export default {
-  components: { GrewSearch },
   name: 'CompareLexicon',
+  components: { GrewSearch },
   props: ['data', 'sampleId'],
   component: {
     GrewSearch,

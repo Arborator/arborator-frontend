@@ -1,7 +1,7 @@
 <template>
   <q-page class="full-width row wrap justify-start items-start content-start" style="padding-top: 180px; padding-bottom: 80px">
-    <div class="q-pa-none full-width" ref="words">
-      <div class="row" dense v-if="isLoggedIn">
+    <div ref="words" class="q-pa-none full-width">
+      <div v-if="isLoggedIn" class="row" dense>
         <div class="col row q-pa-none"><q-space /></div>
         <!-- <div class="col q-pa-none" v-if="viewAllTranscriptions"> -->
         <div class="col q-pa-none">
@@ -16,7 +16,7 @@
         </template>
         <!-- </div> -->
       </div>
-      <div class="row" dense v-for="(sent, i) in transcriptions['original']" :key="i">
+      <div v-for="(sent, i) in transcriptions['original']" :key="i" class="row" dense>
         <span class="line-number" dense>
           {{ i }}
         </span>
@@ -32,9 +32,9 @@
         />
 
         <div class="col row q-pa-none">
-          <span class="justify-end q-pa-none align-right" v-for="(t, j) in sent" :key="j">
+          <span v-for="(t, j) in sent" :key="j" class="justify-end q-pa-none align-right">
             <!-- {{t[1]/1000}} -->
-            <q-chip v-if="t[2] / 1000 < ct" size="md" color="white" text-color="black" clickable dense @click="wordclicked(t)" class="q-pa-none">
+            <q-chip v-if="t[2] / 1000 < ct" size="md" color="white" text-color="black" clickable dense class="q-pa-none" @click="wordclicked(t)">
               {{ t[0] }}
             </q-chip>
             <q-chip
@@ -43,12 +43,12 @@
               size="md"
               clickable
               dense
-              @click="wordclicked(t)"
               class="q-pa-none current"
+              @click="wordclicked(t)"
             >
               {{ t[0] }}
             </q-chip>
-            <q-chip v-else size="md" color="white" text-color="primary" clickable dense @click="wordclicked(t)" class="q-pa-none">
+            <q-chip v-else size="md" color="white" text-color="primary" clickable dense class="q-pa-none" @click="wordclicked(t)">
               {{ t[0] }}
             </q-chip>
           </span>
@@ -63,34 +63,34 @@
             @click="moveToInputField('original', i)"
           />
           <q-btn
+            v-if="canPlayLine"
             dense
             round
             flat
             :icon="isPlayingLine == i ? 'pause' : 'replay'"
             color="primary"
-            @click="handlePlayLine(i)"
-            v-if="canPlayLine"
             class="line-play"
             size="sm"
+            @click="handlePlayLine(i)"
           >
             <q-tooltip> Click to play the sentence </q-tooltip>
           </q-btn>
 
           <q-separator spaced />
         </div>
-        <div class="col q-pa-none" v-if="isLoggedIn">
+        <div v-if="isLoggedIn" class="col q-pa-none">
           <div class="col q-pa-none">
-            <q-input dense filled square v-model="mytrans[i]"> </q-input>
+            <q-input v-model="mytrans[i]" dense filled square> </q-input>
           </div>
         </div>
         <!-- ADMIN TABLE : OTHER ANNOTATOR -->
         <template v-if="viewAllTranscriptions">
           <template v-for="(transcription, username) in transcriptions" :key="username">
-            <div class="col q-pa-none" v-if="username !== 'original'">
+            <div v-if="username !== 'original'" class="col q-pa-none">
               <span>
                 <q-btn v-if="diffsegments[username][i].length !== 1" round dense flat icon="west" @click="moveToInputField(transcription, i)">
                 </q-btn>
-                <span v-for="(part, index) in diffsegments[username][i]" style="padding: 0px; margin: 0px" :key="index">
+                <span v-for="(part, index) in diffsegments[username][i]" :key="index" style="padding: 0px; margin: 0px">
                   <span v-if="part.added" style="color: green; padding: 0px; margin: 0px">
                     {{ part.value }}
                   </span>
@@ -107,7 +107,7 @@
         </template>
       </div>
       <template v-if="isAdmin && viewAllTranscriptions && !isLoading">
-        <div class="row meta-row" dense v-for="(meta, i) in metaFormat" :key="-i - 1">
+        <div v-for="(meta, i) in metaFormat" :key="-i - 1" class="row meta-row" dense>
           <span class="line-number" dense> </span>
           <div class="col row q-pa-none"></div>
           <div class="col row q-pa-none">
@@ -115,7 +115,7 @@
             <q-space />
           </div>
           <template v-for="(transcription, username) in transcriptions">
-            <div class="col row q-pa none" :key="username" v-if="username !== 'original'">
+            <div v-if="username !== 'original'" :key="username" class="col row q-pa none">
               <span class="meta-value">{{ transcription[meta.value] }}</span>
             </div>
           </template>
@@ -124,8 +124,8 @@
     </div>
     <q-page-sticky position="top" expand class="bg-white text-primary shadow-2" style="z-index: 999">
       <av-waveform
-        class="col-grow"
         ref="player"
+        class="col-grow"
         :audio-controls="true"
         :canv-top="true"
         :canv-width="waveWidth"
@@ -139,7 +139,7 @@
         :playtime-font-size="14"
         :playtime-slider-width="1"
         :audio-src="mediaObject"
-        v-bind:currentTime.prop="currentTime"
+        :current-time.prop="currentTime"
         played-line-color="#4a2769"
         noplayed-line-color="#15a700"
       >
@@ -148,19 +148,19 @@
     <q-page-sticky position="bottom" expand class="bg-white text-primary">
       <q-toolbar class="shadow-5">
         <q-toggle
+          v-if="isAdmin"
           v-model="viewAllTranscriptions"
           label="view all transcriptions"
           left-label
-          v-if="isAdmin"
-          @input="adminchanged"
           :disable="isLoading"
+          @input="adminchanged"
         />
         <q-toggle v-else v-model="viewAllTranscriptions" label="View diffs" left-label :disable="isLoading" />
         <q-space />
         <q-select
+          v-model="sound"
           no-caps
           dense
-          v-model="sound"
           style="min-width: 200px"
           toggle-color="primary"
           :options="['unusable', 'bad', 'ok', 'good', 'hifi']"
@@ -168,9 +168,9 @@
         />
         <q-space />
         <q-select
+          v-model="story"
           no-caps
           dense
-          v-model="story"
           style="min-width: 200px"
           toggle-color="primary"
           :options="['unintelligible', 'boring', 'ok', 'fun', 'hilarious']"
@@ -178,9 +178,9 @@
         />
         <q-space />
         <q-select
+          v-model="accent"
           no-caps
           dense
-          v-model="accent"
           style="min-width: 200px"
           toggle-color="primary"
           :options="['unintelligible', 'non-native', 'native', 'French', 'Parisian']"
@@ -188,27 +188,27 @@
         />
         <q-space />
         <q-select
+          v-model="monodia"
           no-caps
           dense
-          v-model="monodia"
           style="min-width: 200px"
           toggle-color="primary"
           :options="['monologue', 'interview', 'dialogue']"
           label="monologue/dialogue"
         />
         <q-space />
-        <q-input square v-model="title" label="2 to 3 word title"> </q-input>
+        <q-input v-model="title" square label="2 to 3 word title"> </q-input>
         <q-space />
         <q-btn
           round
           dense
           flat
           icon="save"
-          @click="save()"
           :disable="isLoading || !isLoggedIn || !title || !monodia || !accent || !story || !sound"
+          @click="save()"
         />
         <q-space />
-        <q-btn round dense flat icon="cloud_download" @click="exportConllDlg = true" :disable="!viewAllTranscriptions">
+        <q-btn round dense flat icon="cloud_download" :disable="!viewAllTranscriptions" @click="exportConllDlg = true">
           <q-tooltip> Click to export conlls </q-tooltip>
         </q-btn>
       </q-toolbar>
@@ -220,13 +220,13 @@
 
           <q-card-section>
             <div class="q-pa-md">
-              <q-option-group :options="users" type="checkbox" v-model="selectedUsers"></q-option-group>
+              <q-option-group v-model="selectedUsers" :options="users" type="checkbox"></q-option-group>
             </div>
           </q-card-section>
 
           <q-card-actions align="right">
-            <q-btn label="Export" color="primary" text-color="white" @click="exportConll()" v-close-popup></q-btn>
-            <q-btn label="Cancel" color="primary" text-color="white" v-close-popup> </q-btn>
+            <q-btn v-close-popup label="Export" color="primary" text-color="white" @click="exportConll()"></q-btn>
+            <q-btn v-close-popup label="Cancel" color="primary" text-color="white"> </q-btn>
           </q-card-actions>
         </q-card>
       </q-dialog>

@@ -7,7 +7,7 @@
       <q-bar class="bg-primary text-white">
         <div class="text-weight-bold">Stastistics of the current opened tree "{{ userId }}"</div>
         <q-space />
-        <q-btn flat dense icon="close" v-close-popup />
+        <q-btn v-close-popup flat dense icon="close" />
       </q-bar>
       <q-card-section style="height: 200px">
         <div>
@@ -18,7 +18,7 @@
       </q-card-section>
       <q-separator />
       <q-card-actions>
-        <q-btn id="catselectvalidate" color="primary" label="Close" v-close-popup style="width: 30%; margin-left: auto; margin-right: auto" />
+        <q-btn id="catselectvalidate" v-close-popup color="primary" label="Close" style="width: 30%; margin-left: auto; margin-right: auto" />
         <!-- :disabled="snap.currentcategory === snap.category" -->
       </q-card-actions>
     </q-card>

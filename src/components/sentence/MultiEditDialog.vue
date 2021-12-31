@@ -4,7 +4,7 @@
       <q-bar class="bg-primary text-white">
         <div class="text-weight-bold">Multi edit</div>
         <q-space />
-        <q-btn flat dense icon="close" v-close-popup />
+        <q-btn v-close-popup flat dense icon="close" />
       </q-bar>
       <table v-if="treeJson">
         <tr>
@@ -28,7 +28,7 @@
           <th>{{ token.ID }}</th>
           <th>{{ token.FORM }}</th>
           <td v-for="metaLabel in metaLabels" :key="metaLabel">
-            <input type="checkbox" :name="metaLabel" :class="metaLabel" v-model="checkboxes[token.ID][metaLabel]" />
+            <input v-model="checkboxes[token.ID][metaLabel]" type="checkbox" :name="metaLabel" :class="metaLabel" />
           </td>
         </tr>
       </table>
@@ -36,8 +36,8 @@
       <q-separator />
       <q-card-actions align="around">
         <!-- @click="ondialoghide()" -->
-        <q-btn flat label="Cancel" v-close-popup style="width: 45%; margin-left: auto; margin-right: auto" />
-        <q-btn color="primary" @click="onDialogOk()" label="Ok" v-close-popup style="width: 45%; margin-left: auto; margin-right: auto" />
+        <q-btn v-close-popup flat label="Cancel" style="width: 45%; margin-left: auto; margin-right: auto" />
+        <q-btn v-close-popup color="primary" label="Ok" style="width: 45%; margin-left: auto; margin-right: auto" @click="onDialogOk()" />
         <!-- :disabled="!someFeatureChanged" -->
       </q-card-actions>
     </q-card>

@@ -8,13 +8,13 @@
       <q-bar class="bg-primary text-white">
         <div class="text-weight-bold">Features of "{{ token['FORM'] }}"</div>
         <q-space />
-        <q-btn flat dense icon="close" v-close-popup />
+        <q-btn v-close-popup flat dense icon="close" />
       </q-bar>
       <AttributeTable
         :featdata="featTable.featl"
         :columns="featTable.columns"
-        :featOptions="annotationFeatures.FEATS"
-        openFeatures="false"
+        :feat-options="annotationFeatures.FEATS"
+        open-features="false"
         modifiable="true"
         title="Universal Features"
         @feature-changed="informFeatureChanged()"
@@ -23,8 +23,8 @@
       <AttributeTable
         :featdata="featTable.miscl"
         :columns="featTable.columns"
-        :featOptions="annotationFeatures.MISC ? annotationFeatures.MISC : {}"
-        openFeatures="true"
+        :feat-options="annotationFeatures.MISC ? annotationFeatures.MISC : {}"
+        open-features="true"
         modifiable="true"
         title="Miscellaneous Features"
         @feature-changed="informFeatureChanged()"
@@ -33,8 +33,8 @@
       <AttributeTable
         :featdata="featTable.form"
         :columns="featTable.columns"
-        :featOptions="options.formoptions"
-        openFeatures="false"
+        :feat-options="options.formoptions"
+        open-features="false"
         modifiable="false"
         title="Form"
         @feature-changed="informFeatureChanged()"
@@ -43,16 +43,16 @@
       <AttributeTable
         :featdata="featTable.lemma"
         :columns="featTable.columns"
-        :featOptions="options.lemmaoptions"
-        openFeatures="false"
+        :feat-options="options.lemmaoptions"
+        open-features="false"
         modifiable="false"
         title="Lemma"
         @feature-changed="informFeatureChanged()"
       ></AttributeTable>
       <q-separator />
       <q-card-actions align="around">
-        <q-btn flat @click="ondialoghide()" label="Cancel" v-close-popup style="width: 45%; margin-left: auto; margin-right: auto" />
-        <q-btn color="primary" @click="onFeatureDialogOk()" label="Ok" v-close-popup style="width: 45%; margin-left: auto; margin-right: auto" />
+        <q-btn v-close-popup flat label="Cancel" style="width: 45%; margin-left: auto; margin-right: auto" @click="ondialoghide()" />
+        <q-btn v-close-popup color="primary" label="Ok" style="width: 45%; margin-left: auto; margin-right: auto" @click="onFeatureDialogOk()" />
         <!-- :disabled="!someFeatureChanged" -->
       </q-card-actions>
     </q-card>

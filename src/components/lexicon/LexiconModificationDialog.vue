@@ -4,59 +4,59 @@
       <q-bar class="bg-primary text-white">
         <div class="text-weight-bold">Features of</div>
         <q-space />
-        <q-btn flat dense icon="close" v-close-popup />
+        <q-btn v-close-popup flat dense icon="close" />
       </q-bar>
       <AttributeTable
         :featdata="formattedItem.form"
         :columns="featTable.columns"
-        openFeatures="false"
+        open-features="false"
         modifiable="false"
         title="Form"
-        :featOptions="['String']"
+        :feat-options="['String']"
       />
       <q-separator />
       <AttributeTable
         :featdata="formattedItem.lemma"
         :columns="featTable.columns"
-        openFeatures="false"
+        open-features="false"
         modifiable="false"
         title="Lemma"
-        :featOptions="options.lemmaoptions"
+        :feat-options="options.lemmaoptions"
       />
       <AttributeTable
         :featdata="formattedItem.pos"
         :columns="featTable.columns"
-        openFeatures="false"
+        open-features="false"
         modifiable="false"
         title="Category"
-        :featOptions="options.catoptions"
+        :feat-options="options.catoptions"
       />
       <AttributeTable
         :featdata="formattedItem.features"
         :columns="featTable.columns"
-        openFeatures="false"
+        open-features="false"
         modifiable="true"
         title="Universal Features"
-        :featOptions="options.annof.FEATS"
+        :feat-options="options.annof.FEATS"
       />
       <AttributeTable
         :featdata="formattedItem.gloss"
         :columns="featTable.columns"
-        openFeatures="false"
+        open-features="false"
         modifiable="false"
         title="Gloss"
-        :featOptions="['String']"
+        :feat-options="['String']"
       />
       <q-separator />
       <q-card-actions align="around">
         <!-- <q-btn flat @click="ondialoghide()" label="Cancel" v-close-popup style="width: 35%; margin-left: auto; margin-right: auto" /> -->
         <!-- <q-btn flat @click="addEntry()" label="Add entry" v-close-popup style="width: 45%; margin-left: auto; margin-right: auto" /> -->
         <q-btn
+          v-close-popup
           color="primary"
-          @click="replaceEntry()"
           label="Replace entry"
           style="width: 45%; margin-left: auto; margin-right: auto"
-          v-close-popup
+          @click="replaceEntry()"
         />
         <!-- :loading="exporting" -->
       </q-card-actions>

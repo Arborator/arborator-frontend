@@ -9,7 +9,7 @@
     </div>
     &nbsp;
     <div class="q-pa-lg row items-start q-gutter-lg">
-      <q-card style="max-width: 300px; width: 300px" clickable v-for="(f, i) in samples" :key="f" class="text-primary cursor-pointer q-hoverable">
+      <q-card v-for="(f, i) in samples" :key="f" style="max-width: 300px; width: 300px" clickable class="text-primary cursor-pointer q-hoverable">
         <span class="q-focus-helper"></span>
         <q-item clickable :to="'/klang/' + kprojectname + '/' + f">
           <q-icon name="music_note" size="lg" />
@@ -22,9 +22,9 @@
     </div>
     <q-separator spaced />
     <div class="q-pa-md">
-      <q-btn dense color="primary" icon="add" label="Add admins for the project" ref="addAdmins" @click="openAdminsDialog" v-if="isSuperAdmin" />
+      <q-btn v-if="isSuperAdmin" ref="addAdmins" dense color="primary" icon="add" label="Add admins for the project" @click="openAdminsDialog" />
     </div>
-    <q-dialog v-model="adminsDialog" ref="addAdminsDialog">
+    <q-dialog ref="addAdminsDialog" v-model="adminsDialog">
       <q-card class="export-dialog">
         <q-card-section class="bg-primary text-white">
           <div class="text-h6">Select admins</div>
@@ -32,13 +32,13 @@
 
         <q-card-section>
           <div class="q-pa-md">
-            <q-option-group :options="users" type="checkbox" v-model="selectedAdmins" ref="userList"></q-option-group>
+            <q-option-group ref="userList" v-model="selectedAdmins" :options="users" type="checkbox"></q-option-group>
           </div>
         </q-card-section>
 
         <q-card-actions align="right">
-          <q-btn label="OK" color="primary" text-color="white" @click="selectAdmins()" ref="OKButton" v-close-popup></q-btn>
-          <q-btn label="Cancel" color="primary" text-color="white" v-close-popup> </q-btn>
+          <q-btn ref="OKButton" v-close-popup label="OK" color="primary" text-color="white" @click="selectAdmins()"></q-btn>
+          <q-btn v-close-popup label="Cancel" color="primary" text-color="white"> </q-btn>
         </q-card-actions>
       </q-card>
     </q-dialog>

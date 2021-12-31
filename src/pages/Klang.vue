@@ -6,7 +6,7 @@
     </div>
 
     <div class="q-pa-lg row items-start q-gutter-lg">
-      <q-card style="max-width: 250px; width: 250px" clickable v-for="(f, i) in projects" :key="f" class="text-primary cursor-pointer q-hoverable">
+      <q-card v-for="(f, i) in projects" :key="f" style="max-width: 250px; width: 250px" clickable class="text-primary cursor-pointer q-hoverable">
         <span class="q-focus-helper"></span>
         <q-item clickable :to="'/klang/' + f">
           <q-icon name="music_note" size="lg" />

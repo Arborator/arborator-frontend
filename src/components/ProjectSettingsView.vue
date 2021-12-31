@@ -4,7 +4,7 @@
       <q-space />
       <div class="text-weight-bold">{{ $t('projectSettings.title') }}</div>
       <q-space />
-      <q-btn dense flat icon="close" v-close-popup>
+      <q-btn v-close-popup dense flat icon="close">
         <q-tooltip content-class="bg-white text-primary">{{ $t('projectSettings.windowClose') }}</q-tooltip>
       </q-btn>
     </q-bar>
@@ -19,17 +19,17 @@
           </div>
         </q-img>
 
-        <template v-slot:action>
+        <template #action>
           <q-file v-model="uploadImage.image" label="Change Image" borderless standout filled use-chips clearable :loading="uploadImage.submitting">
-            <template v-slot:after>
+            <template #after>
               <q-btn
                 color="primary"
                 icon="cloud_upload"
                 round
-                @click="uploadProjectImage()"
                 :loading="uploadImage.submitting"
                 :disable="uploadImage.image === null"
                 accept=".jpg, image/*"
+                @click="uploadProjectImage()"
               />
             </template>
           </q-file>
@@ -38,12 +38,12 @@
     </q-card-section>
     <q-card-section>
       <q-input v-model="description" style="height: 100px" label="Description" filled clearable type="textarea" />
-      <q-btn color="primary" @click="saveDescription" :label="$t('projectSettings.descriptionSave')" icon="save" dense flat></q-btn>
+      <q-btn color="primary" :label="$t('projectSettings.descriptionSave')" icon="save" dense flat @click="saveDescription"></q-btn>
     </q-card-section>
     <q-card-section class="q-pa-sm row items-start q-gutter-md">
       <q-card class="col col-sm-12">
         <q-list>
-          <q-item tag="label" v-ripple>
+          <q-item v-ripple tag="label">
             <q-item-section>
               <q-item-label>{{ $t('projectSettings.togglePrivate') }}</q-item-label>
               <q-item-label caption>{{ $t('projectSettings.togglePrivateCaption') }}</q-item-label>
@@ -51,9 +51,9 @@
             <q-item-section avatar>
               <div>
                 <q-btn-toggle
+                  v-model="visibility"
                   label="Visibility"
                   glossy
-                  v-model="visibility"
                   toggle-color="primary"
                   :options="[
                     { label: 'Private', value: 0 },
@@ -64,43 +64,43 @@
               </div>
             </q-item-section>
           </q-item>
-          <q-item tag="label" v-ripple>
+          <q-item v-ripple tag="label">
             <q-item-section>
               <q-item-label>{{ $t('projectSettings.toggleAllVisible') }}</q-item-label>
               <q-item-label caption>{{ $t('projectSettings.toggleAllVisibleCaption') }}</q-item-label>
             </q-item-section>
             <q-item-section avatar>
-              <q-toggle color="blue" v-model="showAllTrees" checked-icon="check" unchecked-icon="clear" />
+              <q-toggle v-model="showAllTrees" color="blue" checked-icon="check" unchecked-icon="clear" />
             </q-item-section>
           </q-item>
 
-          <q-item tag="label" v-ripple>
+          <q-item v-ripple tag="label">
             <q-item-section>
               <q-item-label>{{ $t('projectSettings.toggleExerciseMode') }}</q-item-label>
               <q-item-label caption>{{ $t('projectSettings.toggleExerciseModeCaption') }}</q-item-label>
             </q-item-section>
             <q-item-section avatar>
-              <q-toggle color="blue" v-model="exerciseMode" checked-icon="check" unchecked-icon="clear" />
+              <q-toggle v-model="exerciseMode" color="blue" checked-icon="check" unchecked-icon="clear" />
             </q-item-section>
           </q-item>
 
-          <q-item id="option__diff-mode" tag="label" v-ripple>
+          <q-item id="option__diff-mode" v-ripple tag="label">
             <q-item-section>
               <q-item-label>{{ $t('projectSettings.toggleDiffMode') }}</q-item-label>
               <q-item-label caption>{{ $t('projectSettings.toggleDiffModeCaption') }}</q-item-label>
             </q-item-section>
             <q-item-section avatar>
-              <q-toggle color="blue" v-model="diffMode" checked-icon="check" unchecked-icon="clear" />
+              <q-toggle v-model="diffMode" color="blue" checked-icon="check" unchecked-icon="clear" />
             </q-item-section>
           </q-item>
 
-          <q-item id="option__usertree-diff" tag="label" v-ripple>
+          <q-item id="option__usertree-diff" v-ripple tag="label">
             <q-item-section>
               <q-item-label>{{ $t('projectSettings.chooseUserDiff') }}</q-item-label>
               <q-item-label caption>{{ $t('projectSettings.chooseUserDiffCaption') }}</q-item-label>
             </q-item-section>
             <q-item-section avatar>
-              <q-select color="blue" v-model="diffUserId" :options="projectTreesFrom" />
+              <q-select v-model="diffUserId" color="blue" :options="projectTreesFrom" />
               <!-- checked-icon="check"
                 unchecked-icon="clear" -->
             </q-item-section>
@@ -125,7 +125,7 @@
         </q-card-section>
         <q-card-section>
           <q-list bordered separator class="list-size">
-            <q-item v-for="dut in default_user_trees" :key="dut.id" clickable v-ripple>
+            <q-item v-for="dut in default_user_trees" :key="dut.id" v-ripple clickable>
               <q-item-section>{{ dut.username }}</q-item-section>
               <q-item-section side>
                 <q-btn
@@ -152,7 +152,7 @@
         </q-card-section>
         <q-card-section>
           <q-list bordered separator class="list-size">
-            <q-item v-for="admin in admins" :key="admin" clickable v-ripple>
+            <q-item v-for="admin in admins" :key="admin" v-ripple clickable>
               <q-item-section>{{ admin }}</q-item-section>
               <q-item-section side>
                 <q-btn
@@ -178,7 +178,7 @@
         </q-card-section>
         <q-card-section>
           <q-list bordered separator class="list-size">
-            <q-item v-for="guest in guests" :key="guest" clickable v-ripple>
+            <q-item v-for="guest in guests" :key="guest" v-ripple clickable>
               <q-item-section>{{ guest }}</q-item-section>
               <q-item-section side>
                 <q-btn
@@ -204,8 +204,8 @@
         </q-card-section>
         <q-card-section>
           <q-select
-            filled
             v-model="shownfeatures"
+            filled
             multiple
             :options="$store.getters['config/shownfeatureschoices']"
             use-chips
@@ -215,8 +215,8 @@
         </q-card-section>
         <q-card-section>
           <q-select
-            filled
             v-model="shownmeta"
+            filled
             multiple
             :options="$store.getters['config/shownmetachoices']"
             use-chips
@@ -239,24 +239,24 @@
         <q-btn
           color="bg-primary"
           text-color="primary"
-          @click="saveAnnotationSettings()"
           :label="$t('projectSettings').annotationSettingsSave"
           icon="save"
           dense
           flat
           :disabled="!annofok"
           no-caps
+          @click="saveAnnotationSettings()"
         ></q-btn>
         <q-btn
           color="bg-primary"
           text-color="primary"
-          @click="resetAnnotationFeatures()"
           label="reset to SUD"
           icon="replay"
           dense
           flat
           :disabled="!annofok"
           no-caps
+          @click="resetAnnotationFeatures()"
         ></q-btn>
         <q-chip text-color="primary" :icon="annofok ? 'sentiment_satisfied_alt' : 'sentiment_very_dissatisfied'">{{ annofcomment }}</q-chip>
       </q-card>
@@ -264,29 +264,29 @@
 
     <q-dialog v-model="addAdminDial" transition-show="fade" transition-hide="fade">
       <UserSelectTable
-        :parentCallback="updateAdminsOrGuests"
+        :parent-callback="updateAdminsOrGuests"
         :general="true"
         selectiontype="Project Admin"
-        targetRole="admin"
+        target-role="admin"
         singlemultiple="multiple"
         :preselected="admins"
       ></UserSelectTable>
     </q-dialog>
     <q-dialog v-model="addGuestDial" transition-show="fade" transition-hide="fade">
       <UserSelectTable
-        :parentCallback="updateAdminsOrGuests"
+        :parent-callback="updateAdminsOrGuests"
         :general="true"
         selectiontype="Project Guest"
-        targetRole="guest"
+        target-role="guest"
         singlemultiple="multiple"
         :preselected="guests"
       ></UserSelectTable>
     </q-dialog>
     <q-dialog v-model="addDefaultUserTreeDial" transition-show="fade" transition-hide="fade">
-      <UserSelectTable :parentCallback="addDefaultUserTree" :general="false" :projectname="$props.projectname"></UserSelectTable>
+      <UserSelectTable :parent-callback="addDefaultUserTree" :general="false" :projectname="$props.projectname"></UserSelectTable>
     </q-dialog>
     <q-dialog v-model="confirmActionDial">
-      <confirm-action :parentAction="confirmActionCallback" :arg1="confirmActionArg1"></confirm-action>
+      <confirm-action :parent-action="confirmActionCallback" :arg1="confirmActionArg1"></confirm-action>
     </q-dialog>
   </q-card>
 </template>
@@ -311,7 +311,7 @@ import UserSelectTable from './UserSelectTable.vue';
 import ConfirmAction from './ConfirmAction.vue';
 
 export default {
-  name: 'project-settings-view',
+  name: 'ProjectSettingsView',
   components: { Codemirror, UserSelectTable, ConfirmAction },
   props: ['projectname', 'projectTreesFrom'],
   data() {

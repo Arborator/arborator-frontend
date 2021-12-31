@@ -11,12 +11,12 @@
       row-key="name"
       :v-model:pagination="pagination"
     >
-      <template v-if="modifiable === 'true'" v-slot:top-right>
+      <template v-if="modifiable === 'true'" #top-right>
         <q-btn color="primary" round size="s" dense icon="add" @click="addNewFeature()">
           <q-tooltip :delay="300" content-class="text-white bg-primary">Add a new feature</q-tooltip>
         </q-btn>
       </template>
-      <template v-slot:body="props">
+      <template #body="props">
         <q-tr :props="props">
           <q-td key="a" :props="props" style="width: 150px">
             <!-- three cases: existing feature -> div,
@@ -27,16 +27,16 @@
             </div>
             <q-select
               v-else-if="openFeatures == 'true'"
+              v-model="props.row.a"
               use-input
               input-debounce="1000"
               new-value-mode="add-unique"
-              @input-value="oninput(props.row)"
               dense
-              v-model="props.row.a"
               :options="computeAttributeOptions(props.row)"
               :options-sanitize="true"
+              @input-value="oninput(props.row)"
             />
-            <q-select v-else dense clearable use-input borderless v-model="props.row.a" :options="computeAttributeOptions(props.row)" />
+            <q-select v-else v-model="props.row.a" dense clearable use-input borderless :options="computeAttributeOptions(props.row)" />
           </q-td>
 
           <q-td key="v" :props="props">
@@ -50,47 +50,47 @@
               filled
               dense
               use-input
-              @input-value="oninput(props.row)"
               :rules="[(val) => !!val || 'Field is required']"
+              @input-value="oninput(props.row)"
             />
             <q-input
               v-else-if="computeValueType(props.row) === 'String'"
               v-model.number="props.row.v"
               filled
               dense
-              @input-value="oninput(props.row)"
               :rules="[(val) => !!val || 'Field is required']"
+              @input-value="oninput(props.row)"
             />
 
             <q-select
               v-else-if="openFeatures === 'true'"
+              v-model="props.row.v"
               filled
               dense
-              v-model="props.row.v"
               use-input
               input-debounce="1000"
               new-value-mode="add-unique"
               clearable
-              @input-value="oninput(props.row)"
               :options="computeValueOptions(props.row)"
               :options-sanitize="true"
+              @input-value="oninput(props.row)"
             />
             <q-select
               v-else
               :key="key"
+              v-model="props.row.v"
               filled
               dense
               clearable
-              v-model="props.row.v"
               :options="computeValueOptions(props.row)"
               @input-value="oninput(props.row)"
             >
               <!-- removed fill-input to allow to erase functions -->
-              <template v-if="prepend !== undefined" v-slot:prepend>{{ props.row.join }}</template>
+              <template v-if="prepend !== undefined" #prepend>{{ props.row.join }}</template>
             </q-select>
           </q-td>
           <q-td v-if="modifiable === 'true'" key="actions" :props="props">
-            <q-btn dense round flat color="grey" @click="deleteRow(props.row)" icon="delete">
+            <q-btn dense round flat color="grey" icon="delete" @click="deleteRow(props.row)">
               <q-tooltip :delay="300">Erase the attribute {{ props.row.a }}</q-tooltip>
             </q-btn>
           </q-td>
@@ -104,7 +104,7 @@
 import { date } from 'quasar';
 
 export default {
-  name: 'attributeTable',
+  name: 'AttributeTable',
   props: ['title', 'featdata', 'columns', 'featOptions', 'openFeatures', 'modifiable', 'numbered', 'prepend'],
   // featdata contains the actual data, featOptions the possible options,
   // openFeatures: user can add own attributes, modifiable: user can add and erase a row of attributes

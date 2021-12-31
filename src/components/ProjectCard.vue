@@ -3,10 +3,10 @@
     v-show="visible"
     :class="hover ? 'shadow-12' : ''"
     class="clickable my-card grid-style-transition shadow-2"
+    :style="hover ? 'transform: scale(0.95);' : ''"
     @mouseover="hover = true"
     @mouseleave="hover = false"
     @click="goTo()"
-    :style="hover ? 'transform: scale(0.95);' : ''"
   >
     <q-popup-proxy v-if="canSeeSettings" transition-show="flip-up" transition-hide="flip-down" context-menu>
       <q-card>
@@ -58,7 +58,7 @@
     </q-card-section>
 
     <q-dialog v-model="confirmActionDial">
-      <confirm-action :parentAction="confirmActionCallback" :arg1="confirmActionArg1"></confirm-action>
+      <confirm-action :parent-action="confirmActionCallback" :arg1="confirmActionArg1"></confirm-action>
     </q-dialog>
   </q-card>
 </template>

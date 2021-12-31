@@ -422,7 +422,7 @@ import { mapGetters } from 'vuex';
 import { openURL } from 'quasar';
 
 import { nextTick } from 'vue';
-import api from '../boot/backend-api';
+import api from '../api/backend-api';
 
 import Store from '../store/index';
 import UserTable from '../components/UserTable';

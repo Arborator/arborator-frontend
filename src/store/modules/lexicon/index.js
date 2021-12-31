@@ -1,4 +1,4 @@
-import api from 'boot/backend-api';
+import api from '../../../api/backend-api';
 
 import { computeUniqueKey } from 'src/components/lexicon/lexiconHelper';
 

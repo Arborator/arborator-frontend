@@ -10,7 +10,7 @@
   */
 
 // This is backend_api which we are gonna test
-const backend_api = require('src/boot/backend-api').default;
+const backend_api = require('src/api/backend-api').default;
 
 // This is value field which response data should have got
 const { fields } = require('test/jest/__mocks__/ProjectsHub.json').api_testing;

@@ -190,7 +190,8 @@
 <script>
 import { openURL } from 'quasar';
 import { useStorage } from 'vue3-storage';
-import api from '../boot/backend-api';
+import api from '../api/backend-api';
+
 import Store from '../store/index';
 import '../assets/css/tags-style.css';
 import '../assets/css/arborator-draft.css';

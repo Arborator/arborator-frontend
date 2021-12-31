@@ -240,7 +240,7 @@ import mitt from 'mitt';
 import { mapGetters } from 'vuex';
 
 import { ReactiveSentence } from 'dependencytreejs/lib'; // for test ony at the moment
-import api from '../../boot/backend-api';
+import api from '../../api/backend-api';
 
 import VueDepTree from './VueDepTree.vue';
 import RelationDialog from './RelationDialog.vue';

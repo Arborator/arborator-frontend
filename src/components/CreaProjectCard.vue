@@ -42,7 +42,7 @@
 </template>
 
 <script>
-import api from '../boot/backend-api';
+import api from '../api/backend-api';
 
 export default {
   props: ['parentGetProjects'],

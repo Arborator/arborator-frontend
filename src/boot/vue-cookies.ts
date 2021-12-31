@@ -8,7 +8,7 @@ const cookiesConfig = {
 let cookies = null;
 
 export default boot(({ app }) => {
-  app.use(VueCookies, cookiesConfig);
+  app.use(VueCookies as any, cookiesConfig);
   cookies = app.config.globalProperties.$cookies;
   // console.log('Boot vue3-cookies', cookies);
 });

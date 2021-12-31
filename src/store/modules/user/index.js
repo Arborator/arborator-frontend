@@ -1,11 +1,11 @@
-import api from 'boot/backend-api';
+import api from '../../../api/backend-api';
 
 import { useRoute } from 'vue-router';
 
 import defaultState from './defaultState';
 
 // import { Notify } from "quasar";
-import { cookies } from '../../../boot/vue-cookies.js';
+import { cookies } from '../../../boot/vue-cookies';
 
 export default {
   namespaced: true,

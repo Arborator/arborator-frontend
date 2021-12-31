@@ -36,7 +36,7 @@ import { mapGetters } from 'vuex';
 
 import RelationTable from './RelationTable';
 
-import api from '../../boot/backend-api';
+import api from '../../api/backend-api';
 
 export default {
   components: {

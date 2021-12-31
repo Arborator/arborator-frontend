@@ -52,7 +52,7 @@
 </template>
 
 <script>
-import api from '../boot/backend-api';
+import api from '../api/backend-api';
 import Store from '../store/index';
 
 export default {

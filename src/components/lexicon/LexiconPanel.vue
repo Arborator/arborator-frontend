@@ -200,7 +200,7 @@
 
 <script>
 import { mapGetters } from 'vuex';
-import api from '../../boot/backend-api';
+import api from '../../api/backend-api';
 import LexiconTableBase from './LexiconTableBase';
 import GrewSearch from '../grewSearch/GrewSearch';
 import LexiconModificationDialog from './LexiconModificationDialog';

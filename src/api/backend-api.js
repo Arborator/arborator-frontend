@@ -1,4 +1,4 @@
-import { API } from './axios-adapters/axios-api';
+import { API } from './axios-api';
 
 export default {
   // -------------------------------------------------- //

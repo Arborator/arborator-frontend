@@ -275,7 +275,7 @@ import diffWords from 'diff';
 import { mapGetters } from 'vuex';
 import { exportFile } from 'quasar';
 import Store from '../store/index';
-import api from '../boot/backend-api';
+import api from '../api/backend-api';
 import app from '../App.vue';
 
 const JSZip = require('jszip');

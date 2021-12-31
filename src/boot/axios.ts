@@ -1,6 +1,6 @@
 import { boot } from 'quasar/wrappers';
 import axios from 'axios';
-import api from './backend-api';
+import api from '../api/backend-api';
 // Be careful when using SSR for cross-request state pollution
 // due to creating a Singleton instance here;
 // If any client changes this (global) instance, it might be a

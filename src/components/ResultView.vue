@@ -57,7 +57,7 @@
 </template>
 
 <script>
-import api from '../boot/backend-api';
+import api from '../api/backend-api';
 import SentenceCard from './sentence/SentenceCard';
 
 export default {

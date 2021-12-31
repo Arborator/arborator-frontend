@@ -72,7 +72,7 @@
 </template>
 
 <script>
-import api from '../boot/backend-api.js';
+import api from '../api/backend-api.js';
 import ConfirmAction from '../components/ConfirmAction';
 import Store from '../store/index';
 

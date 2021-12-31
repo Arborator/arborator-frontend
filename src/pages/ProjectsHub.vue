@@ -178,7 +178,7 @@
 <script>
 import { openURL } from 'quasar';
 import { useStorage } from 'vue3-storage';
-import api from '../boot/backend-api';
+import api from '../api/backend-api';
 import Store from '../store/index';
 import ProjectCard from '../components/ProjectCard.vue';
 import ProjectItem from '../components/ProjectItem.vue';

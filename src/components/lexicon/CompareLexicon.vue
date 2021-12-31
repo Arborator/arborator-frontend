@@ -59,7 +59,7 @@
 </template>
 
 <script>
-import api from '../../boot/backend-api';
+import api from '../../api/backend-api';
 import GrewSearch from '../grewSearch/GrewSearch';
 import grewTemplates from '../../assets/grew-templates.json';
 

@@ -157,7 +157,7 @@
 import { computed } from 'vue';
 import { mapGetters } from 'vuex';
 import { computeFeatureString } from './lexiconHelper';
-import api from '../../boot/backend-api';
+import api from '../../api/backend-api';
 
 export default {
   name: 'LexiconTable',

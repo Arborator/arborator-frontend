@@ -24,7 +24,7 @@
 import { mapGetters } from 'vuex';
 import GrewRequestCard from './GrewRequestCard';
 import ResultView from '../ResultView';
-import api from '../../boot/backend-api';
+import api from '../../api/backend-api';
 
 export default {
   components: {

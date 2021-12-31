@@ -43,7 +43,7 @@ import { mapGetters } from 'vuex';
 
 import { LocalStorage, openURL } from 'quasar';
 
-import api from '../boot/backend-api';
+import api from '../api/backend-api';
 
 import Store from '../store/index';
 

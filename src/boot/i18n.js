@@ -1,6 +1,6 @@
 import messages from 'src/i18n';
 // import { createI18n } from 'vue-i18n'; ///index'
-import { createI18n } from "vue-i18n"; ///dist/vue-i18n.esm-bundler.js";
+import { createI18n } from 'vue-i18n'; /// dist/vue-i18n.esm-bundler.js";
 
 export const i18n = createI18n({
   legacy: false,

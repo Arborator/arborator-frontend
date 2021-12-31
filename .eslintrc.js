@@ -52,7 +52,7 @@ module.exports = {
 
     // https://eslint.vuejs.org/rules/#priority-a-essential-error-prevention
     // consider switching to `plugin:vue/strongly-recommended` or `plugin:vue/recommended` for stricter rules
-    'plugin:vue/essential',
+    'plugin:vue/vue3-essential',
 
     // --- ONLY WHEN USING PRETTIER ---
     // https://github.com/prettier/eslint-config-prettier#installation

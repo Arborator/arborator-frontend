@@ -72,7 +72,6 @@
 </template>
 
 <script>
-import api from '../api/backend-api.js';
 import ConfirmAction from '../components/ConfirmAction';
 import Store from '../store/index';
 

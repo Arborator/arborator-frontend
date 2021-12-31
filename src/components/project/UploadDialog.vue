@@ -101,7 +101,7 @@
 </template>
 
 <script>
-import api from '../../api/backend-api.js';
+import api from '../../api/backend-api';
 import { useModelWrapper } from '../../composables/modelWrapper.js';
 
 export default {

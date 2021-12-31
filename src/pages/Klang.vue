@@ -21,7 +21,6 @@
 </template>
 
 <script>
-import Vue from 'vue';
 import api from '../api/backend-api';
 
 export default {

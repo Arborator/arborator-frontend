@@ -1,25 +1,9 @@
 <template>
-  <q-page class="full-width row wrap justify-start items-start content-start" style="padding-top: 180px; padding-bottom: 80px">
+  <q-page class="full-width row wrap" style="padding-top: 220px; padding-bottom: 80px">
     <div class="q-pa-none full-width" ref="words">
-      <div class="row" dense v-if="isLoggedIn">
-        <div class="col row q-pa-none"><q-space /></div>
-        <!-- <div class="col q-pa-none" v-if="viewAllTranscriptions"> -->
-        <div class="col q-pa-none">
-          <q-badge> {{ viewAllTranscriptions ? 'new proposal' : username }} </q-badge>
-        </div>
-        <template v-if="viewAllTranscriptions">
-          <template v-for="(transcription, username) in transcriptions" :key="username">
-            <div v-if="username !== 'original'" class="col q-pa-none">
-              <q-badge> {{ viewAllTranscriptions || wasSaved ? username : 'original' }} </q-badge>
-            </div>
-          </template>
-        </template>
-        <!-- </div> -->
-      </div>
-      <div class="row" dense v-for="(sent, i) in transcriptions['original']" :key="i">
-        <span class="line-number" dense>
-          {{ i }}
-        </span>
+      <!-- <div class="row" dense v-for="(sent, i) in transcriptions['original']" :key="i"> -->
+      <div class="row justify-evenly" dense v-for="(sent, i) in mytrans" :key="i">
+        <span class="line-number" dense> {{ i + 1 }} </span>
         <q-badge v-if="speakers[i] && speakers[i] == 'L1'" :label="speakers[i]" dense outline style="height: 3px" color="primary" rounded />
         <q-badge
           v-if="speakers[i] && speakers[i] != 'L1'"
@@ -32,7 +16,7 @@
         />
 
         <div class="col row q-pa-none">
-          <span class="justify-end q-pa-none align-right" v-for="(t, j) in sent" :key="j">
+          <span class="q-pa-none" v-for="(t, j) in transcriptions['original'][i]" :key="j">
             <!-- {{t[1]/1000}} -->
             <q-chip v-if="t[2] / 1000 < ct" size="md" color="white" text-color="black" clickable dense @click="wordclicked(t)" class="q-pa-none">
               {{ t[0] }}
@@ -54,7 +38,7 @@
           </span>
           <q-space />
           <q-btn
-            v-if="viewAllTranscriptions && segments['original'][i] !== mytrans[i]"
+            v-if="viewAllTranscriptions && segments.original[i] !== mytrans[i]"
             round
             dense
             flat
@@ -80,16 +64,15 @@
         </div>
         <div class="col q-pa-none" v-if="isLoggedIn">
           <div class="col q-pa-none">
-            <q-input dense filled square v-model="mytrans[i]"> </q-input>
+            <q-input class="special-column" dense filled square v-model="mytrans[i]"> </q-input>
           </div>
         </div>
-        <!-- ADMIN TABLE : OTHER ANNOTATOR -->
+        <!-- ADMIN TABLE : OTHER ANNOTATORS -->
         <template v-if="viewAllTranscriptions">
           <template v-for="(transcription, username) in transcriptions" :key="username">
             <div class="col q-pa-none" v-if="username !== 'original'">
               <span>
-                <q-btn v-if="diffsegments[username][i].length !== 1" round dense flat icon="west" @click="moveToInputField(transcription, i)">
-                </q-btn>
+                <q-btn v-if="segments[username][i] !== mytrans[i]" round dense flat icon="west" @click="moveToInputField(username, i)"> </q-btn>
                 <span v-for="(part, index) in diffsegments[username][i]" style="padding: 0px; margin: 0px" :key="index">
                   <span v-if="part.added" style="color: green; padding: 0px; margin: 0px">
                     {{ part.value }}
@@ -108,10 +91,12 @@
       </div>
       <template v-if="isAdmin && viewAllTranscriptions && !isLoading">
         <div class="row meta-row" dense v-for="(meta, i) in metaFormat" :key="-i - 1">
+          <!-- <div class="row justify-evenly" dense v-if="isLoggedIn"> -->
+          &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
           <span class="line-number" dense> </span>
           <div class="col row q-pa-none"></div>
-          <div class="col row q-pa-none">
-            <span class="meta-label"> {{ meta.label }} </span>
+          <div class="col row q-pa-none meta-label">
+            <span> {{ meta.label }} </span>
             <q-space />
           </div>
           <template v-for="(transcription, username) in transcriptions">
@@ -144,6 +129,30 @@
         noplayed-line-color="#15a700"
       >
       </av-waveform>
+      <div class="q-pa-none full-width">
+        <div class="row justify-evenly" dense v-if="isLoggedIn">
+          &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+          <div class="col q-pa-none">
+            <q-badge> original </q-badge>
+          </div>
+          <!-- <q-space /> -->
+          <!-- <div class="col"></div> -->
+          <!-- <div class="col q-pa-none" v-if="viewAllTranscriptions"> -->
+          <div class="col q-pa-none">
+            <q-badge color="secondary"> {{ viewAllTranscriptions ? 'new proposal' : username }} </q-badge>
+          </div>
+          <template v-if="viewAllTranscriptions">
+            <!-- {{ (555555, typeof transcriptions) }} -->
+
+            <template v-for="(transcription, username) in transcriptions" :key="username">
+              <!-- {{ (555555, (transcription, username)) }} -->
+              <div v-if="username !== 'original'" class="col q-pa-none">
+                <q-badge> {{ viewAllTranscriptions || wasSaved ? username : 'original' }} </q-badge>
+              </div>
+            </template>
+          </template>
+        </div>
+      </div>
     </q-page-sticky>
     <q-page-sticky position="bottom" expand class="bg-white text-primary">
       <q-toolbar class="shadow-5">
@@ -261,11 +270,19 @@
 .meta-label {
   font-weight: 700;
   font-size: 15px;
+  background-color: #276930;
 }
 
 .meta-row {
   background-color: #4a2769;
   color: white;
+}
+
+.special-column {
+  background-color: #27693031;
+  /* width: 500px;
+  min-width: 500px;
+  max-width: 500px; */
 }
 </style>
 <script>
@@ -369,12 +386,8 @@ export default {
     document.title = `Klang: ${this.ksamplename}`;
     this.getSampleData();
   },
-
+  watch: {},
   methods: {
-    btnClick(a, b) {
-      this.manualct = 30;
-    },
-
     save() {
       this.isLoading = true;
 

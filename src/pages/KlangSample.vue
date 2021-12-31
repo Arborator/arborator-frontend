@@ -1,6 +1,5 @@
 <template>
   <q-page class="full-width row wrap" style="padding-top: 220px; padding-bottom: 80px">
-    {{ JSON.stringify(segments['kimgerdes']) !== JSON.stringify(mytrans) }}
     <div class="q-pa-none full-width" ref="words">
       <!-- <div class="row" dense v-for="(sent, i) in transcriptions['original']" :key="i"> -->
       <div class="row justify-evenly" dense v-for="(sent, i) in mytrans" :key="i">

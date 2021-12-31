@@ -199,6 +199,10 @@ export default {
     return API.get(`klang/projects/${projectname}/samples`);
   },
 
+  getKlangProjectTranscribers(projectname) {
+    return API.get(`klang/projects/${projectname}/transcribers`);
+  },
+
   getOriginalTranscription(projectname, samplename) {
     return API.get(`klang/projects/${projectname}/samples/${samplename}/timed-tokens`);
   },

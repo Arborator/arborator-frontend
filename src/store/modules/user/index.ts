@@ -87,7 +87,7 @@ const userActions: ActionTree<UserStateInterface, unknown> = {
     });
   },
   logout({ commit }, { user }) {
-    return new Promise((resolve, reject) => {
+    return new Promise((resolve) => {
       console.log(`logging out user: ${user}`);
       api
         .logout()

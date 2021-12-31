@@ -2,7 +2,7 @@
   <router-view />
 </template>
 
-<script>
+<script lang="ts">
 import { defineComponent } from 'vue';
 
 import { useStorage } from 'vue3-storage';
@@ -13,7 +13,7 @@ export default defineComponent({
   data() {
     return {
       store: Store,
-      storage: null,
+      storage: useStorage(),
       alerts: {
         welcomeback: {
           color: 'primary',
@@ -25,19 +25,18 @@ export default defineComponent({
     };
   },
   mounted() {
-    this.storage = useStorage();
     this.$store.dispatch('user/checkSession', {}).then(() => {
       console.log('App.vue Session checked');
     });
     try {
-      this.$q.dark.set(this.storage.getStorageSync('dm'));
+      this.$q.dark.set(this.storage.getStorageSync('dm') as boolean | 'auto');
     } catch (error) {
       console.log('App.vue ls not found');
     }
     try {
-      this.$i18n.locale = this.storage.getStorageSync('arbolang');
+      this.$i18n.locale = this.storage.getStorageSync('arbolang') as string;
     } catch (error) {
-      this.$i18n.locale = this.$q.lang.getLocale();
+      this.$i18n.locale = this.$q.lang.getLocale() as string;
       this.storage.setStorageSync('arbolang', this.$i18n.locale);
     }
   },

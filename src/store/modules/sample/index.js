@@ -43,38 +43,8 @@ export default {
         })
         .catch((error) => {
           this.$store.dispatch('notifyError', { error });
-          // this.$q.notify({
-          // message: `${error}`,
-          // color: "negative",
-          // position: "bottom",
-          // });
         });
     },
-    // fetchConfigShown({ commit }, { projectname }) {
-    //   api
-    //     .getProjectSettings(projectname)
-    //     .then((response) => {
-    //       commit("set_project_settings", {
-    //         admins: response.data.admins,
-    //         guests: response.data.guests,
-    //         shownfeatures: response.data.config.shownfeatures,
-    //         shownmeta: response.data.config.shownmeta,
-    //         showAllTrees: response.data.show_all_trees,
-    //       });
-    //     })
-    //     .catch((error) => {
-    //       this.$store.dispatch("notifyError", { error: error });
-    //       // this.$q.notify({
-    //       // message: `${error}`,
-    //       // color: "negative",
-    //       // position: "bottom",
-    //       // });
-    //     });
-    // },
-    // there is still a mismatch between all name 'updateProjectSettings' and 'updateProjectSettings'
-    // ... so we have to get a proper data structure of the whole setting for then having better
-    // ... separation of conscerns for API calls
-    // KK TODO
     updateProjectSettings({ commit, dispatch }, { projectname, toUpdateObject }) {
       return new Promise((resolve, reject) => {
         api

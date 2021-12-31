@@ -5,8 +5,9 @@ module.exports = {
   root: true,
 
   parserOptions: {
-    
-    parser: '@babel/eslint-parser',
+    project: ["tsconfig.json"],
+    extraFileExtensions: ['.vue'],
+    parser: '@typescript-eslint/parser',
     // parser: 'babel-eslint',
     ecmaVersion: 2018, // Allows for the parsing of modern ECMAScript features
     sourceType: 'module' // Allows for the use of imports
@@ -17,27 +18,49 @@ module.exports = {
   },
 
   // Rules order is important, please avoid shuffling them
+  // extends: [
+    // // Base ESLint recommended rules
+    // // 'plugin:prettier/recommended',
+    // // Uncomment any of the lines below to choose desired strictness,
+    // // but leave only one uncommented!
+    // // See https://eslint.vuejs.org/rules/#available-rules
+    // // "prettier/prettier",
+    // // "plugin:prettier/recommended",
+    // // 'plugin:vue/vue3-strongly-recommended', // Priority B: Strongly Recommended (Improving Readability)
+    // // 'plugin:vue/vue3-recommended', // Priority C: Recommended (Minimizing Arbitrary Choices and Cognitive Overhead)
+    
+    // // "airbnb",
+    
+    // // 'eslint:recommended',
+    // // "prettier",
+    // 'plugin:vue/vue3-essential', // Priority A: Essential (Error Prevention)
+    // 'airbnb-base',
+    // // "plugin:vue/essential",
+    // "plugin:prettier/recommended",
+    // "eslint:recommended"
+      // Rules order is important, please avoid shuffling them
   extends: [
     // Base ESLint recommended rules
-    // 'plugin:prettier/recommended',
-    // Uncomment any of the lines below to choose desired strictness,
-    // but leave only one uncommented!
-    // See https://eslint.vuejs.org/rules/#available-rules
-    // "prettier/prettier",
-    // "plugin:prettier/recommended",
-    // 'plugin:vue/vue3-strongly-recommended', // Priority B: Strongly Recommended (Improving Readability)
-    // 'plugin:vue/vue3-recommended', // Priority C: Recommended (Minimizing Arbitrary Choices and Cognitive Overhead)
-    
-    // "airbnb",
-    
-    // 'eslint:recommended',
-    // "prettier",
-    'plugin:vue/vue3-essential', // Priority A: Essential (Error Prevention)
-    'airbnb-base',
-    // "plugin:vue/essential",
-    "plugin:prettier/recommended",
-    "eslint:recommended"
+    'eslint:recommended',
 
+    // https://github.com/typescript-eslint/typescript-eslint/tree/master/packages/eslint-plugin#usage
+    // ESLint typescript rules
+    'plugin:@typescript-eslint/eslint-recommended',
+    'plugin:@typescript-eslint/recommended',
+    // consider disabling this class of rules if linting takes too long
+    'plugin:@typescript-eslint/recommended-requiring-type-checking',
+
+    // https://eslint.vuejs.org/rules/#priority-a-essential-error-prevention
+    // consider switching to `plugin:vue/strongly-recommended` or `plugin:vue/recommended` for stricter rules
+    'plugin:vue/essential',
+
+    // --- ONLY WHEN USING PRETTIER ---
+    // https://github.com/prettier/eslint-config-prettier#installation
+    // usage with Prettier, provided by 'eslint-config-prettier'.
+    'prettier',
+    // this two has been merged with prettier in version 8.0.0
+    // 'prettier/@typescript-eslint', // merged with prettir in v8 
+    // 'prettier/vue', // merged with prettir in v8
   ],
 
   plugins: [
@@ -100,6 +123,7 @@ module.exports = {
     'no-cond-assign':'warn',
     'no-use-before-define':'warn',
     'import/no-mutable-exports': 'warn',
+    '@typescript-eslint/await-thenable': 'off',
 
 
     // allow debugger during development only

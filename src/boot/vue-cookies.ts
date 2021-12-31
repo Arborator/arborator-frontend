@@ -5,12 +5,11 @@ const cookiesConfig = {
   expireTimes: '7d',
 };
 
-let cookies = null;
+let cookies: typeof VueCookies.VueCookies;
 
 export default boot(({ app }) => {
   app.use(VueCookies as any, cookiesConfig);
-  cookies = app.config.globalProperties.$cookies;
-  // console.log('Boot vue3-cookies', cookies);
+  cookies = app.config.globalProperties.$cookies as typeof VueCookies.VueCookies;
 });
 
 export { cookies };

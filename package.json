@@ -38,7 +38,7 @@
     "vue-select": "^3.16.0",
     "vue3-cookies": "^1.0.1",
     "vue3-storage": "^0.1.11",
-    "vuex": "^4.0.1"
+    "vuex": "^4.0.2"
   },
   "devDependencies": {
     "@babel/eslint-parser": "^7.13.14",

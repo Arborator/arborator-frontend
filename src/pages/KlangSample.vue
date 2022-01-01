@@ -218,7 +218,18 @@
           :disable="isLoading || !isLoggedIn || !title || !monodia || !accent || !story || !sound"
         />
         <q-space />
-        <q-btn round dense flat icon="cloud_download" @click="exportConllDlg = true" :disable="!viewAllTranscriptions">
+        <q-btn
+          round
+          dense
+          flat
+          icon="cloud_download"
+          @click="
+            setExportSampleName();
+
+            exportConllDlg = true;
+          "
+          :disable="!viewAllTranscriptions"
+        >
           <q-tooltip> Click to export conlls </q-tooltip>
         </q-btn>
       </q-toolbar>
@@ -237,7 +248,9 @@
           <q-card-actions align="right">
             <q-btn label="Export" color="primary" text-color="white" @click="exportConll()" v-close-popup></q-btn>
             <q-btn label="Cancel" color="primary" text-color="white" v-close-popup> </q-btn>
+            <q-toggle v-model="newsentsplit" label="new sentence split" />
           </q-card-actions>
+          <q-input v-model="exportSampleName" label="export sample name" />
         </q-card>
       </q-dialog>
     </q-page-sticky>
@@ -328,6 +341,8 @@ export default {
       isLoading: false,
       wasSaved: true,
       exportConllDlg: false,
+      newsentsplit: true,
+      exportSampleName: '',
       users: [],
       selectedUsers: [],
       metaFormat: [
@@ -497,7 +512,9 @@ export default {
     moveToInputField(annotator, line) {
       this.mytrans[line] = this.segments[annotator][line];
     },
-
+    setExportSampleName() {
+      this.exportSampleName = this.camelize(this.title || this.ksamplename);
+    },
     exportConll() {
       let index;
       const { length } = this.selectedUsers;
@@ -506,7 +523,7 @@ export default {
       for (index = 0; index < length; index += 1) {
         const username = this.selectedUsers[index];
         const isOriginal = username === 'original';
-        const conllFileName = `${username}.conll`;
+        const conllFileName = `${this.ksamplename}_${this.exportSampleName}_${username}.conll`;
         let outputString = '';
         let transcription = this.deepCopy(this.transcriptions[username]);
 
@@ -530,10 +547,47 @@ export default {
             for (word = 0; word < transWords; word += 1) {
               const isRealWord = this.isRealWord(transLine[word]);
               if (isRealWord) endMS += msec;
-              transLine[word] = [transLine[word], Math.round(parseFloat(minMS) + startMS), Math.round(parseFloat(minMS) + endMS)];
+              transLine[word] = [
+                transLine[word],
+                Math.round(parseFloat(minMS) + startMS),
+                Math.round(parseFloat(minMS) + endMS),
+                this.speakers[line],
+              ];
               if (isRealWord) startMS += msec;
             }
           }
+        }
+        if (this.newsentsplit) {
+          const flattranscription = transcription.reduce((accumulator, value) => accumulator.concat(value), []);
+          const newtranscription = [];
+          let newsent = [];
+          let bracksent = [];
+          let inBracket = false;
+          for (const i in flattranscription) {
+            if (flattranscription.hasOwnProperty(i)) {
+              let [w, b, e, s] = flattranscription[i];
+              if (w === '...') w = '…';
+              if (w === '[') {
+                inBracket = true;
+                continue;
+              }
+              if (w === ']') {
+                inBracket = false;
+                continue;
+              }
+              if (inBracket) bracksent.push([w, b, e, s === 'L1' ? 'L2' : 'L1']);
+              else newsent.push([w, b, e, s]);
+              if (this.isEndOfSent(w) && !inBracket) {
+                newtranscription.push(newsent);
+                newsent = [];
+                if (bracksent.length > 0) {
+                  newtranscription.push(bracksent);
+                  bracksent = [];
+                }
+              }
+            }
+          }
+          transcription = newtranscription;
         }
         outputString = this.generateConllText(transcription);
         zip.file(conllFileName, outputString);
@@ -541,7 +595,7 @@ export default {
       zip
         .generateAsync({ type: 'blob' })
         .then((content) => {
-          const zipFileName = `${this.ksamplename}.zip`;
+          const zipFileName = `${this.ksamplename}_${this.exportSampleName}.zip`;
           const status = exportFile(zipFileName, content);
           if (status) {
             this.$q.notify({
@@ -564,7 +618,13 @@ export default {
     isRealWord(word) {
       return word.match(/\w+/);
     },
-
+    isEndOfSent(word) {
+      return word.match(/[.!?…]/);
+    },
+    camelize(text) {
+      text = text.replace(/[-_\s.]+(.)?/g, (_, c) => (c ? c.toUpperCase() : ''));
+      return text.substr(0, 1).toLowerCase() + text.substr(1);
+    },
     generateConllText(transcription) {
       let conllString = '';
       let line = 0;
@@ -573,9 +633,10 @@ export default {
         let word = 0;
         const words = transcription[line].length;
         const lineText = transcription[line].reduce((acc, t) => acc + (t[0] !== '.' ? ' ' : '') + t[0], '');
-        conllString += `# sent_id = ${this.ksamplename}.intervals.conll__${line + 1}\n`;
+        conllString += `# sent_id = ${this.ksamplename}_${this.exportSampleName}__${line + 1}\n`;
         conllString += `# text =${lineText}\n`;
-        conllString += `# sound_url = ${this.ksamplename}.mp3\n`;
+        conllString += `# sound_url = ${this.ksamplename}_${this.exportSampleName}.mp3\n`;
+        conllString += `# speaker = ${transcription[line][word][3]}\n`;
         for (; word < words; word += 1) {
           const conllWord = transcription[line][word];
           conllString += `${word + 1}\t${conllWord[0]}\t${conllWord[0]}\t`;

@@ -38,12 +38,12 @@
     "vue-next-select": "^2.10.1",
     "vue-select": "^3.16.0",
     "vue3-cookies": "^1.0.1",
-    "vue3-storage": "^0.1.11",
-    "vuex": "^4.0.2"
+    "vue3-storage": "^0.1.11"
   },
   "devDependencies": {
     "@babel/eslint-parser": "^7.13.14",
     "@quasar/app": "^3.0.0",
+    "@types/diff": "^5.0.2",
     "@typescript-eslint/eslint-plugin": "^5.8.1",
     "@typescript-eslint/parser": "^5.8.1",
     "eslint": "^7.32.0",

@@ -1,5 +1,3 @@
-import { InjectionKey } from 'vue';
-import { MutationTree, Store as VuexStore } from 'vuex';
 import { GetterTree, ActionTree, createStore } from 'vuex';
 import { Notify } from 'quasar';
 import { i18n } from 'src/boot/i18n';
@@ -10,30 +8,7 @@ import sample from './modules/sample';
 import lexicon from './modules/lexicon';
 import klang from './modules/klang';
 
-export interface StateInterface {
-  // root state
-  source: string | undefined;
-  lastGrewQuery: string;
-  lastGrewCommand: string;
-  desiredUrl: string;
-  pendingModifications: Set<number> | Set<unknown>;
-  // user: UserStateInterface
-  // Define your own store structure, using submodules if needed
-  // example: ExampleStateInterface;
-  // Declared as unknown to avoid linting issue. Best to strongly type as per the line above.
-}
-
-// provide typings for `this.$store`
-declare module '@vue/runtime-core' {
-  interface ComponentCustomProperties {
-    $store: VuexStore<StateInterface>;
-  }
-}
-
-// provide typings for `useStore` helper
-export const storeKey: InjectionKey<VuexStore<StateInterface>> = Symbol('vuex-key');
-
-const rootMutations: MutationTree<StateInterface> = {
+const rootMutations = {
   // seems to be not use
   change_source(state, payload) {
     state.source = payload;
@@ -55,7 +30,7 @@ const rootMutations: MutationTree<StateInterface> = {
   },
 };
 
-const rootActions: ActionTree<StateInterface, unknown> = {
+const rootActions = {
   changeDesiredUrl({ commit, state }, { value }) {
     state.desiredUrl = value;
     commit('desiredurl_modified', { value });
@@ -115,7 +90,7 @@ const rootActions: ActionTree<StateInterface, unknown> = {
   },
 };
 
-const rootGetters: GetterTree<StateInterface, unknown> = {
+const rootGetters = {
   getSource: (state) => state.source,
   getLastGrewQuery: (state) => state.lastGrewQuery,
   getLastGrewCommand: (state) => state.lastGrewCommand,
@@ -123,28 +98,31 @@ const rootGetters: GetterTree<StateInterface, unknown> = {
 };
 
 // export default store(function (/* { ssrContext } */) {
-const Store = createStore<StateInterface>({
-  modules: {
-    config,
-    sample,
-    user,
-    grewSearch,
-    lexicon,
-    klang,
-  },
-  state: {
-    // source: "https://127.0.0.1:5000",
-    // source: "https://arboratorgrew.elizia.net:8888",
-    source: process.env.API,
-    lastGrewQuery: '',
-    lastGrewCommand: '',
-    pendingModifications: new Set(), // set of sentence ids,
-    desiredUrl: '',
-  },
-  mutations: rootMutations,
-  actions: rootActions,
-  getters: rootGetters,
-});
+const Store =
+  createStore <
+  StateInterface >
+  {
+    modules: {
+      config,
+      sample,
+      user,
+      grewSearch,
+      lexicon,
+      klang,
+    },
+    state: {
+      // source: "https://127.0.0.1:5000",
+      // source: "https://arboratorgrew.elizia.net:8888",
+      source: process.env.API,
+      lastGrewQuery: '',
+      lastGrewCommand: '',
+      pendingModifications: new Set(), // set of sentence ids,
+      desiredUrl: '',
+    },
+    mutations: rootMutations,
+    actions: rootActions,
+    getters: rootGetters,
+  };
 // return Store;
 export default Store;
 // })

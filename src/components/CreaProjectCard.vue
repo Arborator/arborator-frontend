@@ -42,7 +42,10 @@
 </template>
 
 <script>
+import { useConfigStore } from 'src/pinia/modules/config';
+import { mapActions } from 'vuex';
 import api from '../api/backend-api';
+import notifyError from 'src/utils/notify';
 
 export default {
   props: ['parentGetProjects'],
@@ -66,6 +69,7 @@ export default {
     },
   },
   methods: {
+    ...mapActions(useConfigStore, ['resetAnnotationFeatures']),
     /**
      * Handle project submission by creating form data and sending to backend
      *
@@ -73,14 +77,15 @@ export default {
      */
     onSubmit() {
       this.submitting = true;
-      this.$store.dispatch('config/resetAnnotationFeatures'); // reset annotationFeature object
+      await this.resetAnnotationFeatures();
+      // this.$store.dispatch('config/resetAnnotationFeatures'); // reset annotationFeature object
       const data = {
         ...this.project,
         username: this.$store.getters['user/getUserInfos'].username,
       };
       api
         .createProject(data)
-        .then((response) => {
+        .then(() => {
           this.attachment.file = [];
           this.$props.parentGetProjects();
           this.submitting = false;
@@ -89,7 +94,7 @@ export default {
           });
         })
         .catch((error) => {
-          this.$store.dispatch('notifyError', { error });
+          notifyError({ error });
           this.submitting = false;
         });
     },

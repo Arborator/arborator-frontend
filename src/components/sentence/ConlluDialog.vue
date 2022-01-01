@@ -120,7 +120,7 @@ export default {
       try {
         sentenceJson = sentenceConllToJson(this.conllContent);
       } catch (error) {
-        this.$store.dispatch('notifyError', {
+        notifyError({
           error,
           timeout: 10000,
         });
@@ -146,7 +146,7 @@ export default {
           message: 'Conllu changed',
         });
       } else {
-        this.$store.dispatch('notifyError', {
+        notifyError({
           error: 'Changing timestamp, user_id, sent_id or text is not allowed !',
         });
       }

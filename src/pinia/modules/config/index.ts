@@ -207,7 +207,7 @@ export const useConfigStore = defineStore('config', {
     //       });
     //     })
     //     .catch((error) => {
-    //       this.$store.dispatch('notifyError', { error });
+    //       notifyError({ error });
     //     });
     // },
   },

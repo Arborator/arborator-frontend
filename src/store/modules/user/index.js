@@ -1,14 +1,12 @@
-import { GetterTree, MutationTree, ActionTree, Module } from 'vuex';
-
 import { useRoute } from 'vue-router';
 
-import defaultState, { UserStateInterface } from './defaultState';
+import defaultState from './defaultState';
 
 import { cookies } from '../../../boot/vue-cookies';
 
 import api from '../../../api/backend-api';
 
-const userGetters: GetterTree<UserStateInterface, unknown> = {
+const userGetters = {
   getUserInfos: (state) => state,
   isSuperAdmin: (state) => state.super_admin,
   /**
@@ -44,7 +42,7 @@ const userGetters: GetterTree<UserStateInterface, unknown> = {
   },
 };
 
-const userMutations: MutationTree<UserStateInterface> = {
+const userMutations = {
   login_success(state) {
     state.loginSuccess = true;
   },
@@ -63,9 +61,9 @@ const userMutations: MutationTree<UserStateInterface> = {
   },
 };
 
-const userActions: ActionTree<UserStateInterface, unknown> = {
+const userActions = {
   checkSession({ commit }) {
-    return new Promise<void>((resolve, reject) => {
+    return new Promise((resolve, reject) => {
       // var token = VueCookies.get("authomatic");
       const session = cookies.get('session');
       // if (token !== null) console.log("token", token);
@@ -106,7 +104,7 @@ const userActions: ActionTree<UserStateInterface, unknown> = {
   },
 };
 
-const user: Module<UserStateInterface, unknown> = {
+const user = {
   namespaced: true,
   state: defaultState(),
   getters: userGetters,

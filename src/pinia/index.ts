@@ -6,7 +6,7 @@ import { useRoute } from 'vue-router';
 
 import { defineStore } from 'pinia';
 
-export const usMainStore = defineStore('main', {
+export const useMainStore = defineStore('main', {
   state: () => {
     return {
       // source: "https://127.0.0.1:5000",

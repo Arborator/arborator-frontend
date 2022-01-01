@@ -37,16 +37,16 @@
         <q-card-section>
           <q-table
             ref="textsTable"
+            :key="tableKey"
             v-model:pagination="table.pagination"
+            v-model:selected="table.selected"
             :class="($q.dark.isActive ? 'my-sticky-header-table-dark' : 'my-sticky-header-table') + ' rounded-borders'"
             title="Samples"
-            v-model:selected="table.selected"
             :rows="samples"
             :columns="table.fields"
             row-key="sample_name"
             :loading="table.loading"
             loading-label="loading"
-            :key="tableKey"
             :filter="table.filter"
             :filter-method="searchSamples"
             binary-state-sort
@@ -299,8 +299,8 @@
                     :typeahead-hide-discard="true"
                     placeholder="add user"
                     :only-existing-tags="true"
-                    @tag-added="modifyRole"
                     :typeahead-always-show="false"
+                    @tag-added="modifyRole"
                     @tag-removed="modifyRole"
                   ></TagInput>
                   <q-list v-else dense>
@@ -322,8 +322,8 @@
                     :typeahead-hide-discard="true"
                     placeholder="add user"
                     :only-existing-tags="true"
-                    @tag-added="modifyRole"
                     :typeahead-always-show="false"
+                    @tag-added="modifyRole"
                     @tag-removed="modifyRole"
                   ></TagInput>
                   <q-list v-else dense>
@@ -437,6 +437,9 @@ import UploadDialog from '../components/project/UploadDialog.vue';
 import LexiconPanel from '../components/lexicon/LexiconPanel';
 import GrewSearch from '../components/grewSearch/GrewSearch';
 import RelationTableMain from '../components/relationTable/RelationTableMain';
+import notifyError from 'src/utils/notify';
+import { mapActions } from 'pinia';
+import { useLexiconStore } from 'src/pinia/modules/lexicon';
 
 export default {
   components: {
@@ -611,6 +614,7 @@ export default {
     if (this.$route.query.q && this.$route.query.q.length > 0) this.searchDialog = true;
   },
   methods: {
+    ...mapActions(useLexiconStore, ['fetchLexicon']),
     handleResize() {
       this.window.width = window.innerWidth;
       this.window.height = window.innerHeight;
@@ -656,7 +660,7 @@ export default {
           }
         })
         .catch((error) => {
-          this.$store.dispatch('notifyError', { error });
+          notifyError({ error });
         });
     },
 
@@ -674,7 +678,7 @@ export default {
             this.getProjectSamples();
           })
           .catch((error) => {
-            this.$store.dispatch('notifyError', { error });
+            notifyError({ error });
           });
       }
     },
@@ -695,12 +699,12 @@ export default {
           if (error.response.data.status === 418) {
             error.response.message = error.response.data.message;
             error.permanent = true;
-            this.$store.dispatch('notifyError', { error });
+            notifyError({ error });
           } else if (error.response.data.status === 204) {
-            this.$store.dispatch('notifyError', {
+            notifyError({
               error: error.response.data.message,
             });
-          } else this.$store.dispatch('notifyError', { error });
+          } else notifyError({ error });
         });
     },
     pull(type) {
@@ -717,7 +721,7 @@ export default {
         .catch((error) => {
           console.log('ici il faut un popup utile indiquant comment installer l application');
 
-          this.$store.dispatch('notifyError', { error });
+          notifyError({ error });
         });
     },
     exportSamplesZip() {
@@ -743,7 +747,7 @@ export default {
         .catch((error) => {
           this.table.exporting = false;
           // this.$q.notify({message:`${error}`, color:'negative'});
-          this.$store.dispatch('notifyError', { error });
+          notifyError({ error });
           return [];
         });
     },
@@ -753,7 +757,7 @@ export default {
         samplenames.push(sample.sample_name);
       }
 
-      this.$store.dispatch('lexicon/fetchLexicon', { projectname: this.$route.params.projectname, samplenames, treeSelection: type });
+      this.fetchLexicon({ projectname: this.$route.params.projectname, samplenames, treeSelection: type });
     },
 
     // grewquery() {
@@ -798,7 +802,7 @@ export default {
         })
         .catch((error) => {
           this.reverseTags(slug.value, context.sample_name, role);
-          this.$store.dispatch('notifyError', { error });
+          notifyError({ error });
         });
     },
     updateExerciseLevel(sample) {
@@ -844,7 +848,7 @@ export default {
           this.downloadFileAttachement(response.data, fileName);
         })
         .catch((error) => {
-          this.$store.dispatch('notifyError', { error });
+          notifyError({ error });
         });
       // window.open(`/api/projects/${projectName}/samples/${sampleName}/evaluation`);
       // api.exportEvaluation(projectName, sampleName).then((response) => {

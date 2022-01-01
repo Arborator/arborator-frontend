@@ -67,7 +67,7 @@ export default {
           this.relationTableDial = true;
         })
         .catch((error) => {
-          this.$store.dispatch('notifyError', { error });
+          notifyError({ error });
         });
     },
   },

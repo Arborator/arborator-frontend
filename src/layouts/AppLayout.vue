@@ -187,16 +187,17 @@
   </q-layout>
 </template>
 
-<script>
+<script lang="ts">
 import { openURL } from 'quasar';
 import { useStorage } from 'vue3-storage';
 import api from '../api/backend-api';
+import { defineComponent } from 'vue';
 
 import Store from '../store/index';
 import '../assets/css/tags-style.css';
 import '../assets/css/arborator-draft.css';
 
-export default {
+export default defineComponent({
   name: 'TempLayout',
   data() {
     return {
@@ -285,7 +286,7 @@ export default {
         .auth(provider)
         .then((response) => {})
         .catch((error) => {
-          this.$store.dispatch('notifyError', { error });
+          notifyError({ error });
         });
     },
     tologin(url) {
@@ -304,7 +305,7 @@ export default {
           this.$router.push('/').catch((error) => {});
         })
         .catch((error) => {
-          this.$store.dispatch('notifyError', { error });
+          notifyError({ error });
         });
     },
     setStartingLanguage() {
@@ -321,6 +322,6 @@ export default {
       }
     },
   },
-};
+});
 </script>
 <style></style>

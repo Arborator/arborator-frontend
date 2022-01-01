@@ -7,6 +7,7 @@ import { defineComponent } from 'vue';
 
 import { useStorage } from 'vue3-storage';
 import Store from './store/index';
+import { useUserStore } from './pinia/modules/user/index';
 
 export default defineComponent({
   name: 'App',
@@ -25,9 +26,11 @@ export default defineComponent({
     };
   },
   mounted() {
-    this.$store.dispatch('user/checkSession', {}).then(() => {
-      console.log('App.vue Session checked');
-    });
+    const userStore = useUserStore();
+    userStore.checkSession().then(() => console.log('App.vue session checked with pinia store'));
+    // this.$store.dispatch('user/checkSession', {}).then(() => {
+    //   console.log('App.vue Session checked');
+    // });
     try {
       this.$q.dark.set(this.storage.getStorageSync('dm') as boolean | 'auto');
     } catch (error) {

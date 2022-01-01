@@ -128,7 +128,7 @@ export default {
           }
         })
         .catch((error) => {
-          this.$store.dispatch('notifyError', { error });
+          notifyError({ error });
           this.loading = false;
         });
     },

@@ -1,8 +1,9 @@
 import { createRouter, createMemoryHistory, createWebHistory, createWebHashHistory } from 'vue-router';
 import { route } from 'quasar/wrappers';
-import store from '../store/index';
 
 import routes from './routes';
+import { useConfigStore } from 'src/pinia/modules/config';
+import { useKlangStore } from 'src/pinia/modules/klang';
 
 /*
  * If not building with SSR mode, you can
@@ -45,12 +46,14 @@ export default route((/* { store, ssrContext } */) => {
    * if yes, fetch the config of the project (annotation and display)
    */
   Router.afterEach((to, from) => {
+    const configStore = useConfigStore();
+    const klangStore = useKlangStore();
     if (to.params.projectname && to.params.projectname !== from.params.projectname) {
       // store.dispatch('config/fetchProjectConlluSchema', {projectname: to.params.projectname})
-      store.dispatch('config/fetchProjectSettings', { projectname: to.params.projectname });
+      configStore.fetchProjectSettings({ projectname: to.params.projectname });
     }
     if (to.params.kprojectname) {
-      store.dispatch('klang/fetchKlangProjectSettings', {
+      klangStore.fetchKlangProjectSettings({
         projectname: to.params.kprojectname,
       });
     }

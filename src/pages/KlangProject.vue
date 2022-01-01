@@ -45,16 +45,11 @@
   </q-page>
 </template>
 
-<style lang="stylus" scoped>
-.export-dialog {
-  min-width: 300px;
-}
-</style>
-
 <script>
-import Vue from 'vue';
+import { mapActions } from 'pinia';
 import { mapGetters } from 'vuex';
 import api from '../api/backend-api';
+import { useKlangStore } from 'src/pinia/modules/klang';
 
 export default {
   props: ['kprojectname'],
@@ -83,6 +78,7 @@ export default {
   },
 
   methods: {
+    ...mapActions(useKlangStore, ['fetchKlangProjectSettings']),
     /**
      * Retrieve conll files from backend
      *
@@ -95,7 +91,7 @@ export default {
           this.samples = response.data;
         })
         .catch((error) => {
-          this.$store.dispatch('notifyError', { error });
+          notifyError({ error });
         });
     },
     /**
@@ -118,7 +114,7 @@ export default {
           });
         })
         .catch((error) => {
-          this.$store.dispatch('notifyError', { error });
+          notifyError({ error });
         });
     },
     /**
@@ -139,7 +135,7 @@ export default {
       api
         .setKlangProjectAdmins(this.kprojectname, this.selectedAdmins)
         .then((response) => {
-          this.$store.dispatch('klang/fetchKlangProjectSettings', {
+          this.fetchKlangProjectSettings({
             projectname: this.kprojectname,
           });
           this.$q.notify({
@@ -150,9 +146,15 @@ export default {
           });
         })
         .catch((error) => {
-          this.$store.dispatch('notifyError', { error });
+          notifyError({ error });
         });
     },
   },
 };
 </script>
+
+<style lang="stylus" scoped>
+.export-dialog {
+  min-width: 300px;
+}
+</style>

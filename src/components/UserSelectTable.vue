@@ -193,7 +193,7 @@ export default {
           this.table.selected = this.table.data.filter((u) => this.preselected.includes(u.id));
         })
         .catch((error) => {
-          this.$store.dispatch('notifyError', { error });
+          notifyError({ error });
         });
     },
     /**
@@ -208,7 +208,7 @@ export default {
           this.table.data = response.data;
         })
         .catch((error) => {
-          this.$store.dispatch('notifyError', { error });
+          notifyError({ error });
         });
     },
   },

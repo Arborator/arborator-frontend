@@ -25,6 +25,8 @@ import { mapGetters } from 'vuex';
 import GrewRequestCard from './GrewRequestCard';
 import ResultView from '../ResultView';
 import api from '../../api/backend-api';
+import { useGrewSearchStore } from 'src/pinia/modules/grewSearch';
+import { mapWritableState } from 'pinia';
 
 export default {
   components: {
@@ -44,14 +46,16 @@ export default {
     breakpoint() {
       return this.window.width <= 400;
     },
-    searchDialog: {
-      get() {
-        return this.$store.getters['grewSearch/grewDialog'];
-      },
-      set(value) {
-        this.$store.dispatch('grewSearch/switch_grew_dialog', value);
-      },
-    },
+    ...mapWritableState(useGrewSearchStore, ['grewDialog']),
+    // searchDialog: {
+    //   get() {
+    //     const grewSearchStore = useGrewSearchStore();
+    //     return grewSearchStore.grew;
+    //   },
+    //   set(value) {
+    //     this.$store.dispatch('grewSearch/switch_grew_dialog', value);
+    //   },
+    // },
   },
   mounted() {
     this.searchDialog = this.showTable;
@@ -83,7 +87,7 @@ export default {
             this.resultSearchDialog = true;
           })
           .catch((error) => {
-            this.$store.dispatch('notifyError', { error });
+            notifyError({ error });
           });
       } else {
         api
@@ -93,7 +97,7 @@ export default {
             this.resultSearchDialog = true;
           })
           .catch((error) => {
-            this.$store.dispatch('notifyError', { error });
+            notifyError({ error });
           });
       }
     },
@@ -106,7 +110,7 @@ export default {
           this.resultSearch = response.data.trees;
         })
         .catch((error) => {
-          this.$store.dispatch('notifyError', {
+          notifyError({
             error: error.response.data.message,
           });
         });

@@ -94,7 +94,7 @@ export default {
           });
         })
         .catch((error) => {
-          this.$store.dispatch('notifyError', { error });
+          notifyError({ error });
           // this.$q.notify({
           // message: `${error}`,
           // color: "negative",
@@ -239,7 +239,7 @@ export default {
           });
         })
         .catch((error) => {
-          this.$store.dispatch('notifyError', { error });
+          notifyError({ error });
         });
     },
   },

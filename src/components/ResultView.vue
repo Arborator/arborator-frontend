@@ -193,7 +193,7 @@ export default {
             this.getProjectSamples();
           })
           .catch((error) => {
-            this.$store.dispatch('notifyError', { error });
+            notifyError({ error });
           });
       }
     },

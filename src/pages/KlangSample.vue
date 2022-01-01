@@ -233,53 +233,16 @@
     </q-page-sticky>
   </q-page>
 </template>
-<style>
-.line-number {
-  vertical-align: middle;
-  line-height: 2.2;
-  margin-left: 5px;
-  margin-right: 3px;
-  width: 15px;
-}
-
-.line-play {
-  margin-right: 5px;
-  min-width: 2.6em !important;
-}
-.align-right {
-  text-align: right;
-}
-
-.export-dialog {
-  min-width: 300px;
-}
-
-.float-right {
-  margin-left: auto;
-}
-
-.meta-label {
-  font-weight: 700;
-  font-size: 15px;
-}
-
-.meta-row {
-  background-color: #4a2769;
-  color: white;
-}
-</style>
 <script>
-import Vue from 'vue';
-import AudioVisual from 'vue-audio-visual';
-import diffWords from 'diff';
 import { mapGetters } from 'vuex';
+import { mapActions } from 'pinia';
 import { exportFile } from 'quasar';
-import Store from '../store/index';
 import api from '../api/backend-api';
-import app from '../App.vue';
-
-const JSZip = require('jszip');
-const Diff = require('diff');
+import { useUserStore } from 'src/pinia/modules/user';
+import JSZip from 'jszip';
+import Diff from 'diff';
+// const JSZip = require('jszip');
+// const Diff = require('diff');
 
 export default {
   props: ['kprojectname', 'ksamplename'],
@@ -371,7 +334,9 @@ export default {
   },
 
   methods: {
+    // ...mapActions(useUserStore, 'checkSession'),
     btnClick(a, b) {
+      // this.checkSession();
       this.manualct = 30;
     },
 
@@ -411,7 +376,7 @@ export default {
           this.isLoading = false;
         },
         (error) => {
-          this.$store.dispatch('notifyError', {
+          notifyError({
             error,
           });
           this.isLoading = false;
@@ -439,7 +404,7 @@ export default {
       if (!isOriginal) {
         // Nasty debegging for the bug that inserts empty list in transcriptions
         if (segments.length !== original.length) {
-          this.$store.dispatch('notifyError', {
+          notifyError({
             error:
               ' Your transcription is corrupted, can you notify the admin of this website please ? ERROR CODE GITHUB : 105 : https://github.com/Arborator/arborator-frontend/issues/105',
             timeout: 25000,
@@ -534,13 +499,13 @@ export default {
               icon: 'done',
             });
           } else {
-            this.$store.dispatch('notifyError', {
+            notifyError({
               error: 'Browser denied file download...',
             });
           }
         })
         .catch((error) => {
-          this.$store.dispatch('notifyError', { error });
+          notifyError({ error });
         });
     },
 
@@ -572,7 +537,8 @@ export default {
 
     async getSampleData() {
       // wait to check if logged in
-      await this.$store.dispatch('user/checkSession');
+      await this.checkSession();
+      // await this.$store.dispatch('user/checkSession');
 
       this.isLoading = true;
       this.transcriptions = {};
@@ -590,7 +556,7 @@ export default {
                   this.isLoading = false;
                 })
                 .catch((error) => {
-                  this.$store.dispatch('notifyError', { error });
+                  notifyError({ error });
                   this.isLoading = false;
                 });
             } else {
@@ -601,7 +567,7 @@ export default {
                   this.isLoading = false;
                 })
                 .catch((error) => {
-                  this.$store.dispatch('notifyError', { error });
+                  notifyError({ error });
                   this.isLoading = false;
                 });
             }
@@ -610,7 +576,7 @@ export default {
           }
         })
         .catch((error) => {
-          this.$store.dispatch('notifyError', { error });
+          notifyError({ error });
         });
     },
 
@@ -687,3 +653,39 @@ export default {
   },
 };
 </script>
+
+<style>
+.line-number {
+  vertical-align: middle;
+  line-height: 2.2;
+  margin-left: 5px;
+  margin-right: 3px;
+  width: 15px;
+}
+
+.line-play {
+  margin-right: 5px;
+  min-width: 2.6em !important;
+}
+.align-right {
+  text-align: right;
+}
+
+.export-dialog {
+  min-width: 300px;
+}
+
+.float-right {
+  margin-left: auto;
+}
+
+.meta-label {
+  font-weight: 700;
+  font-size: 15px;
+}
+
+.meta-row {
+  background-color: #4a2769;
+  color: white;
+}
+</style>

@@ -25,7 +25,7 @@ export default {
           commit('set_klang_project_settings', newAdmins);
         })
         .catch((error) => {
-          this.$store.dispatch('notifyError', { error });
+          notifyError({ error });
         });
     },
   },

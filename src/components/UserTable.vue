@@ -13,9 +13,9 @@
       {{ samples }}
       <q-table
         ref="usersTable"
+        v-model:selected="table.selected"
         class="dark rounded-borders"
         title="Users"
-        v-model:selected="table.selected"
         :rows="table.data"
         :columns="table.fields"
         row-key="username"
@@ -172,7 +172,7 @@ export default {
           this.table.data = response.data;
         })
         .catch((error) => {
-          this.$store.dispatch('notifyError', { error });
+          notifyError({ error });
         });
     },
   },

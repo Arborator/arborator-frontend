@@ -256,7 +256,7 @@
           flat
           :disabled="!annofok"
           no-caps
-          @click="resetAnnotationFeatures()"
+          @click="resetAnnotationFeaturesWrapper()"
         ></q-btn>
         <q-chip text-color="primary" :icon="annofok ? 'sentiment_satisfied_alt' : 'sentiment_very_dissatisfied'">{{ annofcomment }}</q-chip>
       </q-card>
@@ -292,7 +292,7 @@
 </template>
 
 <script>
-import { mapGetters } from 'vuex';
+import { mapActions, mapGetters } from 'vuex';
 // import { codemirror } from "vue-codemirror";
 // import "codemirror/mode/python/python.js";
 // import "codemirror/lib/codemirror.css";
@@ -309,6 +309,10 @@ import 'codemirror/theme/material-darker.css';
 import api from '../api/backend-api';
 import UserSelectTable from './UserSelectTable.vue';
 import ConfirmAction from './ConfirmAction.vue';
+import { mapWritableState } from 'pinia';
+import { useConfigStore } from 'src/pinia/modules/config';
+import { useMainStore } from 'src/pinia';
+import notifyError from 'src/utils/notify';
 
 export default {
   name: 'ProjectSettingsView',
@@ -338,96 +342,105 @@ export default {
       },
     };
   },
-  mounted() {
-    this.annofjson = this.$store.getters['config/getAnnofjson'];
-  },
   computed: {
-    ...mapGetters('config', ['admins', 'guests', 'cleanedImage', 'shownfeatureschoices', 'shownmetachoices']),
-    description: {
-      get() {
-        return this.$store.getters['config/description'];
-      },
-      set(value) {
-        this.$store.commit('config/set_project_settings', {
-          description: value,
-        });
-      },
-    },
-    showAllTrees: {
-      get() {
-        return this.$store.getters['config/showAllTrees'];
-      },
-      set(value) {
-        this.$store.dispatch('config/updateProjectSettings', {
-          toUpdateObject: { showAllTrees: value },
-        });
-      },
-    },
-    exerciseMode: {
-      get() {
-        const value = this.$store.getters['config/exerciseMode'];
-        return value || false;
-      },
-      set(value) {
-        this.$store.dispatch('config/updateProjectSettings', {
-          toUpdateObject: { exerciseMode: value },
-        });
-      },
-    },
-    diffMode: {
-      get() {
-        const value = this.$store.getters['config/diffMode'];
-        return value || false;
-      },
-      set(value) {
-        this.$store.dispatch('config/updateProjectSettings', {
-          toUpdateObject: { diffMode: value },
-        });
-      },
-    },
-    diffUserId: {
-      get() {
-        const value = this.$store.getters['config/diffUserId'];
-        return value || '';
-      },
-      set(value) {
-        this.$store.dispatch('config/updateProjectSettings', {
-          toUpdateObject: { diffUserId: value },
-        });
-      },
-    },
-    visibility: {
-      get() {
-        return this.$store.getters['config/visibility'];
-      },
-      set(value) {
-        this.$store.dispatch('config/updateProjectSettings', {
-          toUpdateObject: { visibility: value },
-        });
-      },
-    },
-    shownfeatures: {
-      get() {
-        return this.$store.getters['config/shownfeatures'];
-      },
-      set(value) {
-        this.$store.dispatch('config/updateProjectShownFeatures', {
-          projectname: this.$props.projectname,
-          toUpdateObject: { shownfeatures: value },
-        });
-      },
-    },
-    shownmeta: {
-      get() {
-        return this.$store.getters['config/shownmeta'];
-      },
-      set(value) {
-        this.$store.dispatch('config/updateProjectShownFeatures', {
-          projectname: this.$props.projectname,
-          toUpdateObject: { shownmeta: value },
-        });
-      },
-    },
+    // ...mapGetters('config', ['admins', 'guests', 'cleanedImage', 'shownfeatureschoices', 'shownmetachoices']),
+    ...mapWritableState(useConfigStore, [
+      'description',
+      'showAllTrees',
+      'exerciseMode',
+      'diffMode',
+      'diffUserId',
+      'visibility',
+      'shownfeatures',
+      'shownmeta',
+    ]),
+    ...mapGetters(useConfigStore, ['admins', 'guests', 'cleanedImage', 'shownfeatureschoices', 'shownmetachoices']),
+    ...mapGetters(useMainStore, ['isProjectAdmin']),
+    // description: {
+    //   get() {
+    //     return this.$store.getters['config/description'];
+    //   },
+    //   set(value) {
+    //     this.$store.commit('config/set_project_settings', {
+    //       description: value,
+    //     });
+    //   },
+    // },
+    // showAllTrees: {
+    //   get() {
+    //     return this.$store.getters['config/showAllTrees'];
+    //   },
+    //   set(value) {
+    //     this.$store.dispatch('config/updateProjectSettings', {
+    //       toUpdateObject: { showAllTrees: value },
+    //     });
+    //   },
+    // },
+    // exerciseMode: {
+    //   get() {
+    //     const value = this.$store.getters['config/exerciseMode'];
+    //     return value || false;
+    //   },
+    //   set(value) {
+    //     this.$store.dispatch('config/updateProjectSettings', {
+    //       toUpdateObject: { exerciseMode: value },
+    //     });
+    //   },
+    // },
+    // diffMode: {
+    //   get() {
+    //     const value = this.$store.getters['config/diffMode'];
+    //     return value || false;
+    //   },
+    //   set(value) {
+    //     this.$store.dispatch('config/updateProjectSettings', {
+    //       toUpdateObject: { diffMode: value },
+    //     });
+    //   },
+    // },
+    // diffUserId: {
+    //   get() {
+    //     const value = this.$store.getters['config/diffUserId'];
+    //     return value || '';
+    //   },
+    //   set(value) {
+    //     this.$store.dispatch('config/updateProjectSettings', {
+    //       toUpdateObject: { diffUserId: value },
+    //     });
+    //   },
+    // },
+    // visibility: {
+    //   get() {
+    //     return this.$store.getters['config/visibility'];
+    //   },
+    //   set(value) {
+    //     this.$store.dispatch('config/updateProjectSettings', {
+    //       toUpdateObject: { visibility: value },
+    //     });
+    //   },
+    // },
+    // shownfeatures: {
+    //   get() {
+    //     return this.$store.getters['config/shownfeatures'];
+    //   },
+    //   set(value) {
+    //     this.$store.dispatch('config/updateProjectShownFeatures', {
+    //       projectname: this.$props.projectname,
+    //       toUpdateObject: { shownfeatures: value },
+    //     });
+    //   },
+    // },
+    // shownmeta: {
+    //   get() {
+    //     return this.$store.getters['config/shownmeta'];
+    //   },
+    //   set(value) {
+    //     this.$store.dispatch('config/updateProjectShownFeatures', {
+    //       projectname: this.$props.projectname,
+    //       toUpdateObject: { shownmeta: value },
+    //     });
+    //   },
+    // },
 
     // create a new computed property `isAdmin` for better clarity
     isAdmin() {
@@ -437,7 +450,12 @@ export default {
       return this.guests.includes(this.$store.getters['user/getUserInfos'].id);
     },
   },
+  mounted() {
+    this.annofjson = this.$store.getters['config/getAnnofjson'];
+  },
+
   methods: {
+    ...mapActions(useConfigStore, ['updateProjectConlluSchema', 'resetAnnotationFeatures']),
     /**
      * Parse annotation features. Display a related informative message dependeing on success
      *
@@ -454,16 +472,19 @@ export default {
       }
     },
     saveAnnotationSettings() {
-      this.$store
-        .dispatch('config/updateProjectConlluSchema', {
-          annotationFeatures: JSON.parse(this.annofjson),
-          projectname: this.projectname,
-        })
-        .then((response) => {
+      this.updateProjectConlluSchema({
+        annotationFeatures: JSON.parse(this.annofjson),
+        projectname: this.projectname,
+      })
+        // .dispatch('config/updateProjectConlluSchema', {
+        //   annotationFeatures: JSON.parse(this.annofjson),
+        //   projectname: this.projectname,
+        // })
+        .then(() => {
           this.$q.notify({ message: 'Change saved!' });
         })
         .catch((error) => {
-          this.$store.dispatch('notifyError', { error });
+          notifyError({ error });
           this.$q.notify({
             message: `${error}`,
             color: 'negative',
@@ -471,10 +492,13 @@ export default {
           });
         });
     },
-    resetAnnotationFeatures() {
-      this.$store.dispatch('config/resetAnnotationFeatures', {
+    resetAnnotationFeaturesWrapper() {
+      this.resetAnnotationFeatures({
         projectname: this.projectname,
       });
+      // this.$store.dispatch('config/resetAnnotationFeatures', {
+      //   projectname: this.projectname,
+      // });
       this.annofjson = this.$store.getters['config/getAnnofjson'];
     },
     updateAdminsOrGuests(usersArray, targetRole) {
@@ -492,7 +516,7 @@ export default {
           });
         })
         .catch((error) => {
-          this.$store.dispatch('notifyError', { error });
+          notifyError({ error });
         });
     },
     removeAdmin(userid) {
@@ -506,7 +530,7 @@ export default {
           });
         })
         .catch((error) => {
-          this.$store.dispatch('notifyError', { error });
+          notifyError({ error });
         });
     },
     removeGuest(userid) {
@@ -520,7 +544,7 @@ export default {
           });
         })
         .catch((error) => {
-          this.$store.dispatch('notifyError', { error });
+          notifyError({ error });
         });
     },
     addDefaultUserTree(selected) {
@@ -530,7 +554,7 @@ export default {
           this.$q.notify({ message: 'Change saved!' });
         })
         .catch((error) => {
-          this.$store.dispatch('notifyError', { error });
+          notifyError({ error });
         });
     },
     removeDefaultUserTree(dutid) {
@@ -540,11 +564,12 @@ export default {
           this.$q.notify({ message: 'Change saved!' });
         })
         .catch((error) => {
-          this.$store.dispatch('notifyError', { error });
+          notifyError({ error });
         });
     },
     saveDescription() {
-      this.$store.dispatch('config/putProjectDescription');
+      this.putProjectDescription();
+      // this.$store.dispatch('config/putProjectDescription');
     },
     uploadProjectImage() {
       this.uploadImage.submitting = true;
@@ -555,7 +580,7 @@ export default {
           this.$q.notify({ message: 'Uploaded image saved!' });
         })
         .catch((error) => {
-          this.$store.dispatch('notifyError', { error });
+          notifyError({ error });
           this.uploadImage.submitting = false;
         });
     },

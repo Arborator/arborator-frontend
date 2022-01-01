@@ -272,7 +272,7 @@ export default {
           // }
         })
         .catch((error) => {
-          this.$store.dispatch('notifyError', { error });
+          notifyError({ error });
           this.loadingProjects = false;
         });
     },
@@ -319,7 +319,7 @@ export default {
           this.getProjects();
         })
         .catch((error) => {
-          this.$store.dispatch('notifyError', { error });
+          notifyError({ error });
         });
     },
     triggerConfirm(method, arg) {

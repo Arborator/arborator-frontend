@@ -547,7 +547,7 @@ export default {
           }
         })
         .catch((error) => {
-          this.$store.dispatch('notifyError', { error });
+          notifyError({ error });
         });
     },
     transitioned() {

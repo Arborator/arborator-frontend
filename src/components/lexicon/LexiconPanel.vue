@@ -206,6 +206,8 @@ import GrewSearch from '../grewSearch/GrewSearch';
 import LexiconModificationDialog from './LexiconModificationDialog';
 // import CompareLexicon from './CompareLexicon';
 import grewTemplates from '../../assets/grew-templates.json';
+import { mapWritableState } from 'pinia';
+import { useLexiconStore } from 'src/pinia/modules/lexicon';
 
 export default {
   name: 'LexiconTable',
@@ -333,14 +335,15 @@ export default {
   },
   computed: {
     ...mapGetters('lexicon', ['isShowLexiconPanel', 'lexiconItems', 'lexiconLoading', 'lexiconItemsModified']),
-    searchDialog: {
-      get() {
-        return this.$store.getters['grewSearch/grewDialog'];
-      },
-      set(value) {
-        this.$store.dispatch('grewSearch/switch_grew_dialog', value);
-      },
-    },
+    ...mapWritableState(useLexiconStore, 'grewDialog'),
+    // searchDialog: {
+    //   get() {
+    //     return this.$store.getters['grewSearch/grewDialog'];
+    //   },
+    //   set(value) {
+    //     this.$store.dispatch('grewSearch/switch_grew_dialog', value);
+    //   },
+    // },
   },
   mounted() {
     this.options.annof = this.$store.getters['config/annotationFeatures'];
@@ -377,7 +380,7 @@ export default {
     //           error.caption = 'Check your file please!';
     //           this.uploadSample.submitting = false;
     //           this.uploadDial = false;
-    //           this.$store.dispatch('notifyError', { error });
+    //           notifyError({ error });
     //         });
     //       this.tsvOK = false;
     //     } else {
@@ -445,7 +448,7 @@ export default {
     //     })
     //     .catch((error) => {
     //       // this.$q.notify({message:`${error}`, color:'negative'});
-    //       this.$store.dispatch('notifyError', { error });
+    //       notifyError({ error });
     //       return [];
     //     });
     //   this.download = [];
@@ -476,7 +479,7 @@ export default {
     //     })
     //     .catch((error) => {
     //       // this.$q.notify({message:`${error}`, color:'negative'});
-    //       this.$store.dispatch('notifyError', { error });
+    //       notifyError({ error });
     //       return [];
     //     });
     //   this.download = [];

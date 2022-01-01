@@ -46,7 +46,7 @@ export default {
           this.projects = response.data;
         })
         .catch((error) => {
-          this.$store.dispatch('notifyError', { error });
+          notifyError({ error });
         });
     },
   },

@@ -1,5 +1,5 @@
 <template>
-  <q-dialog :model-value="isShowLexiconModification" @update:model-value="$store.dispatch('lexicon/hideLexiconModificationDialog')">
+  <q-dialog :model-value="isShowLexiconModification" @update:model-value="hideLexiconModificationDialog()">
     <q-card>
       <q-bar class="bg-primary text-white">
         <div class="text-weight-bold">Features of</div>
@@ -65,22 +65,15 @@
 </template>
 
 <script>
+import { mapActions } from 'pinia';
 import { mapGetters } from 'vuex';
 import AttributeTable from '../sentence/AttributeTable';
+import { useLexiconStore } from 'src/pinia/modules/lexicon';
 
 export default {
   name: 'LexiconModificationDialog',
   components: {
     AttributeTable,
-  },
-  computed: {
-    ...mapGetters('config', ['annotationFeatures']),
-    ...mapGetters('lexicon', ['isShowLexiconModification', 'lexiconModificationItemBefore']),
-  },
-  watch: {
-    lexiconModificationItemBefore(newValue) {
-      this.formattedItem = this.convertLexiconItemToFormattedItem(newValue);
-    },
   },
   data() {
     return {
@@ -131,10 +124,20 @@ export default {
       },
     };
   },
+  computed: {
+    ...mapGetters('config', ['annotationFeatures']),
+    ...mapGetters('lexicon', ['isShowLexiconModification', 'lexiconModificationItemBefore']),
+  },
+  watch: {
+    lexiconModificationItemBefore(newValue) {
+      this.formattedItem = this.convertLexiconItemToFormattedItem(newValue);
+    },
+  },
   mounted() {
     this.options.annof = this.annotationFeatures;
   },
   methods: {
+    ...mapActions(useLexiconStore, ['hideLexiconModificationDialog', 'setLexiconModifiedItem', 'addCoupleLexiconItemBeforeAfter']),
     convertLexiconItemToFormattedItem(lexiconItem) {
       const formattedItem = {};
       formattedItem.form = [{ a: 'Form', v: lexiconItem.form }];
@@ -171,8 +174,10 @@ export default {
     },
     replaceEntry() {
       const modifiedLexiconItem = this.convertFormattedItemToLexiconItem(this.formattedItem);
-      this.$store.dispatch('lexicon/setLexiconModifiedItem', modifiedLexiconItem);
-      this.$store.dispatch('lexicon/addCoupleLexiconItemBeforeAfter');
+      // this.$store.dispatch('lexicon/setLexiconModifiedItem', modifiedLexiconItem);
+      // this.$store.dispatch('lexicon/addCoupleLexiconItemBeforeAfter');
+      this.setLexiconModifiedItem(modifiedLexiconItem);
+      this.addCoupleLexiconItemBeforeAfter();
     },
   },
 };

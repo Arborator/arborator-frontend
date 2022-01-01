@@ -158,6 +158,8 @@ import { computed } from 'vue';
 import { mapGetters } from 'vuex';
 import { computeFeatureString } from './lexiconHelper';
 import api from '../../api/backend-api';
+import { mapActions } from 'pinia';
+import { useLexiconStore } from 'src/pinia/modules/lexicon';
 
 export default {
   name: 'LexiconTable',
@@ -166,9 +168,6 @@ export default {
     const parentSlots = computed(() => Object.keys(ctx.slots));
 
     return { parentSlots };
-  },
-  computed: {
-    ...mapGetters('lexicon', ['lexiconItems']),
   },
   data() {
     return {
@@ -314,12 +313,16 @@ export default {
       tableKey: 0,
     };
   },
+  computed: {
+    ...mapGetters('lexicon', ['lexiconItems']),
+  },
   methods: {
+    ...mapActions(useLexiconStore, ['setLexiconModificationItem', 'removeCoupleLexiconItemBeforeAfter', 'switch_grew_dialog']),
     computeFeatureStringWrapper(featureObj) {
       return computeFeatureString(featureObj);
     },
     onRowClick(evt, row) {
-      this.$store.dispatch('lexicon/setLexiconModificationItem', row);
+      this.setLexiconModificationItem(row);
     },
     findOriginalLexiconItem({ key }) {
       const matchLexiconItem = this.lexiconItems.filter((lexiconItem) => {
@@ -332,12 +335,12 @@ export default {
     },
     deleteSelected() {
       for (const selectedModifiedItem of this.table.selected) {
-        this.$store.dispatch('lexicon/removeCoupleLexiconItemBeforeAfter', selectedModifiedItem.key);
+        this.removeCoupleLexiconItemBeforeAfter(selectedModifiedItem.key);
       }
       this.table.selected = [];
     },
     getRulesGrew() {
-      this.$store.dispatch('grewSearch/switch_grew_dialog', true);
+      this.switch_grew_dialog(true);
       // TODO : handle grew command generation logic
     },
 
@@ -362,7 +365,7 @@ export default {
     //     })
     //     .catch((error) => {
     //       // this.$q.notify({message:`${error}`, color:'negative'});
-    //       this.$store.dispatch('notifyError', { error });
+    //       notifyError({ error });
     //       return [];
     //     });
     //   this.download = [];
@@ -393,7 +396,7 @@ export default {
     //     })
     //     .catch((error) => {
     //       // this.$q.notify({message:`${error}`, color:'negative'});
-    //       this.$store.dispatch('notifyError', { error });
+    //       notifyError({ error });
     //       return [];
     //     });
     //   this.download = [];

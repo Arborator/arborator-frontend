@@ -42,7 +42,7 @@ export default {
           });
         })
         .catch((error) => {
-          this.$store.dispatch('notifyError', { error });
+          notifyError({ error });
         });
     },
     updateProjectSettings({ commit, dispatch }, { projectname, toUpdateObject }) {

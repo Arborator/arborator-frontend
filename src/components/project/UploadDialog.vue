@@ -252,7 +252,7 @@ export default {
           error.caption = 'Check your file please and try again.';
           this.uploadSample.submitting = false;
           this.uploadDialModel = false;
-          this.$store.dispatch('notifyError', { error });
+          notifyError({ error });
         });
     },
     // TODO : refactor all of these $q.notify in a proper single file

@@ -53,9 +53,9 @@ export const useUserStore = defineStore('user', {
         }
       });
     },
-    logout({ user }: { user: string }) {
+    logout() {
       return new Promise((resolve) => {
-        console.log(`logging out user: ${user}`);
+        console.log(`logging out user: ${this.username}`);
         api
           .logout()
           .then((response) => {

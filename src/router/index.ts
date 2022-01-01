@@ -50,12 +50,12 @@ export default route((/* { store, ssrContext } */) => {
     const klangStore = useKlangStore();
     if (to.params.projectname && to.params.projectname !== from.params.projectname) {
       // store.dispatch('config/fetchProjectConlluSchema', {projectname: to.params.projectname})
-      configStore.fetchProjectSettings({ projectname: to.params.projectname });
+      configStore.fetchProjectSettings({ projectname: to.params.projectname } as {projectname: string});
     }
     if (to.params.kprojectname) {
       klangStore.fetchKlangProjectSettings({
         projectname: to.params.kprojectname,
-      });
+      } as {projectname: string});
     }
   });
 

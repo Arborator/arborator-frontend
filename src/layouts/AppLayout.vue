@@ -124,7 +124,7 @@
                   <div class="text-subtitle1 q-mt-md q-mb-xs">
                     {{ store.getters['user/getUserInfos'].username }}
                   </div>
-                  <q-btn v-close-popup color="negative" label="Logout" size="sm" @click="logout()" />
+                  <q-btn v-close-popup color="negative" label="Logout" size="sm" @click="logout_()" />
                 </div>
               </div>
             </q-menu>
@@ -196,13 +196,17 @@ import { defineComponent } from 'vue';
 import Store from '../store/index';
 import '../assets/css/tags-style.css';
 import '../assets/css/arborator-draft.css';
+import notifyError from 'src/utils/notify';
+import { mapActions, mapState } from 'pinia';
+import { useUserStore } from 'src/pinia/modules/user';
+import { useMainStore } from 'src/pinia';
 
 export default defineComponent({
   name: 'TempLayout',
   data() {
     return {
       store: Store,
-      storage: null,
+      storage: useStorage(),
       drawerLeft: false, // this.$q.platform.is.mobile?false:true,
       miniState: true,
       isAdmin: false,
@@ -257,13 +261,14 @@ export default defineComponent({
     };
   },
   computed: {
+    ...mapState(useMainStore, ["isProjectAdmin"]),
     notHome() {
       // return !Object.values(this.$route.params).every(o => o === null); }
       return this.$route.fullPath !== '/';
     },
-    isProjectAdmin() {
-      return this.$store.getters['user/isProjectAdmin'];
-    },
+    // isProjectAdmin() {
+    //   return this.$store.getters['user/isProjectAdmin'];
+    // },
   },
   watch: {
     lang(lang) {
@@ -276,12 +281,13 @@ export default defineComponent({
     this.setStartingLanguage();
   },
   methods: {
+    ...mapActions(useUserStore, ["logout"]),
     openURL,
     toggleDarkMode() {
       this.$q.dark.toggle();
       this.storage.setStorageSync('dm', this.$q.dark.isActive);
     },
-    login(provider) {
+    login(provider: string) {
       api
         .auth(provider)
         .then((response) => {})
@@ -289,18 +295,19 @@ export default defineComponent({
           notifyError({ error });
         });
     },
-    tologin(url) {
+    tologin(url: string) {
       window.location.assign(url);
       // console.log(this.store.getters.getSource + '/login/google'); openURL(this.store.getters.getSource + '/login/google');
       // window.location.href = 'https://arboratorgrew.elizia.net/login/google';
       // window.location.assign("https://arboratorgrew.elizia.net/login/google");
       // window.location.assign("https://profiterole-almanach-ui.paris.inria.fr:8888/");
     },
-    logout() {
-      this.store
-        .dispatch('user/logout', {
-          user: this.store.getters['user/getUserInfos'].username,
-        })
+    logout_() {
+      this.logout()
+      // this.store
+      //   .dispatch('user/logout', {
+      //     user: this.store.getters['user/getUserInfos'].username,
+      //   })
         .then(() => {
           this.$router.push('/').catch((error) => {});
         })
@@ -310,12 +317,17 @@ export default defineComponent({
     },
     setStartingLanguage() {
       const defaultLang = navigator.language;
+      if (this.storage === null) {
+        return 
+      }
       const langStorage = this.storage.setStorageSync('arbolang', this.lang);
       if (langStorage == null) {
         if (defaultLang.includes('fr')) {
-          this.lang = { value: 'fr-fra', label: 'FR', img: '/images/frenchflag.svg' };
+          this.lang = "fr"
+          // this.lang = { value: 'fr-fra', label: 'FR', img: '/images/frenchflag.svg' };
         } else {
-          this.lang = { value: 'en-us', label: 'EN', img: '/images/usflag.svg' };
+          this.lang = "en"
+          // this.lang = { value: 'en-us', label: 'EN', img: '/images/usflag.svg' };
         }
       } else {
         this.lang = langStorage;

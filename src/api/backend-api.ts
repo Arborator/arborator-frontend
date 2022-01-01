@@ -38,9 +38,9 @@ export default {
     return API.post('projects/', data);
   },
   getProject(projectname: string) {
-    return API.get<project_t>(`projects/${projectname}`);
+    return API.get<project_with_diff_t>(`projects/${projectname}`);
   },
-  updateProject(projectname: string, data: project_with_diff_t) {
+  updateProject(projectname: string, data: Partial<project_with_diff_t>) {
     return API.put<project_with_diff_t>(`projects/${projectname}`, data);
   },
   deleteProject(projectname: string) {
@@ -168,7 +168,7 @@ export default {
   },
 
   getKlangProjectAdmins(projectname: string) {
-    return API.get(`klang/projects/${projectname}/admins`);
+    return API.get<string[]>(`klang/projects/${projectname}/admins`);
   },
 
   setKlangProjectAdmins(projectname: string, admins: string[]) {

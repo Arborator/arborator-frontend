@@ -1,4 +1,4 @@
-import { useConfigStore } from './modules/config';
+import { useProjectStore } from './modules/project';
 import { useUserStore } from './modules/user';
 import { useKlangStore } from './modules/klang';
 
@@ -12,14 +12,10 @@ export const useMainStore = defineStore('main', {
       // source: "https://127.0.0.1:5000",
       // source: "https://arboratorgrew.elizia.net:8888",
       source: process.env.API,
-      lastGrewQuery: '',
-      lastGrewCommand: '',
-      pendingModifications: new Set(), // set of sentence ids,
       desiredUrl: '',
     };
   },
   getters: {
-    getUserInfos: (state) => state,
     isProjectAdmin(): boolean {
       if (useUserStore().isSuperAdmin) {
         return true;
@@ -27,7 +23,7 @@ export const useMainStore = defineStore('main', {
       const route = useRoute();
       // Arborator
       if (route.params.projectname) {
-        return useConfigStore().isAdmin;
+        return useProjectStore().isAdmin;
       }
       // Klang
       if (route.params.kprojectname) {

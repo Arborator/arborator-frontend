@@ -8,13 +8,12 @@ import { defineStore } from 'pinia';
 import notifyError from 'src/utils/notify';
 import { project_with_diff_t } from 'src/types/main_types';
 
-export const useConfigStore = defineStore('config', {
+export const useProjectStore = defineStore('project', {
   state: () => {
     return defaultState();
   },
   getters: {
     getProjectConfig: (state) => state,
-    infos: (state) => state,
     // KK TODO fixme all 4 below
     isAdmin: (state) => {
       return state.admins.includes(useUserStore().id);
@@ -191,8 +190,11 @@ export const useConfigStore = defineStore('config', {
           });
       });
     },
+    testFunc(n: number) {
+      return n;
+    },
     /// / for now, AnnotationFeatures is the same thing as configConllu. We need to find an appropriate short name
-    resetAnnotationFeatures() {
+    resetAnnotationFeatures(): void {
       this.annotationFeatures = defaultState().annotationFeatures;
     },
     // KK IS IT IN KLANG STORE NOW ?

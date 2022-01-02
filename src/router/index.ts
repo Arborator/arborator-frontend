@@ -2,7 +2,7 @@ import { createRouter, createMemoryHistory, createWebHistory, createWebHashHisto
 import { route } from 'quasar/wrappers';
 
 import routes from './routes';
-import { useConfigStore } from 'src/pinia/modules/config';
+import { useProjectStore } from 'src/pinia/modules/project';
 import { useKlangStore } from 'src/pinia/modules/klang';
 
 /*
@@ -46,16 +46,16 @@ export default route((/* { store, ssrContext } */) => {
    * if yes, fetch the config of the project (annotation and display)
    */
   Router.afterEach((to, from) => {
-    const configStore = useConfigStore();
+    const configStore = useProjectStore();
     const klangStore = useKlangStore();
     if (to.params.projectname && to.params.projectname !== from.params.projectname) {
       // store.dispatch('config/fetchProjectConlluSchema', {projectname: to.params.projectname})
-      configStore.fetchProjectSettings({ projectname: to.params.projectname } as {projectname: string});
+      configStore.fetchProjectSettings({ projectname: to.params.projectname } as { projectname: string });
     }
     if (to.params.kprojectname) {
       klangStore.fetchKlangProjectSettings({
         projectname: to.params.kprojectname,
-      } as {projectname: string});
+      } as { projectname: string });
     }
   });
 

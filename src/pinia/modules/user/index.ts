@@ -16,7 +16,6 @@ export const useUserStore = defineStore('user', {
     isLoggedIn: (state) => state.loginSuccess,
     hasLoginErrored: (state) => state.loginError,
     getFailedAccess: (state) => state.failedAccess,
-    getAvatarKey: (state) => state.avatarKey,
     loggedWithGithub: (state) => state.auth_provider === 4,
     avatar: (state) => {
       if (state.picture_url) return state.picture_url;
@@ -40,6 +39,7 @@ export const useUserStore = defineStore('user', {
             .whoAmI()
             .then((response) => {
               this.loginSuccess = true;
+              console.log('KK response.data', response.data);
               this.$patch(response.data);
               resolve();
             })

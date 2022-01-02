@@ -2,7 +2,7 @@ export interface UserStateInterface {
   loginSuccess: boolean;
   loginError: boolean;
   failedAccess: boolean;
-  avatarKey: number;
+  avatarKey: string;
 
   as_json: string | null;
   auth_provider: number | null;
@@ -31,7 +31,7 @@ export default function defaultState(): UserStateInterface {
     loginSuccess: false,
     loginError: false,
     failedAccess: false,
-    avatarKey: 0,
+    avatarKey: '',
 
     as_json: null,
     auth_provider: null,

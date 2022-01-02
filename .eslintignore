@@ -6,5 +6,5 @@
 /node_modules
 babel.config.js
 /src-ssr
-
+.eslintrc.js
 test/

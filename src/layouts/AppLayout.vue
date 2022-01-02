@@ -56,9 +56,9 @@
           <q-btn flat round :icon="$q.dark.isActive ? 'lightbulb' : 'brightness_2'" @click="toggleDarkMode()">
             <q-tooltip> Toggle dark mode </q-tooltip>
           </q-btn>
-          <q-btn-dropdown v-show="!store.getters['user/isLoggedIn']" color="secondary" outline label="Log In" icon="account_circle">
+          <q-btn-dropdown v-show="!isLoggedIn" color="secondary" outline label="Log In" icon="account_circle">
             <q-list>
-              <q-item v-close-popup clickable @click="tologin(store.getters.getSource + '/login/google')">
+              <q-item v-close-popup clickable @click="tologin(source + '/login/google')">
                 <q-item-section avatar>
                   <q-icon name="fab fa-google" />
                 </q-item-section>
@@ -67,7 +67,7 @@
                   <q-item-label>Google</q-item-label>
                 </q-item-section>
               </q-item>
-              <q-item v-close-popup clickable @click="tologin(store.getters.getSource + '/login/github')">
+              <q-item v-close-popup clickable @click="tologin(source + '/login/github')">
                 <q-item-section avatar>
                   <q-icon name="fab fa-github" />
                 </q-item-section>
@@ -78,18 +78,12 @@
               </q-item>
             </q-list>
           </q-btn-dropdown>
-          <q-btn v-show="store.getters['user/isLoggedIn']" round flat dense color="purple">
+          <q-btn v-show="isLoggedIn" round flat dense color="purple">
             <q-tooltip> User information </q-tooltip>
             <q-avatar>
-              <q-icon v-show="store.getters['user/getUserInfos'].avatar === ''" name="account_circle" />
-              <q-avatar
-                v-show="store.getters['user/getUserInfos'].picture_url !== ''"
-                :key="store.getters['user/getAvatarKey']"
-                color="default"
-                text-color="white"
-                size="xs"
-              >
-                <img :src="store.getters['user/getUserInfos'].picture_url" />
+              <q-icon v-if="getUserInfos.picture_url === ''" name="account_circle" />
+              <q-avatar v-else :key="getUserInfos.avatarKey" color="default" text-color="white" size="xs">
+                <img :src="getUserInfos.picture_url" />
               </q-avatar>
             </q-avatar>
             <q-menu transition-show="jump-down" transition-hide="jump-up">
@@ -102,7 +96,7 @@
                       </q-item-section>
                       <q-item-section> {{ $t('settings') }} </q-item-section>
                     </q-item>
-                    <q-item v-show="store.getters['user/getUserInfos'].super_admin" v-ripple clickable to="/admin">
+                    <q-item v-show="getUserInfos.super_admin" v-ripple clickable to="/admin">
                       <q-item-section avatar>
                         <q-icon name="vpn_key" />
                       </q-item-section>
@@ -112,17 +106,12 @@
                 </div>
                 <q-separator vertical inset class="q-mx-lg" />
                 <div class="column items-center">
-                  <q-icon v-show="store.getters['user/getUserInfos'].avatar === ''" name="account_circle" />
-                  <q-avatar
-                    v-show="store.getters['user/getUserInfos'].picture_url !== ''"
-                    :key="store.getters['user/getAvatarKey']"
-                    color="default"
-                    text-color="white"
-                  >
-                    <img :src="store.getters['user/getUserInfos'].picture_url" />
+                  <q-icon v-if="getUserInfos.avatarKey === ''" name="account_circle" />
+                  <q-avatar v-else :key="getUserInfos.avatarKey" color="default" text-color="white">
+                    <img :src="getUserInfos.picture_url" />
                   </q-avatar>
                   <div class="text-subtitle1 q-mt-md q-mb-xs">
-                    {{ store.getters['user/getUserInfos'].username }}
+                    {{ getUserInfos.username }}
                   </div>
                   <q-btn v-close-popup color="negative" label="Logout" size="sm" @click="logout_()" />
                 </div>
@@ -165,13 +154,7 @@
       <q-scroll-area style="height: calc(100% - 0px); margin-top: 0px">
         <q-list padding>
           <div v-for="(menuItem, index) in menuList" :key="index">
-            <q-item
-              v-show="store.getters['user/isLoggedIn'] || menuItem.public"
-              v-ripple
-              :to="menuItem.to"
-              clickable
-              :active="menuItem.label === $route.currentRoute"
-            >
+            <q-item v-show="isLoggedIn || menuItem.public" v-ripple :to="menuItem.to" clickable :active="menuItem.label === $route.path">
               <q-item-section avatar>
                 <q-icon :name="menuItem.icon" />
               </q-item-section>
@@ -190,10 +173,8 @@
 <script lang="ts">
 import { openURL } from 'quasar';
 import { useStorage } from 'vue3-storage';
-import api from '../api/backend-api';
 import { defineComponent } from 'vue';
 
-import Store from '../store/index';
 import '../assets/css/tags-style.css';
 import '../assets/css/arborator-draft.css';
 import notifyError from 'src/utils/notify';
@@ -205,7 +186,6 @@ export default defineComponent({
   name: 'TempLayout',
   data() {
     return {
-      store: Store,
       storage: useStorage(),
       drawerLeft: false, // this.$q.platform.is.mobile?false:true,
       miniState: true,
@@ -261,14 +241,11 @@ export default defineComponent({
     };
   },
   computed: {
-    ...mapState(useMainStore, ["isProjectAdmin"]),
+    ...mapState(useMainStore, ['isProjectAdmin', 'source']),
+    ...mapState(useUserStore, ['getUserInfos', 'isLoggedIn']),
     notHome() {
-      // return !Object.values(this.$route.params).every(o => o === null); }
       return this.$route.fullPath !== '/';
     },
-    // isProjectAdmin() {
-    //   return this.$store.getters['user/isProjectAdmin'];
-    // },
   },
   watch: {
     lang(lang) {
@@ -277,39 +254,31 @@ export default defineComponent({
     },
   },
   mounted() {
+    this.isProjectAdmin;
     this.storage = useStorage();
     this.setStartingLanguage();
+    console.log('KK avatarKEy', this.getUserInfos.avatarKey);
   },
   methods: {
-    ...mapActions(useUserStore, ["logout"]),
+    ...mapActions(useUserStore, ['logout']),
     openURL,
     toggleDarkMode() {
       this.$q.dark.toggle();
       this.storage.setStorageSync('dm', this.$q.dark.isActive);
     },
-    login(provider: string) {
-      api
-        .auth(provider)
-        .then((response) => {})
-        .catch((error) => {
-          notifyError({ error });
-        });
-    },
     tologin(url: string) {
       window.location.assign(url);
-      // console.log(this.store.getters.getSource + '/login/google'); openURL(this.store.getters.getSource + '/login/google');
+      // console.log(this.source + '/login/google'); openURL(this.source + '/login/google');
       // window.location.href = 'https://arboratorgrew.elizia.net/login/google';
       // window.location.assign("https://arboratorgrew.elizia.net/login/google");
       // window.location.assign("https://profiterole-almanach-ui.paris.inria.fr:8888/");
     },
     logout_() {
       this.logout()
-      // this.store
-      //   .dispatch('user/logout', {
-      //     user: this.store.getters['user/getUserInfos'].username,
-      //   })
         .then(() => {
-          this.$router.push('/').catch((error) => {});
+          this.$router.push('/').catch((error) => {
+            notifyError({ error });
+          });
         })
         .catch((error) => {
           notifyError({ error });
@@ -318,15 +287,15 @@ export default defineComponent({
     setStartingLanguage() {
       const defaultLang = navigator.language;
       if (this.storage === null) {
-        return 
+        return;
       }
       const langStorage = this.storage.setStorageSync('arbolang', this.lang);
       if (langStorage == null) {
         if (defaultLang.includes('fr')) {
-          this.lang = "fr"
+          this.lang = 'fr';
           // this.lang = { value: 'fr-fra', label: 'FR', img: '/images/frenchflag.svg' };
         } else {
-          this.lang = "en"
+          this.lang = 'en';
           // this.lang = { value: 'en-us', label: 'EN', img: '/images/usflag.svg' };
         }
       } else {

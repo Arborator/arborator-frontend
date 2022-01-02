@@ -310,7 +310,7 @@ import api from '../api/backend-api';
 import UserSelectTable from './UserSelectTable.vue';
 import ConfirmAction from './ConfirmAction.vue';
 import { mapWritableState } from 'pinia';
-import { useConfigStore } from 'src/pinia/modules/config';
+import { useProjectStore } from 'src/pinia/modules/project';
 import { useMainStore } from 'src/pinia';
 import notifyError from 'src/utils/notify';
 
@@ -344,7 +344,7 @@ export default {
   },
   computed: {
     // ...mapGetters('config', ['admins', 'guests', 'cleanedImage', 'shownfeatureschoices', 'shownmetachoices']),
-    ...mapWritableState(useConfigStore, [
+    ...mapWritableState(useProjectStore, [
       'description',
       'showAllTrees',
       'exerciseMode',
@@ -354,7 +354,7 @@ export default {
       'shownfeatures',
       'shownmeta',
     ]),
-    ...mapGetters(useConfigStore, ['admins', 'guests', 'cleanedImage', 'shownfeatureschoices', 'shownmetachoices']),
+    ...mapGetters(useProjectStore, ['admins', 'guests', 'cleanedImage', 'shownfeatureschoices', 'shownmetachoices']),
     ...mapGetters(useMainStore, ['isProjectAdmin']),
     // description: {
     //   get() {
@@ -455,7 +455,7 @@ export default {
   },
 
   methods: {
-    ...mapActions(useConfigStore, ['updateProjectConlluSchema', 'resetAnnotationFeatures']),
+    ...mapActions(useProjectStore, ['updateProjectConlluSchema', 'resetAnnotationFeatures']),
     /**
      * Parse annotation features. Display a related informative message dependeing on success
      *

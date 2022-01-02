@@ -15,6 +15,7 @@
     "typescript",
     "typescriptreact"
   ],
+  "vetur.experimental.templateInterpolationService": true
   "[javascript]": {
     "editor.defaultFormatter": "dbaeumer.vscode-eslint",
     "editor.formatOnSave": true

@@ -6,14 +6,12 @@
 import { defineComponent } from 'vue';
 
 import { useStorage } from 'vue3-storage';
-import Store from './store/index';
 import { useUserStore } from './pinia/modules/user/index';
 
 export default defineComponent({
   name: 'App',
   data() {
     return {
-      store: Store,
       storage: useStorage(),
       alerts: {
         welcomeback: {

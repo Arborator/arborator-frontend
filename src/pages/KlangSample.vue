@@ -1,5 +1,5 @@
 <template>
-  <q-page class="full-width row wrap" style="padding-top: 220px; padding-bottom: 80px">
+  <q-page class="full-width row wrap" style="padding-top: 230px; padding-bottom: 80px">
     <div class="q-pa-none full-width" ref="words">
       <!-- <div class="row" dense v-for="(sent, i) in transcriptions['original']" :key="i"> -->
       <div class="row justify-evenly" dense v-for="(sent, i) in mytrans" :key="i">
@@ -11,7 +11,7 @@
           dense
           outline
           style="height: 3px"
-          :color="'purple-' + speakers[i].slice(-1)"
+          :color="'teal-' + (8 - speakers[i].slice(-1))"
           rounded
         />
 
@@ -139,7 +139,9 @@
           <div class="col q-pa-none">
             <q-badge> original </q-badge>
             <br />
-            <q-btn color="primary" size="xs" @click="openSentenceDlg('original')" round icon="visibility" />
+            <q-btn color="primary" size="xs" @click="openSentenceDlg('original')" round icon="visibility">
+              <q-tooltip> See sentence segmentation </q-tooltip>
+            </q-btn>
           </div>
           <!-- <q-space /> -->
           <!-- <div class="col"></div> -->
@@ -147,14 +149,24 @@
           <div class="col q-pa-none">
             <q-badge color="secondary"> {{ viewAllTranscriptions ? 'new proposal' : username }} </q-badge>
             <br />
-            <q-btn color="secondary" size="xs" @click="openSentenceDlg(viewAllTranscriptions ? 'new proposal' : username)" round icon="visibility" />
+            <q-btn
+              color="secondary"
+              size="xs"
+              @click="openSentenceDlg(viewAllTranscriptions ? 'new proposal' : username, true)"
+              round
+              icon="visibility"
+            >
+              <q-tooltip> See sentence segmentation </q-tooltip>
+            </q-btn>
           </div>
           <template v-if="viewAllTranscriptions">
             <template v-for="(transcription, username) in transcriptions" :key="username">
               <div class="col q-pa-none" v-if="username !== 'original' && JSON.stringify(segments[username]) !== JSON.stringify(mytrans)">
                 <q-badge> {{ viewAllTranscriptions || wasSaved ? username : 'original' }} </q-badge>
                 <br />
-                <q-btn color="primary" size="xs" @click="openSentenceDlg(username)" round icon="visibility" />
+                <q-btn color="primary" size="xs" @click="openSentenceDlg(username)" round icon="visibility">
+                  <q-tooltip> See sentence segmentation </q-tooltip>
+                </q-btn>
               </div>
             </template>
           </template>
@@ -278,7 +290,7 @@
             bordered
           >
             <template v-slot:body-cell="props">
-              <q-td :props="props" :class="props.row.length > 25 ? 'text-red' : 'text-black'">
+              <q-td :props="props" :class="getSentenceCellClass(props)">
                 {{ props.value }}
               </q-td>
             </template>
@@ -453,17 +465,33 @@ export default {
   },
   watch: {},
   methods: {
-    save() {
-      this.isLoading = true;
-
-      const trans = this.mytrans.map((line) => {
-        let words = line.split(' ');
+    lines2WordList(lines, language) {
+      if (language == null) language = 'French';
+      const wlines = lines.map((line) => {
+        if (language === 'French') {
+          line = line.replace('’', "'");
+          line = line.replace(/-ce|-ci|-là|-je|-tu|-t-il|-il|-t-elle|-elle|-t-ils|-ils|-t-elles|-elles|-on/gi, ' $&');
+          line = line.replace(/[,;:!?./§"()*]+/gi, ' $&');
+          line = line.replace(/["'()]+/gi, '$& ');
+          line = line.replace(/\s+/, ' ');
+          line = line.replace("aujourd' hui", "aujourd'hui");
+          line = line.replace("quelqu' un", "quelqu'un");
+        }
+        line.split(/\s+/);
+        let words = line.split(/\s+/);
         words = words.filter((word) => word !== '');
         if (words.length === 0) {
+          // TODO: check if this is necessary
           words.push('');
         }
         return words;
       });
+      return wlines;
+    },
+
+    save() {
+      this.isLoading = true;
+      const trans = this.lines2WordList(this.mytrans);
       const data = {
         user: this.username,
         transcription: trans,
@@ -497,7 +525,10 @@ export default {
       );
     },
 
-    openSentenceDlg(username) {
+    openSentenceDlg(username, fromInput) {
+      if (fromInput) {
+        this.transcriptions[username].transcription = this.lines2WordList(this.mytrans); // , 'French'
+      }
       this.showSentenceUser = username;
       this.showSentencesDlg = true;
       const trans = this.makeTranscription(username, true);
@@ -507,6 +538,14 @@ export default {
         length: sent.length,
         sentence: sent.map((q) => q[0]).join(' '),
       }));
+    },
+    getSentenceCellClass(props) {
+      // for styling of the sentence table: too long sentences get colored in deep orange
+      let cellclass = '';
+      if (props.row.speaker === 'L1') cellclass += 'text-primary';
+      else cellclass = `${cellclass}text-teal-${8 - props.row.speaker.slice(-1)}`;
+      if (props.row.length > 22) cellclass += ` bg-deep-orange-${Math.round((props.row.length - 20) / 5)}`;
+      return cellclass;
     },
 
     adminchanged(adminvalue) {
@@ -574,11 +613,14 @@ export default {
       this.exportSampleName = this.camelize(this.title || this.ksamplename);
     },
     makeTranscription(username, newsentsplit) {
+      // from a list of lines, make quadruples: token, start, end, speaker
+      // if newsentsplit: redo sentences based on punctuation
       const isOriginal = username === 'original';
       let transcription = this.deepCopy(this.transcriptions[username]);
       const { original } = this.transcriptions;
       const lines = original.length;
       if (isOriginal) {
+        // we just have to add the speaker as 4th element
         let line;
 
         for (line = 0; line < lines; line += 1) {
@@ -590,6 +632,7 @@ export default {
           }
         }
       } else {
+        // we have to build the quadruples
         transcription = transcription.transcription;
         let line;
 

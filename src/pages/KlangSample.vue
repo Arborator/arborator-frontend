@@ -1,5 +1,5 @@
 <template>
-  <q-page class="full-width row wrap" style="padding-top: 230px; padding-bottom: 80px">
+  <q-page class="full-width row wrap" style="padding-top: 240px; padding-bottom: 80px">
     <div class="q-pa-none full-width" ref="words">
       <!-- <div class="row" dense v-for="(sent, i) in transcriptions['original']" :key="i"> -->
       <div class="row justify-evenly" dense v-for="(sent, i) in mytrans" :key="i">
@@ -233,14 +233,17 @@
         <q-space />
         <q-input square v-model="title" label="2 to 3 word title"> </q-input>
         <q-space />
-        <q-btn
-          round
-          dense
-          flat
-          icon="save"
-          @click="save()"
-          :disable="isLoading || !isLoggedIn || !title || !monodia || !accent || !story || !sound"
-        />
+        <div>
+          <q-btn
+            round
+            dense
+            flat
+            icon="save"
+            @click="save()"
+            :disable="isLoading || !isLoggedIn || !title || !monodia || !accent || !story || !sound"
+          />
+          <q-tooltip>Fill out the form and save</q-tooltip>
+        </div>
         <q-space />
         <q-btn
           round
@@ -249,10 +252,9 @@
           icon="cloud_download"
           @click="
             setExportSampleName();
-
             exportConllDlg = true;
           "
-          :disable="!viewAllTranscriptions"
+          v-if="viewAllTranscriptions"
         >
           <q-tooltip> Click to export conlls </q-tooltip>
         </q-btn>
@@ -552,9 +554,9 @@ export default {
     getSentenceCellClass(props) {
       // for styling of the sentence table: too long sentences get colored in deep orange
       let cellclass = '';
-      if (props.row.speaker === 'L1') cellclass += 'text-primary';
+      if (props.row.speaker === 'L1' || props.row.speaker === 0) cellclass += 'text-primary';
       else cellclass = `${cellclass}text-teal-${8 - props.row.speaker.slice(-1)}`;
-      if (props.row.length > 22) cellclass += ` bg-deep-orange-${Math.round((props.row.length - 20) / 5)}`;
+      if (props.row.length > 22) cellclass += ` bg-deep-orange-${Math.min(14, Math.round((props.row.length - 20) / 5))}`;
       return cellclass;
     },
 
@@ -632,7 +634,6 @@ export default {
       if (isOriginal) {
         // we just have to add the speaker as 4th element
         let line;
-
         for (line = 0; line < lines; line += 1) {
           const transLine = transcription[line];
           const transWords = transLine.length;
@@ -668,6 +669,7 @@ export default {
       }
       if (newsentsplit) {
         const flattranscription = transcription.reduce((accumulator, value) => accumulator.concat(value), []);
+
         const newtranscription = [];
         let newsent = [];
         let bracksent = [];
@@ -704,6 +706,8 @@ export default {
             lastspeaker = s;
           }
         }
+        if (newsent.length > 0) newtranscription.push(newsent);
+
         transcription = newtranscription;
       }
       return transcription;

@@ -563,6 +563,8 @@ export default {
           let newsent = [];
           let bracksent = [];
           let inBracket = false;
+          let inHm = false;
+          let lastspeaker = null;
           for (const i in flattranscription) {
             if (flattranscription.hasOwnProperty(i)) {
               let [w, b, e, s] = flattranscription[i];
@@ -575,9 +577,14 @@ export default {
                 inBracket = false;
                 continue;
               }
+              if (lastspeaker && s !== lastspeaker && newsent.length > 0) {
+                inHm = !inHm;
+              }
+
               if (inBracket) bracksent.push([w, b, e, s === 'L1' ? 'L2' : 'L1']);
+              else if (inHm) bracksent.push([w, b, e, s]);
               else newsent.push([w, b, e, s]);
-              if (this.isEndOfSent(w) && !inBracket) {
+              if (this.isEndOfSent(w) && !inBracket && !inHm) {
                 newtranscription.push(newsent);
                 newsent = [];
                 if (bracksent.length > 0) {
@@ -585,6 +592,7 @@ export default {
                   bracksent = [];
                 }
               }
+              lastspeaker = s;
             }
           }
           transcription = newtranscription;
@@ -619,7 +627,7 @@ export default {
       return word.match(/\w+/);
     },
     isEndOfSent(word) {
-      return word.match(/[.!?…]/);
+      return word.match(/[.\!\?…]/);
     },
     camelize(text) {
       text = text.replace(/[-_\s.]+(.)?/g, (_, c) => (c ? c.toUpperCase() : ''));

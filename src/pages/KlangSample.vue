@@ -70,7 +70,10 @@
         <!-- ADMIN TABLE : OTHER ANNOTATORS -->
         <template v-if="viewAllTranscriptions">
           <template v-for="(transcription, username) in transcriptions" :key="username">
-            <div class="col q-pa-none" v-if="username !== 'original' && JSON.stringify(segments[username]) !== JSON.stringify(mytrans)">
+            <div
+              class="col q-pa-none"
+              v-if="username !== 'original' && username !== 'new proposal' && JSON.stringify(segments[username]) !== JSON.stringify(mytrans)"
+            >
               <span>
                 <q-btn v-if="segments[username][i] !== mytrans[i]" round dense flat icon="west" @click="moveToInputField(username, i)"> </q-btn>
                 <span v-for="(part, index) in diffsegments[username][i]" style="padding: 0px; margin: 0px" :key="index">
@@ -103,7 +106,7 @@
             <div
               class="col row q-pa none"
               :key="username"
-              v-if="username !== 'original' && JSON.stringify(segments[username]) !== JSON.stringify(mytrans)"
+              v-if="username !== 'original' && username !== 'new proposal' && JSON.stringify(segments[username]) !== JSON.stringify(mytrans)"
             >
               <span class="meta-value meta-text">{{ transcription[meta.value] }}</span>
             </div>
@@ -161,7 +164,10 @@
           </div>
           <template v-if="viewAllTranscriptions">
             <template v-for="(transcription, username) in transcriptions" :key="username">
-              <div class="col q-pa-none" v-if="username !== 'original' && JSON.stringify(segments[username]) !== JSON.stringify(mytrans)">
+              <div
+                class="col q-pa-none"
+                v-if="username !== 'original' && username !== 'new proposal' && JSON.stringify(segments[username]) !== JSON.stringify(mytrans)"
+              >
                 <q-badge> {{ viewAllTranscriptions || wasSaved ? username : 'original' }} </q-badge>
                 <br />
                 <q-btn color="primary" size="xs" @click="openSentenceDlg(username)" round icon="visibility">
@@ -527,6 +533,7 @@ export default {
 
     openSentenceDlg(username, fromInput) {
       if (fromInput) {
+        this.transcriptions[username] = {};
         this.transcriptions[username].transcription = this.lines2WordList(this.mytrans); // , 'French'
       }
       this.showSentenceUser = username;
@@ -538,6 +545,9 @@ export default {
         length: sent.length,
         sentence: sent.map((q) => q[0]).join(' '),
       }));
+      if (fromInput) {
+        delete this.transcriptions.username;
+      }
     },
     getSentenceCellClass(props) {
       // for styling of the sentence table: too long sentences get colored in deep orange

@@ -753,17 +753,31 @@ export default {
       for (; line < lines; line += 1) {
         let word = 0;
         const words = transcription[line].length;
-        const lineText = transcription[line].reduce((acc, t) => acc + (t[0] !== '.' ? ' ' : '') + t[0], '');
-        conllString += `# sent_id = ${this.ksamplename}_${this.exportSampleName}__${line + 1}\n`;
-        conllString += `# text =${lineText}\n`;
-        conllString += `# sound_url = ${this.ksamplename}_${this.exportSampleName}.mp3\n`;
-        conllString += `# speaker = ${transcription[line][word][3]}\n`;
+        // const lineText = transcription[line].reduce((acc, t) => acc + (t[0] !== '.' ? ' ' : '') + t[0], '');
+        let singleConll = '';
+        let text = '';
         for (; word < words; word += 1) {
           const conllWord = transcription[line][word];
-          conllString += `${word + 1}\t${conllWord[0]}\t${conllWord[0]}\t`;
-          for (let index = 0; index < 6; index += 1) conllString += '_\t';
-          conllString += `AlignBegin=${conllWord[1]}|AlignEnd=${conllWord[2]}\n`;
+          singleConll += `${word + 1}\t${conllWord[0]}\t${conllWord[0]}\t`;
+          for (let index = 0; index < 6; index += 1) singleConll += '_\t';
+          let spaceafter = '';
+          // at least two characters and last character==apostrophe:
+          if (conllWord[0].length > 1 && conllWord[0].slice(-1) === "'") spaceafter = '|SpaceAfter=No';
+          // last token == ( or [:
+          else if (['(', '['].includes(conllWord)) spaceafter = '|SpaceAfter=No';
+          // next word exists and is a no-space-after punctuation
+          else if (word + 1 < words && [',', '.', ')'].includes(transcription[line][word + 1][0].charAt(0))) spaceafter = '|SpaceAfter=No';
+          // next word exists and is of form -x...
+          else if (word + 1 < words && /-\w.*/.test(transcription[line][word + 1][0])) spaceafter = '|SpaceAfter=No';
+          text += conllWord[0];
+          if (spaceafter === '') text += ' ';
+          singleConll += `AlignBegin=${conllWord[1]}|AlignEnd=${conllWord[2]}${spaceafter}\n`;
         }
+        conllString += `# sent_id = ${this.ksamplename}_${this.exportSampleName}__${line + 1}\n`;
+        conllString += `# text = ${text.trim()}\n`;
+        conllString += `# sound_url = ${this.ksamplename}_${this.exportSampleName}.mp3\n`;
+        conllString += `# speaker = ${transcription[line][0][3]}\n`;
+        conllString += singleConll;
         conllString += '\n';
       }
       return conllString;

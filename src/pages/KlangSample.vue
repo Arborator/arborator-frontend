@@ -526,12 +526,25 @@ export default {
         const conllFileName = `${this.ksamplename}_${this.exportSampleName}_${username}.conll`;
         let outputString = '';
         let transcription = this.deepCopy(this.transcriptions[username]);
+        console.log(777777777, username, transcription);
+        const { original } = this.transcriptions;
+        const lines = original.length;
+        if (isOriginal) {
+          let line;
 
-        if (!isOriginal) {
+          for (line = 0; line < lines; line += 1) {
+            const transLine = transcription[line];
+            const transWords = transLine.length;
+            let word;
+            for (word = 0; word < transWords; word += 1) {
+              transLine[word].push(this.speakers[line]);
+            }
+          }
+          console.log(88888, username, transcription);
+        } else {
           transcription = transcription.transcription;
           let line;
-          const { original } = this.transcriptions;
-          const lines = original.length;
+
           for (line = 0; line < lines; line += 1) {
             let word;
             const originalLine = original[line];

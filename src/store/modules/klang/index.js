@@ -4,9 +4,11 @@ export default {
   namespaced: true,
   state: {
     admins: [],
+    projectconfig: {},
   },
   getters: {
     admins: (state) => state.admins,
+
     isAdmin: (state, getters, rootState, rootGetters) => state.admins.includes(rootState.user.id) || rootGetters['user/isSuperAdmin'],
   },
   mutations: {

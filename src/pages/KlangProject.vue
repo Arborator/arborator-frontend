@@ -8,7 +8,8 @@
       </q-badge>
     </div>
     &nbsp;
-    <div class="q-pa-lg row items-start q-gutter-lg">
+
+    <div v-if="projectAccessible" class="q-pa-lg row items-start q-gutter-lg">
       <q-card style="max-width: 300px; width: 300px" clickable v-for="(f, i) in samples" :key="f" class="text-primary cursor-pointer q-hoverable">
         <span class="q-focus-helper"></span>
         <q-item clickable :to="'/klang/' + kprojectname + '/' + f">
@@ -25,6 +26,10 @@
           </q-item-section>
         </q-item>
       </q-card>
+    </div>
+    <div v-else class="q-pa-lg row items-start q-gutter-lg">
+      <q-icon name="lock" size="xl" color="primary" /> <br />
+      <h1 class="text-primary">no access</h1>
     </div>
     <template v-if="isAdmin">
       <div class="q-pa-md full-width">
@@ -103,17 +108,20 @@ export default {
       transcribers: [],
       tableColumns: [],
       tableFilter: '',
+      projectAccessible: true,
     };
   },
   computed: {
     ...mapGetters('config', ['admins']),
-
     ...mapGetters('user', ['isSuperAdmin']),
     isAdmin() {
       return this.$store.getters['klang/isAdmin'];
     },
     // projectTranscribers() {
     //   return this.sampleTranscribers();
+    // },
+    // projectAccessible() {
+    //   return this.getProjectAccessible();
     // },
   },
 
@@ -126,6 +134,7 @@ export default {
     this.getAllUsers();
     document.title = `Klang: ${this.kprojectname}`;
     this.sampleTranscribers();
+    this.getProjectAccessible();
   },
 
   methods: {
@@ -144,6 +153,16 @@ export default {
           this.$store.dispatch('notifyError', { error });
         });
     },
+    getProjectAccessible() {
+      api
+        .getKlangAccessible(this.kprojectname)
+        .then((response) => {
+          this.projectAccessible = response.data;
+        })
+        .catch((error) => {
+          this.$store.dispatch('notifyError', { error });
+        });
+    },
     sampleTranscribers() {
       api
         .getKlangProjectTranscribers(this.kprojectname)
@@ -157,9 +176,7 @@ export default {
 
     wrapCsvValue(val, formatFn) {
       let formatted = formatFn !== void 0 ? formatFn(val) : val;
-
       formatted = formatted === void 0 || formatted === null ? '' : String(formatted);
-
       formatted = formatted.split('"').join('""');
       /**
        * Excel accepts \n and \r in strings, but some other CSV parsers do not

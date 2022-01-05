@@ -1,25 +1,9 @@
 <template>
-  <q-page class="full-width row wrap justify-start items-start content-start" style="padding-top: 180px; padding-bottom: 80px">
+  <q-page class="full-width row wrap" style="padding-top: 240px; padding-bottom: 80px">
     <div ref="words" class="q-pa-none full-width">
-      <div v-if="isLoggedIn" class="row" dense>
-        <div class="col row q-pa-none"><q-space /></div>
-        <!-- <div class="col q-pa-none" v-if="viewAllTranscriptions"> -->
-        <div class="col q-pa-none">
-          <q-badge> {{ viewAllTranscriptions ? 'new proposal' : username }} </q-badge>
-        </div>
-        <template v-if="viewAllTranscriptions">
-          <template v-for="(transcription, username) in transcriptions" :key="username">
-            <div v-if="username !== 'original'" class="col q-pa-none">
-              <q-badge> {{ viewAllTranscriptions || wasSaved ? username : 'original' }} </q-badge>
-            </div>
-          </template>
-        </template>
-        <!-- </div> -->
-      </div>
-      <div v-for="(sent, i) in transcriptions['original']" :key="i" class="row" dense>
-        <span class="line-number" dense>
-          {{ i }}
-        </span>
+      <!-- <div class="row" dense v-for="(sent, i) in transcriptions['original']" :key="i"> -->
+      <div v-for="(sent, i) in mytrans" :key="i" class="row justify-evenly" dense>
+        <span class="line-number" dense> {{ i + 1 }} </span>
         <q-badge v-if="speakers[i] && speakers[i] == 'L1'" :label="speakers[i]" dense outline style="height: 3px" color="primary" rounded />
         <q-badge
           v-if="speakers[i] && speakers[i] != 'L1'"
@@ -27,12 +11,12 @@
           dense
           outline
           style="height: 3px"
-          :color="'purple-' + speakers[i].slice(-1)"
+          :color="'teal-' + (8 - speakers[i].slice(-1))"
           rounded
         />
 
         <div class="col row q-pa-none">
-          <span v-for="(t, j) in sent" :key="j" class="justify-end q-pa-none align-right">
+          <span v-for="(t, j) in transcriptions['original'][i]" :key="j" class="q-pa-none">
             <!-- {{t[1]/1000}} -->
             <q-chip v-if="t[2] / 1000 < ct" size="md" color="white" text-color="black" clickable dense class="q-pa-none" @click="wordclicked(t)">
               {{ t[0] }}
@@ -54,7 +38,7 @@
           </span>
           <q-space />
           <q-btn
-            v-if="viewAllTranscriptions && segments['original'][i] !== mytrans[i]"
+            v-if="viewAllTranscriptions && segments.original[i] !== mytrans[i]"
             round
             dense
             flat
@@ -80,16 +64,18 @@
         </div>
         <div v-if="isLoggedIn" class="col q-pa-none">
           <div class="col q-pa-none">
-            <q-input v-model="mytrans[i]" dense filled square> </q-input>
+            <q-input v-model="mytrans[i]" class="special-column" dense filled square> </q-input>
           </div>
         </div>
-        <!-- ADMIN TABLE : OTHER ANNOTATOR -->
+        <!-- ADMIN TABLE : OTHER ANNOTATORS -->
         <template v-if="viewAllTranscriptions">
           <template v-for="(transcription, username) in transcriptions" :key="username">
-            <div v-if="username !== 'original'" class="col q-pa-none">
+            <div
+              v-if="username !== 'original' && username !== 'new proposal' && JSON.stringify(segments[username]) !== JSON.stringify(mytrans)"
+              class="col q-pa-none"
+            >
               <span>
-                <q-btn v-if="diffsegments[username][i].length !== 1" round dense flat icon="west" @click="moveToInputField(transcription, i)">
-                </q-btn>
+                <q-btn v-if="segments[username][i] !== mytrans[i]" round dense flat icon="west" @click="moveToInputField(username, i)"> </q-btn>
                 <span v-for="(part, index) in diffsegments[username][i]" :key="index" style="padding: 0px; margin: 0px">
                   <span v-if="part.added" style="color: green; padding: 0px; margin: 0px">
                     {{ part.value }}
@@ -108,15 +94,21 @@
       </div>
       <template v-if="isAdmin && viewAllTranscriptions && !isLoading">
         <div v-for="(meta, i) in metaFormat" :key="-i - 1" class="row meta-row" dense>
+          <!-- <div class="row justify-evenly" dense v-if="isLoggedIn"> -->
+          &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
           <span class="line-number" dense> </span>
           <div class="col row q-pa-none"></div>
-          <div class="col row q-pa-none">
-            <span class="meta-label"> {{ meta.label }} </span>
+          <div class="col row q-pa-none meta-label">
+            <span class="meta-text"> {{ meta.label }} </span>
             <q-space />
           </div>
           <template v-for="(transcription, username) in transcriptions">
-            <div v-if="username !== 'original'" :key="username" class="col row q-pa none">
-              <span class="meta-value">{{ transcription[meta.value] }}</span>
+            <div
+              v-if="username !== 'original' && username !== 'new proposal' && JSON.stringify(segments[username]) !== JSON.stringify(mytrans)"
+              :key="username"
+              class="col row q-pa none"
+            >
+              <span class="meta-value meta-text">{{ transcription[meta.value] }}</span>
             </div>
           </template>
         </div>
@@ -144,6 +136,48 @@
         noplayed-line-color="#15a700"
       >
       </av-waveform>
+      <div class="q-pa-none full-width">
+        <div v-if="isLoggedIn" class="row justify-evenly" dense>
+          &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+          <div class="col q-pa-none">
+            <q-badge> original </q-badge>
+            <br />
+            <q-btn color="primary" size="xs" round icon="visibility" @click="openSentenceDlg('original')">
+              <q-tooltip> See sentence segmentation </q-tooltip>
+            </q-btn>
+          </div>
+          <!-- <q-space /> -->
+          <!-- <div class="col"></div> -->
+          <!-- <div class="col q-pa-none" v-if="viewAllTranscriptions"> -->
+          <div class="col q-pa-none">
+            <q-badge color="secondary"> {{ viewAllTranscriptions ? 'new proposal' : username }} </q-badge>
+            <br />
+            <q-btn
+              color="secondary"
+              size="xs"
+              round
+              icon="visibility"
+              @click="openSentenceDlg(viewAllTranscriptions ? 'new proposal' : username, true)"
+            >
+              <q-tooltip> See sentence segmentation </q-tooltip>
+            </q-btn>
+          </div>
+          <template v-if="viewAllTranscriptions">
+            <template v-for="(transcription, username) in transcriptions" :key="username">
+              <div
+                v-if="username !== 'original' && username !== 'new proposal' && JSON.stringify(segments[username]) !== JSON.stringify(mytrans)"
+                class="col q-pa-none"
+              >
+                <q-badge> {{ viewAllTranscriptions || wasSaved ? username : 'original' }} </q-badge>
+                <br />
+                <q-btn color="primary" size="xs" round icon="visibility" @click="openSentenceDlg(username)">
+                  <q-tooltip> See sentence segmentation </q-tooltip>
+                </q-btn>
+              </div>
+            </template>
+          </template>
+        </div>
+      </div>
     </q-page-sticky>
     <q-page-sticky position="bottom" expand class="bg-white text-primary">
       <q-toolbar class="shadow-5">
@@ -199,16 +233,29 @@
         <q-space />
         <q-input v-model="title" square label="2 to 3 word title"> </q-input>
         <q-space />
+        <div>
+          <q-btn
+            round
+            dense
+            flat
+            icon="save"
+            :disable="isLoading || !isLoggedIn || !title || !monodia || !accent || !story || !sound"
+            @click="save()"
+          />
+          <q-tooltip>Fill out the form and save</q-tooltip>
+        </div>
+        <q-space />
         <q-btn
+          v-if="viewAllTranscriptions"
           round
           dense
           flat
-          icon="save"
-          :disable="isLoading || !isLoggedIn || !title || !monodia || !accent || !story || !sound"
-          @click="save()"
-        />
-        <q-space />
-        <q-btn round dense flat icon="cloud_download" :disable="!viewAllTranscriptions" @click="exportConllDlg = true">
+          icon="cloud_download"
+          @click="
+            setExportSampleName();
+            exportConllDlg = true;
+          "
+        >
           <q-tooltip> Click to export conlls </q-tooltip>
         </q-btn>
       </q-toolbar>
@@ -227,12 +274,97 @@
           <q-card-actions align="right">
             <q-btn v-close-popup label="Export" color="primary" text-color="white" @click="exportConll()"></q-btn>
             <q-btn v-close-popup label="Cancel" color="primary" text-color="white"> </q-btn>
+            <q-toggle v-model="newsentsplit" label="new sentence split" />
           </q-card-actions>
+          <q-input v-model="exportSampleName" label="export sample name" />
         </q-card>
       </q-dialog>
     </q-page-sticky>
+
+    <q-dialog v-model="showSentencesDlg">
+      <q-card class="sentence-dialog">
+        <q-card-section class="bg-primary text-white">
+          <div class="text-h6">Sentences of {{ showSentenceUser }}</div>
+        </q-card-section>
+
+        <div class="q-pa-md full-width">
+          <q-table
+            :rows="sentences"
+            row-key="number"
+            :rows-per-page-options="[0]"
+            class="text-primary"
+            table-header-class="text-white bg-primary"
+            flat
+            bordered
+          >
+            <template #body-cell="props">
+              <q-td :props="props" :class="getSentenceCellClass(props)">
+                {{ props.value }}
+              </q-td>
+            </template>
+          </q-table>
+        </div>
+
+        <q-card-actions align="right">
+          <q-btn v-close-popup label="OK" color="primary" text-color="white"> </q-btn>
+        </q-card-actions>
+      </q-card>
+    </q-dialog>
   </q-page>
 </template>
+<style>
+.line-number {
+  vertical-align: middle;
+  line-height: 2.2;
+  margin-left: 5px;
+  margin-right: 3px;
+  width: 15px;
+}
+
+.line-play {
+  margin-right: 5px;
+  min-width: 2.6em !important;
+}
+.align-right {
+  text-align: right;
+}
+
+.export-dialog {
+  min-width: 300px;
+}
+.sentence-dialog {
+  min-width: 90vh;
+}
+
+.q-table tbody td {
+  white-space: normal !important;
+}
+
+.float-right {
+  margin-left: auto;
+}
+
+.meta-label {
+  font-weight: 700;
+  font-size: 15px;
+  background-color: #276930;
+}
+.meta-text {
+  margin-left: 10px;
+}
+.meta-row {
+  background-color: #4a2769;
+  color: white;
+}
+
+.special-column {
+  background-color: #27693031;
+  margin-left: 10px;
+  /* width: 500px;
+  min-width: 500px;
+  max-width: 500px; */
+}
+</style>
 <script>
 import { mapActions } from 'pinia';
 import { exportFile } from 'quasar';
@@ -269,6 +401,8 @@ export default {
       isLoading: false,
       wasSaved: true,
       exportConllDlg: false,
+      newsentsplit: true,
+      exportSampleName: '',
       users: [],
       selectedUsers: [],
       metaFormat: [
@@ -297,6 +431,9 @@ export default {
       isPlayingLine: -1,
       lineStart: 0,
       lineEnd: 0,
+      showSentencesDlg: false,
+      showSentenceUser: 'Original',
+      sentences: [],
     };
   },
 
@@ -319,6 +456,7 @@ export default {
       return this.audioplayer.error === null;
     },
   },
+  watch: {},
 
   created() {
     this.mediaObject = `api/klang/projects/${this.kprojectname}/samples/${this.ksamplename}/mp3`;
@@ -331,25 +469,34 @@ export default {
     document.title = `Klang: ${this.ksamplename}`;
     this.getSampleData();
   },
-
   methods: {
-    // ...mapActions(useUserStore, 'checkSession'),
-    btnClick(a, b) {
-      // this.checkSession();
-      this.manualct = 30;
-    },
-
-    save() {
-      this.isLoading = true;
-
-      const trans = this.mytrans.map((line) => {
-        let words = line.split(' ');
+    lines2WordList(lines, language) {
+      if (language == null) language = 'French';
+      const wlines = lines.map((line) => {
+        if (language === 'French') {
+          line = line.replace('’', "'");
+          line = line.replace(/-ce|-ci|-là|-je|-tu|-t-il|-il|-t-elle|-elle|-t-ils|-ils|-t-elles|-elles|-on/gi, ' $&');
+          line = line.replace(/[,;:!?./§"()*]+/gi, ' $&');
+          line = line.replace(/["'()]+/gi, '$& ');
+          line = line.replace(/\s+/, ' ');
+          line = line.replace("aujourd' hui", "aujourd'hui");
+          line = line.replace("quelqu' un", "quelqu'un");
+        }
+        line.split(/\s+/);
+        let words = line.split(/\s+/);
         words = words.filter((word) => word !== '');
         if (words.length === 0) {
+          // TODO: check if this is necessary
           words.push('');
         }
         return words;
       });
+      return wlines;
+    },
+
+    save() {
+      this.isLoading = true;
+      const trans = this.lines2WordList(this.mytrans);
       const data = {
         user: this.username,
         transcription: trans,
@@ -367,7 +514,7 @@ export default {
           this.wasSaved = true;
 
           this.$q.notify({
-            message: 'The operation was successfully saved.',
+            message: 'The information was successfully saved.',
             position: 'top-right',
             color: 'green',
             icon: 'done',
@@ -381,6 +528,33 @@ export default {
           this.isLoading = false;
         }
       );
+    },
+
+    openSentenceDlg(username, fromInput) {
+      if (fromInput) {
+        this.transcriptions[username] = {};
+        this.transcriptions[username].transcription = this.lines2WordList(this.mytrans); // , 'French'
+      }
+      this.showSentenceUser = username;
+      this.showSentencesDlg = true;
+      const trans = this.makeTranscription(username, true);
+      this.sentences = trans.map((sent, i) => ({
+        number: i + 1,
+        speaker: sent[0][3],
+        length: sent.length,
+        sentence: sent.map((q) => q[0]).join(' '),
+      }));
+      if (fromInput) {
+        delete this.transcriptions.username;
+      }
+    },
+    getSentenceCellClass(props) {
+      // for styling of the sentence table: too long sentences get colored in deep orange
+      let cellclass = '';
+      if (props.row.speaker === 'L1' || props.row.speaker === 0) cellclass += 'text-primary';
+      else cellclass = `${cellclass}text-teal-${8 - props.row.speaker.slice(-1)}`;
+      if (props.row.length > 22) cellclass += ` bg-deep-orange-${Math.min(14, Math.round((props.row.length - 20) / 5))}`;
+      return cellclass;
     },
 
     adminchanged(adminvalue) {
@@ -401,7 +575,7 @@ export default {
 
       let segments = this.deepCopy(this.segments[annotator]);
       if (!isOriginal) {
-        // Nasty debegging for the bug that inserts empty list in transcriptions
+        // Nasty debugging for the bug that inserts empty list in transcriptions
         if (segments.length !== original.length) {
           notifyError({
             error:
@@ -444,7 +618,97 @@ export default {
     moveToInputField(annotator, line) {
       this.mytrans[line] = this.segments[annotator][line];
     },
+    setExportSampleName() {
+      this.exportSampleName = this.camelize(this.title || this.ksamplename);
+    },
+    makeTranscription(username, newsentsplit) {
+      // from a list of lines, make quadruples: token, start, end, speaker
+      // if newsentsplit: redo sentences based on punctuation
+      const isOriginal = username === 'original';
+      let transcription = this.deepCopy(this.transcriptions[username]);
+      const { original } = this.transcriptions;
+      const lines = original.length;
+      if (isOriginal) {
+        // we just have to add the speaker as 4th element
+        let line;
+        for (line = 0; line < lines; line += 1) {
+          const transLine = transcription[line];
+          const transWords = transLine.length;
+          let word;
+          for (word = 0; word < transWords; word += 1) {
+            transLine[word].push(this.speakers[line]);
+          }
+        }
+      } else {
+        // we have to build the quadruples
+        transcription = transcription.transcription;
+        let line;
 
+        for (line = 0; line < lines; line += 1) {
+          let word;
+          const originalLine = original[line];
+          const originalWords = originalLine.length;
+          const transLine = transcription[line];
+          const transWords = transLine.length;
+          const minMS = originalLine[0][1];
+          const maxMS = originalLine[originalWords - 1][2];
+          const realWordsCount = transLine.reduce((acc, t) => (this.isRealWord(t) ? acc + 1 : acc), 0);
+          const msec = (maxMS - minMS) / realWordsCount;
+          let startMS = 0;
+          let endMS = 0;
+          for (word = 0; word < transWords; word += 1) {
+            const isRealWord = this.isRealWord(transLine[word]);
+            if (isRealWord) endMS += msec;
+            transLine[word] = [transLine[word], Math.round(parseFloat(minMS) + startMS), Math.round(parseFloat(minMS) + endMS), this.speakers[line]];
+            if (isRealWord) startMS += msec;
+          }
+        }
+      }
+      if (newsentsplit) {
+        const flattranscription = transcription.reduce((accumulator, value) => accumulator.concat(value), []);
+
+        const newtranscription = [];
+        let newsent = [];
+        let bracksent = [];
+        let inBracket = false;
+        let inHm = false;
+        let lastspeaker = null;
+        for (const i in flattranscription) {
+          if (flattranscription.hasOwnProperty(i)) {
+            let [w, b, e, s] = flattranscription[i];
+            if (w === '...') w = '…';
+            if (w === '[') {
+              inBracket = true;
+              continue;
+            }
+            if (w === ']') {
+              inBracket = false;
+              continue;
+            }
+            if (lastspeaker && s !== lastspeaker && newsent.length > 0) {
+              inHm = !inHm;
+            }
+
+            if (inBracket) bracksent.push([w, b, e, s === 'L1' ? 'L2' : 'L1']);
+            else if (inHm) bracksent.push([w, b, e, s]);
+            else newsent.push([w, b, e, s]);
+            if (this.isEndOfSent(w) && !inBracket && !inHm) {
+              newtranscription.push(newsent);
+              newsent = [];
+              if (bracksent.length > 0) {
+                newtranscription.push(bracksent);
+                bracksent = [];
+              }
+            }
+            lastspeaker = s;
+          }
+        }
+        if (newsent.length > 0) newtranscription.push(newsent);
+
+        transcription = newtranscription;
+      }
+      return transcription;
+    },
     exportConll() {
       let index;
       const { length } = this.selectedUsers;
@@ -452,43 +716,18 @@ export default {
 
       for (index = 0; index < length; index += 1) {
         const username = this.selectedUsers[index];
-        const isOriginal = username === 'original';
-        const conllFileName = `${username}.conll`;
-        let outputString = '';
-        let transcription = this.deepCopy(this.transcriptions[username]);
 
-        if (!isOriginal) {
-          transcription = transcription.transcription;
-          let line;
-          const { original } = this.transcriptions;
-          const lines = original.length;
-          for (line = 0; line < lines; line += 1) {
-            let word;
-            const originalLine = original[line];
-            const originalWords = originalLine.length;
-            const transLine = transcription[line];
-            const transWords = transLine.length;
-            const minMS = originalLine[0][1];
-            const maxMS = originalLine[originalWords - 1][2];
-            const realWordsCount = transLine.reduce((acc, t) => (this.isRealWord(t) ? acc + 1 : acc), 0);
-            const msec = (maxMS - minMS) / realWordsCount;
-            let startMS = 0;
-            let endMS = 0;
-            for (word = 0; word < transWords; word += 1) {
-              const isRealWord = this.isRealWord(transLine[word]);
-              if (isRealWord) endMS += msec;
-              transLine[word] = [transLine[word], Math.round(parseFloat(minMS) + startMS), Math.round(parseFloat(minMS) + endMS)];
-              if (isRealWord) startMS += msec;
-            }
-          }
-        }
+        const conllFileName = `${this.ksamplename}_${this.exportSampleName}_${username}.conll`;
+        let outputString = '';
+
+        const transcription = this.makeTranscription(username, this.newsentsplit);
         outputString = this.generateConllText(transcription);
         zip.file(conllFileName, outputString);
       }
       zip
         .generateAsync({ type: 'blob' })
         .then((content) => {
-          const zipFileName = `${this.ksamplename}.zip`;
+          const zipFileName = `${this.ksamplename}_${this.exportSampleName}.zip`;
           const status = exportFile(zipFileName, content);
           if (status) {
             this.$q.notify({
@@ -511,7 +750,13 @@ export default {
     isRealWord(word) {
       return word.match(/\w+/);
     },
-
+    isEndOfSent(word) {
+      return word.match(/[.\!\?…]/);
+    },
+    camelize(text) {
+      text = text.replace(/[-_\s.]+(.)?/g, (_, c) => (c ? c.toUpperCase() : ''));
+      return text.substr(0, 1).toLowerCase() + text.substr(1);
+    },
     generateConllText(transcription) {
       let conllString = '';
       let line = 0;
@@ -519,16 +764,31 @@ export default {
       for (; line < lines; line += 1) {
         let word = 0;
         const words = transcription[line].length;
-        const lineText = transcription[line].reduce((acc, t) => acc + (t[0] !== '.' ? ' ' : '') + t[0], '');
-        conllString += `# sent_id = ${this.ksamplename}.intervals.conll__${line + 1}\n`;
-        conllString += `# text =${lineText}\n`;
-        conllString += `# sound_url = ${this.ksamplename}.mp3\n`;
+        // const lineText = transcription[line].reduce((acc, t) => acc + (t[0] !== '.' ? ' ' : '') + t[0], '');
+        let singleConll = '';
+        let text = '';
         for (; word < words; word += 1) {
           const conllWord = transcription[line][word];
-          conllString += `${word + 1}\t${conllWord[0]}\t${conllWord[0]}\t`;
-          for (let index = 0; index < 6; index += 1) conllString += '_\t';
-          conllString += `AlignBegin=${conllWord[1]}|AlignEnd=${conllWord[2]}\n`;
+          singleConll += `${word + 1}\t${conllWord[0]}\t${conllWord[0]}\t`;
+          for (let index = 0; index < 6; index += 1) singleConll += '_\t';
+          let spaceafter = '';
+          // at least two characters and last character==apostrophe:
+          if (conllWord[0].length > 1 && conllWord[0].slice(-1) === "'") spaceafter = '|SpaceAfter=No';
+          // last token == ( or [:
+          else if (['(', '['].includes(conllWord)) spaceafter = '|SpaceAfter=No';
+          // next word exists and is a no-space-after punctuation
+          else if (word + 1 < words && [',', '.', ')'].includes(transcription[line][word + 1][0].charAt(0))) spaceafter = '|SpaceAfter=No';
+          // next word exists and is of form -x...
+          else if (word + 1 < words && /-\w.*/.test(transcription[line][word + 1][0])) spaceafter = '|SpaceAfter=No';
+          text += conllWord[0];
+          if (spaceafter === '') text += ' ';
+          singleConll += `AlignBegin=${conllWord[1]}|AlignEnd=${conllWord[2]}${spaceafter}\n`;
         }
+        conllString += `# sent_id = ${this.ksamplename}_${this.exportSampleName}__${line + 1}\n`;
+        conllString += `# text = ${text.trim()}\n`;
+        conllString += `# sound_url = ${this.ksamplename}_${this.exportSampleName}.mp3\n`;
+        conllString += `# speaker = ${transcription[line][0][3]}\n`;
+        conllString += singleConll;
         conllString += '\n';
       }
       return conllString;
@@ -581,6 +841,7 @@ export default {
 
     setSampleData(response) {
       const { data } = response;
+
       if (Array.isArray(data)) {
         let index;
         for (index in data) {
@@ -599,6 +860,7 @@ export default {
         const user = this.makeValid(data);
         this.transcriptions[user.user] = user;
       }
+
       this.populateSegmentsForAll();
     },
 

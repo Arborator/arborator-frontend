@@ -196,6 +196,14 @@ export default {
     return API.post(`klang/projects/${projectname}/admins`, { admins });
   },
 
+  getKlangAccessible(projectname: string) {
+    return API.get(`klang/projects/${projectname}/accessible`);
+  },
+
+  getKlangProjectTranscribers(projectname: string) {
+    return API.get(`klang/projects/${projectname}/transcribers`);
+  },
+
   getKlangProjectSamples(projectname: string) {
     return API.get(`klang/projects/${projectname}/samples`);
   },

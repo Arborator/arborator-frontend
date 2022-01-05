@@ -11,12 +11,12 @@
           dense
           outline
           style="height: 3px"
-          :color="'teal-' + (8 - speakers[i].slice(-1))"
+          :color="'teal-' + (8 - speakers[i].toString().slice(-1))"
           rounded
         />
 
         <div class="col row q-pa-none">
-          <span v-for="(t, j) in transcriptions['original'][i]" :key="j" class="q-pa-none">
+          <span v-for="(t, j) in transcriptions.original.data.transcription[i]" :key="j" class="q-pa-none">
             <!-- {{t[1]/1000}} -->
             <q-chip v-if="t[2] / 1000 < ct" size="md" color="white" text-color="black" clickable dense class="q-pa-none" @click="wordclicked(t)">
               {{ t[0] }}
@@ -108,7 +108,7 @@
               :key="username"
               class="col row q-pa none"
             >
-              <span class="meta-value meta-text">{{ transcription[meta.value] }}</span>
+              <span class="meta-value meta-text">{{ transcription.data[meta.value] }}</span>
             </div>
           </template>
         </div>
@@ -142,7 +142,7 @@
           <div class="col q-pa-none">
             <q-badge> original </q-badge>
             <br />
-            <q-btn color="primary" size="xs" round icon="visibility" @click="openSentenceDlg('original')">
+            <q-btn color="primary" size="xs" round icon="visibility" @click="openSentenceDlg('original', false)">
               <q-tooltip> See sentence segmentation </q-tooltip>
             </q-btn>
           </div>
@@ -170,7 +170,7 @@
               >
                 <q-badge> {{ viewAllTranscriptions || wasSaved ? username : 'original' }} </q-badge>
                 <br />
-                <q-btn color="primary" size="xs" round icon="visibility" @click="openSentenceDlg(username)">
+                <q-btn color="primary" size="xs" round icon="visibility" @click="openSentenceDlg(username, false)">
                   <q-tooltip> See sentence segmentation </q-tooltip>
                 </q-btn>
               </div>
@@ -312,98 +312,75 @@
     </q-dialog>
   </q-page>
 </template>
-<style>
-.line-number {
-  vertical-align: middle;
-  line-height: 2.2;
-  margin-left: 5px;
-  margin-right: 3px;
-  width: 15px;
-}
 
-.line-play {
-  margin-right: 5px;
-  min-width: 2.6em !important;
-}
-.align-right {
-  text-align: right;
-}
-
-.export-dialog {
-  min-width: 300px;
-}
-.sentence-dialog {
-  min-width: 90vh;
-}
-
-.q-table tbody td {
-  white-space: normal !important;
-}
-
-.float-right {
-  margin-left: auto;
-}
-
-.meta-label {
-  font-weight: 700;
-  font-size: 15px;
-  background-color: #276930;
-}
-.meta-text {
-  margin-left: 10px;
-}
-.meta-row {
-  background-color: #4a2769;
-  color: white;
-}
-
-.special-column {
-  background-color: #27693031;
-  margin-left: 10px;
-  /* width: 500px;
-  min-width: 500px;
-  max-width: 500px; */
-}
-</style>
-<script>
-import { mapActions } from 'pinia';
+<script lang="ts">
+import { mapState } from 'pinia';
 import { exportFile } from 'quasar';
 import api from '../api/backend-api';
 import { useUserStore } from 'src/pinia/modules/user';
 import JSZip from 'jszip';
-import Diff from 'diff';
+import Diff, { Change } from 'diff';
+import { useMainStore } from 'src/pinia';
+import notifyError from 'src/utils/notify';
+import { timed_tokens_t, transcription_t } from 'src/api/backend-types';
 // const JSZip = require('jszip');
 // const Diff = require('diff');
+type transcription_object_t = { source: 'original'; data: { transcription: timed_tokens_t } } | { source: 'user'; data: transcription_t };
+interface transcriptions_t {
+  [key: string]: transcription_object_t;
+}
+
+interface sentence_line_t {
+  number: number;
+  speaker: number | string;
+  length: number;
+  sentence: string;
+}
+
+type segments_t = { [key: string]: string[] };
 
 export default {
   props: ['kprojectname', 'ksamplename'],
   data() {
+    const transcriptions: transcriptions_t = {};
+    const sound = '';
+    const story = '';
+    const accent = '';
+    const monodia = '';
+    const title = '';
+    const segments: segments_t = {};
+    const sentences: sentence_line_t[] = [];
+    const users: { label: string; value: string }[] = [];
+    const diffsegments: { [key: string]: Change[][] } = {};
+    const mytrans: string[] = [];
+    const speakers: (number | string)[] = [];
     return {
+      sentences,
+      segments,
       audioplayer: null,
       progcolor: 'black',
-      mediaObject: null,
+      mediaObject: '',
       waveWidth: 2500,
       canvwidth: 0,
-      transcriptions: {},
-      speakers: [],
-      segments: {},
-      diffsegments: {},
+      transcriptions,
+      speakers,
+      diffsegments,
       currentTime: -1,
       manualct: -1,
       viewAllTranscriptions: false,
       showSaved: false,
-      sound: null,
-      story: null,
-      accent: null,
-      monodia: null,
-      title: null,
-      mytrans: [],
+      sound,
+      story,
+      accent,
+      monodia,
+      title,
+      mytrans,
       isLoading: false,
       wasSaved: true,
       exportConllDlg: false,
       newsentsplit: true,
       exportSampleName: '',
-      users: [],
+      users,
       selectedUsers: [],
       metaFormat: [
         {
@@ -433,27 +410,17 @@ export default {
       lineEnd: 0,
       showSentencesDlg: false,
       showSentenceUser: 'Original',
-      sentences: [],
     };
   },
 
   computed: {
+    ...mapState(useUserStore, ['isLoggedIn', 'username']),
+    ...mapState(useMainStore, { isAdmin: 'isProjectAdmin' }),
     ct() {
       return this.manualct;
     },
-
-    ...mapGetters('user', ['isLoggedIn']),
-
-    isAdmin() {
-      return this.$store.getters['klang/isAdmin'];
-    },
-
-    username() {
-      return this.$store.getters['user/getUserInfos'].username;
-    },
-
     canPlayLine() {
-      return this.audioplayer.error === null;
+      return (this.audioplayer as any).error === null;
     },
   },
   watch: {},
@@ -464,13 +431,13 @@ export default {
   },
 
   mounted() {
-    this.audioplayer = this.$refs.player.audio;
-    this.$refs.player.audio.ontimeupdate = () => this.onTimeUpdate();
+    this.audioplayer = (this.$refs.player as any).audio;
+    (this.$refs.player as any).audio.ontimeupdate = () => this.onTimeUpdate();
     document.title = `Klang: ${this.ksamplename}`;
     this.getSampleData();
   },
   methods: {
-    lines2WordList(lines, language) {
+    lines2WordList(lines: string[], language: string | null = null) {
       if (language == null) language = 'French';
       const wlines = lines.map((line) => {
         if (language === 'French') {
@@ -530,14 +497,17 @@ export default {
       );
     },
 
-    openSentenceDlg(username, fromInput) {
+    openSentenceDlg(username: string, fromInput: boolean) {
       if (fromInput) {
-        this.transcriptions[username] = {};
-        this.transcriptions[username].transcription = this.lines2WordList(this.mytrans); // , 'French'
+        // this.transcriptions[username] = {};
+        const thisTranscription = this.transcriptions[username];
+        if (thisTranscription.source === 'user') {
+          thisTranscription.data.transcription = this.lines2WordList(this.mytrans); // , 'French'}
+        }
       }
       this.showSentenceUser = username;
       this.showSentencesDlg = true;
-      const trans = this.makeTranscription(username, true);
+      const trans = this.makeTranscription(username, true) as string[][];
       this.sentences = trans.map((sent, i) => ({
         number: i + 1,
         speaker: sent[0][3],
@@ -548,35 +518,35 @@ export default {
         delete this.transcriptions.username;
       }
     },
-    getSentenceCellClass(props) {
+    getSentenceCellClass(props: { row: sentence_line_t }) {
       // for styling of the sentence table: too long sentences get colored in deep orange
       let cellclass = '';
       if (props.row.speaker === 'L1' || props.row.speaker === 0) cellclass += 'text-primary';
-      else cellclass = `${cellclass}text-teal-${8 - props.row.speaker.slice(-1)}`;
+      else cellclass = `${cellclass}text-teal-${8 - parseInt((props.row.speaker as string).slice(-1), 10)}`;
       if (props.row.length > 22) cellclass += ` bg-deep-orange-${Math.min(14, Math.round((props.row.length - 20) / 5))}`;
       return cellclass;
     },
 
-    adminchanged(adminvalue) {
+    adminchanged() {
       this.getSampleData();
     },
 
-    popultateSegmentsForAnnotator(annotator) {
+    popultateSegmentsForAnnotator(annotator: string) {
       const isOriginal = annotator === 'original';
-      const original = !isOriginal ? this.segments.original : [];
-      const conllSegments = isOriginal ? this.transcriptions[annotator] : this.transcriptions[annotator].transcription;
+      const originalSegments = !isOriginal ? this.segments.original : [];
+      const conllSegments = this.transcriptions[annotator].data.transcription as string[][][];
       if (conllSegments.length !== 0) {
         this.segments[annotator] = conllSegments.map((sent) => sent.reduce((acc, t) => `${acc + (isOriginal ? t[0] : t)} `, ''));
         this.users.push({ label: annotator, value: annotator });
       } else {
-        this.segments[annotator] = original;
+        this.segments[annotator] = originalSegments;
         if (!this.viewAllTranscriptions) this.wasSaved = false;
       }
 
-      let segments = this.deepCopy(this.segments[annotator]);
+      let segments = this.deepCopy(this.segments[annotator]) as string[];
       if (!isOriginal) {
         // Nasty debugging for the bug that inserts empty list in transcriptions
-        if (segments.length !== original.length) {
+        if (segments.length !== originalSegments.length) {
           notifyError({
             error:
               ' Your transcription is corrupted, can you notify the admin of this website please ? ERROR CODE GITHUB : 105 : https://github.com/Arborator/arborator-frontend/issues/105',
@@ -584,16 +554,16 @@ export default {
           });
           segments = segments.filter((segment) => segment.length > 0); // <- Kim and Kirian : Quick debugging to make it printing, but we don't know if it will then break all the saving logic !!!!
         }
-        this.diffsegments[annotator] = segments.map((sent, i) => Diff.diffWords(original[i] || 'FINISHED !!', sent));
+        this.diffsegments[annotator] = segments.map((sent, i) => Diff.diffWords(originalSegments[i] || 'FINISHED !!', sent));
       }
-
-      if (annotator === this.username && !this.viewAllTranscriptions) {
+      const thisTranscription = this.transcriptions[annotator];
+      if (thisTranscription.source === 'user' && annotator === this.username && !this.viewAllTranscriptions) {
         this.mytrans = segments;
-        this.sound = this.transcriptions[annotator].sound;
-        this.story = this.transcriptions[annotator].story;
-        this.accent = this.transcriptions[annotator].accent;
-        this.monodia = this.transcriptions[annotator].monodia;
-        this.title = this.transcriptions[annotator].title;
+        this.sound = thisTranscription.data.sound;
+        this.story = thisTranscription.data.story;
+        this.accent = thisTranscription.data.accent;
+        this.monodia = thisTranscription.data.monodia;
+        this.title = thisTranscription.data.title;
       }
     },
 
@@ -611,61 +581,70 @@ export default {
       }
     },
 
-    deepCopy(object) {
+    deepCopy(object: any) {
       return JSON.parse(JSON.stringify(object));
     },
 
-    moveToInputField(annotator, line) {
+    moveToInputField(annotator: string, line: number) {
       this.mytrans[line] = this.segments[annotator][line];
     },
     setExportSampleName() {
       this.exportSampleName = this.camelize(this.title || this.ksamplename);
     },
-    makeTranscription(username, newsentsplit) {
+    makeTranscription(username: string, newsentsplit: boolean) {
+      // KK FIXME : This is probably broken after converting to typescript !!!
+
       // from a list of lines, make quadruples: token, start, end, speaker
       // if newsentsplit: redo sentences based on punctuation
       const isOriginal = username === 'original';
-      let transcription = this.deepCopy(this.transcriptions[username]);
-      const { original } = this.transcriptions;
-      const lines = original.length;
+      let transcriptionObject = JSON.parse(JSON.stringify(this.transcriptions[username])) as transcription_object_t;
+      const originalTranscription = transcriptionObject.data.transcription as timed_tokens_t;
+      const lines = originalTranscription.length;
       if (isOriginal) {
         // we just have to add the speaker as 4th element
         let line;
         for (line = 0; line < lines; line += 1) {
-          const transLine = transcription[line];
+          const transLine = originalTranscription[line];
           const transWords = transLine.length;
           let word;
           for (word = 0; word < transWords; word += 1) {
-            transLine[word].push(this.speakers[line]);
+            transLine[word].push(this.speakers[line] as any);
           }
         }
       } else {
         // we have to build the quadruples
-        transcription = transcription.transcription;
+        let userTranscription = (transcriptionObject.data as transcription_t).transcription;
         let line;
 
         for (line = 0; line < lines; line += 1) {
           let word;
-          const originalLine = original[line];
+          const originalLine = originalTranscription[line];
           const originalWords = originalLine.length;
-          const transLine = transcription[line];
+          const transLine = userTranscription[line] as unknown as (number | string[] | (number | string[])[])[]; // FIXME !!!! KK I put this because it's ducked type and transline is being modify some lines later
           const transWords = transLine.length;
           const minMS = originalLine[0][1];
           const maxMS = originalLine[originalWords - 1][2];
-          const realWordsCount = transLine.reduce((acc, t) => (this.isRealWord(t) ? acc + 1 : acc), 0);
-          const msec = (maxMS - minMS) / realWordsCount;
+          const realWordsCount = transLine.reduce((acc, t) => (this.isRealWord(t as any) ? (acc as number) + 1 : acc), 0) as number;
+          const msec = (parseInt(maxMS, 10) - parseInt(minMS, 10)) / realWordsCount;
           let startMS = 0;
           let endMS = 0;
           for (word = 0; word < transWords; word += 1) {
-            const isRealWord = this.isRealWord(transLine[word]);
+            const isRealWord = this.isRealWord(transLine[word] as any);
             if (isRealWord) endMS += msec;
-            transLine[word] = [transLine[word], Math.round(parseFloat(minMS) + startMS), Math.round(parseFloat(minMS) + endMS), this.speakers[line]];
+            transLine[word] = [
+              transLine[word] as any,
+              Math.round(parseFloat(minMS) + startMS),
+              Math.round(parseFloat(minMS) + endMS),
+              this.speakers[line],
+            ];
             if (isRealWord) startMS += msec;
           }
         }
       }
+      let userTranscription = (transcriptionObject.data as transcription_t).transcription;
+
       if (newsentsplit) {
-        const flattranscription = transcription.reduce((accumulator, value) => accumulator.concat(value), []);
+        const flattranscription = userTranscription.reduce((accumulator, value) => accumulator.concat(value), []);
 
         const newtranscription = [];
         let newsent = [];
@@ -674,7 +653,7 @@ export default {
         let inHm = false;
         let lastspeaker = null;
         for (const i in flattranscription) {
-          if (flattranscription.hasOwnProperty(i)) {
+          if (flattranscription[i] !== null) {
             let [w, b, e, s] = flattranscription[i];
             if (w === '...') w = '…';
             if (w === '[') {
@@ -704,10 +683,10 @@ export default {
           }
         }
         if (newsent.length > 0) newtranscription.push(newsent);
-
-        transcription = newtranscription;
+        return newtranscription;
+        // transcription = newtranscription;
       }
-      return transcription;
+      return userTranscription;
     },
     exportConll() {
       let index;
@@ -747,17 +726,17 @@ export default {
         });
     },
 
-    isRealWord(word) {
+    isRealWord(word: string) {
       return word.match(/\w+/);
     },
-    isEndOfSent(word) {
-      return word.match(/[.\!\?…]/);
+    isEndOfSent(word: string) {
+      return word.match(/[.!?…]/);
     },
-    camelize(text) {
+    camelize(text: string) {
       text = text.replace(/[-_\s.]+(.)?/g, (_, c) => (c ? c.toUpperCase() : ''));
       return text.substr(0, 1).toLowerCase() + text.substr(1);
     },
-    generateConllText(transcription) {
+    generateConllText(transcription: any) {
       let conllString = '';
       let line = 0;
       const lines = transcription.length;
@@ -795,16 +774,13 @@ export default {
     },
 
     async getSampleData() {
-      // wait to check if logged in
-      await this.checkSession();
-      // await this.$store.dispatch('user/checkSession');
+      await useUserStore().checkSession();
 
       this.isLoading = true;
-      this.transcriptions = {};
       api
         .getOriginalTranscription(this.kprojectname, this.ksamplename)
         .then((response) => {
-          this.transcriptions.original = response.data.tokens;
+          this.transcriptions.original.data.transcription = response.data.tokens;
           this.speakers = response.data.speakers;
           if (this.isLoggedIn) {
             if (!this.isAdmin) {
@@ -839,7 +815,7 @@ export default {
         });
     },
 
-    setSampleData(response) {
+    setSampleData(response: any) {
       const { data } = response;
 
       if (Array.isArray(data)) {
@@ -851,20 +827,27 @@ export default {
           }
         }
         if (!this.transcriptions[this.username]) {
-          this.transcriptions[this.username] = {
+          const transcription: string[][] = [[]];
+          this.transcriptions[this.username].source = 'user';
+          this.transcriptions[this.username].data = {
             user: this.username,
-            transcription: [],
+            transcription,
+            accent: '',
+            monodia: '',
+            sound: '',
+            title: '',
+            story: '',
           };
         }
       } else {
-        const user = this.makeValid(data);
-        this.transcriptions[user.user] = user;
+        const transcription = this.makeValid(data);
+        this.transcriptions[transcription.user].data = transcription.transcription;
       }
 
       this.populateSegmentsForAll();
     },
 
-    makeValid(data) {
+    makeValid(data: any) {
       if (!data.user) {
         data.user = this.username;
         data.transcription = [];
@@ -872,25 +855,25 @@ export default {
       return data;
     },
 
-    wordclicked(triple) {
-      this.audioplayer.currentTime = triple[1] / 1000; // -.5;
+    wordclicked(triple: any) {
+      (this.audioplayer as any).currentTime = triple[1] / 1000; // -.5;
       this.manualct = triple[1] / 1000;
-      this.audioplayer.play();
+      (this.audioplayer as any).play();
       if (this.manualct > this.lineEnd) this.isPlayingLine = -1;
     },
 
-    handlePlayLine(index) {
+    handlePlayLine(index: number) {
       if (this.isPlayingLine === index) {
-        this.audioplayer.pause();
+        (this.audioplayer as any).pause();
         this.isPlayingLine = -1;
       } else {
         this.isPlayingLine = index;
-        const line = this.transcriptions.original[index];
+        const line = this.transcriptions.original.data.transcription[index] as unknown as [string, number, number][];
         const { length } = line;
         this.lineStart = line[0][1] / 1000;
         this.lineEnd = line[length - 1][2] / 1000;
-        this.audioplayer.currentTime = this.lineStart;
-        this.audioplayer.play();
+        (this.audioplayer as any).currentTime = this.lineStart;
+        (this.audioplayer as any).play();
       }
     },
 
@@ -898,11 +881,11 @@ export default {
       if (this.$refs.player === null) return;
       // console.log(this.audioplayer.currentTime);
       if (this.isPlayingLine >= 0) {
-        if (this.audioplayer.currentTime > this.lineEnd) this.audioplayer.currentTime = this.lineStart;
+        if ((this.audioplayer as any).currentTime > this.lineEnd) (this.audioplayer as any).currentTime = this.lineStart;
       }
-      this.currentTime = this.audioplayer.currentTime;
+      this.currentTime = (this.audioplayer as any).currentTime;
       this.manualct = this.currentTime;
-      const current = this.$refs.words.querySelector('.current');
+      const current = (this.$refs.words as HTMLElement).querySelector('.current');
       if (current) {
         current.scrollIntoView({
           behavior: 'smooth',
@@ -928,12 +911,21 @@ export default {
   margin-right: 5px;
   min-width: 2.6em !important;
 }
+
 .align-right {
   text-align: right;
 }
 
 .export-dialog {
   min-width: 300px;
+}
+
+.sentence-dialog {
+  min-width: 90vh;
+}
+
+.q-table tbody td {
+  white-space: normal !important;
 }
 
 .float-right {
@@ -943,10 +935,23 @@ export default {
 .meta-label {
   font-weight: 700;
   font-size: 15px;
+  background-color: #276930;
 }
 
 .meta-row {
   background-color: #4a2769;
   color: white;
+}
+
+.meta-text {
+  margin-left: 10px;
+}
+
+.special-column {
+  background-color: #27693031;
+  margin-left: 10px;
+  /* width: 500px;
+  min-width: 500px;
+  max-width: 500px; */
 }
 </style>

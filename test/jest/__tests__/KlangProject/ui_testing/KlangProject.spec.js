@@ -1,10 +1,10 @@
 /**
-  * @description              This is ui testing for KlangProject Page
-  * @version                  1.0
-  * @author                   Gerdes
-  * @createdBy                Khoa
-  * @since                    06-12-2020
-  */
+ * @description              This is ui testing for KlangProject Page
+ * @version                  1.0
+ * @author                   Gerdes
+ * @createdBy                Khoa
+ * @since                    06-12-2020
+ */
 
 import { createLocalVue, mount } from '@vue/test-utils';
 import Storage from 'vue-ls';
@@ -13,9 +13,7 @@ import Vuex from 'vuex';
 import VueRouter from 'vue-router';
 import MockAdapter from 'axios-mock-adapter';
 
-import {
-  qLayoutInjections,
-} from '@quasar/quasar-app-extension-testing-unit-jest';
+import { qLayoutInjections } from '@quasar/quasar-app-extension-testing-unit-jest';
 
 import KlangProject from 'src/pages/KlangProject.vue';
 import { API } from 'src/boot/axios-adapters/axios-api';
@@ -29,20 +27,18 @@ const data = mocks.UITesting.mockResponse;
 const property = mocks.UITesting.mockProperty;
 const mockAPI = new MockAdapter(API);
 
-mockAPI.onGet(`klang/projects/${projectname}/samples`).reply(
-  200, data.samples,
-);
+mockAPI.onGet(`klang/projects/${projectname}/samples`).reply(200, data.samples);
 mockAPI.onGet('users/').reply(200, data.users);
 
 // Test suite for KlangProject component
 describe('KlangProject.vue', () => {
   let localVue;
-  let wrapper; let
-    vm;
+  let wrapper;
+  let vm;
   let testIndex = -1;
 
   beforeEach(() => {
-    testIndex+= 1;
+    testIndex += 1;
     localVue = createLocalVue();
     // Use mocked options for vue-il8n
     localVue.use(Storage, util.options);
@@ -59,9 +55,7 @@ describe('KlangProject.vue', () => {
         $n: util.$n,
         $d: util.$d,
       },
-      props: [
-        'kprojectname',
-      ],
+      props: ['kprojectname'],
       propsData: {
         kprojectname: projectname,
       },
@@ -161,35 +155,26 @@ describe('KlangProject.vue', () => {
     // Check if user1's checkbox is displayed and clicks it
     // And also wait for 100ms until DOM gets updated
     const { users } = data;
-    const user1 = userList.find(
-      `div[aria-label="${users[1].username}"] input[type="checkbox"]`,
-    );
+    const user1 = userList.find(`div[aria-label="${users[1].username}"] input[type="checkbox"]`);
     expect(user1.element).toBeTruthy();
     user1.trigger('click');
     await util.sleep(100);
 
     // Check if user2's checkbox is displayed and clicks it
     // And also wait for 100ms until DOM gets updated
-    const user2 = userList.find(
-      `div[aria-label="${users[2].username}"] input[type="checkbox"]`,
-    );
+    const user2 = userList.find(`div[aria-label="${users[2].username}"] input[type="checkbox"]`);
     expect(user1.element).toBeTruthy();
     user2.trigger('click');
     await util.sleep(100);
 
     // This is a mocked request handler for setting admins
-    mockAPI.onPost(`klang/projects/${projectname}/admins`).replyOnce(
-      (config) => {
-        // Check if correct data is sent from client
-        const data = JSON.parse(config.data);
-        const expectedData = [
-          users[1].username,
-          users[2].username,
-        ];
-        expect(data).toBe(expectedData);
-        return [200];
-      },
-    );
+    mockAPI.onPost(`klang/projects/${projectname}/admins`).replyOnce((config) => {
+      // Check if correct data is sent from client
+      const data = JSON.parse(config.data);
+      const expectedData = [users[1].username, users[2].username];
+      expect(data).toBe(expectedData);
+      return [200];
+    });
     // check if "Select" button is displayed
     const okbutton = wrapper.findComponent({ ref: 'OKButton' });
     expect(okbutton.element).toBeTruthy();

@@ -1,7 +1,7 @@
 import { API } from './axios-api';
-import { transcription_t } from 'src/types/main_types';
 import {
   createProject_ED,
+  getOriginalTranscription_RV,
   getProjectConlluSchema_RV,
   getProjectFeatures_RV,
   getProjectSamples_RV,
@@ -20,7 +20,7 @@ import {
   updateTree_ED,
   whoIAm_RV,
 } from './endpoints';
-import { sample_role_action_t, sample_role_targetrole_t } from './backend-types';
+import { sample_role_action_t, sample_role_targetrole_t, transcription_t } from './backend-types';
 
 export default {
   // -------------------------------------------------- //
@@ -209,7 +209,7 @@ export default {
   },
 
   getOriginalTranscription(projectname: string, samplename: string) {
-    return API.get(`klang/projects/${projectname}/samples/${samplename}/timed-tokens`);
+    return API.get<getOriginalTranscription_RV>(`klang/projects/${projectname}/samples/${samplename}/timed-tokens`);
   },
 
   getTranscription(projectname: string, samplename: string, username: string) {
@@ -221,7 +221,7 @@ export default {
   },
 
   saveTranscription(projectname: string, samplename: string, username: string, data: transcription_t) {
-    return API.put(`klang/projects/${projectname}/samples/${samplename}/transcription/${username}`, data);
+    return API.put<transcription_t>(`klang/projects/${projectname}/samples/${samplename}/transcription/${username}`, data);
   },
   // -------------------------------------------------------- //
   // ---------------        To Refactor       --------------- //

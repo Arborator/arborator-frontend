@@ -11,6 +11,7 @@ import {
   shownfeatures,
   shownmeta,
   user_t,
+  timed_tokens_t,
 } from './backend-types';
 
 export interface logout_RV {
@@ -75,4 +76,10 @@ export interface updateTree_ED {
   sent_id: string;
   user_id: string;
   conll: string;
+}
+
+/////////////// KLANG //////////:
+export interface getOriginalTranscription_RV {
+  tokens: timed_tokens_t;
+  speakers: number[];
 }

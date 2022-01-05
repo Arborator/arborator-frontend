@@ -58,7 +58,7 @@
     </template>
     <q-separator spaced />
     <div class="q-pa-md">
-      <q-btn v-if="isSuperAdmin" ref="addAdmins" dense color="primary" icon="add" label="Add admins for the project" @click="openAdminsDialog" />
+      <q-btn v-if="isAdmin" ref="addAdmins" dense color="primary" icon="add" label="Add admins for the project" @click="openAdminsDialog" />
     </div>
     <q-dialog ref="addAdminsDialog" v-model="adminsDialog">
       <q-card class="export-dialog">
@@ -81,45 +81,43 @@
   </q-page>
 </template>
 
-<style lang="stylus" scoped>
-.export-dialog {
-  min-width: 300px;
-}
-.bold {
-    font-weight: 700;
-}
-</style>
-
-<script>
-import { mapActions } from 'pinia';
-import api from '../api/backend-api';
+<script lang="ts">
+import { mapActions, mapState } from 'pinia';
 import { useKlangStore } from 'src/pinia/modules/klang';
 // import Vue from 'vue';
-import { mapGetters } from 'vuex';
 import { exportFile } from 'quasar';
-import api from '../boot/backend-api';
+import api from 'src/api/backend-api';
+import notifyError from 'src/utils/notify';
+import { useMainStore } from 'src/pinia';
 
 export default {
   props: ['kprojectname'],
   data() {
+    const waveWidth = 0;
+    const users: { label: string; value: string }[] = [];
+    const selectedAdmins: string[] = [];
+    const tableColumns: { name: string; label: string; field: CallableFunction; format: CallableFunction }[] = [];
     return {
+      waveWidth,
       samples: [],
       adminsDialog: false,
-      users: [],
-      selectedAdmins: [],
+      users,
+      selectedAdmins,
       sample2transcribers: {},
       transcribers: [],
-      tableColumns: [],
+      tableColumns,
       tableFilter: '',
       projectAccessible: true,
     };
   },
   computed: {
-    ...mapGetters('config', ['admins']),
-    ...mapGetters('user', ['isSuperAdmin']),
-    isAdmin() {
-      return this.$store.getters['klang/isAdmin'];
-    },
+    ...mapState(useMainStore, { isAdmin: 'isProjectAdmin' }),
+    ...mapState(useKlangStore, { admins: 'admins' }),
+    // ...mapGetters('config', ['admins']),
+    // ...mapGetters('user', ['isSuperAdmin']),
+    // isAdmin() {
+    //   return this.$store.getters['klang/isAdmin'];
+    // },
     // projectTranscribers() {
     //   return this.sampleTranscribers();
     // },
@@ -164,7 +162,7 @@ export default {
           this.projectAccessible = response.data;
         })
         .catch((error) => {
-          this.$store.dispatch('notifyError', { error });
+          notifyError({ error });
         });
     },
     sampleTranscribers() {
@@ -174,12 +172,12 @@ export default {
           [this.sample2transcribers, this.transcribers, this.tableColumns] = response.data;
         })
         .catch((error) => {
-          this.$store.dispatch('notifyError', { error });
+          notifyError({ error });
         });
     },
 
-    wrapCsvValue(val, formatFn) {
-      let formatted = formatFn !== void 0 ? formatFn(val) : val;
+    wrapCsvValue(val: any, formatFn: CallableFunction | null = null) {
+      let formatted = formatFn !== null ? formatFn(val) : val;
       formatted = formatted === void 0 || formatted === null ? '' : String(formatted);
       formatted = formatted.split('"').join('""');
       /**
@@ -208,7 +206,7 @@ export default {
       const status = exportFile('table-export.csv', content, 'text/csv');
 
       if (status !== true) {
-        this.$store.dispatch('notifyError', {
+        this.$q.notify({
           message: 'Browser denied file download...',
           color: 'negative',
           icon: 'warning',
@@ -256,7 +254,7 @@ export default {
     selectAdmins() {
       api
         .setKlangProjectAdmins(this.kprojectname, this.selectedAdmins)
-        .then((response) => {
+        .then(() => {
           this.fetchKlangProjectSettings({
             projectname: this.kprojectname,
           });
@@ -278,5 +276,8 @@ export default {
 <style lang="stylus" scoped>
 .export-dialog {
   min-width: 300px;
+}
+.bold {
+    font-weight: 700;
 }
 </style>

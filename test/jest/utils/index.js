@@ -3,9 +3,7 @@ import { createLocalVue, shallowMount } from 'test-utils';
 
 import Vuex from 'vuex';
 import VueRouter from 'vue-router';
-import {
-  Quasar, Cookies, Notify, Dialog,
-} from 'quasar';
+import { Quasar, Cookies, Notify, Dialog } from 'quasar';
 import Vue from 'vue';
 import * as All from 'quasar';
 
@@ -65,7 +63,11 @@ export const mountQuasar = (component, options = {}) => {
     if (options.plugins) {
       options.plugins.forEach((plugin) => {
         plugin({
-          app, store, router, Vue: localVue, ssrContext,
+          app,
+          store,
+          router,
+          Vue: localVue,
+          ssrContext,
         });
       });
     }
@@ -82,7 +84,10 @@ export const mountQuasar = (component, options = {}) => {
     store,
     router,
     mocks: {
-      $t, $tc, $n, $d,
+      $t,
+      $tc,
+      $n,
+      $d,
     },
     // Injections for Components with a QPage root Element
     provide: {

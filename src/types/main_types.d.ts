@@ -3,17 +3,6 @@ import { ReactiveSentence } from 'dependencytreejs/src/ReactiveSentence';
 import { SentenceSVG } from 'dependencytreejs/src/SentenceSVG';
 import { SentenceJson, TokenJson, TreeJson } from 'conllup/lib/conll';
 
-////////// KLANG /////
-export interface transcription_t {
-  accent: string;
-  monodia: string;
-  sound: string;
-  story: string;
-  title: string;
-  user: string;
-  transcription: Array<Array<string>>;
-}
-
 //////// UI /////
 
 export interface pagination_t {

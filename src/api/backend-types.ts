@@ -97,3 +97,28 @@ export interface sample_t {
 
 export type sample_role_targetrole_t = 'annotator' | 'validator';
 export type sample_role_action_t = 'add' | 'remove';
+
+////////// KLANG /////
+
+//// PROJECT ////
+export interface KlangProject_t {
+  name: string;
+  nrSamples: number;
+  config: { private: boolean };
+}
+
+type token = string;
+type time_start_ms = string;
+type time_end_ms = string;
+
+export type timed_tokens_t = [token, time_start_ms, time_end_ms][][];
+////////// KLANG /////
+export interface transcription_t {
+  accent: string;
+  monodia: string;
+  sound: string;
+  story: string;
+  title: string;
+  user: string;
+  transcription: Array<Array<string>>;
+}

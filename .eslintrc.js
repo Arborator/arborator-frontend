@@ -3,8 +3,7 @@ module.exports = {
   // This option interrupts the configuration hierarchy at this file
   // Remove this if you have an higher level ESLint config file (it usually happens into a monorepos)
   root: true,
-  
-  parser: "vue-eslint-parser",
+  parser: 'vue-eslint-parser',
   parserOptions: {
     project: ['tsconfig.json'],
     extraFileExtensions: ['.vue', '.ts', '.js'],
@@ -19,15 +18,15 @@ module.exports = {
   },
 
   extends: [
-  // Rules order is important, please avoid shuffling them
-  'plugin:vue/vue3-recommended',
-  'plugin:@typescript-eslint/recommended',
-  "eslint:recommended",
-  'prettier',
-  'plugin:prettier/recommended'
-  
-  // Rules order is important, please avoid shuffling them
-  // 'plugin:@typescript-eslint/eslint-recommended',
+    // Rules order is important, please avoid shuffling them
+    'plugin:vue/vue3-recommended',
+    'plugin:@typescript-eslint/recommended',
+    'eslint:recommended',
+    'prettier',
+    'plugin:prettier/recommended',
+
+    // Rules order is important, please avoid shuffling them
+    // 'plugin:@typescript-eslint/eslint-recommended',
     // 'plugin:@typescript-eslint/recommended',
     // 'eslint:recommended',
     // "plugin:vue/vue3-recommended",
@@ -60,7 +59,7 @@ module.exports = {
     'vue',
     'prettier',
     'import',
-    "@typescript-eslint"
+    '@typescript-eslint',
   ],
 
   globals: {
@@ -78,9 +77,9 @@ module.exports = {
 
   // add your custom rules here
   rules: {
-    "no-unused-vars": "off",
-    "@typescript-eslint/no-unused-vars": ["error"],
-    "vue/no-mutating-props": ["warn"]
+    'no-unused-vars': 'off',
+    '@typescript-eslint/no-unused-vars': ['error'],
+    'vue/no-mutating-props': ['warn'],
     // 'prettier/prettier': ['error'],
     // 'no-param-reassign': 'off',
     // 'no-void': 'off',

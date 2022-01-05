@@ -1,10 +1,10 @@
 /**
-  * @description              This is ui testing for Klang Page
-  * @version                  1.0
-  * @author                   Gerdes
-  * @createdBy                Khoa
-  * @since                    06-12-2020
-  */
+ * @description              This is ui testing for Klang Page
+ * @version                  1.0
+ * @author                   Gerdes
+ * @createdBy                Khoa
+ * @since                    06-12-2020
+ */
 
 import { createLocalVue, mount } from '@vue/test-utils';
 import Storage from 'vue-ls';
@@ -13,9 +13,7 @@ import Vuex from 'vuex';
 import VueRouter from 'vue-router';
 import MockAdapter from 'axios-mock-adapter';
 
-import {
-  qLayoutInjections,
-} from '@quasar/quasar-app-extension-testing-unit-jest';
+import { qLayoutInjections } from '@quasar/quasar-app-extension-testing-unit-jest';
 
 import Klang from 'src/pages/Klang.vue';
 import store from 'src/store/index.js';

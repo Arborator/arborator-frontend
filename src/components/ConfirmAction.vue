@@ -15,9 +15,19 @@
 </template>
 
 <script lang="ts">
+import { PropType } from 'vue';
 export default {
   name: 'ConfirmAction',
-  props: ['parentAction', 'arg1'],
+  props: {
+    parentAction: {
+      type: Function as PropType<CallableFunction>,
+      required: true,
+    },
+    arg1: {
+      type: String as PropType<string>,
+      required: true,
+    },
+  },
   data() {
     return {};
   },
@@ -28,7 +38,7 @@ export default {
      * @returns void
      */
     confirm() {
-      this.$props.parentAction(this.arg1);
+      this.parentAction(this.arg1);
     },
   },
 };

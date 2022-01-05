@@ -50,8 +50,9 @@ import { useUserStore } from 'src/pinia/modules/user';
 import notifyError from 'src/utils/notify';
 import { useGrewSearchStore } from 'src/pinia/modules/grewSearch';
 import { sentence_t } from 'src/types/main_types';
+import { PropType, defineComponent } from 'vue';
 
-export default {
+export default defineComponent({
   components: {
     SentenceCard,
     GrewSearch,
@@ -70,7 +71,24 @@ export default {
       next();
     }
   },
-  props: ['projectname', 'samplename', 'nr', 'user'],
+  props: {
+    projectname: {
+      type: String as PropType<string>,
+      required: true,
+    },
+    samplename: {
+      type: String as PropType<string>,
+      required: true,
+    },
+    user: {
+      type: String as PropType<string>,
+      required: true,
+    },
+    nr: {
+      type: Number as PropType<number>,
+      required: true,
+    },
+  },
   data() {
     const sentencesFrozen: {
       list: string[];
@@ -174,5 +192,5 @@ export default {
       this.sentencesFrozen = { list: heavyList, indexes: index2sentId };
     },
   },
-};
+});
 </script>

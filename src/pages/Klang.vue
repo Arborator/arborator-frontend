@@ -25,13 +25,16 @@
   </q-page>
 </template>
 
-<script>
+<script lang="ts">
+import notifyError from 'src/utils/notify';
 import api from '../api/backend-api';
+import { KlangProject_t } from 'src/api/backend-types';
 
 export default {
   data() {
+    const projects: KlangProject_t[] = [];
     return {
-      projects: [],
+      projects,
     };
   },
   mounted() {

@@ -3,11 +3,11 @@
  */
 
 /**
-  * @description              This is api testing for ProjectsHub component
-  * @version                  1.0
-  * @author                   Gerdes
-  * @createdBy                Khoa
-  */
+ * @description              This is api testing for ProjectsHub component
+ * @version                  1.0
+ * @author                   Gerdes
+ * @createdBy                Khoa
+ */
 
 // This is backend_api which we are gonna test
 const backend_api = require('src/api/backend-api').default;
@@ -34,9 +34,11 @@ describe('backend_api testing getProjects()', () => {
 
       // see if each field's type is correct
       keys.forEach((key) => {
-        if (element[key] === null && key === 'image') { return; }
+        if (element[key] === null && key === 'image') {
+          return;
+        }
         if (fields[key] === 'array') expect(Array.isArray(element[key])).toBeTruthy();
-        else expect(typeof (element[key])).toBe(fields[key]);
+        else expect(typeof element[key]).toBe(fields[key]);
       });
     });
   });

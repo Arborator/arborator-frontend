@@ -8,4 +8,5 @@ babel.config.js
 /src-ssr
 .eslintrc.js
 test/
+/src/@types
 src/pages/Project.vue

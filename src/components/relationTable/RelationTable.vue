@@ -79,6 +79,8 @@
 <script lang="ts">
 import { QTree } from 'quasar';
 import ResultView from '../ResultView.vue';
+import { mapState } from 'pinia';
+import { useProjectStore } from 'src/pinia/modules/project';
 // import dummydata from '../assets/data.json';
 
 export default {
@@ -108,10 +110,11 @@ export default {
     };
   },
   computed: {
+    ...mapState(useProjectStore, ['getProjectConfig']),
     // sentenceCount() {return 17}, // todo get the total number of sentences in the table
   },
   mounted() {
-    const splitters = this.$store.getters['config/getProjectConfig'].annotationFeatures.DEPREL.map(({ join }) => join).join('');
+    const splitters = this.getProjectConfig.annotationFeatures.DEPREL.map(({ join }) => join).join('');
     const splitregex = new RegExp(`[${splitters}]`, 'g'); // = /[:@]/g
 
     this.relationtree = [];
@@ -122,12 +125,12 @@ export default {
       match = splitregex.exec(edge + splitters[0]);
       if (match) {
         const r = edge.substr(0, match.index);
-        const alr = lasta.filter((rr) => rr.label === r);
+        const alr = lasta.filter((rr) => (rr as any).label === r);
         if (alr.length === 0) {
           newo = { label: r, children: [] };
-          newo.selectable = r === edge; // some labels don't exist without children
-          newo.icon = r === edge ? 'view_module' : null;
-          lasta.push(newo);
+          (newo as any).selectable = r === edge; // some labels don't exist without children
+          (newo as any).icon = r === edge ? 'view_module' : null;
+          (lasta as any).push(newo as unknown as any);
         } else [newo] = alr;
         lasta = newo.children;
       }
@@ -135,8 +138,8 @@ export default {
     }
     // this.$refs.tree.expandAll(); // doesn't seem to work without timeout
     setTimeout(() => {
-      this.$refs.tree.expandAll();
-      this.$refs.filter.focus();
+      (this.$refs.tree as any).expandAll();
+      (this.$refs.filter as HTMLElement).focus();
     }, 500);
   },
   methods: {
@@ -146,7 +149,7 @@ export default {
      * @param {Event} eve
      * @returns void
      */
-    getTable(eve) {
+    getTable() {
       // console.log(444,eve,this.edges, this.currentEdge)
       const keyset = new Set();
       // var table = {};
@@ -156,36 +159,36 @@ export default {
       }
       // construct fields
       // let fields = [{ name: 'gov', label: row => 'Governor: ' + row.gov, 'field': row => row.gov}];
-      const fields = [{ name: 'gov', label: '↗', field: (row) => row.gov }];
+      const fields = [{ name: 'gov', label: '↗', field: (row: any) => row.gov }];
       for (const key of keyset) {
-        fields.push({
+        (fields as any).push({
           name: key,
           align: 'center',
           label: key,
           field: key,
         });
       }
-      this.table.columns = fields;
-      this.relationstotal[this.currentEdge] = 0;
+      this.table.columns = fields as any;
+      (this.relationstotal as any)[this.currentEdge] = 0;
       // construct rows
       const rows = [];
       for (const gov of keyset) {
-        const row = { gov };
+        const row = { gov } as any;
         for (const dep of keyset) {
-          if (!Object.prototype.hasOwnProperty.call(this.edges[this.currentEdge], gov)) {
-            row[dep] = {};
+          if (!Object.prototype.hasOwnProperty.call(this.edges[this.currentEdge], gov as any)) {
+            row[dep as string] = {} as any;
             continue;
           }
-          if (!Object.prototype.hasOwnProperty.call(this.edges[this.currentEdge], dep)) {
-            row[dep] = {};
+          if (!Object.prototype.hasOwnProperty.call(this.edges[this.currentEdge], dep as any)) {
+            row[dep as string] = {} as any;
             continue;
           }
-          row[dep] = this.edges[this.currentEdge][gov][dep];
-          this.relationstotal[this.currentEdge] += Object.keys(this.edges[this.currentEdge][gov][dep]).length;
+          row[dep as string] = this.edges[this.currentEdge][gov as string][dep as string];
+          (this.relationstotal as any)[this.currentEdge] += Object.keys(this.edges[this.currentEdge][gov as string][dep as string]).length as any;
         }
         rows.push(row);
       }
-      this.table.rows = rows;
+      this.table.rows = rows as any;
       this.table.pagination.rowsNumber = rows.length;
     },
     // createTable(edge){
@@ -235,7 +238,7 @@ export default {
      * @param {Object} props
      * @returns void
      */
-    showTrees(props) {
+    showTrees(props: any) {
       this.tablename = `${this.currentEdge} relation table`;
       this.selectedResults = props;
       this.visuTreeDial = true;
@@ -246,7 +249,7 @@ export default {
      * @param {*} s
      * @returns {Boolean}
      */
-    isString(s) {
+    isString(s: unknown) {
       return typeof s === 'string' || s instanceof String;
     },
   },

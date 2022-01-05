@@ -44,40 +44,32 @@ Cypress.Commands.add('quasar', { prevSubject: 'element' }, (subject, mode, optio
       .invoke('show')
       .click({ force: true })
       .then(() => {
-        cy.get('.q-popover')
-          .contains(option)
-          .click();
+        cy.get('.q-popover').contains(option).click();
       });
   } else if (mode === 'grid') {
     cy.wrap(subject).within(() => {
       cy.get('input').click({ force: true, multiple: true });
     });
   } else if (mode === 'tag-list') {
-    Object.keys(option)
-      .forEach((x) => {
-        cy.wrap(subject)
-          .within(() => {
-            cy.get('input')
-              .first()
-              .type(`${option[x]}{enter}`);
-          });
+    Object.keys(option).forEach((x) => {
+      cy.wrap(subject).within(() => {
+        cy.get('input').first().type(`${option[x]}{enter}`);
       });
+    });
   } else {
     cy.wrap(subject)
       .invoke('show')
-      .within(($subject) => { // eslint-disable-line
+      .within(($subject) => {
+        // eslint-disable-line
         switch (mode) {
           case 'date':
           case 'text':
           case 'email':
-            cy.get('input:first')
-              .type(option)
-              .should('have.value', option);
+            cy.get('input:first').type(option).should('have.value', option);
             break;
           case 'radio':
           case 'checkbox':
-            cy.contains(option)
-              .click();
+            cy.contains(option).click();
             break;
           default:
             break;

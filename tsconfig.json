@@ -1,6 +1,7 @@
 {
   "extends": "@quasar/app/tsconfig-preset", // added for quasar
   "include": ["./src", "src/types"],
+  "exclude": ["src/@types/snapsvg-cjs"],
   "compilerOptions": {
     /* Visit https://aka.ms/tsconfig.json to read more about this file */
     "baseUrl": ".", // added for quasar

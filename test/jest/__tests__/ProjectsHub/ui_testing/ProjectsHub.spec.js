@@ -30,9 +30,7 @@ import * as util from 'test/jest/utils';
 import { API } from 'src/boot/axios-adapters/axios-api';
 
 // These are to import all Quasar Components
-const {
-  Quasar, Notify, Cookies, Dialog,
-} = All;
+const { Quasar, Notify, Cookies, Dialog } = All;
 const components = Object.keys(All).reduce((object, key) => {
   const val = All[key];
   if (val && val.component && val.component.name !== null) {
@@ -64,7 +62,10 @@ describe('Mount ProjectsHub component', () => {
     store,
     localVue,
     mocks: {
-      $t, $tc, $n, $d,
+      $t,
+      $tc,
+      $n,
+      $d,
     },
     provide: qLayoutInjections(),
   });

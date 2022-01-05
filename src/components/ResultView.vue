@@ -23,7 +23,7 @@
           style="height: 80vh; width: 90vw"
           :virtual-scroll-slice-size="5"
           :virtual-scroll-item-size="200"
-          type="table"
+          type="freezeSamples"
         >
           <template #default="{ item, index }">
             <tr :key="index">
@@ -56,27 +56,62 @@
   </q-card>
 </template>
 
-<script>
+<script lang="ts">
 import api from '../api/backend-api';
-import SentenceCard from './sentence/SentenceCard';
+import SentenceCard from './sentence/SentenceCard.vue';
+import { PropType } from 'vue';
+import notifyError from 'src/utils/notify';
+import { sample_t } from 'src/api/backend-types';
 
+interface searchresults_t {
+  [key: string]: { [key: string]: { sample_name: string } };
+}
 export default {
   components: { SentenceCard },
-  props: ['searchresults', 'totalsents', 'searchscope', 'parentOnShowTable'],
+  // props: ['searchresults', 'totalsents', 'searchscope', 'parentOnShowTable'],
+  props: {
+    searchresults: {
+      type: Object as PropType<searchresults_t>,
+      required: true,
+    },
+    totalsents: {
+      type: Number,
+      required: true,
+    },
+    searchscope: {
+      type: String,
+      required: true,
+    },
+    parentOnShowTable: {
+      type: Function as PropType<CallableFunction>,
+      required: true,
+    },
+  },
 
   data() {
+    const searchresultsCopy: searchresults_t = {};
+    const samples: sample_t[] = [];
+    const samplesFrozen: {
+      list: string[][];
+      indexes: { [key: number]: string[] };
+      samples: sample_t[];
+      selected: { [key: number]: boolean };
+    } = { list: [], indexes: {}, samples: [], selected: {} };
+
     return {
+      searchresultsCopy,
       resultSearchDialog: true,
-      samplesFrozen: { list: [], indexes: {}, samples: [] },
+      samplesFrozen,
       loading: false,
       inResult: true,
       selected: [],
+      samples,
     };
   },
   computed: {
     sentenceCount() {
       return Object.keys(this.searchresults)
-        .map((sa) => Object.keys(this.searchresults[sa]))
+        .map((sa) => this.searchresults[sa])
         .flat().length; // number of keys in subobjects
     },
   },
@@ -94,15 +129,16 @@ export default {
       // console.log('samples to freeze', JSON.stringify(this.searchresults) );
       const listIds = []; // list: [["WAZA_10_Bluetooth-Lifestory_MG","WAZA_10_Bluetooth-Lifestory_MG__86"],["WAZA_10_Bluetooth-Lifestory_MG","WAZA_10_Bluetooth-Lifestory_MG__79"], ...
       let index = 0;
-      const index2Ids = {}; // object: {"0":["WAZA_10_Bluetooth-Lifestory_MG","WAZA_10_Bluetooth-Lifestory_MG__86"],"1":["WAZA_10_Bluetooth-Lifestory_MG","WAZA_10_Bluetooth-Lifestory_MG__79"], ...
-      const selectedIndex = {};
+      const index2Ids: { [key: number]: string[] } = {}; // object: {"0":["WAZA_10_Bluetooth-Lifestory_MG","WAZA_10_Bluetooth-Lifestory_MG__86"],"1":["WAZA_10_Bluetooth-Lifestory_MG","WAZA_10_Bluetooth-Lifestory_MG__79"], ...
+      const selectedIndex: { [key: number]: boolean } = {};
+      this.searchresultsCopy = this.searchresults;
       // this is sent to the sentenceCard: searchresults[item[0]][item[1]], items from this.samplesFrozen.list
       for (const sampleId in this.searchresults) {
         for (const sentId in this.searchresults[sampleId]) {
           listIds.push([sampleId, sentId]);
           index2Ids[index] = [sampleId, sentId];
           selectedIndex[index] = true;
-          this.searchresults[sampleId][sentId].sample_name = sampleId;
+          this.searchresultsCopy[sampleId][sentId].sample_name = sampleId;
           index += 1;
         }
       }
@@ -112,6 +148,7 @@ export default {
         list: listIds,
         indexes: index2Ids,
         selected: selectedIndex,
+        samples: JSON.parse(JSON.stringify(this.samples)),
       };
       // console.log(this.samplesFrozen)
     },
@@ -136,26 +173,25 @@ export default {
      * @returns void
      */
     save() {
-      const changedConllUser = this.$store.getters['user/getUserInfos'].username;
-      const sentenceIds = [];
+      const sentenceIds: string[] = [];
       const objLength = Object.keys(this.samplesFrozen.selected).length;
       for (let i = 0; i < objLength; i += 1) {
         if (this.samplesFrozen.selected[i] === true) sentenceIds.push(this.samplesFrozen.list[i][1]);
       }
-      for (const samplename in this.searchresults) {
-        for (const sentId in this.searchresults[samplename]) {
+      for (const samplename in this.searchresultsCopy) {
+        for (const sentId in this.searchresultsCopy[samplename]) {
           if (sentenceIds.includes(sentId) === false) {
             console.log(sentId);
-            delete this.searchresults[samplename][sentId];
+            delete this.searchresultsCopy[samplename][sentId];
           }
         }
-        if (Object.keys(this.searchresults[samplename]).length === 0) {
-          delete this.searchresults[samplename];
+        if (Object.keys(this.searchresultsCopy[samplename]).length === 0) {
+          delete this.searchresultsCopy[samplename];
         }
       }
-      if (Object.keys(this.searchresults) !== 0) {
-        const datasample = { data: this.searchresults };
-        api.saveConll(this.$route.params.projectname, datasample).then((response) => {
+      if (Object.keys(this.searchresultsCopy).length !== 0) {
+        const datasample = { data: this.searchresultsCopy };
+        api.saveConll(this.$route.params.projectname as string, datasample).then(() => {
           this.resultSearchDialog = false;
           this.parentOnShowTable(this.resultSearchDialog);
           this.$q.notify({ message: 'Conll Saved' });
@@ -179,17 +215,17 @@ export default {
     //     });
     //   });
     getProjectSamples() {
-      api.getProjectSamples(this.$route.params.projectname).then((response) => {
+      api.getProjectSamples(this.$route.params.projectname as string).then((response) => {
         this.samples = response.data;
       });
     },
     deleteSamples() {
-      for (const sample of this.table.selected) {
+      for (const sample of this.samplesFrozen.samples) {
         api
-          .deleteSample(this.$route.params.projectname, sample.sample_name)
-          .then((response) => {
-            this.table.selected = [];
-            this.showNotif('top-right', 'deletesuccess');
+          .deleteSample(this.$route.params.projectname as string, sample.sample_name)
+          .then(() => {
+            this.samplesFrozen.selected = [];
+            this.$q.notify({ message: 'delete success' });
             this.getProjectSamples();
           })
           .catch((error) => {

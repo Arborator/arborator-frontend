@@ -76,7 +76,7 @@
   </q-card>
 </template>
 
-<script>
+<script lang="ts">
 import { QTree } from 'quasar';
 import ResultView from '../ResultView.vue';
 // import dummydata from '../assets/data.json';

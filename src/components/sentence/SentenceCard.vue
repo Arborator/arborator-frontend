@@ -18,7 +18,7 @@
         <q-space />
         <template v-if="openTabUser !== ''">
           <q-btn
-            v-if="isLoggedIn && exerciseLevel <= 3 && !$store.getters['config/isTeacher']"
+            v-if="isLoggedIn && exerciseLevel <= 3 && !isTeacher"
             flat
             round
             dense
@@ -28,19 +28,11 @@
             ><q-tooltip>See your annotation errors</q-tooltip>
           </q-btn>
 
-          <q-btn v-if="$store.getters['config/isTeacher']" flat round dense icon="school" :disable="openTabUser === ''" @click="save('teacher')">
+          <q-btn v-if="isTeacher" flat round dense icon="school" :disable="openTabUser === ''" @click="save('teacher')">
             <q-tooltip>Save as teacher</q-tooltip>
           </q-btn>
 
-          <q-btn
-            v-if="$store.getters['config/isTeacher']"
-            flat
-            round
-            dense
-            icon="linear_scale"
-            :disable="openTabUser === ''"
-            @click="save('base_tree')"
-          >
+          <q-btn v-if="isTeacher" flat round dense icon="linear_scale" :disable="openTabUser === ''" @click="save('base_tree')">
             <q-tooltip>Save as base_tree</q-tooltip>
           </q-btn>
 
@@ -48,15 +40,7 @@
             <q-tooltip>Save as Emmett</q-tooltip>
           </q-btn>
 
-          <q-btn
-            v-if="isLoggedIn && !$store.getters['config/isTeacher']"
-            flat
-            round
-            dense
-            icon="save"
-            :disable="openTabUser === '' || !canSave"
-            @click="save('')"
-          >
+          <q-btn v-if="isLoggedIn && !isTeacher" flat round dense icon="save" :disable="openTabUser === '' || !canSave" @click="save('')">
             <q-tooltip
               >Save the tree of {{ openTabUser }} as <b>{{ userId }}</b></q-tooltip
             >
@@ -66,15 +50,7 @@
           <q-btn v-if="isLoggedIn" flat round dense icon="post_add" :disable="openTabUser === ''" @click="openMetaDialog()">
             <q-tooltip>Edit this tree's metadata</q-tooltip>
           </q-btn>
-          <q-btn
-            v-if="isLoggedIn && $store.getters['config/isTeacher']"
-            flat
-            round
-            dense
-            icon="filter_9_plus"
-            :disable="openTabUser === ''"
-            @click="openMultiEditDialog"
-          >
+          <q-btn v-if="isLoggedIn && isTeacher" flat round dense icon="filter_9_plus" :disable="openTabUser === ''" @click="openMultiEditDialog">
             <q-tooltip>multi edit dialog</q-tooltip>
           </q-btn>
 
@@ -127,27 +103,9 @@
               </q-item>
             </q-list>
           </q-btn-dropdown>
-          <q-btn
-            v-if="isLoggedIn"
-            flat
-            round
-            dense
-            icon="undo"
-            :disable="openTabUser === '' || !canUndo"
-            :class="'undo-button'"
-            @click="undo('user')"
-          >
+          <q-btn v-if="isLoggedIn" flat round dense icon="undo" :disable="openTabUser === '' || !canUndo" :class="'undo-button'" @click="undo()">
           </q-btn>
-          <q-btn
-            v-if="isLoggedIn"
-            flat
-            round
-            dense
-            icon="ion-redo"
-            :disable="openTabUser === '' || !canRedo"
-            :class="'redo-button'"
-            @click="redo('user')"
-          >
+          <q-btn v-if="isLoggedIn" flat round dense icon="ion-redo" :disable="openTabUser === '' || !canRedo" :class="'redo-button'" @click="redo()">
           </q-btn>
         </template>
       </div>
@@ -233,13 +191,11 @@
   </q-card>
 </template>
 
-<script>
+<script lang="ts">
 // import Vue from "vue";
-import mitt from 'mitt';
+import mitt, { Emitter } from 'mitt';
 
-import { mapGetters } from 'vuex';
-
-import { ReactiveSentence } from 'dependencytreejs/lib'; // for test ony at the moment
+import { ReactiveSentence } from 'dependencytreejs/src/ReactiveSentence';
 import api from '../../api/backend-api';
 
 import VueDepTree from './VueDepTree.vue';
@@ -252,6 +208,18 @@ import ExportSVG from './ExportSVG.vue';
 import TokenDialog from './TokenDialog.vue';
 import StatisticsDialog from './StatisticsDialog.vue';
 import MultiEditDialog from './MultiEditDialog.vue';
+import { reactive_sentences_obj_t, sentence_bus_events_t, sentence_bus_t } from 'src/types/main_types';
+import { mapActions, mapState } from 'pinia';
+import { useProjectStore } from 'src/pinia/modules/project';
+import notifyError from 'src/utils/notify';
+import { useUserStore } from 'src/pinia/modules/user';
+import { useGrewSearchStore } from 'src/pinia/modules/grewSearch';
+
+function sentenceBusFactory(): sentence_bus_t {
+  let sentenceBus: Emitter<sentence_bus_events_t> = mitt<sentence_bus_events_t>();
+  (sentenceBus as any).sentences = {};
+  return sentenceBus as sentence_bus_t;
+}
 
 export default {
   name: 'SentenceCard',
@@ -269,9 +237,13 @@ export default {
   },
   props: ['index', 'sentence', 'sentenceId', 'searchResult', 'exerciseLevel'],
   data() {
+    const hasPendingChanges: { [key: string]: boolean } = {};
+    const reactiveSentencesObj: reactive_sentences_obj_t = {};
+    const shownmetanames: string[] = [];
     return {
-      sentenceBus: new mitt(), // Event/Object Bus that communicate between all components
-      reactiveSentencesObj: {},
+      sentenceBus: sentenceBusFactory(),
+      exportedConll: '',
+      reactiveSentencesObj,
       openTabUser: '',
       animated: false,
       sentenceData: this.$props.sentence,
@@ -290,8 +262,8 @@ export default {
           icon: 'report_problem',
         },
       },
+      shownmetanames,
       conllSavedCounter: 0,
-      shownmetanames: [],
       shownmetas: {},
       view: null,
       sentenceLink: '',
@@ -299,20 +271,31 @@ export default {
       canUndo: false,
       canRedo: false,
       canSave: true,
-      hasPendingChanges: {},
+      hasPendingChanges,
       forceRerender: 0,
     };
   },
 
   computed: {
-    ...mapGetters('config', ['isAdmin', 'isGuest', 'guests', 'admins', 'exerciseMode', 'shownmeta']),
+    ...mapState(useProjectStore, [
+      'isAdmin',
+      'isGuest',
+      'isTeacher',
+      'guests',
+      'admins',
+      'exerciseMode',
+      'shownmeta',
+      'getProjectConfig',
+      'diffMode',
+    ]),
+    ...mapState(useUserStore, ['isLoggedIn', 'getUserInfos']),
     lastModifiedTime() {
       // this.forceRerender; it was like this when i found it. Should it have = 0 ?
-      const lastModifiedTime = {};
+      const lastModifiedTime: { [key: string]: string } = {};
       for (const user of Object.keys(this.reactiveSentencesObj)) {
         const { timestamp } = this.reactiveSentencesObj[user].state.metaJson;
-        const timeDifferenceNumber = (Math.round(Date.now()) - parseInt(timestamp, 10)) / 1000;
-        let timeDifferenceString;
+        const timeDifferenceNumber = (Math.round(Date.now()) - parseInt(timestamp as string, 10)) / 1000;
+        let timeDifferenceString = '';
         if (timeDifferenceNumber < 10) {
           timeDifferenceString = '< 10s';
         } else if (timeDifferenceNumber / 60 < 1) {
@@ -344,51 +327,47 @@ export default {
      * Check the store to see if a user is logged in or not
      * @returns {Boolean}
      */
-    isLoggedIn() {
-      return this.$store.getters['user/isLoggedIn'];
-    },
     filteredConlls() {
       let filteredConlls = this.sentenceData.conlls;
       if (this.exerciseLevel !== 1 && !this.isAdmin && this.exerciseMode) {
-        const filteredConllsTemp = Object.entries(this.sentenceData.conlls).filter(([user, conll]) => user !== 'teacher');
-        filteredConlls = {};
-        for (const [user, conll] of filteredConllsTemp) {
-          filteredConlls[user] = conll;
-        }
+        return Object.fromEntries(Object.entries(filteredConlls).filter(([user]) => user !== 'teacher'));
+        // const filteredConllsTemp = Object.entries(this.sentenceData.conlls).filter(([user, conll]) => user !== 'teacher');
+        // filteredConlls = {};
+        // for (const [user, conll] of filteredConllsTemp) {
+        //   filteredConlls[user] = conll;
+        // }
       }
       return this.orderConlls(filteredConlls);
     },
     userId() {
-      return this.$store.getters['user/getUserInfos'].username;
+      return this.getUserInfos.username;
     },
     isBernardCaron() {
-      return (
-        this.$store.getters['user/getUserInfos'].username === 'bernard.l.caron' ||
-        this.$store.getters['user/getUserInfos'].username === 'kirianguiller'
-      );
+      return this.getUserInfos.username === 'bernard.l.caron' || this.getUserInfos.username === 'kirianguiller';
     },
     diffUserId() {
-      const value = this.$store.getters['config/diffUserId'];
+      const value = useProjectStore().diffUserId;
       return value || this.userId;
     },
   },
   created() {
-    this.shownmetanames = this.$store.getters['config/getProjectConfig'].shownmeta;
+    this.shownmetanames = this.getProjectConfig.shownmeta;
 
     for (const [userId, conll] of Object.entries(this.sentence.conlls)) {
       const reactiveSentence = new ReactiveSentence();
-      reactiveSentence.fromSentenceConll(conll);
+      reactiveSentence.fromSentenceConll(conll as string);
       this.reactiveSentencesObj[userId] = reactiveSentence;
       this.hasPendingChanges[userId] = false;
     }
 
-    this.diffMode = !!this.$store.getters['config/diffMode'];
+    this.diffMode = !!this.diffMode;
 
     this.sentenceBus.on('changed:metaText', ({ newMetaText }) => {
       this.changeMetaText(newMetaText);
     });
   },
   methods: {
+    ...mapActions(useGrewSearchStore, ['remove_pending_modification']),
     /**
      * Set the sentence link and copy it after 500 ms
      *
@@ -399,7 +378,7 @@ export default {
         this.$route.params.projectname
       }/${this.sentence.sample_name}/${this.index + 1}/${this.graphInfo.user}`;
       setTimeout(() => {
-        this.$refs.linkinput.select();
+        (this.$refs.linkinput as HTMLInputElement).select();
         document.execCommand('copy');
       }, 500);
     },
@@ -437,7 +416,7 @@ export default {
      * @param {Event} event
      * @returns void
      */
-    ttselect(event) {
+    ttselect(event: Event) {
       // only if a tab is open
       if (this.openTabUser !== '') {
         this.sentenceBus.emit('open:tokenDialog', {
@@ -446,14 +425,14 @@ export default {
         });
       }
     },
-    undo(mode) {
+    undo() {
       if (this.openTabUser !== '') {
         this.sentenceBus.emit('action:undo', {
           userId: this.openTabUser,
         });
       }
     },
-    redo(mode) {
+    redo() {
       if (this.openTabUser !== '') {
         this.sentenceBus.emit('action:redo', {
           userId: this.openTabUser,
@@ -471,7 +450,7 @@ export default {
      * Receive canUndo, canRedo status from VueDepTree child component and
      * decide whether to disable undo, redo buttons or not
      */
-    handleStatusChange(event) {
+    handleStatusChange(event: { canUndo: boolean; canRedo: boolean }) {
       this.canUndo = event.canUndo;
       this.canRedo = event.canRedo;
       // this.canSave = event.canSave;
@@ -496,10 +475,10 @@ export default {
      *
      * @returns void
      */
-    save(mode) {
+    save(mode: string) {
       const openedTreeUser = this.openTabUser;
 
-      let changedConllUser = this.$store.getters['user/getUserInfos'].username;
+      let changedConllUser = this.getUserInfos.username;
       if (mode) {
         changedConllUser = mode;
       }
@@ -517,7 +496,7 @@ export default {
         user_id: changedConllUser,
       };
       api
-        .updateTree(this.$route.params.projectname, this.$props.sentence.sample_name, data)
+        .updateTree(this.$route.params.projectname as string, this.$props.sentence.sample_name, data)
         .then((response) => {
           if (response.status === 200) {
             this.sentenceBus.emit('action:saved', {
@@ -542,7 +521,7 @@ export default {
               this.exportedConll = exportedConll;
             }
             this.graphInfo.dirty = false;
-            this.showNotif('top', 'saveSuccess');
+            this.$q.notify({ position: 'top', message: 'saveSuccess' });
             this.forceRerender += 1; // nasty trick to rerender the indication of last time
           }
         })
@@ -561,10 +540,10 @@ export default {
      *
      * @returns void
      */
-    onConllGraphUpdate(payload) {
+    onConllGraphUpdate(payload: any) {
       this.graphInfo = payload;
-      if (this.graphInfo.dirty === true) this.$store.commit('add_pending_modification', this.sentenceId);
-      else this.$store.commit('remove_pending_modification', this.sentenceId);
+      if (this.graphInfo.dirty === true) this.add_pending_modification(this.sentenceId);
+      else this.remove_pending_modification(this.sentenceId);
     },
     openMetaDialog() {
       // "this.openTabUser" contains the user name
@@ -578,7 +557,7 @@ export default {
      * @param {String} alert 'warn', ect.
      * @returns void
      */
-    changeMetaText(newMetaText) {
+    changeMetaText(newMetaText: string) {
       this.sentenceData.sentence = newMetaText;
     },
 
@@ -586,45 +565,32 @@ export default {
       this.diffMode = !this.diffMode;
       for (const otherUserId in this.reactiveSentencesObj) {
         if (otherUserId !== this.diffUserId) {
-          if (this.sentenceBus[otherUserId]) {
-            this.sentenceBus[otherUserId].plugDiffTree(this.diffMode ? this.reactiveSentencesObj[this.diffUserId] : {});
+          if (this.sentenceBus.sentenceSVGs[otherUserId]) {
+            if (this.diffMode) {
+              this.sentenceBus.sentenceSVGs[otherUserId].plugDiffTree(this.reactiveSentencesObj[this.diffUserId] as ReactiveSentence);
+            }
             // this.sentenceBus[otherUserId].drawTree()
           }
           this.conllSavedCounter += 1;
         }
       }
     },
-    orderConlls(filteredConlls) {
+    orderConlls(filteredConlls: { [key: string]: string }) {
       const userAndTimestamps = [];
       for (const [user, reactiveSentence] of Object.entries(this.reactiveSentencesObj)) {
         userAndTimestamps.push({
           user,
-          timestamp: parseInt(reactiveSentence.state.metaJson.timestamp, 10),
+          timestamp: parseInt(reactiveSentence.state.metaJson.timestamp as string, 10),
         });
       }
       // sort from newest to oldest
       const orderedUserAndTimestamps = userAndTimestamps.sort((a, b) => b.timestamp - a.timestamp);
 
-      const orderedConlls = {};
+      const orderedConlls: { [key: string]: string } = {};
       for (const userAndTimestamp of orderedUserAndTimestamps) {
         orderedConlls[userAndTimestamp.user] = filteredConlls[userAndTimestamp.user];
       }
       return orderedConlls;
-    },
-    showNotif(position, alert) {
-      const { color, textColor, multiLine, icon, message, avatar, actions } = this.alerts[alert];
-      const buttonColor = color ? 'white' : void 0;
-      this.$q.notify({
-        color,
-        textColor,
-        icon,
-        message,
-        position,
-        avatar,
-        multiLine,
-        actions,
-        timeout: 2000,
-      });
     },
   },
 };

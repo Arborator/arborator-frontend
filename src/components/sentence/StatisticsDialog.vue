@@ -11,7 +11,7 @@
       </q-bar>
       <q-card-section style="height: 200px">
         <div>
-          <p v-for="(tag, index) of ['UPOS', 'DEPREL', 'HEAD']" :key="index">
+          <p v-for="(tag, index) in tagSet" :key="index">
             {{ tag }} correct : {{ corrects[tag] }}/{{ totals[tag] }} ({{ (100 * corrects[tag]) / totals[tag] }}%)
           </p>
         </div>
@@ -27,21 +27,44 @@
   <!----------------- End uposDialog ------------------->
 </template>
 
-<script>
+<script lang="ts">
+import { PropType } from 'vue';
+import { sentence_bus_t } from 'src/types/main_types';
+
+type tag_t = 'UPOS' | 'DEPREL' | 'HEAD';
+type scores_on_tags_t = { [key in tag_t]: number };
+interface stats_t {
+  corrects: scores_on_tags_t;
+  totals: scores_on_tags_t;
+}
+
 export default {
-  props: ['sentenceBus', 'conlls'],
+  props: {
+    sentenceBus: {
+      type: Object as PropType<sentence_bus_t>,
+      required: true,
+    },
+    conlls: {
+      type: Object as PropType<{ teacher: string }>,
+      required: true,
+    },
+  },
   data() {
+    const tagSet: tag_t[] = ['UPOS', 'HEAD', 'DEPREL'];
+    const corrects: scores_on_tags_t = { UPOS: 0, DEPREL: 0, HEAD: 0 };
+    const totals: scores_on_tags_t = { UPOS: 0, DEPREL: 0, HEAD: 0 };
     return {
+      tagSet,
       statisticsDialogOpened: false,
       userId: '',
-      corrects: {},
-      totals: {},
+      corrects,
+      totals,
     };
   },
   mounted() {
     this.sentenceBus.on('open:statisticsDialog', ({ userId }) => {
       this.userId = userId;
-      const stats = this.sentenceBus[this.userId].getDiffStats(this.conlls.teacher);
+      const stats = this.sentenceBus.sentenceSVGs[this.userId].getDiffStats(this.conlls.teacher) as stats_t;
 
       this.corrects = stats.corrects;
       this.totals = stats.totals;

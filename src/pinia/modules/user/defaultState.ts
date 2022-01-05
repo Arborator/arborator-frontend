@@ -6,7 +6,7 @@ export interface UserStateInterface {
 
   as_json: string | null;
   auth_provider: number | null;
-  created_date: string | null;
+  created_date: number | null;
   family_name: string | null;
   first_name: string | null;
   get_id: string | null;
@@ -15,14 +15,14 @@ export interface UserStateInterface {
   is_active: boolean;
   is_anonymous: true;
   is_authenticated: boolean;
-  last_seen: string | null;
+  last_seen: number | null;
   make_unique_nickname: string | null;
   make_valid_nickname: string | null;
   picture_url: string | null;
   query: string | null;
   query_class: string | null;
   super_admin: boolean;
-  username: string | null;
+  username: string;
 }
 
 // default user state
@@ -51,6 +51,6 @@ export default function defaultState(): UserStateInterface {
     query: null,
     query_class: null,
     super_admin: false,
-    username: null,
+    username: '',
   };
 }

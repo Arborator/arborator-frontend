@@ -207,10 +207,10 @@
             v-model="shownfeatures"
             filled
             multiple
-            :options="$store.getters['config/shownfeatureschoices']"
+            :options="shownfeatureschoices"
             use-chips
             stack-label
-            :label="$t('projectSettings').shownFeaturesTokens"
+            :label="$t('projectSettings.shownFeaturesTokens')"
           />
         </q-card-section>
         <q-card-section>
@@ -218,10 +218,10 @@
             v-model="shownmeta"
             filled
             multiple
-            :options="$store.getters['config/shownmetachoices']"
+            :options="shownmetachoices"
             use-chips
             stack-label
-            :label="$t('projectSettings').shownFeaturesSentences"
+            :label="$t('projectSettings.shownFeaturesSentences')"
           />
         </q-card-section>
       </q-card>
@@ -239,7 +239,7 @@
         <q-btn
           color="bg-primary"
           text-color="primary"
-          :label="$t('projectSettings').annotationSettingsSave"
+          :label="$t('projectSettings.annotationSettingsSave')"
           icon="save"
           dense
           flat
@@ -291,8 +291,7 @@
   </q-card>
 </template>
 
-<script>
-import { mapActions, mapGetters } from 'vuex';
+<script lang="ts">
 // import { codemirror } from "vue-codemirror";
 // import "codemirror/mode/python/python.js";
 // import "codemirror/lib/codemirror.css";
@@ -309,26 +308,33 @@ import 'codemirror/theme/material-darker.css';
 import api from '../api/backend-api';
 import UserSelectTable from './UserSelectTable.vue';
 import ConfirmAction from './ConfirmAction.vue';
-import { mapWritableState } from 'pinia';
+import { mapActions, mapState, mapWritableState } from 'pinia';
 import { useProjectStore } from 'src/pinia/modules/project';
 import { useMainStore } from 'src/pinia';
 import notifyError from 'src/utils/notify';
+import { sample_role_targetrole_t, user_t } from 'src/api/backend-types';
 
 export default {
   name: 'ProjectSettingsView',
   components: { Codemirror, UserSelectTable, ConfirmAction },
   props: ['projectname', 'projectTreesFrom'],
   data() {
+    const confirmActionCallback: CallableFunction = () => {
+      console.log('default callback');
+    };
+    const uploadImage: { image: string | null; submitting: boolean } = { image: null, submitting: false };
+    const addDefaultUserTreeDial = false;
+    const default_user_trees: user_t[] = [];
     return {
-      default_user_trees: [],
+      default_user_trees,
       addAdminDial: false,
       addGuestDial: false,
-      addDefaultUserTreeDial: false,
+      confirmActionCallback,
       confirmActionDial: false,
-      confirmActionCallback: null,
       confirmActionArg1: '',
-      uploadImage: { image: null, submitting: false },
+      uploadImage,
       annofjson: '',
+      addDefaultUserTreeDial,
       annofok: true,
       annofcomment: '',
       cmOption: {
@@ -354,8 +360,17 @@ export default {
       'shownfeatures',
       'shownmeta',
     ]),
-    ...mapGetters(useProjectStore, ['admins', 'guests', 'cleanedImage', 'shownfeatureschoices', 'shownmetachoices']),
-    ...mapGetters(useMainStore, ['isProjectAdmin']),
+    ...mapState(useProjectStore, [
+      'isGuest',
+      'isAdmin',
+      'admins',
+      'guests',
+      'cleanedImage',
+      'shownfeatureschoices',
+      'shownmetachoices',
+      'getAnnofjson',
+    ]),
+    ...mapState(useMainStore, ['isProjectAdmin']),
     // description: {
     //   get() {
     //     return this.$store.getters['config/description'];
@@ -441,21 +456,13 @@ export default {
     //     });
     //   },
     // },
-
-    // create a new computed property `isAdmin` for better clarity
-    isAdmin() {
-      return this.$store.getters['config/isAdmin'] || this.$store.getters['user/getUserInfos'].super_admin;
-    },
-    isGuest() {
-      return this.guests.includes(this.$store.getters['user/getUserInfos'].id);
-    },
   },
   mounted() {
-    this.annofjson = this.$store.getters['config/getAnnofjson'];
+    this.annofjson = this.getAnnofjson;
   },
 
   methods: {
-    ...mapActions(useProjectStore, ['updateProjectConlluSchema', 'resetAnnotationFeatures']),
+    ...mapActions(useProjectStore, ['updateProjectConlluSchema', 'resetAnnotationFeatures', 'updateProjectSettings']),
     /**
      * Parse annotation features. Display a related informative message dependeing on success
      *
@@ -468,18 +475,11 @@ export default {
         this.annofcomment = this.$t('projectSettings.checkAnnotation');
       } catch (e) {
         this.annofok = false;
-        this.annofcomment = e;
+        this.annofcomment = e as string; // This is dangerous
       }
     },
     saveAnnotationSettings() {
-      this.updateProjectConlluSchema({
-        annotationFeatures: JSON.parse(this.annofjson),
-        projectname: this.projectname,
-      })
-        // .dispatch('config/updateProjectConlluSchema', {
-        //   annotationFeatures: JSON.parse(this.annofjson),
-        //   projectname: this.projectname,
-        // })
+      this.updateProjectConlluSchema(this.projectname, JSON.parse(this.annofjson))
         .then(() => {
           this.$q.notify({ message: 'Change saved!' });
         })
@@ -493,15 +493,13 @@ export default {
         });
     },
     resetAnnotationFeaturesWrapper() {
-      this.resetAnnotationFeatures({
-        projectname: this.projectname,
-      });
+      this.resetAnnotationFeatures();
       // this.$store.dispatch('config/resetAnnotationFeatures', {
       //   projectname: this.projectname,
       // });
-      this.annofjson = this.$store.getters['config/getAnnofjson'];
+      this.annofjson = this.getAnnofjson;
     },
-    updateAdminsOrGuests(usersArray, targetRole) {
+    updateAdminsOrGuests(usersArray: user_t[], targetRole: sample_role_targetrole_t) {
       const newRolesArrayId = [];
       for (const user of usersArray) {
         newRolesArrayId.push(user.id);
@@ -510,7 +508,7 @@ export default {
         .updateManyProjectUserAccess(this.$props.projectname, targetRole, newRolesArrayId)
         .then((response) => {
           this.$q.notify({ message: 'Change saved!' });
-          this.$store.commit('config/set_project_settings', {
+          this.updateProjectSettings({
             admins: response.data.admins,
             guests: response.data.guests,
           });
@@ -519,12 +517,12 @@ export default {
           notifyError({ error });
         });
     },
-    removeAdmin(userid) {
+    removeAdmin(userid: string) {
       api
         .deleteProjectUserAccess(this.$props.projectname, userid)
         .then((response) => {
           this.$q.notify({ message: 'Change saved!' });
-          this.$store.commit('config/set_project_settings', {
+          this.updateProjectSettings({
             admins: response.data.admins,
             guests: response.data.guests,
           });
@@ -533,12 +531,12 @@ export default {
           notifyError({ error });
         });
     },
-    removeGuest(userid) {
+    removeGuest(userid: string) {
       api
         .deleteProjectUserAccess(this.$props.projectname, userid)
         .then((response) => {
           this.$q.notify({ message: 'Change saved!' });
-          this.$store.commit('config/set_project_settings', {
+          this.updateProjectSettings({
             admins: response.data.admins,
             guests: response.data.guests,
           });
@@ -547,20 +545,20 @@ export default {
           notifyError({ error });
         });
     },
-    addDefaultUserTree(selected) {
+    addDefaultUserTree(selected: any) {
       api
         .addDefaultUserTree(this.$props.projectname, selected[0])
-        .then((response) => {
+        .then(() => {
           this.$q.notify({ message: 'Change saved!' });
         })
         .catch((error) => {
           notifyError({ error });
         });
     },
-    removeDefaultUserTree(dutid) {
+    removeDefaultUserTree(dutid: string) {
       api
         .removeDefaultUserTree(this.$props.projectname, dutid)
-        .then((response) => {
+        .then(() => {
           this.$q.notify({ message: 'Change saved!' });
         })
         .catch((error) => {
@@ -573,16 +571,19 @@ export default {
     },
     uploadProjectImage() {
       this.uploadImage.submitting = true;
-      this.$store
-        .dispatch('config/postImage', this.uploadImage.image)
-        .then(() => {
-          this.uploadImage.submitting = false;
-          this.$q.notify({ message: 'Uploaded image saved!' });
-        })
-        .catch((error) => {
-          notifyError({ error });
-          this.uploadImage.submitting = false;
-        });
+      if (this.uploadImage.image) {
+        this.postImage(this.uploadImage.image)
+          .then(() => {
+            this.uploadImage.submitting = false;
+            this.$q.notify({ message: 'Uploaded image saved!' });
+          })
+          .catch((error) => {
+            notifyError({ error });
+            this.uploadImage.submitting = false;
+          });
+      } else {
+        this.$q.notify({ message: 'No image was selected', type: 'error' });
+      }
     },
     /**
      * Wrapper to display the confirm dialog prior to executing the method
@@ -591,7 +592,7 @@ export default {
      * @param {*} arg
      * @returns void
      */
-    triggerConfirm(method, arg) {
+    triggerConfirm(method: CallableFunction, arg: string) {
       this.confirmActionDial = true;
       this.confirmActionCallback = method;
       this.confirmActionArg1 = arg;

@@ -7,7 +7,7 @@
     selection="multiple"
     :rows="passedLexiconItems"
     :row-key="(row) => row.key"
-    :columns="table.columns"
+    :columns="table.fields"
     :visible-columns="table.visibleColumns"
     card-class="shadow-8"
     table-style="max-height:80vh"
@@ -153,13 +153,17 @@
   </q-table>
 </template>
 
-<script>
+<script lang="ts">
 import { computed } from 'vue';
-import { mapGetters } from 'vuex';
 import { computeFeatureString } from './lexiconHelper';
-import api from '../../api/backend-api';
-import { mapActions } from 'pinia';
+import { mapActions, mapState } from 'pinia';
 import { useLexiconStore } from 'src/pinia/modules/lexicon';
+import { useGrewSearchStore } from 'src/pinia/modules/grewSearch';
+import { table_t } from 'src/types/main_types';
+
+interface lexicon_item_t {
+  key: string;
+}
 
 export default {
   name: 'LexiconTable',
@@ -170,6 +174,70 @@ export default {
     return { parentSlots };
   },
   data() {
+    const table: table_t<lexicon_item_t> = {
+      fields: [
+        {
+          name: 'expand',
+          label: 'expand',
+          field: 'expand',
+          sortable: false,
+        },
+        {
+          name: 'form',
+          label: 'Form',
+          sortable: true,
+          align: 'left',
+          field: 'form',
+        },
+        {
+          name: 'lemma',
+          label: 'Lemma',
+          sortable: true,
+          align: 'left',
+          field: 'lemma',
+        },
+        {
+          name: 'pos',
+          label: 'POS',
+          sortable: true,
+          align: 'left',
+          field: 'pos',
+        },
+        {
+          name: 'features',
+          label: 'Features',
+          align: 'left',
+          field: 'features',
+          sortable: false,
+        },
+        {
+          name: 'gloss',
+          label: 'Gloss',
+          sortable: true,
+          align: 'left',
+          field: 'gloss',
+        },
+        {
+          name: 'frequency',
+          label: 'Frequency',
+          sortable: true,
+          align: 'left',
+          field: 'frequency',
+        },
+      ],
+      visibleColumns: ['form', 'lemma', 'pos', 'features', 'gloss', 'frequency'],
+      filter: '',
+      selected: [],
+      loading: false,
+      pagination: {
+        sortBy: 'name',
+        descending: false,
+        page: 1,
+        rowsPerPage: 10,
+      },
+      loadingDelete: false,
+      exporting: false,
+    };
     return {
       selected: [],
       openFeatures: false,
@@ -237,68 +305,7 @@ export default {
         lemmaoptions: [{ name: 'Lemma', values: 'String' }],
         catoptions: [],
       },
-      table: {
-        columns: [
-          {
-            name: 'expand',
-            label: 'expand',
-            field: 'expand',
-          },
-          {
-            name: 'form',
-            label: 'Form',
-            sortable: true,
-            align: 'left',
-            field: 'form',
-          },
-          {
-            name: 'lemma',
-            label: 'Lemma',
-            sortable: true,
-            align: 'left',
-            field: 'lemma',
-          },
-          {
-            name: 'pos',
-            label: 'POS',
-            sortable: true,
-            align: 'left',
-            field: 'pos',
-          },
-          {
-            name: 'features',
-            label: 'Features',
-            align: 'left',
-            field: 'features',
-          },
-          {
-            name: 'gloss',
-            label: 'Gloss',
-            sortable: true,
-            align: 'left',
-            field: 'gloss',
-          },
-          {
-            name: 'frequency',
-            label: 'Frequency',
-            sortable: true,
-            align: 'left',
-            field: 'frequency',
-          },
-        ],
-        visibleColumns: ['form', 'lemma', 'pos', 'features', 'gloss', 'frequency'],
-        filter: '',
-        selected: [],
-        loading: false,
-        pagination: {
-          sortBy: 'name',
-          descending: false,
-          page: 1,
-          rowsPerPage: 10,
-        },
-        loadingDelete: false,
-        exporting: false,
-      },
+      table,
       alerts: {
         noRuletoApply: { color: 'negative', message: 'No rule to apply' },
         noModification: { color: 'negative', message: 'No modification' },
@@ -314,17 +321,18 @@ export default {
     };
   },
   computed: {
-    ...mapGetters('lexicon', ['lexiconItems']),
+    ...mapState(useLexiconStore, ['lexiconItems']),
   },
   methods: {
-    ...mapActions(useLexiconStore, ['setLexiconModificationItem', 'removeCoupleLexiconItemBeforeAfter', 'switch_grew_dialog']),
-    computeFeatureStringWrapper(featureObj) {
+    ...mapActions(useLexiconStore, ['setLexiconModificationItem', 'removeCoupleLexiconItemBeforeAfter']),
+    ...mapActions(useGrewSearchStore, ['switch_grew_dialog']),
+    computeFeatureStringWrapper(featureObj: any) {
       return computeFeatureString(featureObj);
     },
-    onRowClick(evt, row) {
+    onRowClick(evt: Event, row: any) {
       this.setLexiconModificationItem(row);
     },
-    findOriginalLexiconItem({ key }) {
+    findOriginalLexiconItem({ key }: { key: string }) {
       const matchLexiconItem = this.lexiconItems.filter((lexiconItem) => {
         if (lexiconItem.key === key) {
           return true;

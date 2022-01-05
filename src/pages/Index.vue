@@ -317,7 +317,7 @@
   </q-page>
 </template>
 
-<script>
+<script lang="ts">
 import { openURL, copyToClipboard } from 'quasar';
 
 export default {
@@ -338,10 +338,8 @@ export default {
     };
   },
   computed: {
-    myColor: {
-      get() {
-        return `hsl(${this.xcursor}, 50%, 50%)`;
-      },
+    myColor(): string {
+      return `hsl(${this.xcursor}, 50%, 50%)`;
     },
   },
   methods: {
@@ -365,11 +363,14 @@ export default {
           this.$q.notify({ message: 'Failed to copy.' });
         });
     },
-    xCoordinate(e) {
+    xCoordinate(e: { clientX: number }) {
       this.xcursor = e.clientX;
     },
     scrolldown() {
-      document.getElementById('arboheadline').scrollIntoView({ behavior: 'smooth' });
+      const arboheadline = document.getElementById('arboheadline');
+      if (arboheadline !== null) {
+        arboheadline.scrollIntoView({ behavior: 'smooth' });
+      }
     },
   },
 };

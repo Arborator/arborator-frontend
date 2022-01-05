@@ -36,20 +36,30 @@
   <!----------------- End uposDialog ------------------->
 </template>
 
-<script>
+<script lang="ts">
+import { PropType } from 'vue';
+import { sentence_bus_t } from 'src/types/main_types';
+import { emptyTokenJson } from 'conllup/lib/conll';
+import { useProjectStore } from 'src/pinia/modules/project';
+import { mapState } from 'pinia';
+
 export default {
-  props: ['sentenceBus'],
+  props: {
+    sentenceBus: {
+      type: Object as PropType<sentence_bus_t>,
+      required: true,
+    },
+  },
   data() {
+    const token = emptyTokenJson();
     return {
       uposDialogOpened: false,
-      token: {},
+      token,
       userId: '',
     };
   },
   computed: {
-    annotationFeatures() {
-      return this.$store.getters['config/annotationFeatures'];
-    },
+    ...mapState(useProjectStore, ['annotationFeatures']),
   },
   mounted() {
     this.sentenceBus.on('open:uposDialog', ({ token, userId }) => {

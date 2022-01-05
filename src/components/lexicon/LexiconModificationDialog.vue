@@ -64,11 +64,32 @@
   </q-dialog>
 </template>
 
-<script>
-import { mapActions } from 'pinia';
-import { mapGetters } from 'vuex';
-import AttributeTable from '../sentence/AttributeTable';
+<script lang="ts">
+import { mapActions, mapState } from 'pinia';
+import AttributeTable from '../sentence/AttributeTable.vue';
 import { useLexiconStore } from 'src/pinia/modules/lexicon';
+import { useProjectStore } from 'src/pinia/modules/project';
+import { annotationFeatures_t } from 'src/api/backend-types';
+
+interface formattedItem_t {
+  form: { a: string; v: string }[];
+  lemma: { a: string; v: string }[];
+  pos: { a: string; v: string }[];
+  gloss: { a: string; v: string }[];
+  features: { a: string; v: string }[];
+  frequency: number;
+  key: string;
+}
+
+interface lexiconItem_t {
+  form: string;
+  lemma: string;
+  pos: string;
+  gloss: string;
+  features: { [key: string]: string };
+  frequency: number;
+  key: string;
+}
 
 export default {
   name: 'LexiconModificationDialog',
@@ -76,8 +97,19 @@ export default {
     AttributeTable,
   },
   data() {
+    const annof: annotationFeatures_t = {
+      META: [],
+      UPOS: [],
+      XPOS: [],
+      FEATS: [],
+      MISC: [],
+      DEPREL: [],
+      DEPS: [],
+    };
+    const formattedItem: formattedItem_t = { form: [], lemma: [], pos: [], gloss: [], features: [], frequency: 0, key: '' };
+
     return {
-      formattedItem: {},
+      formattedItem,
       featTable: {
         form: [],
         pos: [],
@@ -112,7 +144,7 @@ export default {
       },
       options: {
         // attribute table dialog specific stuff
-        annof: [], // = annotationFeatures from conf!!!
+        annof, // = annotationFeatures from conf!!!
         annofFEATS: {}, // obj version (instead of list)
         annofMISC: {}, // obj version (instead of list)
         splitregex: '',
@@ -125,8 +157,8 @@ export default {
     };
   },
   computed: {
-    ...mapGetters('config', ['annotationFeatures']),
-    ...mapGetters('lexicon', ['isShowLexiconModification', 'lexiconModificationItemBefore']),
+    ...mapState(useProjectStore, ['annotationFeatures']),
+    ...mapState(useLexiconStore, ['isShowLexiconModification', 'lexiconModificationItemBefore']),
   },
   watch: {
     lexiconModificationItemBefore(newValue) {
@@ -138,8 +170,8 @@ export default {
   },
   methods: {
     ...mapActions(useLexiconStore, ['hideLexiconModificationDialog', 'setLexiconModifiedItem', 'addCoupleLexiconItemBeforeAfter']),
-    convertLexiconItemToFormattedItem(lexiconItem) {
-      const formattedItem = {};
+    convertLexiconItemToFormattedItem(lexiconItem: lexiconItem_t) {
+      const formattedItem: formattedItem_t = { form: [], lemma: [], pos: [], gloss: [], features: [], frequency: 0, key: '' };
       formattedItem.form = [{ a: 'Form', v: lexiconItem.form }];
       formattedItem.lemma = [{ a: 'Lemma', v: lexiconItem.lemma }];
       formattedItem.pos = [{ a: 'POS', v: lexiconItem.pos }];
@@ -156,20 +188,20 @@ export default {
       }
       return formattedItem;
     },
-    convertFormattedItemToLexiconItem(formattedItem) {
-      const lexiconItem = {};
-      lexiconItem.form = formattedItem.form[0].v;
-      lexiconItem.lemma = formattedItem.lemma[0].v;
-      lexiconItem.pos = formattedItem.pos[0].v;
-      lexiconItem.gloss = formattedItem.gloss[0].v;
-      lexiconItem.frequency = formattedItem.frequency;
-      lexiconItem.key = formattedItem.key;
-      lexiconItem.features = {};
-
+    convertFormattedItemToLexiconItem(formattedItem: formattedItem_t) {
+      const features: { [key: string]: string } = {};
       for (const keyValue of formattedItem.features) {
-        lexiconItem.features[keyValue.a] = keyValue.v;
+        features[keyValue.a] = keyValue.v;
       }
-
+      const lexiconItem: lexiconItem_t = {
+        form: formattedItem.form[0].v,
+        lemma: formattedItem.lemma[0].v,
+        pos: formattedItem.pos[0].v,
+        gloss: formattedItem.gloss[0].v,
+        frequency: formattedItem.frequency,
+        key: formattedItem.key,
+        features,
+      };
       return lexiconItem;
     },
     replaceEntry() {

@@ -1,22 +1,9 @@
-////// ARBORATOR /////
+import { Emitter } from 'mitt';
+import { ReactiveSentence } from 'dependencytreejs/src/ReactiveSentence';
+import { SentenceSVG } from 'dependencytreejs/src/SentenceSVG';
+import { SentenceJson, TokenJson, TreeJson } from 'conllup/lib/conll';
 
-// PROJECT
-export interface project_t {
-  id: number;
-  projectName: string;
-  description: string;
-  image: string;
-  visibility: number;
-  showAllTrees: boolean;
-  exerciseMode: boolean;
-}
-
-export interface project_with_diff_t extends project_t {
-  diffMode: boolean;
-  diffUserId: string;
-}
-
-////// KLANG /////
+////////// KLANG /////
 export interface transcription_t {
   accent: string;
   monodia: string;
@@ -26,3 +13,73 @@ export interface transcription_t {
   user: string;
   transcription: Array<Array<string>>;
 }
+
+//////// UI /////
+
+export interface pagination_t {
+  sortBy: string;
+  descending: boolean;
+  page: number;
+  rowsPerPage: number;
+}
+
+export interface field_t {
+  name: string;
+  label: string;
+  sortable: boolean;
+  field: string;
+  align?: string;
+}
+
+export interface table_t<T> {
+  fields: field_t[];
+  selected: T[];
+  visibleColumns: string[];
+  visibleColumnsExerciseMode?: string[];
+  filter: string;
+  loading: boolean;
+  pagination: pagination_t;
+  loadingDelete: boolean;
+  exporting?: boolean;
+}
+
+export type sentence_t = unknown;
+
+export interface reactive_sentences_obj_t {
+  [key: string]: ReactiveSentence;
+}
+
+// export type
+export type sentence_bus_events_t = {
+  'open:metaDialog': { userId: string };
+  'open:conlluDialog': { userId: string };
+  'open:statisticsDialog': { userId: string };
+  'open:openMultiEditDialog': { userId: string };
+  'open:relationDialog': { userId: string; dep: TokenJson; gov: TokenJson };
+  'open:featuresDialog': { userId: string; token: TokenJson };
+  'open:uposDialog': { userId: string; token: TokenJson };
+  'action:saved': { userId: string };
+  'export:SVG': { userId: string };
+  'open:tokenDialog': { userId: string; event: Event };
+  'open:openMultiEditDialog': { userId: string };
+  'changed:metaText': { newMetaText: string };
+  'changed:metaText': { newMetaText: string };
+  'tree-update:token': { userId: string; token: TokenJson };
+  'tree-update:sentence': { sentenceJson: SentenceJson; userId: string };
+  'open:tokenDialog': { userId: string; event: Event };
+  'action:undo': { userId: string };
+  'action:redo': { userId: string };
+  'action:addEmptyToken': { userId: string };
+  'action:tabSelected': { userId: string };
+  'tree-update:tree': { userId: string; tree: TreeJson };
+};
+export interface sentence_bus_t extends Emitter<sentence_bus_events_t> {
+  sentenceSVGs: { [key: string]: SentenceSVG };
+}
+
+export type grew_templates_t = {
+  name: string;
+  pattern: string;
+  commands: string;
+  sampleIds: string | string[] | undefined | never[];
+}[];

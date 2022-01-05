@@ -63,30 +63,36 @@
   </q-card>
 </template>
 
-<script>
-import ConfirmAction from '../components/ConfirmAction';
+<script lang="ts">
+import { mapState } from 'pinia';
+import ConfirmAction from '../components/ConfirmAction.vue';
+import { useUserStore } from 'src/pinia/modules/user';
+import { timeAgo } from 'src/utils/timeAgoUtils';
 
 export default {
   components: { ConfirmAction },
   props: ['props', 'parentDeleteProject', 'parentProjectSettings'],
   data() {
+    const confirmActionCallback = null as unknown as CallableFunction;
     return {
       project: this.props,
       hover: false,
+      confirmActionCallback,
       confirmActionDial: false,
-      confirmActionCallback: null,
       confirmActionArg1: '',
     };
   },
   computed: {
+    ...mapState(useUserStore, ['isLoggedIn', 'getUserInfos']),
     canSeeSettings() {
-      if (!this.$store.getters['user/isLoggedIn']) {
+      // FIXME : can be refactored a lot (we have isProjectAdmin in useMainStore that cover all of this)
+      if (!this.isLoggedIn) {
         return false;
       }
-      if (this.project.admins.includes(this.$store.getters['user/getUserInfos'].id)) {
+      if (this.project.admins.includes(this.getUserInfos.id)) {
         return true;
       }
-      if (this.$store.getters['user/getUserInfos'].super_admin) {
+      if (this.getUserInfos.super_admin) {
         return true;
       }
       return false;
@@ -112,29 +118,12 @@ export default {
       // }
     },
     locale() {
-      return ({ ...this.$i18n.locale }.value || this.$i18n.locale).substring(0, 2); // TODO: strange bug: this.$i18n.locale is a Promess and on switching locals this.$i18n.locale becomes a string, its value. The value is fr-fra, not accepted by Intl.RelativeTimeFormat -> take the substring
+      return this.$i18n.locale.substring(0, 2); // TODO: strange bug: this.$i18n.locale is a Promess and on switching locals this.$i18n.locale becomes a string, its value. The value is fr-fra, not accepted by Intl.RelativeTimeFormat -> take the substring
     },
   },
   methods: {
-    timeAgo(secsAgo) {
-      if (secsAgo < -7 * 3600 * 24 * 365) return this.$t('projectHub.longtime');
-      const formatter = new Intl.RelativeTimeFormat(this.locale, { style: 'long' });
-      const ranges = {
-        years: 3600 * 24 * 365,
-        months: 3600 * 24 * 30,
-        weeks: 3600 * 24 * 7,
-        days: 3600 * 24,
-        hours: 3600,
-        minutes: 60,
-        seconds: 1,
-      };
-      for (const key in ranges) {
-        if (ranges[key] < Math.abs(secsAgo)) {
-          const delta = secsAgo / ranges[key];
-          return formatter.format(Math.round(delta), key);
-        }
-      }
-      return formatter.format(secsAgo, 'seconds'); // should be useless
+    timeAgo(secsAgo: number) {
+      return timeAgo(secsAgo);
     },
     /**
      * Use the router to push (i.e. got to) a new route
@@ -173,10 +162,9 @@ export default {
      * @param {*} arg
      * @returns void
      */
-    triggerConfirm(method, arg) {
+    triggerConfirm(method: CallableFunction) {
       this.confirmActionDial = true;
       this.confirmActionCallback = method;
-      this.confirmActionArg1 = arg;
     },
     imageEmpty() {
       if (this.project.image === null) {

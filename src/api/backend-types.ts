@@ -1,0 +1,99 @@
+////////// ARBORATOR /////
+
+//// USER ////
+export interface user_t {
+  id: string;
+  auth_provider: number;
+  username: string;
+  first_name: string;
+  family_name: string;
+  picture_url: string;
+  super_admin: boolean;
+  created_date: number;
+  last_seen: number;
+}
+
+//// PROJECT ////
+// export interface project_t {
+//   id: number;
+//   projectName: string;
+//   description: string;
+//   image: string;
+//   visibility: number;
+//   showAllTrees: boolean;
+//   exerciseMode: boolean;
+// }
+
+export interface project_with_diff_t {
+  id: number;
+  projectName: string;
+  description: string;
+  image: string;
+  visibility: number;
+  showAllTrees: boolean;
+  exerciseMode: boolean;
+  diffMode: boolean;
+  diffUserId: string;
+}
+
+export interface project_extended_t {
+  id: number;
+  project_name: string;
+  description: string;
+  image: string;
+  visibility: number;
+  show_all_trees: boolean;
+  exercise_mode: boolean;
+
+  admins: string[];
+  guests: string[];
+  number_sentences: number;
+  number_samples: number;
+  number_trees: number;
+  number_tokens: number;
+  last_access: number;
+  last_write_access: number;
+}
+
+export type shownmeta = string[];
+
+export type shownfeatures = string[];
+
+export interface annotationFeatures_t {
+  META: string[];
+  UPOS: string[];
+  XPOS: string[];
+  FEATS: { name: string; values: string[] }[];
+  MISC: { name: string; values: string[] | string }[];
+  DEPREL: { name: string; values: string[]; join: string }[];
+  DEPS: { name: string; values: string[]; join: string }[];
+}
+
+export interface project_access_t {
+  admins: string[];
+  guests: string[];
+}
+
+//// SAMPLES
+// this user_sample_roles_t interface is messy , it comes from backend, it should prob change
+export interface user_sample_roles_t {
+  key: string;
+  value: string;
+}
+
+export interface sample_roles_t {
+  annotator: user_sample_roles_t[];
+  validator: user_sample_roles_t[];
+}
+export interface sample_t {
+  sample_name: string;
+  treesFrom: string;
+  sentences: number;
+  number_trees: number;
+  tokens: number;
+  exerciseLevel: number;
+  roles: sample_roles_t;
+}
+
+export type sample_role_targetrole_t = 'annotator' | 'validator';
+export type sample_role_action_t = 'add' | 'remove';

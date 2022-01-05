@@ -33,6 +33,9 @@ It should works without any changes on the backend. So you can continue to use t
 
 #### TS + Pinia migration
 - [ ] check in AppLayout.vue that the language logic is correct
+- [ ] check if styus (used in some component style) still works
+- [ ] proper renaming of conll_schema/annotationFeatures/config (grew backend has config name, frontend has all of them)
+- [ ] auth provider seems its a number in the db, but on backend it's typed as a string
 
 #### Quasar v2 migration
 - [ ] <URGENT> re-add lexicon import and export logic (in LexiconTableBase.vue ? before was in LexiconPanel.vue) and compareLexicon.vue

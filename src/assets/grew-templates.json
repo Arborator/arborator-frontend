@@ -4,5 +4,5 @@
 	{"name":"Lemma query", "pattern":"% Search for a given lemma (lemmatization is not available for all languages)\n\npattern { N [lemma=\"Lemma_to_search\"] }", "commands":""},
 	{"name":"Dependency relation query", "pattern":"% Search for a dependency relation\n% Available relations are:\n%   acl, acl:relcl, advcl, advmod, amod, appos, aux, aux:pass, case, cc, ccomp,\n%   compound, conj, cop, csubj, dep, det, discourse, obj, expl, iobj, mark,\n%   fixed, flat, neg, nmod, nmod:poss, nsubj, nsubj:pass, nummod, parataxis, punct, root, xcomp\n\npattern { GOV -[advcl]-> DEP }", "commands":""},
 	{"name":"Relation and tags query", "pattern":"% Search for a \"det\" dependency relation\n% such that the governor's tag is different from NOUN, PROPN and ADJ\n\npattern {\nGOV [upos <> NOUN|ADJ|PROPN];\nGOV -[det]-> DEP;\n}", "commands":""},
-	{"name":"Rewrite POS", "pattern":"pattern { N [upos=VERB] \n}", "commands":"commands { N.upos = V }"}
+	{"name":"Rewrite POS", "pattern":"pattern { N [upos=VERB] \n}", "commands":"commands { N.upos = V }", "sampleIds": []}
 ]

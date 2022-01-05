@@ -4,10 +4,10 @@
       <q-bar>
         <q-space />
         <q-btn v-if="maximizedUploadToggle" dense flat icon="minimize" @click="maximizedUploadToggle = false">
-          <q-tooltip v-if="maximizedUploadToggle" content-class="bg-white text-primary">{{ $t('projectView.tooltipWindows[0]') }}</q-tooltip>
+          <q-tooltip content-class="bg-white text-primary">{{ $t('projectView.tooltipWindows[0]') }}</q-tooltip>
         </q-btn>
         <q-btn v-if="!maximizedUploadToggle" dense flat icon="crop_square" @click="maximizedUploadToggle = true">
-          <q-tooltip v-if="!maximizedUploadToggle" content-class="bg-white text-primary">{{ $t('projectView.tooltipWindows[1]') }}</q-tooltip>
+          <q-tooltip content-class="bg-white text-primary">{{ $t('projectView.tooltipWindows[1]') }}</q-tooltip>
         </q-btn>
         <q-btn v-close-popup="10" dense flat icon="close" @click="uploadDialModel = false">
           <q-tooltip content-class="bg-white text-primary">{{ $t('projectView.tooltipWindows[2]') }}</q-tooltip>
@@ -100,50 +100,73 @@
   </q-dialog>
 </template>
 
-<script>
+<script lang="ts">
+import notifyError from 'src/utils/notify';
 import api from '../../api/backend-api';
 import { useModelWrapper } from '../../composables/modelWrapper.js';
+import { defineComponent } from 'vue';
+import { mapState } from 'pinia';
+import { useUserStore } from 'src/pinia/modules/user';
+import { useProjectStore } from 'src/pinia/modules/project';
 
-export default {
-  props: ['uploadDial'],
+export default defineComponent({
+  props: {
+    uploadDial: { type: Boolean, required: true },
+  },
   setup(props, { emit }) {
     return {
       uploadDialModel: useModelWrapper(props, emit, 'uploadDial'),
     };
   },
-
   data() {
+    let maximizedUploadToggle = false;
+
+    let columns: {
+      name: string;
+      required: boolean;
+      label: string;
+      align: string;
+      field: (a: { old: unknown; new: unknown }) => unknown;
+      format: (a: unknown) => unknown;
+      sortable: boolean;
+    }[] = [
+      {
+        name: 'old',
+        required: true,
+        label: 'Original',
+        align: 'left',
+        field: (row) => row.old,
+        format: (val) => `${val}`,
+        sortable: true,
+      },
+      {
+        name: 'new',
+        required: true,
+        label: 'New',
+        align: 'left',
+        field: (row) => row.new,
+        format: (val) => `${val}`,
+        sortable: true,
+      },
+    ];
+
+    const userIds: { old: string; new: string }[] = [];
+    const uploadSample: {
+      submitting: boolean;
+      attachment: { name: string | null; file: File[] };
+    } = {
+      submitting: false,
+      attachment: { name: null, file: [] },
+    };
     return {
       files: null,
-      maximizedUploadToggle: false,
+      maximizedUploadToggle,
       robot: { active: false, name: 'parser', exerciseModeName: 'teacher' },
-      uploadSample: {
-        submitting: false,
-        attachment: { name: null, file: null },
-      },
-      userIds: [],
+      uploadSample,
+      userIds,
       userIdsList: [],
       userIdsPreprocessed: false,
-      columns: [
-        {
-          name: 'old',
-          required: true,
-          label: 'Original',
-          align: 'left',
-          field: (row) => row.old,
-          format: (val) => `${val}`,
-          sortable: true,
-        },
-        {
-          name: 'new',
-          required: true,
-          label: 'New',
-          align: 'left',
-          field: (row) => row.new,
-          format: (val) => `${val}`,
-          sortable: true,
-        },
-      ],
+      columns,
 
       alerts: {
         uploadsuccess: { color: 'positive', message: 'Upload success' },
@@ -171,19 +194,9 @@ export default {
   },
 
   computed: {
-    //   uploadDialModel: {
-    //     get() {
-    //       return this.uploadDial;
-    //     },
-    //     set(newValue) {
-    //       this.$emit("update:uploadDial", newValue);
-    //     },
-    //   },
-    userid: {
-      get() {
-        return this.$store.getters['user/getUserInfos'].username;
-      },
-    },
+    ...mapState(useUserStore, { userid: 'id' }),
+    ...mapState(useUserStore, ['username']),
+    ...mapState(useProjectStore, ['exerciseMode']),
   },
 
   methods: {
@@ -195,13 +208,13 @@ export default {
       this.userIds = [
         {
           old: 'default',
-          new: this.$store.getters['user/getUserInfos'].username,
+          new: this.username,
         },
       ];
       for (const file of this.uploadSample.attachment.file) {
         const reader = new FileReader();
         reader.onload = () => {
-          const lines = reader.result.split(/[\r\n]+/g);
+          const lines = (reader as { result: string }).result.split(/[\r\n]+/g);
           // lines.forEach((line) => {
           for (const line of lines) {
             if (line[0] === '#') {
@@ -221,26 +234,26 @@ export default {
     },
     upload() {
       const form = new FormData();
-      if (this.$store.getters['config/exerciseMode']) {
+      if (this.exerciseMode) {
         this.robot.name = 'teacher';
         this.robot.active = true;
       }
       form.append('robotname', this.robot.name);
-      form.append('robot', this.robot.active);
+      form.append('robot', this.robot.active as any);
       this.uploadSample.submitting = true;
       for (const file of this.uploadSample.attachment.file) {
         form.append('files', file);
       }
-      form.append('import_user', this.$store.getters['user/getUserInfos'].username);
+      form.append('import_user', this.username);
       form.append('userIdsConvertor', JSON.stringify(this.userIds));
       api
-        .uploadSample(this.$route.params.projectname, form)
-        .then((response) => {
-          this.uploadSample.attachment.file = null;
+        .uploadSample(this.$route.params.projectname as string, form)
+        .then(() => {
+          this.uploadSample.attachment.file = [];
           this.$emit('uploaded:sample'); // tell to the parent that a new sample was uploaded and to fetch all samples
           this.uploadDialModel = false;
           this.uploadSample.submitting = false;
-          this.showNotif('top-right', 'uploadsuccess');
+          this.$q.notify({ message: 'upload success' });
         })
         .catch((error) => {
           if (error.response) {
@@ -255,24 +268,8 @@ export default {
           notifyError({ error });
         });
     },
-    // TODO : refactor all of these $q.notify in a proper single file
-    showNotif(position, alert) {
-      const { color, textColor, multiLine, icon, message, avatar, actions } = this.alerts[alert];
-      const buttonColor = color ? 'white' : void 0;
-      this.$q.notify({
-        color,
-        textColor,
-        icon,
-        message,
-        position,
-        avatar,
-        multiLine,
-        actions,
-        timeout: 2000,
-      });
-    },
   },
-};
+});
 </script>
 
 <style></style>

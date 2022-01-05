@@ -234,7 +234,6 @@
   </q-page>
 </template>
 <script>
-import { mapGetters } from 'vuex';
 import { mapActions } from 'pinia';
 import { exportFile } from 'quasar';
 import api from '../api/backend-api';

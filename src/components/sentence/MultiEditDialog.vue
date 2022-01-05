@@ -44,28 +44,46 @@
   </q-dialog>
 </template>
 
-<script>
+<script lang="ts">
+import { PropType } from 'vue';
+import { reactive_sentences_obj_t, sentence_bus_t } from 'src/types/main_types';
+import { emptyTreeJson, TokenJson } from 'conllup/lib/conll';
+
+type metaLabel_t = 'UPOS' | 'DEPREL' | 'HEAD' | 'LEMMA';
+
 export default {
-  props: ['sentenceBus', 'reactiveSentencesObj'],
+  props: {
+    sentenceBus: {
+      type: Object as PropType<sentence_bus_t>,
+      required: true,
+    },
+    reactiveSentencesObj: {
+      type: Object as PropType<reactive_sentences_obj_t>,
+      required: true,
+    },
+  },
   data() {
+    const treeJson = emptyTreeJson();
+    const metaLabels: metaLabel_t[] = ['UPOS', 'DEPREL', 'HEAD', 'LEMMA'];
+    const checkboxes: { [key: string]: { [key in metaLabel_t]: boolean } } = {};
     return {
       dialogOpened: false,
       userId: '',
-      treeJson: {},
-      checkboxes: {},
-      metaLabels: ['UPOS', 'DEPREL', 'HEAD', 'LEMMA'],
+      treeJson,
+      checkboxes,
+      metaLabels,
       checkboxesAll: { UPOS: false, DEPREL: false, HEAD: false, LEMMA: false },
     };
   },
   mounted() {
-    this.sentenceBus.on('open:openMultiEditDialog', ({ userId, event }) => {
+    this.sentenceBus.on('open:openMultiEditDialog', ({ userId }) => {
       this.userId = userId;
-      this.treeJson = JSON.parse(JSON.stringify(this.sentenceBus[this.userId].treeJson));
+      this.treeJson = JSON.parse(JSON.stringify(this.sentenceBus.sentenceSVGs[this.userId].treeJson));
       for (const metaLabel of this.metaLabels) {
         this.checkboxesAll[metaLabel] = false;
       }
       for (const token in this.treeJson) {
-        const checkboxesToken = {};
+        const checkboxesToken: { [key in metaLabel_t]: boolean } = { UPOS: false, DEPREL: false, HEAD: false, LEMMA: false };
         // checkboxesToken["UPOS"] = false;
         // checkboxesToken["DEPREL"] = false;
         // checkboxesToken["HEAD"] = false;
@@ -83,7 +101,7 @@ export default {
         for (const metaLabel of this.metaLabels) {
           const toDeleteBool = this.checkboxes[token][metaLabel];
           if (toDeleteBool) {
-            this.treeJson[token][metaLabel] = typeof this.treeJson[token][metaLabel] === 'string' ? '_' : '_';
+            this.treeJson[token][metaLabel as keyof TokenJson] = '_';
             if (metaLabel === 'HEAD') {
               this.treeJson[token].DEPREL = '_';
             }
@@ -96,7 +114,7 @@ export default {
       });
       this.uncheckToggles();
     },
-    toggleAll(metaLabel) {
+    toggleAll(metaLabel: metaLabel_t) {
       this.checkboxesAll[metaLabel] = !this.checkboxesAll[metaLabel];
       for (const token in this.treeJson) {
         this.checkboxes[token][metaLabel] = this.checkboxesAll[metaLabel];

@@ -26,7 +26,7 @@ export const useLexiconStore = defineStore('lexicon', {
     hideLexiconTable() {
       this.isShowLexiconPanel = false;
     },
-    fetchLexicon({ projectname, samplenames, treeSelection }: { projectname: string; samplenames: string[]; treeSelection: any }) {
+    fetchLexicon(projectname: string, samplenames: string[], treeSelection: string) {
       this.lexiconLoading = true;
       api
         .getLexicon(projectname, { samplenames, treeSelection })

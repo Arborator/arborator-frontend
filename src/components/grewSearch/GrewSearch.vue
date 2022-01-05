@@ -1,11 +1,11 @@
 <template>
   <div>
     <q-page-sticky :position="breakpoint ? 'bottom-right' : 'bottom-right'" :offset="breakpoint ? [18, 18] : [30, 80]" style="z-index: 999">
-      <q-btn size="20px" round color="primary" icon="img:/svg/g.svg" @click="searchDialog = !searchDialog">
+      <q-btn size="20px" round color="primary" icon="img:/svg/g.svg" @click="grewDialog = !grewDialog">
         <q-tooltip content-class="bg-primary" content-style="font-size: 16px"> Search with Grew in this sample </q-tooltip>
       </q-btn>
     </q-page-sticky>
-    <q-dialog v-model="searchDialog" seamless position="right" full-width>
+    <q-dialog v-model="grewDialog" seamless position="right" full-width>
       <GrewRequestCard :parent-on-search="onSearch" :parent-on-try-rules="onTryRules" :grewquery="$route.query.q || ''"></GrewRequestCard>
     </q-dialog>
     <q-dialog v-model="resultSearchDialog" transition-show="fade" transition-hide="fade">
@@ -20,13 +20,13 @@
   </div>
 </template>
 
-<script>
-import { mapGetters } from 'vuex';
-import GrewRequestCard from './GrewRequestCard';
-import ResultView from '../ResultView';
+<script lang="ts">
+import GrewRequestCard from './GrewRequestCard.vue';
+import ResultView from '../ResultView.vue';
 import api from '../../api/backend-api';
 import { useGrewSearchStore } from 'src/pinia/modules/grewSearch';
 import { mapWritableState } from 'pinia';
+import notifyError from 'src/utils/notify';
 
 export default {
   components: {
@@ -47,7 +47,7 @@ export default {
       return this.window.width <= 400;
     },
     ...mapWritableState(useGrewSearchStore, ['grewDialog']),
-    // searchDialog: {
+    // grewDialog: {
     //   get() {
     //     const grewSearchStore = useGrewSearchStore();
     //     return grewSearchStore.grew;
@@ -58,7 +58,7 @@ export default {
     // },
   },
   mounted() {
-    this.searchDialog = this.showTable;
+    this.grewDialog = this.showTable;
   },
   methods: {
     // getRelationTable(type) {
@@ -73,15 +73,15 @@ export default {
     //       this.$store.dispatch("notifyError", { error: error });
     //     });
     // },
-    onShowTable(resultSearchDialog) {
+    onShowTable(resultSearchDialog: any) {
       this.resultSearchDialog = resultSearchDialog;
-      this.searchDialog = false;
+      this.grewDialog = false;
     },
-    onSearch(searchPattern) {
+    onSearch(searchPattern: string) {
       const query = { pattern: searchPattern };
       if (this.$route.params.samplename) {
         api
-          .searchSample(this.$route.params.projectname, this.$route.params.samplename, query)
+          .searchSample(this.$route.params.projectname as string, this.$route.params.samplename as string, query)
           .then((response) => {
             this.resultSearch = response.data;
             this.resultSearchDialog = true;
@@ -91,7 +91,7 @@ export default {
           });
       } else {
         api
-          .searchProject(this.$route.params.projectname, query)
+          .searchProject(this.$route.params.projectname as string, query)
           .then((response) => {
             this.resultSearch = response.data;
             this.resultSearchDialog = true;
@@ -101,10 +101,10 @@ export default {
           });
       }
     },
-    onTryRules(Rules, SampleIds) {
+    onTryRules(Rules: any, SampleIds: any) {
       const query = { rules: Rules, sampleId: SampleIds };
       api
-        .tryRulesProject(this.$route.params.projectname, query)
+        .tryRulesProject(this.$route.params.projectname as string, query)
         .then((response) => {
           this.resultSearchDialog = true;
           this.resultSearch = response.data.trees;

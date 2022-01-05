@@ -32,7 +32,7 @@
         </q-card-section>
 
         <q-card-section v-if="isShowLexiconPanel">
-          <LexiconPanel :lexicon-items="lexiconItems" :sample-id="table.selected" @request="fetchLexicon"> </LexiconPanel>
+          <LexiconPanel :lexicon-items="lexiconItems" :sample-id="table.selected" @request="fetchLexicon_"> </LexiconPanel>
         </q-card-section>
         <q-card-section>
           <q-table
@@ -84,7 +84,7 @@
 
                 <div>
                   <q-btn
-                    v-if="$store.getters['config/isTeacher']"
+                    v-if="isTeacher"
                     flat
                     color="default"
                     icon="analytics"
@@ -215,7 +215,7 @@
                     icon="playlist_add_check"
                     :loading="table.exporting"
                     :disable="table.selected.length < 1"
-                    @click="fetchLexicon()"
+                    @click="fetchLexicon_('test')"
                   ></q-btn>
                   <q-btn
                     v-if="isGuest || isAdmin || isSuperAdmin"
@@ -366,7 +366,7 @@
           </q-table>
         </q-card-section>
       </q-card>
-      <template v-if="!($store.getters['config/exerciseMode'] && !$store.getters['config/isTeacher'])">
+      <template v-if="!exerciseMode && !isTeacher">
         <GrewSearch :sentence-count="0" />
         <RelationTableMain />
       </template>
@@ -420,28 +420,37 @@
   </q-page>
 </template>
 
-<script>
-import { mapGetters } from 'vuex';
-
-import { openURL } from 'quasar';
-
-import { nextTick } from 'vue';
+<script lang="ts">
 import api from '../api/backend-api';
 
-import Store from '../store/index';
-import UserTable from '../components/UserTable';
-import TagInput from '../components/TagInput';
+import UserTable from '../components/UserTable.vue';
+import TagInput from '../components/TagInput.vue';
 import ProjectSettingsView from '../components/ProjectSettingsView.vue';
 import ConfirmAction from '../components/ConfirmAction.vue';
 import UploadDialog from '../components/project/UploadDialog.vue';
-import LexiconPanel from '../components/lexicon/LexiconPanel';
-import GrewSearch from '../components/grewSearch/GrewSearch';
-import RelationTableMain from '../components/relationTable/RelationTableMain';
+import LexiconPanel from '../components/lexicon/LexiconPanel.vue';
+import GrewSearch from '../components/grewSearch/GrewSearch.vue';
+import RelationTableMain from '../components/relationTable/RelationTableMain.vue';
 import notifyError from 'src/utils/notify';
-import { mapActions } from 'pinia';
+import { mapActions, mapState } from 'pinia';
 import { useLexiconStore } from 'src/pinia/modules/lexicon';
+import { useProjectStore } from 'src/pinia/modules/project';
+import { useUserStore } from 'src/pinia/modules/user';
+import { sample_roles_t, sample_t, user_sample_roles_t, sample_role_targetrole_t, sample_role_action_t } from 'src/api/backend-types';
+import { defineComponent } from 'vue';
+import { table_t } from 'src/types/main_types';
 
-export default {
+interface alert_t {
+  color?: string;
+  textColor?: string;
+  multiLine?: boolean;
+  icon?: string;
+  message?: string;
+  avatar?: string;
+  actions?: any[];
+}
+
+export default defineComponent({
   components: {
     UserTable,
     TagInput,
@@ -453,7 +462,99 @@ export default {
     RelationTableMain,
   },
   data() {
+    const samples: sample_t[] = [];
+    const selected: sample_t[] = [];
+    const projectTreesFrom: string[] = [];
+    const possiblesUsers: user_sample_roles_t[] = [];
+    const confirmActionCallback: CallableFunction = () => {
+      console.log('Callback not init yet');
+    };
+    const alerts: { [key: string]: alert_t } = {
+      uploadsuccess: { color: 'positive', message: 'Upload success' },
+      uploadfail: {
+        color: 'negative',
+        message: 'Upload failed',
+        icon: 'report_problem',
+      },
+      deletesuccess: { color: 'positive', message: 'Delete success' },
+      deletefail: {
+        color: 'negative',
+        message: 'Delete failed',
+        icon: 'report_problem',
+      },
+      GitHubPushSuccess: {
+        color: 'positive',
+        message: 'Successfully pushed your data to GitHub',
+      },
+    };
+
+    const table: table_t<sample_t> = {
+      fields: [
+        {
+          name: 'samplename',
+          label: 'Name',
+          sortable: true,
+          field: 'samplename',
+        },
+        {
+          name: 'sentences',
+          label: 'Nb Sentences',
+          sortable: true,
+          field: 'sentences',
+        },
+        {
+          name: 'tokens',
+          label: 'Nb Tokens',
+          sortable: true,
+          field: 'number_tokens',
+        },
+        {
+          name: 'annotators',
+          label: 'Annotators',
+          sortable: true,
+          field: 'roles.annotator',
+        },
+        {
+          name: 'validators',
+          label: 'Validators',
+          sortable: true,
+          field: 'roles.validator',
+        },
+        {
+          name: 'profs',
+          label: 'Profs',
+          sortable: true,
+          field: 'roles.prof',
+        },
+        {
+          name: 'treesFrom',
+          label: 'Trees From',
+          sortable: true,
+          field: 'treesFrom',
+        },
+        {
+          name: 'exerciseLevel',
+          label: 'Exercise Level',
+          sortable: true,
+          field: 'exerciseLevel',
+        },
+      ],
+      selected,
+      visibleColumns: ['samplename', 'annotators', 'validators', 'treesFrom', 'tokens', 'sentences'],
+      visibleColumnsExerciseMode: ['samplename', 'exerciseLevel', 'treesFrom', 'tokens', 'sentences'],
+      filter: '',
+      loading: false,
+      pagination: {
+        sortBy: 'samplename',
+        descending: true,
+        page: 1,
+        rowsPerPage: 10,
+      },
+      loadingDelete: false,
+      exporting: false,
+    };
     return {
+      table,
       tab: 'texts',
       btnTopClass: this.$q.dark.isActive ? 'white' : 'blue-grey-8',
       assignDial: false,
@@ -461,27 +562,10 @@ export default {
       projectSettingsDial: false,
       simpleProjectInfoDialog: false,
       confirmActionDial: false,
-      confirmActionCallback: null,
+      confirmActionCallback,
       confirmActionArg1: '',
       lexiconItems: [],
-      alerts: {
-        uploadsuccess: { color: 'positive', message: 'Upload success' },
-        uploadfail: {
-          color: 'negative',
-          message: 'Upload failed',
-          icon: 'report_problem',
-        },
-        deletesuccess: { color: 'positive', message: 'Delete success' },
-        deletefail: {
-          color: 'negative',
-          message: 'Delete failed',
-          icon: 'report_problem',
-        },
-        GitHubPushSuccess: {
-          color: 'positive',
-          message: 'Successfully pushed your data to GitHub',
-        },
-      },
+      alerts,
       project: {
         // todo: this seems to be useless
         infos: {
@@ -495,74 +579,9 @@ export default {
         },
         samples: [],
       },
-      samples: [],
-      projectTreesFrom: [],
+      samples,
+      projectTreesFrom,
 
-      table: {
-        fields: [
-          {
-            name: 'samplename',
-            label: 'Name',
-            sortable: true,
-            field: 'samplename',
-          },
-          {
-            name: 'sentences',
-            label: 'Nb Sentences',
-            sortable: true,
-            field: 'sentences',
-          },
-          {
-            name: 'tokens',
-            label: 'Nb Tokens',
-            sortable: true,
-            field: 'number_tokens',
-          },
-          {
-            name: 'annotators',
-            label: 'Annotators',
-            sortable: true,
-            field: 'roles.annotator',
-          },
-          {
-            name: 'validators',
-            label: 'Validators',
-            sortable: true,
-            field: 'roles.validator',
-          },
-          {
-            name: 'profs',
-            label: 'Profs',
-            sortable: true,
-            field: 'roles.prof',
-          },
-          {
-            name: 'treesFrom',
-            label: 'Trees From',
-            sortable: true,
-            field: 'treesFrom',
-          },
-          {
-            name: 'exerciseLevel',
-            label: 'Exercise Level',
-            sortable: true,
-            field: 'exerciseLevel',
-          },
-        ],
-        visibleColumns: ['samplename', 'annotators', 'validators', 'treesFrom', 'tokens', 'sentences'],
-        visibleColumnsExerciseMode: ['samplename', 'exerciseLevel', 'treesFrom', 'tokens', 'sentences'],
-        filter: '',
-        selected: [],
-        loading: false,
-        pagination: {
-          sortBy: 'samplename',
-          descending: true,
-          page: 1,
-          rowsPerPage: 10,
-        },
-        loadingDelete: false,
-        exporting: false,
-      },
       exerciceModeOptions: [
         {
           label: '1: teacher_visible',
@@ -582,21 +601,32 @@ export default {
         },
       ],
       window: { width: 0, height: 0 },
-      possiblesUsers: [],
+      possiblesUsers,
       tagContext: {},
       tableKey: 0,
       initLoad: false,
     };
   },
   computed: {
-    ...mapGetters('config', ['visibility', 'isAdmin', 'isGuest', 'guests', 'admins', 'image', 'exerciseMode', 'cleanedImage', 'description']),
-    ...mapGetters('user', ['isLoggedIn', 'isSuperAdmin', 'loggedWithGithub', 'avatar']),
-    ...mapGetters('lexicon', ['isShowLexiconPanel']),
+    ...mapState(useProjectStore, [
+      'visibility',
+      'isAdmin',
+      'isGuest',
+      'guests',
+      'admins',
+      'image',
+      'exerciseMode',
+      'cleanedImage',
+      'description',
+      'isTeacher',
+    ]),
+    ...mapState(useUserStore, ['isLoggedIn', 'isSuperAdmin', 'loggedWithGithub', 'avatar']),
+    ...mapState(useLexiconStore, ['isShowLexiconPanel']),
 
     routePath() {
       return this.$route.path;
     },
-    noselect() {
+    noselect(): boolean {
       return this.table.selected.length < 1;
     },
   },
@@ -604,14 +634,13 @@ export default {
     window.addEventListener('resize', this.handleResize);
     this.handleResize();
   },
-  unmounted() {
-    window.removeEventListener('resize', this.handleResize);
-  },
   mounted() {
     this.getUsers();
     this.getProjectSamples();
     document.title = `ArboratorGrew: ${this.$route.params.projectname}`;
-    if (this.$route.query.q && this.$route.query.q.length > 0) this.searchDialog = true;
+  },
+  unmounted() {
+    window.removeEventListener('resize', this.handleResize);
   },
   methods: {
     ...mapActions(useLexiconStore, ['fetchLexicon']),
@@ -620,23 +649,23 @@ export default {
       this.window.height = window.innerHeight;
     },
 
-    goToRoute(props) {
+    goToRoute() {
       this.$router.push(`/projects/${this.$route.params.projectname}/samples`);
     },
 
-    filterFields(tableJson) {
+    filterFields(tableJson: table_t<unknown>) {
       // to remove some fields from visiblecolumns select options
       const tempArray = tableJson.fields.filter((obj) => obj.field !== 'syntInfo' && obj.field !== 'cat' && obj.field !== 'redistributions');
       return tempArray;
     },
     getProjectSamples() {
-      api.getProjectSamples(this.$route.params.projectname).then((response) => {
+      api.getProjectSamples(this.$route.params.projectname as string).then((response) => {
         this.samples = response.data;
-        this.projectTreesFrom = this.getProjectTreesFrom(this.samples);
+        this.projectTreesFrom = this.getProjectTreesFrom();
       });
     },
-    getProjectTreesFrom(samples) {
-      const projectTreesFrom = [];
+    getProjectTreesFrom() {
+      const projectTreesFrom: string[] = [];
 
       for (const sample of this.samples) {
         const sampleTreesFrom = sample.treesFrom;
@@ -664,15 +693,11 @@ export default {
         });
     },
 
-    onFileChange(event) {
-      this.uploadSample.attachment.file = event.target.files;
-    },
-
     deleteSamples() {
       for (const sample of this.table.selected) {
         api
-          .deleteSample(this.$route.params.projectname, sample.sample_name)
-          .then((response) => {
+          .deleteSample(this.$route.params.projectname as string, sample.sample_name)
+          .then(() => {
             this.table.selected = [];
             this.showNotif('top-right', 'deletesuccess');
             this.getProjectSamples();
@@ -683,46 +708,49 @@ export default {
       }
     },
 
-    commit(type) {
-      const samplenames = [];
-      for (const sample of this.table.selected) {
-        samplenames.push(sample.sample_name);
-      }
-      const data = { samplenames, commit_type: type };
-      api
-        .commit(this.$route.params.projectname, data)
-        .then((response) => {
-          console.log(777, response);
-          this.showNotif('top', 'GitHubPushSuccess');
-        })
-        .catch((error) => {
-          if (error.response.data.status === 418) {
-            error.response.message = error.response.data.message;
-            error.permanent = true;
-            notifyError({ error });
-          } else if (error.response.data.status === 204) {
-            notifyError({
-              error: error.response.data.message,
-            });
-          } else notifyError({ error });
-        });
-    },
-    pull(type) {
-      const samplenames = [];
-      for (const sample of this.table.selected) {
-        samplenames.push(sample.sample_name);
-      }
-      const data = { samplenames, pull_type: type };
-      api
-        .pull(this.$route.params.projectname, data)
-        .then((response) => {
-          console.log('wooohoo');
-        })
-        .catch((error) => {
-          console.log('ici il faut un popup utile indiquant comment installer l application');
+    commit(type: string) {
+      console.log('deprecated function push', type);
 
-          notifyError({ error });
-        });
+      // const samplenames = [];
+      // for (const sample of this.table.selected) {
+      //   samplenames.push(sample.sample_name);
+      // }
+      // const data = { samplenames, commit_type: type };
+      // api
+      //   .commit(this.$route.params.projectname, data)
+      //   .then((response) => {
+      //     console.log(777, response);
+      //     this.showNotif('top', 'GitHubPushSuccess');
+      //   })
+      //   .catch((error) => {
+      //     if (error.response.data.status === 418) {
+      //       error.response.message = error.response.data.message;
+      //       error.permanent = true;
+      //       notifyError({ error });
+      //     } else if (error.response.data.status === 204) {
+      //       notifyError({
+      //         error: error.response.data.message,
+      //       });
+      //     } else notifyError({ error });
+      //   });
+    },
+    pull(type: string) {
+      console.log('deprecated function pull', type);
+      // const samplenames = [];
+      // for (const sample of this.table.selected) {
+      //   samplenames.push(sample.sample_name);
+      // }
+      // const data = { samplenames, pull_type: type };
+      // api
+      //   .pull(this.$route.params.projectname, data)
+      //   .then(() => {
+      //     console.log('wooohoo');
+      //   })
+      //   .catch((error) => {
+      //     console.log('ici il faut un popup utile indiquant comment installer l application');
+
+      //     notifyError({ error });
+      //   });
     },
     exportSamplesZip() {
       this.table.exporting = true;
@@ -731,7 +759,7 @@ export default {
         samplenames.push(sample.sample_name);
       }
       api
-        .exportSamplesZip(samplenames, this.$route.params.projectname)
+        .exportSamplesZip(samplenames, this.$route.params.projectname as string)
         .then((response) => {
           const url = window.URL.createObjectURL(new Blob([response.data], { type: 'application/zip' }));
           const link = document.createElement('a');
@@ -751,13 +779,13 @@ export default {
           return [];
         });
     },
-    fetchLexicon(type) {
+    fetchLexicon_(type: string) {
       const samplenames = [];
       for (const sample of this.table.selected) {
         samplenames.push(sample.sample_name);
       }
 
-      this.fetchLexicon({ projectname: this.$route.params.projectname, samplenames, treeSelection: type });
+      this.fetchLexicon(this.$route.params.projectname as string, samplenames, type);
     },
 
     // grewquery() {
@@ -771,17 +799,17 @@ export default {
      * @param response : the response from backend
      * @param samplename : the sample name to find
      */
-    updateTags(response, samplename, target) {
+    updateTags(roles: sample_roles_t, samplename: string) {
       for (const [i, sample] of this.samples.entries()) {
         if (sample.sample_name === samplename) {
-          this.samples[i].roles = response.data.roles;
+          this.samples[i].roles = roles;
         }
       }
       this.tableKey += 1;
       // this.$refs.textsTable.requestServerInteraction(this.table.pagination);
     },
 
-    reverseTags(value, samplename, target) {
+    reverseTags(value: string, samplename: string, target: sample_role_targetrole_t) {
       for (const [i, sample] of this.samples.entries()) {
         if (sample.sample_name === samplename) {
           const res = this.samples[i].roles[target].filter((name) => name.key !== value);
@@ -793,11 +821,11 @@ export default {
     /*
     KK : New method that add/remove annotator/validator to a sample
     */
-    modifyRole(slug, context, role, action) {
+    modifyRole(slug: { value: string }, context: sample_t, role: sample_role_targetrole_t, action: sample_role_action_t) {
       api
-        .modifySampleRole(this.$route.params.projectname, context.sample_name, slug.value, role, action)
+        .modifySampleRole(this.$route.params.projectname as string, context.sample_name, slug.value, role, action)
         .then((response) => {
-          this.updateTags(response, context.sample_name);
+          this.updateTags(response.data.roles, context.sample_name);
           this.$q.notify({ message: 'Change saved!' });
         })
         .catch((error) => {
@@ -805,22 +833,20 @@ export default {
           notifyError({ error });
         });
     },
-    updateExerciseLevel(sample) {
+    updateExerciseLevel(sample: sample_t) {
       setTimeout(() => {
         // IMPORTANT : Since quasar v2 (vue v3), the update method (in q-select) occurs BEFORE the value is updated
         // So we need to use this hack of setTimeout if we want to access to the updated sample.exerciseLevel
-        api.updateSampleExerciseLevel(this.$route.params.projectname, sample.sample_name, sample.exerciseLevel);
+        api.updateSampleExerciseLevel(this.$route.params.projectname as string, sample.sample_name, sample.exerciseLevel);
       }, 0);
     },
-    triggerConfirm(method, arg) {
+    triggerConfirm(method: CallableFunction) {
       this.confirmActionDial = true;
       this.confirmActionCallback = method;
-      this.confirmActionArg1 = arg;
     },
 
-    showNotif(position, alert) {
+    showNotif(position: any, alert: string) {
       const { color, textColor, multiLine, icon, message, avatar, actions } = this.alerts[alert];
-      const buttonColor = color ? 'white' : void 0;
       this.$q.notify({
         color,
         textColor,
@@ -834,12 +860,12 @@ export default {
       });
     },
 
-    searchSamples(rows, terms, cols, cellValue) {
+    searchSamples(rows: sample_t[], terms: any) {
       return rows.filter((row) => row.sample_name.indexOf(terms) !== -1);
     },
 
     exportEvaluation() {
-      const projectName = this.$route.params.projectname;
+      const projectName = this.$route.params.projectname as string;
       const sampleName = this.table.selected[0].sample_name;
       const fileName = `${sampleName}_evaluations`;
       api
@@ -866,7 +892,7 @@ export default {
       //   // a.click();
       // });
     },
-    downloadFileAttachement(data, fileName) {
+    downloadFileAttachement(data: any, fileName: string) {
       const fileURL = window.URL.createObjectURL(new Blob([data]));
       const fileLink = document.createElement('a');
 
@@ -877,7 +903,7 @@ export default {
       fileLink.click();
     },
   },
-};
+});
 </script>
 
 <style lang="stylus">

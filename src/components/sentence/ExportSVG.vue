@@ -2,16 +2,17 @@
   <div></div>
 </template>
 
-<script>
+<script lang="ts">
 export default {
   props: ['sentenceBus'],
   data() {
     return {
       userId: '',
+      tab: '',
     };
   },
   mounted() {
-    this.sentenceBus.on('export:SVG', ({ userId }) => {
+    this.sentenceBus.on('export:SVG', ({ userId }: { userId: string }) => {
       this.userId = userId;
       this.getSVG();
     });
@@ -126,11 +127,11 @@ export default {
      * @param {Event} event
      * @returns void
      */
-    ttselect(event) {
+    ttselect(event: any) {
       let cg;
       // triggered if some letters of the sentence are selected
       if ('conllGraph' in this.$refs) {
-        [cg] = this.$refs.conllGraph.filter((c) => c.user === this.tab);
+        [cg] = (this.$refs.conllGraph as { user: unknown; openTokenDialog: CallableFunction }[]).filter((c) => c.user === this.tab);
       }
       if (cg) {
         cg.openTokenDialog(

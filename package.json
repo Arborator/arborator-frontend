@@ -43,8 +43,9 @@
   "devDependencies": {
     "@babel/eslint-parser": "^7.13.14",
     "@quasar/app": "^3.0.0",
-    "@types/node": "^12.20.21",
+    "@types/codemirror": "^5.60.5",
     "@types/diff": "^5.0.2",
+    "@types/node": "^12.20.21",
     "@typescript-eslint/eslint-plugin": "^5.8.1",
     "@typescript-eslint/parser": "^5.8.1",
     "eslint": "^7.32.0",

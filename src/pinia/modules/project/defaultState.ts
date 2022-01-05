@@ -1,12 +1,4 @@
-interface annotationFeatures_t {
-  META: string[];
-  UPOS: string[];
-  XPOS: string[];
-  FEATS: { name: string; values: string[] }[];
-  MISC: { name: string; values: string[] | string }[];
-  DEPREL: { name: string; values: string[]; join: string }[];
-  DEPS: { name: string; values: string[]; join: string }[];
-}
+import { annotationFeatures_t } from 'src/api/backend-types';
 
 interface configState {
   name: string;

@@ -31,12 +31,14 @@
   </div>
 </template>
 
-<script>
-import { mapGetters } from 'vuex';
-
-import RelationTable from './RelationTable';
+<script lang="ts">
+import RelationTable from './RelationTable.vue';
 
 import api from '../../api/backend-api';
+import { mapState } from 'pinia';
+import { useProjectStore } from 'src/pinia/modules/project';
+import { useUserStore } from 'src/pinia/modules/user';
+import notifyError from 'src/utils/notify';
 
 export default {
   components: {
@@ -51,8 +53,8 @@ export default {
     };
   },
   computed: {
-    ...mapGetters('config', ['isAdmin']),
-    ...mapGetters('user', ['isLoggedIn', 'isSuperAdmin', 'avatar']),
+    ...mapState(useProjectStore, ['isAdmin']),
+    ...mapState(useUserStore, ['isLoggedIn', 'isSuperAdmin', 'avatar']),
     breakpoint() {
       return this.window.width <= 400;
     },

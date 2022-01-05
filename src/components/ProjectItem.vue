@@ -46,7 +46,7 @@
     <q-item-section v-for="adm in project.admins" :key="adm" side>
       <q-chip v-if="userid == adm" size="sm">
         <q-avatar>
-          <img :src="store.getters['user/getUserInfos'].picture_url" />
+          <img :src="getUserInfos.picture_url" />
         </q-avatar>
         {{ adm }}
       </q-chip>
@@ -71,31 +71,34 @@
   </q-item>
 </template>
 
-<script>
-import ConfirmAction from '../components/ConfirmAction';
-import Store from '../store/index';
+<script lang="ts">
+import { mapState } from 'pinia';
+import ConfirmAction from '../components/ConfirmAction.vue';
+import { useUserStore } from 'src/pinia/modules/user';
+import { timeAgo } from 'src/utils/timeAgoUtils';
 
 export default {
   components: { ConfirmAction },
   props: ['props', 'parentDeleteProject', 'parentProjectSettings'],
   data() {
+    const confirmActionCallback: CallableFunction = () => {
+      console.log('FIXME: find better init function');
+    };
     return {
-      store: Store,
       project: this.props,
       confirmActionDial: false,
-      confirmActionCallback: null,
+      confirmActionCallback,
       confirmActionArg1: '',
     };
   },
   computed: {
+    ...mapState(useUserStore, ['getUserInfos']),
+    ...mapState(useUserStore, { userid: 'id' }),
     imageCleaned() {
       let clean = this.project.image.replace('b', '');
       clean = clean.replace(/^'/g, '');
       clean = clean.replace(/'$/g, '');
       return `data:image/png;base64, ${clean}`;
-    },
-    userid() {
-      return this.$store.getters['user/getUserInfos'].id;
     },
     // visible() {
     //   if (!this.project.visibility === 1) {
@@ -127,24 +130,8 @@ export default {
       }
       return false;
     },
-    timeAgo(secsAgo) {
-      const formatter = new Intl.RelativeTimeFormat(this.locale, { style: 'long' });
-      const ranges = {
-        years: 3600 * 24 * 365,
-        months: 3600 * 24 * 30,
-        weeks: 3600 * 24 * 7,
-        days: 3600 * 24,
-        hours: 3600,
-        minutes: 60,
-        seconds: 1,
-      };
-      for (const key in ranges) {
-        if (ranges[key] < Math.abs(secsAgo)) {
-          const delta = secsAgo / ranges[key];
-          return formatter.format(Math.round(delta), key);
-        }
-      }
-      return formatter.format(secsAgo, 'seconds'); // should be useless
+    timeAgo(secsAgo: number) {
+      return timeAgo(secsAgo);
     },
     /**
      * Use the router to push (i.e. got to) a new route
@@ -183,10 +170,9 @@ export default {
      * @param {*} arg
      * @returns void
      */
-    triggerConfirm(method, arg) {
+    triggerConfirm(method: CallableFunction) {
       this.confirmActionDial = true;
       this.confirmActionCallback = method;
-      this.confirmActionArg1 = arg;
     },
   },
 };

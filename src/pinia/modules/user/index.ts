@@ -39,7 +39,6 @@ export const useUserStore = defineStore('user', {
             .whoAmI()
             .then((response) => {
               this.loginSuccess = true;
-              console.log('KK response.data', response.data);
               this.$patch(response.data);
               resolve();
             })

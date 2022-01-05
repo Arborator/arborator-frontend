@@ -2,12 +2,12 @@
   <div class="table">
     <q-table
       ref="table"
+      :key="tableKey"
+      v-model:selected="table.selected"
       title="Dictionaries"
       :class="($q.dark.isActive ? 'my-sticky-header-table-dark' : 'my-sticky-header-table') + ' rounded-borders'"
       :rows="data"
-      :key="tableKey"
-      :columns="table.columns"
-      v-model:selected="table.selected"
+      :columns="table.fields"
       row-key="key"
       :v-model:pagination="table.pagination"
       :filter="table.filter"
@@ -49,7 +49,7 @@
       </template>
     </q-table>
     <q-dialog v-model="searchDialog" seamless position="right" full-width>
-      <template v-if="!($store.getters['config/exerciseMode'] && !$store.getters['config/isTeacher'])">
+      <template v-if="!(exerciseMode && !isTeacher)">
         <GrewSearch :sentence-count="data.length" :sample-id="sampleId" :show-table="searchDialog" />
       </template>
     </q-dialog>
@@ -58,10 +58,22 @@
   </div>
 </template>
 
-<script>
+<script lang="ts">
 import api from '../../api/backend-api';
-import GrewSearch from '../grewSearch/GrewSearch';
+import GrewSearch from '../grewSearch/GrewSearch.vue';
 import grewTemplates from '../../assets/grew-templates.json';
+import { mapState } from 'pinia';
+import { useProjectStore } from 'src/pinia/modules/project';
+import { grew_templates_t, table_t } from 'src/types/main_types';
+
+interface CompareLexiconItem_t {
+  toChange: string;
+  features: unknown;
+  lemma: string;
+  form: string;
+  POS: string;
+  gloss: string;
+}
 
 export default {
   name: 'CompareLexicon',
@@ -71,84 +83,90 @@ export default {
     GrewSearch,
   },
   data() {
+    const table: table_t<CompareLexiconItem_t> = {
+      fields: [
+        {
+          name: 'form',
+          label: 'Form',
+          sortable: true,
+          align: 'left',
+          field: 'form',
+        },
+        {
+          name: 'lemma',
+          label: 'Lemma',
+          sortable: true,
+          align: 'left',
+          field: 'lemma',
+        },
+        {
+          name: 'pos',
+          label: 'POS',
+          sortable: true,
+          align: 'left',
+          field: 'POS',
+        },
+        {
+          name: 'features',
+          label: 'Features',
+          sortable: true,
+          align: 'left',
+          field: 'features',
+        },
+        {
+          name: 'gloss',
+          label: 'Gloss',
+          sortable: true,
+          align: 'left',
+          field: 'gloss',
+        },
+        {
+          name: 'key',
+          label: 'Key',
+          sortable: true,
+          align: 'left',
+          field: 'key',
+        },
+        {
+          name: 'type',
+          label: 'Type',
+          sortable: true,
+          align: 'left',
+          field: 'type',
+        },
+        {
+          name: 'toChange',
+          label: 'Difference',
+          sortable: true,
+          align: 'left',
+          field: 'toChange',
+        },
+      ],
+      visibleColumns: ['form', 'lemma', 'pos', 'features', 'gloss', 'type', 'toChange'],
+      filter: '',
+      pagination: {
+        sortBy: 'name',
+        descending: false,
+        page: 1,
+        rowsPerPage: 10,
+      },
+      selected: [],
+      loading: false,
+      loadingDelete: false,
+    };
+    const queries: grew_templates_t = grewTemplates as grew_templates_t;
+
     return {
+      table,
       RulesApplied: false,
-      queries: grewTemplates,
+      queries,
       featCheck: false,
       currentinfo: '',
       infotochange: '',
       searchDialog: false,
       resultSearchDialog: false,
       resultSearch: {},
-      table: {
-        columns: [
-          {
-            name: 'form',
-            label: 'Form',
-            sortable: true,
-            align: 'left',
-            field: 'form',
-          },
-          {
-            name: 'lemma',
-            label: 'Lemma',
-            sortable: true,
-            align: 'left',
-            field: 'lemma',
-          },
-          {
-            name: 'pos',
-            label: 'POS',
-            sortable: true,
-            align: 'left',
-            field: 'POS',
-          },
-          {
-            name: 'features',
-            label: 'Features',
-            sortable: true,
-            align: 'left',
-            field: 'features',
-          },
-          {
-            name: 'gloss',
-            label: 'Gloss',
-            sortable: true,
-            align: 'left',
-            field: 'gloss',
-          },
-          {
-            name: 'key',
-            label: 'Key',
-            sortable: true,
-            align: 'left',
-            field: 'key',
-          },
-          {
-            name: 'type',
-            label: 'Type',
-            sortable: true,
-            align: 'left',
-            field: 'type',
-          },
-          {
-            name: 'toChange',
-            label: 'Difference',
-            sortable: true,
-            align: 'left',
-            field: 'toChange',
-          },
-        ],
-        visibleColumns: ['form', 'lemma', 'pos', 'features', 'gloss', 'type', 'toChange'],
-        filter: '',
-        pagination: {
-          sortBy: 'name',
-          descending: false,
-          page: 1,
-          rowsPerPage: 10,
-        },
-        selected: [],
-      },
+
       tableKey: 0,
       alerts: {
         noRuletoApply: { color: 'negative', message: 'No rule to apply' },
@@ -159,7 +177,9 @@ export default {
       },
     };
   },
-  mounted() {},
+  computed: {
+    ...mapState(useProjectStore, ['exerciseMode', 'isTeacher']),
+  },
   methods: {
     changeLexicon() {
       const RulesGrew = [];
@@ -191,23 +211,23 @@ export default {
         }
         this.getRulesGrew(RulesGrew);
       } else {
-        this.showNotif('top', 'onlyDifference');
+        this.$q.notify({ message: 'only difference' });
       }
       this.featCheck = false;
     },
 
-    getRulesGrew(RulesGrew) {
+    getRulesGrew(RulesGrew: { currentInfo: string; info2Change: string }[]) {
       if (RulesGrew.length !== 0) {
         let listSampleIds = '';
-        for (const i in this.sampleId) {
-          if (i < this.sampleId.length - 1) {
-            listSampleIds += `${this.sampleId[i].sample_name}, `;
-          } else {
-            listSampleIds += this.sampleId[i].sample_name;
-          }
+        for (const i in this.sampleId as number[]) {
+          // if (i < this.sampleId.length - 1) {
+          //   listSampleIds += `${this.sampleId[i].sample_name}, `;
+          // } else {
+          listSampleIds += this.sampleId[i].sample_name;
+          // }
         }
         const datasample = { data: RulesGrew };
-        api.transformation_grew(this.$route.params.projectname, datasample).then((response) => {
+        api.transformation_grew(this.$route.params.projectname as string, datasample).then((response) => {
           if (this.queries.slice(-1)[0].name !== 'Correct lexicon') {
             this.queries.push({
               name: 'Correct lexicon',
@@ -223,23 +243,8 @@ export default {
         });
         this.searchDialog = true;
       } else {
-        this.showNotif('top', 'noRuletoApply');
+        this.$q.notify({ message: 'No rule to apply' });
       }
-    },
-    showNotif(position, alert) {
-      const { color, textColor, multiLine, icon, message, avatar, actions } = this.alerts[alert];
-      const buttonColor = color ? 'white' : void 0;
-      this.$q.notify({
-        color,
-        textColor,
-        icon,
-        message,
-        position,
-        avatar,
-        multiLine,
-        actions,
-        timeout: 2000,
-      });
     },
   },
 };

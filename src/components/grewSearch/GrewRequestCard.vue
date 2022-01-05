@@ -83,23 +83,25 @@
   </q-card>
 </template>
 
-<script>
+<script lang="ts">
 import CodeMirror2 from 'codemirror';
 // import { codemirror } from "vue-codemirror";
 import Codemirror from 'codemirror-editor-vue3';
 
 import 'codemirror/lib/codemirror.css';
 import grewTemplates from '../../assets/grew-templates.json';
+import { mapActions, mapState } from 'pinia';
+import { useGrewSearchStore } from 'src/pinia/modules/grewSearch';
 // import 'codemirror/theme/material.css'
 
-CodeMirror2.defineMode('grew', (_config, parserConfig) => {
+CodeMirror2.defineMode('grew', () => {
   const words = {
     global: 'builtin',
     pattern: 'builtin',
     commands: 'builtin',
     without: 'builtin',
   };
-  function tokenBase(stream, state) {
+  function tokenBase(stream: any, state: any) {
     const ch = stream.next();
     if (ch === '"') {
       state.tokenize = tokenString;
@@ -139,10 +141,10 @@ CodeMirror2.defineMode('grew', (_config, parserConfig) => {
       return 'operator';
     }
     stream.eatWhile(/\w/);
-    const cur = stream.current();
+    const cur = stream.current() as 'global' | 'pattern' | 'commands' | 'without';
     return words[cur] || 'variable';
   }
-  function tokenString(stream, state) {
+  function tokenString(stream: any, state: any) {
     let next;
     let end = false;
     let escaped = false;
@@ -162,7 +164,7 @@ CodeMirror2.defineMode('grew', (_config, parserConfig) => {
     startState() {
       return { tokenize: tokenBase, commentLevel: 0 };
     },
-    token(stream, state) {
+    token(stream: any, state: any) {
       if (stream.eatSpace()) return null;
       return state.tokenize(stream, state);
     },
@@ -193,21 +195,25 @@ pattern { N [form="Form_to_search"] }`,
       grewlink: '',
     };
   },
+  computed: {
+    ...mapState(useGrewSearchStore, ['lastGrewQuery', 'lastGrewCommand']),
+  },
   mounted() {
     const grewHistory = this.$storage.getStorageSync('grewHistory');
     if (grewHistory !== undefined && grewHistory.length > 0) {
-      this.$store.commit('change_last_grew_query', grewHistory);
+      this.change_last_grew_query(grewHistory);
     }
 
-    if (this.$store.getters.getLastGrewQuery.length > 0) {
-      this.searchPattern = this.$store.getters.getLastGrewQuery;
+    if (this.lastGrewQuery !== '') {
+      this.searchPattern = this.lastGrewQuery;
     }
-    if (this.$store.getters.getLastGrewCommand.length > 0) {
-      this.rewriteCommands = this.$store.getters.getLastGrewCommand;
+    if (this.lastGrewCommand !== '') {
+      this.rewriteCommands = this.lastGrewCommand;
     }
     this.checkgrewquery();
   },
   methods: {
+    ...mapActions(useGrewSearchStore, ['change_last_grew_query', 'change_last_grew_command']),
     /**
      * Call parent onsearch function and update store and history
      *
@@ -215,8 +221,8 @@ pattern { N [form="Form_to_search"] }`,
      */
     onSearch() {
       this.parentOnSearch(this.searchPattern);
-      this.$store.commit('change_last_grew_query', this.searchPattern);
-      this.$store.commit('change_last_grew_command', this.rewriteCommands);
+      this.change_last_grew_query(this.searchPattern);
+      this.change_last_grew_command(this.rewriteCommands);
       this.$storage.setStorageSync('grewHistory', this.searchPattern);
     },
     /**
@@ -235,7 +241,7 @@ pattern { N [form="Form_to_search"] }`,
      * @param {string} pattern
      * @returns void
      */
-    changeSearchPattern(pattern, rewriteCommands) {
+    changeSearchPattern(pattern: string, rewriteCommands = '') {
       this.searchPattern = pattern;
       console.log(this.searchPattern);
       this.rewriteCommands = rewriteCommands;
@@ -261,7 +267,7 @@ pattern { N [form="Form_to_search"] }`,
         this.$route.params.samplename ? `/${this.$route.params.samplename}` : ''
       }?q=${z}`;
       setTimeout(() => {
-        this.$refs.grewlinkinput.select();
+        (this.$refs.grewlinkinput as HTMLInputElement).select();
         document.execCommand('copy');
       }, 500);
     },
@@ -273,12 +279,8 @@ pattern { N [form="Form_to_search"] }`,
     checkgrewquery() {
       if (this.grewquery.length > 0) {
         if (this.queries.filter((c) => c.name === 'custom query').length === 0) {
-          console.log('checkgrewquery()', {
-            name: 'custom query',
-            pattern: customquery,
-          });
           let customquery = this.unzip(this.grewquery);
-          this.queries.unshift({ name: 'custom query', pattern: customquery });
+          // this.queries.unshift({ name: 'custom query', pattern: customquery }); //FIXME
           this.changeSearchPattern(customquery);
           this.onSearch(); // autostart the query?
         }
@@ -290,9 +292,9 @@ pattern { N [form="Form_to_search"] }`,
      * @param {string} s
      * @returns void
      */
-    zip(s) {
+    zip(s: any) {
       try {
-        const dict = {};
+        const dict: { [key: string]: any } = {};
         const data = `${s}`.split('');
         const out = [];
         let currChar;
@@ -325,10 +327,10 @@ pattern { N [form="Form_to_search"] }`,
      * @param {string} base64ZippedString a string result representing zipped base64; result from the above zip(s) method
      * @returns void
      */
-    unzip(base64ZippedString) {
+    unzip(base64ZippedString: string) {
       try {
         const s = this.atou(base64ZippedString);
-        const dict = {};
+        const dict: { [key: string]: string } = {};
         const data = `${s}`.split('');
         let currChar = data[0];
         let oldPhrase = currChar;
@@ -360,7 +362,7 @@ pattern { N [form="Form_to_search"] }`,
      * @param {string} str
      * @returns void
      */
-    utoa(str) {
+    utoa(str: string) {
       return window.btoa(unescape(encodeURIComponent(str)));
     },
     /**
@@ -369,7 +371,7 @@ pattern { N [form="Form_to_search"] }`,
      * @param {string} str
      * @returns void
      */
-    atou(str) {
+    atou(str: string) {
       return decodeURIComponent(escape(window.atob(str)));
     },
   },

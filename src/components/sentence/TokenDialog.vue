@@ -38,20 +38,44 @@
   <!----------------- End TokenDialog ------------------->
 </template>
 
-<script>
-import { replaceArrayOfTokens, sentenceConllToJson } from 'conllup';
+<script lang="ts">
+import conllup from 'conllup';
 import AttributeTable from './AttributeTable.vue';
+import { mapState } from 'pinia';
+import { useProjectStore } from 'src/pinia/modules/project';
+import { PropType } from 'vue';
+import { reactive_sentences_obj_t, sentence_bus_t } from 'src/types/main_types';
+const replaceArrayOfTokens = conllup.replaceArrayOfTokens;
 
 export default {
   components: { AttributeTable },
-  props: ['sentenceBus', 'reactiveSentencesObj'],
+  props: {
+    sentenceBus: {
+      type: Object as PropType<sentence_bus_t>,
+      required: true,
+    },
+    reactiveSentencesObj: {
+      type: Object as PropType<reactive_sentences_obj_t>,
+      required: true,
+    },
+  },
   data() {
+    const tokidsequence: number[] = [];
+    const tokl: {
+      a: number;
+      v: string;
+    }[] = [];
     return {
+      tokenDialog: false,
       tokenDialogOpened: false,
+      tokidsequence,
+      startIndex: 0,
+      endIndex: 0,
+      selection: '',
       token: {},
       userId: '',
       currentword: '',
-      tokl: [],
+      tokl,
       featTable: {
         featl: [],
         miscl: [],
@@ -83,24 +107,24 @@ export default {
     };
   },
   computed: {
-    annotationFeatures() {
-      return this.$store.getters['config/annotationFeatures'];
-    },
+    ...mapState(useProjectStore, ['annotationFeatures']),
   },
   mounted() {
     this.sentenceBus.on('open:tokenDialog', ({ userId, event }) => {
       this.userId = userId;
-      this.startIndex = event.srcElement.selectionStart;
-      this.endIndex = event.srcElement.selectionEnd;
-      this.selection = event.srcElement.value.substring(this.startIndex, this.endIndex);
-      this.openTokenDialog(this.startIndex, this.endIndex, this.selection);
+      if (event.target !== null) {
+        this.startIndex = (event.target as HTMLInputElement).selectionStart || 0;
+        this.endIndex = (event.target as HTMLInputElement).selectionEnd || 0;
+        this.selection = (event.target as HTMLInputElement).value.substring(this.startIndex, this.endIndex);
+        this.openTokenDialog(this.startIndex, this.endIndex, this.selection);
+      }
     });
   },
   beforeUnmount() {
     this.sentenceBus.off('open:tokenDialog');
   },
   methods: {
-    openTokenDialog(b, e, t) {
+    openTokenDialog(b: number, e: number, t: string) {
       this.tokenDialogOpened = true;
 
       // begin index, end index, selected token of text field in sentenceCard
@@ -112,7 +136,7 @@ export default {
         t = t.substring(1);
         b += 1;
       }
-      const { treeJson } = this.sentenceBus[this.userId];
+      const { treeJson } = this.sentenceBus.sentenceSVGs[this.userId];
       const toks = Object.values(treeJson).map(({ FORM }) => FORM);
       const spa = Object.values(treeJson).map(({ MISC }) => ('SpaceAfter' in MISC && MISC.SpaceAfter === 'No' ? 0 : 1));
       const toktok = [];

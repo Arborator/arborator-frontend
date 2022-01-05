@@ -41,11 +41,12 @@
   </q-card>
 </template>
 
-<script>
+<script lang="ts">
 import { useProjectStore } from 'src/pinia/modules/project';
 import api from '../api/backend-api';
 import notifyError from 'src/utils/notify';
-import { mapActions } from 'pinia';
+import { mapActions, mapState } from 'pinia';
+import { useUserStore } from 'src/pinia/modules/user';
 
 export default {
   props: ['parentGetProjects'],
@@ -60,16 +61,14 @@ export default {
         showAllTrees: true,
         exerciseMode: false,
       },
-      attachment: { name: null, file: null },
+      attachment: { name: null, file: [] },
     };
   },
   computed: {
-    getUserInfos() {
-      return this.$store.getters['user/getUserInfos'];
-    },
+    ...mapState(useUserStore, ['getUserInfos']),
   },
   methods: {
-    ...mapActions(useProjectStore, ['resetAnnotationFeatures', 'testFunc']),
+    ...mapActions(useProjectStore, ['resetAnnotationFeatures']),
     /**
      * Handle project submission by creating form data and sending to backend
      *
@@ -81,7 +80,7 @@ export default {
       // this.$store.dispatch('config/resetAnnotationFeatures'); // reset annotationFeature object
       const data = {
         ...this.project,
-        username: this.$store.getters['user/getUserInfos'].username,
+        username: this.getUserInfos.username,
       };
       api
         .createProject(data)
@@ -98,17 +97,10 @@ export default {
           this.submitting = false;
         });
     },
-    /**
-     * @TODO : Nothing yet ,to delete ?
-     */
-    onReset() {},
-    /**
-     * Attach the file when the event is triggerred
-     *
-     * @param {Event} event
-     * @returns void
-     */
-    onFileChange(event) {
+    onReset() {
+      console.log('FIXME: not implemented yet');
+    },
+    onFileChange(event: any) {
       this.attachment.file = event.target.files;
     },
   },

@@ -1,6 +1,26 @@
 import { API } from './axios-api';
-import { project_t, project_with_diff_t, transcription_t } from 'src/types/main_types';
-import { updateProjectFeatures_ED, updateTree_ED } from './backend-api-types';
+import { transcription_t } from 'src/types/main_types';
+import {
+  createProject_ED,
+  getProjectConlluSchema_RV,
+  getProjectFeatures_RV,
+  getProjectSamples_RV,
+  getProjects_RV,
+  getProjectUsersAccess_RV,
+  getProject_RV,
+  getUsers_RV,
+  logout_RV,
+  modifySampleRole_RV,
+  updateManyProjectUserAccess_ED,
+  updateManyProjectUserAccess_RV,
+  updateProjectConlluSchema_ED,
+  updateProjectFeatures_ED,
+  updateProject_ED,
+  updateProject_RV,
+  updateTree_ED,
+  whoIAm_RV,
+} from './endpoints';
+import { sample_role_action_t, sample_role_targetrole_t } from './backend-types';
 
 export default {
   // -------------------------------------------------- //
@@ -14,7 +34,7 @@ export default {
     return API.get(provider);
   },
   logout() {
-    return API.get('/logout');
+    return API.get<logout_RV>('/logout');
   },
 
   // -------------------------------------------------- //
@@ -22,48 +42,48 @@ export default {
   // -------------------------------------------------- //
 
   getUsers() {
-    return API.get('users/');
+    return API.get<getUsers_RV>('users/');
   },
   whoAmI() {
-    return API.get('users/me');
+    return API.get<whoIAm_RV>('users/me');
   },
 
   // ---------------------------------------------------- //
   // ---------------        Project       --------------- //
   // ---------------------------------------------------- //
   getProjects() {
-    return API.get('projects');
+    return API.get<getProjects_RV>('projects');
   },
-  createProject(data: project_t) {
+  createProject(data: createProject_ED) {
     return API.post('projects/', data);
   },
   getProject(projectname: string) {
-    return API.get<project_with_diff_t>(`projects/${projectname}`);
+    return API.get<getProject_RV>(`projects/${projectname}`);
   },
-  updateProject(projectname: string, data: Partial<project_with_diff_t>) {
-    return API.put<project_with_diff_t>(`projects/${projectname}`, data);
+  updateProject(projectname: string, data: updateProject_ED) {
+    return API.put<updateProject_RV>(`projects/${projectname}`, data);
   },
   deleteProject(projectname: string) {
     return API.delete(`projects/${projectname}`);
   },
   getProjectFeatures(projectname: string) {
-    return API.get(`projects/${projectname}/features`);
+    return API.get<getProjectFeatures_RV>(`projects/${projectname}/features`);
   },
   updateProjectFeatures(projectname: string, toUpdateObject: updateProjectFeatures_ED) {
-    return API.put(`projects/${projectname}/features`, toUpdateObject);
+    return API.put<{ status: 'success' }>(`projects/${projectname}/features`, toUpdateObject);
   },
   getProjectConlluSchema(projectname: string) {
-    return API.get(`projects/${projectname}/conll-schema`);
+    return API.get<getProjectConlluSchema_RV>(`projects/${projectname}/conll-schema`);
   },
-  updateProjectConlluSchema(projectname: string, conlluSchema: any) {
-    return API.put(`projects/${projectname}/conll-schema`, conlluSchema);
+  updateProjectConlluSchema(projectname: string, data: updateProjectConlluSchema_ED) {
+    return API.put(`projects/${projectname}/conll-schema`, data);
   },
   getProjectUsersAccess(projectname: string) {
-    return API.get(`projects/${projectname}/access`);
+    return API.get<getProjectUsersAccess_RV>(`projects/${projectname}/access`);
   },
   updateManyProjectUserAccess(projectname: string, targetrole: string, userIds: string[]) {
-    const data = { user_ids: userIds, targetrole };
-    return API.put(`projects/${projectname}/access/many`, data);
+    const data: updateManyProjectUserAccess_ED = { user_ids: userIds, targetrole };
+    return API.put<updateManyProjectUserAccess_RV>(`projects/${projectname}/access/many`, data);
   },
   deleteProjectUserAccess(projectname: string, userId: string) {
     return API.delete(`projects/${projectname}/access/${userId}`);
@@ -74,10 +94,11 @@ export default {
   // ---------------------------------------------------- //
   getProjectSamples(projectname: string) {
     // this call flask api that call grew api
-    return API.get(`/projects/${projectname}/samples`);
+    return API.get<getProjectSamples_RV>(`/projects/${projectname}/samples`);
   },
+  // KK FIXME : fix this data: any
   uploadSample(projectname: string, data: any) {
-    return API.post(`/projects/${projectname}/samples`, data, { timeout: 400000 });
+    return API.post<{ status: 'OK' }>(`/projects/${projectname}/samples`, data, { timeout: 400000 });
   },
   exportEvaluation(projectName: string, sampleName: string) {
     return API.get(`/projects/${projectName}/samples/${sampleName}/evaluation`);
@@ -91,8 +112,8 @@ export default {
   deleteSample(projectname: string, samplename: string) {
     return API.delete(`/projects/${projectname}/samples/${samplename}`);
   },
-  modifySampleRole(projectname: string, samplename: string, username: string, targetrole: string, action: string) {
-    return API.post(`/projects/${projectname}/samples/${samplename}/role`, {
+  modifySampleRole(projectname: string, samplename: string, username: string, targetrole: sample_role_targetrole_t, action: sample_role_action_t) {
+    return API.post<modifySampleRole_RV>(`/projects/${projectname}/samples/${samplename}/role`, {
       username,
       targetrole,
       action,

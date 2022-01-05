@@ -5,19 +5,19 @@
       <div class="col items-center">
         <q-banner rounded :class="$q.dark.isActive ? '' : 'bg-grey-3'">
           <template #avatar>
-            <q-avatar :key="store.getters['user/getAvatarKey']" color="default" text-color="white" size="100px">
-              <img :src="user.picture_url" />
+            <q-avatar :key="avatarKey" color="default" text-color="white" size="100px">
+              <img :src="getUserInfos.picture_url" />
             </q-avatar>
           </template>
           <div class="row">
             <div :class="'col text-center text-weight-bold text-h4 ' + ($q.dark.isActive ? '' : 'text-blue-grey-10')">
-              {{ user.first_name }} {{ user.family_name }}
+              {{ getUserInfos.first_name }} {{ getUserInfos.family_name }}
             </div>
           </div>
           <div class="row">
-            <div :class="'col text-center ' + +($q.dark.isActive ? '' : 'text-blue-grey-8')">@{{ user.username }}</div>
+            <div :class="'col text-center ' + +($q.dark.isActive ? '' : 'text-blue-grey-8')">@{{ getUserInfos.username }}</div>
           </div>
-          <div v-show="user.super_admin" class="row">
+          <div v-show="getUserInfos.super_admin" class="row">
             <div :class="'col text-center ' + ($q.dark.isActive ? '' : 'text-blue-grey-8')">Super Admin</div>
           </div>
         </q-banner>
@@ -35,9 +35,9 @@
             </q-card-section>
             <q-card-section>
               <div class="q-gutter-lg">
-                <q-input v-model="user.id" type="email" label="Email" />
-                <q-input v-model="user.first_name" type="text" label="First Name" />
-                <q-input v-model="user.family_name" type="text" label="Last Name" />
+                <q-input v-model="getUserInfos.id" type="email" label="Email" />
+                <q-input v-model="getUserInfos.first_name" type="text" label="First Name" />
+                <q-input v-model="getUserInfos.family_name" type="text" label="Last Name" />
               </div>
             </q-card-section>
             <q-card-actions align="right">
@@ -51,15 +51,13 @@
   </div>
 </template>
 
-<script>
-import Store from '../store/index';
-
+<script lang="ts">
+import { mapState } from 'pinia';
+import { useUserStore } from 'src/pinia/modules/user';
 export default {
   name: 'Settings',
   data() {
     return {
-      user: this.$store.getters['user/getUserInfos'],
-      store: Store,
       alerts: {
         saveerror: { color: 'negative', message: 'Could not save the data.', icon: 'report_problem' },
         savesuccess: { color: 'positive', message: 'Modifications saved' },
@@ -70,25 +68,12 @@ export default {
       tempPwd: '',
     };
   },
+  computed: {
+    ...mapState(useUserStore, ['avatarKey', 'getUserInfos']),
+  },
   methods: {
     forceRerenderAvatar() {
-      this.$store.commit('increment_avatar_key');
-      this.showNotif('top-right', 'savesuccess');
-    },
-    showNotif(position, alert) {
-      const { color, textColor, multiLine, icon, message, avatar, actions } = this.alerts[alert];
-      const buttonColor = color ? 'white' : void 0;
-      this.$q.notify({
-        color,
-        textColor,
-        icon,
-        message,
-        position,
-        avatar,
-        multiLine,
-        actions,
-        timeout: 2000,
-      });
+      console.log('FIXME : THIS IS EMPTY');
     },
   },
 };

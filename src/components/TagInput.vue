@@ -75,14 +75,20 @@
   </div>
 </template>
 
-<script>
+<script lang="ts">
+import { PropType } from 'vue';
+interface tag_t {
+  value: string;
+  key: string;
+}
+
 export default {
   props: {
     role: String,
     elementId: String,
 
     existingTags: {
-      type: Array,
+      type: Array as PropType<tag_t[]>,
       default: () => [],
     },
 
@@ -198,20 +204,24 @@ export default {
 
     tagContext: {
       type: Object,
-      default: () => {},
+      default: () => {
+        console.log('default callback');
+      },
     },
   },
 
   data() {
+    const tags: tag_t[] = [];
+    const searchResults: tag_t[] = [];
     return {
       badgeId: 0,
-      tags: [],
+      tags,
 
       input: '',
       oldInput: '',
       hiddenInput: '',
 
-      searchResults: [],
+      searchResults,
       searchSelection: 0,
 
       selectedTag: -1,
@@ -220,11 +230,9 @@ export default {
 
   watch: {
     input(newVal, oldVal) {
-      this.searchTag(false);
+      this.searchTag();
 
       if (newVal.length && newVal !== oldVal) {
-        const diff = newVal.substring(oldVal.length, newVal.length);
-
         if (this.addTagsOnSpace) {
           if (newVal.endsWith(' ')) {
             // The space shouldn't actually be inserted
@@ -251,13 +259,13 @@ export default {
       }
     },
 
-    tags() {
-      // Updating the hidden input
-      this.hiddenInput = JSON.stringify(this.tags);
+    // tags() {
+    //   // Updating the hidden input
+    //   this.hiddenInput = JSON.stringify(this.tags);
 
-      // Update the bound v-model value
-      this.$emit('input', this.tags);
-    },
+    //   // Update the bound v-model value
+    //   this.$emit('input', this.tags);
+    // },
 
     value() {
       this.tagsFromValue();
@@ -265,7 +273,7 @@ export default {
 
     typeaheadAlwaysShow(newValue) {
       if (newValue) {
-        this.searchTag(false);
+        this.searchTag();
       } else {
         this.clearSearchResults();
       }
@@ -276,7 +284,7 @@ export default {
     this.tagsFromValue();
 
     if (this.typeaheadAlwaysShow) {
-      this.searchTag(false);
+      this.searchTag();
     }
 
     // Emit an event
@@ -291,7 +299,7 @@ export default {
      * @param string
      * @returns String
      */
-    escapeRegExp(string) {
+    escapeRegExp(string: string) {
       return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
     },
 
@@ -345,10 +353,10 @@ export default {
      * @param tag
      * @returns void
      */
-    tagFromSearchOnClick(tag) {
+    tagFromSearchOnClick(tag: tag_t) {
       this.tagFromSearch(tag);
 
-      this.$refs.taginput.blur();
+      (this.$refs.taginput as HTMLInputElement).blur();
     },
 
     /**
@@ -359,7 +367,7 @@ export default {
      * @param tag
      * @return void
      */
-    tagFromSearch(tag) {
+    tagFromSearch(tag: tag_t) {
       this.clearSearchResults();
       this.addTag(tag);
 
@@ -375,7 +383,7 @@ export default {
      * @param tag
      * @returns void | Boolean
      */
-    addTag(tag) {
+    addTag(tag: tag_t) {
       if (!this.beforeAddingTag(tag)) {
         return false;
       }
@@ -406,7 +414,7 @@ export default {
      * @param tag
      * @returns void | Boolean
      */
-    addTagInit(tag) {
+    addTagInit(tag: tag_t) {
       if (!this.beforeAddingTag(tag)) {
         return false;
       }
@@ -441,7 +449,7 @@ export default {
      * @param index
      * @returns void
      */
-    removeTag(index) {
+    removeTag(index: number) {
       const tag = this.tags[index];
 
       if (!this.beforeRemovingTag(tag)) {
@@ -615,7 +623,7 @@ export default {
      * @param tag
      * @returns Boolean
      */
-    tagSelected(tag) {
+    tagSelected(tag: tag_t) {
       if (this.allowDuplicates) {
         return false;
       }
@@ -652,7 +660,7 @@ export default {
      * @param e
      * @returns void
      */
-    onKeyUp(e) {
+    onKeyUp(e: KeyboardEvent) {
       this.$emit('keyup', e);
     },
 
@@ -662,7 +670,7 @@ export default {
      * @param e
      * @returns void
      */
-    onKeyDown(e) {
+    onKeyDown(e: KeyboardEvent) {
       this.$emit('keydown', e);
     },
 
@@ -672,7 +680,7 @@ export default {
      * @param e
      * @returns void
      */
-    onFocus(e) {
+    onFocus(e: FocusEvent) {
       this.$emit('focus', e);
 
       this.searchTag();
@@ -684,7 +692,7 @@ export default {
      * @param e
      * @returns void
      */
-    onBlur(e) {
+    onBlur(e: HTMLInputElement) {
       this.$emit('blur', e);
 
       if (this.addTagsOnBlur) {

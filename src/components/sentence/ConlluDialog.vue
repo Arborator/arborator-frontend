@@ -27,8 +27,10 @@
   <!----------------- End ConllDialog ------------------->
 </template>
 
-<script>
-import { sentenceConllToJson } from 'conllup';
+<script lang="ts">
+import conllup from 'conllup';
+const sentenceConllToJson = conllup.sentenceConllToJson;
+
 // import { codemirror } from "vue-codemirror";
 import CodeMirror2 from 'codemirror';
 
@@ -42,9 +44,12 @@ import 'codemirror/mode/javascript/javascript.js';
 
 // theme
 import 'codemirror/theme/dracula.css';
+import notifyError from 'src/utils/notify';
+import { sentence_bus_t } from 'src/types/main_types';
+import { PropType } from 'vue';
 
-CodeMirror2.defineMode('tsv', (_config, parserConfig) => {
-  function tokenBase(stream, state) {
+CodeMirror2.defineMode('tsv', () => {
+  function tokenBase(stream: any) {
     if (stream.string.match(/^#.+/)) {
       stream.skipToEnd();
       return 'comment';
@@ -63,7 +68,6 @@ CodeMirror2.defineMode('tsv', (_config, parserConfig) => {
       return 'operator';
     }
     stream.eatWhile(/\w/);
-    const cur = stream.current();
     return 'variable';
   }
 
@@ -73,7 +77,7 @@ CodeMirror2.defineMode('tsv', (_config, parserConfig) => {
     startState() {
       return { tokenize: tokenBase, commentLevel: 0 };
     },
-    token(stream, state) {
+    token(stream: any, state: any) {
       if (stream.eatSpace()) return null;
       return state.tokenize(stream, state);
     },
@@ -83,9 +87,15 @@ CodeMirror2.defineMode('tsv', (_config, parserConfig) => {
 
 export default {
   components: { Codemirror },
-  props: ['sentenceBus'],
+  props: {
+    sentenceBus: {
+      type: Object as PropType<sentence_bus_t>,
+      required: true,
+    },
+  },
   data() {
     return {
+      userId: '',
       conlluDialogOpened: false,
       currentConllContent: '',
       conllContent: '',
@@ -106,14 +116,15 @@ export default {
     this.sentenceBus.on('open:conlluDialog', ({ userId }) => {
       this.userId = userId;
       this.conlluDialogOpened = true;
-      this.currentConllContent = this.sentenceBus[this.userId].exportConll();
-      this.conllContent = this.sentenceBus[this.userId].exportConll();
+      this.currentConllContent = this.sentenceBus.sentenceSVGs[this.userId].exportConll();
+      this.conllContent = this.sentenceBus.sentenceSVGs[this.userId].exportConll();
     });
   },
   methods: {
-    codefocus(cm, ev) {
+    codefocus(cm: any, ev: any) {
       cm.refresh();
       cm.execCommand('selectAll');
+      console.log('codefocus()', ev);
     },
     onConllDialogOk() {
       let sentenceJson;
@@ -126,7 +137,7 @@ export default {
         });
         return;
       }
-      const oldMeta = this.sentenceBus[this.userId].metaJson;
+      const oldMeta = this.sentenceBus.sentenceSVGs[this.userId].metaJson;
       const newMeta = sentenceJson.metaJson;
 
       let isMetaChanged = 0;

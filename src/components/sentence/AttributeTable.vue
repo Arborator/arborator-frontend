@@ -32,11 +32,11 @@
               input-debounce="1000"
               new-value-mode="add-unique"
               dense
-              :options="computeAttributeOptions(props.row)"
+              :options="computeAttributeOptions()"
               :options-sanitize="true"
-              @input-value="oninput(props.row)"
+              @input-value="oninput()"
             />
-            <q-select v-else v-model="props.row.a" dense clearable use-input borderless :options="computeAttributeOptions(props.row)" />
+            <q-select v-else v-model="props.row.a" dense clearable use-input borderless :options="computeAttributeOptions()" />
           </q-td>
 
           <q-td key="v" :props="props">
@@ -51,7 +51,7 @@
               dense
               use-input
               :rules="[(val) => !!val || 'Field is required']"
-              @input-value="oninput(props.row)"
+              @input-value="oninput()"
             />
             <q-input
               v-else-if="computeValueType(props.row) === 'String'"
@@ -59,7 +59,7 @@
               filled
               dense
               :rules="[(val) => !!val || 'Field is required']"
-              @input-value="oninput(props.row)"
+              @input-value="oninput()"
             />
 
             <q-select
@@ -73,7 +73,7 @@
               clearable
               :options="computeValueOptions(props.row)"
               :options-sanitize="true"
-              @input-value="oninput(props.row)"
+              @input-value="oninput()"
             />
             <q-select
               v-else
@@ -83,7 +83,7 @@
               dense
               clearable
               :options="computeValueOptions(props.row)"
-              @input-value="oninput(props.row)"
+              @input-value="oninput()"
             >
               <!-- removed fill-input to allow to erase functions -->
               <template v-if="prepend !== undefined" #prepend>{{ props.row.join }}</template>
@@ -142,8 +142,6 @@ export default {
     thisdate(timestamp) {
       if (!timestamp) return 'no';
       const now = Date.now();
-      const date1 = new Date(2017, 4, 12);
-      const date2 = new Date(2017, 3, 8);
       const diff = date.getDateDiff(now, parseInt(timestamp, 10), 'days');
       let diffstr = '';
       if (diff === 0) diffstr = `${date.getDateDiff(now, parseInt(timestamp, 10), 'hours')} hours ago: `;
@@ -151,7 +149,7 @@ export default {
       else diffstr = `${diff} days ago: `;
       return diffstr + date.formatDate(parseInt(timestamp, 10), 'YYYY-MM-DD HH:mm:ss');
     },
-    computeAttributeOptions(row) {
+    computeAttributeOptions() {
       // for new line, returns all the predefined attributes not yet existing
       // todo: hide completely the q-select, if no selection possible
       // console.log('computeAttributeOptions',this.featOptions)
@@ -175,7 +173,7 @@ export default {
       if (vs === ['Number']) return 'Number';
       return 'String'; // if (vs==["String"]) or unknown
     },
-    oninput(row) {
+    oninput() {
       this.$emit('feature-changed');
       this.key += 1;
     },

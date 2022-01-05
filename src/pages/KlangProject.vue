@@ -47,7 +47,6 @@
 
 <script>
 import { mapActions } from 'pinia';
-import { mapGetters } from 'vuex';
 import api from '../api/backend-api';
 import { useKlangStore } from 'src/pinia/modules/klang';
 

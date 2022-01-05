@@ -59,28 +59,43 @@
   </q-dialog>
   <!----------------- END FeaturesDialog ------------------->
 </template>
-<script>
+<script lang="ts">
 import AttributeTable from './AttributeTable.vue';
+import { PropType } from 'vue';
+import { sentence_bus_t } from 'src/types/main_types';
+import { mapState } from 'pinia';
+import { useProjectStore } from 'src/pinia/modules/project';
+import { emptyTokenJson } from 'conllup/lib/conll';
 
 export default {
   components: {
     AttributeTable,
   },
-  props: ['sentenceBus'],
+  props: {
+    sentenceBus: {
+      type: Object as PropType<sentence_bus_t>,
+      required: true,
+    },
+  },
   data() {
+    const featl: { a: string; v: string }[] = [];
+    const miscl: { a: string; v: string }[] = [];
+    const lemma: { a: string; v: string }[] = [];
+    const form: { a: string; v: string }[] = [];
+    const token = emptyTokenJson();
     return {
       featuresDialogOpened: false,
-      token: {},
+      token,
       userId: '',
       options: {
         lemmaoptions: [{ name: 'Lemma', values: 'String' }],
         formoptions: [{ name: 'Form', values: 'String' }],
       },
       featTable: {
-        featl: [],
-        miscl: [],
-        lemma: [],
-        form: [],
+        featl,
+        miscl,
+        lemma,
+        form,
         columns: [
           {
             name: 'a',
@@ -108,9 +123,7 @@ export default {
     };
   },
   computed: {
-    annotationFeatures() {
-      return this.$store.getters['config/annotationFeatures'];
-    },
+    ...mapState(useProjectStore, ['annotationFeatures']),
   },
   mounted() {
     this.sentenceBus.on('open:featuresDialog', ({ token, userId }) => {
@@ -134,23 +147,33 @@ export default {
     this.sentenceBus.off('open:featuresDialog');
   },
   methods: {
-    informFeatureChanged() {},
-    ondialoghide() {},
+    informFeatureChanged() {
+      console.log('FIXME to implement');
+    },
+    ondialoghide() {
+      console.log('FIXME to implement');
+    },
     onFeatureDialogOk() {
-      this.token.LEMMA = this.featTable.lemma.reduce((obj, r) => {
-        if (r.v) obj[r.a] = r.v;
-        return obj;
-      }, {}).Lemma;
-      this.token.FORM = this.featTable.form.reduce((obj, r) => {
-        if (r.v) obj[r.a] = r.v;
-        return obj;
-      }, {}).Form;
+      this.token.LEMMA = this.featTable.lemma.reduce(
+        (obj, r) => {
+          if (r.v) (obj as { [key: string]: string })[r.a] = r.v;
+          return obj;
+        },
+        { Lemma: '' }
+      ).Lemma;
+      this.token.FORM = this.featTable.form.reduce(
+        (obj, r) => {
+          if (r.v) (obj as { [key: string]: string })[r.a] = r.v;
+          return obj;
+        },
+        { Form: '' }
+      ).Form;
       this.token.FEATS = this.featTable.featl.reduce((obj, r) => {
-        if (r.v) obj[r.a] = r.v;
+        if (r.v) (obj as { [key: string]: string })[r.a] = r.v;
         return obj;
       }, {});
       this.token.MISC = this.featTable.miscl.reduce((obj, r) => {
-        if (r.v) obj[r.a] = r.v;
+        if (r.v) (obj as { [key: string]: string })[r.a] = r.v;
         return obj;
       }, {});
       this.sentenceBus.emit('tree-update:token', {

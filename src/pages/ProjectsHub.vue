@@ -159,6 +159,151 @@
   </q-page>
 </template>
 
+<script lang="ts">
+import { openURL } from 'quasar';
+import { useStorage } from 'vue3-storage';
+import api from '../api/backend-api';
+import ProjectCard from '../components/ProjectCard.vue';
+import ProjectItem from '../components/ProjectItem.vue';
+import CreaProjectCard from '../components/CreaProjectCard.vue';
+import ProjectSettingsView from '../components/ProjectSettingsView.vue';
+import { mapState } from 'pinia';
+import { useUserStore } from 'src/pinia/modules/user';
+import { defineComponent } from 'vue';
+import notifyError from 'src/utils/notify';
+import { project_extended_t } from 'src/api/backend-types';
+import { StorageInterface } from 'vue3-storage/packages/types';
+
+export default defineComponent({
+  name: 'ProjectHub',
+  components: {
+    ProjectCard,
+    ProjectItem,
+    CreaProjectCard,
+    ProjectSettingsView,
+  },
+  data() {
+    const projects: project_extended_t[] = [];
+    const visibleProjects: project_extended_t[] = [];
+    const storage: StorageInterface = useStorage();
+    return {
+      lorem: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.',
+      projects,
+      visibleProjects,
+      projectDifference: false,
+      hover: false,
+      search: '',
+      listMode: true,
+      creaProjectDial: false,
+      projectSettingsDial: false,
+      projectnameTarget: '',
+      initLoading: false,
+      loadingProjects: true,
+      skelNumber: [...Array(5).keys()],
+      confirmActionDial: false,
+      confirmActionCallback: null,
+      confirmActionArg1: '',
+      storage,
+      ayear: -3600 * 24 * 365,
+      userId: '',
+    };
+  },
+  computed: {
+    ...mapState(useUserStore, ['isLoggedIn']),
+
+    myOldProjects(): project_extended_t[] {
+      return this.visibleProjects.filter((project) => {
+        return this.isCreatedByMe(project) && this.isOld(project);
+      });
+    },
+    otherProjects(): project_extended_t[] {
+      return this.visibleProjects.filter((project) => {
+        return !this.isCreatedByMe(project) && !this.isOld(project);
+      });
+    },
+    otherOldProjects(): project_extended_t[] {
+      return this.visibleProjects.filter((project) => {
+        return !this.isCreatedByMe(project) && this.isOld(project);
+      });
+    },
+  },
+  mounted() {
+    document.title = `ArboratorGrew: ${this.$t('projectHub.title')}`;
+    this.storage = useStorage();
+    this.initLoading = true;
+    this.userId = useUserStore().id;
+    // this.listMode = this.$storage.getStorageSync("project_view", false);
+    this.listMode = this.storage.getStorageSync('project_view') || false;
+    this.getProjects();
+  },
+  methods: {
+    openURL,
+    myProjects() {
+      return this.visibleProjects.filter((project) => {
+        return this.isCreatedByMe(project) && !this.isOld(project);
+      });
+    },
+    getProjects() {
+      this.loadingProjects = true;
+      api
+        .getProjects()
+        .then((response) => {
+          // console.log('here', response.data);
+          this.projects = response.data as project_extended_t[];
+          this.visibleProjects = response.data as project_extended_t[];
+          this.sortProjects();
+          // this.projectDifference = response.data.difference;
+          this.loadingProjects = false;
+          this.initLoading = false;
+          // }
+        })
+        .catch((error) => {
+          notifyError({ error });
+          this.loadingProjects = false;
+        });
+    },
+    searchProject(pattern: string) {
+      const filteredProjects = this.projects.filter((project) => {
+        return project.project_name.toLowerCase().includes(pattern.toLowerCase()) === true;
+      });
+      this.visibleProjects = filteredProjects;
+    },
+    sortProjects() {
+      // if (!this.isLoggedIn) return;
+      this.visibleProjects.sort((a, b) => b.last_access - a.last_access);
+    },
+    isCreatedByMe(project: project_extended_t) {
+      return project.admins[0] === this.userId;
+    },
+    isOld(project: project_extended_t) {
+      // either not used since more than a year or empty and older than an hour
+      return project.last_access < this.ayear || (project.number_samples < 1 && project.last_access < 3600);
+    },
+    toggleProjectView() {
+      this.listMode = !this.listMode;
+      if (this.storage) {
+        this.storage.setStorageSync('project_view', this.listMode);
+      }
+    },
+    showProjectSettings(projectName: string) {
+      this.projectnameTarget = projectName;
+      this.projectSettingsDial = true;
+    },
+    deleteProject(projectName: string) {
+      api
+        .deleteProject(projectName)
+        .then(() => {
+          this.$q.notify({ message: `Project ${projectName} deleted` });
+          this.getProjects();
+        })
+        .catch((error) => {
+          notifyError({ error });
+        });
+    },
+  },
+});
+</script>
+
 <style scoped lang="stylus">
 .clickable:hover {
   cursor: pointer;
@@ -174,159 +319,3 @@
   font-size: 18px;
 }
 </style>
-
-<script>
-import { openURL } from 'quasar';
-import { useStorage } from 'vue3-storage';
-import api from '../api/backend-api';
-import Store from '../store/index';
-import ProjectCard from '../components/ProjectCard.vue';
-import ProjectItem from '../components/ProjectItem.vue';
-import CreaProjectCard from '../components/CreaProjectCard.vue';
-import ProjectSettingsView from '../components/ProjectSettingsView.vue';
-import ConfirmAction from '../components/ConfirmAction';
-
-export default {
-  name: 'ProjectHub',
-  components: {
-    ProjectCard,
-    ProjectItem,
-    CreaProjectCard,
-    ProjectSettingsView,
-    ConfirmAction,
-  },
-  data() {
-    return {
-      lorem: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.',
-      projects: [],
-      visibleProjects: [],
-      projectDifference: false,
-      hover: false,
-      search: '',
-      listMode: true,
-      creaProjectDial: false,
-      projectSettingsDial: false,
-      projectnameTarget: '',
-      initLoading: false,
-      loadingProjects: true,
-      skelNumber: [...Array(5).keys()],
-      confirmActionDial: false,
-      confirmActionCallback: null,
-      confirmActionArg1: '',
-      storage: null,
-      ayear: -3600 * 24 * 365,
-      userId: '',
-    };
-  },
-  computed: {
-    isLoggedIn() {
-      return this.$store.getters['user/isLoggedIn'];
-    },
-    myProjects() {
-      return this.visibleProjects.filter((project) => {
-        return this.isCreatedByMe(project) && !this.isOld(project);
-      });
-    },
-    myOldProjects() {
-      return this.visibleProjects.filter((project) => {
-        return this.isCreatedByMe(project) && this.isOld(project);
-      });
-    },
-    otherProjects() {
-      return this.visibleProjects.filter((project) => {
-        return !this.isCreatedByMe(project) && !this.isOld(project);
-      });
-    },
-    otherOldProjects() {
-      return this.visibleProjects.filter((project) => {
-        return !this.isCreatedByMe(project) && this.isOld(project);
-      });
-    },
-    avatar() {
-      return this.$store.getters['user/getUserInfos'].picture_url;
-    },
-  },
-  mounted() {
-    document.title = `ArboratorGrew: ${this.$t('projectHub.title')}`;
-    this.storage = useStorage();
-    this.initLoading = true;
-    this.userId = this.$store.getters['user/getUserInfos'].id;
-    // this.listMode = this.$storage.getStorageSync("project_view", false);
-    this.listMode = this.storage.getStorageSync('project_view', false);
-    this.getProjects();
-  },
-  methods: {
-    openURL,
-    getProjects() {
-      this.loadingProjects = true;
-      api
-        .getProjects()
-        .then((response) => {
-          // console.log('here', response.data);
-          this.projects = response.data;
-          this.visibleProjects = response.data;
-          this.sortProjects();
-          // this.projectDifference = response.data.difference;
-          this.loadingProjects = false;
-          this.initLoading = false;
-          // }
-        })
-        .catch((error) => {
-          notifyError({ error });
-          this.loadingProjects = false;
-        });
-    },
-    searchProject(pattern) {
-      const filteredProjects = this.projects.filter((project) => {
-        return project.project_name.toLowerCase().includes(pattern.toLowerCase()) === true;
-      });
-      this.visibleProjects = filteredProjects;
-    },
-    // oldsortProjects() {
-    //   if (!this.isLoggedIn) return;
-    //   this.visibleProjects.sort((a, b) => {
-    //     const myProjectA = this.isCreatedByMe(a);
-    //     const myProjectB = this.isCreatedByMe(b);
-    //     if (myProjectA && myProjectB) return 0;
-    //     if (myProjectA) return -1;
-    //     return 1;
-    //   });
-    // },
-    sortProjects() {
-      // if (!this.isLoggedIn) return;
-      this.visibleProjects.sort((a, b) => b.last_access - a.last_access);
-    },
-    isCreatedByMe(project) {
-      return project.admins[0] === this.userId;
-    },
-    isOld(project) {
-      // either not used since more than a year or empty and older than an hour
-      return project.last_access < this.ayear || (project.number_samples < 1 && project.last_access < 3600);
-    },
-    toggleProjectView() {
-      this.listMode = !this.listMode;
-      this.storage.setStorageSync('project_view', this.listMode);
-    },
-    showProjectSettings(projectName) {
-      this.projectnameTarget = projectName;
-      this.projectSettingsDial = true;
-    },
-    deleteProject(projectName) {
-      api
-        .deleteProject(projectName)
-        .then((response) => {
-          this.$q.notify({ message: `Project ${projectName} deleted` });
-          this.getProjects();
-        })
-        .catch((error) => {
-          notifyError({ error });
-        });
-    },
-    triggerConfirm(method, arg) {
-      this.confirmActionDial = true;
-      this.confirmActionCallback = method;
-      this.confirmActionArg1 = arg;
-    },
-  },
-};
-</script>

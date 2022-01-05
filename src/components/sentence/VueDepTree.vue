@@ -6,34 +6,78 @@
   </div>
 </template>
 
-<script>
+<script lang="ts">
 import { LocalStorage } from 'quasar';
-import { SentenceSVG, defaultSentenceSVGOptions, SentenceCaretaker } from 'dependencytreejs/lib';
+import { SentenceSVG, defaultSentenceSVGOptions } from 'dependencytreejs/src/SentenceSVG';
+import { SentenceCaretaker } from 'dependencytreejs/src/ReactiveSentence';
+import { PropType } from 'vue';
+import { sentence_bus_events_t, sentence_bus_t } from 'src/types/main_types';
+import { ReactiveSentence } from 'dependencytreejs/src/ReactiveSentence';
+import { mapState } from 'pinia';
+import { useProjectStore } from 'src/pinia/modules/project';
+import { emptyTokenJson } from 'conllup/lib/conll';
+
+interface svgClickEvent_t extends Event {
+  detail: { clicked: string; targetLabel: 'FORM' | 'FEATS' | 'LEMMA' | 'DEPREL' };
+}
+
+interface svgHoveredEvent_t extends Event {
+  detail: { dragged: string; hovered: string; isRoot: boolean };
+}
 
 export default {
-  props: [
-    'sentenceId',
-    'conll',
-    'sentenceBus',
-    'userId',
-    'conllSavedCounter',
-    'reactiveSentence',
-    'teacherReactiveSentence',
-    'cardId',
-    'hasPendingChanges',
-  ],
+  props: {
+    sentenceBus: {
+      type: Object as PropType<sentence_bus_t>,
+      required: true,
+    },
+    reactiveSentence: {
+      type: Object as PropType<ReactiveSentence>,
+      required: true,
+    },
+    teacherReactiveSentence: {
+      type: Object as PropType<ReactiveSentence>,
+      required: true,
+    },
+    conll: {
+      type: String as PropType<string>,
+      required: true,
+    },
+    sentenceId: {
+      type: String as PropType<string>,
+      required: true,
+    },
+    userId: {
+      type: String as PropType<string>,
+      required: true,
+    },
+    conllSavedCounter: {
+      type: Number as PropType<number>,
+      required: true,
+    },
+    cardId: {
+      type: String as PropType<string>,
+      required: true,
+    },
+    hasPendingChanges: {
+      type: Object as PropType<{ [key: string]: boolean }>,
+      required: true,
+    },
+  },
   data() {
+    const sentenceSVG: SentenceSVG = null as unknown as SentenceSVG; // trick to not have to initialize an empty SentenceSVG
+    const sentenceCaretaker: SentenceCaretaker = null as unknown as SentenceCaretaker;
     return {
-      sentenceSVG: null,
+      sentenceSVG,
+      sentenceCaretaker,
       sentenceJson: {},
       usermatches: [],
+      history_index: 0,
       history_saveIndex: 0,
     };
   },
   computed: {
-    shownFeatures() {
-      return this.$store.getters['config/shownfeatures'];
-    },
+    ...mapState(useProjectStore, ['shownfeatures', 'TEACHER', 'isTeacher', 'isStudent']),
   },
   watch: {
     conllSavedCounter() {
@@ -46,12 +90,12 @@ export default {
     this.reactiveSentence.attach(this);
     this.reactiveSentence.fromSentenceConll(this.conll);
     const sentenceSVGOptions = defaultSentenceSVGOptions();
-    sentenceSVGOptions.shownFeatures = this.shownFeatures;
+    sentenceSVGOptions.shownFeatures = this.shownfeatures;
     sentenceSVGOptions.interactive = true;
-    if (this.$store.getters['config/isStudent'] === true && this.userId === this.$store.getters['config/TEACHER']) {
+    if (this.isStudent === true && this.userId === this.TEACHER) {
       sentenceSVGOptions.interactive = false;
     }
-    const { svgWrapper } = this.$refs;
+    const svgWrapper = this.$refs.svgWrapper as SVGElement;
     this.sentenceSVG = new SentenceSVG(svgWrapper, this.reactiveSentence, sentenceSVGOptions);
 
     this.sentenceSVG.plugDiffTree(this.teacherReactiveSentence);
@@ -59,14 +103,14 @@ export default {
     this.sentenceCaretaker = new SentenceCaretaker(this.reactiveSentence);
     this.sentenceCaretaker.backup();
 
-    this.sentenceBus[this.userId] = this.sentenceSVG;
+    this.sentenceBus.sentenceSVGs[this.userId] = this.sentenceSVG;
 
     this.sentenceSVG.addEventListener('svg-click', (e) => {
-      this.svgClickHandler(e);
+      this.svgClickHandler(e as svgClickEvent_t);
     });
 
     this.sentenceSVG.addEventListener('svg-drop', (e) => {
-      this.svgDropHandler(e);
+      this.svgDropHandler(e as svgHoveredEvent_t);
     });
     this.sentenceBus.on('tree-update:token', ({ token, userId }) => {
       if (userId === this.userId) {
@@ -126,10 +170,10 @@ export default {
     this.statusChangeHadler();
   },
   methods: {
-    svgClickHandler(e) {
+    svgClickHandler(e: svgClickEvent_t) {
       const clickedId = e.detail.clicked;
       const clickedToken = { ...this.sentenceSVG.treeJson[clickedId] };
-      const { targetLabel } = e.detail;
+      const targetLabel = e.detail.targetLabel;
 
       if (targetLabel === 'DEPREL') {
         const dep = clickedToken;
@@ -148,22 +192,22 @@ export default {
           userId: this.userId,
         });
       } else {
-        this.sentenceBus.emit(`open:${targetLabel.toLowerCase()}Dialog`, {
+        this.sentenceBus.emit(`open:${targetLabel.toLowerCase()}Dialog` as keyof sentence_bus_events_t, {
           token: clickedToken,
           userId: this.userId,
         });
       }
     },
 
-    svgDropHandler(e) {
+    svgDropHandler(e: svgHoveredEvent_t) {
       const draggedId = e.detail.dragged;
       const hoveredId = e.detail.hovered;
 
-      let gov = {};
-      let dep = {};
+      let gov = emptyTokenJson();
+      let dep = emptyTokenJson();
       // if the area being hovered is the root (circle on top of the svg), assign the gov object to root
       if (e.detail.isRoot) {
-        gov = { ID: 0, FORM: 'ROOT' };
+        gov = Object.assign(gov, { ID: '0', FORM: 'ROOT' });
         dep = { ...this.sentenceSVG.treeJson[draggedId] };
       } else {
         gov = { ...this.sentenceSVG.treeJson[draggedId] };
@@ -186,7 +230,7 @@ export default {
       const canRedo = this.sentenceCaretaker.canRedo();
       const needSave = this.history_saveIndex !== this.sentenceCaretaker.currentStateIndex;
       const statusStr = LocalStorage.getItem('save_status');
-      const statusObj = statusStr ? JSON.parse(statusStr) : {};
+      const statusObj = statusStr ? JSON.parse(statusStr as string) : {};
       let card = statusObj[this.cardId];
       this.hasPendingChanges[this.userId] = needSave;
 
@@ -204,7 +248,7 @@ export default {
     },
     checkSaveStatus() {
       const statusStr = LocalStorage.getItem('save_status');
-      const statusObj = JSON.parse(statusStr);
+      const statusObj = JSON.parse(statusStr as string);
       const cardKeys = Object.keys(statusObj);
       for (const i in cardKeys) {
         if (Object.prototype.hasOwnProperty.call(cardKeys, i)) {
@@ -212,7 +256,7 @@ export default {
           const userIds = Object.keys(card);
           for (const j in userIds) {
             if (card[userIds[j]] === true) {
-              window.onbeforeunload = function (e) {
+              window.onbeforeunload = function () {
                 return `You have some unsaved changes left,
                please save them before you leave this page`;
               };

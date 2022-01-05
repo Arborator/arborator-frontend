@@ -19,10 +19,10 @@
 			</q-form> -->
       <q-table
         ref="usersTable"
+        v-model:selected="table.selected"
         class="dark rounded-borders"
         title="Users"
-        v-model:selected="table.selected"
-        :rows="table.data"
+        :rows="data"
         :columns="table.fields"
         row-key="username"
         :v-model:pagination="table.pagination"
@@ -111,55 +111,60 @@
   </q-card>
 </template>
 
-<script>
+<script lang="ts">
+import { table_t } from 'src/types/main_types';
 import api from '../api/backend-api';
+import notifyError from 'src/utils/notify';
+import { user_t } from 'src/api/backend-types';
 
 export default {
   props: ['parentCallback', 'general', 'projectname', 'robot', 'selectiontype', 'singlemultiple', 'preselected', 'targetRole'],
   data() {
-    return {
-      table: {
-        data: [],
-        fields: [
-          // { name: 'selection', label: 'selection', field: 'selection' },
-          { name: 'picture_url', label: 'Avatar', field: 'picture_url' },
-          {
-            name: 'name',
-            label: 'Name',
-            field: 'username',
-            sortable: true,
-          },
-          {
-            name: 'email',
-            label: 'Mail or ID',
-            field: 'id',
-            sortable: true,
-          },
-          {
-            name: 'super_admin',
-            label: 'Admin',
-            field: 'super_admin',
-            sortable: true,
-          },
-          {
-            name: 'last_seen',
-            label: 'Last Seen',
-            field: 'last_seen',
-            sortable: true,
-          },
-        ],
-        visibleColumns: ['picture_url', 'name', 'email'],
-        filter: '',
-        selected: [],
-        loading: false,
-        pagination: {
-          sortBy: 'name',
-          descending: false,
-          page: 1,
-          rowsPerPage: 10,
+    const data: user_t[] = [];
+    const table: table_t<unknown> = {
+      fields: [
+        // { name: 'selection', label: 'selection', field: 'selection' },
+        { name: 'picture_url', label: 'Avatar', field: 'picture_url', sortable: false },
+        {
+          name: 'name',
+          label: 'Name',
+          field: 'username',
+          sortable: true,
         },
-        loadingDelete: false,
+        {
+          name: 'email',
+          label: 'Mail or ID',
+          field: 'id',
+          sortable: true,
+        },
+        {
+          name: 'super_admin',
+          label: 'Admin',
+          field: 'super_admin',
+          sortable: true,
+        },
+        {
+          name: 'last_seen',
+          label: 'Last Seen',
+          field: 'last_seen',
+          sortable: true,
+        },
+      ],
+      visibleColumns: ['picture_url', 'name', 'email'],
+      filter: '',
+      selected: [],
+      loading: false,
+      pagination: {
+        sortBy: 'name',
+        descending: false,
+        page: 1,
+        rowsPerPage: 10,
       },
+      loadingDelete: false,
+    };
+    return {
+      table,
+      data,
     };
   },
   mounted() {
@@ -176,7 +181,7 @@ export default {
      * @param {Object} tableJson
      * @returns {Array} array of fields
      */
-    filterFields(tableJson) {
+    filterFields(tableJson: table_t<unknown>) {
       const tempArray = tableJson.fields.filter((obj) => obj.field !== 'syntInfo' && obj.field !== 'cat' && obj.field !== 'redistributions');
       return tempArray;
     },
@@ -189,8 +194,8 @@ export default {
       api
         .getUsers()
         .then((response) => {
-          this.table.data = response.data;
-          this.table.selected = this.table.data.filter((u) => this.preselected.includes(u.id));
+          this.data = response.data;
+          this.table.selected = this.data.filter((u) => this.preselected.includes(u.id));
         })
         .catch((error) => {
           notifyError({ error });
@@ -205,7 +210,7 @@ export default {
       api
         .getUsersTreeFrom(this.$props.projectname)
         .then((response) => {
-          this.table.data = response.data;
+          this.data = response.data;
         })
         .catch((error) => {
           notifyError({ error });

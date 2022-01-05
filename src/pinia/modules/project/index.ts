@@ -6,7 +6,7 @@ import { useUserStore } from '../user';
 
 import { defineStore } from 'pinia';
 import notifyError from 'src/utils/notify';
-import { project_with_diff_t } from 'src/types/main_types';
+import { annotationFeatures_t, project_extended_t } from 'src/api/backend-types';
 
 export const useProjectStore = defineStore('project', {
   state: () => {
@@ -16,9 +16,9 @@ export const useProjectStore = defineStore('project', {
     getProjectConfig: (state) => state,
     // KK TODO fixme all 4 below
     isAdmin: (state) => {
-      return state.admins.includes(useUserStore().id);
+      return state.admins.includes(useUserStore().id) || useUserStore().super_admin;
     }, // return state.admins.includes(getters["getUserInfos"].id);
-    isGuest: (state) => state.guests.includes(useUserStore().id),
+    isGuest: (state) => state.guests.includes(useUserStore().id) && !useUserStore().super_admin,
     isTeacher(): boolean {
       return this.isAdmin && this.exerciseMode;
     },
@@ -117,7 +117,7 @@ export const useProjectStore = defineStore('project', {
         });
     },
 
-    updateProjectSettings({ toUpdateObject }: { toUpdateObject: Partial<project_with_diff_t> }) {
+    updateProjectSettings(toUpdateObject: Partial<project_extended_t>) {
       return new Promise((resolve, reject) => {
         api
           .updateProject(this.name, toUpdateObject)
@@ -175,7 +175,7 @@ export const useProjectStore = defineStore('project', {
           });
       });
     },
-    updateProjectConlluSchema({ projectname, annotationFeatures }: { projectname: string; annotationFeatures: any }) {
+    updateProjectConlluSchema(projectname: string, annotationFeatures: annotationFeatures_t) {
       return new Promise((resolve, reject) => {
         api
           .updateProjectConlluSchema(projectname, {
@@ -190,9 +190,7 @@ export const useProjectStore = defineStore('project', {
           });
       });
     },
-    testFunc(n: number) {
-      return n;
-    },
+
     /// / for now, AnnotationFeatures is the same thing as configConllu. We need to find an appropriate short name
     resetAnnotationFeatures(): void {
       this.annotationFeatures = defaultState().annotationFeatures;

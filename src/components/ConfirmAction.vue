@@ -14,7 +14,7 @@
   </q-card>
 </template>
 
-<script>
+<script lang="ts">
 export default {
   name: 'ConfirmAction',
   props: ['parentAction', 'arg1'],

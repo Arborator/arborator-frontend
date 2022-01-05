@@ -15,8 +15,8 @@
         open-features="true"
         modifiable="true"
         title="Meta Sentence Features"
-        @feature-changed="informFeatureChanged()"
       ></AttributeTable>
+      <!-- @feature-changed="informFeatureChanged()" -->
       <q-separator />
       <!-- todo: adapt informFeatureChanged also to metadata -->
       <q-card-actions align="around">
@@ -35,19 +35,32 @@
 
   <!----------------- End MetaDialog ------------------->
 </template>
-<script>
-import AttributeTable from './AttributeTable';
+<script lang="ts">
+import { mapState } from 'pinia';
+import AttributeTable from './AttributeTable.vue';
+import { useProjectStore } from 'src/pinia/modules/project';
+import { sentence_bus_t } from 'src/types/main_types';
+import { PropType } from 'vue';
+import { MetaJson } from 'conllup/lib/conll';
+import notifyError from 'src/utils/notify';
 
 export default {
   components: { AttributeTable },
-  props: ['sentenceBus'],
+  props: {
+    sentenceBus: {
+      type: Object as PropType<sentence_bus_t>,
+      required: true,
+    },
+  },
   data() {
+    const metalist: { a: string; v: string | number }[] = [];
+    const metaJson: MetaJson = {};
     return {
       metaDialogOpened: false,
       token: {},
       userId: '',
-      metaJson: {},
-      metalist: [],
+      metalist,
+      metaJson,
       featTable: {
         columns: [
           {
@@ -76,17 +89,15 @@ export default {
     };
   },
   computed: {
-    annotationFeatures() {
-      return this.$store.getters['config/annotationFeatures'];
-    },
+    ...mapState(useProjectStore, ['annotationFeatures']),
     someFeatureChanged() {
       return true;
     },
   },
   mounted() {
-    this.sentenceBus.on('open:metaDialog', ({ userId }) => {
+    this.sentenceBus.on('open:metaDialog', ({ userId }: { userId: string }) => {
       this.userId = userId;
-      this.metaJson = { ...this.sentenceBus[userId].metaJson };
+      this.metaJson = { ...this.sentenceBus.sentenceSVGs[userId].metaJson };
       this.metaDialogOpened = true;
       this.metalist = [];
       for (const a in this.metaJson) {
@@ -100,10 +111,12 @@ export default {
   },
   methods: {
     onMetaDialogOk() {
-      const newMetaJson = this.metalist.reduce((obj, r) => {
-        if (r.v) obj[r.a] = r.v;
-        return obj;
-      }, {});
+      const newMetaJson: MetaJson = {};
+
+      this.metalist.forEach((meta) => {
+        newMetaJson[meta.a] = newMetaJson[meta.v];
+      });
+
       let isMetaChanged = 0;
       for (const newMetaKey of Object.keys(newMetaJson)) {
         const newMetaValue = newMetaJson[newMetaKey];
@@ -117,7 +130,7 @@ export default {
         this.sentenceBus.emit('tree-update:sentence', {
           sentenceJson: {
             metaJson: newMetaJson,
-            treeJson: this.sentenceBus[this.userId].treeJson,
+            treeJson: this.sentenceBus.sentenceSVGs[this.userId].treeJson,
           },
           userId: this.userId,
         });

@@ -59,7 +59,7 @@ export default defineComponent({
       required: true,
     },
     cardId: {
-      type: String as PropType<string>,
+      type: Number as PropType<number>,
       required: true,
     },
     hasPendingChanges: {

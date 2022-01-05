@@ -209,7 +209,7 @@ import TokenDialog from './TokenDialog.vue';
 import StatisticsDialog from './StatisticsDialog.vue';
 import MultiEditDialog from './MultiEditDialog.vue';
 import { reactive_sentences_obj_t, sentence_bus_events_t, sentence_bus_t } from 'src/types/main_types';
-import { mapActions, mapState } from 'pinia';
+import { mapActions, mapState, mapWritableState } from 'pinia';
 import { useProjectStore } from 'src/pinia/modules/project';
 import notifyError from 'src/utils/notify';
 import { useUserStore } from 'src/pinia/modules/user';
@@ -217,7 +217,7 @@ import { useGrewSearchStore } from 'src/pinia/modules/grewSearch';
 
 function sentenceBusFactory(): sentence_bus_t {
   let sentenceBus: Emitter<sentence_bus_events_t> = mitt<sentence_bus_events_t>();
-  (sentenceBus as any).sentences = {};
+  (sentenceBus as sentence_bus_t).sentenceSVGs = {};
   return sentenceBus as sentence_bus_t;
 }
 
@@ -269,7 +269,6 @@ export default defineComponent({
       shownmetas: {},
       view: null,
       sentenceLink: '',
-      diffMode: false,
       canUndo: false,
       canRedo: false,
       canSave: true,
@@ -279,17 +278,8 @@ export default defineComponent({
   },
 
   computed: {
-    ...mapState(useProjectStore, [
-      'isAdmin',
-      'isGuest',
-      'isTeacher',
-      'guests',
-      'admins',
-      'exerciseMode',
-      'shownmeta',
-      'getProjectConfig',
-      'diffMode',
-    ]),
+    ...mapWritableState(useProjectStore, ['diffMode']),
+    ...mapState(useProjectStore, ['isAdmin', 'isGuest', 'isTeacher', 'guests', 'admins', 'exerciseMode', 'shownmeta', 'getProjectConfig']),
     ...mapState(useUserStore, ['isLoggedIn', 'getUserInfos']),
     lastModifiedTime() {
       // this.forceRerender; it was like this when i found it. Should it have = 0 ?

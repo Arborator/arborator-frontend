@@ -130,6 +130,9 @@ export default defineComponent({
       },
     };
   },
+  computed: {
+    ...mapState(useProjectStore, ['annotationFeatures', 'shownfeatures', 'shownmeta']),
+  },
   created() {
     this.options.annof = this.annotationFeatures;
     this.options.shownfeatures = this.shownfeatures;
@@ -144,9 +147,6 @@ export default defineComponent({
       return obj;
     }, {});
     this.options.splitregex = new RegExp(`[${this.options.annof.DEPREL.map(({ join }) => join).join('')}]`, 'g'); // = /[:@]/g
-  },
-  computed: {
-    ...mapState(useProjectStore, ['annotationFeatures', 'shownfeatures', 'shownmeta']),
   },
   mounted() {
     this.sentenceBus.on('open:relationDialog', ({ dep, gov, userId }) => {
@@ -194,15 +194,13 @@ export default defineComponent({
         return tot;
       }, '');
       if (this.gov.ID === undefined || this.gov.ID === null) {
-        this.dep.DEPREL = '_';
-        this.dep.HEAD = -1;
+        this.dep.DEPREL = newDeprel || '_';
       } else {
         this.dep.DEPREL = newDeprel || '_';
-        this.dep.HEAD = parseInt(this.gov.ID, 10) || -1;
+        this.dep.HEAD = parseInt(this.gov.ID, 10);
       }
       this.sentenceBus.emit('tree-update:token', {
         token: this.dep,
-        // gov: this.gov,
         userId: this.userId,
       });
     },
@@ -211,7 +209,6 @@ export default defineComponent({
       this.dep.HEAD = -1;
       this.sentenceBus.emit('tree-update:token', {
         token: this.dep,
-        // gov: this.gov,
         userId: this.userId,
       });
     },

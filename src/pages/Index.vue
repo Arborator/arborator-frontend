@@ -320,7 +320,9 @@
 <script lang="ts">
 import { openURL, copyToClipboard } from 'quasar';
 
-export default {
+import { defineComponent } from 'vue';
+
+export default defineComponent({
   name: 'PageIndex',
   data() {
     return {
@@ -373,7 +375,7 @@ export default {
       }
     },
   },
-};
+});
 </script>
 <style scoped lang="stylus">
 .clickable:hover {

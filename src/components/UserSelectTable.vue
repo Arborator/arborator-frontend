@@ -116,8 +116,9 @@ import { table_t } from 'src/types/main_types';
 import api from '../api/backend-api';
 import notifyError from 'src/utils/notify';
 import { user_t } from 'src/api/backend-types';
+import { defineComponent } from 'vue';
 
-export default {
+export default defineComponent({
   props: ['parentCallback', 'general', 'projectname', 'robot', 'selectiontype', 'singlemultiple', 'preselected', 'targetRole'],
   data() {
     const data: user_t[] = [];
@@ -217,5 +218,5 @@ export default {
         });
     },
   },
-};
+});
 </script>

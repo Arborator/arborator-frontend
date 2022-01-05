@@ -15,7 +15,8 @@ import { sentence_bus_events_t, sentence_bus_t } from 'src/types/main_types';
 import { ReactiveSentence } from 'dependencytreejs/src/ReactiveSentence';
 import { mapState } from 'pinia';
 import { useProjectStore } from 'src/pinia/modules/project';
-import { emptyTokenJson } from 'conllup/lib/conll';
+import conllup from 'conllup';
+const emptyTokenJson = conllup.emptyTokenJson;
 
 interface svgClickEvent_t extends Event {
   detail: { clicked: string; targetLabel: 'FORM' | 'FEATS' | 'LEMMA' | 'DEPREL' };
@@ -25,7 +26,9 @@ interface svgHoveredEvent_t extends Event {
   detail: { dragged: string; hovered: string; isRoot: boolean };
 }
 
-export default {
+import { defineComponent } from 'vue';
+
+export default defineComponent({
   props: {
     sentenceBus: {
       type: Object as PropType<sentence_bus_t>,
@@ -274,7 +277,7 @@ export default {
       this.sentenceBus.emit('changed:metaText', { newMetaText });
     },
   },
-};
+});
 </script>
 
 <style>

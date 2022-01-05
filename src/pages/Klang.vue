@@ -30,7 +30,9 @@ import notifyError from 'src/utils/notify';
 import api from '../api/backend-api';
 import { KlangProject_t } from 'src/api/backend-types';
 
-export default {
+import { defineComponent } from 'vue';
+
+export default defineComponent({
   data() {
     const projects: KlangProject_t[] = [];
     return {
@@ -58,5 +60,5 @@ export default {
         });
     },
   },
-};
+});
 </script>

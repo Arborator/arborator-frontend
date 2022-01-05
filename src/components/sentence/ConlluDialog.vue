@@ -85,7 +85,9 @@ CodeMirror2.defineMode('tsv', () => {
   };
 }); // end codemirror
 
-export default {
+import { defineComponent } from 'vue';
+
+export default defineComponent({
   components: { Codemirror },
   props: {
     sentenceBus: {
@@ -163,7 +165,7 @@ export default {
       }
     },
   },
-};
+});
 </script>
 
 <style></style>

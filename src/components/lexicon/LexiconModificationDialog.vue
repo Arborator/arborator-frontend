@@ -90,8 +90,9 @@ interface lexiconItem_t {
   frequency: number;
   key: string;
 }
+import { defineComponent } from 'vue';
 
-export default {
+export default defineComponent({
   name: 'LexiconModificationDialog',
   components: {
     AttributeTable,
@@ -212,7 +213,7 @@ export default {
       this.addCoupleLexiconItemBeforeAfter();
     },
   },
-};
+});
 </script>
 
 <style></style>

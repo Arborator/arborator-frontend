@@ -39,11 +39,13 @@
 <script lang="ts">
 import { PropType } from 'vue';
 import { sentence_bus_t } from 'src/types/main_types';
-import { emptyTokenJson } from 'conllup/lib/conll';
 import { useProjectStore } from 'src/pinia/modules/project';
 import { mapState } from 'pinia';
+import conllup from 'conllup';
+const emptyTokenJson = conllup.emptyTokenJson;
+import { defineComponent } from 'vue';
 
-export default {
+export default defineComponent({
   props: {
     sentenceBus: {
       type: Object as PropType<sentence_bus_t>,
@@ -87,6 +89,6 @@ export default {
       });
     },
   },
-};
+});
 </script>
 <style></style>

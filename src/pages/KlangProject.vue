@@ -90,7 +90,9 @@ import api from 'src/api/backend-api';
 import notifyError from 'src/utils/notify';
 import { useMainStore } from 'src/pinia';
 
-export default {
+import { defineComponent } from 'vue';
+
+export default defineComponent({
   props: ['kprojectname'],
   data() {
     const waveWidth = 0;
@@ -270,7 +272,7 @@ export default {
         });
     },
   },
-};
+});
 </script>
 
 <style lang="stylus" scoped>

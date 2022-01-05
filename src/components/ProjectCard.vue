@@ -68,8 +68,9 @@ import { mapState } from 'pinia';
 import ConfirmAction from '../components/ConfirmAction.vue';
 import { useUserStore } from 'src/pinia/modules/user';
 import { timeAgo } from 'src/utils/timeAgoUtils';
+import { defineComponent } from 'vue';
 
-export default {
+export default defineComponent({
   components: { ConfirmAction },
   props: ['props', 'parentDeleteProject', 'parentProjectSettings'],
   data() {
@@ -179,7 +180,7 @@ export default {
       return false;
     },
   },
-};
+});
 </script>
 
 <style scoped lang="stylus">

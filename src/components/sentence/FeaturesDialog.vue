@@ -65,9 +65,12 @@ import { PropType } from 'vue';
 import { sentence_bus_t } from 'src/types/main_types';
 import { mapState } from 'pinia';
 import { useProjectStore } from 'src/pinia/modules/project';
-import { emptyTokenJson } from 'conllup/lib/conll';
+import conllup from 'conllup';
+const emptyTokenJson = conllup.emptyTokenJson;
 
-export default {
+import { defineComponent } from 'vue';
+
+export default defineComponent({
   components: {
     AttributeTable,
   },
@@ -182,6 +185,6 @@ export default {
       });
     },
   },
-};
+});
 </script>
 <style></style>

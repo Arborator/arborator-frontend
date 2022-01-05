@@ -47,7 +47,9 @@ import { PropType } from 'vue';
 import { reactive_sentences_obj_t, sentence_bus_t } from 'src/types/main_types';
 const replaceArrayOfTokens = conllup.replaceArrayOfTokens;
 
-export default {
+import { defineComponent } from 'vue';
+
+export default defineComponent({
   components: { AttributeTable },
   props: {
     sentenceBus: {
@@ -197,6 +199,6 @@ export default {
       // );
     },
   },
-};
+});
 </script>
 <style></style>

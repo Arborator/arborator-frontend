@@ -59,14 +59,15 @@
 <script lang="ts">
 import api from '../api/backend-api';
 import SentenceCard from './sentence/SentenceCard.vue';
-import { PropType } from 'vue';
+import { PropType, defineComponent } from 'vue';
 import notifyError from 'src/utils/notify';
 import { sample_t } from 'src/api/backend-types';
 
 interface searchresults_t {
   [key: string]: { [key: string]: { sample_name: string } };
 }
-export default {
+
+export default defineComponent({
   components: { SentenceCard },
   // props: ['searchresults', 'totalsents', 'searchscope', 'parentOnShowTable'],
   props: {
@@ -234,5 +235,5 @@ export default {
       }
     },
   },
-};
+});
 </script>

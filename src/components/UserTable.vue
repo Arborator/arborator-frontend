@@ -102,7 +102,9 @@ import api from '../api/backend-api';
 import notifyError from 'src/utils/notify';
 import { user_t } from 'src/api/backend-types';
 
-export default {
+import { defineComponent } from 'vue';
+
+export default defineComponent({
   props: ['samples'],
   data() {
     const table: table_t<unknown> = {
@@ -182,5 +184,5 @@ export default {
         });
     },
   },
-};
+});
 </script>

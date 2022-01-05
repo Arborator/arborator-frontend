@@ -38,9 +38,13 @@ import { sentence_bus_t } from 'src/types/main_types';
 import { mapState } from 'pinia';
 import { useProjectStore } from 'src/pinia/modules/project';
 import { annotationFeatures_t } from 'src/api/backend-types';
-import { TokenJson, emptyTokenJson } from 'conllup/lib/conll';
+import { TokenJson } from 'conllup/lib/conll';
+import conllup from 'conllup';
+const emptyTokenJson = conllup.emptyTokenJson;
 
-export default {
+import { defineComponent } from 'vue';
+
+export default defineComponent({
   components: { AttributeTable },
   props: {
     sentenceBus: {
@@ -212,7 +216,7 @@ export default {
       });
     },
   },
-};
+});
 </script>
 
 <style></style>

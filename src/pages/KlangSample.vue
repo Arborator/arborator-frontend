@@ -339,7 +339,9 @@ interface sentence_line_t {
 
 type segments_t = { [key: string]: string[] };
 
-export default {
+import { defineComponent } from 'vue';
+
+export default defineComponent({
   props: ['kprojectname', 'ksamplename'],
   data() {
     const transcriptions: transcriptions_t = {};
@@ -895,7 +897,7 @@ export default {
       }
     },
   },
-};
+});
 </script>
 
 <style>

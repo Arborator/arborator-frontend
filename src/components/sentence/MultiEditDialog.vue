@@ -47,11 +47,15 @@
 <script lang="ts">
 import { PropType } from 'vue';
 import { reactive_sentences_obj_t, sentence_bus_t } from 'src/types/main_types';
-import { emptyTreeJson, TokenJson } from 'conllup/lib/conll';
+import { TokenJson } from 'conllup/lib/conll';
+import conllup from 'conllup';
+const emptyTreeJson = conllup.emptyTreeJson;
 
 type metaLabel_t = 'UPOS' | 'DEPREL' | 'HEAD' | 'LEMMA';
 
-export default {
+import { defineComponent } from 'vue';
+
+export default defineComponent({
   props: {
     sentenceBus: {
       type: Object as PropType<sentence_bus_t>,
@@ -126,6 +130,6 @@ export default {
       }
     },
   },
-};
+});
 </script>
 <style></style>

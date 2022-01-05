@@ -75,7 +75,9 @@ interface CompareLexiconItem_t {
   gloss: string;
 }
 
-export default {
+import { defineComponent } from 'vue';
+
+export default defineComponent({
   name: 'CompareLexicon',
   components: { GrewSearch },
   props: ['data', 'sampleId'],
@@ -247,5 +249,5 @@ export default {
       }
     },
   },
-};
+});
 </script>

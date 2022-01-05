@@ -165,7 +165,9 @@ interface lexicon_item_t {
   key: string;
 }
 
-export default {
+import { defineComponent } from 'vue';
+
+export default defineComponent({
   name: 'LexiconTable',
   props: ['passedLexiconItems', 'lexiconLoading', 'compareWithBefore'],
   setup(props, ctx) {
@@ -410,7 +412,7 @@ export default {
     //   this.download = [];
     // },
   },
-};
+});
 </script>
 
 <style scoped>

@@ -40,7 +40,9 @@ import { useProjectStore } from 'src/pinia/modules/project';
 import { useUserStore } from 'src/pinia/modules/user';
 import notifyError from 'src/utils/notify';
 
-export default {
+import { defineComponent } from 'vue';
+
+export default defineComponent({
   components: {
     RelationTable,
   },
@@ -55,15 +57,15 @@ export default {
   computed: {
     ...mapState(useProjectStore, ['isAdmin']),
     ...mapState(useUserStore, ['isLoggedIn', 'isSuperAdmin', 'avatar']),
-    breakpoint() {
+    breakpoint(): boolean {
       return this.window.width <= 400;
     },
   },
   methods: {
-    getRelationTable(type) {
+    getRelationTable(type: any) {
       const data = { table_type: type };
       api
-        .getRelationTable(this.$route.params.projectname, data)
+        .getRelationTable(this.$route.params.projectname as string, data)
         .then((response) => {
           this.relationTableInfos = response.data;
           this.relationTableDial = true;
@@ -73,7 +75,7 @@ export default {
         });
     },
   },
-};
+});
 </script>
 
 <style></style>

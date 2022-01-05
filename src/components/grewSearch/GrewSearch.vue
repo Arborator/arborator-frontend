@@ -27,8 +27,9 @@ import api from '../../api/backend-api';
 import { useGrewSearchStore } from 'src/pinia/modules/grewSearch';
 import { mapWritableState } from 'pinia';
 import notifyError from 'src/utils/notify';
+import { defineComponent } from 'vue';
 
-export default {
+export default defineComponent({
   components: {
     GrewRequestCard,
     ResultView,
@@ -116,7 +117,7 @@ export default {
         });
     },
   },
-};
+});
 </script>
 
 <style></style>

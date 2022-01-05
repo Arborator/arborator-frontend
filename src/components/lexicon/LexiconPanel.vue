@@ -210,7 +210,9 @@ import { useProjectStore } from 'src/pinia/modules/project';
 import { useGrewSearchStore } from 'src/pinia/modules/grewSearch';
 import { annotationFeatures_t } from 'src/api/backend-types';
 
-export default {
+import { defineComponent } from 'vue';
+
+export default defineComponent({
   name: 'LexiconTable',
   components: {
     GrewSearch,
@@ -463,5 +465,5 @@ export default {
       // },
     },
   },
-};
+});
 </script>

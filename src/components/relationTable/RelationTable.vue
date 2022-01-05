@@ -83,7 +83,9 @@ import { mapState } from 'pinia';
 import { useProjectStore } from 'src/pinia/modules/project';
 // import dummydata from '../assets/data.json';
 
-export default {
+import { defineComponent } from 'vue';
+
+export default defineComponent({
   components: { ResultView, QTree },
   props: ['edges'],
   data() {
@@ -253,5 +255,5 @@ export default {
       return typeof s === 'string' || s instanceof String;
     },
   },
-};
+});
 </script>

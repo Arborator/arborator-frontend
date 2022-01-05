@@ -221,7 +221,9 @@ function sentenceBusFactory(): sentence_bus_t {
   return sentenceBus as sentence_bus_t;
 }
 
-export default {
+import { defineComponent } from 'vue';
+
+export default defineComponent({
   name: 'SentenceCard',
   components: {
     VueDepTree,
@@ -593,7 +595,7 @@ export default {
       return orderedConlls;
     },
   },
-};
+});
 </script>
 
 <style>

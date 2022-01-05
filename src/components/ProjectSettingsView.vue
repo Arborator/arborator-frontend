@@ -314,7 +314,9 @@ import { useMainStore } from 'src/pinia';
 import notifyError from 'src/utils/notify';
 import { sample_role_targetrole_t, user_t } from 'src/api/backend-types';
 
-export default {
+import { defineComponent } from 'vue';
+
+export default defineComponent({
   name: 'ProjectSettingsView',
   components: { Codemirror, UserSelectTable, ConfirmAction },
   props: ['projectname', 'projectTreesFrom'],
@@ -598,7 +600,7 @@ export default {
       this.confirmActionArg1 = arg;
     },
   },
-};
+});
 </script>
 
 <style scoped>

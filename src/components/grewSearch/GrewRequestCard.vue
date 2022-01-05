@@ -92,6 +92,7 @@ import 'codemirror/lib/codemirror.css';
 import grewTemplates from '../../assets/grew-templates.json';
 import { mapActions, mapState } from 'pinia';
 import { useGrewSearchStore } from 'src/pinia/modules/grewSearch';
+import { defineComponent } from 'vue';
 // import 'codemirror/theme/material.css'
 
 CodeMirror2.defineMode('grew', () => {
@@ -171,7 +172,8 @@ CodeMirror2.defineMode('grew', () => {
     lineComment: '%',
   };
 });
-export default {
+
+export default defineComponent({
   name: 'GrewRequestCard',
   components: { Codemirror },
   props: ['parentOnSearch', 'parentOnTryRules', 'grewquery'],
@@ -375,5 +377,5 @@ pattern { N [form="Form_to_search"] }`,
       return decodeURIComponent(escape(window.atob(str)));
     },
   },
-};
+});
 </script>

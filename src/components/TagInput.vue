@@ -76,13 +76,13 @@
 </template>
 
 <script lang="ts">
-import { PropType } from 'vue';
+import { PropType, defineComponent } from 'vue';
 interface tag_t {
   value: string;
   key: string;
 }
 
-export default {
+export default defineComponent({
   props: {
     role: String,
     elementId: String,
@@ -707,7 +707,7 @@ export default {
       }
     },
   },
-};
+});
 </script>
 
 <style>

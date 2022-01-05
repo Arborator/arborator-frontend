@@ -103,7 +103,9 @@
 <script>
 import { date } from 'quasar';
 
-export default {
+import { defineComponent } from 'vue';
+
+export default defineComponent({
   name: 'AttributeTable',
   props: ['title', 'featdata', 'columns', 'featOptions', 'openFeatures', 'modifiable', 'numbered', 'prepend'],
   // featdata contains the actual data, featOptions the possible options,
@@ -178,5 +180,5 @@ export default {
       this.key += 1;
     },
   },
-};
+});
 </script>

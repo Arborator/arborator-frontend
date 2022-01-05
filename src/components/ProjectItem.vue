@@ -77,7 +77,9 @@ import ConfirmAction from '../components/ConfirmAction.vue';
 import { useUserStore } from 'src/pinia/modules/user';
 import { timeAgo } from 'src/utils/timeAgoUtils';
 
-export default {
+import { defineComponent } from 'vue';
+
+export default defineComponent({
   components: { ConfirmAction },
   props: ['props', 'parentDeleteProject', 'parentProjectSettings'],
   data() {
@@ -175,7 +177,7 @@ export default {
       this.confirmActionCallback = method;
     },
   },
-};
+});
 </script>
 
 <style scoped></style>

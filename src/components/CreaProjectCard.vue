@@ -47,8 +47,9 @@ import api from '../api/backend-api';
 import notifyError from 'src/utils/notify';
 import { mapActions, mapState } from 'pinia';
 import { useUserStore } from 'src/pinia/modules/user';
+import { defineComponent } from 'vue';
 
-export default {
+export default defineComponent({
   props: ['parentGetProjects'],
   data() {
     return {
@@ -104,5 +105,5 @@ export default {
       this.attachment.file = event.target.files;
     },
   },
-};
+});
 </script>

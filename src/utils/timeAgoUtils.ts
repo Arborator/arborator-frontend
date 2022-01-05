@@ -1,9 +1,7 @@
-import { useI18n } from 'vue-i18n';
-
-const i18n = useI18n({ useScope: 'global' });
+import { i18n } from 'src/boot/i18n';
 
 export function timeAgo(secsAgo: number) {
-  const formatter = new Intl.RelativeTimeFormat(i18n.locale.value, { style: 'long' });
+  const formatter = new Intl.RelativeTimeFormat(i18n.global.locale.value, { style: 'long' });
   // const ranges: { [key in Intl.RelativeTimeFormatUnit]?: number } = {
   // const ranges: Partial<Record<Intl.RelativeTimeFormatUnit, number>> = {
   const ranges: { [key: string]: number } = {

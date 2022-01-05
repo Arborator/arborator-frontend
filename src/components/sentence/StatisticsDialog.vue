@@ -38,7 +38,9 @@ interface stats_t {
   totals: scores_on_tags_t;
 }
 
-export default {
+import { defineComponent } from 'vue';
+
+export default defineComponent({
   props: {
     sentenceBus: {
       type: Object as PropType<sentence_bus_t>,
@@ -75,6 +77,6 @@ export default {
   beforeUnmount() {
     this.sentenceBus.off('open:statisticsDialog');
   },
-};
+});
 </script>
 <style></style>

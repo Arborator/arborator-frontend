@@ -15,8 +15,8 @@
 </template>
 
 <script lang="ts">
-import { PropType } from 'vue';
-export default {
+import { PropType, defineComponent } from 'vue';
+export default defineComponent({
   name: 'ConfirmAction',
   props: {
     parentAction: {
@@ -41,5 +41,5 @@ export default {
       this.parentAction(this.arg1);
     },
   },
-};
+});
 </script>

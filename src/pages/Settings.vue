@@ -54,7 +54,9 @@
 <script lang="ts">
 import { mapState } from 'pinia';
 import { useUserStore } from 'src/pinia/modules/user';
-export default {
+import { defineComponent } from 'vue';
+
+export default defineComponent({
   name: 'Settings',
   data() {
     return {
@@ -76,7 +78,7 @@ export default {
       console.log('FIXME : THIS IS EMPTY');
     },
   },
-};
+});
 </script>
 
 <style scoped></style>

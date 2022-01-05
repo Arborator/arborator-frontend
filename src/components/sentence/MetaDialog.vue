@@ -44,7 +44,9 @@ import { PropType } from 'vue';
 import { MetaJson } from 'conllup/lib/conll';
 import notifyError from 'src/utils/notify';
 
-export default {
+import { defineComponent } from 'vue';
+
+export default defineComponent({
   components: { AttributeTable },
   props: {
     sentenceBus: {
@@ -144,6 +146,6 @@ export default {
       }
     },
   },
-};
+});
 </script>
 <style></style>

@@ -80,14 +80,6 @@ export default defineComponent({
       type: String as PropType<string>,
       required: true,
     },
-    user: {
-      type: String as PropType<string>,
-      required: true,
-    },
-    nr: {
-      type: Number as PropType<number>,
-      required: true,
-    },
   },
   data() {
     const sentencesFrozen: {

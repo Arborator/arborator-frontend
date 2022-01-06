@@ -154,7 +154,7 @@
     </q-dialog>
 
     <q-dialog v-model="confirmActionDial">
-      <confirm-action :parent-action="confirmActionCallback" :arg1="confirmActionArg1"></confirm-action>
+      <ConfirmAction :parent-action="confirmActionCallback" :arg1="confirmActionArg1"></ConfirmAction>
     </q-dialog>
   </q-page>
 </template>
@@ -167,6 +167,7 @@ import ProjectCard from '../components/ProjectCard.vue';
 import ProjectItem from '../components/ProjectItem.vue';
 import CreaProjectCard from '../components/CreaProjectCard.vue';
 import ProjectSettingsView from '../components/ProjectSettingsView.vue';
+import ConfirmAction from '../components/ConfirmAction.vue';
 import { mapState } from 'pinia';
 import { useUserStore } from 'src/pinia/modules/user';
 import { defineComponent } from 'vue';
@@ -181,6 +182,7 @@ export default defineComponent({
     ProjectItem,
     CreaProjectCard,
     ProjectSettingsView,
+    ConfirmAction,
   },
   data() {
     const projects: project_extended_t[] = [];

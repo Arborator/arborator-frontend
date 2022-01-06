@@ -257,7 +257,6 @@ export default defineComponent({
     this.isProjectAdmin;
     this.storage = useStorage();
     this.setStartingLanguage();
-    console.log('KK avatarKEy', this.getUserInfos.avatarKey);
   },
   methods: {
     ...mapActions(useUserStore, ['logout']),

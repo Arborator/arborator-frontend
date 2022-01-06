@@ -58,7 +58,7 @@
     </q-card-section>
 
     <q-dialog v-model="confirmActionDial">
-      <confirm-action :parent-action="confirmActionCallback" :arg1="confirmActionArg1"></confirm-action>
+      <ConfirmAction :parent-action="confirmActionCallback" :arg1="confirmActionArg1"></ConfirmAction>
     </q-dialog>
   </q-card>
 </template>

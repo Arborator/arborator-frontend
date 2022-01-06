@@ -160,10 +160,11 @@
                 :card-id="index"
                 :conll="tree"
                 :reactive-sentence="reactiveSentencesObj[user]"
-                :teacher-reactive-sentence="showDiffTeacher ? reactiveSentencesObj['teacher'] : diffMode ? reactiveSentencesObj[diffUserId] : {}"
+                :reactive-sentences-obj="reactiveSentencesObj"
+                :diff-mode="showDiffTeacher ? 'DIFF_TEACHER' : diffMode ? 'DIFF_USER' : 'NO_DIFF'"
                 :sentence-id="sentenceId"
                 :sentence-bus="sentenceBus"
-                :user-id="user"
+                :tree-user-id="user"
                 :conll-saved-counter="conllSavedCounter"
                 :has-pending-changes="hasPendingChanges"
                 @statusChanged="handleStatusChange"
@@ -555,17 +556,17 @@ export default defineComponent({
 
     toggleDiffMode() {
       this.diffMode = !this.diffMode;
-      for (const otherUserId in this.reactiveSentencesObj) {
-        if (otherUserId !== this.diffUserId) {
-          if (this.sentenceBus.sentenceSVGs[otherUserId]) {
-            if (this.diffMode) {
-              this.sentenceBus.sentenceSVGs[otherUserId].plugDiffTree(this.reactiveSentencesObj[this.diffUserId] as ReactiveSentence);
-            }
-            // this.sentenceBus[otherUserId].drawTree()
-          }
-          this.conllSavedCounter += 1;
-        }
-      }
+      // for (const otherUserId in this.reactiveSentencesObj) {
+      //   if (otherUserId !== this.diffUserId) {
+      //     if (this.sentenceBus.sentenceSVGs[otherUserId]) {
+      //       if (this.diffMode) {
+      //         this.sentenceBus.sentenceSVGs[otherUserId].plugDiffTree(this.reactiveSentencesObj[this.diffUserId] as ReactiveSentence);
+      //       }
+      //       // this.sentenceBus[otherUserId].drawTree()
+      //     }
+      //     this.conllSavedCounter += 1;
+      //   }
+      // }
     },
     orderConlls(filteredConlls: { [key: string]: string }) {
       const userAndTimestamps = [];

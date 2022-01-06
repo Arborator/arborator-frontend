@@ -11,7 +11,7 @@ import { LocalStorage } from 'quasar';
 import { SentenceSVG, defaultSentenceSVGOptions } from 'dependencytreejs/src/SentenceSVG';
 import { SentenceCaretaker } from 'dependencytreejs/src/ReactiveSentence';
 import { PropType } from 'vue';
-import { sentence_bus_events_t, sentence_bus_t } from 'src/types/main_types';
+import { reactive_sentences_obj_t, sentence_bus_events_t, sentence_bus_t } from 'src/types/main_types';
 import { ReactiveSentence } from 'dependencytreejs/src/ReactiveSentence';
 import { mapState } from 'pinia';
 import { useProjectStore } from 'src/pinia/modules/project';
@@ -27,6 +27,7 @@ interface svgHoveredEvent_t extends Event {
 }
 
 import { defineComponent } from 'vue';
+import { useUserStore } from 'src/pinia/modules/user';
 
 export default defineComponent({
   props: {
@@ -34,11 +35,11 @@ export default defineComponent({
       type: Object as PropType<sentence_bus_t>,
       required: true,
     },
-    reactiveSentence: {
-      type: Object as PropType<ReactiveSentence>,
+    reactiveSentencesObj: {
+      type: Object as PropType<reactive_sentences_obj_t>,
       required: true,
     },
-    teacherReactiveSentence: {
+    reactiveSentence: {
       type: Object as PropType<ReactiveSentence>,
       required: true,
     },
@@ -46,11 +47,15 @@ export default defineComponent({
       type: String as PropType<string>,
       required: true,
     },
+    diffMode: {
+      type: String as PropType<'DIFF_TEACHER' | 'DIFF_USER' | 'NO_DIFF'>,
+      required: true,
+    },
     sentenceId: {
       type: String as PropType<string>,
       required: true,
     },
-    userId: {
+    treeUserId: {
       type: String as PropType<string>,
       required: true,
     },
@@ -81,10 +86,19 @@ export default defineComponent({
   },
   computed: {
     ...mapState(useProjectStore, ['shownfeatures', 'TEACHER', 'isTeacher', 'isStudent']),
+    ...mapState(useUserStore, ['username']),
+    diffUserId() {
+      const value = useProjectStore().diffUserId;
+      return value || this.username;
+    },
   },
   watch: {
     conllSavedCounter() {
       this.sentenceSVG.drawTree();
+    },
+    diffMode() {
+      // Watching diffmode
+      this.handleDiffPlugging();
     },
   },
   mounted() {
@@ -95,18 +109,18 @@ export default defineComponent({
     const sentenceSVGOptions = defaultSentenceSVGOptions();
     sentenceSVGOptions.shownFeatures = this.shownfeatures;
     sentenceSVGOptions.interactive = true;
-    if (this.isStudent === true && this.userId === this.TEACHER) {
+    if (this.isStudent === true && this.treeUserId === this.TEACHER) {
       sentenceSVGOptions.interactive = false;
     }
     const svgWrapper = this.$refs.svgWrapper as SVGElement;
     this.sentenceSVG = new SentenceSVG(svgWrapper, this.reactiveSentence, sentenceSVGOptions);
 
-    this.sentenceSVG.plugDiffTree(this.teacherReactiveSentence);
+    this.handleDiffPlugging();
 
     this.sentenceCaretaker = new SentenceCaretaker(this.reactiveSentence);
     this.sentenceCaretaker.backup();
 
-    this.sentenceBus.sentenceSVGs[this.userId] = this.sentenceSVG;
+    this.sentenceBus.sentenceSVGs[this.treeUserId] = this.sentenceSVG;
 
     this.sentenceSVG.addEventListener('svg-click', (e) => {
       this.svgClickHandler(e as svgClickEvent_t);
@@ -116,7 +130,7 @@ export default defineComponent({
       this.svgDropHandler(e as svgHoveredEvent_t);
     });
     this.sentenceBus.on('tree-update:token', ({ token, userId }) => {
-      if (userId === this.userId) {
+      if (userId === this.treeUserId) {
         this.history_index += 1;
         this.reactiveSentence.updateToken(token);
         this.sentenceCaretaker.backup();
@@ -125,45 +139,45 @@ export default defineComponent({
     });
 
     this.sentenceBus.on('tree-update:tree', ({ tree, userId }) => {
-      if (userId === this.userId) {
+      if (userId === this.treeUserId) {
         this.reactiveSentence.updateTree(tree);
         this.sentenceCaretaker.backup();
         this.statusChangeHadler();
       }
     });
     this.sentenceBus.on('tree-update:sentence', ({ sentenceJson, userId }) => {
-      if (userId === this.userId) {
+      if (userId === this.treeUserId) {
         this.reactiveSentence.updateSentence(sentenceJson);
         this.sentenceCaretaker.backup();
         this.statusChangeHadler();
       }
     });
     this.sentenceBus.on('action:undo', ({ userId }) => {
-      if (userId === this.userId) {
+      if (userId === this.treeUserId) {
         this.sentenceCaretaker.undo();
         this.statusChangeHadler();
       }
     });
     this.sentenceBus.on('action:redo', ({ userId }) => {
-      if (userId === this.userId) {
+      if (userId === this.treeUserId) {
         this.sentenceCaretaker.redo();
         this.statusChangeHadler();
       }
     });
     this.sentenceBus.on('action:saved', ({ userId }) => {
-      if (userId === this.userId) {
+      if (userId === this.treeUserId) {
         this.history_saveIndex = this.sentenceCaretaker.currentStateIndex;
         this.statusChangeHadler();
       }
     });
 
     this.sentenceBus.on('action:tabSelected', ({ userId }) => {
-      if (userId === this.userId) {
+      if (userId === this.treeUserId) {
         this.statusChangeHadler();
       }
     });
     this.sentenceBus.on('action:addEmptyToken', ({ userId }) => {
-      if (userId === this.userId) {
+      if (userId === this.treeUserId) {
         this.reactiveSentence.addEmptyToken();
         this.sentenceCaretaker.backup();
         this.statusChangeHadler();
@@ -187,17 +201,17 @@ export default defineComponent({
         this.sentenceBus.emit('open:relationDialog', {
           gov,
           dep,
-          userId: this.userId,
+          userId: this.treeUserId,
         });
       } else if (targetLabel === 'FORM' || ['MISC.', 'FEATS', 'LEMMA'].includes(targetLabel.slice(0, 5))) {
         this.sentenceBus.emit('open:featuresDialog', {
           token: clickedToken,
-          userId: this.userId,
+          userId: this.treeUserId,
         });
       } else {
         this.sentenceBus.emit(`open:${targetLabel.toLowerCase()}Dialog` as keyof sentence_bus_events_t, {
           token: clickedToken,
-          userId: this.userId,
+          userId: this.treeUserId,
         });
       }
     },
@@ -221,7 +235,7 @@ export default defineComponent({
         this.sentenceBus.emit('open:relationDialog', {
           gov,
           dep,
-          userId: this.userId,
+          userId: this.treeUserId,
         });
       }
     },
@@ -235,16 +249,16 @@ export default defineComponent({
       const statusStr = LocalStorage.getItem('save_status');
       const statusObj = statusStr ? JSON.parse(statusStr as string) : {};
       let card = statusObj[this.cardId];
-      this.hasPendingChanges[this.userId] = needSave;
+      this.hasPendingChanges[this.treeUserId] = needSave;
 
       this.$emit('statusChanged', {
         canUndo,
         canRedo,
         canSave: needSave,
-        userId: this.userId,
+        userId: this.treeUserId,
       });
       if (!card) card = {};
-      card[this.userId] = needSave;
+      card[this.treeUserId] = needSave;
       statusObj[this.cardId] = card;
       LocalStorage.set('save_status', JSON.stringify(statusObj));
       this.checkSaveStatus();
@@ -275,6 +289,25 @@ export default defineComponent({
     update() {
       const newMetaText = this.reactiveSentence.getSentenceText();
       this.sentenceBus.emit('changed:metaText', { newMetaText });
+    },
+    handleDiffPlugging() {
+      if (this.diffMode === 'DIFF_TEACHER') {
+        if (this.treeUserId === this.TEACHER) {
+          return;
+        }
+        this.sentenceSVG.plugDiffTree(this.reactiveSentencesObj[this.TEACHER]);
+      }
+      if (this.diffMode === 'DIFF_USER') {
+        if (this.treeUserId === this.diffUserId) {
+          console.log('KK tree of the user, no diff');
+          return;
+        }
+        this.sentenceSVG.plugDiffTree(this.reactiveSentencesObj[this.username]);
+      }
+      if (this.diffMode === 'NO_DIFF') {
+        this.sentenceSVG.teacherTreeJson = {};
+        this.sentenceSVG.drawTree();
+      }
     },
   },
 });

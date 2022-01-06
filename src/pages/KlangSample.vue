@@ -155,6 +155,17 @@
           <!-- <div class="col q-pa-none" v-if="viewAllTranscriptions"> -->
           <div :class="(viewAllTranscriptions ? 'col-3' : 'col-6') + ' q-pa-none'">
             <q-badge color="secondary"> {{ viewAllTranscriptions ? 'new proposal' : username }} </q-badge>
+
+            <template v-for="(tt, un) in transcriptions" :key="un">
+              <q-badge
+                color="primary"
+                class="q-ml-md"
+                v-if="un !== 'original' && un !== 'new proposal' && un !== username && JSON.stringify(segments[un]) === JSON.stringify(mytrans)"
+              >
+                {{ un }}
+              </q-badge>
+            </template>
+
             <br />
             <q-btn
               color="secondary"
@@ -360,7 +371,7 @@
   margin-left: 10px;
 }
 .meta-row {
-  background-color: #4a276954;
+  background-color: #4a2769;
   color: white;
 }
 

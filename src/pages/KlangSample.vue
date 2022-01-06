@@ -2,20 +2,20 @@
   <q-page class="full-width row wrap" style="padding-top: 240px; padding-bottom: 80px">
     <div class="q-pa-none full-width" ref="words">
       <!-- <div class="row" dense v-for="(sent, i) in transcriptions['original']" :key="i"> -->
-      <div class="row justify-evenly" dense v-for="(sent, i) in mytrans" :key="i">
-        <span class="line-number" dense> {{ i + 1 }} </span>
-        <q-badge v-if="speakers[i] && speakers[i] == 'L1'" :label="speakers[i]" dense outline style="height: 3px" color="primary" rounded />
-        <q-badge
-          v-if="speakers[i] && speakers[i] != 'L1'"
-          :label="speakers[i]"
-          dense
-          outline
-          style="height: 3px"
-          :color="'teal-' + (8 - speakers[i].slice(-1))"
-          rounded
-        />
-
-        <div class="col row q-pa-none">
+      <div class="row" dense v-for="(sent, i) in mytrans" :key="i">
+        <!-- column original transcription: -->
+        <div :class="(viewAllTranscriptions ? 'col-2' : 'col-6') + ' row q-pa-none'">
+          <span class="line-number" dense> {{ i + 1 }} </span>
+          <q-badge v-if="speakers[i] && speakers[i] == 'L1'" :label="speakers[i]" dense outline style="height: 3px" color="secondary" rounded />
+          <q-badge
+            v-if="speakers[i] && speakers[i] != 'L1'"
+            :label="speakers[i]"
+            dense
+            outline
+            style="height: 3px"
+            :color="'purple-' + (8 - speakers[i].slice(-1))"
+            rounded
+          />
           <span class="q-pa-none" v-for="(t, j) in transcriptions['original'][i]" :key="j">
             <!-- {{t[1]/1000}} -->
             <q-chip v-if="t[2] / 1000 < ct" size="md" color="white" text-color="black" clickable dense @click="wordclicked(t)" class="q-pa-none">
@@ -62,13 +62,13 @@
 
           <q-separator spaced />
         </div>
-        <div class="col q-pa-none" v-if="isLoggedIn">
-          <div class="col q-pa-none">
-            <q-input class="special-column" dense filled square v-model="mytrans[i]"> </q-input>
-          </div>
+        <!-- column input: -->
+        <div :class="(viewAllTranscriptions ? 'col-3' : 'col-6') + ' q-pa-none'" v-if="isLoggedIn">
+          <q-input v-if="speakers[i] && speakers[i] == 'L1'" style="background-color: #27693031" dense filled square v-model="mytrans[i]"> </q-input>
+          <q-input v-if="speakers[i] && speakers[i] != 'L1'" style="background-color: #4a276954" dense filled square v-model="mytrans[i]"> </q-input>
         </div>
-        <!-- ADMIN TABLE : OTHER ANNOTATORS -->
-        <template v-if="viewAllTranscriptions">
+        <!-- ADMIN TABLE : OTHER ANNOTATORS: -->
+        <template class="col-8" v-if="viewAllTranscriptions">
           <template v-for="(transcription, username) in transcriptions" :key="username">
             <div
               class="col q-pa-none"
@@ -83,7 +83,7 @@
                   <span v-else-if="part.removed" style="color: red; padding: 0px; margin: 0px"
                     >▼<q-tooltip>{{ part.value }}</q-tooltip></span
                   >
-                  <span v-else style="color: grey; padding: 0px; margin: 0px">
+                  <span v-else style="color: dark-grey; padding: 0px; margin: 0px">
                     {{ part.value }}
                   </span>
                 </span>
@@ -92,17 +92,18 @@
           </template>
         </template>
       </div>
+      <!-- meta table: -->
       <template v-if="isAdmin && viewAllTranscriptions && !isLoading">
         <div class="row meta-row" dense v-for="(meta, i) in metaFormat" :key="-i - 1">
-          <!-- <div class="row justify-evenly" dense v-if="isLoggedIn"> -->
-          &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-          <span class="line-number" dense> </span>
-          <div class="col row q-pa-none"></div>
-          <div class="col row q-pa-none meta-label">
+          <!-- empty column under the original: -->
+          <div class="col-2 row q-pa-none"></div>
+          <!-- meta names: -->
+          <div class="col-3 row q-pa-none meta-label">
             <span class="meta-text"> {{ meta.label }} </span>
             <q-space />
           </div>
-          <template v-for="(transcription, username) in transcriptions">
+          <!-- columns by reviewers: -->
+          <template class="col-8" v-for="(transcription, username) in transcriptions">
             <div
               class="col row q-pa none"
               :key="username"
@@ -136,20 +137,23 @@
         noplayed-line-color="#15a700"
       >
       </av-waveform>
+      <!-- column headers: -->
       <div class="q-pa-none full-width">
         <div class="row justify-evenly" dense v-if="isLoggedIn">
-          &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-          <div class="col q-pa-none">
+          <div :class="(viewAllTranscriptions ? 'col-2' : 'col-6') + '  q-pa-none'">
             <q-badge> original </q-badge>
             <br />
             <q-btn color="primary" size="xs" @click="openSentenceDlg('original')" round icon="visibility">
               <q-tooltip> See sentence segmentation </q-tooltip>
             </q-btn>
+            <q-btn color="primary" size="xs" @click="moveAllToInputField('original')" round icon="east">
+              <q-tooltip> copy original transcription into your column </q-tooltip>
+            </q-btn>
           </div>
           <!-- <q-space /> -->
           <!-- <div class="col"></div> -->
           <!-- <div class="col q-pa-none" v-if="viewAllTranscriptions"> -->
-          <div class="col q-pa-none">
+          <div :class="(viewAllTranscriptions ? 'col-3' : 'col-6') + ' q-pa-none'">
             <q-badge color="secondary"> {{ viewAllTranscriptions ? 'new proposal' : username }} </q-badge>
             <br />
             <q-btn
@@ -162,7 +166,7 @@
               <q-tooltip> See sentence segmentation </q-tooltip>
             </q-btn>
           </div>
-          <template v-if="viewAllTranscriptions">
+          <template class="col-8" v-if="viewAllTranscriptions">
             <template v-for="(transcription, username) in transcriptions" :key="username">
               <div
                 class="col q-pa-none"
@@ -172,6 +176,9 @@
                 <br />
                 <q-btn color="primary" size="xs" @click="openSentenceDlg(username)" round icon="visibility">
                   <q-tooltip> See sentence segmentation </q-tooltip>
+                </q-btn>
+                <q-btn color="primary" size="xs" @click="moveAllToInputField(username)" round icon="west">
+                  <q-tooltip> copy transcription by {{ username }} into your column </q-tooltip>
                 </q-btn>
               </div>
             </template>
@@ -281,7 +288,7 @@
       </q-dialog>
     </q-page-sticky>
 
-    <q-dialog v-model="showSentencesDlg">
+    <q-dialog full-width class="row-grow" v-model="showSentencesDlg">
       <q-card class="sentence-dialog">
         <q-card-section class="bg-primary text-white">
           <div class="text-h6">Sentences of {{ showSentenceUser }}</div>
@@ -292,7 +299,7 @@
             :rows="sentences"
             row-key="number"
             :rows-per-page-options="[0]"
-            class="text-primary"
+            class="text-black"
             table-header-class="text-white bg-primary"
             flat
             bordered
@@ -353,12 +360,11 @@
   margin-left: 10px;
 }
 .meta-row {
-  background-color: #4a2769;
+  background-color: #4a276954;
   color: white;
 }
 
 .special-column {
-  background-color: #27693031;
   margin-left: 10px;
   /* width: 500px;
   min-width: 500px;
@@ -554,7 +560,7 @@ export default {
     getSentenceCellClass(props) {
       // for styling of the sentence table: too long sentences get colored in deep orange
       let cellclass = '';
-      if (props.row.speaker === 'L1' || props.row.speaker === 0) cellclass += 'text-primary';
+      if (props.row.speaker === 'L1' || props.row.speaker === 0) cellclass += 'text-black';
       else cellclass = `${cellclass}text-teal-${8 - props.row.speaker.slice(-1)}`;
       if (props.row.length > 22) cellclass += ` bg-deep-orange-${Math.min(14, Math.round((props.row.length - 20) / 5))}`;
       return cellclass;
@@ -621,6 +627,11 @@ export default {
     moveToInputField(annotator, line) {
       this.mytrans[line] = this.segments[annotator][line];
     },
+    moveAllToInputField(annotator) {
+      for (let line = 0; line < this.transcriptions.original.length; line += 1) {
+        this.mytrans[line] = this.segments[annotator][line];
+      }
+    },
     setExportSampleName() {
       this.exportSampleName = this.camelize(this.title || this.ksamplename);
     },
@@ -645,10 +656,7 @@ export default {
       } else {
         // we have to build the quadruples
         transcription = transcription.transcription;
-        let line;
-
-        for (line = 0; line < lines; line += 1) {
-          let word;
+        for (let line = 0; line < lines; line += 1) {
           const originalLine = original[line];
           const originalWords = originalLine.length;
           const transLine = transcription[line];
@@ -659,7 +667,7 @@ export default {
           const msec = (maxMS - minMS) / realWordsCount;
           let startMS = 0;
           let endMS = 0;
-          for (word = 0; word < transWords; word += 1) {
+          for (let word = 0; word < transWords; word += 1) {
             const isRealWord = this.isRealWord(transLine[word]);
             if (isRealWord) endMS += msec;
             transLine[word] = [transLine[word], Math.round(parseFloat(minMS) + startMS), Math.round(parseFloat(minMS) + endMS), this.speakers[line]];

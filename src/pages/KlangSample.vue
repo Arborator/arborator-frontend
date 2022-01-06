@@ -11,29 +11,38 @@
           dense
           outline
           style="height: 3px"
-          :color="'teal-' + (8 - speakers[i].toString().slice(-1))"
+          :color="'teal-' + (8 - parseInt(speakers[i].slice(-1), 10))"
           rounded
         />
 
         <div class="col row q-pa-none">
-          <span v-for="(t, j) in transcriptions.original.data.transcription[i]" :key="j" class="q-pa-none">
+          <span v-for="(wordInfo, j) in timedTokens[i]" :key="j" class="q-pa-none">
             <!-- {{t[1]/1000}} -->
-            <q-chip v-if="t[2] / 1000 < ct" size="md" color="white" text-color="black" clickable dense class="q-pa-none" @click="wordclicked(t)">
-              {{ t[0] }}
+            <q-chip
+              v-if="parseInt(wordInfo[2], 10) / 1000 < ct"
+              size="md"
+              color="white"
+              text-color="black"
+              clickable
+              dense
+              class="q-pa-none"
+              @click="wordclicked(wordInfo)"
+            >
+              {{ wordInfo[0] }}
             </q-chip>
             <q-chip
-              v-else-if="t[1] / 1000 <= ct && t[2] / 1000 >= ct"
+              v-else-if="parseInt(wordInfo[1]) / 1000 <= ct && parseInt(wordInfo[2], 10) / 1000 >= ct"
               square
               size="md"
               clickable
               dense
               class="q-pa-none current"
-              @click="wordclicked(t)"
+              @click="wordclicked(wordInfo)"
             >
-              {{ t[0] }}
+              {{ wordInfo[0] }}
             </q-chip>
-            <q-chip v-else size="md" color="white" text-color="primary" clickable dense class="q-pa-none" @click="wordclicked(t)">
-              {{ t[0] }}
+            <q-chip v-else size="md" color="white" text-color="primary" clickable dense class="q-pa-none" @click="wordclicked(wordInfo)">
+              {{ wordInfo[0] }}
             </q-chip>
           </span>
           <q-space />
@@ -108,7 +117,7 @@
               :key="username"
               class="col row q-pa none"
             >
-              <span class="meta-value meta-text">{{ transcription.data[meta.value] }}</span>
+              <span class="meta-value meta-text">{{ transcription[meta.value] }}</span>
             </div>
           </template>
         </div>
@@ -319,15 +328,14 @@ import { exportFile } from 'quasar';
 import api from '../api/backend-api';
 import { useUserStore } from 'src/pinia/modules/user';
 import JSZip from 'jszip';
-import Diff, { Change } from 'diff';
+import { Change, diffWords } from 'diff';
 import { useMainStore } from 'src/pinia';
 import notifyError from 'src/utils/notify';
 import { timed_tokens_t, transcription_t } from 'src/api/backend-types';
-// const JSZip = require('jszip');
-// const Diff = require('diff');
-type transcription_object_t = { source: 'original'; data: { transcription: timed_tokens_t } } | { source: 'user'; data: transcription_t };
+
+// type transcription_object_t = { source: 'original'; data: { transcription: timed_tokens_t } } | { source: 'user'; data: transcription_t };
 interface transcriptions_t {
-  [key: string]: transcription_object_t;
+  [key: string]: transcription_t;
 }
 
 interface sentence_line_t {
@@ -355,8 +363,10 @@ export default defineComponent({
     const users: { label: string; value: string }[] = [];
     const diffsegments: { [key: string]: Change[][] } = {};
     const mytrans: string[] = [];
-    const speakers: (number | string)[] = [];
+    const speakers: string[] = [];
+    const timedTokens: timed_tokens_t = [[]];
     return {
+      timedTokens,
       sentences,
       segments,
       audioplayer: null,
@@ -432,11 +442,11 @@ export default defineComponent({
     this.waveWidth = window.innerWidth;
   },
 
-  mounted() {
+  async mounted() {
     this.audioplayer = (this.$refs.player as any).audio;
     (this.$refs.player as any).audio.ontimeupdate = () => this.onTimeUpdate();
     document.title = `Klang: ${this.ksamplename}`;
-    this.getSampleData();
+    await this.getSampleData();
   },
   methods: {
     lines2WordList(lines: string[], language: string | null = null) {
@@ -478,7 +488,7 @@ export default defineComponent({
 
       api.saveTranscription(this.kprojectname, this.ksamplename, this.username, data).then(
         (response) => {
-          this.setSampleData(response);
+          this.setSampleDataOneTranscription(response.data);
           this.populateSegmentsForAll();
           this.wasSaved = true;
 
@@ -502,10 +512,10 @@ export default defineComponent({
     openSentenceDlg(username: string, fromInput: boolean) {
       if (fromInput) {
         // this.transcriptions[username] = {};
-        const thisTranscription = this.transcriptions[username];
-        if (thisTranscription.source === 'user') {
-          thisTranscription.data.transcription = this.lines2WordList(this.mytrans); // , 'French'}
-        }
+        //   const thisTranscription = this.transcriptions[username];
+        //   if (thisTranscription.source === 'user') {
+        //     thisTranscription.data.transcription = this.lines2WordList(this.mytrans); // , 'French'}
+        //   }
       }
       this.showSentenceUser = username;
       this.showSentencesDlg = true;
@@ -534,46 +544,44 @@ export default defineComponent({
     },
 
     popultateSegmentsForAnnotator(annotator: string) {
-      const isOriginal = annotator === 'original';
-      const originalSegments = !isOriginal ? this.segments.original : [];
-      const conllSegments = this.transcriptions[annotator].data.transcription as string[][][];
-      if (conllSegments.length !== 0) {
-        this.segments[annotator] = conllSegments.map((sent) => sent.reduce((acc, t) => `${acc + (isOriginal ? t[0] : t)} `, ''));
-        this.users.push({ label: annotator, value: annotator });
-      } else {
-        this.segments[annotator] = originalSegments;
-        if (!this.viewAllTranscriptions) this.wasSaved = false;
+      if (annotator === 'original') {
+        throw Error('This function is only for annotator (not for the original timedtokens)');
       }
 
-      let segments = this.deepCopy(this.segments[annotator]) as string[];
-      if (!isOriginal) {
-        // Nasty debugging for the bug that inserts empty list in transcriptions
-        if (segments.length !== originalSegments.length) {
-          notifyError({
-            error:
-              ' Your transcription is corrupted, can you notify the admin of this website please ? ERROR CODE GITHUB : 105 : https://github.com/Arborator/arborator-frontend/issues/105',
-            timeout: 25000,
-          });
-          segments = segments.filter((segment) => segment.length > 0); // <- Kim and Kirian : Quick debugging to make it printing, but we don't know if it will then break all the saving logic !!!!
-        }
-        this.diffsegments[annotator] = segments.map((sent, i) => Diff.diffWords(originalSegments[i] || 'FINISHED !!', sent));
+      const annotatorTranscriptionText = this.transcriptions[annotator].transcription;
+      if (annotatorTranscriptionText.length === 0) {
+        this.segments[annotator] = JSON.parse(JSON.stringify(this.segments.original));
+      } else {
+        this.segments[annotator] = this.transcriptions[annotator].transcription.map((sent) => sent.reduce((acc, t) => `${acc + t} `, ''));
       }
-      const thisTranscription = this.transcriptions[annotator];
-      if (thisTranscription.source === 'user' && annotator === this.username && !this.viewAllTranscriptions) {
-        this.mytrans = segments;
-        this.sound = thisTranscription.data.sound;
-        this.story = thisTranscription.data.story;
-        this.accent = thisTranscription.data.accent;
-        this.monodia = thisTranscription.data.monodia;
-        this.title = thisTranscription.data.title;
+      this.users.push({ label: annotator, value: annotator });
+      if (!this.viewAllTranscriptions) this.wasSaved = false;
+
+      // Nasty debugging for the bug that inserts empty list in transcriptions
+      if (this.segments[annotator].length !== this.segments.original.length) {
+        notifyError({
+          error:
+            ' Your transcription is corrupted, can you notify the admin of this website please ? ERROR CODE GITHUB : 105 : https://github.com/Arborator/arborator-frontend/issues/105',
+          timeout: 25000,
+        });
+        // segments = segments.filter((segment) => segment.length > 0); // <- Kim and Kirian : Quick debugging to make it printing, but we don't know if it will then break all the saving logic !!!!
       }
+      this.diffsegments[annotator] = this.segments[annotator].map((sent, i) => diffWords(this.segments.original[i] || 'FINISHED !!', sent));
+    },
+
+    populateSegmentsForOriginal() {
+      if (this.timedTokens.length === 0) {
+        throw Error('TimedTokens is null, see why original content is broken');
+      }
+      this.segments.original = this.timedTokens.map((sent) => sent.reduce((acc, t) => `${acc + t[0]} `, ''));
+      this.users.push({ label: 'original', value: 'original' });
     },
 
     populateSegmentsForAll() {
       this.segments = {};
       this.users = [];
       this.selectedUsers = [];
-      this.popultateSegmentsForAnnotator('original');
+      this.populateSegmentsForOriginal();
       for (const annotator in this.transcriptions) {
         if (Object.prototype.hasOwnProperty.call(this.transcriptions, annotator)) {
           if (annotator !== 'original') {
@@ -583,8 +591,15 @@ export default defineComponent({
       }
     },
 
-    deepCopy(object: any) {
-      return JSON.parse(JSON.stringify(object));
+    setMetaInfo() {
+      if (!this.viewAllTranscriptions) {
+        this.mytrans = this.segments[this.username];
+        this.sound = this.transcriptions[this.username].sound;
+        this.story = this.transcriptions[this.username].story;
+        this.accent = this.transcriptions[this.username].accent;
+        this.monodia = this.transcriptions[this.username].monodia;
+        this.title = this.transcriptions[this.username].title;
+      }
     },
 
     moveToInputField(annotator: string, line: number) {
@@ -593,14 +608,13 @@ export default defineComponent({
     setExportSampleName() {
       this.exportSampleName = this.camelize(this.title || this.ksamplename);
     },
-    makeTranscription(username: string, newsentsplit: boolean) {
+    makeTranscription(annotator: string, newsentsplit: boolean) {
       // KK FIXME : This is probably broken after converting to typescript !!!
 
       // from a list of lines, make quadruples: token, start, end, speaker
       // if newsentsplit: redo sentences based on punctuation
-      const isOriginal = username === 'original';
-      let transcriptionObject = JSON.parse(JSON.stringify(this.transcriptions[username])) as transcription_object_t;
-      const originalTranscription = transcriptionObject.data.transcription as timed_tokens_t;
+      const isOriginal = annotator === 'original';
+      const originalTranscription = this.deepCopy(this.timedTokens);
       const lines = originalTranscription.length;
       if (isOriginal) {
         // we just have to add the speaker as 4th element
@@ -615,7 +629,7 @@ export default defineComponent({
         }
       } else {
         // we have to build the quadruples
-        let userTranscription = (transcriptionObject.data as transcription_t).transcription;
+        let userTranscription = this.transcriptions[annotator].transcription;
         let line;
 
         for (line = 0; line < lines; line += 1) {
@@ -643,7 +657,7 @@ export default defineComponent({
           }
         }
       }
-      let userTranscription = (transcriptionObject.data as transcription_t).transcription;
+      let userTranscription = this.transcriptions[annotator].transcription;
 
       if (newsentsplit) {
         const flattranscription = userTranscription.reduce((accumulator, value) => accumulator.concat(value), []);
@@ -777,20 +791,22 @@ export default defineComponent({
 
     async getSampleData() {
       await useUserStore().checkSession();
-
       this.isLoading = true;
-      api
+      await api
         .getOriginalTranscription(this.kprojectname, this.ksamplename)
         .then((response) => {
-          this.transcriptions.original.data.transcription = response.data.tokens;
+          this.timedTokens = response.data.tokens;
           this.speakers = response.data.speakers;
           if (this.isLoggedIn) {
             if (!this.isAdmin) {
               api
                 .getTranscription(this.kprojectname, this.ksamplename, this.username)
                 .then((response2) => {
-                  this.setSampleData(response2);
+                  this.setSampleDataOneTranscription(response2.data);
                   this.isLoading = false;
+                  this.addUserTranscriptionIfNoExist();
+                  this.populateSegmentsForAll();
+                  this.setMetaInfo();
                 })
                 .catch((error) => {
                   notifyError({ error });
@@ -800,61 +816,51 @@ export default defineComponent({
               api
                 .getAllTranscription(this.kprojectname, this.ksamplename)
                 .then((response2) => {
-                  this.setSampleData(response2);
+                  this.setSampleDataAllTranscription(response2.data);
                   this.isLoading = false;
+                  this.addUserTranscriptionIfNoExist();
+                  this.populateSegmentsForAll();
+                  this.setMetaInfo();
                 })
                 .catch((error) => {
                   notifyError({ error });
                   this.isLoading = false;
                 });
             }
-          } else {
-            this.populateSegmentsForAll();
           }
         })
+
         .catch((error) => {
           notifyError({ error });
         });
     },
 
-    setSampleData(response: any) {
-      const { data } = response;
-
-      if (Array.isArray(data)) {
-        let index;
-        for (index in data) {
-          if (Object.prototype.hasOwnProperty.call(data, index)) {
-            const user = this.makeValid(data[index]);
-            this.transcriptions[user.user] = user;
-          }
-        }
-        if (!this.transcriptions[this.username]) {
-          const transcription: string[][] = [[]];
-          this.transcriptions[this.username].source = 'user';
-          this.transcriptions[this.username].data = {
-            user: this.username,
-            transcription,
-            accent: '',
-            monodia: '',
-            sound: '',
-            title: '',
-            story: '',
-          };
-        }
-      } else {
-        const transcription = this.makeValid(data);
-        this.transcriptions[transcription.user].data = transcription.transcription;
+    setSampleDataOneTranscription(transcriptionBackend: transcription_t) {
+      if (transcriptionBackend !== null) {
+        this.transcriptions[transcriptionBackend.user] = transcriptionBackend;
       }
-
-      this.populateSegmentsForAll();
     },
 
-    makeValid(data: any) {
-      if (!data.user) {
-        data.user = this.username;
-        data.transcription = [];
+    setSampleDataAllTranscription(transcriptionsBackend: transcription_t[]) {
+      for (const transcription of transcriptionsBackend) {
+        const userId = transcription.user;
+        this.transcriptions[userId] = transcription;
       }
-      return data;
+    },
+
+    addUserTranscriptionIfNoExist() {
+      if (!this.transcriptions[this.username] && this.isLoggedIn) {
+        const transcription: string[][] = [];
+        this.transcriptions[this.username] = {
+          user: this.username,
+          transcription,
+          accent: '',
+          monodia: '',
+          sound: '',
+          title: '',
+          story: '',
+        };
+      }
     },
 
     wordclicked(triple: any) {
@@ -870,10 +876,10 @@ export default defineComponent({
         this.isPlayingLine = -1;
       } else {
         this.isPlayingLine = index;
-        const line = this.transcriptions.original.data.transcription[index] as unknown as [string, number, number][];
+        const line = this.timedTokens[index];
         const { length } = line;
-        this.lineStart = line[0][1] / 1000;
-        this.lineEnd = line[length - 1][2] / 1000;
+        this.lineStart = parseInt(line[0][1], 10) / 1000;
+        this.lineEnd = parseInt(line[length - 1][2], 10) / 1000;
         (this.audioplayer as any).currentTime = this.lineStart;
         (this.audioplayer as any).play();
       }
@@ -895,6 +901,10 @@ export default defineComponent({
           inline: 'center',
         });
       }
+    },
+
+    deepCopy<T>(obj: T): T {
+      return JSON.parse(JSON.stringify(obj));
     },
   },
 });

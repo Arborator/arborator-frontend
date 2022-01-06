@@ -81,5 +81,5 @@ export interface updateTree_ED {
 /////////////// KLANG //////////:
 export interface getOriginalTranscription_RV {
   tokens: timed_tokens_t;
-  speakers: number[];
+  speakers: string[];
 }

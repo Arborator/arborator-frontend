@@ -480,13 +480,15 @@ export default {
   watch: {},
   methods: {
     lines2WordList(lines, language) {
-      if (language == null) language = 'French';
+      if (language == null) language = 'French'; // TODO: more languages
+
       const wlines = lines.map((line) => {
         if (language === 'French') {
           line = line.replace('’', "'");
           line = line.replace(/-ce|-ci|-là|-je|-tu|-t-il|-il|-t-elle|-elle|-t-ils|-ils|-t-elles|-elles|-on/gi, ' $&');
-          line = line.replace(/[,;:!?./§"()*]+/gi, ' $&');
-          line = line.replace(/["'()]+/gi, '$& ');
+          line = line.replace(/[,;:!?./§()*]+/gi, ' $&');
+          line = line.replace(/['()]+/gi, '$& ');
+          line = line.replace(/"/gi, ' " ');
           line = line.replace(/\s+/, ' ');
           line = line.replace("aujourd' hui", "aujourd'hui");
           line = line.replace("quelqu' un", "quelqu'un");
@@ -684,9 +686,11 @@ export default {
         let inBracket = false;
         let inHm = false;
         let lastspeaker = null;
-        for (const i in flattranscription) {
-          if (flattranscription.hasOwnProperty(i)) {
-            let [w, b, e, s] = flattranscription[i];
+        // for (const i in flattranscription) {
+        for (let word = 0; word < flattranscription.length; word += 1) {
+          if (flattranscription.hasOwnProperty(word)) {
+            let [w, b, e, s] = flattranscription[word];
+            const [nw, nb, ne, ns] = word + 1 < flattranscription.length ? flattranscription[word + 1] : [0, 0, 0, 0];
             if (w === '...') w = '…';
             if (w === '[') {
               inBracket = true;
@@ -703,7 +707,7 @@ export default {
             if (inBracket) bracksent.push([w, b, e, s === 'L1' ? 'L2' : 'L1']);
             else if (inHm) bracksent.push([w, b, e, s]);
             else newsent.push([w, b, e, s]);
-            if (this.isEndOfSent(w) && !inBracket && !inHm) {
+            if (this.isEndOfSent(w) && !inBracket && !inHm && !(nw === '"' && ns === s)) {
               newtranscription.push(newsent);
               newsent = [];
               if (bracksent.length > 0) {

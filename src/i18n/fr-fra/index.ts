@@ -189,7 +189,7 @@ export default {
     toggleOpenProjectCaption: 'If true, anyone can edit samples',
     defaultUserTreePanel: 'Default User Tree',
     adminsPanel: 'Admins',
-    guestsPanel: 'Guests',
+    guestsPanel: "Annotateurs et d'autres invités",
     shownFeaturesPanel: 'Shown Features',
     shownFeaturesTokens: 'Choose the features to be shown under each token',
     shownFeaturesSentences: 'Choose the features to be shown under each sentence',

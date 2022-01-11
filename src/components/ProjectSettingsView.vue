@@ -36,10 +36,12 @@
         </template>
       </q-banner>
     </q-card-section>
+    <!-- project description: -->
     <q-card-section>
       <q-input v-model="description" style="height: 100px" label="Description" filled clearable type="textarea" />
       <q-btn color="primary" :label="$t('projectSettings.descriptionSave')" icon="save" dense flat @click="saveDescription"></q-btn>
     </q-card-section>
+    <!-- project options: -->
     <q-card-section class="q-pa-sm row items-start q-gutter-md">
       <q-card class="col col-sm-12">
         <q-list>
@@ -142,45 +144,91 @@
           </q-list>
         </q-card-section>
       </q-card>
+      <!-- admin panel -->
+      <q-card class="col">
+        <q-scroll-area style="height: 500px">
+          <q-card-section>
+            <div class="text-h6 text-center">
+              {{ $t('projectSettings.adminsPanel') }}
+              <q-btn v-show="isAdmin" flat round icon="add" :color="$q.dark.isActive ? 'purple-12' : 'primary'" @click="addAdminDial = true"></q-btn>
+            </div>
+          </q-card-section>
 
-      <q-card class="col">
-        <q-card-section>
-          <div class="text-h6 text-center">
-            {{ $t('projectSettings.adminsPanel') }}
-            <q-btn v-show="isAdmin" flat round icon="add" :color="$q.dark.isActive ? 'purple-12' : 'primary'" @click="addAdminDial = true"></q-btn>
-          </div>
-        </q-card-section>
-        <q-card-section>
-          <q-list bordered separator class="list-size">
-            <q-item v-for="admin in admins" :key="admin" v-ripple clickable>
-              <q-item-section>{{ admin }}</q-item-section>
-              <q-item-section side>
-                <q-btn
-                  v-show="isAdmin"
-                  dense
-                  round
-                  flat
-                  icon="remove"
-                  :color="$q.dark.isActive ? 'red-13' : 'negative'"
-                  @click="triggerConfirm(removeAdmin, admin)"
-                ></q-btn>
-              </q-item-section>
-            </q-item>
-          </q-list>
-        </q-card-section>
+          <q-markup-table v-if="admins.length > 0">
+            <thead>
+              <tr>
+                <th class="text-left">ID</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-for="admin in admins" :key="admin" v-ripple clickable>
+                <td>{{ admin }}</td>
+                <td>
+                  <q-btn
+                    v-show="isAdmin"
+                    dense
+                    round
+                    flat
+                    icon="remove"
+                    :color="$q.dark.isActive ? 'red-13' : 'negative'"
+                    @click="triggerConfirm(removeAdmin, admin)"
+                  ></q-btn>
+                </td>
+              </tr>
+            </tbody>
+          </q-markup-table>
+        </q-scroll-area>
       </q-card>
+      <!-- guest panel: -->
       <q-card class="col">
-        <q-card-section>
-          <div class="text-h6 text-center">
-            {{ $t('projectSettings.guestsPanel') }}
-            <q-btn v-show="isAdmin" flat round icon="add" :color="$q.dark.isActive ? 'purple-12' : 'primary'" @click="addGuestDial = true"></q-btn>
-          </div>
-        </q-card-section>
-        <q-card-section>
-          <q-list bordered separator class="list-size">
-            <q-item v-for="guest in guests" :key="guest" v-ripple clickable>
-              <q-item-section>{{ guest }}</q-item-section>
-              <q-item-section side>
+        <q-scroll-area style="height: 500px">
+          <q-card-section>
+            <div class="text-h6 text-center">
+              {{ $t('projectSettings.guestsPanel') }}
+              <q-btn v-show="isAdmin" flat round icon="add" :color="$q.dark.isActive ? 'purple-12' : 'primary'" @click="addGuestDial = true"></q-btn>
+            </div>
+          </q-card-section>
+
+          <q-markup-table>
+            <thead>
+              <tr>
+                <th class="text-left">Name</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-for="guest in guests" :key="guest" v-ripple clickable>
+                <td>{{ guest }}</td>
+                <td>
+                  <q-btn
+                    v-show="isAdmin"
+                    dense
+                    round
+                    flat
+                    icon="remove"
+                    :color="$q.dark.isActive ? 'red-13' : 'negative'"
+                    @click="triggerConfirm(removeGuest, guest)"
+                  ></q-btn>
+                </td>
+              </tr>
+            </tbody>
+          </q-markup-table>
+        </q-scroll-area>
+      </q-card>
+      <!-- shown features: -->
+      <q-card>
+        <q-markup-table v-if="guests.length > 0">
+          <thead>
+            <tr>
+              <th class="text-left">ID</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="guest in guests" :key="guest" v-ripple clickable>
+              <td>{{ guest }}</td>
+              <td>
                 <q-btn
                   v-show="isAdmin"
                   dense
@@ -190,12 +238,12 @@
                   :color="$q.dark.isActive ? 'red-13' : 'negative'"
                   @click="triggerConfirm(removeGuest, guest)"
                 ></q-btn>
-              </q-item-section>
-            </q-item>
-          </q-list>
-        </q-card-section>
+              </td>
+            </tr>
+          </tbody>
+        </q-markup-table>
       </q-card>
-
+      <!-- shown features: -->
       <q-card class="col">
         <q-card-section>
           <div class="text-h6 text-center">

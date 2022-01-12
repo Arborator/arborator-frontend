@@ -38,7 +38,6 @@
     "vue-audio-visual": "^2.4.0",
     "vue-i18n": "^9.1.9",
     "vue-next-select": "^2.10.1",
-    "vue-select": "^3.16.0",
     "vue3-cookies": "^1.0.1"
   },
   "devDependencies": {

@@ -14,7 +14,6 @@ export const useProjectStore = defineStore('project', {
   },
   getters: {
     getProjectConfig: (state) => state,
-    // KK TODO fixme all 4 below
     isAdmin: (state) => {
       return state.admins.includes(useUserStore().id) || useUserStore().super_admin;
     }, // return state.admins.includes(getters["getUserInfos"].id);
@@ -76,8 +75,7 @@ export const useProjectStore = defineStore('project', {
           this.image = response.data.image;
           this.description = response.data.description;
         })
-        .catch((error) => {
-          notifyError({ error });
+        .then(() => {
           api.getProjectUsersAccess(projectname).then((response) => {
             this.admins = response.data.admins;
             this.guests = response.data.guests;
@@ -86,15 +84,20 @@ export const useProjectStore = defineStore('project', {
             this.shownmeta = response.data.shownmeta;
             this.shownfeatures = response.data.shownfeatures;
           });
-          api.getProjectConlluSchema(projectname).then((response) => {
-            let fetchedAnnotationFeatures = response.data.annotationFeatures;
-            // check if there is a json in proper format, otherwise use default ConfigConllu
-            if (typeof fetchedAnnotationFeatures !== 'object' || fetchedAnnotationFeatures === null) {
-              // commit("reset_project_config");
-              fetchedAnnotationFeatures = this.annotationFeatures;
-            }
-            this.annotationFeatures = fetchedAnnotationFeatures;
-          });
+          api
+            .getProjectConlluSchema(projectname)
+            .then((response) => {
+              let fetchedAnnotationFeatures = response.data.annotationFeatures;
+              // check if there is a json in proper format, otherwise use default ConfigConllu
+              if (typeof fetchedAnnotationFeatures !== 'object' || fetchedAnnotationFeatures === null) {
+                // commit("reset_project_config");
+                fetchedAnnotationFeatures = this.annotationFeatures;
+              }
+              this.annotationFeatures = fetchedAnnotationFeatures;
+            })
+            .catch((error) => {
+              notifyError({ error });
+            });
         });
     },
     // KK TODO

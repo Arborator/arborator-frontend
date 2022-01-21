@@ -46,7 +46,7 @@
     <q-item-section v-for="adm in project.admins" :key="adm" side>
       <q-chip v-if="userid == adm" size="sm">
         <q-avatar>
-          <img :src="getUserInfos.picture_url" />
+          <img :src="getUserInfos.picture_url || undefined" />
         </q-avatar>
         {{ adm }}
       </q-chip>

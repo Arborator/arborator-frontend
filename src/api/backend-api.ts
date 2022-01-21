@@ -142,14 +142,14 @@ export default {
   searchProject(projectname: string, query: any) {
     return API.post(`projects/${projectname}/search`, query);
   },
+  searchSample(projectname: string, samplename: string, query: any) {
+    return API.post(`projects/${projectname}/sample/${samplename}/search`, query);
+  },
   tryRuleProject(projectname: string, query: any) {
     return API.post(`projects/${projectname}/try-rule`, query);
   },
   tryRulesProject(projectname: string, query: any) {
     return API.post(`projects/${projectname}/try-rules`, query);
-  },
-  searchSample(projectname: string, samplename: string, query: any) {
-    return API.post(`projects/${projectname}/sample/${samplename}/search`, query);
   },
   // -------------------------------------------------------- //
   // ---------------          Lexicon         --------------- //

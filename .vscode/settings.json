@@ -2,7 +2,7 @@
   // "vetur.validation.template": false,
   // "vetur.format.enable": true,
   // "eslint.validate": ["javascript", "javascriptreact", "typescript", "vue"],
-  // "vetur.experimental.templateInterpolationService": false,
+  "vetur.experimental.templateInterpolationService": true,
   "editor.defaultFormatter": "dbaeumer.vscode-eslint",
   "eslint.alwaysShowStatus": true,
   "editor.formatOnSave": true,

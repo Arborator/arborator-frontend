@@ -66,9 +66,9 @@ export interface sentence_bus_t extends Emitter<sentence_bus_events_t> {
   sentenceSVGs: { [key: string]: SentenceSVG };
 }
 
+export type grew_query_t = { name: string; pattern: string; sampleIds: string | string[] | undefined | never[]; type: 'SEARCH' | 'REWRITE' };
+
 export type grew_templates_t = {
-  name: string;
-  pattern: string;
-  commands: string;
-  sampleIds: string | string[] | undefined | never[];
-}[];
+  searchQueries: grew_query_t[];
+  rewriteQueries: grew_query_t[];
+};

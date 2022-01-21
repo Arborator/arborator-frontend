@@ -230,17 +230,16 @@ export default defineComponent({
         }
         const datasample = { data: RulesGrew };
         api.transformation_grew(this.$route.params.projectname as string, datasample).then((response) => {
-          if (this.queries.slice(-1)[0].name !== 'Correct lexicon') {
-            this.queries.push({
+          if (this.queries.rewriteQueries.slice(-1)[0].name !== 'Correct lexicon') {
+            this.queries.rewriteQueries.push({
               name: 'Correct lexicon',
               pattern: response.data.rules,
-              commands: ' ',
               sampleIds: listSampleIds,
+              type: 'REWRITE',
             });
           } else {
-            this.queries.slice(-1)[0].pattern = response.data.rules;
-            this.queries.slice(-1)[0].commands = ' ';
-            this.queries.slice(-1)[0].sampleIds = listSampleIds;
+            this.queries.rewriteQueries.slice(-1)[0].pattern = response.data.rules;
+            this.queries.rewriteQueries.slice(-1)[0].sampleIds = listSampleIds;
           }
         });
         this.searchDialog = true;

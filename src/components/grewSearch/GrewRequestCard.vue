@@ -1,23 +1,22 @@
 <template>
-  <q-card style="width: 100%" :class="$q.dark.isActive ? 'bg-dark' : 'bg-grey-1'">
+  <q-card style="width: 10%" :class="$q.dark.isActive ? 'bg-dark' : 'bg-grey-1'">
     <q-bar class="bg-primary text-white">
       <q-icon name="img:/svg/grew.svg" size="7rem" />
       <q-space />
       <q-btn v-close-popup flat dense icon="close" />
     </q-bar>
 
-    <q-card-section style="width: 80vw">
+    <q-card-section style="width: 80vw; height: 80vh">
       <q-form class="q-gutter-md" @submit="onSearch" @reset="onResetSearch">
         <div class="q-pa-xs">
           <div class="row">
             <div class="col-10">
-              <Codemirror v-model:value="searchPattern" :options="cmOption"></Codemirror>
+              <Codemirror v-model:value="currentQuery" style="height: 70vh" :options="cmOption"></Codemirror>
               <q-separator />
-              <Codemirror v-if="rewriteCommands !== ''" v-model:value="rewriteCommands" :options="cmOption"></Codemirror>
               <div class="full-width row justify-start">
                 <q-btn color="primary" type="submit" label="Search" no-caps icon="search" />
                 <q-space />
-                <q-btn v-if="rewriteCommands !== ''" color="primary" label="Try Rules" no-caps icon="autorenew" @click="tryRules" />
+                <q-btn v-if="currentQueryType === 'REWRITE'" color="primary" label="Try Rules" no-caps icon="autorenew" @click="tryRules" />
                 <q-space />
                 <q-btn label="Get link" no-caps icon="ion-md-link" @click="getgrewlink" />
                 <q-space />
@@ -31,12 +30,12 @@
 
             <div class="col-2 bg-primary">
               <q-tabs v-model="searchreplacetab" dense no-caps class="bg-grey-2 primary text-primary">
-                <q-tab name="search" icon="search" label="Search">
+                <q-tab name="SEARCH" icon="search" label="Search">
                   <q-tooltip content-class="bg-primary" anchor="top middle" self="bottom middle" :offset="[10, 10]">
                     Examples of Grew search statements
                   </q-tooltip>
                 </q-tab>
-                <q-tab name="replace" icon="autorenew" label="Replace">
+                <q-tab name="REWRITE" icon="autorenew" label="Rewrite">
                   <q-tooltip content-class="bg-primary" anchor="top middle" self="bottom middle" :offset="[10, 10]">
                     Examples of Grew search and replacement statements
                   </q-tooltip>
@@ -45,32 +44,18 @@
               <q-separator />
 
               <q-tab-panels v-model="searchreplacetab" animated class="shadow-2">
-                <q-tab-panel name="search">
+                <q-tab-panel name="SEARCH">
                   <q-tabs v-model="searchquerytab" dense no-caps vertical switch-indicator class="bg-grey-2 primary" indicator-color="primary">
-                    <template v-for="query in queries" :key="query.name">
-                      <q-tab
-                        v-if="query.commands === ''"
-                        v-ripple
-                        :name="query.name"
-                        :label="query.name"
-                        clickable
-                        @click="changeSearchPattern(query.pattern, query.commands)"
-                      />
+                    <template v-for="query in searchQueries" :key="query.name">
+                      <q-tab v-ripple :name="query.name" :label="query.name" clickable @click="changeQuery(query.pattern, 'SEARCH')" />
                     </template>
                   </q-tabs>
                 </q-tab-panel>
 
-                <q-tab-panel name="replace">
+                <q-tab-panel name="REWRITE">
                   <q-tabs v-model="searchquerytab" dense no-caps vertical switch-indicator class="bg-grey-2 primary" indicator-color="primary">
-                    <template v-for="query in queries" :key="query.name">
-                      <q-tab
-                        v-if="query.commands !== ''"
-                        v-ripple
-                        :name="query.name"
-                        :label="query.name"
-                        clickable
-                        @click="changeSearchPattern(query.pattern, query.commands)"
-                      />
+                    <template v-for="query in rewriteQueries" :key="query.name">
+                      <q-tab v-ripple :name="query.name" :label="query.name" clickable @click="changeQuery(query.pattern, 'REWRITE')" />
                     </template>
                   </q-tabs>
                 </q-tab-panel>
@@ -102,6 +87,22 @@ CodeMirror2.defineMode('grew', () => {
     commands: 'builtin',
     without: 'builtin',
   };
+  function tokenString(stream: any, state: any) {
+    let next;
+    let end = false;
+    let escaped = false;
+    while ((next = stream.next()) !== null) {
+      if (next === '"' && !escaped) {
+        end = true;
+        break;
+      }
+      escaped = !escaped && next === '\\';
+    }
+    if (end && !escaped) {
+      state.tokenize = tokenBase;
+    }
+    return 'string';
+  }
   function tokenBase(stream: any, state: any) {
     const ch = stream.next();
     if (ch === '"') {
@@ -145,22 +146,7 @@ CodeMirror2.defineMode('grew', () => {
     const cur = stream.current() as 'global' | 'pattern' | 'commands' | 'without';
     return words[cur] || 'variable';
   }
-  function tokenString(stream: any, state: any) {
-    let next;
-    let end = false;
-    let escaped = false;
-    while ((next = stream.next()) !== null) {
-      if (next === '"' && !escaped) {
-        end = true;
-        break;
-      }
-      escaped = !escaped && next === '\\';
-    }
-    if (end && !escaped) {
-      state.tokenize = tokenBase;
-    }
-    return 'string';
-  }
+
   return {
     startState() {
       return { tokenize: tokenBase, commentLevel: 0 };
@@ -178,11 +164,12 @@ export default defineComponent({
   components: { Codemirror },
   props: ['parentOnSearch', 'parentOnTryRules', 'grewquery'],
   data() {
+    const currentQueryType: 'SEARCH' | 'REWRITE' = grewTemplates.searchQueries[0].type as 'SEARCH' | 'REWRITE';
     return {
-      searchreplacetab: 'search',
-      searchquerytab: grewTemplates[0].name,
-      searchPattern: `% Search for a given word form
-pattern { N [form="Form_to_search"] }`,
+      searchreplacetab: grewTemplates.searchQueries[0].type,
+      searchquerytab: grewTemplates.searchQueries[0].type,
+      currentQuery: grewTemplates.searchQueries[0].pattern,
+      currentQueryType,
       rewriteCommands: '',
       cmOption: {
         tabSize: 4,
@@ -193,7 +180,8 @@ pattern { N [form="Form_to_search"] }`,
         mode: 'grew',
         theme: this.$q.dark.isActive ? 'material-darker' : 'default',
       },
-      queries: grewTemplates,
+      searchQueries: grewTemplates.searchQueries,
+      rewriteQueries: grewTemplates.rewriteQueries,
       grewlink: '',
     };
   },
@@ -207,7 +195,7 @@ pattern { N [form="Form_to_search"] }`,
     }
 
     if (this.lastGrewQuery !== '') {
-      this.searchPattern = this.lastGrewQuery;
+      this.currentQuery = this.lastGrewQuery;
     }
     if (this.lastGrewCommand !== '') {
       this.rewriteCommands = this.lastGrewCommand;
@@ -222,31 +210,29 @@ pattern { N [form="Form_to_search"] }`,
      * @returns void
      */
     onSearch() {
-      this.parentOnSearch(this.searchPattern);
-      this.change_last_grew_query(this.searchPattern);
+      this.parentOnSearch(this.currentQuery);
+      this.change_last_grew_query(this.currentQuery);
       this.change_last_grew_command(this.rewriteCommands);
-      this.$storage.setStorageSync('grewHistory', this.searchPattern);
+      this.$storage.setStorageSync('grewHistory', this.currentQuery);
     },
     /**
      * Call parent onsearch function and update store and history
      *
      * @returns void
      */
-    tryRules() {
-      console.log('tryRules()', this.queries[6].pattern);
-      console.log('this.queries = ', this.queries);
-      this.parentOnTryRules(this.queries[6].pattern, this.queries[6].sampleIds);
-    },
+    // tryRules() {
+    //   this.parentOnTryRules(this.queries[6].pattern, this.queries[6].sampleIds);
+    // },
     /**
      * Modify the search pattern (search string)
      *
      * @param {string} pattern
      * @returns void
      */
-    changeSearchPattern(pattern: string, rewriteCommands = '') {
-      this.searchPattern = pattern;
-      console.log(this.searchPattern);
-      this.rewriteCommands = rewriteCommands;
+    changeQuery(query: string, type: 'SEARCH' | 'REWRITE') {
+      this.currentQuery = query;
+      this.currentQueryType = type;
+      console.log(this.currentQuery);
     },
 
     /**
@@ -255,7 +241,7 @@ pattern { N [form="Form_to_search"] }`,
      * @returns void
      */
     onResetSearch() {
-      this.searchPattern = '';
+      this.currentQuery = '';
       this.rewriteCommands = '';
     },
     /**
@@ -264,7 +250,7 @@ pattern { N [form="Form_to_search"] }`,
      * @returns void
      */
     getgrewlink() {
-      const z = this.zip(this.searchPattern);
+      const z = this.zip(this.currentQuery);
       this.grewlink = `${window.location.href.split(`/projects/${this.$route.params.projectname}`)[0]}/projects/${this.$route.params.projectname}${
         this.$route.params.samplename ? `/${this.$route.params.samplename}` : ''
       }?q=${z}`;
@@ -280,10 +266,10 @@ pattern { N [form="Form_to_search"] }`,
      */
     checkgrewquery() {
       if (this.grewquery.length > 0) {
-        if (this.queries.filter((c) => c.name === 'custom query').length === 0) {
+        if (this.searchQueries.filter((c) => c.name === 'custom query').length === 0) {
           let customquery = this.unzip(this.grewquery);
           // this.queries.unshift({ name: 'custom query', pattern: customquery }); //FIXME
-          this.changeSearchPattern(customquery);
+          this.changeQuery(customquery, this.currentQueryType);
           this.onSearch(); // autostart the query?
         }
       }

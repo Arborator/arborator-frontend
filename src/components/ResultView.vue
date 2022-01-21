@@ -18,31 +18,33 @@
         </q-bar> -->
     <q-card-section>
       <div v-show="!loading" class="q-pa-md row q-gutter-md">
-        <q-virtual-scroll
-          :items="samplesFrozen.list"
-          style="height: 80vh; width: 90vw"
-          :virtual-scroll-slice-size="5"
-          :virtual-scroll-item-size="200"
-          type="freezeSamples"
-        >
-          <template #default="{ item, index }">
-            <tr :key="index">
-              <td>
-                <q-toggle v-model="samplesFrozen.selected[index]" checked-icon="check" unchecked-icon="clear" />
-              </td>
-              <td>
-                <sentence-card
-                  :id="item[1]"
-                  :key="index"
-                  :sentence="searchresults[item[0]][item[1]]"
-                  :index="index"
-                  :sentence-id="item[1]"
-                  search-result="searchResult"
-                ></sentence-card>
-              </td>
-            </tr>
-          </template>
-        </q-virtual-scroll>
+        <div v-if="samplesFrozen.list.length > 0">
+          <q-virtual-scroll
+            :items="samplesFrozen.list"
+            style="height: 80vh; width: 90vw"
+            :virtual-scroll-slice-size="5"
+            :virtual-scroll-item-size="200"
+            type="list"
+          >
+            <template #default="{ item, index }">
+              <tr :key="index">
+                <td>
+                  <q-toggle v-model="samplesFrozen.selected[index]" checked-icon="check" unchecked-icon="clear" />
+                </td>
+                <td>
+                  <sentence-card
+                    :id="item[1]"
+                    :key="index"
+                    :sentence="searchresults[item[0]][item[1]]"
+                    :index="index"
+                    :sentence-id="item[1]"
+                    search-result="searchResult"
+                  ></sentence-card>
+                </td>
+              </tr>
+            </template>
+          </q-virtual-scroll>
+        </div>
       </div>
       <div v-show="loading" class="q-pa-md row justify-center">
         <div class="col">

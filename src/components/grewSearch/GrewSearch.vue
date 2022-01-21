@@ -9,13 +9,7 @@
       <GrewRequestCard :parent-on-search="onSearch" :parent-on-try-rules="onTryRules" :grewquery="$route.query.q || ''"></GrewRequestCard>
     </q-dialog>
     <q-dialog v-model="resultSearchDialog" transition-show="fade" transition-hide="fade">
-      <ResultView
-        :searchresults="resultSearch"
-        :totalsents="sentenceCount"
-        :rules-grew="rulesGrew"
-        searchscope="sample"
-        :parent-on-show-table="onShowTable"
-      ></ResultView>
+      <ResultView :searchresults="resultSearch" :totalsents="sentenceCount" searchscope="sample" :parent-on-show-table="onShowTable"></ResultView>
     </q-dialog>
   </div>
 </template>
@@ -62,18 +56,6 @@ export default defineComponent({
     this.grewDialog = this.showTable;
   },
   methods: {
-    // getRelationTable(type) {
-    //   var data = { table_type: type };
-    //   api
-    //     .getRelationTable(this.$route.params.projectname, data)
-    //     .then((response) => {
-    //       this.relationTableInfos = response.data;
-    //       this.relationTableDial = true;
-    //     })
-    //     .catch((error) => {
-    //       this.$store.dispatch("notifyError", { error: error });
-    //     });
-    // },
     onShowTable(resultSearchDialog: any) {
       this.resultSearchDialog = resultSearchDialog;
       this.grewDialog = false;

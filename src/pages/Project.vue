@@ -819,7 +819,7 @@ export default defineComponent({
       this.tableKey += 1;
     },
     /*
-    KK : New method that add/remove annotator/validator to a sample
+    Kirian : New method that add/remove annotator/validator to a sample
     */
     modifyRole(slug: { value: string }, context: sample_t, role: sample_role_targetrole_t, action: sample_role_action_t) {
       api

@@ -71,6 +71,12 @@ export default defineComponent({
       type: Object as PropType<{ [key: string]: boolean }>,
       required: true,
     },
+    matches: {
+      default: () => {
+        return [];
+      },
+      type: Array as PropType<string[]>,
+    },
   },
   data() {
     const sentenceSVG: SentenceSVG = null as unknown as SentenceSVG; // trick to not have to initialize an empty SentenceSVG
@@ -111,6 +117,10 @@ export default defineComponent({
     sentenceSVGOptions.interactive = true;
     if (this.isStudent === true && this.treeUserId === this.TEACHER) {
       sentenceSVGOptions.interactive = false;
+    }
+
+    if (this.matches.length > 0) {
+      sentenceSVGOptions.matches = JSON.parse(JSON.stringify(this.matches));
     }
     const svgWrapper = this.$refs.svgWrapper as SVGElement;
     this.sentenceSVG = new SentenceSVG(svgWrapper, this.reactiveSentence, sentenceSVGOptions);

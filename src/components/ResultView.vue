@@ -32,14 +32,14 @@
                   <q-toggle v-model="samplesFrozen.selected[index]" checked-icon="check" unchecked-icon="clear" />
                 </td>
                 <td>
-                  <sentence-card
+                  <SentenceCard
                     :id="item[1]"
                     :key="index"
                     :sentence="searchresults[item[0]][item[1]]"
                     :index="index"
                     :sentence-id="item[1]"
-                    search-result="searchResult"
-                  ></sentence-card>
+                    :matches="searchresults[item[0]][item[1]]"
+                  ></SentenceCard>
                 </td>
               </tr>
             </template>
@@ -63,18 +63,14 @@ import api from '../api/backend-api';
 import SentenceCard from './sentence/SentenceCard.vue';
 import { PropType, defineComponent } from 'vue';
 import notifyError from 'src/utils/notify';
-import { sample_t } from 'src/api/backend-types';
-
-interface searchresults_t {
-  [key: string]: { [key: string]: { sample_name: string } };
-}
+import { grewSearchResult_t, sample_t } from 'src/api/backend-types';
 
 export default defineComponent({
   components: { SentenceCard },
   // props: ['searchresults', 'totalsents', 'searchscope', 'parentOnShowTable'],
   props: {
     searchresults: {
-      type: Object as PropType<searchresults_t>,
+      type: Object as PropType<grewSearchResult_t>,
       required: true,
     },
     totalsents: {
@@ -92,7 +88,7 @@ export default defineComponent({
   },
 
   data() {
-    const searchresultsCopy: searchresults_t = {};
+    const searchresultsCopy: grewSearchResult_t = {};
     const samples: sample_t[] = [];
     const samplesFrozen: {
       list: string[][];

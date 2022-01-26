@@ -11,6 +11,7 @@ import {
   getUsers_RV,
   logout_RV,
   modifySampleRole_RV,
+  grewSearch_RV,
   updateManyProjectUserAccess_ED,
   updateManyProjectUserAccess_RV,
   updateProjectConlluSchema_ED,
@@ -140,10 +141,10 @@ export default {
     return API.post(`projects/V2/${projectname}/lexicon`, data);
   },
   searchProject(projectname: string, query: any) {
-    return API.post(`projects/${projectname}/search`, query);
+    return API.post<grewSearch_RV>(`projects/${projectname}/search`, query);
   },
   searchSample(projectname: string, samplename: string, query: any) {
-    return API.post(`projects/${projectname}/sample/${samplename}/search`, query);
+    return API.post<grewSearch_RV>(`projects/${projectname}/sample/${samplename}/search`, query);
   },
   tryRuleProject(projectname: string, query: any) {
     return API.post(`projects/${projectname}/try-rule`, query);

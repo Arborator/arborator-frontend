@@ -98,10 +98,30 @@ export interface sample_t {
 export type sample_role_targetrole_t = 'annotator' | 'validator';
 export type sample_role_action_t = 'add' | 'remove';
 
-////////// KLANG /////
+//// GREW
+export interface matche_t {
+  edges: { [key: string]: string };
+  nodes: { [key: string]: string };
+}
+export type conlls_t = { [userId: string]: string };
+export type matches_t = { [userId: string]: matche_t[] };
+
+export interface grewSearchResultSentence_t {
+  sentence: string;
+  conlls: conlls_t;
+  matches: matches_t;
+  sample_name?: string;
+}
+export interface grewSearchResultSample_t {
+  [sentenceId: string]: grewSearchResultSentence_t;
+}
+export interface grewSearchResult_t {
+  [sampleId: string]: grewSearchResultSample_t;
+}
+export ////////// KLANG /////
 
 //// PROJECT ////
-export interface KlangProject_t {
+interface KlangProject_t {
   name: string;
   nrSamples: number;
   config: { private: boolean };

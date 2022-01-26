@@ -167,6 +167,7 @@
                 :tree-user-id="user"
                 :conll-saved-counter="conllSavedCounter"
                 :has-pending-changes="hasPendingChanges"
+                :matches="sentence.matches[user] ? sentence.matches[user].map((match) => Object.values(match.nodes)).flat() : []"
                 @statusChanged="handleStatusChange"
               ></VueDepTree>
             </q-card-section>
@@ -215,6 +216,7 @@ import { useProjectStore } from 'src/pinia/modules/project';
 import notifyError from 'src/utils/notify';
 import { useUserStore } from 'src/pinia/modules/user';
 import { useGrewSearchStore } from 'src/pinia/modules/grewSearch';
+import { PropType } from 'vue';
 
 function sentenceBusFactory(): sentence_bus_t {
   let sentenceBus: Emitter<sentence_bus_events_t> = mitt<sentence_bus_events_t>();
@@ -223,6 +225,7 @@ function sentenceBusFactory(): sentence_bus_t {
 }
 
 import { defineComponent } from 'vue';
+import { grewSearchResultSentence_t } from 'src/api/backend-types';
 
 export default defineComponent({
   name: 'SentenceCard',
@@ -238,7 +241,30 @@ export default defineComponent({
     StatisticsDialog,
     MultiEditDialog,
   },
-  props: ['index', 'sentence', 'sentenceId', 'searchResult', 'exerciseLevel'],
+  props: {
+    index: {
+      type: Number as PropType<number>,
+      required: true,
+    },
+    sentenceId: {
+      type: String as PropType<string>,
+      required: true,
+    },
+    exerciseLevel: {
+      type: Number as PropType<number>,
+      required: true,
+    },
+    sentence: {
+      type: Object as PropType<grewSearchResultSentence_t>,
+      required: true,
+    },
+    matches: {
+      default: () => {
+        return [];
+      },
+      type: Array as PropType<string[]>,
+    },
+  },
   data() {
     const hasPendingChanges: { [key: string]: boolean } = {};
     const reactiveSentencesObj: reactive_sentences_obj_t = {};
@@ -488,8 +514,11 @@ export default defineComponent({
         conll: exportedConll,
         user_id: changedConllUser,
       };
+      if (!this.sentence.sample_name) {
+        return;
+      }
       api
-        .updateTree(this.$route.params.projectname as string, this.$props.sentence.sample_name, data)
+        .updateTree(this.$route.params.projectname as string, this.sentence.sample_name, data)
         .then((response) => {
           if (response.status === 200) {
             this.sentenceBus.emit('action:saved', {

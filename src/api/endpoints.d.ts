@@ -12,6 +12,7 @@ import {
   shownmeta,
   user_t,
   timed_tokens_t,
+  grewSearchResult_t as grewSearchResult_t,
 } from './backend-types';
 
 export interface logout_RV {
@@ -77,6 +78,9 @@ export interface updateTree_ED {
   user_id: string;
   conll: string;
 }
+
+//// GREW
+export type grewSearch_RV = grewSearchResult_t;
 
 /////////////// KLANG //////////:
 export interface getOriginalTranscription_RV {

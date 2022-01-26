@@ -80,6 +80,7 @@ module.exports = {
     'no-unused-vars': 'off',
     '@typescript-eslint/no-unused-vars': ['error'],
     'vue/no-mutating-props': ['warn'],
+    "vue/no-v-html": 'off',
     // 'prettier/prettier': ['error'],
     // 'no-param-reassign': 'off',
     // 'no-void': 'off',

@@ -22,6 +22,7 @@ import { useGrewSearchStore } from 'src/pinia/modules/grewSearch';
 import { mapWritableState } from 'pinia';
 import notifyError from 'src/utils/notify';
 import { defineComponent } from 'vue';
+import { grewSearchResult_t } from 'src/api/backend-types';
 
 export default defineComponent({
   components: {
@@ -30,9 +31,10 @@ export default defineComponent({
   },
   props: ['sentenceCount', 'sampleId', 'showTable'],
   data() {
+    const resultSearch: grewSearchResult_t = {};
     return {
       resultSearchDialog: false,
-      resultSearch: {},
+      resultSearch,
       rulesGrew: {},
       window: { width: 0, height: 0 },
     };

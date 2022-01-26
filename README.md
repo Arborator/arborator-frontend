@@ -1,5 +1,11 @@
 # arborator (arborator-frontend)
 
+## Wiki (work in progress)
+
+Arborator-Grew's wiki is available here: https://github.com/Arborator/arborator-frontend/wiki
+
+This wiki will contain the full User Guide, which is currently a work-in-progress.
+
 ## Migration to quasar v2 (vue3)
 
 ### Installation

@@ -17,6 +17,12 @@ export default {
   navsettings: 'Settings',
   navklang: 'Klang',
 
+  // confirm action dialog
+  confirmAction: {
+    title: 'Are you sure?',
+    message: 'You are about to perform an irrevocable action. Do you really want to proceed?'
+  },
+
   // first page (the index)
   homepage: {
     accessTreebankBtn: 'Access Treebanks',
@@ -100,6 +106,7 @@ export default {
   projectHub: {
     tooltipCreaProject: 'Create a new project',
     tooltipChangeView: 'Change view',
+    tooltipRightClickDelete: 'Right click to delete',
     title: 'Projects',
     sample: 'sample',
     samples: 'samples',

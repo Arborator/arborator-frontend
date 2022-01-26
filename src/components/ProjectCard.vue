@@ -8,6 +8,9 @@
     @mouseleave="hover = false"
     @click="goTo()"
   >
+    <q-tooltip class="bg-purple text-body2" anchor="top middle" :offset="[10, 10]" :delay="100">
+      {{ $t('projectHub.tooltipRightClickDelete') }}
+    </q-tooltip>
     <q-popup-proxy v-if="canSeeSettings" transition-show="flip-up" transition-hide="flip-down" context-menu>
       <q-card>
         <q-card-section>
@@ -58,7 +61,7 @@
     </q-card-section>
 
     <q-dialog v-model="confirmActionDial">
-      <ConfirmAction :parent-action="confirmActionCallback" :arg1="confirmActionArg1"></ConfirmAction>
+      <ConfirmAction :parent-action="confirmActionCallback" :arg1="confirmActionArg1" :targetName="project.project_name"></ConfirmAction>
     </q-dialog>
   </q-card>
 </template>

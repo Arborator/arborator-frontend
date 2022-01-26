@@ -250,10 +250,8 @@ export default defineComponent({
       api
         .getProjects()
         .then((response) => {
-          console.log('here', response.data);
           this.projects = response.data as project_extended_t[];
           this.visibleProjects = response.data as project_extended_t[];
-          console.log('visible projects', this.visibleProjects)
           this.sortProjects();
           // this.projectDifference = response.data.difference;
           this.loadingProjects = false;

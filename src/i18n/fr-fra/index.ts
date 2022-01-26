@@ -13,6 +13,12 @@ export default {
   fullscreen: 'Plein écran',
   navprojects: 'Projets',
   navsettings: 'Paramètres',
+  
+  // confirm action dialog
+  confirmAction: {
+    title: 'En êtes-vous certain?',
+    message: 'Vous êtes sur le point de faire une action irrémédiable. Voulez-vous vraiment continuer?'
+  },
 
   // first page (the index)
   homepage: {
@@ -97,6 +103,7 @@ export default {
   projectHub: {
     tooltipCreaProject: 'Créer un nouveau projet',
     tooltipChangeView: "Changer l'affichage",
+    tooltipRightClickDelete: 'Clic droit pour supprimer',
     title: 'Projets',
     sample: 'échantillon',
     samples: 'échantillons',

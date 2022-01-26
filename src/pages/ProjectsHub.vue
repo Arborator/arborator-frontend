@@ -75,7 +75,7 @@
               <q-chip color="primary" class="category" text-color="white"> {{ $t('projectHub.myProjects') }} </q-chip>
             </div>
             <ProjectCard
-              v-for="project in myProjects"
+              v-for="project in myProjects()"
               :key="project.id"
               style="max-width: 270px"
               :props="project"
@@ -250,9 +250,10 @@ export default defineComponent({
       api
         .getProjects()
         .then((response) => {
-          // console.log('here', response.data);
+          console.log('here', response.data);
           this.projects = response.data as project_extended_t[];
           this.visibleProjects = response.data as project_extended_t[];
+          console.log('visible projects', this.visibleProjects)
           this.sortProjects();
           // this.projectDifference = response.data.difference;
           this.loadingProjects = false;

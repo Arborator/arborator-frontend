@@ -1,4 +1,5 @@
-import { API } from './axios-api';
+import axios from 'axios';
+
 import {
   createProject_ED,
   getOriginalTranscription_RV,
@@ -22,6 +23,14 @@ import {
   whoIAm_RV,
 } from './endpoints';
 import { sample_role_action_t, sample_role_targetrole_t, transcription_t } from './backend-types';
+
+export const API = axios.create({
+  // baseURL: 'https://arboratorgrew.elizia.net/api',
+  // baseURL: `/api`,
+  baseURL: process.env.DEV ? '/api' : `${process.env.API}/api`,
+  timeout: 50000,
+  withCredentials: true,
+});
 
 export default {
   // -------------------------------------------------- //

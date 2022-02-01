@@ -156,7 +156,7 @@
           <div :class="(viewAllTranscriptions ? 'col-2' : 'col-6') + '  q-pa-none'">
             <q-badge> original </q-badge>
             <br />
-            <q-btn color="primary" size="xs" round icon="visibility" @click="openSentenceDlg('original', false)">
+            <q-btn color="primary" size="xs" round icon="visibility" @click="openSentenceDlg('original')">
               <q-tooltip> See sentence segmentation </q-tooltip>
             </q-btn>
             <q-btn color="primary" size="xs" round icon="east" @click="moveAllToInputField('original')">
@@ -177,13 +177,7 @@
             </template>
 
             <br />
-            <q-btn
-              color="secondary"
-              size="xs"
-              round
-              icon="visibility"
-              @click="openSentenceDlg(viewAllTranscriptions ? 'new proposal' : username, true)"
-            >
+            <q-btn color="secondary" size="xs" round icon="visibility" @click="openSentenceDlg('new proposal')">
               <q-tooltip> See sentence segmentation </q-tooltip>
             </q-btn>
           </div>
@@ -195,7 +189,7 @@
               >
                 <q-badge> {{ viewAllTranscriptions || wasSaved ? username : 'original' }} </q-badge>
                 <br />
-                <q-btn color="primary" size="xs" round icon="visibility" @click="openSentenceDlg(username, false)">
+                <q-btn color="primary" size="xs" round icon="visibility" @click="openSentenceDlg(username)">
                   <q-tooltip> See sentence segmentation </q-tooltip>
                 </q-btn>
                 <q-btn color="primary" size="xs" round icon="west" @click="moveAllToInputField(username)">
@@ -300,7 +294,16 @@
           </q-card-section>
 
           <q-card-actions align="right">
-            <q-btn v-close-popup label="Export" color="primary" text-color="white" @click="exportConll()"></q-btn>
+            <q-btn v-close-popup no-caps label="Export complete table" color="primary" text-color="white" @click="exportTextTable()"></q-btn>
+            <q-btn
+              v-close-popup
+              no-caps
+              :disable="selectedUsers.length == 0"
+              label="Export CoNLL"
+              color="primary"
+              text-color="white"
+              @click="exportConll()"
+            ></q-btn>
             <q-btn v-close-popup label="Cancel" color="primary" text-color="white"> </q-btn>
             <q-toggle v-model="newsentsplit" label="new sentence split" />
           </q-card-actions>
@@ -334,6 +337,24 @@
         </div>
 
         <q-card-actions align="right">
+          <q-chip dense>
+            <q-avatar color="primary" text-color="white">{{ totTokens }}</q-avatar>
+            tokens
+          </q-chip>
+          <q-chip v-if="totNewTokens != totTokens" dense outline>
+            <q-avatar color="primary" text-color="white">{{ totNewTokens }}</q-avatar>
+            retokenized
+          </q-chip>
+          <q-chip dense>
+            <q-avatar color="secondary" text-color="white">{{ totWords }}</q-avatar>
+            words
+          </q-chip>
+          <q-chip v-if="totNewWords != totWords" dense outline>
+            <q-avatar color="secondary" text-color="white">{{ totNewWords }}</q-avatar>
+            retokenized words
+          </q-chip>
+
+          <q-space />
           <q-btn v-close-popup label="OK" color="primary" text-color="white"> </q-btn>
         </q-card-actions>
       </q-card>
@@ -360,7 +381,10 @@ interface transcriptions_t {
 interface sentence_line_t {
   number: number;
   speaker: number | string;
-  length: number;
+  nrTokens: number;
+  nrNewTokens: number;
+  nrWords: number;
+  nrNewWords: number;
   sentence: string;
 }
 
@@ -372,6 +396,7 @@ export default defineComponent({
   props: ['kprojectname', 'ksamplename'],
   data() {
     const transcriptions: transcriptions_t = {};
+    // transcription is an object username -> {..., sound: "ok", story: "ok", ...[ [ "et", "du", "coup", … ],..., [...] ]
     const sound = '';
     const story = '';
     const accent = '';
@@ -387,6 +412,10 @@ export default defineComponent({
     return {
       timedTokens,
       sentences,
+      totTokens: 0,
+      totNewTokens: 0,
+      totWords: 0,
+      totNewWords: 0,
       segments,
       audioplayer: null,
       progcolor: 'black',
@@ -468,27 +497,30 @@ export default defineComponent({
     await this.getSampleData();
   },
   methods: {
+    singleLine2WordList(line: string, language: string | null = null) {
+      if (language === 'French') {
+        line = line.replace('’', "'");
+        line = line.replace(/-ce|-ci|-là|-je|-tu|-t-il|-il|-t-elle|-elle|-t-ils|-ils|-t-elles|-elles|-on/gi, ' $&');
+        line = line.replace(/[,;:!?./§()*]+/gi, ' $&');
+        line = line.replace(/['()]+/gi, '$& ');
+        line = line.replace(/"/gi, ' " ');
+        line = line.replace(/\s+/, ' ');
+        line = line.replace("aujourd' hui", "aujourd'hui");
+        line = line.replace("quelqu' un", "quelqu'un");
+      }
+      line.split(/\s+/);
+      let words = line.split(/\s+/);
+      words = words.filter((word) => word !== '');
+      if (words.length === 0) {
+        // TODO: check if this is necessary
+        words.push('');
+      }
+      return words;
+    },
     lines2WordList(lines: string[], language: string | null = null) {
       if (language == null) language = 'French';
       const wlines = lines.map((line) => {
-        if (language === 'French') {
-          line = line.replace('’', "'");
-          line = line.replace(/-ce|-ci|-là|-je|-tu|-t-il|-il|-t-elle|-elle|-t-ils|-ils|-t-elles|-elles|-on/gi, ' $&');
-          line = line.replace(/[,;:!?./§()*]+/gi, ' $&');
-          line = line.replace(/['()]+/gi, '$& ');
-          line = line.replace(/"/gi, ' " ');
-          line = line.replace(/\s+/, ' ');
-          line = line.replace("aujourd' hui", "aujourd'hui");
-          line = line.replace("quelqu' un", "quelqu'un");
-        }
-        line.split(/\s+/);
-        let words = line.split(/\s+/);
-        words = words.filter((word) => word !== '');
-        if (words.length === 0) {
-          // TODO: check if this is necessary
-          words.push('');
-        }
-        return words;
+        return this.singleLine2WordList(line, language);
       });
       return wlines;
     },
@@ -529,33 +561,32 @@ export default defineComponent({
       );
     },
 
-    openSentenceDlg(username: string, fromInput: boolean) {
-      if (fromInput) {
-        // this.transcriptions[username] = {};
-        //   const thisTranscription = this.transcriptions[username];
-        //   if (thisTranscription.source === 'user') {
-        //     thisTranscription.data.transcription = this.lines2WordList(this.mytrans); // , 'French'}
-        //   }
-      }
+    openSentenceDlg(username: string) {
       this.showSentenceUser = username;
       this.showSentencesDlg = true;
       const trans = this.makeTranscription(username, true) as string[][];
       this.sentences = trans.map((sent, i) => ({
         number: i + 1,
         speaker: sent[0][3],
-        length: sent.length,
+        nrTokens: sent.length,
+        nrNewTokens: this.singleLine2WordList(sent.map((q) => q[0]).join(' ')).length,
+        nrWords: sent.map((q) => q[0]).reduce((acc, t) => (this.isRealWord(t as string) ? (acc as number) + 1 : acc), 0),
+        nrNewWords: this.singleLine2WordList(sent.map((q) => q[0]).join(' '))
+          .map((q) => q[0])
+          .reduce((acc, t) => (this.isRealWord(t as string) ? (acc as number) + 1 : acc), 0),
         sentence: sent.map((q) => q[0]).join(' '),
       }));
-      if (fromInput) {
-        delete this.transcriptions.username;
-      }
+      this.totTokens = this.sentences.reduce((acc, t) => acc + t.nrTokens, 0) as number;
+      this.totNewTokens = this.sentences.reduce((acc, t) => acc + t.nrNewTokens, 0) as number;
+      this.totWords = this.sentences.reduce((acc, t) => acc + t.nrWords, 0) as number;
+      this.totNewWords = this.sentences.reduce((acc, t) => acc + t.nrNewWords, 0) as number;
     },
     getSentenceCellClass(props: { row: sentence_line_t }) {
       // for styling of the sentence table: too long sentences get colored in deep orange
       let cellclass = '';
       if (props.row.speaker === 'L1' || props.row.speaker === 0) cellclass += 'text-black';
       else cellclass = `${cellclass}text-teal-${8 - parseInt((props.row.speaker as string).slice(-1), 10)}`;
-      if (props.row.length > 22) cellclass += ` bg-deep-orange-${Math.min(14, Math.round((props.row.length - 20) / 5))}`;
+      if (props.row.nrTokens > 22) cellclass += ` bg-deep-orange-${Math.min(14, Math.round((props.row.nrTokens - 20) / 5))}`;
       return cellclass;
     },
 
@@ -633,102 +664,102 @@ export default defineComponent({
     setExportSampleName() {
       this.exportSampleName = this.camelize(this.title || this.ksamplename);
     },
-    makeTranscription(annotator: string, newsentsplit: boolean) {
-      // KK FIXME : This is probably broken after converting to typescript !!!
-
-      // from a list of lines, make quadruples: token, start, end, speaker
-      // if newsentsplit: redo sentences based on punctuation
-      const isOriginal = annotator === 'original';
-      const originalTranscription = this.deepCopy(this.timedTokens);
-      const lines = originalTranscription.length;
-      if (isOriginal) {
-        // we just have to add the speaker as 4th element
-        let line;
-        for (line = 0; line < lines; line += 1) {
-          const transLine = originalTranscription[line];
-          const transWords = transLine.length;
-          let word;
-          for (word = 0; word < transWords; word += 1) {
-            transLine[word].push(this.speakers[line] as any);
-          }
+    tokTrans2quadrupleTrans(newTrans: any[][], origTrans: any[][]) {
+      // takes a list of lists of tokens and adds start, end, and speaker information from the original transcription
+      var quadTrans: any[][] = [];
+      for (let line = 0; line < origTrans.length; line += 1) {
+        // looping over the original lines
+        const origLine = origTrans[line];
+        var transLine: (string | number)[][] = [];
+        const minMS = origLine[0][1];
+        const maxMS = origLine[origLine.length - 1][2];
+        const realWordsCount = newTrans[line].reduce((acc, t) => (this.isRealWord(t as string) ? (acc as number) + 1 : acc), 0) as number;
+        const msec = (parseInt(maxMS, 10) - parseInt(minMS, 10)) / realWordsCount;
+        let startMS = 0;
+        let endMS = 0;
+        for (let ti = 0; ti < newTrans[line].length; ti += 1) {
+          const isRealWord = this.isRealWord(newTrans[line][ti] as any);
+          if (isRealWord) endMS += msec;
+          transLine[ti] = [
+            newTrans[line][ti] as string,
+            Math.round(parseFloat(minMS) + startMS),
+            Math.round(parseFloat(minMS) + endMS),
+            this.speakers[line],
+          ];
+          if (isRealWord) startMS += msec;
         }
-      } else {
-        // we have to build the quadruples
-        let userTranscription = this.transcriptions[annotator].transcription;
-        let line;
+        quadTrans.push(transLine);
+      }
+      return quadTrans;
+    },
+    makeNewTranscription(transcription: any[][]) {
+      const flattranscription = transcription.reduce((accumulator, value) => accumulator.concat(value), []);
+      const newtranscription = [];
+      let newsent = [];
+      let bracksent = [];
+      let inBracket = false;
+      let inHm = false;
+      let lastspeaker = null;
+      for (let word = 0; word < flattranscription.length; word += 1) {
+        if (Object.prototype.hasOwnProperty.call(flattranscription, word)) {
+          let [w, b, e, s] = flattranscription[word];
+          const [nw, nb, ne, ns] = word + 1 < flattranscription.length ? flattranscription[word + 1] : [0, 0, 0, 0];
 
-        for (line = 0; line < lines; line += 1) {
-          let word;
-          const originalLine = originalTranscription[line];
-          const originalWords = originalLine.length;
-          const transLine = userTranscription[line] as unknown as (number | string[] | (number | string[])[])[]; // FIXME !!!! KK I put this because it's ducked type and transline is being modify some lines later
-          const transWords = transLine.length;
-          const minMS = originalLine[0][1];
-          const maxMS = originalLine[originalWords - 1][2];
-          const realWordsCount = transLine.reduce((acc, t) => (this.isRealWord(t as any) ? (acc as number) + 1 : acc), 0) as number;
-          const msec = (parseInt(maxMS, 10) - parseInt(minMS, 10)) / realWordsCount;
-          let startMS = 0;
-          let endMS = 0;
-          for (word = 0; word < transWords; word += 1) {
-            const isRealWord = this.isRealWord(transLine[word] as any);
-            if (isRealWord) endMS += msec;
-            transLine[word] = [
-              transLine[word] as any,
-              Math.round(parseFloat(minMS) + startMS),
-              Math.round(parseFloat(minMS) + endMS),
-              this.speakers[line],
-            ];
-            if (isRealWord) startMS += msec;
+          if (w === '...') w = '…';
+          if (w === '[') {
+            inBracket = true;
+            continue;
           }
+          if (w === ']') {
+            inBracket = false;
+            continue;
+          }
+          if (lastspeaker && s !== lastspeaker && newsent.length > 0) {
+            inHm = !inHm;
+          }
+
+          if (inBracket) bracksent.push([w, b, e, s === 'L1' ? 'L2' : 'L1']);
+          else if (inHm) bracksent.push([w, b, e, s]);
+          else newsent.push([w, b, e, s]);
+          if (this.isEndOfSent(w) && !inBracket && !inHm && !(nw === '"' && ns === s)) {
+            newtranscription.push(newsent);
+            newsent = [];
+            if (bracksent.length > 0) {
+              newtranscription.push(bracksent);
+              bracksent = [];
+            }
+          }
+          lastspeaker = s;
         }
       }
-      let userTranscription = this.transcriptions[annotator].transcription;
-
-      if (newsentsplit) {
-        const flattranscription = userTranscription.reduce((accumulator, value) => accumulator.concat(value), []);
-
-        const newtranscription = [];
-        let newsent = [];
-        let bracksent = [];
-        let inBracket = false;
-        let inHm = false;
-        let lastspeaker = null;
-        // for (const i in flattranscription) {
-        for (let word = 0; word < flattranscription.length; word += 1) {
-          if (Object.prototype.hasOwnProperty.call(flattranscription, word)) {
-            let [w, b, e, s] = flattranscription[word];
-            const [nw, nb, ne, ns] = word + 1 < flattranscription.length ? flattranscription[word + 1] : [0, 0, 0, 0];
-            console.log(nb, ne);
-            if (w === '...') w = '…';
-            if (w === '[') {
-              inBracket = true;
-              continue;
-            }
-            if (w === ']') {
-              inBracket = false;
-              continue;
-            }
-            if (lastspeaker && s !== lastspeaker && newsent.length > 0) {
-              inHm = !inHm;
-            }
-
-            if (inBracket) bracksent.push([w, b, e, s === 'L1' ? 'L2' : 'L1']);
-            else if (inHm) bracksent.push([w, b, e, s]);
-            else newsent.push([w, b, e, s]);
-            if (this.isEndOfSent(w) && !inBracket && !inHm && !(nw === '"' && ns === s)) {
-              newtranscription.push(newsent);
-              newsent = [];
-              if (bracksent.length > 0) {
-                newtranscription.push(bracksent);
-                bracksent = [];
-              }
-            }
-            lastspeaker = s;
+      if (bracksent.length > 0) newtranscription.push(bracksent);
+      if (newsent.length > 0) newtranscription.push(newsent);
+      // console.log(1111, 'newtranscription', newtranscription);
+      // console.log(1111, 'bracksent', bracksent);
+      // console.log(1111, 'newsent', newsent);
+      return newtranscription;
+      // transcription = newtranscription;
+    },
+    makeTranscription(annotator: string, newsentsplit: boolean) {
+      const originalTranscription = this.deepCopy(this.timedTokens);
+      const nrLines = originalTranscription.length;
+      var userTranscription: any[][] = [];
+      if (annotator == 'original') {
+        for (let line = 0; line < nrLines; line += 1) {
+          const transLine = originalTranscription[line];
+          var newLine = []; //(string | number)[];
+          for (let ti = 0; ti < transLine.length; ti += 1) {
+            newLine.push([...transLine[ti], this.speakers[line]]);
           }
+          userTranscription.push(newLine);
         }
-        if (newsent.length > 0) newtranscription.push(newsent);
-        return newtranscription;
-        // transcription = newtranscription;
+      } else if (annotator == 'new proposal') {
+        userTranscription = this.tokTrans2quadrupleTrans(this.lines2WordList(this.mytrans), originalTranscription);
+      } else {
+        userTranscription = this.tokTrans2quadrupleTrans(this.transcriptions[annotator].transcription, originalTranscription);
+      }
+      if (newsentsplit) {
+        return this.makeNewTranscription(userTranscription);
       }
       return userTranscription;
     },
@@ -769,11 +800,46 @@ export default defineComponent({
           notifyError({ error });
         });
     },
+    exportTextTable() {
+      const fileName = `${this.ksamplename}_${this.exportSampleName}.tsv`;
+      var lines = [];
+      lines.push(['original', ...Object.keys(this.transcriptions).filter((user) => this.transcriptions[user].transcription.length > 0)].join('\t'));
+
+      var transs = Object.keys(this.transcriptions)
+        .map((user) => this.transcriptions[user].transcription)
+        .filter((trans) => trans.length > 0)
+        .map((trans) =>
+          trans.map((t) =>
+            t
+              .join(' ')
+              .replace(/\s+/gm, ' ')
+              .replace(/(^ +| +$)/gm, '')
+          )
+        );
+      for (var i = 0; i < transs[0].length; i++) {
+        lines.push([this.segments.original[i], ...transs.map((row) => row[i])].join('\t'));
+      }
+      const status = exportFile(fileName, lines.join('\n'));
+      if (status) {
+        this.$q.notify({
+          message: 'Exported transcription tsv successfully.',
+          position: 'top-right',
+          color: 'green',
+          icon: 'done',
+        });
+      } else {
+        notifyError({
+          error: 'Browser denied file download...',
+        });
+      }
+    },
 
     isRealWord(word: string) {
+      // console.log(1111, word, typeof word);
       return word.match(/\w+/);
     },
     isEndOfSent(word: string) {
+      // console.log(7777, word, typeof word);
       return word.match(/[.!?…]/);
     },
     camelize(text: string) {

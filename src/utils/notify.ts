@@ -1,10 +1,23 @@
 import { Notify } from 'quasar';
 import { i18n } from 'src/boot/i18n';
 
-export default function notifyError({ error, timeout }: { error: any; timeout?: number }) {
+interface ArboratorGrewError_t {
+  error: any;
+  timeout: number; // in milliseconds
+  message: string;
+}
+
+export default function notifyError(ArboratorGrewError: ArboratorGrewError_t) {
+  console.log('ArboratorGrewError : ', ArboratorGrewError);
   let msg;
   let caption = '';
-  if (error.message !== undefined) {
+
+  const error = ArboratorGrewError.error;
+  const timeout = ArboratorGrewError.timeout;
+  const message = ArboratorGrewError.message;
+  if (message !== undefined) {
+    msg = message;
+  } else if (error.message !== undefined) {
     msg = error.message;
   } else if (error.response) {
     if (error.response.status === 403) {

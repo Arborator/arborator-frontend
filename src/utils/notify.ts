@@ -15,9 +15,8 @@ export default function notifyError(ArboratorGrewError: ArboratorGrewError_t) {
   const error = ArboratorGrewError.error;
   let timeout = ArboratorGrewError.timeout;
   const message = ArboratorGrewError.message;
-  if (message !== undefined) {
-    msg = message;
-  } else if (error !== undefined) {
+  console.log('Error message', message);
+  if (error !== undefined) {
     if (error.message !== undefined) {
       msg = error.message;
     } else if (error.response) {

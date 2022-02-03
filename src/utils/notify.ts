@@ -21,6 +21,9 @@ export default function notifyError(ArboratorGrewError: ArboratorGrewError_t) {
     if (error.message !== undefined) {
       msg = error.message;
     } else if (error.response) {
+      console.log('Error error.response.status', error.response.status);
+      console.log('Error error.response.message', error.response.message);
+      console.log('Error error.response.data.message', error.response.data.message);
       if (error.response.status === 403) {
         msg = error.response.message ? error.response.message : i18n.global.t('error403');
       } else if (error.response.status === 401) {

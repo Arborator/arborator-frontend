@@ -2,7 +2,7 @@ import { Notify } from 'quasar';
 import { i18n } from 'src/boot/i18n';
 
 interface ArboratorGrewError_t {
-  error: any;
+  error?: any;
   timeout?: number; // in milliseconds
   message?: string;
 }
@@ -17,18 +17,24 @@ export default function notifyError(ArboratorGrewError: ArboratorGrewError_t) {
   const message = ArboratorGrewError.message;
   if (message !== undefined) {
     msg = message;
-  } else if (error.message !== undefined) {
-    msg = error.message;
-  } else if (error.response) {
-    if (error.response.status === 403) {
-      msg = error.response.message ? error.response.message : i18n.global.t('error403');
-    } else if (error.response.status === 401) {
-      msg = error.response.message ? error.response.message : i18n.global.t('error401');
-    } else {
-      msg = error.response.message ? error.response.message : `${error.response.statusText} error ${error.response.status}`;
+  } else if (error !== undefined) {
+    if (error.message !== undefined) {
+      msg = error.message;
+    } else if (error.response) {
+      if (error.response.status === 403) {
+        msg = error.response.message ? error.response.message : i18n.global.t('error403');
+      } else if (error.response.status === 401) {
+        msg = error.response.message ? error.response.message : i18n.global.t('error401');
+      } else if (error.response.status === 406) {
+        // 406 is the errors for grew
+        const grewErrorMessage = error.response.data.message || 'Unknown error, please contact the administrators';
+        msg = `Grew internal error : ${grewErrorMessage}`;
+      } else {
+        msg = error.response.message ? error.response.message : `${error.response.statusText} error ${error.response.status}`;
+      }
     }
   } else {
-    msg = `oops${error}`;
+    msg = `Oops, an unexpected error occured, please contact the administrators`;
   }
   if (error.caption) {
     caption = error.caption;

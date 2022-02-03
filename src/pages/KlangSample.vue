@@ -74,7 +74,7 @@
 
         <div v-if="isLoggedIn" :class="(viewAllTranscriptions ? 'col-3' : 'col-6') + ' q-pa-none'">
           <q-input v-if="speakers[i] && speakers[i] == 'L1'" v-model="mytrans[i]" style="background-color: #27693031" dense filled square> </q-input>
-          <q-input v-if="speakers[i] && speakers[i] != 'L1'" v-model="mytrans[i]" style="background-color: #4a276954" dense filled square> </q-input>
+          <q-input v-else v-model="mytrans[i]" style="background-color: #4a276954" dense filled square> </q-input>
         </div>
 
         <!-- ADMIN TABLE : OTHER ANNOTATORS: -->
@@ -606,7 +606,9 @@ export default defineComponent({
         this.segments[annotator] = this.transcriptions[annotator].transcription.map((sent) => sent.reduce((acc, t) => `${acc + t} `, ''));
       }
       this.users.push({ label: annotator, value: annotator });
-      if (!this.viewAllTranscriptions) this.wasSaved = false;
+      if (!this.viewAllTranscriptions) {
+        this.wasSaved = false;
+      }
 
       // Nasty debugging for the bug that inserts empty list in transcriptions
       if (this.segments[annotator].length !== this.segments.original.length) {

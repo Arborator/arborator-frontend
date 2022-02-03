@@ -7,7 +7,7 @@
           <span class="line-number" dense> {{ i + 1 }} </span>
           <q-badge v-if="speakers[i] && speakers[i] == 'L1'" :label="speakers[i]" dense outline style="height: 3px" color="primary" rounded />
           <q-badge
-            v-if="speakers[i] && speakers[i] != 'L1'"
+            v-if="speakers[i] && speakers[i] != 'L1' && speakers[i] != 'L0'"
             :label="speakers[i]"
             dense
             outline
@@ -73,8 +73,24 @@
         </div>
 
         <div v-if="isLoggedIn" :class="(viewAllTranscriptions ? 'col-3' : 'col-6') + ' q-pa-none'">
-          <q-input v-if="speakers[i] && speakers[i] == 'L1'" v-model="mytrans[i]" style="background-color: #27693031" dense filled square> </q-input>
-          <q-input v-else v-model="mytrans[i]" style="background-color: #4a276954" dense filled square> </q-input>
+          <q-input
+            v-if="speakers[i] && (speakers[i] == 'L1' || speakers[i] == 'L0')"
+            v-model="mytrans[i]"
+            style="background-color: #27693031"
+            dense
+            filled
+            square
+          >
+          </q-input>
+          <q-input
+            v-if="speakers[i] && speakers[i] != 'L1' && speakers[i] != 'L0'"
+            v-model="mytrans[i]"
+            style="background-color: #4a276954"
+            dense
+            filled
+            square
+          >
+          </q-input>
         </div>
 
         <!-- ADMIN TABLE : OTHER ANNOTATORS: -->
@@ -584,7 +600,7 @@ export default defineComponent({
     getSentenceCellClass(props: { row: sentence_line_t }) {
       // for styling of the sentence table: too long sentences get colored in deep orange
       let cellclass = '';
-      if (props.row.speaker === 'L1' || props.row.speaker === 0) cellclass += 'text-black';
+      if (props.row.speaker === 'L1' || props.row.speaker === 'L0') cellclass += 'text-black';
       else cellclass = `${cellclass}text-teal-${8 - parseInt((props.row.speaker as string).slice(-1), 10)}`;
       if (props.row.nrTokens > 22) cellclass += ` bg-deep-orange-${Math.min(14, Math.round((props.row.nrTokens - 20) / 5))}`;
       return cellclass;
@@ -924,6 +940,7 @@ export default defineComponent({
                 });
             }
           }
+          console.log(1111, this.speakers);
         })
 
         .catch((error) => {

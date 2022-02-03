@@ -31,6 +31,7 @@ export default function notifyError(ArboratorGrewError: ArboratorGrewError_t) {
         // 406 is the errors for grew
         const grewErrorMessage = error.response.data.message || 'Unknown error, please contact the administrators';
         msg = `Grew internal error : ${grewErrorMessage}`;
+        timeout = 20000;
       } else {
         msg = error.response.message ? error.response.message : `${error.response.statusText} error ${error.response.status}`;
       }

@@ -3,8 +3,8 @@ import { i18n } from 'src/boot/i18n';
 
 interface ArboratorGrewError_t {
   error: any;
-  timeout: number; // in milliseconds
-  message: string;
+  timeout?: number; // in milliseconds
+  message?: string;
 }
 
 export default function notifyError(ArboratorGrewError: ArboratorGrewError_t) {
@@ -13,7 +13,7 @@ export default function notifyError(ArboratorGrewError: ArboratorGrewError_t) {
   let caption = '';
 
   const error = ArboratorGrewError.error;
-  const timeout = ArboratorGrewError.timeout;
+  let timeout = ArboratorGrewError.timeout;
   const message = ArboratorGrewError.message;
   if (message !== undefined) {
     msg = message;

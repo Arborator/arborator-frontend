@@ -16,10 +16,10 @@ export default function notifyError(ArboratorGrewError: ArboratorGrewError_t) {
   let timeout = ArboratorGrewError.timeout;
   const message = ArboratorGrewError.message;
   console.log('Error message', message);
-  if (error !== undefined) {
-    if (error.message !== undefined) {
-      msg = error.message;
-    } else if (error.response) {
+  if (message !== undefined) {
+    msg = message;
+  } else if (error !== undefined) {
+    if (error.response) {
       console.log('Error error.response.status', error.response.status);
       console.log('Error error.response.message', error.response.message);
       console.log('Error error.response.data.message', error.response.data.message);
@@ -35,6 +35,8 @@ export default function notifyError(ArboratorGrewError: ArboratorGrewError_t) {
         msg = error.response.message ? error.response.message : `${error.response.statusText} error ${error.response.status}`;
       }
     }
+  } else if (error.message !== undefined) {
+    msg = error.message;
   } else {
     msg = `Oops, an unexpected error occured, please contact the administrators`;
   }

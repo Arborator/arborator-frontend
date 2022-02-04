@@ -161,12 +161,13 @@ export default {
   tryRulesProject(projectname: string, query: any) {
     return API.post(`projects/${projectname}/try-rules`, query);
   },
-  // -------------------------------------------------------- //
-  // ---------------          Lexicon         --------------- //
-  // -------------------------------------------------------- //
   getRelationTable(projectname: string, data: any) {
     return API.post(`projects/${projectname}/relation-table`, data);
   },
+
+  // -------------------------------------------------------- //
+  // ---------------          Lexicon         --------------- //
+  // -------------------------------------------------------- //
 
   exportLexiconJSON(projectname: string, data: any) {
     return API.post(`projects/${projectname}/export/json`, data, {

@@ -311,7 +311,7 @@
         <!-- <a href="https://team.inria.fr/almanach" target="_blank">
         <img aria-hidden="true" role="presentation" src="/svg/almanachInria.svg" class="" style="height:18px;">
       </a> -->
-        — v1.0 (20211015)</q-item-label
+        — v2.0 (20220203)</q-item-label
       >
     </q-footer>
   </q-page>

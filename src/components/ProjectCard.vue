@@ -2,15 +2,13 @@
   <q-card
     v-show="visible"
     :class="hover ? 'shadow-12' : ''"
-    class="clickable my-card grid-style-transition shadow-2"
+    class=" my-card grid-style-transition shadow-2"
     :style="hover ? 'transform: scale(0.95);' : ''"
     @mouseover="hover = true"
     @mouseleave="hover = false"
-    @click="goTo()"
+    
   >
-    <q-tooltip class="bg-purple text-body2" anchor="top middle" :offset="[10, 10]" :delay="100">
-      {{ $t('projectHub.tooltipRightClickDelete') }}
-    </q-tooltip>
+    
     <q-popup-proxy v-if="canSeeSettings" transition-show="flip-up" transition-hide="flip-down" context-menu>
       <q-card>
         <q-card-section>
@@ -31,7 +29,7 @@
         </q-card-section>
       </q-card>
     </q-popup-proxy>
-    <q-img :ratio="16 / 9" :src="imageEmpty() ? '/images/small.niko-photos-tGTVxeOr_Rs-unsplash.jpg' : imageCleaned" basic>
+    <q-img @click="goTo()" class="clickable" :ratio="16 / 9" :src="imageEmpty() ? '/images/small.niko-photos-tGTVxeOr_Rs-unsplash.jpg' : imageCleaned" basic>
       <div class="absolute-bottom text-h6">
         <q-icon v-show="project.visibility === 0" name="fas fa-lock" color="negative" size="lg"></q-icon>
         <q-icon v-show="project.visibility === 1" name="fas fa-unlock-alt" color="positive" size="lg"></q-icon>
@@ -40,11 +38,11 @@
       </div>
     </q-img>
     <q-card-section>
-      <q-item class="justify-around q-px-md">
+      <q-item class="justify-around q-px-md" @click="goTo()">
         <q-item-label>{{ project.description }}</q-item-label>
       </q-item>
 
-      <q-card-actions vertical class="q-pa-md">
+      <q-card-actions @click="goTo()" vertical class="q-pa-md clickable">
         <q-chip size="md" icon="fas fa-vial" color="secondary" text-color="white">
           {{ project.number_samples }} {{ project.number_samples == 1 ? $t('projectHub.sample') : $t('projectHub.samples') }}
         </q-chip>
@@ -57,6 +55,14 @@
         <q-chip size="sm" icon="edit" color="primary" text-color="white">
           {{ $t('projectHub.lastWriteAccess') }} {{ timeAgo(project.last_write_access) }}
         </q-chip>
+      </q-card-actions>
+      <q-card-actions>
+        <q-btn v-if="canSeeSettings" round color="negative" glossy icon="delete_forever" >
+          <q-tooltip class="bg-purple text-body2" anchor="top middle" :offset="[10, 10]" :delay="100">
+            <!-- {{ $t('projectHub.tooltipRightClickDelete') }} -->
+            {{ $t('projectHub.rightClickDelete') }}
+          </q-tooltip>
+        </q-btn>
       </q-card-actions>
     </q-card-section>
 

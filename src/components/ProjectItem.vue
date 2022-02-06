@@ -1,6 +1,9 @@
 <template>
   <!-- removed: v-show="visible"  -->
   <q-item clickable @click="goTo()">
+    <q-tooltip class="bg-purple text-body2" anchor="top middle" :offset="[10, 10]" :delay="100">
+      {{ $t('projectHub.tooltipRightClickDelete') }}
+    </q-tooltip>
     <q-popup-proxy transition-show="flip-up" transition-hide="flip-down" context-menu>
       <q-card>
         <q-card-section>
@@ -97,10 +100,11 @@ export default defineComponent({
     ...mapState(useUserStore, ['getUserInfos']),
     ...mapState(useUserStore, { userid: 'id' }),
     imageCleaned() {
-      let clean = this.project.image.replace('b', '');
-      clean = clean.replace(/^'/g, '');
-      clean = clean.replace(/'$/g, '');
-      return `data:image/png;base64, ${clean}`;
+      // let clean = this.project.image.replace('b', '');
+      // clean = clean.replace(/^'/g, '');
+      // clean = clean.replace(/'$/g, '');
+      // return `data:image/png;base64, ${clean}`;
+      return this.project.image;
     },
     // visible() {
     //   if (!this.project.visibility === 1) {

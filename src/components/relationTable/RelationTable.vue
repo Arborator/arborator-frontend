@@ -48,22 +48,35 @@
               }}</span>
             </q-toolbar-title>
           </q-toolbar>
+          <!--   hide-bottom no-caps sort-by="sum"   -->
           <q-table
             ref="relationTable"
+            v-model:pagination="pagination"
             class="rounded-borders"
             :rows="table.rows"
             :columns="table.columns"
-            :v-model:pagination="table.pagination"
             row-key="gov"
+            :rows-per-page-options="[0]"
             hide-bottom
           >
             <template #body-cell="props">
               <q-td :props="props">
-                <span v-if="isString(props.value)">
-                  <span class="primary" style="font-weight: 500">{{ props.value }} </span>
+                <span v-if="props.value > 0">
+                  <q-btn
+                    v-if="props.key == '∑' || props.col.name == 'sum'"
+                    dense
+                    color="secondary"
+                    outline
+                    :label="props.value"
+                    @click="showTrees(props)"
+                  />
+                  <q-btn v-else dense color="primary" outline :label="props.value" @click="showTrees(props)" />
+                  <!-- </span> -->
                 </span>
-                <span v-else-if="Object.keys(props.value).length < 1"> </span>
-                <q-btn v-else color="primary" :label="Object.keys(props.value).length" @click="showTrees(props.value)" />
+                <span v-else-if="!Number.isInteger(props.value)">{{ props.value }} </span>
+
+                <!--  -->
+                <!-- <q-btn v-else color="primary" :label="Object.keys(props.value).length" @click="showTrees(props.value)" /> -->
               </q-td>
             </template>
           </q-table>
@@ -71,7 +84,12 @@
       </div>
     </q-card-section>
     <q-dialog v-model="visuTreeDial" maximized transition-show="fade" transition-hide="fade">
-      <result-view :searchresults="selectedResults" :totalsents="relationstotal[currentEdge]" :searchscope="tablename"></result-view>
+      <result-view
+        :searchresults="resultSearch"
+        :totalsents="relationstotal[currentEdge]"
+        :searchscope="tablename"
+        :parent-on-show-table="onShowTable"
+      ></result-view>
     </q-dialog>
   </q-card>
 </template>
@@ -82,13 +100,18 @@ import ResultView from '../ResultView.vue';
 import { mapState } from 'pinia';
 import { useProjectStore } from 'src/pinia/modules/project';
 // import dummydata from '../assets/data.json';
+import api from '../../api/backend-api';
+import notifyError from 'src/utils/notify';
 
 import { defineComponent } from 'vue';
+import { grewSearchResult_t } from 'src/api/backend-types';
 
 export default defineComponent({
   components: { ResultView, QTree },
   props: ['edges'],
+
   data() {
+    const resultSearch: grewSearchResult_t = {};
     return {
       currentEdge: '',
       visuTreeDial: false,
@@ -101,14 +124,12 @@ export default defineComponent({
       table: {
         rows: [],
         columns: [],
-        pagination: {
-          sortBy: 'name',
-          descending: false,
-          page: 2,
-          rowsPerPage: 50,
-          rowsNumber: 0,
-        },
       },
+      pagination: {
+        sortBy: 'NOUN',
+        descending: false,
+      },
+      resultSearch,
     };
   },
   computed: {
@@ -152,73 +173,57 @@ export default defineComponent({
      * @returns void
      */
     getTable() {
-      // console.log(444,eve,this.edges, this.currentEdge)
       const keyset = new Set();
-      // var table = {};
-      for (const gov of Object.keys(this.edges[this.currentEdge])) {
+      for (const gov of Object.keys(this.edges[this.currentEdge] || {})) {
         keyset.add(gov);
-        for (const dep of Object.keys(this.edges[this.currentEdge][gov])) keyset.add(dep);
+        for (const dep of Object.keys((this.edges[this.currentEdge] || {})[gov])) keyset.add(dep);
       }
       // construct fields
-      // let fields = [{ name: 'gov', label: row => 'Governor: ' + row.gov, 'field': row => row.gov}];
-      const fields = [{ name: 'gov', label: '↗', field: (row: any) => row.gov }];
+      const fields: any[] = [];
       for (const key of keyset) {
         (fields as any).push({
           name: key,
           align: 'center',
           label: key,
           field: key,
+          sortable: true,
+          sum: 0,
         });
       }
-      this.table.columns = fields as any;
+
       (this.relationstotal as any)[this.currentEdge] = 0;
       // construct rows
       const rows = [];
+      var colsum = {};
       for (const gov of keyset) {
         const row = { gov } as any;
+        var rowsum = 0;
         for (const dep of keyset) {
-          if (!Object.prototype.hasOwnProperty.call(this.edges[this.currentEdge], gov as any)) {
-            row[dep as string] = {} as any;
-            continue;
-          }
-          if (!Object.prototype.hasOwnProperty.call(this.edges[this.currentEdge], dep as any)) {
-            row[dep as string] = {} as any;
-            continue;
-          }
-          row[dep as string] = this.edges[this.currentEdge][gov as string][dep as string];
-          (this.relationstotal as any)[this.currentEdge] += Object.keys(this.edges[this.currentEdge][gov as string][dep as string]).length as any;
+          var num = (this.edges[this.currentEdge][gov as string] || {})[dep as string] || 0;
+          row[dep as string] = num;
+          rowsum += num;
+          (colsum as any)[dep as string] = (colsum as any)[dep as string] + num || num;
         }
+        row['sum'] = rowsum;
         rows.push(row);
+        (this.relationstotal as any)[this.currentEdge] += rowsum;
       }
+      (colsum as any)['sum'] = Object.values(colsum).reduce((sum, value) => (sum as number) + (value as number), 0);
+      (colsum as any)['gov'] = '∑';
+
+      rows.unshift(colsum);
+      fields.sort((a, b) => ((colsum as any)[a.name as string] > (colsum as any)[b.name] ? -1 : 1));
+      fields.unshift({ name: 'sum', label: '∑', field: (row: any) => row.sum, sortable: true, sum: 0 });
+      fields.unshift({ name: 'gov', label: '↗', field: (row: any) => row.gov, sortable: true, sum: 0 });
+
+      this.table.columns = fields as any;
       this.table.rows = rows as any;
-      this.table.pagination.rowsNumber = rows.length;
+      this.pagination = {
+        sortBy: 'sum',
+        descending: true,
+      };
     },
-    // createTable(edge){
-    //     var keyset = new Set();
-    //     for( let gov of Object.keys(this.edges[edge])){
-    //         keyset.add(gov); for( let dep of Object.keys(this.edges[edge][gov]) ) keyset.add(dep);
-    //         }
-    //     // construct fields
-    //     // let fields = [{ name: 'gov', label: row => 'Governor: ' + row.gov, 'field': row => row.gov}];
-    //     let fields = [{ name: 'gov', label: '↗', 'field': row => row.gov}];
-    //     for ( let key of keyset ){ fields.push( { name: key, align: 'center', label: key, field: key} ); }
-    //     this.table.columns = fields;
-    //     this.relationstotal[edge] = 0;
-    //     // construct rows
-    //     let rows = [];
-    //     for ( let gov of keyset) {
-    //         let row = { gov: gov };
-    //         for (let dep of keyset){
-    //             if(!this.edges[edge].hasOwnProperty(gov)) { row[dep] = {}; continue; }
-    //             if(!this.edges[edge][gov].hasOwnProperty(dep) )  { row[dep] = {}; continue; }
-    //             row[dep] = this.edges[edge][gov][dep];
-    //             this.relationstotal[edge]+=Object.keys(this.edges[edge][gov][dep]).length;
-    //         }
-    //         rows.push(row);
-    //     }
-    //     this.table.rows = rows;
-    //     this.table.pagination.rowsNumber = rows.length;
-    // },
+
     /**
      * Set the filter to an empty string
      *
@@ -227,13 +232,7 @@ export default defineComponent({
     resetFilter() {
       this.filter = '';
     },
-    // select(){
-    //     console.log(33);
-    //     //JSON.stringify(this.edges[edge]));
-    //     this.createTable(this.currentEdge);
 
-    //     // this.currentEdge = edge;
-    // },
     /**
      * Show the trees considering the table row props
      *
@@ -242,8 +241,42 @@ export default defineComponent({
      */
     showTrees(props: any) {
       this.tablename = `${this.currentEdge} relation table`;
-      this.selectedResults = props;
-      this.visuTreeDial = true;
+
+      var searchPattern = `pattern { GOV -[${this.currentEdge}]-> DEP; `;
+      if (props.col.name != 'sum') searchPattern += `DEP [ExtPos="${props.col.name}"/upos="${props.col.name}"]; `;
+      if (props.key != '∑') searchPattern += ` GOV [upos="${props.key}"]; `;
+      searchPattern += '}';
+      this.onSearch(searchPattern);
+    },
+    onShowTable(resultSearchDialog: any) {
+      // never called?
+      console.log(555555, resultSearchDialog);
+      // this.resultSearchDialog = resultSearchDialog;
+      // this.grewDialog = false;
+    },
+    onSearch(searchPattern: string) {
+      const query = { pattern: searchPattern };
+      if (this.$route.params.samplename) {
+        api
+          .searchSample(this.$route.params.projectname as string, this.$route.params.samplename as string, query)
+          .then((response) => {
+            this.resultSearch = response.data;
+            this.visuTreeDial = true;
+          })
+          .catch((error) => {
+            notifyError({ error });
+          });
+      } else {
+        api
+          .searchProject(this.$route.params.projectname as string, query)
+          .then((response) => {
+            this.resultSearch = response.data;
+            this.visuTreeDial = true;
+          })
+          .catch((error) => {
+            notifyError({ error });
+          });
+      }
     },
     /**
      * Check whether variable s is a String or not

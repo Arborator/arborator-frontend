@@ -46,6 +46,8 @@ export default defineComponent({
   components: {
     RelationTable,
   },
+  props: ['samplename'],
+
   data() {
     return {
       relationTableDial: false,
@@ -54,16 +56,17 @@ export default defineComponent({
       window: { width: 0, height: 0 },
     };
   },
+
   computed: {
     ...mapState(useProjectStore, ['isAdmin']),
-    ...mapState(useUserStore, ['isLoggedIn', 'isSuperAdmin', 'avatar']),
+    ...mapState(useUserStore, ['isLoggedIn', 'isSuperAdmin', 'avatar', 'getUserInfos']),
     breakpoint(): boolean {
       return this.window.width <= 400;
     },
   },
   methods: {
-    getRelationTable(type: any) {
-      const data = { table_type: type };
+    getRelationTable(tableType: string) {
+      const data = { sample_id: this.samplename, tableType: tableType };
       api
         .getRelationTable(this.$route.params.projectname as string, data)
         .then((response) => {

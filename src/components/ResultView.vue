@@ -5,7 +5,7 @@
       <q-space />
       <div class="text-weight-bold">
         {{ sentenceCount }} <span v-if="sentenceCount === 1">result</span><span v-else>results</span> (of the {{ totalsents }}
-        <span v-if="totalsents === 1">sentence</span><span v-else>sentences</span> in the {{ searchscope }})
+        <span v-if="totalsents === 1">sentence</span><span v-else>occurrences</span> in the {{ searchscope }})
       </div>
       <q-space />
       <q-btn v-close-popup flat dense icon="close" />
@@ -21,20 +21,21 @@
         <div v-if="samplesFrozen.list.length > 0">
           <q-virtual-scroll
             :items="samplesFrozen.list"
-            style="height: 80vh; width: 40vw"
+            style="height: 80vh; width: 100vw"
             :virtual-scroll-slice-size="5"
             :virtual-scroll-item-size="200"
             type="list"
           >
             <template #default="{ item, index }">
-                  <SentenceCard
-                    :id="item[1]"
-                    :key="index"
-                    :sentence="searchresults[item[0]][item[1]]"
-                    :index="index"
-                    :sentence-id="item[1]"
-                    :matches="searchresults[item[0]][item[1]]"
-                  ></SentenceCard>
+              <SentenceCard
+                :id="item[1]"
+                :key="index"
+                :sentence="searchresults[item[0]][item[1]]"
+                :index="index"
+                :sentence-id="item[1]"
+                :matches="searchresults[item[0]][item[1]]"
+                :exercise-level="4"
+              ></SentenceCard>
             </template>
           </q-virtual-scroll>
         </div>

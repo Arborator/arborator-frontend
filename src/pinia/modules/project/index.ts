@@ -33,26 +33,10 @@ export const useProjectStore = defineStore('project', {
         )
       ),
     cleanedImage: (state) => {
-      let ifImageNotEmpty;
-      if (state.image !== null) {
-        let clean = state.image.replace('b', '');
-        clean = clean.replace(/^'/g, '');
-        clean = clean.replace(/'$/g, '');
-        ifImageNotEmpty = `data:image/png;base64, ${clean}`;
-      }
-
       const ifImageEmpty = '/images/niko-photos-tGTVxeOr_Rs-unsplash.jpg';
-
-      if (state.image === null) {
-        state.image = "b''";
-      }
-      if (state.image === "b''") {
-        return ifImageEmpty;
-      }
-      if (state.image.length < 1) {
-        return ifImageEmpty;
-      }
-      return ifImageNotEmpty;
+      if (state.image == null ) return ifImageEmpty;
+      if (state.image.length < 1) return ifImageEmpty;
+      return state.image
     },
   },
   actions: {

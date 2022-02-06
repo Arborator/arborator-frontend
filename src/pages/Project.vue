@@ -5,6 +5,17 @@
         <q-card-section class="project-header">
           <q-toolbar class="text-center">
             <!-- <q-toolbar-title><span :class="($q.dark.isActive?'':'text-primary') + ' text-bold'">{.name}}</span> </q-toolbar-title> -->
+            <q-btn
+                v-if="isSuperAdmin || isAdmin"
+                flat
+                round
+                :color="$q.dark.isActive ? 'primary' : ''"
+                icon="settings"
+                @click="projectSettingsDial = true"
+              >
+                <!-- <q-btn v-if="1" flat round :color="$q.dark.isActive?'primary':''" icon="settings" @click="projectSettingsDial=true"> -->
+                <q-tooltip :delay="300" content-class="text-white bg-primary">{{ $t('projectView.tooltipSettings') }}</q-tooltip>
+              </q-btn>
           </q-toolbar>
           <q-img class="project-image" :src="cleanedImage" basic>
             <div class="absolute-bottom text-h6" style="padding: 6px">

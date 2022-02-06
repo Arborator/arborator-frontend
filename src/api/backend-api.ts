@@ -249,6 +249,6 @@ export default {
     return API.post(`projects/${projectname}/defaultusertrees/remove`, data);
   },
   uploadProjectImage(projectname: string, form: any) {
-    return API.post(`projects/${projectname}/image`, form);
+    return API.post(`projects/${projectname}/image`, form, {headers: {"Content-Type": "multipart/form-data"}});
   },
 };

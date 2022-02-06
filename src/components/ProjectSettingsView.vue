@@ -512,7 +512,7 @@ export default defineComponent({
   },
 
   methods: {
-    ...mapActions(useProjectStore, ['updateProjectConlluSchema', 'resetAnnotationFeatures', 'updateProjectSettings']),
+    ...mapActions(useProjectStore, ['updateProjectConlluSchema', 'resetAnnotationFeatures', 'updateProjectSettings', 'postImage']),
     /**
      * Parse annotation features. Display a related informative message dependeing on success
      *

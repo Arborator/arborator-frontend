@@ -103,10 +103,7 @@ export default defineComponent({
     },
 
     imageCleaned() {
-      let clean = this.project.image.replace('b', '');
-      clean = clean.replace(/^'/g, '');
-      clean = clean.replace(/'$/g, '');
-      return `data:image/png;base64, ${clean}`;
+      return this.project.image;
     },
     visible() {
       // show all projects regardless of their visibility status

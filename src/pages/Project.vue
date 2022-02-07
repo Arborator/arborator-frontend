@@ -5,17 +5,6 @@
         <q-card-section class="project-header">
           <q-toolbar class="text-center">
             <!-- <q-toolbar-title><span :class="($q.dark.isActive?'':'text-primary') + ' text-bold'">{.name}}</span> </q-toolbar-title> -->
-            <q-btn
-                v-if="isSuperAdmin || isAdmin"
-                flat
-                round
-                :color="$q.dark.isActive ? 'primary' : ''"
-                icon="settings"
-                @click="projectSettingsDial = true"
-              >
-                <!-- <q-btn v-if="1" flat round :color="$q.dark.isActive?'primary':''" icon="settings" @click="projectSettingsDial=true"> -->
-                <q-tooltip :delay="300" content-class="text-white bg-primary">{{ $t('projectView.tooltipSettings') }}</q-tooltip>
-              </q-btn>
           </q-toolbar>
           <q-img class="project-image" :src="cleanedImage" basic>
             <div class="absolute-bottom text-h6" style="padding: 6px">
@@ -41,7 +30,6 @@
           </q-img>
           <div class="text-primary">{{ description }}</div>
         </q-card-section>
-
         <q-card-section v-if="isShowLexiconPanel">
           <LexiconPanel :lexicon-items="lexiconItems" :sample-id="table.selected" @request="fetchLexicon_"> </LexiconPanel>
         </q-card-section>
@@ -218,7 +206,7 @@
                   <q-tooltip :delay="300" content-class="text-white bg-primary"></q-tooltip>
                 </div>
 
-                <div v-if="isGuest || isAdmin || isSuperAdmin">
+                <!-- <div v-if="isGuest || isAdmin || isSuperAdmin">
                   <q-btn
                     v-show="isShowLexiconPanel === false"
                     flat
@@ -242,7 +230,7 @@
                     >Select the samples to create a lexicon</q-tooltip
                   >
                   <q-tooltip v-else :delay="300" content-class="text-white bg-primary">Create lexicon from selected samples</q-tooltip>
-                </div>
+                </div> -->
               </q-btn-group>
 
               <q-space />

@@ -279,7 +279,7 @@ export default defineComponent({
     },
     isOld(project: project_extended_t) {
       // either not used since more than a year or empty and older than an hour
-      return project.last_access < this.ayear || (project.number_samples < 1 && project.last_access < 3600);
+      return project.last_access < this.ayear || (project.number_samples < 1 && project.last_access < -3600);
     },
     toggleProjectView() {
       this.listMode = !this.listMode;

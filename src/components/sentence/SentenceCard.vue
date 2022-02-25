@@ -167,7 +167,9 @@
                 :tree-user-id="user"
                 :conll-saved-counter="conllSavedCounter"
                 :has-pending-changes="hasPendingChanges"
-                :matches="sentence.matches[user] ? sentence.matches[user].map((match) => Object.values(match.nodes)).flat() : []"
+                :matches="
+                  sentence.matches ? (sentence.matches[user] ? sentence.matches[user].map((match) => Object.values(match.nodes)).flat() : []) : []
+                "
                 @statusChanged="handleStatusChange"
               ></VueDepTree>
             </q-card-section>

@@ -92,7 +92,7 @@ export default defineComponent({
         .tryPackage(this.$route.params.projectname as string, sampleId, query)
         .then((response) => {
           this.resultSearchDialog = true;
-          this.resultSearch = response.data.trees;
+          this.resultSearch = response.data;
         })
         .catch((error) => {
           notifyError({

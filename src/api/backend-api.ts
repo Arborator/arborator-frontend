@@ -156,7 +156,7 @@ export default {
     return API.post<grewSearch_RV>(`projects/${projectname}/sample/${samplename}/search`, query);
   },
   tryPackage(projectname: string, sampleId: string | null, query: string) {
-    return API.post(`projects/${projectname}/try-package`, { package: query, sampleId });
+    return API.post<grewSearch_RV>(`projects/${projectname}/try-package`, { package: query, sampleId });
   },
   getRelationTable(projectname: string, data: any) {
     return API.post(`projects/${projectname}/relation-table`, data);

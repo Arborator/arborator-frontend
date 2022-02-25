@@ -155,11 +155,8 @@ export default {
   searchSample(projectname: string, samplename: string, query: any) {
     return API.post<grewSearch_RV>(`projects/${projectname}/sample/${samplename}/search`, query);
   },
-  tryRuleProject(projectname: string, query: any) {
-    return API.post(`projects/${projectname}/try-rule`, query);
-  },
-  tryRulesProject(projectname: string, query: any) {
-    return API.post(`projects/${projectname}/try-rules`, query);
+  tryPackage(projectname: string, sampleId: string | null, query: string) {
+    return API.post(`projects/${projectname}/try-package`, { package: query, sampleId });
   },
   getRelationTable(projectname: string, data: any) {
     return API.post(`projects/${projectname}/relation-table`, data);
@@ -250,6 +247,6 @@ export default {
     return API.post(`projects/${projectname}/defaultusertrees/remove`, data);
   },
   uploadProjectImage(projectname: string, form: any) {
-    return API.post(`projects/${projectname}/image`, form, {headers: {"Content-Type": "multipart/form-data"}});
+    return API.post(`projects/${projectname}/image`, form, { headers: { 'Content-Type': 'multipart/form-data' } });
   },
 };

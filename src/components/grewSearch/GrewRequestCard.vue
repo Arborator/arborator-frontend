@@ -7,16 +7,15 @@
     </q-bar>
 
     <q-card-section style="width: 80vw; height: 80vh">
-      <q-form class="q-gutter-md" @submit="onSearch" @reset="onResetSearch">
+      <q-form class="q-gutter-md" @reset="onResetSearch">
         <div class="q-pa-xs">
           <div class="row">
             <div class="col-10">
               <Codemirror v-model:value="currentQuery" style="height: 70vh" :options="cmOption"></Codemirror>
               <q-separator />
               <div class="full-width row justify-start">
-                <q-btn color="primary" type="submit" label="Search" no-caps icon="search" />
-                <q-space />
-                <q-btn v-if="currentQueryType === 'REWRITE'" color="primary" label="Try Rules" no-caps icon="autorenew" @click="tryRules" />
+                <q-btn v-if="currentQueryType === 'SEARCH'" color="primary" label="Search" no-caps icon="search" @click="onSearch" />
+                <q-btn v-else-if="currentQueryType === 'REWRITE'" color="primary" label="Try Rules" no-caps icon="autorenew" @click="tryRules" />
                 <q-space />
                 <q-btn label="Get link" no-caps icon="ion-md-link" @click="getgrewlink" />
                 <q-space />
@@ -220,9 +219,12 @@ export default defineComponent({
      *
      * @returns void
      */
-    // tryRules() {
-    //   this.parentOnTryRules(this.queries[6].pattern, this.queries[6].sampleIds);
-    // },
+    tryRules() {
+      this.parentOnTryRules(this.currentQuery);
+      this.change_last_grew_query(this.currentQuery);
+      this.change_last_grew_command(this.rewriteCommands);
+      this.$storage.setStorageSync('grewHistory', this.currentQuery);
+    },
     /**
      * Modify the search pattern (search string)
      *

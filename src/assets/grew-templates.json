@@ -7,6 +7,6 @@
 		{"type": "SEARCH", "name":"Relation and tags query", "pattern":"% Search for a \"det\" dependency relation\n% such that the governor's tag is different from NOUN, PROPN and ADJ\n\npattern {\nGOV [upos <> NOUN|ADJ|PROPN];\nGOV -[det]-> DEP;\n}"}
 	],
 	"rewriteQueries": [
-		{"type": "REWRITE", "name":"Rewrite POS", "pattern":"pattern { N [upos=VERB] }\ncommands { N.upos = V }", "sampleIds": []}
+		{"type": "REWRITE", "name":"Rewrite POS", "pattern":"rule r1 { pattern { N [upos=VERB] } commands { N.upos = V } }", "sampleIds": []}
 	]
 }

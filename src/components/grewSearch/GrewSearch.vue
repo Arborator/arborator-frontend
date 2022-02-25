@@ -86,10 +86,10 @@ export default defineComponent({
           });
       }
     },
-    onTryRules(Rules: any, SampleIds: any) {
-      const query = { rules: Rules, sampleId: SampleIds };
+    onTryRules(query: string) {
+      const sampleId = (this.$route.params.samplename as string) || null;
       api
-        .tryRulesProject(this.$route.params.projectname as string, query)
+        .tryPackage(this.$route.params.projectname as string, sampleId, query)
         .then((response) => {
           this.resultSearchDialog = true;
           this.resultSearch = response.data.trees;

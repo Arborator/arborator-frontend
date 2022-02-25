@@ -55,13 +55,12 @@
             />
             <q-input
               v-else-if="computeValueType(props.row) === 'String'"
-              v-model.number="props.row.v"
+              v-model="props.row.v"
               filled
               dense
               :rules="[(val) => !!val || 'Field is required']"
               @input-value="oninput()"
             />
-
             <q-select
               v-else-if="openFeatures === 'true'"
               v-model="props.row.v"

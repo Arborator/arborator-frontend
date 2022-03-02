@@ -103,13 +103,21 @@ export interface matche_t {
   edges: { [key: string]: string };
   nodes: { [key: string]: string };
 }
+
+export interface package_t {
+  modified_edges: { src: string; edge: string; tar: string }[];
+  modified_nodes: { id: string; features: string[] }[];
+}
+
 export type conlls_t = { [userId: string]: string };
 export type matches_t = { [userId: string]: matche_t[] };
+export type packages_t = { [userId: string]: package_t[] };
 
 export interface grewSearchResultSentence_t {
   sentence: string;
   conlls: conlls_t;
-  matches: matches_t;
+  matches: matches_t | undefined;
+  packages: packages_t | undefined;
   sample_name?: string;
 }
 export interface grewSearchResultSample_t {

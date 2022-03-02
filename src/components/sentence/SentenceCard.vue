@@ -170,6 +170,7 @@
                 :matches="
                   sentence.matches ? (sentence.matches[user] ? sentence.matches[user].map((match) => Object.values(match.nodes)).flat() : []) : []
                 "
+                :packages="sentence.packages ? (sentence.packages[user] ? sentence.packages[user] : {}) : {}"
                 @statusChanged="handleStatusChange"
               ></VueDepTree>
             </q-card-section>

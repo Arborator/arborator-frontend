@@ -28,6 +28,7 @@ interface svgHoveredEvent_t extends Event {
 
 import { defineComponent } from 'vue';
 import { useUserStore } from 'src/pinia/modules/user';
+import { package_t } from 'src/api/backend-types';
 
 export default defineComponent({
   props: {
@@ -77,6 +78,12 @@ export default defineComponent({
       },
       type: Array as PropType<string[]>,
     },
+    packages: {
+      default: () => {
+        return {};
+      },
+      type: Object as PropType<package_t>,
+    },
   },
   data() {
     const sentenceSVG: SentenceSVG = null as unknown as SentenceSVG; // trick to not have to initialize an empty SentenceSVG
@@ -121,6 +128,10 @@ export default defineComponent({
 
     if (this.matches.length > 0) {
       sentenceSVGOptions.matches = JSON.parse(JSON.stringify(this.matches));
+    }
+
+    if (Object.keys(this.packages).length > 0) {
+      sentenceSVGOptions.packages = JSON.parse(JSON.stringify(this.packages));
     }
     const svgWrapper = this.$refs.svgWrapper as SVGElement;
     this.sentenceSVG = new SentenceSVG(svgWrapper, this.reactiveSentence, sentenceSVGOptions);

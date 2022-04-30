@@ -167,7 +167,7 @@ export default defineComponent({
       formattedItem.form = [{ a: 'Form', v: lexiconItem.feats.form }];
       formattedItem.lemma = [{ a: 'Lemma', v: lexiconItem.feats.lemma }];
       formattedItem.pos = [{ a: 'POS', v: lexiconItem.feats.upos }];
-      formattedItem.gloss = [{ a: 'Gloss', v: lexiconItem.feats.gloss }];
+      formattedItem.gloss = [{ a: 'Gloss', v: lexiconItem.feats.Gloss }];
       formattedItem.frequency = lexiconItem.freq;
       formattedItem.key = lexiconItem.key;
 
@@ -185,7 +185,7 @@ export default defineComponent({
           form: formattedItem.form[0].v,
           lemma: formattedItem.lemma[0].v,
           upos: formattedItem.pos[0].v,
-          gloss: formattedItem.gloss[0].v,
+          Gloss: formattedItem.gloss[0].v,
           ...features,
         },
         freq: formattedItem.frequency,

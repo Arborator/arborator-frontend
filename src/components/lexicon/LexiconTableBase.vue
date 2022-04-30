@@ -4,20 +4,20 @@
     ref="table"
     :key="tableKey"
     v-model:selected="table.selected"
+    v-model:pagination="table.pagination"
     selection="multiple"
     :rows="passedLexiconItems"
     :row-key="(row) => row.key"
+    :rows-per-page-options="[50]"
     :columns="table.fields"
     :visible-columns="table.visibleColumns"
     card-class="shadow-8"
     table-style="max-height:80vh"
-    :rows-per-page-options="[50]"
     :loading="lexiconLoading"
     loading-label="loading"
     :filter="table.filter"
     binary-state-sort
     :class="($q.dark.isActive ? 'my-sticky-header-table-dark' : 'my-sticky-header-table') + ' rounded-borders'"
-    :v-model:pagination="table.pagination"
     @row-click="onRowClick"
   >
     <!-- <template v-slot:body-cell="props">
@@ -45,12 +45,12 @@
 
     <template #body-cell-form="props">
       <q-td key="form" :props="props">
-        <span :class="compareWithBefore ? 'added-prop' : ''"> {{ props.row.feats.form }} </span>
-        <template>
+        <span :class="compareWithBefore && passedLexiconItems.length >= 1 ? 'added-prop' : ''"> {{ props.row.feats.form }} </span>
+        <template v-if="compareWithBefore">
           <br />
           <span class="removed-prop">
             <del>
-              {{ findOriginalLexiconItem(props.row.feats) }}
+              {{ findOriginalLexiconItem(props.row).feats.form }}
             </del>
           </span>
         </template>
@@ -59,8 +59,8 @@
 
     <template #body-cell-lemma="props">
       <q-td key="lemma" :props="props">
-        <span :class="compareWithBefore ? 'added-prop' : ''"> {{ props.row.feats.lemma }} </span>
-        <template>
+        <span :class="compareWithBefore && passedLexiconItems.length >= 1 ? 'added-prop' : ''"> {{ props.row.feats.lemma }} </span>
+        <template v-if="compareWithBefore">
           <br />
           <span class="removed-prop">
             <del>
@@ -73,8 +73,8 @@
 
     <template #body-cell-pos="props">
       <q-td key="pos" :props="props">
-        <span :class="compareWithBefore ? 'added-prop' : ''"> {{ props.row.feats.upos }} </span>
-        <template>
+        <span :class="compareWithBefore && passedLexiconItems.length >= 1 ? 'added-prop' : ''"> {{ props.row.feats.upos }} </span>
+        <template v-if="compareWithBefore">
           <br />
           <span class="removed-prop">
             <del>
@@ -86,8 +86,8 @@
     </template>
     <template #body-cell-gloss="props">
       <q-td key="gloss" :props="props">
-        <span :class="compareWithBefore ? 'added-prop' : ''"> {{ props.row.feats.Gloss }} </span>
-        <template>
+        <span :class="compareWithBefore && passedLexiconItems.length >= 1 ? 'added-prop' : ''"> {{ props.row.feats.Gloss }} </span>
+        <template v-if="compareWithBefore">
           <br />
           <span class="removed-prop">
             <del>
@@ -321,6 +321,9 @@ export default defineComponent({
       tableKey: 0,
     };
   },
+  mounted() {
+    console.log('KK compare with before ', this.compareWithBefore);
+  },
   computed: {
     ...mapState(useLexiconStore, ['lexiconItems']),
   },
@@ -337,6 +340,7 @@ export default defineComponent({
         }
         return false;
       })[0];
+      console.log('KK matchLexiconItem', matchLexiconItem.key);
       return matchLexiconItem;
     },
     deleteSelected() {
@@ -351,7 +355,7 @@ export default defineComponent({
     },
 
     // exportLexiconTSV() {
-    //   for (let i = 0; i < this.passedLexiconItems.length; i += 1) {
+    //   for (let i = 0; i < this.passedLexiconItems.length; =i += 1) {
     //     this.download.push(this.passedLexiconItems[i]);
     //   }
     //   const datasample = { data: this.download };

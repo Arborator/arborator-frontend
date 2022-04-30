@@ -21,6 +21,7 @@ import {
   updateProject_RV,
   updateTree_ED,
   whoIAm_RV,
+  getLexicon_RV,
 } from './endpoints';
 import { sample_role_action_t, sample_role_targetrole_t, transcription_t } from './backend-types';
 
@@ -147,7 +148,7 @@ export default {
   // ---------------          Grew         --------------- //
   // ----------------------------------------------------- //
   getLexicon(projectname: string, data: any) {
-    return API.post(`projects/V2/${projectname}/lexicon`, data);
+    return API.post<getLexicon_RV>(`projects/V2/${projectname}/lexicon`, data);
   },
   searchProject(projectname: string, query: any) {
     return API.post<grewSearch_RV>(`projects/${projectname}/search`, query);

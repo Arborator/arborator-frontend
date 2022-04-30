@@ -126,6 +126,13 @@ export interface grewSearchResultSample_t {
 export interface grewSearchResult_t {
   [sampleId: string]: grewSearchResultSample_t;
 }
+
+//// LEXICON ////
+export interface lexiconItem_t {
+  feats: { [key: string]: any };
+  freq: number;
+}
+
 export ////////// KLANG /////
 
 //// PROJECT ////

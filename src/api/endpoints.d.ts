@@ -13,6 +13,7 @@ import {
   user_t,
   timed_tokens_t,
   grewSearchResult_t as grewSearchResult_t,
+  lexiconItem_t,
 } from './backend-types';
 
 export interface logout_RV {
@@ -81,6 +82,9 @@ export interface updateTree_ED {
 
 //// GREW
 export type grewSearch_RV = grewSearchResult_t;
+
+//// LEXICON
+export type getLexicon_RV = lexiconItem_t[];
 
 /////////////// KLANG //////////:
 export interface getOriginalTranscription_RV {

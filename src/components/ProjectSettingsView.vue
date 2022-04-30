@@ -12,9 +12,9 @@
       <q-banner rounded class="col-md-4 offset-md-4 col-xs-12 col-sm-12">
         <q-img :ratio="16 / 9" :src="cleanedImage" basic>
           <div class="absolute-bottom text-h6">
-            <q-icon v-show="visibility === 0" name="lock" :color="$q.dark.isActive ? 'red-13' : 'negative'" size="lg"></q-icon>
-            <q-icon v-show="visibility === 1" name="lock" :color="$q.dark.isActive ? 'red-13' : 'positive'" size="lg"></q-icon>
-            <q-icon v-show="visibility === 2" name="public" :color="$q.dark.isActive ? 'red-13' : 'positive'" size="lg"></q-icon>
+            <q-icon v-show="visibilityLocal === 0" name="lock" :color="$q.dark.isActive ? 'red-13' : 'negative'" size="lg"></q-icon>
+            <q-icon v-show="visibilityLocal === 1" name="lock" :color="$q.dark.isActive ? 'red-13' : 'positive'" size="lg"></q-icon>
+            <q-icon v-show="visibilityLocal === 2" name="public" :color="$q.dark.isActive ? 'red-13' : 'positive'" size="lg"></q-icon>
             {{ projectname }}
           </div>
         </q-img>
@@ -53,7 +53,7 @@
             <q-item-section avatar>
               <div>
                 <q-btn-toggle
-                  v-model="visibility"
+                  v-model="visibilityLocal"
                   label="Visibility"
                   glossy
                   toggle-color="primary"
@@ -102,7 +102,7 @@
               <q-item-label caption>{{ $t('projectSettings.chooseUserDiffCaption') }}</q-item-label>
             </q-item-section>
             <q-item-section avatar>
-              <q-select v-model="diffUserId" color="blue" :options="projectTreesFrom" />
+              <q-select v-model="diffUserIdLocal" color="blue" :options="projectTreesFrom" />
               <!-- checked-icon="check"
                 unchecked-icon="clear" -->
             </q-item-section>
@@ -252,7 +252,7 @@
         </q-card-section>
         <q-card-section>
           <q-select
-            v-model="shownfeatures"
+            v-model="shownfeaturesLocal"
             filled
             multiple
             :options="shownfeatureschoices"
@@ -263,7 +263,7 @@
         </q-card-section>
         <q-card-section>
           <q-select
-            v-model="shownmeta"
+            v-model="shownmetaLocal"
             filled
             multiple
             :options="shownmetachoices"
@@ -356,10 +356,10 @@ import 'codemirror/theme/material-darker.css';
 import api from '../api/backend-api';
 import UserSelectTable from './UserSelectTable.vue';
 import ConfirmAction from './ConfirmAction.vue';
-import { mapActions, mapState, mapWritableState } from 'pinia';
+import { mapActions, mapState, mapWritableState, mapStores } from 'pinia';
 import { useProjectStore } from 'src/pinia/modules/project';
 import { useMainStore } from 'src/pinia';
-import notifyError from 'src/utils/notify';
+import { notifyError } from 'src/utils/notify';
 import { sample_role_targetrole_t, user_t } from 'src/api/backend-types';
 
 import { defineComponent } from 'vue';
@@ -399,7 +399,7 @@ export default defineComponent({
     };
   },
   computed: {
-    // ...mapGetters('config', ['admins', 'guests', 'cleanedImage', 'shownfeatureschoices', 'shownmetachoices']),
+    ...mapStores(useProjectStore),
     ...mapWritableState(useProjectStore, [
       'description',
       'showAllTrees',
@@ -463,48 +463,44 @@ export default defineComponent({
     //     });
     //   },
     // },
-    // diffUserId: {
+    // diffUserIdLocal: {
     //   get() {
-    //     const value = this.$store.getters['config/diffUserId'];
-    //     return value || '';
+    //     return this.diffUserId || '';
     //   },
-    //   set(value) {
-    //     this.$store.dispatch('config/updateProjectSettings', {
-    //       toUpdateObject: { diffUserId: value },
-    //     });
+    //   set(value: string) {
+    //     this.updateProjectSettings({ diffUserId: value });
     //   },
     // },
-    // visibility: {
-    //   get() {
-    //     return this.$store.getters['config/visibility'];
-    //   },
-    //   set(value) {
-    //     this.$store.dispatch('config/updateProjectSettings', {
-    //       toUpdateObject: { visibility: value },
-    //     });
-    //   },
-    // },
-    // shownfeatures: {
-    //   get() {
-    //     return this.$store.getters['config/shownfeatures'];
-    //   },
-    //   set(value) {
-    //     this.$store.dispatch('config/updateProjectShownFeatures', {
-    //       projectname: this.$props.projectname,
-    //       toUpdateObject: { shownfeatures: value },
-    //     });
-    //   },
-    // },
-    // shownmeta: {
-    //   get() {
-    //     return this.$store.getters['config/shownmeta'];
-    //   },
-    //   set(value) {
-    //     this.$store.dispatch('config/updateProjectShownFeatures', {
-    //       projectname: this.$props.projectname,
-    //       toUpdateObject: { shownmeta: value },
-    //     });
-    //   },
+    visibilityLocal: {
+      get() {
+        return this.visibility;
+      },
+      set(value: number) {
+        this.updateProjectSettings({ visibility: value });
+      },
+    },
+    shownfeaturesLocal: {
+      get() {
+        return this.shownfeatures;
+      },
+      set(value: string[]) {
+        this.updateProjectShownFeatures({
+          projectname: this.$props.projectname,
+          toUpdateObject: { shownfeatures: value },
+        });
+      },
+    },
+    shownmetaLocal: {
+      get() {
+        return this.shownmeta;
+      },
+      set(value: string[]) {
+        this.updateProjectShownFeatures({
+          projectname: this.$props.projectname,
+          toUpdateObject: { shownmeta: value },
+        });
+      },
+    },
     // },
   },
   mounted() {
@@ -512,7 +508,13 @@ export default defineComponent({
   },
 
   methods: {
-    ...mapActions(useProjectStore, ['updateProjectConlluSchema', 'resetAnnotationFeatures', 'updateProjectSettings', 'postImage']),
+    ...mapActions(useProjectStore, [
+      'updateProjectConlluSchema',
+      'resetAnnotationFeatures',
+      'updateProjectSettings',
+      'postImage',
+      'updateProjectShownFeatures',
+    ]),
     /**
      * Parse annotation features. Display a related informative message dependeing on success
      *

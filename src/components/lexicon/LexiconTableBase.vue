@@ -321,9 +321,6 @@ export default defineComponent({
       tableKey: 0,
     };
   },
-  mounted() {
-    console.log('KK passedLexiconItems', this.passedLexiconItems);
-  },
   computed: {
     ...mapState(useLexiconStore, ['lexiconItems']),
   },
@@ -334,7 +331,6 @@ export default defineComponent({
       this.setLexiconModificationItem(row);
     },
     findOriginalLexiconItem({ key }: { key: string }) {
-      console.log('KK key', key);
       const matchLexiconItem = this.lexiconItems.filter((lexiconItem) => {
         if (lexiconItem.key === key) {
           return true;

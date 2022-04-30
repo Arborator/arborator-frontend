@@ -35,7 +35,6 @@ export const useLexiconStore = defineStore('lexicon', {
       api
         .getLexicon(projectname, { samplenames, treeSelection })
         .then((response) => {
-          console.log('KK lexicon response', response);
           const lexiconItems = [];
           for (const lexiconItem_BE of response.data) {
             const lexiconItem_FE = { ...lexiconItem_BE, key: computeUniqueKey(lexiconItem_BE) };
@@ -44,7 +43,6 @@ export const useLexiconStore = defineStore('lexicon', {
           this.isShowLexiconPanel = true;
           this.lexiconItems = lexiconItems;
           this.lexiconLoading = false;
-          console.log('KK this.lexiconItems', this.lexiconItems);
         })
         .catch((error) => {
           this.lexiconLoading = false;

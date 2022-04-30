@@ -6,7 +6,7 @@ import { useUserStore } from '../user';
 
 import { defineStore } from 'pinia';
 import { notifyMessage, notifyError } from 'src/utils/notify';
-import { annotationFeatures_t, project_extended_t } from 'src/api/backend-types';
+import { annotationFeatures_t, project_extended_t, project_with_diff_t } from 'src/api/backend-types';
 
 export const useProjectStore = defineStore('project', {
   state: () => {
@@ -104,7 +104,7 @@ export const useProjectStore = defineStore('project', {
         });
     },
 
-    updateProjectSettings(toUpdateObject: Partial<project_extended_t>) {
+    updateProjectSettings(toUpdateObject: Partial<project_extended_t | project_with_diff_t>) {
       return new Promise((resolve, reject) => {
         api
           .updateProject(this.name, toUpdateObject)

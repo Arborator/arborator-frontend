@@ -72,7 +72,7 @@
               <q-item-label caption>{{ $t('projectSettings.toggleAllVisibleCaption') }}</q-item-label>
             </q-item-section>
             <q-item-section avatar>
-              <q-toggle v-model="showAllTrees" color="blue" checked-icon="check" unchecked-icon="clear" />
+              <q-toggle v-model="showAllTreesLocal" color="blue" checked-icon="check" unchecked-icon="clear" />
             </q-item-section>
           </q-item>
 
@@ -82,7 +82,7 @@
               <q-item-label caption>{{ $t('projectSettings.toggleExerciseModeCaption') }}</q-item-label>
             </q-item-section>
             <q-item-section avatar>
-              <q-toggle v-model="exerciseMode" color="blue" checked-icon="check" unchecked-icon="clear" />
+              <q-toggle v-model="exerciseModeLocal" color="blue" checked-icon="check" unchecked-icon="clear" />
             </q-item-section>
           </q-item>
 
@@ -92,7 +92,7 @@
               <q-item-label caption>{{ $t('projectSettings.toggleDiffModeCaption') }}</q-item-label>
             </q-item-section>
             <q-item-section avatar>
-              <q-toggle v-model="diffMode" color="blue" checked-icon="check" unchecked-icon="clear" />
+              <q-toggle v-model="diffModeLocal" color="blue" checked-icon="check" unchecked-icon="clear" />
             </q-item-section>
           </q-item>
 
@@ -102,7 +102,7 @@
               <q-item-label caption>{{ $t('projectSettings.chooseUserDiffCaption') }}</q-item-label>
             </q-item-section>
             <q-item-section avatar>
-              <q-select v-model="diffUserId" color="blue" :options="projectTreesFrom" />
+              <q-select v-model="diffUserIdLocal" color="blue" :options="projectTreesFrom" />
               <!-- checked-icon="check"
                 unchecked-icon="clear" -->
             </q-item-section>
@@ -421,56 +421,38 @@ export default defineComponent({
       'getAnnofjson',
     ]),
     ...mapState(useMainStore, ['isProjectAdmin']),
-    // description: {
-    //   get() {
-    //     return this.$store.getters['config/description'];
-    //   },
-    //   set(value) {
-    //     this.$store.commit('config/set_project_settings', {
-    //       description: value,
-    //     });
-    //   },
-    // },
-    // showAllTrees: {
-    //   get() {
-    //     return this.$store.getters['config/showAllTrees'];
-    //   },
-    //   set(value) {
-    //     this.$store.dispatch('config/updateProjectSettings', {
-    //       toUpdateObject: { showAllTrees: value },
-    //     });
-    //   },
-    // },
-    // exerciseMode: {
-    //   get() {
-    //     const value = this.$store.getters['config/exerciseMode'];
-    //     return value || false;
-    //   },
-    //   set(value) {
-    //     this.$store.dispatch('config/updateProjectSettings', {
-    //       toUpdateObject: { exerciseMode: value },
-    //     });
-    //   },
-    // },
-    // diffMode: {
-    //   get() {
-    //     const value = this.$store.getters['config/diffMode'];
-    //     return value || false;
-    //   },
-    //   set(value) {
-    //     this.$store.dispatch('config/updateProjectSettings', {
-    //       toUpdateObject: { diffMode: value },
-    //     });
-    //   },
-    // },
-    // diffUserIdLocal: {
-    //   get() {
-    //     return this.diffUserId || '';
-    //   },
-    //   set(value: string) {
-    //     this.updateProjectSettings({ diffUserId: value });
-    //   },
-    // },
+    showAllTreesLocal: {
+      get() {
+        return this.showAllTrees;
+      },
+      set(value: boolean) {
+        this.updateProjectSettings({ showAllTrees: value });
+      },
+    },
+    exerciseModeLocal: {
+      get() {
+        return this.exerciseMode || false;
+      },
+      set(value: boolean) {
+        this.updateProjectSettings({ exerciseMode: value });
+      },
+    },
+    diffModeLocal: {
+      get() {
+        return this.diffMode || false;
+      },
+      set(value: boolean) {
+        this.updateProjectSettings({ diffMode: value });
+      },
+    },
+    diffUserIdLocal: {
+      get() {
+        return this.diffUserId || '';
+      },
+      set(value: string) {
+        this.updateProjectSettings({ diffUserId: value });
+      },
+    },
     visibilityLocal: {
       get() {
         return this.visibility;
@@ -618,8 +600,7 @@ export default defineComponent({
         });
     },
     saveDescription() {
-      this.putProjectDescription();
-      // this.$store.dispatch('config/putProjectDescription');
+      this.updateProjectSettings({ description: this.description });
     },
     uploadProjectImage() {
       this.uploadImage.submitting = true;

@@ -146,10 +146,7 @@ export default defineComponent({
           }
         })
         .catch((error) => {
-          {
-            notifyError;
-          }
-          ({ error });
+          notifyError({ error });
           this.loading = false;
         });
     },

@@ -7,13 +7,12 @@
             <q-btn id="createproject" :disable="!isLoggedIn" color="primary" round dense icon="add" @click="creaProjectDial = true">
               <q-tooltip :delay="300" content-class="text-white bg-primary">{{ $t('projectHub.tooltipCreaProject') }}</q-tooltip>
             </q-btn>
-            <q-btn  round dense :icon="listMode ? 'view_module' : 'list'" @click="toggleProjectView()">
+            <q-btn round dense :icon="listMode ? 'view_module' : 'list'" @click="toggleProjectView()">
               <q-tooltip :delay="300" content-class="text-white bg-primary">{{ $t('projectHub.tooltipChangeView') }}</q-tooltip>
             </q-btn>
             <q-toolbar-title :class="($q.dark.isActive ? '' : 'text-primary') + ' text-bold'">
               {{ $t('projectHub.title') }}
             </q-toolbar-title>
-            
           </q-toolbar>
           <q-toolbar class="text-center">
             <q-toolbar-title>
@@ -172,7 +171,7 @@ import ConfirmAction from '../components/ConfirmAction.vue';
 import { mapState } from 'pinia';
 import { useUserStore } from 'src/pinia/modules/user';
 import { defineComponent } from 'vue';
-import notifyError from 'src/utils/notify';
+import { notifyError } from 'src/utils/notify';
 import { project_extended_t } from 'src/api/backend-types';
 import { StorageInterface } from 'vue3-storage/packages/types';
 

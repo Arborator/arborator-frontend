@@ -2,17 +2,22 @@ import api from '../../../api/backend-api';
 
 import { defineStore } from 'pinia';
 import { notifyError } from 'src/utils/notify';
+import { lexiconItem_t } from 'src/api/backend-types';
+
+export interface lexiconItem_FE_t extends lexiconItem_t {
+  key: string;
+}
 
 export const useLexiconStore = defineStore('lexicon', {
   state: () => {
     return {
       isShowLexiconPanel: false,
       lexiconLoading: false,
-      lexiconItems: [] as any[],
-      lexiconModificationItemBefore: {} as any,
-      lexiconModificationItemAfter: {} as any,
+      lexiconItems: [] as lexiconItem_FE_t[],
+      lexiconModificationItemBefore: {} as lexiconItem_FE_t,
+      lexiconModificationItemAfter: {} as lexiconItem_FE_t,
       isShowLexiconModification: false,
-      couplesLexiconItemsBeforeAfter: [] as { before: any; after: any }[],
+      couplesLexiconItemsBeforeAfter: [] as { before: lexiconItem_FE_t; after: lexiconItem_FE_t }[],
     };
   },
   getters: {
@@ -30,14 +35,16 @@ export const useLexiconStore = defineStore('lexicon', {
       api
         .getLexicon(projectname, { samplenames, treeSelection })
         .then((response) => {
+          console.log('KK lexicon response', response);
           const lexiconItems = [];
-          for (const lexiconItem of response.data) {
-            lexiconItem.key = computeUniqueKey(lexiconItem);
-            lexiconItems.push(lexiconItem);
+          for (const lexiconItem_BE of response.data) {
+            const lexiconItem_FE = { ...lexiconItem_BE, key: computeUniqueKey(lexiconItem_BE) };
+            lexiconItems.push(lexiconItem_FE);
           }
           this.isShowLexiconPanel = true;
           this.lexiconItems = lexiconItems;
           this.lexiconLoading = false;
+          console.log('KK this.lexiconItems', this.lexiconItems);
         })
         .catch((error) => {
           this.lexiconLoading = false;
@@ -56,12 +63,12 @@ export const useLexiconStore = defineStore('lexicon', {
     hideLexiconModificationDialog() {
       this.isShowLexiconModification = false;
     },
-    setLexiconModificationItem(lexiconItem: any) {
+    setLexiconModificationItem(lexiconItem: lexiconItem_FE_t) {
       this.lexiconModificationItemBefore = lexiconItem;
       this.lexiconModificationItemAfter = lexiconItem;
       this.isShowLexiconModification = true;
     },
-    setLexiconModifiedItem(modifiedLexiconItem: any) {
+    setLexiconModifiedItem(modifiedLexiconItem: lexiconItem_FE_t) {
       this.lexiconModificationItemAfter = modifiedLexiconItem;
     },
     addCoupleLexiconItemBeforeAfter() {
@@ -102,4 +109,12 @@ function deepEqual(x: Record<string, any>, y: Record<string, any>): boolean {
   const tx = typeof x;
   const ty = typeof y;
   return x && y && tx === 'object' && tx === ty ? ok(x).length === ok(y).length && ok(x).every((key) => deepEqual(x[key], y[key])) : x === y;
+}
+
+function computeUniqueKey(lexiconItem: lexiconItem_t) {
+  let uniqueKey = '';
+  for (const value of Object.values(lexiconItem.feats)) {
+    uniqueKey += value;
+  }
+  return uniqueKey;
 }

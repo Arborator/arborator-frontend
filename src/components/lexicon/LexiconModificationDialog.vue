@@ -67,7 +67,7 @@
 <script lang="ts">
 import { mapActions, mapState } from 'pinia';
 import AttributeTable from '../sentence/AttributeTable.vue';
-import { useLexiconStore } from 'src/pinia/modules/lexicon';
+import { useLexiconStore, lexiconItem_FE_t } from 'src/pinia/modules/lexicon';
 import { useProjectStore } from 'src/pinia/modules/project';
 import { annotationFeatures_t } from 'src/api/backend-types';
 
@@ -81,15 +81,6 @@ interface formattedItem_t {
   key: string;
 }
 
-interface lexiconItem_t {
-  form: string;
-  lemma: string;
-  pos: string;
-  gloss: string;
-  features: { [key: string]: string };
-  frequency: number;
-  key: string;
-}
 import { defineComponent } from 'vue';
 
 export default defineComponent({
@@ -171,22 +162,17 @@ export default defineComponent({
   },
   methods: {
     ...mapActions(useLexiconStore, ['hideLexiconModificationDialog', 'setLexiconModifiedItem', 'addCoupleLexiconItemBeforeAfter']),
-    convertLexiconItemToFormattedItem(lexiconItem: lexiconItem_t) {
+    convertLexiconItemToFormattedItem(lexiconItem: lexiconItem_FE_t) {
       const formattedItem: formattedItem_t = { form: [], lemma: [], pos: [], gloss: [], features: [], frequency: 0, key: '' };
-      formattedItem.form = [{ a: 'Form', v: lexiconItem.form }];
-      formattedItem.lemma = [{ a: 'Lemma', v: lexiconItem.lemma }];
-      formattedItem.pos = [{ a: 'POS', v: lexiconItem.pos }];
-      formattedItem.gloss = [{ a: 'Gloss', v: lexiconItem.gloss }];
-      formattedItem.frequency = lexiconItem.frequency;
+      formattedItem.form = [{ a: 'Form', v: lexiconItem.feats.form }];
+      formattedItem.lemma = [{ a: 'Lemma', v: lexiconItem.feats.lemma }];
+      formattedItem.pos = [{ a: 'POS', v: lexiconItem.feats.upos }];
+      formattedItem.gloss = [{ a: 'Gloss', v: lexiconItem.feats.gloss }];
+      formattedItem.frequency = lexiconItem.freq;
       formattedItem.key = lexiconItem.key;
 
       formattedItem.features = [];
-      for (const keyValue of Object.entries(lexiconItem.features)) {
-        formattedItem.features.push({
-          a: keyValue[0],
-          v: keyValue[1],
-        });
-      }
+
       return formattedItem;
     },
     convertFormattedItemToLexiconItem(formattedItem: formattedItem_t) {
@@ -194,14 +180,16 @@ export default defineComponent({
       for (const keyValue of formattedItem.features) {
         features[keyValue.a] = keyValue.v;
       }
-      const lexiconItem: lexiconItem_t = {
-        form: formattedItem.form[0].v,
-        lemma: formattedItem.lemma[0].v,
-        pos: formattedItem.pos[0].v,
-        gloss: formattedItem.gloss[0].v,
-        frequency: formattedItem.frequency,
+      const lexiconItem: lexiconItem_FE_t = {
+        feats: {
+          form: formattedItem.form[0].v,
+          lemma: formattedItem.lemma[0].v,
+          upos: formattedItem.pos[0].v,
+          gloss: formattedItem.gloss[0].v,
+          ...features,
+        },
+        freq: formattedItem.frequency,
         key: formattedItem.key,
-        features,
       };
       return lexiconItem;
     },

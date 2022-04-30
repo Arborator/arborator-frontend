@@ -45,12 +45,12 @@
 
     <template #body-cell-form="props">
       <q-td key="form" :props="props">
-        <span :class="compareWithBefore ? 'added-prop' : ''"> {{ props.row.form }} </span>
-        <template v-if="compareWithBefore && lexiconItems.length >= 1">
+        <span :class="compareWithBefore ? 'added-prop' : ''"> {{ props.row.feats.form }} </span>
+        <template>
           <br />
           <span class="removed-prop">
             <del>
-              {{ findOriginalLexiconItem(props.row).form }}
+              {{ findOriginalLexiconItem(props.row.feats) }}
             </del>
           </span>
         </template>
@@ -59,12 +59,12 @@
 
     <template #body-cell-lemma="props">
       <q-td key="lemma" :props="props">
-        <span :class="compareWithBefore ? 'added-prop' : ''"> {{ props.row.lemma }} </span>
-        <template v-if="compareWithBefore && lexiconItems.length >= 1">
+        <span :class="compareWithBefore ? 'added-prop' : ''"> {{ props.row.feats.lemma }} </span>
+        <template>
           <br />
           <span class="removed-prop">
             <del>
-              {{ findOriginalLexiconItem(props.row).lemma }}
+              {{ findOriginalLexiconItem(props.row).feats.lemma }}
             </del>
           </span>
         </template>
@@ -73,12 +73,12 @@
 
     <template #body-cell-pos="props">
       <q-td key="pos" :props="props">
-        <span :class="compareWithBefore ? 'added-prop' : ''"> {{ props.row.pos }} </span>
-        <template v-if="compareWithBefore && lexiconItems.length >= 1">
+        <span :class="compareWithBefore ? 'added-prop' : ''"> {{ props.row.feats.upos }} </span>
+        <template>
           <br />
           <span class="removed-prop">
             <del>
-              {{ findOriginalLexiconItem(props.row).pos }}
+              {{ findOriginalLexiconItem(props.row).feats.upos }}
             </del>
           </span>
         </template>
@@ -86,21 +86,21 @@
     </template>
     <template #body-cell-gloss="props">
       <q-td key="gloss" :props="props">
-        <span :class="compareWithBefore ? 'added-prop' : ''"> {{ props.row.gloss }} </span>
-        <template v-if="compareWithBefore && lexiconItems.length >= 1">
+        <span :class="compareWithBefore ? 'added-prop' : ''"> {{ props.row.feats.Gloss }} </span>
+        <template>
           <br />
           <span class="removed-prop">
             <del>
-              {{ findOriginalLexiconItem(props.row).gloss }}
+              {{ findOriginalLexiconItem(props.row).feats.Gloss }}
             </del>
           </span>
         </template>
       </q-td>
     </template>
-    <template #body-cell-features="props">
+    <!-- <template #body-cell-features="props">
       <q-td key="features" :props="props">
         <span :class="compareWithBefore ? 'added-prop' : ''"> {{ computeFeatureStringWrapper(props.row.features) }} </span>
-        <template v-if="compareWithBefore && lexiconItems.length >= 1">
+        <template >
           <br />
           <span class="removed-prop">
             <del>
@@ -109,10 +109,10 @@
           </span>
         </template>
       </q-td>
-    </template>
+    </template> -->
     <template #body-cell-frequency="props">
       <q-td key="frequency" :props="props">
-        {{ props.row.frequency }}
+        {{ props.row.freq }}
       </q-td>
     </template>
 
@@ -155,7 +155,6 @@
 
 <script lang="ts">
 import { computed } from 'vue';
-import { computeFeatureString } from './lexiconHelper';
 import { mapActions, mapState } from 'pinia';
 import { useLexiconStore } from 'src/pinia/modules/lexicon';
 import { useGrewSearchStore } from 'src/pinia/modules/grewSearch';
@@ -205,13 +204,13 @@ export default defineComponent({
           align: 'left',
           field: 'pos',
         },
-        {
-          name: 'features',
-          label: 'Features',
-          align: 'left',
-          field: 'features',
-          sortable: false,
-        },
+        // {
+        //   name: 'features',
+        //   label: 'Features',
+        //   align: 'left',
+        //   field: 'features',
+        //   sortable: false,
+        // },
         {
           name: 'gloss',
           label: 'Gloss',
@@ -322,19 +321,20 @@ export default defineComponent({
       tableKey: 0,
     };
   },
+  mounted() {
+    console.log('KK passedLexiconItems', this.passedLexiconItems);
+  },
   computed: {
     ...mapState(useLexiconStore, ['lexiconItems']),
   },
   methods: {
     ...mapActions(useLexiconStore, ['setLexiconModificationItem', 'removeCoupleLexiconItemBeforeAfter']),
     ...mapActions(useGrewSearchStore, ['switch_grew_dialog']),
-    computeFeatureStringWrapper(featureObj: any) {
-      return computeFeatureString(featureObj);
-    },
     onRowClick(evt: Event, row: any) {
       this.setLexiconModificationItem(row);
     },
     findOriginalLexiconItem({ key }: { key: string }) {
+      console.log('KK key', key);
       const matchLexiconItem = this.lexiconItems.filter((lexiconItem) => {
         if (lexiconItem.key === key) {
           return true;

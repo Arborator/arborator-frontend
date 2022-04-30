@@ -409,6 +409,8 @@ export default defineComponent({
       'visibility',
       'shownfeatures',
       'shownmeta',
+      'admins',
+      'guests',
     ]),
     ...mapState(useProjectStore, [
       'isGuest',
@@ -542,10 +544,8 @@ export default defineComponent({
         .updateManyProjectUserAccess(this.$props.projectname, targetRole, newRolesArrayId)
         .then((response) => {
           this.$q.notify({ message: 'Change saved!' });
-          this.updateProjectSettings({
-            admins: response.data.admins,
-            guests: response.data.guests,
-          });
+          this.admins = response.data.admins;
+          this.guests = response.data.guests;
         })
         .catch((error) => {
           notifyError({ error });
@@ -556,10 +556,8 @@ export default defineComponent({
         .deleteProjectUserAccess(this.$props.projectname, userid)
         .then((response) => {
           this.$q.notify({ message: 'Change saved!' });
-          this.updateProjectSettings({
-            admins: response.data.admins,
-            guests: response.data.guests,
-          });
+          this.admins = response.data.admins;
+          this.guests = response.data.guests;
         })
         .catch((error) => {
           notifyError({ error });
@@ -570,10 +568,8 @@ export default defineComponent({
         .deleteProjectUserAccess(this.$props.projectname, userid)
         .then((response) => {
           this.$q.notify({ message: 'Change saved!' });
-          this.updateProjectSettings({
-            admins: response.data.admins,
-            guests: response.data.guests,
-          });
+          this.admins = response.data.admins;
+          this.guests = response.data.guests;
         })
         .catch((error) => {
           notifyError({ error });

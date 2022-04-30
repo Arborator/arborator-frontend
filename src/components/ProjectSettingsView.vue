@@ -102,7 +102,7 @@
               <q-item-label caption>{{ $t('projectSettings.chooseUserDiffCaption') }}</q-item-label>
             </q-item-section>
             <q-item-section avatar>
-              <q-select v-model="diffUserIdLocal" color="blue" :options="projectTreesFrom" />
+              <q-select v-model="diffUserId" color="blue" :options="projectTreesFrom" />
               <!-- checked-icon="check"
                 unchecked-icon="clear" -->
             </q-item-section>

@@ -126,7 +126,9 @@
       </div>
       <div>
         <q-btn-group v-if="compareWithBefore" flat>
-          <q-btn color="default" flat icon="compare_arrows" @click="getRulesGrew()"><q-tooltip>Generate Grew Rule</q-tooltip></q-btn>
+          <q-btn color="default" :disable="table.selected.length === 0" flat icon="compare_arrows" @click="getRulesGrew()"
+            ><q-tooltip>Generate Grew Rule</q-tooltip></q-btn
+          >
           <q-btn color="default" :disable="table.selected.length === 0" flat icon-right="delete_forever" @click="deleteSelected()"
             ><q-tooltip>Unstage selected lexicon changes</q-tooltip></q-btn
           >

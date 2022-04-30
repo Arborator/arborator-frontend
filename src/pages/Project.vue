@@ -206,7 +206,7 @@
                   <q-tooltip :delay="300" content-class="text-white bg-primary"></q-tooltip>
                 </div>
 
-                <!-- <div v-if="isGuest || isAdmin || isSuperAdmin">
+                <div v-if="isGuest || isAdmin || isSuperAdmin">
                   <q-btn
                     v-show="isShowLexiconPanel === false"
                     flat
@@ -230,7 +230,7 @@
                     >Select the samples to create a lexicon</q-tooltip
                   >
                   <q-tooltip v-else :delay="300" content-class="text-white bg-primary">Create lexicon from selected samples</q-tooltip>
-                </div> -->
+                </div>
               </q-btn-group>
 
               <q-space />

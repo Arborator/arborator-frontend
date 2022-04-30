@@ -1,8 +1,7 @@
 import api from '../../../api/backend-api';
 
 import { defineStore } from 'pinia';
-import { computeUniqueKey } from 'src/components/lexicon/lexiconHelper';
-import notifyError from 'src/utils/notify';
+import { notifyError } from 'src/utils/notify';
 
 export const useLexiconStore = defineStore('lexicon', {
   state: () => {

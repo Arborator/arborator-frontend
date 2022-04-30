@@ -7,7 +7,25 @@ interface ArboratorGrewError_t {
   message?: string;
 }
 
-export default function notifyError(ArboratorGrewError: ArboratorGrewError_t) {
+interface ArboratorMessage_t {
+  message: string;
+  timeout?: number;
+}
+
+export function notifyMessage(arboratorMessage: ArboratorMessage_t) {
+  const message = arboratorMessage.message;
+  const timeout = arboratorMessage.timeout || 10000;
+
+  Notify.create({
+    message,
+    position: 'top-right',
+    timeout,
+    closeBtn: 'Dismiss',
+    html: true,
+  });
+}
+
+export function notifyError(ArboratorGrewError: ArboratorGrewError_t) {
   console.log('ArboratorGrewError : ', ArboratorGrewError);
   let msg;
   let caption = '';
@@ -15,7 +33,7 @@ export default function notifyError(ArboratorGrewError: ArboratorGrewError_t) {
   const error = ArboratorGrewError.error;
   let timeout = ArboratorGrewError.timeout;
   const message = ArboratorGrewError.message;
-  console.log('Error message', message);
+  console.error('Error message', message);
   if (message !== undefined) {
     msg = message;
   } else if (error !== undefined) {

@@ -47,7 +47,7 @@ import RelationTableMain from '../components/relationTable/RelationTableMain.vue
 import { mapActions, mapState } from 'pinia';
 import { useProjectStore } from 'src/pinia/modules/project';
 import { useUserStore } from 'src/pinia/modules/user';
-import notifyError from 'src/utils/notify';
+import { notifyError } from 'src/utils/notify';
 import { useGrewSearchStore } from 'src/pinia/modules/grewSearch';
 import { sentence_t } from 'src/types/main_types';
 import { PropType, defineComponent } from 'vue';
@@ -146,7 +146,10 @@ export default defineComponent({
           }
         })
         .catch((error) => {
-          notifyError({ error });
+          {
+            notifyError;
+          }
+          ({ error });
           this.loading = false;
         });
     },

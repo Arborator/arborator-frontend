@@ -99,7 +99,7 @@
 <script lang="ts">
 import { table_t } from 'src/types/main_types';
 import api from '../api/backend-api';
-import notifyError from 'src/utils/notify';
+import { notifyError } from 'src/utils/notify';
 import { user_t } from 'src/api/backend-types';
 
 import { defineComponent } from 'vue';

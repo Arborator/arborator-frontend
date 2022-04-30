@@ -216,7 +216,7 @@ import MultiEditDialog from './MultiEditDialog.vue';
 import { reactive_sentences_obj_t, sentence_bus_events_t, sentence_bus_t } from 'src/types/main_types';
 import { mapActions, mapState, mapWritableState } from 'pinia';
 import { useProjectStore } from 'src/pinia/modules/project';
-import notifyError from 'src/utils/notify';
+import { notifyError } from 'src/utils/notify';
 import { useUserStore } from 'src/pinia/modules/user';
 import { useGrewSearchStore } from 'src/pinia/modules/grewSearch';
 import { PropType } from 'vue';

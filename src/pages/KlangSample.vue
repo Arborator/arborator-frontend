@@ -386,7 +386,7 @@ import { useUserStore } from 'src/pinia/modules/user';
 import JSZip from 'jszip';
 import { Change, diffWords } from 'diff';
 import { useMainStore } from 'src/pinia';
-import notifyError from 'src/utils/notify';
+import { notifyError } from 'src/utils/notify';
 import { timed_tokens_t, transcription_t } from 'src/api/backend-types';
 
 // type transcription_object_t = { source: 'original'; data: { transcription: timed_tokens_t } } | { source: 'user'; data: transcription_t };

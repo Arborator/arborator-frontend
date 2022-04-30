@@ -38,7 +38,7 @@ import api from '../../api/backend-api';
 import { mapState } from 'pinia';
 import { useProjectStore } from 'src/pinia/modules/project';
 import { useUserStore } from 'src/pinia/modules/user';
-import notifyError from 'src/utils/notify';
+import { notifyError } from 'src/utils/notify';
 
 import { defineComponent } from 'vue';
 

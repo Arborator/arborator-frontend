@@ -56,7 +56,7 @@
 import api from '../api/backend-api';
 import SentenceCard from './sentence/SentenceCard.vue';
 import { PropType, defineComponent } from 'vue';
-import notifyError from 'src/utils/notify';
+import { notifyError } from 'src/utils/notify';
 import { grewSearchResult_t, sample_t } from 'src/api/backend-types';
 
 export default defineComponent({

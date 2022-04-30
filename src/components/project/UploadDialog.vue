@@ -101,7 +101,7 @@
 </template>
 
 <script lang="ts">
-import notifyError from 'src/utils/notify';
+import { notifyError } from 'src/utils/notify';
 import api from '../../api/backend-api';
 import { useModelWrapper } from '../../composables/modelWrapper.js';
 import { defineComponent } from 'vue';

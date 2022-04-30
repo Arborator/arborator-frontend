@@ -44,7 +44,7 @@ import 'codemirror/mode/javascript/javascript.js';
 
 // theme
 import 'codemirror/theme/dracula.css';
-import notifyError from 'src/utils/notify';
+import { notifyError } from 'src/utils/notify';
 import { sentence_bus_t } from 'src/types/main_types';
 import { PropType } from 'vue';
 

@@ -101,7 +101,7 @@ import { mapState } from 'pinia';
 import { useProjectStore } from 'src/pinia/modules/project';
 // import dummydata from '../assets/data.json';
 import api from '../../api/backend-api';
-import notifyError from 'src/utils/notify';
+import { notifyError } from 'src/utils/notify';
 
 import { defineComponent } from 'vue';
 import { grewSearchResult_t } from 'src/api/backend-types';

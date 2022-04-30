@@ -5,7 +5,7 @@ import defaultState from './defaultState';
 import { useUserStore } from '../user';
 
 import { defineStore } from 'pinia';
-import notifyError from 'src/utils/notify';
+import { notifyMessage, notifyError } from 'src/utils/notify';
 import { annotationFeatures_t, project_extended_t } from 'src/api/backend-types';
 
 export const useProjectStore = defineStore('project', {
@@ -34,9 +34,9 @@ export const useProjectStore = defineStore('project', {
       ),
     cleanedImage: (state) => {
       const ifImageEmpty = '/images/niko-photos-tGTVxeOr_Rs-unsplash.jpg';
-      if (state.image == null ) return ifImageEmpty;
+      if (state.image == null) return ifImageEmpty;
       if (state.image.length < 1) return ifImageEmpty;
-      return state.image
+      return state.image;
     },
   },
   actions: {
@@ -110,8 +110,9 @@ export const useProjectStore = defineStore('project', {
           .updateProject(this.name, toUpdateObject)
           .then((response) => {
             this.$patch(toUpdateObject);
-            notifyError({
-              error: 'Change saved!',
+            notifyMessage({
+              message: 'Change saved!',
+              timeout: 3000,
             });
             resolve(response);
           })

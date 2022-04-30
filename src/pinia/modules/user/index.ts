@@ -4,7 +4,7 @@ import { cookies } from '../../../boot/vue-cookies';
 
 import api from '../../../api/backend-api';
 import { defineStore } from 'pinia';
-import notifyError from 'src/utils/notify';
+import { notifyError } from 'src/utils/notify';
 
 export const useUserStore = defineStore('user', {
   state: () => {

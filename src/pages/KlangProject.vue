@@ -87,7 +87,7 @@ import { useKlangStore } from 'src/pinia/modules/klang';
 // import Vue from 'vue';
 import { exportFile } from 'quasar';
 import api from 'src/api/backend-api';
-import notifyError from 'src/utils/notify';
+import { notifyError } from 'src/utils/notify';
 import { useMainStore } from 'src/pinia';
 
 import { defineComponent } from 'vue';

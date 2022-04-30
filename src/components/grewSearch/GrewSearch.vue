@@ -20,7 +20,7 @@ import ResultView from '../ResultView.vue';
 import api from '../../api/backend-api';
 import { useGrewSearchStore } from 'src/pinia/modules/grewSearch';
 import { mapWritableState } from 'pinia';
-import notifyError from 'src/utils/notify';
+import { notifyError } from 'src/utils/notify';
 import { defineComponent } from 'vue';
 import { grewSearchResult_t } from 'src/api/backend-types';
 

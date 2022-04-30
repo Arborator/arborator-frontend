@@ -430,7 +430,7 @@ import UploadDialog from '../components/project/UploadDialog.vue';
 import LexiconPanel from '../components/lexicon/LexiconPanel.vue';
 import GrewSearch from '../components/grewSearch/GrewSearch.vue';
 import RelationTableMain from '../components/relationTable/RelationTableMain.vue';
-import notifyError from 'src/utils/notify';
+import { notifyError } from 'src/utils/notify';
 import { mapActions, mapState } from 'pinia';
 import { useLexiconStore } from 'src/pinia/modules/lexicon';
 import { useProjectStore } from 'src/pinia/modules/project';

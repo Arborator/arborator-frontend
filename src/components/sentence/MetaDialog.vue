@@ -42,7 +42,7 @@ import { useProjectStore } from 'src/pinia/modules/project';
 import { sentence_bus_t } from 'src/types/main_types';
 import { PropType } from 'vue';
 import { MetaJson } from 'conllup/lib/conll';
-import notifyError from 'src/utils/notify';
+import { notifyError } from 'src/utils/notify';
 
 import { defineComponent } from 'vue';
 

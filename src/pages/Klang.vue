@@ -26,7 +26,7 @@
 </template>
 
 <script lang="ts">
-import notifyError from 'src/utils/notify';
+import { notifyError } from 'src/utils/notify';
 import api from '../api/backend-api';
 import { KlangProject_t } from 'src/api/backend-types';
 

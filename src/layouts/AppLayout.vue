@@ -177,7 +177,7 @@ import { defineComponent } from 'vue';
 
 import '../assets/css/tags-style.css';
 import '../assets/css/arborator-draft.css';
-import notifyError from 'src/utils/notify';
+import { notifyError } from 'src/utils/notify';
 import { mapActions, mapState } from 'pinia';
 import { useUserStore } from 'src/pinia/modules/user';
 import { useMainStore } from 'src/pinia';

@@ -156,13 +156,9 @@
 <script lang="ts">
 import { computed } from 'vue';
 import { mapActions, mapState } from 'pinia';
-import { useLexiconStore } from 'src/pinia/modules/lexicon';
+import { lexiconItem_FE_t, useLexiconStore } from 'src/pinia/modules/lexicon';
 import { useGrewSearchStore } from 'src/pinia/modules/grewSearch';
 import { table_t } from 'src/types/main_types';
-
-interface lexicon_item_t {
-  key: string;
-}
 
 import { defineComponent } from 'vue';
 
@@ -175,7 +171,7 @@ export default defineComponent({
     return { parentSlots };
   },
   data() {
-    const table: table_t<lexicon_item_t> = {
+    const table: table_t<lexiconItem_FE_t> = {
       fields: [
         {
           name: 'expand',
@@ -329,7 +325,7 @@ export default defineComponent({
   },
   methods: {
     ...mapActions(useLexiconStore, ['setLexiconModificationItem', 'removeCoupleLexiconItemBeforeAfter']),
-    ...mapActions(useGrewSearchStore, ['switch_grew_dialog']),
+    ...mapActions(useGrewSearchStore, ['switch_grew_dialog', 'change_last_grew_query']),
     onRowClick(evt: Event, row: any) {
       this.setLexiconModificationItem(row);
     },
@@ -350,8 +346,46 @@ export default defineComponent({
       this.table.selected = [];
     },
     getRulesGrew() {
+      console.log('KK this.table.selected', this.table.selected);
+      let grewRuleConcatenated = '';
+      let counter = 1;
+      for (const after of this.table.selected) {
+        const before = this.findOriginalLexiconItem(after);
+        console.log(before.key, after.key);
+        const thisRule = this.grew_rule_from_lex_item_pair(before, after);
+        grewRuleConcatenated += `rule r${counter} {\n${thisRule}\n}\n`;
+        counter = counter + 1;
+      }
+      this.change_last_grew_query({ text: grewRuleConcatenated, type: 'REWRITE' });
       this.switch_grew_dialog(true);
-      // TODO : handle grew command generation logic
+    },
+
+    grew_pattern_from_lex_item(lex_item: lexiconItem_FE_t) {
+      let pattern = 'pattern { N[';
+      for (const [feat, value] of Object.entries(lex_item.feats)) {
+        if (lex_item.feats) {
+          pattern += `${feat} = \"${value}\", `;
+        } else {
+          pattern += `!${feat}, `;
+        }
+      }
+      pattern += '] }';
+      return pattern;
+    },
+
+    grew_rule_from_lex_item_pair(before: lexiconItem_FE_t, after: lexiconItem_FE_t) {
+      let commands = 'commands { ';
+      for (const feat in after.feats) {
+        if (before.feats[feat] != after.feats[feat]) {
+          if (after.feats[feat]) {
+            commands += `N.${feat} = \"${after.feats[feat]}\"; `;
+          } else {
+            commands += `del_feat N.${feat}; `;
+          }
+        }
+      }
+      commands += '}';
+      return this.grew_pattern_from_lex_item(before) + '\n' + commands;
     },
 
     // exportLexiconTSV() {

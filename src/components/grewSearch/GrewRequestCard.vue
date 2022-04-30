@@ -76,6 +76,7 @@ import 'codemirror/lib/codemirror.css';
 import grewTemplates from '../../assets/grew-templates.json';
 import { mapActions, mapState } from 'pinia';
 import { useGrewSearchStore } from 'src/pinia/modules/grewSearch';
+
 import { defineComponent } from 'vue';
 // import 'codemirror/theme/material.css'
 
@@ -104,10 +105,10 @@ CodeMirror2.defineMode('grew', () => {
   }
   function tokenBase(stream: any, state: any) {
     const ch = stream.next();
-    // if (ch === '"') {
-    //   state.tokenize = tokenString;
-    //   return state.tokenize(stream, state);
-    // }
+    if (ch === '"') {
+      state.tokenize = tokenString;
+      return state.tokenize(stream, state);
+    }
     if (ch === '%') {
       stream.skipToEnd();
       return 'comment';
@@ -185,24 +186,17 @@ export default defineComponent({
     };
   },
   computed: {
-    ...mapState(useGrewSearchStore, ['lastGrewQuery', 'lastGrewCommand']),
+    ...mapState(useGrewSearchStore, ['lastQuery']),
   },
   mounted() {
-    const grewHistory = this.$storage.getStorageSync('grewHistory');
-    if (grewHistory !== undefined && grewHistory.length > 0) {
-      this.change_last_grew_query(grewHistory);
-    }
-
-    if (this.lastGrewQuery !== '') {
-      this.currentQuery = this.lastGrewQuery;
-    }
-    if (this.lastGrewCommand !== '') {
-      this.rewriteCommands = this.lastGrewCommand;
+    if (this.lastQuery !== null) {
+      this.currentQueryType = this.lastQuery.type;
+      this.currentQuery = this.lastQuery.text;
     }
     this.checkgrewquery();
   },
   methods: {
-    ...mapActions(useGrewSearchStore, ['change_last_grew_query', 'change_last_grew_command']),
+    ...mapActions(useGrewSearchStore, ['change_last_grew_query']),
     /**
      * Call parent onsearch function and update store and history
      *
@@ -210,9 +204,7 @@ export default defineComponent({
      */
     onSearch() {
       this.parentOnSearch(this.currentQuery);
-      this.change_last_grew_query(this.currentQuery);
-      this.change_last_grew_command(this.rewriteCommands);
-      this.$storage.setStorageSync('grewHistory', this.currentQuery);
+      this.change_last_grew_query({ text: this.currentQuery, type: this.currentQueryType });
     },
     /**
      * Call parent onsearch function and update store and history
@@ -221,9 +213,7 @@ export default defineComponent({
      */
     tryRules() {
       this.parentOnTryRules(this.currentQuery);
-      this.change_last_grew_query(this.currentQuery);
-      this.change_last_grew_command(this.rewriteCommands);
-      this.$storage.setStorageSync('grewHistory', this.currentQuery);
+      this.change_last_grew_query({ text: this.currentQuery, type: this.currentQueryType });
     },
     /**
      * Modify the search pattern (search string)

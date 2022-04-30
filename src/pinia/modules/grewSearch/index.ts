@@ -4,8 +4,7 @@ export const useGrewSearchStore = defineStore('grewSearch', {
   state: () => {
     return {
       grewDialog: false,
-      lastGrewQuery: '',
-      lastGrewCommand: '',
+      lastQuery: null as null | { text: string; type: 'REWRITE' | 'SEARCH' },
       pendingModifications: new Set(), // set of sentence ids
     };
   },
@@ -13,11 +12,8 @@ export const useGrewSearchStore = defineStore('grewSearch', {
     switch_grew_dialog(newDialogState: boolean) {
       this.grewDialog = newDialogState;
     },
-    change_last_grew_query(query: string) {
-      this.lastGrewQuery = query;
-    },
-    change_last_grew_command(command: string) {
-      this.lastGrewCommand = command;
+    change_last_grew_query(query: null | { text: string; type: 'REWRITE' | 'SEARCH' }) {
+      this.lastQuery = query;
     },
     add_pending_modification(pendingModification: any) {
       this.pendingModifications.add(pendingModification);

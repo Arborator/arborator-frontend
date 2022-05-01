@@ -339,7 +339,7 @@ export default defineComponent({
     };
   },
   computed: {
-    ...mapState(useLexiconStore, ['isShowLexiconPanel', 'lexiconItems', 'lexiconLoading', 'lexiconItemsModified']),
+    ...mapState(useLexiconStore, ['lexiconItems', 'lexiconLoading', 'lexiconItemsModified']),
     ...mapState(useProjectStore, ['annotationFeatures']),
     ...mapState(useProjectStore, ['isTeacher', 'exerciseMode']),
     ...mapWritableState(useGrewSearchStore, ['grewDialog']),

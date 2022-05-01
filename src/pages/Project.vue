@@ -604,6 +604,7 @@ export default defineComponent({
       tagContext: {},
       tableKey: 0,
       initLoad: false,
+      isShowLexiconPanel: false,
     };
   },
   computed: {
@@ -620,7 +621,6 @@ export default defineComponent({
       'isTeacher',
     ]),
     ...mapState(useUserStore, ['isLoggedIn', 'isSuperAdmin', 'loggedWithGithub', 'avatar']),
-    ...mapState(useLexiconStore, ['isShowLexiconPanel']),
 
     routePath() {
       return this.$route.path;
@@ -785,6 +785,7 @@ export default defineComponent({
       }
 
       this.fetchLexicon(this.$route.params.projectname as string, samplenames, type);
+      this.isShowLexiconPanel = true
     },
 
     // grewquery() {

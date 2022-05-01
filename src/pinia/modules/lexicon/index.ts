@@ -11,8 +11,7 @@ export interface lexiconItem_FE_t extends lexiconItem_t {
 export const useLexiconStore = defineStore('lexicon', {
   state: () => {
     return {
-      isShowLexiconPanel: false,
-      lexiconLoading: false,
+      lexiconLoading: false as boolean,
       lexiconItems: [] as lexiconItem_FE_t[],
       lexiconModificationItemBefore: {} as lexiconItem_FE_t,
       lexiconModificationItemAfter: {} as lexiconItem_FE_t,
@@ -24,25 +23,26 @@ export const useLexiconStore = defineStore('lexicon', {
     lexiconItemsModified: (state) => state.couplesLexiconItemsBeforeAfter.map((couple) => couple.after),
   },
   actions: {
-    showLexiconTable() {
-      this.isShowLexiconPanel = true;
-    },
-    hideLexiconTable() {
-      this.isShowLexiconPanel = false;
+    purgeCurrentState() {
+      this.lexiconItems = [];
+      this.lexiconModificationItemBefore = {} as lexiconItem_FE_t;
+      this.lexiconModificationItemAfter = {} as lexiconItem_FE_t;
+      this.isShowLexiconModification = false;
+      this.couplesLexiconItemsBeforeAfter = [];
     },
     fetchLexicon(projectname: string, samplenames: string[], treeSelection: string) {
       this.lexiconLoading = true;
+      this.purgeCurrentState();
       api
         .getLexicon(projectname, { samplenames, treeSelection })
         .then((response) => {
+          this.lexiconLoading = false;
           const lexiconItems = [];
           for (const lexiconItem_BE of response.data) {
             const lexiconItem_FE = { ...lexiconItem_BE, key: computeUniqueKey(lexiconItem_BE) };
             lexiconItems.push(lexiconItem_FE);
           }
-          this.isShowLexiconPanel = true;
           this.lexiconItems = lexiconItems;
-          this.lexiconLoading = false;
         })
         .catch((error) => {
           this.lexiconLoading = false;

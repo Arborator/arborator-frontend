@@ -105,10 +105,10 @@ CodeMirror2.defineMode('grew', () => {
   }
   function tokenBase(stream: any, state: any) {
     const ch = stream.next();
-    if (ch === '"') {
-      state.tokenize = tokenString;
-      return state.tokenize(stream, state);
-    }
+    // if (ch === '"') {
+    //   state.tokenize = tokenString;
+    //   return state.tokenize(stream, state);
+    // }
     if (ch === '%') {
       stream.skipToEnd();
       return 'comment';

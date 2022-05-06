@@ -377,9 +377,11 @@ export default defineComponent({
 
     grew_rule_from_lex_item_pair(before: lexiconItem_FE_t, after: lexiconItem_FE_t) {
       let commands = 'commands { ';
+      let withouts = '';
       for (const feat in after.feats) {
         if (before.feats[feat] != after.feats[feat]) {
           if (after.feats[feat]) {
+            withouts += `\nwithout { N.${feat} = \"${after.feats[feat]}\" }`;
             commands += `N.${feat} = \"${after.feats[feat]}\"; `;
           } else {
             commands += `del_feat N.${feat}; `;
@@ -387,7 +389,7 @@ export default defineComponent({
         }
       }
       commands += '}';
-      return this.grew_pattern_from_lex_item(before) + '\n' + commands;
+      return this.grew_pattern_from_lex_item(before) + withouts + '\n' + commands;
     },
 
     // exportLexiconTSV() {

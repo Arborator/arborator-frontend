@@ -2,7 +2,6 @@
   <q-table
     v-bind="$attrs"
     ref="table"
-    :key="tableKey"
     v-model:selected="table.selected"
     v-model:pagination="table.pagination"
     selection="multiple"
@@ -20,21 +19,6 @@
     :class="($q.dark.isActive ? 'my-sticky-header-table-dark' : 'my-sticky-header-table') + ' rounded-borders'"
     @row-click="onRowClick"
   >
-    <!-- <template v-slot:body-cell="props">
-        <td v-if="props.row.changed === 'replace'" style="background: mediumseagreen">
-          {{ props.value }}
-        </td>
-        <td v-else-if="props.row.changed === 'add'" style="background: orange">
-          {{ props.value }}
-        </td>
-        <td v-else-if="props.row.changed === 'delete'" style="background: #f34336">
-          {{ props.value }}
-        </td>
-        <td v-else>{{ props.value }}</td>
-      </template> -->
-    <!-- <template v-slot:body-selection="scope">
-        
-      </template> -->
     <template #header-selection="scope">
       <q-checkbox v-model="scope.selected" />
     </template>
@@ -126,7 +110,7 @@
       </div>
       <div>
         <q-btn-group v-if="compareWithBefore" flat>
-          <q-btn color="default" :disable="table.selected.length === 0" flat icon="compare_arrows" @click="getRulesGrew()"
+          <q-btn color="default" :disable="table.selected.length === 0" flat icon="compare_arrows" @click="get()"
             ><q-tooltip>Generate Grew Rule</q-tooltip></q-btn
           >
           <q-btn color="default" :disable="table.selected.length === 0" flat icon-right="delete_forever" @click="deleteSelected()"
@@ -136,18 +120,6 @@
       </div>
     </template>
 
-    <!-- <template v-slot:body-cell="props">
-        <td v-if="props.row.changed === 'replace'" style="background: mediumseagreen">
-          {{ props.value }}
-        </td>
-        <td v-else-if="props.row.changed === 'add'" style="background: orange">
-          {{ props.value }}
-        </td>
-        <td v-else-if="props.row.changed === 'delete'" style="background: #f34336">
-          {{ props.value }}
-        </td>
-        <td v-else>{{ props.value }}</td>
-      </template> -->
     <!-- Dynamically inherit slots from parent -->
     <template v-for="slot in parentSlots" #[slot]>
       <slot :name="slot" />
@@ -238,84 +210,8 @@ export default defineComponent({
       exporting: false,
     };
     return {
-      selected: [],
-      openFeatures: false,
-      tableExporting: false,
-      currentword: null,
-      someFeatureChanged: false,
-      exporting: false,
-      RulesGrew: [],
-      currentinfo: null,
-      tempfeat: '',
-      infotochange: null,
-      temp_features: '',
-      indexfeat: 0,
-      resultSearchDialog: false,
-      // searchDialog: false,
-      RulesApplied: false,
-      uploadDial: false,
-      maximizedUploadToggle: false,
-      tsvOK: false,
       download: [],
-      uploadLexicon: [],
-      CompareDics: false,
-      dics: [],
-      featTable: {
-        form: [],
-        pos: [],
-        featl: [],
-        miscl: [],
-        lemma: [],
-        gloss: [],
-        changed: null,
-        columns: [
-          {
-            name: 'a',
-            align: 'center',
-            label: 'Attribute',
-            field: 'a',
-            sortable: true,
-            style: 'width: 33%',
-          },
-          {
-            name: 'v',
-            label: 'Value',
-            field: 'v',
-            sortable: true,
-          },
-          {
-            name: 'actions',
-            label: 'Actions',
-            field: '',
-            align: 'center',
-            style: 'width: 8%',
-          },
-        ],
-      },
-      options: {
-        // attribute table dialog specific stuff
-        annof: [], // = annotationFeatures from conf!!!
-        annofFEATS: {}, // obj version (instead of list)
-        annofMISC: {}, // obj version (instead of list)
-        splitregex: '',
-        relav: [],
-        currentoptions: [],
-        extendedrel: false,
-        lemmaoptions: [{ name: 'Lemma', values: 'String' }],
-        catoptions: [],
-      },
       table,
-      alerts: {
-        noRuletoApply: { color: 'negative', message: 'No rule to apply' },
-        noModification: { color: 'negative', message: 'No modification' },
-        getRulegrewSuccess: { color: 'positive', message: 'got rule grew.' },
-        onlyOneFile: { color: 'negative', message: 'One file is expected' },
-        onlyTSVFile: { color: 'negative', message: 'TSV file is expected' },
-      },
-      uploadSample: {
-        submitting: false,
-        attachment: { name: null, file: null },
-      },
       tableKey: 0,
     };
   },
@@ -347,7 +243,7 @@ export default defineComponent({
       }
       this.table.selected = [];
     },
-    getRulesGrew() {
+    get() {
       console.log('KK this.table.selected', this.table.selected);
       let grewRuleConcatenated = '';
       let counter = 1;

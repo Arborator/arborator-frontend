@@ -115,6 +115,12 @@ export default {
     tooltipAddSample: 'Ajouter un échantillon (fichier CoNLL)',
     tooltipExportSample: ['Sélectionnez les échantillons à exporter', 'Exporter les échantillons sélectionnés'],
     tooltipDeleteSample: ['Sélectionnez les échantillons à supprimer', 'Supprimer les échantillons sélectionnés'],
+    tooltipParser: [
+      'Sélectionner les échantillons pour entraîner le parseur',
+      'Entraîner le parseur avec les échantillons sélectionnés',
+      'Cliquer et choisir les paramètres pour le parseur',
+      'Cliquer pour arrêter le parseur',
+    ],
     tooltipGitPush: [
       'Pousser seulement mes arbres des échantillons sélectionnés',
       'Pousser mes plus récents arbres des échantillons sélectionnés',

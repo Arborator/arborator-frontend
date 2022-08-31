@@ -233,6 +233,34 @@ export default {
     return API.post(`projects/${projectname}/image`, form);
   },
 
+  // write bootparser default fct here:
+  // ---------------------------------------------------- //
+  // ---------------         Parser        --------------- //
+  // ---------------------------------------------------- //
+  bootParserDefault(samplenames, projectname) {
+    const data = { samples: samplenames, dev: 0.1, parser: 'auto', epoch: 5, to_parse: 'ALL' };
+    return API.post(`/projects/${projectname}/samples/parsing`, data);
+  },
+  bootParserCustom(samplenames, projectname, parserType, epochs, keepUpos, toParseNames) {
+    // TODO add custom parser params button
+    const data = {
+      samples: samplenames,
+      dev: 0.1,
+      parser: parserType,
+      epoch: epochs,
+      keepPos: keepUpos,
+      to_parse: toParseNames,
+    };
+    return API.post(`/projects/${projectname}/samples/parsing`, data);
+  },
+  bootParserResults(projectname, parserType, projectFdname) {
+    const data = { parser: parserType, fdname: projectFdname };
+    return API.post(`/projects/${projectname}/samples/parsing/results`, data);
+  },
+  removeParseFolder(projectname, projectFdname) {
+    const data = { fdname: projectFdname };
+    return API.post(`/projects/${projectname}/samples/parsing/removeFolder`, data);
+  },
   // These following two are not used
   commit(projectname, data) {
     return API.post(`projects/${projectname}/commit`, data);

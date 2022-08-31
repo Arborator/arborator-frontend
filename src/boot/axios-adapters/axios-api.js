@@ -5,5 +5,5 @@ export const API = axios.create({
   // baseURL: `/api`,
   baseURL: process.env.DEV ? '/api' : `${process.env.API}/api`,
   timeout: 50000,
-  withCredentials: true,
+  withCredentials: false,
 });

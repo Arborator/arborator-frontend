@@ -315,7 +315,7 @@
                   }}</q-tooltip>
                 </div>
                 <div>
-                  <q-btn flat color="default" label="stop" @click="bootParserStop()" :class="{ hidden: !parser.parsing }"></q-btn>
+                  <q-btn no-caps text-color="black" label="STOParser" @click="bootParserStop()" :class="{ hidden: !parser.parsing }"></q-btn>
                   <q-tooltip :delay="300" content-class="text-white bg-primary">{{ $t('projectView.tooltipParser[3]') }}</q-tooltip>
                 </div>
                 <!--fin TODO-->

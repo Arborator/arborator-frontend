@@ -1,16 +1,6 @@
 <template>
   <div class="table">
-    <q-table
-      separator="vertical"
-      hide-header
-      hide-bottom
-      dense
-      :title="title"
-      :rows="featdata"
-      :columns="columns"
-      row-key="name"
-      :v-model:pagination="pagination"
-    >
+    <q-table separator="vertical" hide-header :title="title" :rows="featdata" :columns="columns" row-key="name" :pagination="pagination">
       <template v-if="modifiable === 'true'" #top-right>
         <q-btn color="primary" round size="s" dense icon="add" @click="addNewFeature()">
           <q-tooltip :delay="300" content-class="text-white bg-primary">Add a new feature</q-tooltip>
@@ -117,12 +107,6 @@ export default defineComponent({
       },
       key: 0, // workaround...
     };
-  },
-  // computed: {
-  //   //  nodata(){ return "no "+this.title; }
-  // },
-  mounted() {
-    // console.log('prepend',this.prepend)
   },
   methods: {
     addNewFeature() {

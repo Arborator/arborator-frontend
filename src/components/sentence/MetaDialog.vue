@@ -2,7 +2,7 @@
   <!----------------- Start MetaDialog ------------------->
 
   <q-dialog v-model="metaDialogOpened">
-    <q-card style="height: 110vh; width: 110vh">
+    <q-card style="width: 110vh">
       <q-bar class="bg-primary text-white">
         <div class="text-weight-bold">Metadata of this sentence</div>
         <q-space />

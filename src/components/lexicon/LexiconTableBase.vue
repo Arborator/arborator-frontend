@@ -156,9 +156,9 @@ export default defineComponent({
           name: 'form',
           label: 'Form',
           sortable: true,
-          sort: (a: string, b: string) => {
-            return a.localeCompare(b);
-          },
+          // sort: (a: string, b: string) => {
+          //   return a.localeCompare(b);
+          // },
           align: 'left',
           field: 'form',
         },

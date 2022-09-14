@@ -76,6 +76,7 @@ interface CompareLexiconItem_t {
 }
 
 import { defineComponent } from 'vue';
+import { notifyMessage } from 'src/utils/notify';
 
 export default defineComponent({
   name: 'CompareLexicon',
@@ -213,7 +214,7 @@ export default defineComponent({
         }
         this.getRulesGrew(RulesGrew);
       } else {
-        this.$q.notify({ message: 'only difference' });
+        notifyMessage({ message: 'only difference' });
       }
       this.featCheck = false;
     },
@@ -244,7 +245,7 @@ export default defineComponent({
         });
         this.searchDialog = true;
       } else {
-        this.$q.notify({ message: 'No rule to apply' });
+        notifyMessage({ message: 'No rule to apply' });
       }
     },
   },

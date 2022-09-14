@@ -87,7 +87,7 @@ import { useKlangStore } from 'src/pinia/modules/klang';
 // import Vue from 'vue';
 import { exportFile } from 'quasar';
 import api from 'src/api/backend-api';
-import { notifyError } from 'src/utils/notify';
+import { notifyError, notifyMessage } from 'src/utils/notify';
 import { useMainStore } from 'src/pinia';
 
 import { defineComponent } from 'vue';
@@ -208,7 +208,7 @@ export default defineComponent({
       const status = exportFile('table-export.csv', content, 'text/csv');
 
       if (status !== true) {
-        this.$q.notify({
+        notifyMessage({
           message: 'Browser denied file download...',
           color: 'negative',
           icon: 'warning',
@@ -260,7 +260,7 @@ export default defineComponent({
           this.fetchKlangProjectSettings({
             projectname: this.kprojectname,
           });
-          this.$q.notify({
+          notifyMessage({
             message: 'The operation was successfully saved.',
             position: 'top-right',
             color: 'green',

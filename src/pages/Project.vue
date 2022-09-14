@@ -430,7 +430,7 @@ import UploadDialog from '../components/project/UploadDialog.vue';
 import LexiconPanel from '../components/lexicon/LexiconPanel.vue';
 import GrewSearch from '../components/grewSearch/GrewSearch.vue';
 import RelationTableMain from '../components/relationTable/RelationTableMain.vue';
-import { notifyError } from 'src/utils/notify';
+import { notifyError, notifyMessage } from 'src/utils/notify';
 import { mapActions, mapState } from 'pinia';
 import { useLexiconStore } from 'src/pinia/modules/lexicon';
 import { useProjectStore } from 'src/pinia/modules/project';
@@ -467,24 +467,6 @@ export default defineComponent({
     const possiblesUsers: user_sample_roles_t[] = [];
     const confirmActionCallback: CallableFunction = () => {
       console.log('Callback not init yet');
-    };
-    const alerts: { [key: string]: alert_t } = {
-      uploadsuccess: { color: 'positive', message: 'Upload success' },
-      uploadfail: {
-        color: 'negative',
-        message: 'Upload failed',
-        icon: 'report_problem',
-      },
-      deletesuccess: { color: 'positive', message: 'Delete success' },
-      deletefail: {
-        color: 'negative',
-        message: 'Delete failed',
-        icon: 'report_problem',
-      },
-      GitHubPushSuccess: {
-        color: 'positive',
-        message: 'Successfully pushed your data to GitHub',
-      },
     };
 
     const table: table_t<sample_t> = {
@@ -564,7 +546,6 @@ export default defineComponent({
       confirmActionCallback,
       confirmActionArg1: '',
       lexiconItems: [],
-      alerts,
       project: {
         // todo: this seems to be useless
         infos: {
@@ -698,7 +679,7 @@ export default defineComponent({
           .deleteSample(this.$route.params.projectname as string, sample.sample_name)
           .then(() => {
             this.table.selected = [];
-            this.showNotif('top-right', 'deletesuccess');
+            notifyMessage({message: "Delete success"})
             this.getProjectSamples();
           })
           .catch((error) => {
@@ -843,21 +824,6 @@ export default defineComponent({
     triggerConfirm(method: CallableFunction) {
       this.confirmActionDial = true;
       this.confirmActionCallback = method;
-    },
-
-    showNotif(position: any, alert: string) {
-      const { color, textColor, multiLine, icon, message, avatar, actions } = this.alerts[alert];
-      this.$q.notify({
-        color,
-        textColor,
-        icon,
-        message,
-        position,
-        avatar,
-        multiLine,
-        actions,
-        timeout: 2000,
-      });
     },
 
     searchSamples(rows: sample_t[], terms: any) {

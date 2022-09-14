@@ -386,7 +386,7 @@ import { useUserStore } from 'src/pinia/modules/user';
 import JSZip from 'jszip';
 import { Change, diffWords } from 'diff';
 import { useMainStore } from 'src/pinia';
-import { notifyError } from 'src/utils/notify';
+import { notifyError, notifyMessage } from 'src/utils/notify';
 import { timed_tokens_t, transcription_t } from 'src/api/backend-types';
 
 // type transcription_object_t = { source: 'original'; data: { transcription: timed_tokens_t } } | { source: 'user'; data: transcription_t };
@@ -560,10 +560,8 @@ export default defineComponent({
           this.populateSegmentsForAll();
           this.wasSaved = true;
 
-          this.$q.notify({
+          notifyMessage({
             message: 'The information was successfully saved.',
-            position: 'top-right',
-            color: 'green',
             icon: 'done',
           });
           this.isLoading = false;
@@ -802,10 +800,8 @@ export default defineComponent({
           const zipFileName = `${this.ksamplename}_${this.exportSampleName}.zip`;
           const status = exportFile(zipFileName, content);
           if (status) {
-            this.$q.notify({
+            notifyMessage({
               message: 'Exported conlls successfully.',
-              position: 'top-right',
-              color: 'green',
               icon: 'done',
             });
           } else {
@@ -839,10 +835,8 @@ export default defineComponent({
       }
       const status = exportFile(fileName, lines.join('\n'));
       if (status) {
-        this.$q.notify({
+        notifyMessage({
           message: 'Exported transcription tsv successfully.',
-          position: 'top-right',
-          color: 'green',
           icon: 'done',
         });
       } else {

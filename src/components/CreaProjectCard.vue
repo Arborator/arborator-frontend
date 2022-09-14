@@ -44,7 +44,7 @@
 <script lang="ts">
 import { useProjectStore } from 'src/pinia/modules/project';
 import api from '../api/backend-api';
-import { notifyError } from 'src/utils/notify';
+import { notifyError, notifyMessage } from 'src/utils/notify';
 import { mapActions, mapState } from 'pinia';
 import { useUserStore } from 'src/pinia/modules/user';
 import { defineComponent } from 'vue';
@@ -89,7 +89,7 @@ export default defineComponent({
           this.attachment.file = [];
           this.$props.parentGetProjects();
           this.submitting = false;
-          this.$q.notify({
+          notifyMessage({
             message: `${this.project.projectName} uploaded and created.`,
           });
         })

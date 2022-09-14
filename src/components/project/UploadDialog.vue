@@ -101,7 +101,7 @@
 </template>
 
 <script lang="ts">
-import { notifyError } from 'src/utils/notify';
+import { notifyError, notifyMessage } from 'src/utils/notify';
 import api from '../../api/backend-api';
 import { useModelWrapper } from '../../composables/modelWrapper.js';
 import { defineComponent } from 'vue';
@@ -253,7 +253,7 @@ export default defineComponent({
           this.$emit('uploaded:sample'); // tell to the parent that a new sample was uploaded and to fetch all samples
           this.uploadDialModel = false;
           this.uploadSample.submitting = false;
-          this.$q.notify({ message: 'upload success' });
+          notifyMessage({ message: 'upload success' });
         })
         .catch((error) => {
           if (error.response) {

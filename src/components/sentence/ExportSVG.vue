@@ -3,6 +3,7 @@
 </template>
 
 <script lang="ts">
+import { notifyMessage } from 'src/utils/notify';
 import { defineComponent } from 'vue';
 
 export default defineComponent({
@@ -121,7 +122,7 @@ export default defineComponent({
       link.click();
       document.body.removeChild(link);
       // this.table.exporting = false;
-      this.$q.notify({ message: 'Files downloaded' });
+      notifyMessage({ message: 'Files downloaded' });
     },
     /**
      * Handle token click event to display the related dialog

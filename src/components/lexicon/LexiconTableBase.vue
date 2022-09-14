@@ -304,11 +304,11 @@ export default defineComponent({
     //       link.click();
     //       document.body.removeChild(link);
     //       this.table.exporting = false;
-    //       this.$q.notify({ message: 'File downloaded' });
+    //       notifyMessage({ message: 'File downloaded' });
     //       return [];
     //     })
     //     .catch((error) => {
-    //       // this.$q.notify({message:`${error}`, color:'negative'});
+    //       // notifyError({message:`${error}`, type:'negative'});
     //       notifyError({ error });
     //       return [];
     //     });
@@ -335,11 +335,11 @@ export default defineComponent({
     //       link.click();
     //       document.body.removeChild(link);
     //       this.table.exporting = false;
-    //       this.$q.notify({ message: 'File downloaded' });
+    //       notifyMessage({ message: 'File downloaded' });
     //       return [];
     //     })
     //     .catch((error) => {
-    //       // this.$q.notify({message:`${error}`, color:'negative'});
+    //       // notifyError({message:`${error}`, type:'negative'});
     //       notifyError({ error });
     //       return [];
     //     });

@@ -359,7 +359,7 @@ import ConfirmAction from './ConfirmAction.vue';
 import { mapActions, mapState, mapWritableState, mapStores } from 'pinia';
 import { useProjectStore } from 'src/pinia/modules/project';
 import { useMainStore } from 'src/pinia';
-import { notifyError } from 'src/utils/notify';
+import { notifyError, notifyMessage } from 'src/utils/notify';
 import { sample_role_targetrole_t, user_t } from 'src/api/backend-types';
 
 import { defineComponent } from 'vue';
@@ -517,11 +517,11 @@ export default defineComponent({
     saveAnnotationSettings() {
       this.updateProjectConlluSchema(this.projectname, JSON.parse(this.annofjson))
         .then(() => {
-          this.$q.notify({ message: 'Change saved!' });
+          notifyMessage({ message: 'Change saved!' });
         })
         .catch((error) => {
           notifyError({ error });
-          this.$q.notify({
+          notifyMessage({
             message: `${error}`,
             color: 'negative',
             position: 'bottom',
@@ -543,7 +543,7 @@ export default defineComponent({
       api
         .updateManyProjectUserAccess(this.$props.projectname, targetRole, newRolesArrayId)
         .then((response) => {
-          this.$q.notify({ message: 'Change saved!' });
+          notifyMessage({ message: 'Change saved!' });
           this.admins = response.data.admins;
           this.guests = response.data.guests;
         })
@@ -555,7 +555,7 @@ export default defineComponent({
       api
         .deleteProjectUserAccess(this.$props.projectname, userid)
         .then((response) => {
-          this.$q.notify({ message: 'Change saved!' });
+          notifyMessage({ message: 'Change saved!' });
           this.admins = response.data.admins;
           this.guests = response.data.guests;
         })
@@ -567,7 +567,7 @@ export default defineComponent({
       api
         .deleteProjectUserAccess(this.$props.projectname, userid)
         .then((response) => {
-          this.$q.notify({ message: 'Change saved!' });
+          notifyMessage({ message: 'Change saved!' });
           this.admins = response.data.admins;
           this.guests = response.data.guests;
         })
@@ -579,7 +579,7 @@ export default defineComponent({
       api
         .addDefaultUserTree(this.$props.projectname, selected[0])
         .then(() => {
-          this.$q.notify({ message: 'Change saved!' });
+          notifyMessage({ message: 'Change saved!' });
         })
         .catch((error) => {
           notifyError({ error });
@@ -589,7 +589,7 @@ export default defineComponent({
       api
         .removeDefaultUserTree(this.$props.projectname, dutid)
         .then(() => {
-          this.$q.notify({ message: 'Change saved!' });
+          notifyMessage({ message: 'Change saved!' });
         })
         .catch((error) => {
           notifyError({ error });
@@ -604,14 +604,14 @@ export default defineComponent({
         this.postImage(this.uploadImage.image)
           .then(() => {
             this.uploadImage.submitting = false;
-            this.$q.notify({ message: 'Uploaded image saved!' });
+            notifyMessage({ message: 'Uploaded image saved!' });
           })
           .catch((error) => {
             notifyError({ error });
             this.uploadImage.submitting = false;
           });
       } else {
-        this.$q.notify({ message: 'No image was selected', type: 'error' });
+        notifyMessage({ message: 'No image was selected', type: 'error' });
       }
     },
     /**

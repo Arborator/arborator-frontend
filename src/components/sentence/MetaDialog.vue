@@ -42,7 +42,7 @@ import { useProjectStore } from 'src/pinia/modules/project';
 import { sentence_bus_t } from 'src/types/main_types';
 import { PropType } from 'vue';
 import { MetaJson } from 'conllup/lib/conll';
-import { notifyError } from 'src/utils/notify';
+import { notifyError, notifyMessage } from 'src/utils/notify';
 
 import { defineComponent } from 'vue';
 
@@ -136,7 +136,7 @@ export default defineComponent({
           },
           userId: this.userId,
         });
-        this.$q.notify({
+        notifyMessage({
           message: 'Conllu changed',
         });
       } else {

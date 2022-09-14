@@ -56,7 +56,7 @@
 import api from '../api/backend-api';
 import SentenceCard from './sentence/SentenceCard.vue';
 import { PropType, defineComponent } from 'vue';
-import { notifyError } from 'src/utils/notify';
+import { notifyError, notifyMessage } from 'src/utils/notify';
 import { grewSearchResult_t, sample_t } from 'src/api/backend-types';
 
 export default defineComponent({
@@ -187,7 +187,7 @@ export default defineComponent({
         api.saveConll(this.$route.params.projectname as string, datasample).then(() => {
           this.resultSearchDialog = false;
           this.parentOnShowTable(this.resultSearchDialog);
-          this.$q.notify({ message: 'Conll Saved' });
+          notifyMessage({ message: 'Conll Saved' });
         });
       } else {
         console.log('not ok');
@@ -218,7 +218,7 @@ export default defineComponent({
           .deleteSample(this.$route.params.projectname as string, sample.sample_name)
           .then(() => {
             this.samplesFrozen.selected = [];
-            this.$q.notify({ message: 'delete success' });
+            notifyMessage({ message: 'delete success' });
             this.getProjectSamples();
           })
           .catch((error) => {

@@ -319,6 +319,7 @@
 
 <script lang="ts">
 import { openURL, copyToClipboard } from 'quasar';
+import { notifyMessage } from 'src/utils/notify';
 
 import { defineComponent } from 'vue';
 
@@ -359,10 +360,10 @@ export default defineComponent({
               url       = {https://www.aclweb.org/anthology/2020.lrec-1.651}
               }`)
         .then(() => {
-          this.$q.notify({ message: 'Copied to clipboard!' });
+          notifyMessage({ message: 'Copied to clipboard!' });
         })
         .catch(() => {
-          this.$q.notify({ message: 'Failed to copy.' });
+          notifyMessage({ message: 'Failed to copy.' });
         });
     },
     xCoordinate(e: { clientX: number }) {

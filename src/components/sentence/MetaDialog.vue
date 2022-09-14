@@ -136,7 +136,9 @@ export default defineComponent({
           userId: this.userId,
         });
         notifyMessage({
-          message: 'Conllu changed',
+          message: "Meta changed locally, don't forget to save !",
+          type: 'warning',
+          icon: 'warning',
         });
       } else {
         notifyError({

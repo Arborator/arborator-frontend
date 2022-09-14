@@ -517,7 +517,7 @@ export default defineComponent({
     saveAnnotationSettings() {
       this.updateProjectConlluSchema(this.projectname, JSON.parse(this.annofjson))
         .then(() => {
-          notifyMessage({ message: 'Change saved!' });
+          notifyMessage({ message: 'New annotation settings saved on the server', icon: 'save' });
         })
         .catch((error) => {
           notifyError({ error });
@@ -538,7 +538,7 @@ export default defineComponent({
       api
         .updateManyProjectUserAccess(this.$props.projectname, targetRole, newRolesArrayId)
         .then((response) => {
-          notifyMessage({ message: 'Change saved!' });
+          notifyMessage({ message: 'New admins/guests saved on the server', icon: 'save' });
           this.admins = response.data.admins;
           this.guests = response.data.guests;
         })
@@ -550,7 +550,7 @@ export default defineComponent({
       api
         .deleteProjectUserAccess(this.$props.projectname, userid)
         .then((response) => {
-          notifyMessage({ message: 'Change saved!' });
+          notifyMessage({ message: 'Admin removal saved on the server', icon: 'save' });
           this.admins = response.data.admins;
           this.guests = response.data.guests;
         })
@@ -562,7 +562,7 @@ export default defineComponent({
       api
         .deleteProjectUserAccess(this.$props.projectname, userid)
         .then((response) => {
-          notifyMessage({ message: 'Change saved!' });
+          notifyMessage({ message: 'Guest removal saved on the server', icon: 'save' });
           this.admins = response.data.admins;
           this.guests = response.data.guests;
         })
@@ -574,7 +574,7 @@ export default defineComponent({
       api
         .addDefaultUserTree(this.$props.projectname, selected[0])
         .then(() => {
-          notifyMessage({ message: 'Change saved!' });
+          notifyMessage({ message: 'Default user tree config saved on the server', icon: 'save' });
         })
         .catch((error) => {
           notifyError({ error });
@@ -584,7 +584,7 @@ export default defineComponent({
       api
         .removeDefaultUserTree(this.$props.projectname, dutid)
         .then(() => {
-          notifyMessage({ message: 'Change saved!' });
+          notifyMessage({ message: 'Default user tree removal saved on the server', icon: 'save' });
         })
         .catch((error) => {
           notifyError({ error });

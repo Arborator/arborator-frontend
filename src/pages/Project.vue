@@ -749,12 +749,12 @@ export default defineComponent({
           link.click();
           document.body.removeChild(link);
           this.table.exporting = false;
-          this.$q.notify({ message: 'Files downloaded' });
+          notifyMessage({ message: 'Files downloaded' });
           return [];
         })
         .catch((error) => {
           this.table.exporting = false;
-          // this.$q.notify({message:`${error}`, color:'negative'});
+          // notifyMessage({message:`${error}`, color:'negative'});
           notifyError({ error });
           return [];
         });
@@ -807,7 +807,7 @@ export default defineComponent({
         .modifySampleRole(this.$route.params.projectname as string, context.sample_name, slug.value, role, action)
         .then((response) => {
           this.updateTags(response.data.roles, context.sample_name);
-          this.$q.notify({ message: 'Change saved!' });
+          notifyMessage({ message: 'New project roles saved on the server', icon: 'save' });
         })
         .catch((error) => {
           this.reverseTags(slug.value, context.sample_name, role);

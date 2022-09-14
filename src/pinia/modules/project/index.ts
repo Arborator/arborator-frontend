@@ -92,9 +92,7 @@ export const useProjectStore = defineStore('project', {
       api
         .updateProject(this.name, { description: this.description })
         .then(() => {
-          Notify.create({
-            message: 'Change saved!',
-          });
+          notifyMessage({ message: 'New project description saved on the server', icon: 'save' });
         })
         .catch((error) => {
           notifyError({ error });
@@ -110,10 +108,7 @@ export const useProjectStore = defineStore('project', {
           .updateProject(this.name, toUpdateObject)
           .then((response) => {
             this.$patch(toUpdateObject);
-            notifyMessage({
-              message: 'Change saved!',
-              timeout: 3000,
-            });
+            notifyMessage({ message: 'New project settings saved on the server', icon: 'save' });
             resolve(response);
           })
           .catch((error) => {
@@ -133,17 +128,11 @@ export const useProjectStore = defineStore('project', {
           .updateProjectFeatures(projectname, toUpdateObject)
           .then((response) => {
             this.$patch(toUpdateObject);
-            Notify.create({
-              message: 'Change saved!',
-            });
+            notifyMessage({ message: 'New project features saved on the server', icon: 'save' });
             resolve(response);
           })
           .catch((error) => {
-            Notify.create({
-              message: `${error}`,
-              color: 'negative',
-              position: 'bottom',
-            });
+            notifyError({ error });
             reject(error);
           });
       });

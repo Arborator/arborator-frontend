@@ -60,11 +60,6 @@ export default defineComponent({
   name: 'Settings',
   data() {
     return {
-      alerts: {
-        saveerror: { color: 'negative', message: 'Could not save the data.', icon: 'report_problem' },
-        savesuccess: { color: 'positive', message: 'Modifications saved' },
-        denied: { color: 'warning', icon: 'report_problem', message: 'Denied! Contact an administrator.' },
-      },
       savingModifs: false,
       isPwd: true,
       tempPwd: '',

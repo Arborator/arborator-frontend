@@ -5,7 +5,7 @@ interface ArboratorMessage_t {
   message: string;
   timeout?: number;
   color?: string;
-  type?: string;
+  type?: 'positive' | 'negative' | 'warning';
   position?: 'top-right' | 'top' | 'bottom';
   icon?: string;
 }

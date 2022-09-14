@@ -286,14 +286,6 @@ export default defineComponent({
         redo: false,
         user: '',
       },
-      alerts: {
-        saveSuccess: { color: 'positive', message: 'Saved!' },
-        saveFail: {
-          color: 'negative',
-          message: 'Oops, could not save...',
-          icon: 'report_problem',
-        },
-      },
       shownmetanames,
       conllSavedCounter: 0,
       shownmetas: {},
@@ -546,7 +538,7 @@ export default defineComponent({
               this.exportedConll = exportedConll;
             }
             this.graphInfo.dirty = false;
-            notifyMessage({ position: 'top', message: 'saveSuccess' });
+            notifyMessage({ position: 'top', message: 'Saved on the server', icon: 'save' });
             this.forceRerender += 1; // nasty trick to rerender the indication of last time
           }
         })
@@ -574,14 +566,6 @@ export default defineComponent({
       // "this.openTabUser" contains the user name
       this.sentenceBus.emit('open:metaDialog', { userId: this.openTabUser });
     },
-    /**
-     * Show a notification. Wrapper considering parameters
-     * @deprecated should use this.$q.notify instead. Global params are already set
-     *
-     * @param {String} position 'top-right' etc
-     * @param {String} alert 'warn', ect.
-     * @returns void
-     */
     changeMetaText(newMetaText: string) {
       this.sentenceData.sentence = newMetaText;
     },

@@ -171,7 +171,7 @@ import ConfirmAction from '../components/ConfirmAction.vue';
 import { mapState } from 'pinia';
 import { useUserStore } from 'src/pinia/modules/user';
 import { defineComponent } from 'vue';
-import { notifyError } from 'src/utils/notify';
+import { notifyError, notifyMessage } from 'src/utils/notify';
 import { project_extended_t } from 'src/api/backend-types';
 import { StorageInterface } from 'vue3-storage/packages/types';
 
@@ -294,7 +294,7 @@ export default defineComponent({
       api
         .deleteProject(projectName)
         .then(() => {
-          this.$q.notify({ message: `Project ${projectName} deleted` });
+          notifyMessage({ message: `Project ${projectName} deleted` });
           this.getProjects();
         })
         .catch((error) => {

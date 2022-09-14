@@ -50,7 +50,7 @@
           v-if="userIds.length > 0"
           icon="perm_identity"
           label="Custom user id on import"
-          :caption="'By default we use your user name ' + userid"
+          :caption="'By default we use your user name ' + '`' + username + '`'"
           header-class="primary"
         >
           <div class="q-pa-md">

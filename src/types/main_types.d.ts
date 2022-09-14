@@ -18,7 +18,7 @@ export interface field_t {
   sortable: boolean;
   field: string;
   align?: string;
-  sort?: (a: any, b: any) => number;
+  // sort?: (a: any, b: any) => number;
 }
 
 export interface table_t<T> {

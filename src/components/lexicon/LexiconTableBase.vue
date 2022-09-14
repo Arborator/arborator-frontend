@@ -15,7 +15,6 @@
     :loading="lexiconLoading"
     loading-label="loading"
     :filter="table.filter"
-    binary-state-sort
     :class="($q.dark.isActive ? 'my-sticky-header-table-dark' : 'my-sticky-header-table') + ' rounded-borders'"
     @row-click="onRowClick"
   >
@@ -151,12 +150,15 @@ export default defineComponent({
           name: 'expand',
           label: 'expand',
           field: 'expand',
-          sortable: false,
+          sortable: true,
         },
         {
           name: 'form',
           label: 'Form',
           sortable: true,
+          sort: (a: string, b: string) => {
+            return a.localeCompare(b);
+          },
           align: 'left',
           field: 'form',
         },
@@ -173,6 +175,11 @@ export default defineComponent({
           sortable: true,
           align: 'left',
           field: 'pos',
+          // Add a sort function for handling the requested sorting feature
+          // sort: (a: string, b: string) => {
+          //   console.log('KK a', a, b);
+          //   return a.localeCompare(b);
+          // },
         },
         // {
         //   name: 'features',

@@ -135,18 +135,17 @@ export default defineComponent({
       } catch (error) {
         notifyError({
           error,
-          timeout: 10000,
         });
         return;
       }
       const oldMeta = this.sentenceBus.sentenceSVGs[this.userId].metaJson;
       const newMeta = sentenceJson.metaJson;
 
-      let isMetaChanged = 0;
+      let isMetaChanged = false;
       for (const [metaKey, metaValue] of Object.entries(newMeta)) {
         if (metaValue !== oldMeta[metaKey]) {
           if (['timestamp', 'user_id', 'sent_id', 'text'].includes(metaKey)) {
-            isMetaChanged = 1;
+            isMetaChanged = true;
           }
         }
       }

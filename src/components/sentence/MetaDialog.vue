@@ -114,17 +114,16 @@ export default defineComponent({
   methods: {
     onMetaDialogOk() {
       const newMetaJson: MetaJson = {};
-
       this.metalist.forEach((meta) => {
-        newMetaJson[meta.a] = newMetaJson[meta.v];
+        newMetaJson[meta.a] = meta.v;
       });
 
-      let isMetaChanged = 0;
+      let isMetaChanged = false;
       for (const newMetaKey of Object.keys(newMetaJson)) {
         const newMetaValue = newMetaJson[newMetaKey];
         if (newMetaValue !== this.metaJson[newMetaKey]) {
           if (['timestamp', 'user_id', 'sent_id', 'text'].includes(newMetaKey)) {
-            isMetaChanged = 1;
+            isMetaChanged = true;
           }
         }
       }

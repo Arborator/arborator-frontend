@@ -521,11 +521,6 @@ export default defineComponent({
         })
         .catch((error) => {
           notifyError({ error });
-          notifyMessage({
-            message: `${error}`,
-            color: 'negative',
-            position: 'bottom',
-          });
         });
     },
     resetAnnotationFeaturesWrapper() {
@@ -611,7 +606,7 @@ export default defineComponent({
             this.uploadImage.submitting = false;
           });
       } else {
-        notifyMessage({ message: 'No image was selected', type: 'error' });
+        notifyError({ error: 'No image was selected' });
       }
     },
     /**

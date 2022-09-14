@@ -245,7 +245,7 @@ export default defineComponent({
         });
         this.searchDialog = true;
       } else {
-        notifyMessage({ message: 'No rule to apply' });
+        notifyMessage({ message: 'No rule to apply', type: 'warning' });
       }
     },
   },

@@ -208,10 +208,8 @@ export default defineComponent({
       const status = exportFile('table-export.csv', content, 'text/csv');
 
       if (status !== true) {
-        notifyMessage({
-          message: 'Browser denied file download...',
-          color: 'negative',
-          icon: 'warning',
+        notifyError({
+          error: 'Browser denied file download...',
         });
       }
     },

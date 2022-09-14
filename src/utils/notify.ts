@@ -14,17 +14,15 @@ export function notifyMessage(arboratorMessage: ArboratorMessage_t) {
   const message = arboratorMessage.message;
   const timeout = arboratorMessage.timeout || 10000;
   const position = arboratorMessage.position || 'top-right';
-  const color = arboratorMessage.color;
-  const type = arboratorMessage.type;
+  const type = arboratorMessage.type || 'positive';
   const icon = arboratorMessage.icon;
 
   Notify.create({
     message,
-    color,
     timeout,
     type,
     position,
-    closeBtn: 'Dismiss',
+    closeBtn: 'X',
     html: true,
     icon,
   });
@@ -42,7 +40,7 @@ export function notifyError(ArboratorGrewError: ArboratorGrewError_t) {
   if (typeof ArboratorGrewError.error === 'string') {
     Notify.create({
       message: ArboratorGrewError.error,
-      color: 'negative',
+      type: 'negative',
       icon: 'warning',
       timeout,
     });

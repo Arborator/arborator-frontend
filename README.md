@@ -1,5 +1,9 @@
 # arborator (arborator-frontend)
 
+Here is the running application: https://arboratorgrew.elizia.net/
+
+Don't hesitate to create an account to try it out
+
 ## Wiki (work in progress)
 
 Arborator-Grew's wiki is available here: https://github.com/Arborator/arborator-frontend/wiki

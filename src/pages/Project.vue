@@ -33,6 +33,11 @@
         <q-card-section v-if="isShowLexiconPanel">
           <LexiconPanel :lexicon-items="lexiconItems" :sample-id="table.selected" @request="fetchLexicon_"> </LexiconPanel>
         </q-card-section>
+        <!-- TODO bootParser add custom button -->
+        <q-card-section v-if="parser.parsing">
+          <div>{{ parser.progress }}</div>
+        </q-card-section>
+        <!-- FIN -->
         <q-card-section>
           <q-table
             ref="textsTable"
@@ -116,7 +121,6 @@
                 >
                   <q-tooltip :delay="300" content-class="text-white bg-primary">{{ $t('projectView.tooltipDeleteSample[1]') }}</q-tooltip>
                 </q-btn>
-
                 <!-- ion-logo-github -->
                 <div>
                   <q-btn-dropdown v-if="loggedWithGithub" :disable="table.selected.length < 1" icon="ion-md-git-commit" flat dense>
@@ -231,6 +235,91 @@
                   >
                   <q-tooltip v-else :delay="300" content-class="text-white bg-primary">Create lexicon from selected samples</q-tooltip>
                 </div>
+
+                <!--button for bootparser -->
+                <div>
+                  <q-btn
+                    flat
+                    color="default"
+                    icon="star"
+                    @click="bootParserDefault()"
+                    :loading="parser.parsing"
+                    :disable="(visibility === 0 && !isGuest && !isAdmin && !isSuperAdmin) || table.selected.length < 1"
+                  ></q-btn>
+                  <q-tooltip v-if="parser.parsing" :delay="300" content-class="text-body2 bg-primary">{{
+                    parser.param.type + parser.timeInfo
+                  }}</q-tooltip>
+                  <q-tooltip v-else-if="table.selected.length < 1" :delay="300" class="text-body2" content-class="text-white bg-primary">{{
+                    $t('projectView.tooltipParser[0]')
+                  }}</q-tooltip>
+                  <q-tooltip v-else :delay="300" class="text-body2" content-class="text-body2 bg-primary">{{
+                    $t('projectView.tooltipParser[1]') + parser.timeInfo
+                  }}</q-tooltip>
+                </div>
+                <!-- TODO custom boot parser -->
+                <div>
+                  <q-btn-dropdown
+                    color="white"
+                    text-color="black"
+                    no-caps
+                    label="CustomParse"
+                    :disable="(visibility === 0 && !isGuest && !isAdmin && !isSuperAdmin) || table.selected.length < 1 || parser.parsing"
+                  >
+                    <div class="row no-wrap q-pa-md">
+                      <div class="column">
+                        <!-- <div class="text-h6 q-mb-md">Parameters</div> -->
+                        <div class="column q-gutter-md">
+                          <q-select v-model="parser.param.type" :options="parser.param.options" label="parser type" stack-label />
+                          <q-toggle v-model="parser.param.keepUpos" label="keep UPOS" />
+                          <q-toggle v-model="parser.param.parseAll" label="parse all file" />
+                          <q-select
+                            v-if="!parser.param.parseAll"
+                            filled
+                            v-model="parser.param.files2parse"
+                            :options="sampleNames"
+                            multiple
+                            label="Files to parse"
+                            stack-label
+                            style="max-width: 200px; min-width: 150px"
+                          >
+                          </q-select>
+                        </div>
+                      </div>
+
+                      <q-separator vertical inset class="q-mx-lg" />
+
+                      <div class="column items-center">
+                        <div class="q-pa-sm">
+                          <q-input
+                            v-model.number="parser.param.epochs"
+                            type="number"
+                            label="epochs"
+                            min="3"
+                            max="300"
+                            filled
+                            style="max-width: 100px"
+                          />
+                        </div>
+                        <div class="text-subtitle1 q-mt-md q-mb-xs">Begin parse:</div>
+                        <q-btn color="primary" label="Begin" :loading="parser.parsing" @click="bootParserCustom()" push size="sm" v-close-popup />
+                      </div>
+                    </div>
+                  </q-btn-dropdown>
+                  <q-tooltip v-if="parser.parsing" :delay="300" content-class="text-body2 bg-primary">{{
+                    parser.param.type + parser.timeInfo
+                  }}</q-tooltip>
+                  <q-tooltip v-else-if="table.selected.length < 1" :delay="300" class="text-body2" content-class="text-white bg-primary">{{
+                    $t('projectView.tooltipParser[0]')
+                  }}</q-tooltip>
+                  <q-tooltip v-else :delay="300" class="text-body2" content-class="text-body2 bg-primary">{{
+                    $t('projectView.tooltipParser[1]') + parser.timeInfo
+                  }}</q-tooltip>
+                </div>
+                <div>
+                  <q-btn no-caps text-color="black" label="STOParser" @click="bootParserStop()" :class="{ hidden: !parser.parsing }"></q-btn>
+                  <q-tooltip :delay="300" content-class="text-white bg-primary">{{ $t('projectView.tooltipParser[3]') }}</q-tooltip>
+                </div>
+                <!--fin TODO-->
               </q-btn-group>
 
               <q-space />
@@ -422,6 +511,7 @@
 <script lang="ts">
 import api from '../api/backend-api';
 
+import { openURL, exportFile } from 'quasar';
 import UserTable from '../components/UserTable.vue';
 import TagInput from '../components/TagInput.vue';
 import ProjectSettingsView from '../components/ProjectSettingsView.vue';
@@ -449,6 +539,24 @@ interface alert_t {
   actions?: any[];
 }
 
+interface parser_t {
+  parsing: boolean,
+  timer: any,
+  progress: string,
+  sha512Fdname: string,
+  time: number,
+  timeInfo: string,
+  param: {
+    type: string,
+    options: string[],
+    keepUpos: boolean,
+    parseAll: boolean,
+    epochs: number,
+    epochsTok: number,
+    files2parse: string[],
+  },
+}
+
 export default defineComponent({
   components: {
     UserTable,
@@ -468,6 +576,26 @@ export default defineComponent({
     const confirmActionCallback: CallableFunction = () => {
       console.log('Callback not init yet');
     };
+    const sampleNames: string[] = [];
+
+
+    const parser: parser_t = {
+        parsing: false,
+        timer: '',
+        progress: 'bootstrap parsing',
+        sha512Fdname: '',
+        time: -1,
+        timeInfo: '',
+        param: {
+          type: 'hopsParser',
+          options: ['hopsParser', 'kirParser', 'udifyParser', 'trankitParser', 'stanzaParser'],
+          keepUpos: true,
+          parseAll: true,
+          epochs: 5,
+          epochsTok: 5,
+          files2parse: [],
+        },
+      }
 
     const table: table_t<sample_t> = {
       fields: [
@@ -536,6 +664,8 @@ export default defineComponent({
     };
     return {
       table,
+      multiple: [],
+      options: ['Google', 'Facebook', 'Twitter', 'Apple', 'Oracle'],
       tab: 'texts',
       btnTopClass: this.$q.dark.isActive ? 'white' : 'blue-grey-8',
       assignDial: false,
@@ -561,7 +691,6 @@ export default defineComponent({
       },
       samples,
       projectTreesFrom,
-
       exerciceModeOptions: [
         {
           label: '1: teacher_visible',
@@ -580,6 +709,24 @@ export default defineComponent({
           value: 4,
         },
       ],
+      sampleNames,
+      parser: {
+        parsing: false,
+        timer: '',
+        progress: 'bootstrap parsing',
+        sha512Fdname: '',
+        time: -1,
+        timeInfo: '',
+        param: {
+          type: 'hopsParser',
+          options: ['hopsParser', 'kirParser', 'udifyParser', 'trankitParser', 'stanzaParser'],
+          keepUpos: true,
+          parseAll: true,
+          epochs: 5,
+          epochsTok: 5,
+          files2parse: [],
+        },
+      },
       window: { width: 0, height: 0 },
       possiblesUsers,
       tagContext: {},
@@ -618,9 +765,12 @@ export default defineComponent({
     this.getUsers();
     this.getProjectSamples();
     document.title = `ArboratorGrew: ${this.$route.params.projectname}`;
+    if (this.parser.param.epochs > 300) this.parser.param.epochs = 300;
+    if (this.parser.param.epochs < 3) this.parser.param.epochs = 3;
   },
   unmounted() {
     window.removeEventListener('resize', this.handleResize);
+
   },
   methods: {
     ...mapActions(useLexiconStore, ['fetchLexicon']),
@@ -642,6 +792,10 @@ export default defineComponent({
       api.getProjectSamples(this.$route.params.projectname as string).then((response) => {
         this.samples = response.data;
         this.projectTreesFrom = this.getProjectTreesFrom();
+        this.sampleNames = [];
+        for (const sample of this.samples) {
+          this.sampleNames.push(sample.sample_name);
+        }
       });
     },
     getProjectTreesFrom() {
@@ -759,13 +913,192 @@ export default defineComponent({
           return [];
         });
     },
+    resetParsingProgress() {
+      clearInterval(this.parser.timer as any);
+      this.parser.timeInfo = '';
+      this.parser.time = -1;
+      this.parser.progress = 'bootstrap parsing';
+    },
+    exportScore(f1score: any) {
+      const filename = this.parser.param.type.concat('f1_score.json');
+      const status = exportFile(filename, f1score, 'application/json');
+      console.log(status);
+      if (status === true) {
+        this.$q.notify({ message: `Score on dev set`, color: 'positive' });
+      } else {
+        this.$q.notify({ message: `Error when download score file: ${status}`, color: 'negative' });
+      }
+    },
+    exportConllError(info: any) {
+      const filename = 'Error_in_train_files.txt';
+      const status = exportFile(filename, info, 'text/plain;charset=UTF-8');
+      if (status === true) {
+        this.$q.notify({ message: `Error on dataset`, color: 'positive' });
+      } else {
+        this.$q.notify({ message: `Error when download error files: ${status}`, color: 'negative' });
+      }
+    },
+    bootParserStop() {
+      api
+        .removeParseFolder(this.$route.params.projectname as string, this.parser.sha512Fdname)
+        .then((response) => {
+          // this.parser.progress = response.data.status;
+          if (response.data.status.toLowerCase() !== 'ok') {
+            throw new Error('Failed to stop parsing, please try latter');
+          }
+          this.parser.parsing = false;
+          this.parser.timeInfo = '';
+          this.parser.time = -1;
+          // this.resetParsingProgress();
+        })
+        .catch((error) => {
+          this.$q.notify({ message: `${error}`, color: 'negative' });
+          return [];
+        });
+    },
+    getProgress(fdname: string) {
+      console.log(this.parser.timeInfo);
+      api
+        .bootParserResults(this.$route.params.projectname as string, this.parser.param.type, fdname)
+        .then((response) => {
+          // console.log('Progress: ', response.data);
+          console.log('Progress_info: ', response.data.status, 'log_path: ', response.data.logPath);
+          console.log(this.parser.parsing);
+          this.parser.progress = response.data.status;
+          if (this.parser.parsing === false) {
+            this.resetParsingProgress();
+          }
+          if (this.parser.progress.toLowerCase() === 'error') {
+            this.parser.parsing = false;
+            this.resetParsingProgress();
+            throw new Error('failed to train or parse');
+          }
+          if (this.parser.progress.toLowerCase() === 'fin') {
+            this.getProjectSamples();
+            this.parser.parsing = false;
+            this.resetParsingProgress();
+            this.exportScore(JSON.stringify(response.data.devScore));
+            console.log(response.data.devScore);
+          }
+        })
+        .catch((error) => {
+          this.$q.notify({ message: `${error}`, color: 'negative' });
+          this.parser.parsing = false;
+          this.resetParsingProgress();
+          return [];
+        });
+    },
+    bootParserDefault() {
+      // TODO
+      this.parser.parsing = true;
+      this.parser.param.type = 'auto';
+      const samplenames = [];
+      for (const sample of this.table.selected) {
+        samplenames.push(sample.sample_name);
+      }
+      api
+        .bootParserDefault(samplenames, this.$route.params.projectname as string)
+        .then((response) => {
+          this.table.selected = [];
+          console.log('Res', response);
+          console.log(response.data.datasetStatus);
+          if (response.data.datasetStatus.toLowerCase() !== 'ok') {
+            this.parser.parsing = false;
+            throw new Error('Failed to prepare dataset');
+          }
+          if (response.data.parseStatus.toLowerCase() === 'done') {
+            this.parser.parsing = false;
+            throw new Error('Nothing new to train or parse');
+          }
+          this.parser.sha512Fdname = response.data.projectFolder;
+          console.log(this.parser.sha512Fdname);
+          this.parser.param.type = response.data.parserID;
+          this.parser.time = response.data.time;
+          if (this.parser.time > 0) {
+            this.parser.timeInfo = ' Estimated time: '.concat(this.parser.time.toString()).concat(' (min)');
+          }
+          if (response.data.dataError === '') {
+            console.log(response.data.dataError);
+            this.exportConllError(response.data.dataError);
+          }
+        })
+        .catch((error) => {
+          this.$q.notify({ message: `${error}`, color: 'negative' });
+          this.table.selected = [];
+          this.parser.parsing = false;
+          this.parser.timeInfo = '';
+          this.parser.time = -1;
+          return [];
+        });
+      if (this.parser.parsing) {
+        this.parser.timer = setInterval(() => {
+          setTimeout(this.getProgress(this.parser.sha512Fdname) as any, 10);
+        }, 20 * 1000) as any;
+      }
+    },
+    bootParserCustom() {
+      // TODO
+      this.parser.parsing = true;
+      const samplenames = [];
+      for (const sample of this.table.selected) {
+        samplenames.push(sample.sample_name);
+      }
+
+      const toParseNames = this.parser.param.parseAll ? 'ALL' : this.parser.param.files2parse;
+
+      api
+        .bootParserCustom(
+          samplenames,
+          this.$route.params.projectname as any,
+          this.parser.param.type,
+          this.parser.param.epochs,
+          this.parser.param.keepUpos,
+          toParseNames as string[]
+        )
+        .then((response) => {
+          this.table.selected = [];
+          console.log(response);
+          if (response.data.datasetStatus.toLowerCase() !== 'ok') {
+            this.parser.parsing = false;
+            throw new Error('Failed to prepare dataset');
+          }
+          if (response.data.parseStatus.toLowerCase() === 'done') {
+            this.parser.parsing = false;
+            throw new Error('Nothing new to train or parse');
+          }
+          this.parser.sha512Fdname = response.data.projectFolder;
+          console.log(this.parser.sha512Fdname);
+          this.parser.param.type = response.data.parserID;
+          this.parser.time = response.data.time;
+          if (this.parser.time > 0) {
+            this.parser.timeInfo = ' Estimated time: '.concat(this.parser.time.toString()).concat(' (min)');
+          }
+          if (response.data.dataError) {
+            console.log(response.data.dataError);
+            this.exportConllError(response.data.dataError);
+          }
+        })
+        .catch((error) => {
+          this.$q.notify({ message: `${error}`, color: 'negative' });
+          this.table.selected = [];
+          this.parser.parsing = false;
+          this.parser.timeInfo = '';
+          this.parser.time = -1;
+          return [];
+        });
+      if (this.parser.parsing) {
+        this.parser.timer = setInterval(() => {
+          setTimeout(this.getProgress(this.parser.sha512Fdname) as any, 10);
+        }, 20 * 1000) as any;
+      }
+    },
     fetchLexicon_(type: string) {
       const samplenames = [];
       for (const sample of this.table.selected) {
         samplenames.push(sample.sample_name);
       }
 
-      this.fetchLexicon(this.$route.params.projectname as string, samplenames, type);
+      this.fetchLexicon(this.$route.params.projectname as string, samplenames as string[], type);
       this.isShowLexiconPanel = true
     },
 

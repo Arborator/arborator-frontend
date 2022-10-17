@@ -323,7 +323,7 @@ export default defineComponent({
           console.log('KK tree of the user, no diff');
           return;
         }
-        this.sentenceSVG.plugDiffTree(this.reactiveSentencesObj[this.username]);
+        this.sentenceSVG.plugDiffTree(this.reactiveSentencesObj[this.diffUserId]);
       }
       if (this.diffMode === 'NO_DIFF') {
         this.sentenceSVG.teacherTreeJson = {};

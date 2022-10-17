@@ -27,6 +27,8 @@ nvm install 16.14.2
 nvm alias default 16.14.2
 ```
 
+WE HIGHLY RECOMMEND TO USE THE VERSION 16.14.2 !!
+
 ## Deploy a New Version on prod
 
 Connect as Arborator (ssh arborator@elixxxx.xx) (ask sysadmin for the correct url), then:

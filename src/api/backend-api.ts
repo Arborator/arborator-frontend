@@ -240,7 +240,14 @@ export default {
     const data = { samples: samplenames, dev: 0.1, parser: 'auto', epoch: 5, to_parse: 'ALL' };
     return API.post(`/projects/${projectname}/samples/parsing`, data);
   },
-  bootParserCustom(samplenames: string[], projectname: string, parserType: string, epochs: number, keepUpos: boolean, toParseNames: string[]) {
+  bootParserCustom(
+    samplenames: string[],
+    projectname: string,
+    parserType: string,
+    epochs: number,
+    keepUpos: boolean,
+    toParseNames: string[] | 'ALL'
+  ) {
     // TODO add custom parser params button
     const data = {
       samples: samplenames,

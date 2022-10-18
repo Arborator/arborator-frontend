@@ -73,3 +73,14 @@ export type grew_templates_t = {
   searchQueries: grew_query_t[];
   rewriteQueries: grew_query_t[];
 };
+
+// Parser Types
+
+type parserType_t = 'kirParser' | 'hopsParser' | 'stanzaParser' | 'trankitParser' | 'udifyParser';
+
+type timeEstimationCoefs_t = {
+  [key in parserType_t]: {
+    a: number;
+    b: number;
+  };
+};

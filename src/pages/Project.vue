@@ -38,7 +38,7 @@
         
         <!-- Parsing Panel -->
         <q-card-section v-if="isShowParsingPanel">
-          <ParsingPanel :allSampleNames="sampleNames"></ParsingPanel>
+          <ParsingPanel :samples="samples"></ParsingPanel>
         </q-card-section>
         
         <q-card-section>
@@ -242,20 +242,13 @@
                 <div>
                   <q-btn
                     flat
-                    color="default"
                     icon="precision_manufacturing"
                     @click="bootParserPanelToggle()"
+                    :color="isShowParsingPanel ? 'primary' : 'default'"
                     :disable="(visibility === 0 && !isGuest && !isAdmin && !isSuperAdmin)"
                   >
                     <q-tooltip  content-class="text-body2 bg-primary">{{isShowParsingPanel ? "Close " : "Open "}}Parsing Panel</q-tooltip>
                   </q-btn>
-                  <!-- 
-                  <q-tooltip v-else-if="table.selected.length < 1" :delay="300" class="text-body2" content-class="text-white bg-primary">{{
-                    $t('projectView.tooltipParser[0]')
-                  }}</q-tooltip>
-                  <q-tooltip v-else :delay="300" class="text-body2" content-class="text-body2 bg-primary">{{
-                    $t('projectView.tooltipParser[1]') + parser.timeInfo
-                  }}</q-tooltip> -->
                 </div>
               </q-btn-group>
 
@@ -466,17 +459,6 @@ import { useUserStore } from 'src/pinia/modules/user';
 import { sample_roles_t, sample_t, user_sample_roles_t, sample_role_targetrole_t, sample_role_action_t } from 'src/api/backend-types';
 import { defineComponent } from 'vue';
 import { table_t } from 'src/types/main_types';
-
-interface alert_t {
-  color?: string;
-  textColor?: string;
-  multiLine?: boolean;
-  icon?: string;
-  message?: string;
-  avatar?: string;
-  actions?: any[];
-}
-
 
 
 export default defineComponent({

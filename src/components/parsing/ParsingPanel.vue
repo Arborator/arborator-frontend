@@ -18,7 +18,7 @@
               v-if="!parser.param.trainAll"
               v-model="parser.param.trainSamples"
               filled
-              :options="allSampleNames"
+              :options="allSamplesNames"
               multiple
               label="Files to parse"
               stack-label
@@ -37,7 +37,7 @@
               v-if="!parser.param.parseAll"
               v-model="parser.param.parseSamples"
               filled
-              :options="allSampleNames"
+              :options="allSamplesNames"
               multiple
               label="Files to parse"
               stack-label
@@ -61,7 +61,9 @@
             :rules="[(val) => (val >= 3 && val <= 300) || 'Please use 3 to 300 epochs']"
           />
         </div>
-        <div class="text-subtitle1 q-mt-md q-mb-xs">Begin parse:</div>
+        <div class="text-subtitle1 q-mt-xs">Begin parse:</div>
+        <div class="text-subtitle5 q-mb-xs">estimated time = {{ estimatedTime }}mn</div>
+        <div class="text-subtitle5 q-mb-xs">({{ trainingSentencesCount }} training sentences)</div>
         <q-btn v-close-popup color="primary" label="Begin" :loading="parser.parsing" push size="sm" @click="bootParserStart()" />
         <q-btn v-if="parser.parsing" v-close-popup color="primary" label="Stop" push size="sm" @click="bootParserStop()" />
       </div>
@@ -85,6 +87,16 @@
 import { defineComponent, PropType } from 'vue';
 import api from '../../api/backend-api';
 import { exportFile } from 'quasar';
+import { sample_t } from 'src/api/backend-types';
+import { parserType_t, timeEstimationCoefs_t } from 'src/types/main_types';
+
+const timeEstimationCoefs: timeEstimationCoefs_t = {
+  kirParser: { a: 0.0919, b: 4.315 },
+  hopsParser: { a: 0.0877, b: 2.413 },
+  stanzaParser: { a: 0.0411, b: 1.793 },
+  trankitParser: { a: 0.0526, b: 3.688 },
+  udifyParser: { a: 0.149, b: 24.212 },
+};
 
 interface parser_t {
   parsing: boolean;
@@ -94,7 +106,7 @@ interface parser_t {
   time: number;
   timeInfo: string;
   param: {
-    type: string;
+    type: parserType_t;
     options: string[];
     keepUpos: boolean;
     trainAll: boolean;
@@ -110,8 +122,8 @@ export default defineComponent({
   name: 'ParsingPanel',
   components: {},
   props: {
-    allSampleNames: {
-      type: Array as PropType<string[]>,
+    samples: {
+      type: Array as PropType<sample_t[]>,
       required: true,
     },
   },
@@ -140,7 +152,31 @@ export default defineComponent({
       parser,
     };
   },
-  computed: {},
+  computed: {
+    allSamplesNames() {
+      return this.samples.map((sample) => sample.sample_name);
+    },
+    trainingSentencesCount() {
+      if (this.parser.param.trainAll) {
+        return this.samples.map((sample) => sample.sentences).reduce((partialSum, a) => partialSum + a, 0);
+      }
+      return this.samples
+        .filter((sample) => this.parser.param.trainSamples.includes(sample.sample_name))
+        .reduce((partialSum, sample) => partialSum + sample.sentences, 0);
+    },
+    estimatedTime() {
+      const parserId = this.parser.param.type;
+      const parserCoefs = timeEstimationCoefs[parserId];
+      const y = parserCoefs.a * this.trainingSentencesCount + parserCoefs.b;
+      const epochs = this.parser.param.epochs;
+
+      if (this.parser.param.type === 'udifyParser') {
+        return Math.floor((epochs * (y - 20)) / 100) + 20 + 2;
+      }
+
+      return Math.floor((epochs * y) / 100) + 2;
+    },
+  },
   methods: {
     exportConllError(info: any) {
       const filename = 'Error_in_train_files.txt';
@@ -223,7 +259,7 @@ export default defineComponent({
       // TODO
       this.parser.parsing = true;
 
-      const trainingFiles = this.parser.param.trainAll ? this.allSampleNames : this.parser.param.trainSamples;
+      const trainingFiles = this.parser.param.trainAll ? this.allSamplesNames : this.parser.param.trainSamples;
       const toParseNames = this.parser.param.parseAll ? 'ALL' : this.parser.param.parseSamples;
 
       api

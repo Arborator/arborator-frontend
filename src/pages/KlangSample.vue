@@ -943,7 +943,13 @@ export default defineComponent({
     },
 
     setSampleDataOneTranscription(transcriptionBackend: transcription_t) {
-      if (transcriptionBackend !== null) {
+      if (
+        transcriptionBackend &&
+        Object.keys(transcriptionBackend).length !== 0 &&
+        Object.getPrototypeOf(transcriptionBackend) === Object.prototype &&
+        transcriptionBackend !== null &&
+        transcriptionBackend !== undefined
+      ) {
         this.transcriptions[transcriptionBackend.user] = transcriptionBackend;
       }
     },

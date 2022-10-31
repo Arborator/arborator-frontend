@@ -13,7 +13,9 @@ This wiki will contain the full User Guide, which is currently a work-in-progres
 ## Install NVM
 For either prod or dev, you need a working and compatible version of NPM ([link here](https://github.com/nvm-sh/nvm)). To do so, we highly recommend to install it through NVM.
 
-Here the install process on ubuntu
+Here the install process on ubuntu 
+
+> For the Windows users, you have to use WSL [Windows Subsystem for Linux](https://learn.microsoft.com/en-us/windows/wsl/install)
 
 ```bash
 curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.2/install.sh | bash

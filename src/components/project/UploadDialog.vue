@@ -39,7 +39,7 @@
               icon="cloud_upload"
               round
               :loading="uploadSample.submitting"
-              :disable="uploadSample.attachment.file === null || uploadSample.attachment.file === []"
+              :disable="uploadSample.attachment.file.length == 0"
               @click="upload()"
             />
           </template>

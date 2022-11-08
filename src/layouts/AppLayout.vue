@@ -5,7 +5,7 @@
         <!-- class="bg-white text-black" -->
         <!--   :class="$q.dark.isActive ? 'text-white' : 'text-primary'" -->
         <q-btn flat round icon="menu" @click="drawerLeft = !drawerLeft" />
-        <q-btn flat to="/projects" :ripple="false" type="a">
+        <q-btn flat to="/" :ripple="false" type="a">
           <div class="q-btn__content text-center col items-center q-anchor--skip row">
             <img v-if="$q.dark.isActive" alt="Arborator" src="/svg/arborator.grew.white.svg" style="height: 2.3vw" />
             <img v-else alt="Arborator" src="/svg/arborator.grew.svg" style="height: 2.3vw" />

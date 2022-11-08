@@ -33,7 +33,8 @@ export default defineComponent({
     getSVG() {
       // todo: instead of this long string, read the actual css file and put it there.
       // var svg = this.graphInfo.conllGraph.snap.treedata.s.toString();
-      const sentenceSVG = this.sentenceBus[this.userId];
+      const sentenceSVG = this.sentenceBus.sentenceSVGs[this.userId];
+      console.log(sentenceSVG)
       let svg = sentenceSVG.snapSentence.toString();
       const style = `<style> 
 <![CDATA[  
@@ -117,7 +118,8 @@ export default defineComponent({
       const url = window.URL.createObjectURL(new Blob([svg], { type: 'image/svg+xml' }));
       const link = document.createElement('a');
       link.href = url;
-      link.setAttribute('download', `${sentenceSVG.svgID}.svg`);
+      link.setAttribute('download', `SVG Tree ${this.userId}.svg`);
+      
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);

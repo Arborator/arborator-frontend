@@ -97,7 +97,7 @@
                 <q-item-section avatar>
                   <q-avatar icon="add" color="primary" text-color="white" />
                 </q-item-section>
-                <q-item-section>
+               <q-item-section>
                   <q-item-label>Add a new token</q-item-label>
                 </q-item-section>
               </q-item>
@@ -109,11 +109,11 @@
           </q-btn>
         </template>
       </div>
-
       <div class="full-width row justify-end">
-        <q-input v-show="sentenceLink.length !== 0" ref="linkinput" dense class="col-4 self-stretch" :value="sentenceLink">
+        <q-input v-model="sentenceLink" v-show="sentenceLink.length != 0" ref="linkinput" dense class="col-4 self-stretch" :value="sentenceLink" >
           <template #prepend>
             <q-icon name="ion-md-link" />
+  
           </template>
         </q-input>
       </div>

@@ -137,6 +137,12 @@ export default {
     tooltipAddSample: 'Add CoNLL files as new samples',
     tooltipExportSample: ['Select the samples you want to export', 'Export selected samples'],
     tooltipDeleteSample: ['Select the samples you want to delete', 'Delete selected samples'],
+    tooltipParser: [
+      'Select samples to train a parser',
+      'train with the selected samples',
+      'Click to set the parameters for parser',
+      'Click to interrupt parsing',
+    ],
     tooltipGitPush: [
       'Push only my trees of the selected samples',
       'Push my trees of the selected samples, filled up with the most recent trees',

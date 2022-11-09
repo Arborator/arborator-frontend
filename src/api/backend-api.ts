@@ -30,7 +30,7 @@ export const API = axios.create({
   // baseURL: `/api`,
   baseURL: process.env.DEV ? '/api' : `${process.env.API}/api`,
   timeout: 50000,
-  withCredentials: true,
+  withCredentials: false,
 });
 
 export default {
@@ -231,6 +231,41 @@ export default {
 
   saveTranscription(projectname: string, samplename: string, username: string, data: transcription_t) {
     return API.put<transcription_t>(`klang/projects/${projectname}/samples/${samplename}/transcription/${username}`, data);
+  },
+  // write bootparser default fct here:
+  // ---------------------------------------------------- //
+  // ---------------         Parser        --------------- //
+  // ---------------------------------------------------- //
+  bootParserDefault(samplenames: string[], projectname: string) {
+    const data = { samples: samplenames, dev: 0.1, parser: 'auto', epoch: 5, to_parse: 'ALL' };
+    return API.post(`/projects/${projectname}/samples/parsing`, data);
+  },
+  bootParserCustom(
+    samplenames: string[],
+    projectname: string,
+    parserType: string,
+    epochs: number,
+    keepUpos: boolean,
+    toParseNames: string[] | 'ALL'
+  ) {
+    // TODO add custom parser params button
+    const data = {
+      samples: samplenames,
+      dev: 0.1,
+      parser: parserType,
+      epoch: epochs,
+      keepPos: keepUpos,
+      to_parse: toParseNames,
+    };
+    return API.post(`/projects/${projectname}/samples/parsing`, data);
+  },
+  bootParserResults(projectname: string, parserType: string, projectFdname: string) {
+    const data = { parser: parserType, fdname: projectFdname };
+    return API.post(`/projects/${projectname}/samples/parsing/results`, data);
+  },
+  removeParseFolder(projectname: string, projectFdname: string) {
+    const data = { fdname: projectFdname };
+    return API.post(`/projects/${projectname}/samples/parsing/removeFolder`, data);
   },
   // -------------------------------------------------------- //
   // ---------------        To Refactor       --------------- //

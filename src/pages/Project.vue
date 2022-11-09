@@ -30,9 +30,17 @@
           </q-img>
           <div class="text-primary">{{ description }}</div>
         </q-card-section>
+        
+        <!-- Lexicon Panel -->
         <q-card-section v-if="isShowLexiconPanel">
           <LexiconPanel :lexicon-items="lexiconItems" :sample-id="table.selected" @request="fetchLexicon_"> </LexiconPanel>
         </q-card-section>
+        
+        <!-- Parsing Panel -->
+        <q-card-section v-if="isShowParsingPanel">
+          <ParsingPanel :samples="samples"></ParsingPanel>
+        </q-card-section>
+        
         <q-card-section>
           <q-table
             ref="textsTable"
@@ -116,7 +124,6 @@
                 >
                   <q-tooltip :delay="300" content-class="text-white bg-primary">{{ $t('projectView.tooltipDeleteSample[1]') }}</q-tooltip>
                 </q-btn>
-
                 <!-- ion-logo-github -->
                 <div>
                   <q-btn-dropdown v-if="loggedWithGithub" :disable="table.selected.length < 1" icon="ion-md-git-commit" flat dense>
@@ -230,6 +237,18 @@
                     >Select the samples to create a lexicon</q-tooltip
                   >
                   <q-tooltip v-else :delay="300" content-class="text-white bg-primary">Create lexicon from selected samples</q-tooltip>
+                </div>
+                <!-- single and main button for parsing -->
+                <div>
+                  <q-btn
+                    flat
+                    icon="precision_manufacturing"
+                    @click="bootParserPanelToggle()"
+                    :color="isShowParsingPanel ? 'primary' : 'default'"
+                    :disable="(visibility === 0 && !isGuest && !isAdmin && !isSuperAdmin)"
+                  >
+                    <q-tooltip  content-class="text-body2 bg-primary">{{isShowParsingPanel ? "Close " : "Open "}}Parsing Panel</q-tooltip>
+                  </q-btn>
                 </div>
               </q-btn-group>
 
@@ -375,7 +394,7 @@
       <q-dialog v-model="assignDial" persistent transition-show="slide-up" transition-hide="slide-down">
         <user-table :samples="table.selected"></user-table>
       </q-dialog>
-      <UploadDialog v-model:uploadDial="uploadDial" @uploaded:sample="getProjectSamples()" />
+      <UploadDialog v-model:uploadDial="uploadDial" @uploaded:sample="loadProjectData()" />
 
       <q-dialog v-model="projectSettingsDial" transition-show="slide-up" transition-hide="slide-down">
         <ProjectSettingsView
@@ -430,6 +449,8 @@ import UploadDialog from '../components/project/UploadDialog.vue';
 import LexiconPanel from '../components/lexicon/LexiconPanel.vue';
 import GrewSearch from '../components/grewSearch/GrewSearch.vue';
 import RelationTableMain from '../components/relationTable/RelationTableMain.vue';
+import ParsingPanel from '../components/parsing/ParsingPanel.vue'
+
 import { notifyError, notifyMessage } from 'src/utils/notify';
 import { mapActions, mapState } from 'pinia';
 import { useLexiconStore } from 'src/pinia/modules/lexicon';
@@ -439,15 +460,6 @@ import { sample_roles_t, sample_t, user_sample_roles_t, sample_role_targetrole_t
 import { defineComponent } from 'vue';
 import { table_t } from 'src/types/main_types';
 
-interface alert_t {
-  color?: string;
-  textColor?: string;
-  multiLine?: boolean;
-  icon?: string;
-  message?: string;
-  avatar?: string;
-  actions?: any[];
-}
 
 export default defineComponent({
   components: {
@@ -459,6 +471,7 @@ export default defineComponent({
     LexiconPanel,
     GrewSearch,
     RelationTableMain,
+    ParsingPanel,
   },
   data() {
     const samples: sample_t[] = [];
@@ -468,6 +481,7 @@ export default defineComponent({
     const confirmActionCallback: CallableFunction = () => {
       console.log('Callback not init yet');
     };
+    const sampleNames: string[] = [];
 
     const table: table_t<sample_t> = {
       fields: [
@@ -536,6 +550,8 @@ export default defineComponent({
     };
     return {
       table,
+      multiple: [],
+      options: ['Google', 'Facebook', 'Twitter', 'Apple', 'Oracle'],
       tab: 'texts',
       btnTopClass: this.$q.dark.isActive ? 'white' : 'blue-grey-8',
       assignDial: false,
@@ -561,7 +577,6 @@ export default defineComponent({
       },
       samples,
       projectTreesFrom,
-
       exerciceModeOptions: [
         {
           label: '1: teacher_visible',
@@ -580,6 +595,8 @@ export default defineComponent({
           value: 4,
         },
       ],
+      sampleNames,
+      isShowParsingPanel: false,
       window: { width: 0, height: 0 },
       possiblesUsers,
       tagContext: {},
@@ -616,11 +633,12 @@ export default defineComponent({
   },
   mounted() {
     this.getUsers();
-    this.getProjectSamples();
+    this.loadProjectData();
     document.title = `ArboratorGrew: ${this.$route.params.projectname}`;
   },
   unmounted() {
     window.removeEventListener('resize', this.handleResize);
+
   },
   methods: {
     ...mapActions(useLexiconStore, ['fetchLexicon']),
@@ -638,10 +656,17 @@ export default defineComponent({
       const tempArray = tableJson.fields.filter((obj) => obj.field !== 'syntInfo' && obj.field !== 'cat' && obj.field !== 'redistributions');
       return tempArray;
     },
+    loadProjectData() {
+      this.getProjectSamples();
+      this.getProjectTreesFrom();
+    },
     getProjectSamples() {
       api.getProjectSamples(this.$route.params.projectname as string).then((response) => {
         this.samples = response.data;
-        this.projectTreesFrom = this.getProjectTreesFrom();
+        this.sampleNames = [];
+        for (const sample of this.samples) {
+          this.sampleNames.push(sample.sample_name);
+        }
       });
     },
     getProjectTreesFrom() {
@@ -680,7 +705,7 @@ export default defineComponent({
           .then(() => {
             this.table.selected = [];
             notifyMessage({message: "Delete success"})
-            this.getProjectSamples();
+            this.loadProjectData();
           })
           .catch((error) => {
             notifyError({ error });
@@ -759,13 +784,17 @@ export default defineComponent({
           return [];
         });
     },
+    bootParserPanelToggle() {
+      this.isShowParsingPanel = !this.isShowParsingPanel
+
+    },
     fetchLexicon_(type: string) {
       const samplenames = [];
       for (const sample of this.table.selected) {
         samplenames.push(sample.sample_name);
       }
 
-      this.fetchLexicon(this.$route.params.projectname as string, samplenames, type);
+      this.fetchLexicon(this.$route.params.projectname as string, samplenames as string[], type);
       this.isShowLexiconPanel = true
     },
 

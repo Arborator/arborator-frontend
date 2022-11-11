@@ -14,7 +14,7 @@
             new feature && !openFeatures -> non-modifiable select -->
             <div v-if="props.row.a !== ''">
               {{ props.row.a }}
-            </div>
+            </div>    
             <q-select
               v-else-if="openFeatures == 'true'"
               v-model="props.row.a"
@@ -32,6 +32,9 @@
           <q-td key="v" :props="props">
             <div v-if="props.row.a === 'timestamp'">
               {{ thisdate(props.row.v) }}
+            </div>
+            <div v-else-if="metadata.includes(props.row.a)">
+              {{ props.row.v }}
             </div>
             <q-input
               v-else-if="computeValueType(props.row) === 'Number'"
@@ -78,7 +81,7 @@
               <template v-if="prepend !== undefined" #prepend>{{ props.row.join }}</template>
             </q-select>
           </q-td>
-          <q-td v-if="modifiable === 'true'" key="actions" :props="props">
+          <q-td v-if="modifiable === 'true' && ! metadata.includes(props.row.a) " key="actions" :props="props">
             <q-btn dense round flat color="grey" icon="delete" @click="deleteRow(props.row)">
               <q-tooltip :delay="300">Erase the attribute {{ props.row.a }}</q-tooltip>
             </q-btn>
@@ -105,7 +108,8 @@ export default defineComponent({
       pagination: {
         rowsPerPage: 0, // current rows per page being displayed : 0=All
       },
-      key: 0, // workaround...
+      key: 0,
+      metadata:['timestamp', 'user_id', 'sent_id', 'text'] // workaround...
     };
   },
   methods: {

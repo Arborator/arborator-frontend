@@ -117,18 +117,7 @@ export default defineComponent({
       this.metalist.forEach((meta) => {
         newMetaJson[meta.a] = meta.v;
       });
-
-      let isMetaChanged = false;
-      for (const newMetaKey of Object.keys(newMetaJson)) {
-        const newMetaValue = newMetaJson[newMetaKey];
-        if (newMetaValue !== this.metaJson[newMetaKey]) {
-          if (['timestamp', 'user_id', 'sent_id', 'text'].includes(newMetaKey)) {
-            isMetaChanged = true;
-          }
-        }
-      }
-      if (!isMetaChanged) {
-        this.sentenceBus.emit('tree-update:sentence', {
+      this.sentenceBus.emit('tree-update:sentence', {
           sentenceJson: {
             metaJson: newMetaJson,
             treeJson: this.sentenceBus.sentenceSVGs[this.userId].treeJson,
@@ -139,12 +128,7 @@ export default defineComponent({
           message: "Meta changed locally, don't forget to save !",
           type: 'warning',
           icon: 'warning',
-        });
-      } else {
-        notifyError({
-          error: 'Changing timestamp, user_id, sent_id or text is not allowed !',
-        });
-      }
+        });  
     },
   },
 });

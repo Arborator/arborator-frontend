@@ -15,8 +15,7 @@ import { reactive_sentences_obj_t, sentence_bus_events_t, sentence_bus_t } from 
 import { ReactiveSentence } from 'dependencytreejs/src/ReactiveSentence';
 import { mapState } from 'pinia';
 import { useProjectStore } from 'src/pinia/modules/project';
-import conllup from 'conllup';
-const emptyTokenJson = conllup.emptyTokenJson;
+import { emptyTokenJson, emptyTreeJson } from 'conllup/lib/conll';
 
 interface svgClickEvent_t extends Event {
   detail: { clicked: string; targetLabel: 'FORM' | 'FEATS' | 'LEMMA' | 'DEPREL' };
@@ -210,12 +209,12 @@ export default defineComponent({
   methods: {
     svgClickHandler(e: svgClickEvent_t) {
       const clickedId = e.detail.clicked;
-      const clickedToken = { ...this.sentenceSVG.treeJson[clickedId] };
+      const clickedToken = { ...this.sentenceSVG.treeJson.nodesJson[clickedId] };
       const targetLabel = e.detail.targetLabel;
 
       if (targetLabel === 'DEPREL') {
         const dep = clickedToken;
-        const gov = { ...this.sentenceSVG.treeJson[dep.HEAD] } || {
+        const gov = { ...this.sentenceSVG.treeJson.nodesJson[dep.HEAD] } || {
           FORM: 'ROOT',
           ID: 0,
         }; // handle if head is root
@@ -246,10 +245,10 @@ export default defineComponent({
       // if the area being hovered is the root (circle on top of the svg), assign the gov object to root
       if (e.detail.isRoot) {
         gov = Object.assign(gov, { ID: '0', FORM: 'ROOT' });
-        dep = { ...this.sentenceSVG.treeJson[draggedId] };
+        dep = { ...this.sentenceSVG.treeJson.nodesJson[draggedId] };
       } else {
-        gov = { ...this.sentenceSVG.treeJson[draggedId] };
-        dep = { ...this.sentenceSVG.treeJson[hoveredId] };
+        gov = { ...this.sentenceSVG.treeJson.nodesJson[draggedId] };
+        dep = { ...this.sentenceSVG.treeJson.nodesJson[hoveredId] };
       }
       // emit only if dep is defined. If the token is being dragged on nothing, nothing will happen
       if (dep?.ID) {
@@ -326,7 +325,7 @@ export default defineComponent({
         this.sentenceSVG.plugDiffTree(this.reactiveSentencesObj[this.diffUserId]);
       }
       if (this.diffMode === 'NO_DIFF') {
-        this.sentenceSVG.teacherTreeJson = {};
+        this.sentenceSVG.teacherTreeJson = emptyTreeJson();
         this.sentenceSVG.drawTree();
       }
     },

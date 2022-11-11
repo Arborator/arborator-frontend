@@ -45,7 +45,7 @@ import { mapState } from 'pinia';
 import { useProjectStore } from 'src/pinia/modules/project';
 import { PropType } from 'vue';
 import { reactive_sentences_obj_t, sentence_bus_t } from 'src/types/main_types';
-const replaceArrayOfTokens = conllup.replaceArrayOfTokens;
+import { replaceArrayOfTokens } from 'conllup/lib/conll';
 
 import { defineComponent } from 'vue';
 
@@ -139,8 +139,8 @@ export default defineComponent({
         b += 1;
       }
       const { treeJson } = this.sentenceBus.sentenceSVGs[this.userId];
-      const toks = Object.values(treeJson).map(({ FORM }) => FORM);
-      const spa = Object.values(treeJson).map(({ MISC }) => ('SpaceAfter' in MISC && MISC.SpaceAfter === 'No' ? 0 : 1));
+      const toks = Object.values(treeJson.nodesJson).map(({ FORM }) => FORM);
+      const spa = Object.values(treeJson.nodesJson).map(({ MISC }) => ('SpaceAfter' in MISC && MISC.SpaceAfter === 'No' ? 0 : 1));
       const toktok = [];
       let currp = 0;
       let sentence = '';

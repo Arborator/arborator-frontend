@@ -3,3 +3,5 @@ dist
 dist_backup
 .quasar
 src-pwa
+
+.idea/

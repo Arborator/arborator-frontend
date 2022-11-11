@@ -118,17 +118,17 @@ export default defineComponent({
         newMetaJson[meta.a] = meta.v;
       });
       this.sentenceBus.emit('tree-update:sentence', {
-          sentenceJson: {
-            metaJson: newMetaJson,
-            treeJson: this.sentenceBus.sentenceSVGs[this.userId].treeJson,
-          },
-          userId: this.userId,
-        });
-        notifyMessage({
-          message: "Meta changed locally, don't forget to save !",
-          type: 'warning',
-          icon: 'warning',
-        });  
+        sentenceJson: {
+          metaJson: newMetaJson,
+          treeJson: this.sentenceBus.sentenceSVGs[this.userId].treeJson,
+        },
+        userId: this.userId,
+      });
+      notifyMessage({
+        message: "Meta changed locally, don't forget to save !",
+        type: 'warning',
+        icon: 'warning',
+      });
     },
   },
 });

@@ -53,7 +53,7 @@
             </template>
             <q-tooltip> Switch the language of the user interface </q-tooltip>
           </q-select>
-          <q-btn flat round :icon="$q.dark.isActive ? 'lightbulb' : 'brightness_2'" @click="toggleDarkMode()">
+          <q-btn flat round :icon="$q.dark.isActive ? 'sunny' : 'brightness_2'" @click="toggleDarkMode()">
             <q-tooltip> Toggle dark mode </q-tooltip>
           </q-btn>
           <q-btn-dropdown v-show="!isLoggedIn" color="secondary" outline label="Log In" icon="account_circle">
@@ -176,7 +176,7 @@ import { useStorage } from 'vue3-storage';
 import { defineComponent } from 'vue';
 
 import '../assets/css/tags-style.css';
-import '../assets/css/arborator-draft.css';
+// import '../assets/css/arborator-draft.css';
 import { notifyError } from 'src/utils/notify';
 import { mapActions, mapState } from 'pinia';
 import { useUserStore } from 'src/pinia/modules/user';

@@ -7,6 +7,7 @@ import { defineComponent } from 'vue';
 
 import { useStorage } from 'vue3-storage';
 import { useUserStore } from './pinia/modules/user/index';
+import {setThemeMode} from "dependencytreejs/src/StylesheetHandler";
 
 export default defineComponent({
   name: 'App',
@@ -26,14 +27,12 @@ export default defineComponent({
   mounted() {
     const userStore = useUserStore();
     userStore.checkSession().then(() => console.log('App.vue session checked with pinia store'));
-    // this.$store.dispatch('user/checkSession', {}).then(() => {
-    //   console.log('App.vue Session checked');
-    // });
-    try {
-      this.$q.dark.set(this.storage.getStorageSync('dm') as boolean | 'auto');
-    } catch (error) {
-      console.log('App.vue ls not found');
+
+    const darkIsActiveLocalStorage = this.storage.getStorageSync('dm') as boolean | 'auto' | undefined
+    if (darkIsActiveLocalStorage !== undefined) {
+      this.$q.dark.set(darkIsActiveLocalStorage)
     }
+
     try {
       this.$i18n.locale = this.storage.getStorageSync('arbolang') as string;
     } catch (error) {
@@ -41,6 +40,15 @@ export default defineComponent({
       this.storage.setStorageSync('arbolang', this.$i18n.locale);
     }
   },
+  watch: {
+    '$q.dark.isActive' (isActive: boolean) {
+      if (isActive) {
+        setThemeMode('DARK', true)
+      } else {
+        setThemeMode('LIGHT', true)
+      }
+    }
+  }
 });
 </script>
 

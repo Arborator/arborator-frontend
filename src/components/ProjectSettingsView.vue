@@ -360,14 +360,23 @@ import { mapActions, mapState, mapWritableState, mapStores } from 'pinia';
 import { useProjectStore } from 'src/pinia/modules/project';
 import { useMainStore } from 'src/pinia';
 import { notifyError, notifyMessage } from 'src/utils/notify';
-import { sample_role_targetrole_t, user_t } from 'src/api/backend-types';
+import {project_extended_t, sample_role_targetrole_t, user_t} from 'src/api/backend-types';
 
-import { defineComponent } from 'vue';
+import {defineComponent, PropType} from 'vue';
 
 export default defineComponent({
   name: 'ProjectSettingsView',
   components: { Codemirror, UserSelectTable, ConfirmAction },
-  props: ['projectname', 'projectTreesFrom'],
+  props: {
+    projectname: {
+      type: String as PropType<string>,
+      required: true,
+    },
+    projectTreesFrom: {
+      type: Object as PropType<string[]>,
+      required: true
+    },
+  },
   data() {
     const confirmActionCallback: CallableFunction = () => {
       console.log('default callback');

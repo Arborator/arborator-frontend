@@ -62,7 +62,7 @@
               <ProjectCard
                 :key="item.id"
                 style="max-width: 80vw"
-                :props="item"
+                :project="item"
                 :parent-delete-project="deleteProject"
                 :parent-project-settings="showProjectSettings"
               ></ProjectCard>
@@ -78,7 +78,7 @@
               v-for="project in myProjects()"
               :key="project.id"
               style="max-width: 270px"
-              :props="project"
+              :project="project"
               :parent-delete-project="deleteProject"
               :parent-project-settings="showProjectSettings"
             ></ProjectCard>
@@ -90,7 +90,7 @@
               v-for="project in myOldProjects"
               :key="project.id"
               style="max-width: 270px"
-              :props="project"
+              :project="project"
               :parent-delete-project="deleteProject"
               :parent-project-settings="showProjectSettings"
             ></ProjectCard>
@@ -103,7 +103,7 @@
               v-for="project in otherProjects"
               :key="project.id"
               style="max-width: 250px"
-              :props="project"
+              :project="project"
               :parent-delete-project="deleteProject"
               :parent-project-settings="showProjectSettings"
             ></ProjectCard>
@@ -116,7 +116,7 @@
               v-for="project in otherOldProjects"
               :key="project.id"
               style="max-width: 250px"
-              :props="project"
+              :project="project"
               :parent-delete-project="deleteProject"
               :parent-project-settings="showProjectSettings"
             ></ProjectCard>
@@ -134,7 +134,7 @@
               <template #default="{ item }">
                 <ProjectItem
                   :key="item.id"
-                  :props="item"
+                  :project="item"
                   :parent-delete-project="deleteProject"
                   :parent-project-settings="showProjectSettings"
                 ></ProjectItem>
@@ -264,21 +264,20 @@ export default defineComponent({
         });
     },
     searchProject(pattern: string) {
-      const filteredProjects = this.projects.filter((project) => {
-        return project.project_name.toLowerCase().includes(pattern.toLowerCase()) === true;
+      this.visibleProjects = this.projects.filter((project) => {
+        return project.projectName.toLowerCase().includes(pattern.toLowerCase());
       });
-      this.visibleProjects = filteredProjects;
     },
     sortProjects() {
       // if (!this.isLoggedIn) return;
-      this.visibleProjects.sort((a, b) => b.last_access - a.last_access);
+      this.visibleProjects.sort((a, b) => b.lastAccess - a.lastAccess);
     },
     isCreatedByMe(project: project_extended_t) {
       return project.admins[0] === this.userId;
     },
     isOld(project: project_extended_t) {
       // either not used since more than a year or empty and older than an hour
-      return project.last_access < this.ayear || (project.number_samples < 1 && project.last_access < -3600);
+      return project.lastAccess < this.ayear || (project.numberSamples < 1 && project.lastAccess < -3600);
     },
     toggleProjectView() {
       this.listMode = !this.listMode;

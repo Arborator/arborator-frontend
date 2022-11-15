@@ -12,7 +12,7 @@
               <q-icon v-show="visibility === 1" name="lock" :color="$q.dark.isActive ? 'red-13' : 'positive'" size="lg"></q-icon>
               <q-icon v-show="visibility === 2" name="public" :color="$q.dark.isActive ? 'red-13' : 'positive'" size="lg"></q-icon>
               <q-icon v-show="exerciseMode" name="school" color="indigo-11" size="lg"></q-icon>
-              Project {{ $route.params.projectname }}
+              Project {{ projectName }}
               <q-btn
                 v-if="isSuperAdmin || isAdmin"
                 flat
@@ -297,7 +297,7 @@
                     color="white"
                     :text-color="$q.dark.isActive ? 'white' : 'black'"
                     class="full-width"
-                    :to="'/projects/' + $route.params.projectname + '/' + props.row.sample_name"
+                    :to="'/projects/' + projectName + '/' + props.row.sample_name"
                     icon-right="open_in_browser"
                     no-caps
                     >{{ props.row.sample_name }}</q-btn
@@ -400,7 +400,7 @@
       <q-dialog v-model="projectSettingsDial" transition-show="slide-up" transition-hide="slide-down">
         <ProjectSettingsView
           :project-trees-from="projectTreesFrom"
-          :projectname="$route.params.projectname"
+          :projectname="projectName"
           style="width: 90vw"
         ></ProjectSettingsView>
       </q-dialog>
@@ -620,7 +620,9 @@ export default defineComponent({
       'isTeacher',
     ]),
     ...mapState(useUserStore, ['isLoggedIn', 'isSuperAdmin', 'loggedWithGithub', 'avatar']),
-
+    projectName() {
+      return this.$route.params.projectname;
+    },
     routePath() {
       return this.$route.path;
     },
@@ -635,7 +637,7 @@ export default defineComponent({
   mounted() {
     this.getUsers();
     this.loadProjectData();
-    document.title = `ArboratorGrew: ${this.$route.params.projectname}`;
+    document.title = `ArboratorGrew: ${this.projectName}`;
   },
   unmounted() {
     window.removeEventListener('resize', this.handleResize);
@@ -649,7 +651,7 @@ export default defineComponent({
     },
 
     goToRoute() {
-      this.$router.push(`/projects/${this.$route.params.projectname}/samples`);
+      this.$router.push(`/projects/${this.projectName}/samples`);
     },
 
     filterFields(tableJson: table_t<unknown>) {
@@ -662,7 +664,7 @@ export default defineComponent({
       this.getProjectTreesFrom();
     },
     getProjectSamples() {
-      api.getProjectSamples(this.$route.params.projectname as string).then((response) => {
+      api.getProjectSamples(this.projectName as string).then((response) => {
         this.samples = response.data;
         this.sampleNames = [];
         for (const sample of this.samples) {
@@ -702,7 +704,7 @@ export default defineComponent({
     deleteSamples() {
       for (const sample of this.table.selected) {
         api
-          .deleteSample(this.$route.params.projectname as string, sample.sample_name)
+          .deleteSample(this.projectName as string, sample.sample_name)
           .then(() => {
             this.table.selected = [];
             notifyMessage({message: "Delete success"})
@@ -723,7 +725,7 @@ export default defineComponent({
       // }
       // const data = { samplenames, commit_type: type };
       // api
-      //   .commit(this.$route.params.projectname, data)
+      //   .commit(this.projectName, data)
       //   .then((response) => {
       //     console.log(777, response);
       //     this.showNotif('top', 'GitHubPushSuccess');
@@ -748,7 +750,7 @@ export default defineComponent({
       // }
       // const data = { samplenames, pull_type: type };
       // api
-      //   .pull(this.$route.params.projectname, data)
+      //   .pull(this.projectName, data)
       //   .then(() => {
       //     console.log('wooohoo');
       //   })
@@ -765,12 +767,12 @@ export default defineComponent({
         samplenames.push(sample.sample_name);
       }
       api
-        .exportSamplesZip(samplenames, this.$route.params.projectname as string)
+        .exportSamplesZip(samplenames, this.projectName as string)
         .then((response) => {
           const url = window.URL.createObjectURL(new Blob([response.data], { type: 'application/zip' }));
           const link = document.createElement('a');
           link.href = url;
-          link.setAttribute('download', `dump_${this.$route.params.projectname}.zip`);
+          link.setAttribute('download', `dump_${this.projectName}.zip`);
           document.body.appendChild(link);
           link.click();
           document.body.removeChild(link);
@@ -794,7 +796,7 @@ export default defineComponent({
         samplenames.push(sample.sample_name);
       }
 
-      this.fetchLexicon(this.$route.params.projectname as string, samplenames as string[], type);
+      this.fetchLexicon(this.projectName as string, samplenames as string[], type);
       this.isShowLexiconPanel = true
     },
 
@@ -833,7 +835,7 @@ export default defineComponent({
     */
     modifyRole(slug: { value: string }, context: sample_t, role: sample_role_targetrole_t, action: sample_role_action_t) {
       api
-        .modifySampleRole(this.$route.params.projectname as string, context.sample_name, slug.value, role, action)
+        .modifySampleRole(this.projectName as string, context.sample_name, slug.value, role, action)
         .then((response) => {
           this.updateTags(response.data.roles, context.sample_name);
           notifyMessage({ message: 'New project roles saved on the server', icon: 'save' });
@@ -847,7 +849,7 @@ export default defineComponent({
       setTimeout(() => {
         // IMPORTANT : Since quasar v2 (vue v3), the update method (in q-select) occurs BEFORE the value is updated
         // So we need to use this hack of setTimeout if we want to access to the updated sample.exerciseLevel
-        api.updateSampleExerciseLevel(this.$route.params.projectname as string, sample.sample_name, sample.exerciseLevel)
+        api.updateSampleExerciseLevel(this.projectName as string, sample.sample_name, sample.exerciseLevel)
           .then((response) => {notifyMessage(
             {message: "The new exercise level was correctly saved in the server"}
           )})
@@ -866,7 +868,7 @@ export default defineComponent({
     },
 
     exportEvaluation() {
-      const projectName = this.$route.params.projectname as string;
+      const projectName = this.projectName as string;
       const sampleName = this.table.selected[0].sample_name;
       const fileName = `${sampleName}_evaluations`;
       api

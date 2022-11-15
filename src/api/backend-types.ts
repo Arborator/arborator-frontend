@@ -38,21 +38,21 @@ export interface project_with_diff_t {
 
 export interface project_extended_t {
   id: number;
-  project_name: string;
+  projectName: string;
   description: string;
   image: string;
   visibility: number;
-  show_all_trees: boolean;
-  exercise_mode: boolean;
+  showAllTrees: boolean;
+  exerciseMode: boolean;
 
   admins: string[];
   guests: string[];
-  number_sentences: number;
-  number_samples: number;
-  number_trees: number;
-  number_tokens: number;
-  last_access: number;
-  last_write_access: number;
+  numberSentences: number;
+  numberSamples: number;
+  numberTrees: number;
+  numberTokens: number;
+  lastAccess: number;
+  lastWriteAccess: number;
 }
 
 export type shownmeta = string[];

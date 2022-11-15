@@ -34,8 +34,8 @@
         <q-icon v-show="project.visibility === 0" name="fas fa-lock" color="negative" size="lg"></q-icon>
         <q-icon v-show="project.visibility === 1" name="fas fa-unlock-alt" color="positive" size="lg"></q-icon>
         <q-icon v-show="project.visibility === 2" name="public" color="positive" size="lg"></q-icon>
-        <q-icon v-show="project.exercise_mode" name="school" color="indigo-11" size="lg"></q-icon>
-        {{ project.project_name }}
+        <q-icon v-show="project.exerciseMode" name="school" color="indigo-11" size="lg"></q-icon>
+        {{ project.projectName }}
       </div>
     </q-img>
     <q-card-section>
@@ -45,16 +45,16 @@
 
       <q-card-actions @click="goTo()" vertical class="q-pa-md clickable">
         <q-chip size="md" icon="fas fa-vial" color="secondary" text-color="white">
-          {{ project.number_samples }} {{ project.number_samples == 1 ? $t('projectHub.sample') : $t('projectHub.samples') }}
+          {{ project.numberSamples }} {{ project.numberSamples === 1 ? $t('projectHub.sample') : $t('projectHub.samples') }}
         </q-chip>
 
         <q-space />
-        <!-- v-if="project.last_access > project.last_write_access" -->
-        <q-chip size="sm" icon="fingerprint" :color="project.last_access > project.last_write_access ? 'info' : 'white'" text-color="white">
-          {{ $t('projectHub.lastAccess') }} {{ timeAgo(project.last_access) }}
+        <!-- v-if="project.lastAccess > project.lastWriteAccess" -->
+        <q-chip size="sm" icon="fingerprint" :color="project.lastAccess > project.lastWriteAccess ? 'info' : 'white'" text-color="white">
+          {{ $t('projectHub.lastAccess') }} {{ timeAgo(project.lastAccess) }}
         </q-chip>
         <q-chip size="sm" icon="edit" color="primary" text-color="white">
-          {{ $t('projectHub.lastWriteAccess') }} {{ timeAgo(project.last_write_access) }}
+          {{ $t('projectHub.lastWriteAccess') }} {{ timeAgo(project.lastWriteAccess) }}
         </q-chip>
       </q-card-actions>
       <q-card-actions>
@@ -68,7 +68,7 @@
     </q-card-section>
 
     <q-dialog v-model="confirmActionDial">
-      <ConfirmAction :parent-action="confirmActionCallback" :arg1="confirmActionArg1" :targetName="project.project_name"></ConfirmAction>
+      <ConfirmAction :parent-action="confirmActionCallback" :arg1="confirmActionArg1" :targetName="project.projectName"></ConfirmAction>
     </q-dialog>
   </q-card>
 </template>
@@ -78,15 +78,28 @@ import { mapState } from 'pinia';
 import ConfirmAction from '../components/ConfirmAction.vue';
 import { useUserStore } from 'src/pinia/modules/user';
 import { timeAgo } from 'src/utils/timeAgoUtils';
-import { defineComponent } from 'vue';
+import {defineComponent, PropType} from 'vue';
+import { project_extended_t } from 'src/api/backend-types';
 
 export default defineComponent({
   components: { ConfirmAction },
-  props: ['props', 'parentDeleteProject', 'parentProjectSettings'],
+  props: {
+    project: {
+      type: Object as PropType<project_extended_t>,
+      required: true,
+    },
+    parentDeleteProject: {
+      type: Function as PropType<(value: string) => void>,
+      required: true
+    },
+    parentProjectSettings: {
+      type: Function as PropType<(value: string) => void>,
+      required: true
+    },
+  },
   data() {
     const confirmActionCallback = null as unknown as CallableFunction;
     return {
-      project: this.props,
       hover: false,
       confirmActionCallback,
       confirmActionDial: false,
@@ -126,7 +139,7 @@ export default defineComponent({
       // }
     },
     locale() {
-      return this.$i18n.locale.substring(0, 2); // TODO: strange bug: this.$i18n.locale is a Promess and on switching locals this.$i18n.locale becomes a string, its value. The value is fr-fra, not accepted by Intl.RelativeTimeFormat -> take the substring
+      return this.$i18n.locale.substring(0, 2); // TODO: strange bug: this.$i18n.locale is a Promise and on switching locals this.$i18n.locale becomes a string, its value. The value is fr-fra, not accepted by Intl.RelativeTimeFormat -> take the substring
     },
   },
   methods: {
@@ -139,13 +152,16 @@ export default defineComponent({
      * @returns void
      */
     goTo() {
+      console.log("KK goto", this.project.projectName, this.project)
       this.$router.push({
         name: 'project',
         params: {
-          projectname: this.project.project_name,
-          infos: this.project,
+          projectname: this.project.projectName,
+          infos: this.project as any,
         },
       });
+      console.log("KK after goto")
+
     },
     /**
      * Use the parent project settings function
@@ -153,7 +169,7 @@ export default defineComponent({
      * @returns void
      */
     projectSettings() {
-      this.$props.parentProjectSettings(this.project.project_name);
+      this.$props.parentProjectSettings(this.project.projectName);
     },
     /**
      * Delete a project using the parent function
@@ -161,7 +177,7 @@ export default defineComponent({
      * @returns void
      */
     deleteProject() {
-      this.$props.parentDeleteProject(this.project.project_name);
+      this.$props.parentDeleteProject(this.project.projectName);
     },
     /**
      * Wrapper to display the confirm dialog prior to executing the method
@@ -175,7 +191,7 @@ export default defineComponent({
       this.confirmActionCallback = method;
     },
     imageEmpty() {
-      if (this.project.image === null) {
+      if (this.project.image === null || this.project.image === "") {
         this.project.image = "b''";
       }
       if (this.project.image === "b''") {

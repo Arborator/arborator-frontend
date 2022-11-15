@@ -11,6 +11,7 @@
               <q-icon v-show="visibility === 0" name="lock" :color="$q.dark.isActive ? 'red-13' : 'negative'" size="lg"></q-icon>
               <q-icon v-show="visibility === 1" name="lock" :color="$q.dark.isActive ? 'red-13' : 'positive'" size="lg"></q-icon>
               <q-icon v-show="visibility === 2" name="public" :color="$q.dark.isActive ? 'red-13' : 'positive'" size="lg"></q-icon>
+              <q-icon v-show="exerciseMode" name="school" color="indigo-11" size="lg"></q-icon>
               Project {{ $route.params.projectname }}
               <q-btn
                 v-if="isSuperAdmin || isAdmin"
@@ -30,17 +31,17 @@
           </q-img>
           <div class="text-primary">{{ description }}</div>
         </q-card-section>
-        
+
         <!-- Lexicon Panel -->
         <q-card-section v-if="isShowLexiconPanel">
           <LexiconPanel :lexicon-items="lexiconItems" :sample-id="table.selected" @request="fetchLexicon_"> </LexiconPanel>
         </q-card-section>
-        
+
         <!-- Parsing Panel -->
         <q-card-section v-if="isShowParsingPanel">
           <ParsingPanel :samples="samples"></ParsingPanel>
         </q-card-section>
-        
+
         <q-card-section>
           <q-table
             ref="textsTable"
@@ -779,7 +780,6 @@ export default defineComponent({
         })
         .catch((error) => {
           this.table.exporting = false;
-          // notifyMessage({message:`${error}`, color:'negative'});
           notifyError({ error });
           return [];
         });
@@ -847,7 +847,13 @@ export default defineComponent({
       setTimeout(() => {
         // IMPORTANT : Since quasar v2 (vue v3), the update method (in q-select) occurs BEFORE the value is updated
         // So we need to use this hack of setTimeout if we want to access to the updated sample.exerciseLevel
-        api.updateSampleExerciseLevel(this.$route.params.projectname as string, sample.sample_name, sample.exerciseLevel);
+        api.updateSampleExerciseLevel(this.$route.params.projectname as string, sample.sample_name, sample.exerciseLevel)
+          .then((response) => {notifyMessage(
+            {message: "The new exercise level was correctly saved in the server"}
+          )})
+          .catch((error) => {
+            notifyError({ error })
+          });
       }, 0);
     },
     triggerConfirm(method: CallableFunction) {

@@ -6,9 +6,9 @@
     :style="hover ? 'transform: scale(0.95);' : ''"
     @mouseover="hover = true"
     @mouseleave="hover = false"
-    
+
   >
-    
+
     <q-popup-proxy v-if="canSeeSettings" transition-show="flip-up" transition-hide="flip-down" context-menu>
       <q-card>
         <q-card-section>
@@ -34,6 +34,7 @@
         <q-icon v-show="project.visibility === 0" name="fas fa-lock" color="negative" size="lg"></q-icon>
         <q-icon v-show="project.visibility === 1" name="fas fa-unlock-alt" color="positive" size="lg"></q-icon>
         <q-icon v-show="project.visibility === 2" name="public" color="positive" size="lg"></q-icon>
+        <q-icon v-show="project.exercise_mode" name="school" color="indigo-11" size="lg"></q-icon>
         {{ project.project_name }}
       </div>
     </q-img>

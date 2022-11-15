@@ -30,10 +30,10 @@
           </q-td>
 
           <q-td key="v" :props="props">
-            <div v-if="props.row.a === 'timestamp'">
+            <div class="meta-data" v-if="props.row.a === 'timestamp'">
               {{ thisdate(props.row.v) }}
             </div>
-            <div v-else-if="metadata.includes(props.row.a)">
+            <div class="meta-data" v-else-if="metadata.includes(props.row.a)">
               {{ props.row.v }}
             </div>
             <q-input
@@ -169,3 +169,9 @@ export default defineComponent({
   },
 });
 </script>
+<style>
+.meta-data
+{
+ text-align:left;
+}
+</style>

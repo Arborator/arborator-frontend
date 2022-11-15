@@ -82,11 +82,11 @@
               :parent-delete-project="deleteProject"
               :parent-project-settings="showProjectSettings"
             ></ProjectCard>
-            <div v-if="myOldProjects.length" class="text-h6 col-12">
+            <div v-if="isLoggedIn && myOldProjects.length" class="text-h6 col-12">
               <q-chip color="primary" class="category" text-color="white"> {{ $t('projectHub.myOldProjects') }} </q-chip><br />
               <q-chip outline color="negative" class="bg-white text-negative">{{ $t('projectHub.myOldProjectInfo') }}</q-chip>
             </div>
-            <ProjectCard
+            <ProjectCard v-if="isLoggedIn"
               v-for="project in myOldProjects"
               :key="project.id"
               style="max-width: 270px"
@@ -107,12 +107,12 @@
               :parent-delete-project="deleteProject"
               :parent-project-settings="showProjectSettings"
             ></ProjectCard>
-            <div v-if="otherOldProjects.length" class="text-h6 col-12">
+            <div v-if="isLoggedIn && otherOldProjects.length" class="text-h6 col-12">
               <q-chip color="primary" class="category" text-color="white">{{ $t('projectHub.otherOldProjects') }}</q-chip
               ><br />
               <q-chip outline color="negative" class="bg-white text-negative">{{ $t('projectHub.otherOldProjectInfo') }}</q-chip>
             </div>
-            <ProjectCard
+            <ProjectCard v-if="isLoggedIn"
               v-for="project in otherOldProjects"
               :key="project.id"
               style="max-width: 250px"
@@ -132,7 +132,7 @@
               :virtual-scroll-item-size="200"
             >
               <template #default="{ item }">
-                <ProjectItem
+                <ProjectItem v-if="isLoggedIn || !isOld(item)"
                   :key="item.id"
                   :project="item"
                   :parent-delete-project="deleteProject"
@@ -215,17 +215,17 @@ export default defineComponent({
 
     myOldProjects(): project_extended_t[] {
       return this.visibleProjects.filter((project) => {
-        return this.isCreatedByMe(project) && this.isOld(project);
+        return (this.isCreatedByMe(project)||this.isSharedWithMe(project)) && this.isOld(project);
       });
     },
     otherProjects(): project_extended_t[] {
       return this.visibleProjects.filter((project) => {
-        return !this.isCreatedByMe(project) && !this.isOld(project);
+        return !(this.isCreatedByMe(project)||this.isSharedWithMe(project)) && !this.isOld(project);
       });
     },
     otherOldProjects(): project_extended_t[] {
       return this.visibleProjects.filter((project) => {
-        return !this.isCreatedByMe(project) && this.isOld(project);
+        return !(this.isCreatedByMe(project)||this.isSharedWithMe(project)) && this.isOld(project);
       });
     },
   },
@@ -242,7 +242,7 @@ export default defineComponent({
     openURL,
     myProjects() {
       return this.visibleProjects.filter((project) => {
-        return this.isCreatedByMe(project) && !this.isOld(project);
+        return (this.isCreatedByMe(project)||this.isSharedWithMe(project)) && !this.isOld(project);
       });
     },
     getProjects() {
@@ -272,6 +272,9 @@ export default defineComponent({
     },
     isCreatedByMe(project: project_extended_t) {
       return project.admins[0] === this.userId;
+    },
+    isSharedWithMe(project: project_extended_t){
+      return project.admins.includes(this.userId)|| project.guests.includes(this.userId);
     },
     isOld(project: project_extended_t) {
       // either not used since more than a year or empty and older than an hour

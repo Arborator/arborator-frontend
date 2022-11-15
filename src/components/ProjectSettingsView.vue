@@ -360,7 +360,7 @@ import { mapActions, mapState, mapWritableState, mapStores } from 'pinia';
 import { useProjectStore } from 'src/pinia/modules/project';
 import { useMainStore } from 'src/pinia';
 import { notifyError, notifyMessage } from 'src/utils/notify';
-import {project_extended_t, sample_role_targetrole_t, user_t} from 'src/api/backend-types';
+import { sample_role_targetrole_t, user_t} from 'src/api/backend-types';
 
 import {defineComponent, PropType} from 'vue';
 

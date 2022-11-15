@@ -47,10 +47,15 @@ import api from '../api/backend-api';
 import { notifyError, notifyMessage } from 'src/utils/notify';
 import { mapActions, mapState } from 'pinia';
 import { useUserStore } from 'src/pinia/modules/user';
-import { defineComponent } from 'vue';
+import {defineComponent, PropType} from 'vue';
 
 export default defineComponent({
-  props: ['parentGetProjects'],
+  props: {
+    parentGetProjects: {
+      type: Function as PropType<() => void>,
+      required: true,
+    }
+  },
   data() {
     return {
       submitting: false,

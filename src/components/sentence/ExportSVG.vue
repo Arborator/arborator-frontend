@@ -4,10 +4,16 @@
 
 <script lang="ts">
 import { notifyMessage } from 'src/utils/notify';
-import { defineComponent } from 'vue';
+import {defineComponent, PropType} from 'vue';
+import {sentence_bus_t} from "src/types/main_types";
 
 export default defineComponent({
-  props: ['sentenceBus'],
+  props: {
+    sentenceBus: {
+      type: Object as PropType<sentence_bus_t>,
+      required: true,
+    },
+  },
   data() {
     return {
       userId: '',
@@ -36,8 +42,8 @@ export default defineComponent({
       const sentenceSVG = this.sentenceBus.sentenceSVGs[this.userId];
       console.log(sentenceSVG)
       let svg = sentenceSVG.snapSentence.toString();
-      const style = `<style> 
-<![CDATA[  
+      const style = `<style>
+<![CDATA[
    .curve {
 	stroke: black;
 	stroke-width: 1;
@@ -46,7 +52,7 @@ export default defineComponent({
 .dark .curve {
 	stroke: rgb(248, 244, 244);
 	stroke-width: 1;
-	fill: none;	
+	fill: none;
 }
 .arrowhead {
 	fill: white;
@@ -56,7 +62,7 @@ export default defineComponent({
 .FORM {
 	fill:black;
 	text-align: center;
-} 
+}
 .dark .FORM {
 		fill:rgb(255, 255, 255);
 		text-align: center;
@@ -67,32 +73,32 @@ export default defineComponent({
 	font-family:sans-serif;
 	text-align: center;
 	font-style: italic;
-} 
+}
 .dark .LEMMA {
 	font: 15px DejaVu Sans;
 	fill: rgb(238, 232, 232);
 	font-family:sans-serif;
 	text-align: center;
 	font-style: italic;
-} 
+}
 .MISC-Gloss {
 	font: 15px DejaVu Sans;
 	fill: rgb(124, 96, 86);
 	font-family:sans-serif;
 	text-align: center;
 	font-style: italic;
-} 
+}
 .UPOS {
 	font: 11px DejaVu Sans;
 	fill: rgb(80, 29, 125);
 	text-align: center;
-} 
+}
 .UPOSselected {
 	font: 11px DejaVu Sans;
 	fill: #dd137bff;
 	font-weight: bold;
 	text-align: center;
-} 
+}
 .DEPREL {
 	font: 12px Arial;
 	fill: #501d7d;
@@ -100,7 +106,7 @@ export default defineComponent({
 	font-family:sans-serif;
 	cursor:pointer;
 	--funcCurveDist:3; /* distance between the function name and the curves highest point */
-} 
+}
 .dark .DEPREL {
 	font: 12px Arial;
 	fill: #aab3ff;
@@ -109,7 +115,7 @@ export default defineComponent({
 	cursor:pointer;
 	--funcCurveDist:3; /* distance between the function name and the curves highest point */
 }
-    ]]>  
+    ]]>
 </style> `;
 
       svg = svg.replace(/<desc>Created with Snap<\/desc>/g, '<desc>Created with Snap on Arborator</desc>');
@@ -119,7 +125,7 @@ export default defineComponent({
       const link = document.createElement('a');
       link.href = url;
       link.setAttribute('download', `SVG Tree ${this.userId}.svg`);
-      
+
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);

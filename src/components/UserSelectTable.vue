@@ -115,11 +115,39 @@
 import { table_t } from 'src/types/main_types';
 import api from '../api/backend-api';
 import { notifyError } from 'src/utils/notify';
-import { user_t } from 'src/api/backend-types';
-import { defineComponent } from 'vue';
+import { defineComponent, PropType } from 'vue';
+import { sample_role_targetrole_t, user_t } from 'src/api/backend-types';
 
 export default defineComponent({
-  props: ['parentCallback', 'general', 'projectname', 'robot', 'selectiontype', 'singlemultiple', 'preselected', 'targetRole'],
+  props: {
+    parentCallback: {
+      type: Function as PropType<(usersArray: user_t[], targetRole: sample_role_targetrole_t) => void>,
+      required: true,
+    },
+    general: {
+      type: Boolean as PropType<boolean>,
+      required: true,
+    },
+    robot: {
+      type: String as PropType<string>,
+    },
+    selectiontype: {
+      type: String as PropType<string>,
+      default: "",
+    },
+    singlemultiple: {
+      type: String as PropType<string>,
+      default: "",
+    },
+    targetRole: {
+      type: String as PropType<'admin' | 'guest' | 'annotator' | 'validator' | ''>,
+      default: "",
+    },
+    preselected: {
+      type: Object as PropType<string[]>,
+      default: [],
+    }
+  },
   data() {
     const data: user_t[] = [];
     const table: table_t<unknown> = {
@@ -209,7 +237,7 @@ export default defineComponent({
      */
     getUsersTreeFrom() {
       api
-        .getUsersTreeFrom(this.$props.projectname)
+        .getUsersTreeFrom(this.$route.params.projectname as string)
         .then((response) => {
           this.data = response.data;
         })

@@ -374,7 +374,7 @@ export default defineComponent({
     },
     projectTreesFrom: {
       type: Object as PropType<string[]>,
-      required: true
+      default: [],
     },
   },
   data() {

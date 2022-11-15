@@ -104,7 +104,6 @@ export default defineComponent({
       console.log('FIXME: find better init function');
     };
     return {
-      project: this.props,
       confirmActionDial: false,
       confirmActionCallback,
       confirmActionArg1: '',
@@ -114,28 +113,8 @@ export default defineComponent({
     ...mapState(useUserStore, ['getUserInfos']),
     ...mapState(useUserStore, { userid: 'id' }),
     imageCleaned() {
-      // let clean = this.project.image.replace('b', '');
-      // clean = clean.replace(/^'/g, '');
-      // clean = clean.replace(/'$/g, '');
-      // return `data:image/png;base64, ${clean}`;
       return this.project.image;
     },
-    // visible() {
-    //   if (!this.project.visibility === 1) {
-    //     return true;
-    //   }
-
-    //   if (this.project.admins.includes(this.$store.getters['user/getUserInfos'].id)) {
-    //     return true;
-    //   }
-    //   if (this.project.guests.includes(this.$store.getters['user/getUserInfos'].id)) {
-    //     return true;
-    //   }
-    //   if (this.$store.getters['user/getUserInfos'].super_admin) {
-    //     return true;
-    //   }
-    //   return false;
-    // },
   },
   methods: {
     imageEmpty() {

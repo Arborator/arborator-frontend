@@ -253,10 +253,8 @@ export default defineComponent({
           this.projects = response.data as project_extended_t[];
           this.visibleProjects = response.data as project_extended_t[];
           this.sortProjects();
-          // this.projectDifference = response.data.difference;
           this.loadingProjects = false;
           this.initLoading = false;
-          // }
         })
         .catch((error) => {
           notifyError({ error });

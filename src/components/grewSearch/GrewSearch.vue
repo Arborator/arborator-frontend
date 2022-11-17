@@ -9,7 +9,7 @@
       <GrewRequestCard :parent-on-search="onSearch" :parent-on-try-rules="onTryRules" :grewquery="$route.query.q || ''"></GrewRequestCard>
     </q-dialog>
     <q-dialog v-model="resultSearchDialog" transition-show="fade" transition-hide="fade">
-      <ResultView :searchresults="resultSearch" :totalsents="sentenceCount" searchscope="sample" :parent-on-show-table="onShowTable"></ResultView>
+      <ResultView :searchresults="resultSearch" :totalsents="sentenceCount" :searchscope="searchScope" :parent-on-show-table="onShowTable"></ResultView>
     </q-dialog>
   </div>
 </template>
@@ -29,7 +29,7 @@ export default defineComponent({
     GrewRequestCard,
     ResultView,
   },
-  props: ['sentenceCount', 'sampleId', 'showTable'],
+  props: ['sentenceCount', 'sampleId', 'showTable','searchScope'],
   data() {
     const resultSearch: grewSearchResult_t = {};
     return {

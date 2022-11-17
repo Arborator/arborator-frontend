@@ -386,7 +386,7 @@
         </q-card-section>
       </q-card>
       <template v-if="!exerciseMode && !isTeacher">
-        <GrewSearch :sentence-count="0" />
+        <GrewSearch :sentence-count="sentenceCount" :search-scope="projectName" />
         <RelationTableMain />
       </template>
       <!-- :sentenceCount=.number_sentences" -->
@@ -628,6 +628,13 @@ export default defineComponent({
     },
     noselect(): boolean {
       return this.table.selected.length < 1;
+    },
+    sentenceCount() { 
+    let sentenceCount=0;
+     for (const sample of this.samples){
+      sentenceCount+=sample.sentences
+     }
+     return sentenceCount;
     },
   },
   created() {

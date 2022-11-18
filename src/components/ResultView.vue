@@ -10,12 +10,9 @@
       <q-space />
       <q-btn v-close-popup flat dense icon="close" />
     </q-bar>
-    <!-- <q-bar class="bg-primary text-white">
-        <q-space />
-        <div class="text-weight-bold">Results</div>
-        <q-space />
-        <q-btn flat dense icon="close" v-close-popup/>
-        </q-bar> -->
+    <div v-if="queryType ==='REWRITE'  && (samplesFrozen.list.length > 0) && (isGuest || isAdmin || isSuperAdmin)" class="q-pa-md" >
+      <q-btn color="primary" label="Apply rules" @click="save"/>
+    </div>
     <q-card-section>
       <div v-show="!loading" class="q-pa-md row q-gutter-md">
         <div v-if="samplesFrozen.list.length > 0">
@@ -55,6 +52,9 @@
 <script lang="ts">
 import api from '../api/backend-api';
 import SentenceCard from './sentence/SentenceCard.vue';
+import { useUserStore } from 'src/pinia/modules/user';
+import { useProjectStore } from 'src/pinia/modules/project';
+import { mapState } from 'pinia'; 
 import { PropType, defineComponent } from 'vue';
 import { notifyError, notifyMessage } from 'src/utils/notify';
 import { grewSearchResult_t, sample_t } from 'src/api/backend-types';
@@ -74,6 +74,10 @@ export default defineComponent({
     searchscope: {
       type: String,
       required: true,
+    },
+    queryType:{
+      type:String,
+
     },
     parentOnShowTable: {
       type: Function as PropType<CallableFunction>,
@@ -102,6 +106,8 @@ export default defineComponent({
     };
   },
   computed: {
+    ...mapState(useProjectStore,  ['isGuest','isAdmin']),
+    ...mapState(useUserStore,['isSuperAdmin']),
     sentenceCount() {
       return Object.keys(this.searchresults)
         .map((sa) => this.searchresults[sa])
@@ -167,13 +173,12 @@ export default defineComponent({
      */
     save() {
       const sentenceIds: string[] = [];
-      const objLength = Object.keys(this.samplesFrozen.selected).length;
-      for (let i = 0; i < objLength; i += 1) {
-        if (this.samplesFrozen.selected[i] === true) sentenceIds.push(this.samplesFrozen.list[i][1]);
+      for ( const index of Object.keys(this.samplesFrozen.selected)){
+         if (this.samplesFrozen.selected[parseInt(index)]) sentenceIds.push(this.samplesFrozen.list[parseInt(index)][1]);
       }
       for (const samplename in this.searchresultsCopy) {
         for (const sentId in this.searchresultsCopy[samplename]) {
-          if (sentenceIds.includes(sentId) === false) {
+          if (!sentenceIds.includes(sentId)) {
             console.log(sentId);
             delete this.searchresultsCopy[samplename][sentId];
           }
@@ -184,15 +189,17 @@ export default defineComponent({
       }
       if (Object.keys(this.searchresultsCopy).length !== 0) {
         const datasample = { data: this.searchresultsCopy };
-        api.saveConll(this.$route.params.projectname as string, datasample).then(() => {
+        api
+        .saveConll(this.$route.params.projectname as string, datasample)
+        .then(() => {
           this.resultSearchDialog = false;
           this.parentOnShowTable(this.resultSearchDialog);
           notifyMessage({ message: 'Conll Saved' });
         });
-      } else {
+      } 
+      else {
         console.log('not ok');
       }
-      // console.log(this.searchresults["ABJ_GWA_06_Ugo-Lifestory_MG"]["conlls"])
     },
     // var query = { results: this.searchresults, sentenceIds: sentenceIds };
     // api

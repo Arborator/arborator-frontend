@@ -9,7 +9,7 @@
       <GrewRequestCard :parent-on-search="onSearch" :parent-on-try-rules="onTryRules" :grewquery="$route.query.q || ''"></GrewRequestCard>
     </q-dialog>
     <q-dialog v-model="resultSearchDialog" transition-show="fade" transition-hide="fade">
-      <ResultView :searchresults="resultSearch" :totalsents="sentenceCount" :searchscope="searchScope" :parent-on-show-table="onShowTable"></ResultView>
+      <ResultView :searchresults="resultSearch" :totalsents="sentenceCount" :searchscope="searchScope" :parent-on-show-table="onShowTable" :query-type="queryType"></ResultView>
     </q-dialog>
   </div>
 </template>
@@ -32,9 +32,11 @@ export default defineComponent({
   props: ['sentenceCount', 'sampleId', 'showTable','searchScope'],
   data() {
     const resultSearch: grewSearchResult_t = {};
+    const queryType: string = '';
     return {
       resultSearchDialog: false,
       resultSearch,
+      queryType,
       rulesGrew: {},
       window: { width: 0, height: 0 },
     };
@@ -64,6 +66,7 @@ export default defineComponent({
     },
     onSearch(searchPattern: string) {
       const query = { pattern: searchPattern };
+      this.queryType='SEARCH'
       if (this.$route.params.samplename) {
         api
           .searchSample(this.$route.params.projectname as string, this.$route.params.samplename as string, query)
@@ -88,6 +91,7 @@ export default defineComponent({
     },
     onTryRules(query: string) {
       const sampleId = (this.$route.params.samplename as string) || null;
+       this.queryType='REWRITE';
       api
         .tryPackage(this.$route.params.projectname as string, sampleId, query)
         .then((response) => {

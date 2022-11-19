@@ -11,9 +11,12 @@
           class="row items-center justify-center"
           v-bind="$attrs"
           readonly
-          @select="ttselect"
+          @select="editTokens"
         >
-          <template #prepend> <q-icon name="chat_bubble_outline" /><!-- 言 --> </template>
+        <q-tooltip anchor="center middle" self="center middle" :offset="[10, 10]" >
+         Select the sentence to edit, remove or split tokens
+        </q-tooltip>
+        <template #prepend> <q-icon name="chat_bubble_outline" /><!-- 言 --> </template>
         </q-input>
         <q-space />
         <template v-if="openTabUser !== ''">
@@ -46,10 +49,14 @@
             >
           </q-btn>
 
+          <q-btn v-if="isLoggedIn" flat round dense icon="edit" :disable="openTabUser === ''" @click="(event)=>{editTokens(event)}">
+            <q-tooltip>Edit the tokens</q-tooltip>
+          </q-btn>
           <!-- TODO : still display the metadata when the user is not logged in, but hide all the buttons for deleting and saving them -->
           <q-btn v-if="isLoggedIn" flat round dense icon="post_add" :disable="openTabUser === ''" @click="openMetaDialog()">
             <q-tooltip>Edit this tree's metadata</q-tooltip>
           </q-btn>
+          
           <q-btn v-if="isLoggedIn && isTeacher" flat round dense icon="filter_9_plus" :disable="openTabUser === ''" @click="openMultiEditDialog">
             <q-tooltip>multi edit dialog</q-tooltip>
           </q-btn>
@@ -429,7 +436,7 @@ export default defineComponent({
      * @param {Event} event
      * @returns void
      */
-    ttselect(event: Event) {
+     editTokens(event: Event) {
       // only if a tab is open
       if (this.openTabUser !== '') {
         this.sentenceBus.emit('open:tokenDialog', {

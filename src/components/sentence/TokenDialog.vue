@@ -115,11 +115,19 @@ export default defineComponent({
     this.sentenceBus.on('open:tokenDialog', ({ userId, event }) => {
       this.userId = userId;
       if (event.target !== null) {
+        if (event.type=== 'select'){
         this.startIndex = (event.target as HTMLInputElement).selectionStart || 0;
         this.endIndex = (event.target as HTMLInputElement).selectionEnd || 0;
         this.selection = (event.target as HTMLInputElement).value.substring(this.startIndex, this.endIndex);
         this.openTokenDialog(this.startIndex, this.endIndex, this.selection);
-      }
+        }
+        else{
+          this.startIndex = 0;
+          this.endIndex = this.reactiveSentencesObj[this.userId].getSentenceText().length;
+          this.selection= this.reactiveSentencesObj[this.userId].getSentenceText();
+          this.openTokenDialog(this.startIndex, this.endIndex, this.selection);
+        }
+        }
     });
   },
   beforeUnmount() {
@@ -188,15 +196,12 @@ export default defineComponent({
       const oldTokensIndexes = this.tokidsequence;
       const newTokensForm = ttokl;
       const newTree = replaceArrayOfTokens(oldTree, oldTokensIndexes, newTokensForm);
+      const newMetaText = Object.values(newTree.nodesJson).map(({ FORM }) => FORM).join(' ');
       this.sentenceBus.emit('tree-update:tree', {
         tree: newTree,
         userId: this.userId,
-      });
-
-      // this.$emit(
-      //   "changed:metaText",
-      //   this.sentenceBus[this.userId].metaJson.text
-      // );
+      }); 
+    this.sentenceBus.emit('changed:metaText', {newMetaText});
     },
   },
 });

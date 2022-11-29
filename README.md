@@ -10,6 +10,9 @@ Arborator-Grew's wiki is available here: https://github.com/Arborator/arborator-
 
 This wiki will contain the full User Guide, which is currently a work-in-progress.
 
+## Important external docs
+- Grew server documentation : https://grew.fr/usage/grew_server
+
 ## Install NVM
 For either prod or dev, you need a working and compatible version of NPM ([link here](https://github.com/nvm-sh/nvm)). To do so, we highly recommend to install it through NVM.
 

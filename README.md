@@ -12,6 +12,7 @@ This wiki will contain the full User Guide, which is currently a work-in-progres
 
 ## Important external docs
 - Grew server documentation : https://grew.fr/usage/grew_server
+- [DependencyTreeJS](https://github.com/kirianguiller/DependencyTreeJS) : For handling interactive dependency trees in the browser in JS  
 
 ## Install NVM
 For either prod or dev, you need a working and compatible version of NPM ([link here](https://github.com/nvm-sh/nvm)). To do so, we highly recommend to install it through NVM.

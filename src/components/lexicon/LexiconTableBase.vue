@@ -356,12 +356,18 @@ export default defineComponent({
 });
 </script>
 
-<style scoped>
+<style>
 .added-prop {
   color: #33aa28;
 }
 
 .removed-prop {
   color: #ff0000;
+}
+.my-sticky-header-table th {
+   background-color:white;
+}
+.my-sticky-header-table-dark th{
+  background-color:#121212;
 }
 </style>

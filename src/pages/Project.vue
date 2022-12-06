@@ -34,6 +34,12 @@
 
         <!-- Lexicon Panel -->
         <q-card-section v-if="isShowLexiconPanel">
+          <q-bar class="bg-primary text-white ">
+           <q-space />
+            <q-btn  @click="isShowLexiconPanel = false" dense flat icon="close">
+              <q-tooltip content-class="bg-white text-primary">Close</q-tooltip>
+            </q-btn>
+          </q-bar>
           <LexiconPanel :lexicon-items="lexiconItems" :sample-id="table.selected" @request="fetchLexicon_"> </LexiconPanel>
         </q-card-section>
 
@@ -216,23 +222,12 @@
 
                 <div v-if="isGuest || isAdmin || isSuperAdmin">
                   <q-btn
-                    v-show="isShowLexiconPanel === false"
                     flat
                     color="default"
                     icon="playlist_add_check"
                     :loading="table.exporting"
                     :disable="table.selected.length < 1"
                     @click="fetchLexicon_('test')"
-                  ></q-btn>
-                  <q-btn
-                    v-if="isGuest || isAdmin || isSuperAdmin"
-                    v-show="isShowLexiconPanel === true"
-                    flat
-                    color="default"
-                    icon="playlist_add_check"
-                    :loading="table.exporting"
-                    :disable="table.selected.length < 1"
-                    @click="isShowLexiconPanel = false"
                   ></q-btn>
                   <q-tooltip v-if="table.selected.length < 1" :delay="300" content-class="text-white bg-primary"
                     >Select the samples to create a lexicon</q-tooltip

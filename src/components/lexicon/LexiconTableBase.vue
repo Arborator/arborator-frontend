@@ -5,8 +5,9 @@
     v-model:selected="table.selected"
     v-model:pagination="table.pagination"
     selection="multiple"
-    :rows="passedLexiconItems"
-    :row-key="(row) => row.key"
+    :rows="getLexiconData"
+    row-key="key"
+    binary-state-sort
     :rows-per-page-options="[50]"
     :columns="table.fields"
     :visible-columns="table.visibleColumns"
@@ -28,7 +29,7 @@
 
     <template #body-cell-form="props">
       <q-td key="form" :props="props">
-        <span :class="compareWithBefore && passedLexiconItems.length >= 1 ? 'added-prop' : ''"> {{ props.row.feats.form }} </span>
+        <span :class="compareWithBefore && passedLexiconItems.length >= 1 ? 'added-prop' : ''"> {{ props.row.form }} </span>
         <template v-if="compareWithBefore">
           <br />
           <span class="removed-prop">
@@ -42,7 +43,7 @@
 
     <template #body-cell-lemma="props">
       <q-td key="lemma" :props="props">
-        <span :class="compareWithBefore && passedLexiconItems.length >= 1 ? 'added-prop' : ''"> {{ props.row.feats.lemma }} </span>
+        <span :class="compareWithBefore && passedLexiconItems.length >= 1 ? 'added-prop' : ''"> {{ props.row.lemma }} </span>
         <template v-if="compareWithBefore">
           <br />
           <span class="removed-prop">
@@ -56,7 +57,7 @@
 
     <template #body-cell-pos="props">
       <q-td key="pos" :props="props">
-        <span :class="compareWithBefore && passedLexiconItems.length >= 1 ? 'added-prop' : ''"> {{ props.row.feats.upos }} </span>
+        <span :class="compareWithBefore && passedLexiconItems.length >= 1 ? 'added-prop' : ''"> {{ props.row.upos }} </span>
         <template v-if="compareWithBefore">
           <br />
           <span class="removed-prop">
@@ -69,12 +70,12 @@
     </template>
     <template #body-cell-gloss="props">
       <q-td key="gloss" :props="props">
-        <span :class="compareWithBefore && passedLexiconItems.length >= 1 ? 'added-prop' : ''"> {{ props.row.feats.Gloss }} </span>
+        <span :class="compareWithBefore && passedLexiconItems.length >= 1 ? 'added-prop' : ''"> {{ props.row.gloss }} </span>
         <template v-if="compareWithBefore">
           <br />
           <span class="removed-prop">
             <del>
-              {{ findOriginalLexiconItem(props.row).feats.Gloss }}
+              {{ findOriginalLexiconItem(props.row).Gloss }}
             </del>
           </span>
         </template>
@@ -95,7 +96,7 @@
     </template> -->
     <template #body-cell-frequency="props">
       <q-td key="frequency" :props="props">
-        {{ props.row.freq }}
+        {{ props.row.frequency }}
       </q-td>
     </template>
 
@@ -144,6 +145,14 @@ export default defineComponent({
     return { parentSlots };
   },
   data() {
+    const lexiconData :{
+                    form :string,
+                    lemma:string,
+                    upos:string,
+                    gloss:string,
+                    key:string,
+                    frequency:number
+    }[]=[];
     const table: table_t<lexiconItem_FE_t> = {
       fields: [
         {
@@ -174,7 +183,7 @@ export default defineComponent({
           label: 'POS',
           sortable: true,
           align: 'left',
-          field: 'pos',
+          field: 'upos',
           // Add a sort function for handling the requested sorting feature
           // sort: (a: string, b: string) => {
           //   console.log('KK a', a, b);
@@ -217,22 +226,37 @@ export default defineComponent({
       exporting: false,
     };
     return {
+      lexiconData,
       download: [],
       table,
       tableKey: 0,
     };
   },
-  mounted() {
-    console.log('KK compare with before ', this.compareWithBefore);
+   mounted(){
   },
   computed: {
     ...mapState(useLexiconStore, ['lexiconItems']),
+    getLexiconData(){ 
+      for (const lexiconItem of this.passedLexiconItems ){
+        this.lexiconData.push({
+                        form :lexiconItem.feats.form,
+                        lemma:lexiconItem.feats.lemma,
+                        upos: lexiconItem.feats.upos,
+                        gloss:lexiconItem.feats.Gloss,
+                        key:lexiconItem.key,
+                        frequency:lexiconItem.freq
+                      })
+      }
+      
+      return this.lexiconData;
+    },
+
   },
   methods: {
     ...mapActions(useLexiconStore, ['setLexiconModificationItem', 'removeCoupleLexiconItemBeforeAfter']),
     ...mapActions(useGrewSearchStore, ['switch_grew_dialog', 'change_last_grew_query']),
     onRowClick(evt: Event, row: any) {
-      this.setLexiconModificationItem(row);
+      this.setLexiconModificationItem(this.findOriginalLexiconItem(row));
     },
     findOriginalLexiconItem({ key }: { key: string }) {
       const matchLexiconItem = this.lexiconItems.filter((lexiconItem) => {

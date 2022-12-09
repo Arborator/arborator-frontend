@@ -111,6 +111,10 @@
       <q-btn color="default" flat label="tsv" @click="exportLexiconTSV">
        <q-tooltip :delay="300" content-class="text-white bg-primary">{{ $t('projectView.tooltipExportLexicon[0]') }}</q-tooltip>
        </q-btn>
+       <q-btn color="default" flat label="json" @click="exportLexiconJSON" >
+       <q-tooltip :delay="300" content-class="text-white bg-primary">{{ $t('projectView.tooltipExportLexicon[1]') }}
+       </q-tooltip>
+       </q-btn>
       <div>
         <q-btn-group v-if="compareWithBefore" flat>
           <q-btn color="default" :disable="table.selected.length === 0" flat icon="compare_arrows" @click="get()"
@@ -344,43 +348,36 @@ export default defineComponent({
            return [];
          })
         .catch((error) => {
-           // notifyError({message:`${error}`, type:'negative'});
-           console.log('error');
+           notifyError({ error });
+           return [];
+         });
+     },
+     exportLexiconJSON() {
+      const download=[];
+      for ( const lexiconItem of this.passedLexiconItems) {
+         download.push(lexiconItem);
+       }
+       const datasample = { data: download };
+       api
+         .exportLexiconJSON(this.$route.params.projectname as string, datasample)
+         .then((response) => {
+           const url = window.URL.createObjectURL(new Blob([response.data], { type: 'application/json' }));
+           const link = document.createElement('a');
+           link.href = url;
+           link.setAttribute('download', `lexicon_${this.$route.params.projectname}.json`);
+           document.body.appendChild(link);
+           link.click();
+           document.body.removeChild(link);
+           this.table.exporting = false;
+           notifyMessage({ message: 'File downloaded' });
+           return [];
+         })
+         .catch((error) => {
+           notifyError({ error });
            return [];
          });
        this.download = [];
      },
-    // exportLexiconJSON() {
-    //   for (let i = 0; i < this.lexiconItems.length; i += 1) {
-    //     if (this.lexiconItems[i].changed !== 'delete') {
-    //       if (!('frequency' in this.lexiconItems[i])) {
-    //         this.lexiconItems[i].frequency = '_';
-    //       }
-    //       this.download.push(this.lexiconItems[i]);
-    //     }
-    //   }
-    //   const datasample = { data: this.download };
-    //   api
-    //     .exportLexiconJSON(this.$route.params.projectname, datasample)
-    //     .then((response) => {
-    //       const url = window.URL.createObjectURL(new Blob([response.data], { type: 'application/json' }));
-    //       const link = document.createElement('a');
-    //       link.href = url;
-    //       link.setAttribute('download', `lexicon_${this.$route.params.projectname}.json`);
-    //       document.body.appendChild(link);
-    //       link.click();
-    //       document.body.removeChild(link);
-    //       this.table.exporting = false;
-    //       notifyMessage({ message: 'File downloaded' });
-    //       return [];
-    //     })
-    //     .catch((error) => {
-    //       // notifyError({message:`${error}`, type:'negative'});
-    //       notifyError({ error });
-    //       return [];
-    //     });
-    //   this.download = [];
-    // },
   },
 });
 </script>

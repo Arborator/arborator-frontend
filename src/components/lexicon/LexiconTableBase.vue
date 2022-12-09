@@ -108,6 +108,9 @@
           </template>
         </q-input>
       </div>
+      <q-btn color="default" flat label="tsv" @click="exportLexiconTSV">
+       <q-tooltip :delay="300" content-class="text-white bg-primary">{{ $t('projectView.tooltipExportLexicon[0]') }}</q-tooltip>
+       </q-btn>
       <div>
         <q-btn-group v-if="compareWithBefore" flat>
           <q-btn color="default" :disable="table.selected.length === 0" flat icon="compare_arrows" @click="get()"
@@ -128,12 +131,13 @@
 </template>
 
 <script lang="ts">
+import api from '../../api/backend-api';
 import { computed } from 'vue';
 import { mapActions, mapState } from 'pinia';
 import { lexiconItem_FE_t, useLexiconStore } from 'src/pinia/modules/lexicon';
 import { useGrewSearchStore } from 'src/pinia/modules/grewSearch';
 import { table_t } from 'src/types/main_types';
-
+import { notifyError, notifyMessage } from 'src/utils/notify';
 import { defineComponent } from 'vue';
 
 export default defineComponent({
@@ -319,32 +323,33 @@ export default defineComponent({
       return this.grew_pattern_from_lex_item(before) + withouts + '\n' + commands;
     },
 
-    // exportLexiconTSV() {
-    //   for (let i = 0; i < this.passedLexiconItems.length; =i += 1) {
-    //     this.download.push(this.passedLexiconItems[i]);
-    //   }
-    //   const datasample = { data: this.download };
-    //   api
-    //     .exportLexiconTSV(this.$route.params.projectname, datasample)
-    //     .then((response) => {
-    //       const url = window.URL.createObjectURL(new Blob([response.data], { type: 'text/tab-separated-values' }));
-    //       const link = document.createElement('a');
-    //       link.href = url;
-    //       link.setAttribute('download', `lexicon_${this.$route.params.projectname}.tsv`);
-    //       document.body.appendChild(link);
-    //       link.click();
-    //       document.body.removeChild(link);
-    //       this.table.exporting = false;
-    //       notifyMessage({ message: 'File downloaded' });
-    //       return [];
-    //     })
-    //     .catch((error) => {
-    //       // notifyError({message:`${error}`, type:'negative'});
-    //       notifyError({ error });
-    //       return [];
-    //     });
-    //   this.download = [];
-    // },
+     exportLexiconTSV() {
+      const download=[];
+       for ( const lexiconItem of this.passedLexiconItems) {
+         download.push(lexiconItem);
+       }
+       const datasample = { data: download };
+       api
+         .exportLexiconTSV(this.$route.params.projectname as string, datasample)
+         .then((response) => {
+           const url = window.URL.createObjectURL(new Blob([response.data], { type: 'text/tab-separated-values' }));
+           const link = document.createElement('a');
+           link.href = url;
+           link.setAttribute('download', `lexicon_${this.$route.params.projectname}.tsv`);
+           document.body.appendChild(link);
+           link.click();
+           document.body.removeChild(link);
+           this.table.exporting = false;
+           notifyMessage({ message: 'File downloaded' });
+           return [];
+         })
+        .catch((error) => {
+           // notifyError({message:`${error}`, type:'negative'});
+           console.log('error');
+           return [];
+         });
+       this.download = [];
+     },
     // exportLexiconJSON() {
     //   for (let i = 0; i < this.lexiconItems.length; i += 1) {
     //     if (this.lexiconItems[i].changed !== 'delete') {

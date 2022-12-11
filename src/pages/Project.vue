@@ -624,12 +624,8 @@ export default defineComponent({
     noselect(): boolean {
       return this.table.selected.length < 1;
     },
-    sentenceCount() { 
-    let sentenceCount=0;
-     for (const sample of this.samples){
-      sentenceCount+=sample.sentences
-     }
-     return sentenceCount;
+    sentenceCount() :number { 
+    return this.samples.map((sample) => sample.sentences).reduce((partialSum, a) => partialSum + a, 0);
     },
   },
   created() {

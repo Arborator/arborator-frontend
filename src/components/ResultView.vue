@@ -110,8 +110,9 @@ export default defineComponent({
     ...mapState(useUserStore,['isSuperAdmin']),
     sentenceCount() {
       return Object.keys(this.searchresults)
-        .map((sa) => this.searchresults[sa])
-        .flat().length; // number of keys in subobjects
+        .map((sa) => Object.keys(this.searchresults[sa]))
+        .flat().length
+         // number of keys in subobjects
     },
   },
   mounted() {

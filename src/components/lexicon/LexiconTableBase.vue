@@ -76,7 +76,7 @@
             <br />
             <span class="removed-prop">
               <del>
-                {{ findOriginalLexiconItem(props.row).Gloss }}
+                {{ findOriginalLexiconItem(props.row).feats.Gloss }}
               </del>
             </span>
           </template>
@@ -258,7 +258,8 @@ export default defineComponent({
   },
   computed: {
     ...mapState(useLexiconStore, ['lexiconItems']),
-    getLexiconData(){ 
+    getLexiconData(){
+      this.lexiconData =[];
       for (const lexiconItem of this.passedLexiconItems ){
         this.lexiconData.push({
                         form :lexiconItem.feats.form,
@@ -289,7 +290,6 @@ export default defineComponent({
         }
         return false;
       })[0];
-      console.log('KK matchLexiconItem', matchLexiconItem.key);
       return matchLexiconItem;
     },
     deleteSelected() {
@@ -299,12 +299,11 @@ export default defineComponent({
       this.table.selected = [];
     },
     get() {
-      console.log('KK this.table.selected', this.table.selected);
       let grewRuleConcatenated = '';
       let counter = 1;
+      console.log(this.table.selected)
       for (const after of this.table.selected) {
         const before = this.findOriginalLexiconItem(after);
-        console.log(before.key, after.key);
         const thisRule = this.grew_rule_from_lex_item_pair(before, after);
         grewRuleConcatenated += `rule r${counter} {\n${thisRule}\n}\n`;
         counter = counter + 1;

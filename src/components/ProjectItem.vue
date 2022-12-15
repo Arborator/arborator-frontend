@@ -69,7 +69,7 @@
     </q-item-section>
 
     <q-dialog v-model="confirmActionDial">
-      <confirm-action :parent-action="confirmActionCallback" :arg1="confirmActionArg1"></confirm-action>
+      <confirm-action :parent-action="confirmActionCallback" :arg1="confirmActionArg1" :targetName="project.projectName"></confirm-action>
     </q-dialog>
   </q-item>
 </template>

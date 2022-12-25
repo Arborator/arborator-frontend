@@ -40,7 +40,7 @@
               <q-tooltip content-class="bg-white text-primary">Close</q-tooltip>
             </q-btn>
           </q-bar>
-          <LexiconPanel :lexicon-items="lexiconItems" :sample-id="table.selected" @request="fetchLexicon_"> </LexiconPanel>
+          <LexiconPanel :features="features" :lexicon-items="lexiconItems" :sample-id="table.selected" @request="fetchLexicon_"> </LexiconPanel>
         </q-card-section>
 
         <!-- Parsing Panel -->
@@ -146,7 +146,6 @@
                           <q-item-label>{{ $t('projectView.tooltipGitPush[0]') }}</q-item-label>
                         </q-item-section>
                       </q-item>
-
                       <q-item v-close-popup clickable @click="commit('user_recent')">
                         <q-item-section avatar>
                           <q-avatar v-if="isLoggedIn" size="1.2rem">
@@ -227,12 +226,43 @@
                     icon="playlist_add_check"
                     :loading="table.exporting"
                     :disable="table.selected.length < 1"
-                    @click="fetchLexicon_('test')"
+                    @click=" isShowFeatureDialog = true"
                   ></q-btn>
-                  <q-tooltip v-if="table.selected.length < 1" :delay="300" content-class="text-white bg-primary"
-                    >Select the samples to create a lexicon</q-tooltip
-                  >
+                  <q-tooltip v-if="table.selected.length < 1" :delay="300" content-class="text-white bg-primary">
+                   Select the samples to create a lexicon</q-tooltip>
                   <q-tooltip v-else :delay="300" content-class="text-white bg-primary">Create lexicon from selected samples</q-tooltip>
+                 <q-dialog v-model="isShowFeatureDialog" >
+                  <q-card>
+                    <q-bar class="bg-primary text-white ">
+                      <q-space />
+                      <q-btn dense flat icon="close" v-close-popup></q-btn>
+                    </q-bar>
+                    <q-card-section>
+                      <div class="text-h6 blue-grey-10">
+                        {{ $t('projectView.featureSelectDial[0]') }}
+                      </div>
+                    </q-card-section>
+                    <q-card-section >
+                      <q-select
+                        v-model="features"
+                        filled
+                        multiple
+                        :options="featureOptions"
+                        use-chips
+                        stack-label
+                        :label="$t('projectView.featureSelectDial[2]')"
+                        />
+                    </q-card-section>
+                    <q-card-section>
+                      <div class="text-caption text-grey">
+                        {{ $t('projectView.featureSelectDial[1]') }}
+                      </div>
+                    </q-card-section>
+                      <q-card-section>
+                      <q-btn  color="primary" @click="fetchLexicon_(features)" >Continue</q-btn>
+                       </q-card-section>
+                  </q-card>
+                </q-dialog>   
                 </div>
                 <!-- single and main button for parsing -->
                 <div>
@@ -591,6 +621,7 @@ export default defineComponent({
           value: 4,
         },
       ],
+      features:[],
       sampleNames,
       isShowParsingPanel: false,
       window: { width: 0, height: 0 },
@@ -598,11 +629,13 @@ export default defineComponent({
       tagContext: {},
       tableKey: 0,
       initLoad: false,
+      isShowFeatureDialog:false,
       isShowLexiconPanel: false,
     };
   },
   computed: {
     ...mapState(useProjectStore, [
+      'annotationFeatures',
       'visibility',
       'isAdmin',
       'isGuest',
@@ -627,6 +660,9 @@ export default defineComponent({
     sentenceCount() :number { 
     return this.samples.map((sample) => sample.sentences).reduce((partialSum, a) => partialSum + a, 0);
     },
+    featureOptions(): String[]{
+        return Object.values(this.annotationFeatures.FEATS).map((value)=>value.name);
+    }
   },
   created() {
     window.addEventListener('resize', this.handleResize);
@@ -788,14 +824,15 @@ export default defineComponent({
       this.isShowParsingPanel = !this.isShowParsingPanel
 
     },
-    fetchLexicon_(type: string) {
+    fetchLexicon_(features: string []) {
       const samplenames = [];
       for (const sample of this.table.selected) {
         samplenames.push(sample.sample_name);
       }
 
-      this.fetchLexicon(this.projectName as string, samplenames as string[], type);
+      this.fetchLexicon(this.projectName as string, samplenames as string[],features);
       this.isShowLexiconPanel = true
+      this.isShowFeatureDialog=false
     },
 
     // grewquery() {

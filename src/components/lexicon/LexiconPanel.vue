@@ -7,141 +7,10 @@
       :compare-with-before="true"
       :passed-lexicon-items="lexiconItemsModified"
       :lexicon-loading="false"
+      :features="features"
     >
     </LexiconTableBase>
-    <LexiconTableBase title="Lexicon" :passed-lexicon-items="lexiconItems" :lexicon-loading="lexiconLoading"> </LexiconTableBase>
-
-    <!-- <q-table
-      ref="table"
-      title="Lexicon"
-      v-model:selected="table.selected"
-      selection="multiple"
-      :rows="lexiconItems"
-      :row-key="(row) => `${row.form}-${row.lemma}-${row.gloss}-${row.pos}`"
-      :columns="table.columns"
-      :visible-columns="table.visibleColumns"
-      @row-click="onRowClick"
-      card-class="shadow-8"
-      :key="tableKey"
-      table-style="max-height:80vh"
-      :rows-per-page-options="[50]"
-      :loading="lexiconLoading"
-      loading-label="loading"
-      :filter="table.filter"
-      binary-state-sort
-      :class="($q.dark.isActive ? 'my-sticky-header-table-dark' : 'my-sticky-header-table') + ' rounded-borders'"
-      :v-model:pagination="table.pagination"
-    >
-
-
-      <template v-slot:top-right>
-        <div>
-          <q-input borderless dense debounce="300" v-model="table.filter" placeholder="Search">
-            <template v-slot:append>
-              <q-icon name="search" />
-            </template>
-          </q-input>
-        </div>
-        <div>
-          <q-btn-group compareWithBefore flat>
-            <q-btn color="default" v-show="table.selected.length < 1" flat icon="delete_forever" disable
-              ><q-tooltip>Delete seleted samples</q-tooltip></q-btn
-            >
-            <q-btn color="default" flat label="tsv" @click="exportLexiconTSV()" :loading="tableExporting"
-              ><q-tooltip :delay="300" content-class="text-white bg-primary">{{ $t('projectView.tooltipExportLexicon[0]') }}</q-tooltip></q-btn
-            >
-            <q-btn color="default" flat label="json" @click="exportLexiconJSON()" :loading="tableExporting"
-              ><q-tooltip :delay="300" content-class="text-white bg-primary">{{ $t('projectView.tooltipExportLexicon[1]') }}</q-tooltip></q-btn
-            >
-            <q-btn color="default" flat label="Rule Grew" @click="getRulesGrew()" :disable="RulesGrew.length < 0"
-              ><q-tooltip :delay="300" content-class="text-white bg-primary">{{ $t('projectView.tooltipRuleGrewLexicon') }}</q-tooltip></q-btn
-            >
-            <q-btn flat color="default" v-show="CompareDics === false" icon="cloud_upload" @click="uploadDial = true"
-              ><q-tooltip :delay="300" content-class="text-white bg-primary">{{ $t('projectView.tooltipValidatorLexicon') }}</q-tooltip></q-btn
-            >
-            <q-btn flat color="default" v-show="CompareDics === true" icon="cloud_upload" @click="CompareDics = false"
-              ><q-tooltip :delay="300" content-class="text-white bg-primary">{{ $t('projectView.tooltipValidatorLexicon') }}</q-tooltip></q-btn
-            >
-          </q-btn-group>
-        </div>
-      </template>
-    </q-table> -->
-    <!-- <div v-show="CompareDics === true">
-      <q-space />
-      <q-card>
-        <q-separator />
-        <CompareLexicon :data="this.dics" :sampleId="this.sampleId"> </CompareLexicon>
-      </q-card>
-    </div> -->
-    <!-- <q-dialog v-model="openFeatures">
-      <q-card>
-        <q-bar class="bg-primary text-white">
-          <div class="text-weight-bold">Features of "{{ currentword }}"</div>
-          <q-space />
-          <q-btn flat dense icon="close" v-close-popup />
-        </q-bar>
-        <attribute-table
-          :featdata="featTable.form"
-          :columns="featTable.columns"
-          openFeatures="false"
-          modifiable="false"
-          title="Form"
-          :featOptions="['String']"
-          @feature-changed="informFeatureChanged()"
-        />
-        <q-separator />
-        <attribute-table
-          :featdata="featTable.lemma"
-          :columns="featTable.columns"
-          openFeatures="false"
-          modifiable="false"
-          title="Lemma"
-          :featOptions="options.lemmaoptions"
-          @feature-changed="informFeatureChanged()"
-        />
-        <attribute-table
-          :featdata="featTable.pos"
-          :columns="featTable.columns"
-          openFeatures="false"
-          modifiable="false"
-          title="Category"
-          :featOptions="options.catoptions"
-          @feature-changed="informFeatureChanged()"
-        />
-        <attribute-table
-          :featdata="featTable.featl"
-          :columns="featTable.columns"
-          openFeatures="false"
-          modifiable="true"
-          title="Universal Features"
-          :featOptions="options.annof.FEATS"
-          @feature-changed="informFeatureChanged()"
-        />
-        <attribute-table
-          :featdata="featTable.gloss"
-          :columns="featTable.columns"
-          openFeatures="false"
-          modifiable="false"
-          title="Gloss"
-          :featOptions="['String']"
-          @feature-changed="informFeatureChanged()"
-        />
-        <q-separator />
-        <q-card-actions align="around">
-          <q-btn flat @click="ondialoghide()" label="Cancel" v-close-popup style="width: 35%; margin-left: auto; margin-right: auto" />
-          <q-btn flat @click="addEntry()" label="Add entry" v-close-popup style="width: 45%; margin-left: auto; margin-right: auto" />
-          <q-btn
-            v-if="featTable.changed !== 'add'"
-            color="primary"
-            @click="replaceEntry()"
-            :loading="exporting"
-            label="Replace entry"
-            v-close-popup
-            style="width: 45%; margin-left: auto; margin-right: auto"
-          />
-        </q-card-actions>
-      </q-card>
-    </q-dialog> -->
+    <LexiconTableBase title="Lexicon" :passed-lexicon-items="lexiconItems" :lexicon-loading="lexiconLoading" :features="features"> </LexiconTableBase>
     <q-dialog v-model="grewDialog" seamless position="right" full-width>
       <template v-if="!(exerciseMode && !isTeacher)">
         <GrewSearch :sentence-count="lexiconItems.length" :sample-id="sampleId" :show-table="grewDialog" />
@@ -213,14 +82,14 @@ import { annotationFeatures_t } from 'src/api/backend-types';
 import { defineComponent } from 'vue';
 
 export default defineComponent({
-  name: 'LexiconTable',
+  name: 'LexiconPanel',
   components: {
     GrewSearch,
     // CompareLexicon,
     LexiconTableBase,
     LexiconModificationDialog,
   },
-  props: ['sampleId'],
+  props: ['sampleId','features'],
 
   data() {
     const annof: Partial<annotationFeatures_t> = {};

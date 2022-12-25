@@ -28,73 +28,19 @@
         <q-checkbox v-model="scope.selected" />
       </template>
 
-      <template #body-cell-form="props">
-        <q-td key="form" :props="props">
-          <span :class="compareWithBefore && passedLexiconItems.length >= 1 ? 'added-prop' : ''"> {{ props.row.form }} </span>
+      <template #body-cell="props">
+        <q-td :props="props">
+          <span :class="compareWithBefore && passedLexiconItems.length >= 1 ? 'added-prop' : ''"> {{ props.value }} </span>
           <template v-if="compareWithBefore">
             <br />
             <span class="removed-prop">
               <del>
-                {{ findOriginalLexiconItem(props.row).feats.form }}
+                {{ findOriginalLexiconItem(props).feats[props.col.field] }}
               </del>
             </span>
           </template>
         </q-td>
       </template>
-
-      <template #body-cell-lemma="props">
-        <q-td key="lemma" :props="props">
-          <span :class="compareWithBefore && passedLexiconItems.length >= 1 ? 'added-prop' : ''"> {{ props.row.lemma }} </span>
-          <template v-if="compareWithBefore">
-            <br />
-            <span class="removed-prop">
-              <del>
-                {{ findOriginalLexiconItem(props.row).feats.lemma }}
-              </del>
-            </span>
-          </template>
-        </q-td>
-      </template>
-
-      <template #body-cell-pos="props">
-        <q-td key="pos" :props="props">
-          <span :class="compareWithBefore && passedLexiconItems.length >= 1 ? 'added-prop' : ''"> {{ props.row.upos }} </span>
-          <template v-if="compareWithBefore">
-            <br />
-            <span class="removed-prop">
-              <del>
-                {{ findOriginalLexiconItem(props.row).feats.upos }}
-              </del>
-            </span>
-          </template>
-        </q-td>
-      </template>
-      <template #body-cell-gloss="props">
-        <q-td key="gloss" :props="props">
-          <span :class="compareWithBefore && passedLexiconItems.length >= 1 ? 'added-prop' : ''"> {{ props.row.gloss }} </span>
-          <template v-if="compareWithBefore">
-            <br />
-            <span class="removed-prop">
-              <del>
-                {{ findOriginalLexiconItem(props.row).feats.Gloss }}
-              </del>
-            </span>
-          </template>
-        </q-td>
-      </template>
-      <!-- <template #body-cell-features="props">
-        <q-td key="features" :props="props">
-          <span :class="compareWithBefore ? 'added-prop' : ''"> {{ computeFeatureStringWrapper(props.row.features) }} </span>
-          <template >
-            <br />
-            <span class="removed-prop">
-              <del>
-                {{ computeFeatureStringWrapper(findOriginalLexiconItem(props.row).features) }}
-              </del>
-            </span>
-          </template>
-        </q-td>
-      </template> -->
       <template #body-cell-frequency="props">
         <q-td key="frequency" :props="props">
         <q-btn           
@@ -115,20 +61,20 @@
           </q-input>
         </div>
         <q-btn color="default" flat label="tsv" @click="exportLexiconTSV">
-        <q-tooltip :delay="300" content-class="text-white bg-primary">{{ $t('projectView.tooltipExportLexicon[0]') }}</q-tooltip>
+          <q-tooltip :delay="300" content-class="text-white bg-primary">{{ $t('projectView.tooltipExportLexicon[0]') }}</q-tooltip>
         </q-btn>
         <q-btn color="default" flat label="json" @click="exportLexiconJSON" >
-        <q-tooltip :delay="300" content-class="text-white bg-primary">{{ $t('projectView.tooltipExportLexicon[1]') }}
-        </q-tooltip>
+          <q-tooltip :delay="300" content-class="text-white bg-primary">{{ $t('projectView.tooltipExportLexicon[1]') }}
+          </q-tooltip>
         </q-btn>
         <div>
           <q-btn-group v-if="compareWithBefore" flat>
-            <q-btn color="default" :disable="table.selected.length === 0" flat icon="compare_arrows" @click="get()"
-              ><q-tooltip>Generate Grew Rule</q-tooltip></q-btn
-            >
-            <q-btn color="default" :disable="table.selected.length === 0" flat icon-right="delete_forever" @click="deleteSelected()"
-              ><q-tooltip>Unstage selected lexicon changes</q-tooltip></q-btn
-            >
+            <q-btn color="default" :disable="table.selected.length === 0" flat icon="compare_arrows" @click="get()">
+              <q-tooltip>Generate Grew Rule</q-tooltip>
+            </q-btn>
+            <q-btn color="default" :disable="table.selected.length === 0" flat icon-right="delete_forever" @click="deleteSelected()">
+              <q-tooltip>Unstage selected lexicon changes</q-tooltip>
+            </q-btn>
           </q-btn-group>
         </div>
       </template>
@@ -165,7 +111,7 @@ import { grewSearchResult_t } from 'src/api/backend-types';
 export default defineComponent({
   components: { ResultView},
   name: 'LexiconTable',
-  props: ['passedLexiconItems', 'lexiconLoading', 'compareWithBefore'],
+  props: ['passedLexiconItems', 'lexiconLoading', 'compareWithBefore','features'],
   setup(props, ctx) {
     const parentSlots = computed(() => Object.keys(ctx.slots));
 
@@ -173,14 +119,7 @@ export default defineComponent({
   },
   data() {
     const resultSearch: grewSearchResult_t = {};
-    const lexiconData :{
-                    form :string,
-                    lemma:string,
-                    upos:string,
-                    gloss:string,
-                    key:string,
-                    frequency:number
-    }[]=[];
+    const lexiconData :{}[]=[];
     const table: table_t<lexiconItem_FE_t> = {
       fields: [
         {
@@ -210,13 +149,6 @@ export default defineComponent({
           align: 'left',
           field: 'upos',
         },
-        // {
-        //   name: 'features',
-        //   label: 'Features',
-        //   align: 'left',
-        //   field: 'features',
-        //   sortable: false,
-        // },
         {
           name: 'gloss',
           label: 'Gloss',
@@ -232,7 +164,7 @@ export default defineComponent({
           field: 'frequency',
         },
       ],
-      visibleColumns: ['form', 'lemma', 'pos', 'features', 'gloss', 'frequency'],
+      visibleColumns: ['form', 'lemma', 'pos', 'gloss', 'frequency'],
       filter: '',
       selected: [],
       loading: false,
@@ -255,24 +187,20 @@ export default defineComponent({
     };
   },
    mounted(){
+    this.extendTableFieldsAndColumns();
   },
   computed: {
     ...mapState(useLexiconStore, ['lexiconItems']),
+
     getLexiconData(){
       this.lexiconData =[];
       for (const lexiconItem of this.passedLexiconItems ){
-        this.lexiconData.push({
-                        form :lexiconItem.feats.form,
-                        lemma:lexiconItem.feats.lemma,
-                        upos: lexiconItem.feats.upos,
-                        gloss:lexiconItem.feats.Gloss,
-                        key:lexiconItem.key,
-                        frequency:lexiconItem.freq
-                      })
+        this.lexiconData.push({...lexiconItem.feats, key:lexiconItem.key,frequency:lexiconItem.freq})
       }
-      
+      console.log(this.lexiconData)
       return this.lexiconData;
     },
+
      projectName() {
       return this.$route.params.projectname;
     },
@@ -280,9 +208,11 @@ export default defineComponent({
   methods: {
     ...mapActions(useLexiconStore, ['setLexiconModificationItem', 'removeCoupleLexiconItemBeforeAfter']),
     ...mapActions(useGrewSearchStore, ['switch_grew_dialog', 'change_last_grew_query']),
+
     onRowClick(evt: Event, row: any) {
       this.setLexiconModificationItem(this.findOriginalLexiconItem(row));
     },
+
     findOriginalLexiconItem({ key }: { key: string }) {
       const matchLexiconItem = this.lexiconItems.filter((lexiconItem) => {
         if (lexiconItem.key === key) {
@@ -292,12 +222,14 @@ export default defineComponent({
       })[0];
       return matchLexiconItem;
     },
+
     deleteSelected() {
       for (const selectedModifiedItem of this.table.selected) {
         this.removeCoupleLexiconItemBeforeAfter(selectedModifiedItem.key);
       }
       this.table.selected = [];
     },
+
     get() {
       let grewRuleConcatenated = '';
       let counter = 1;
@@ -325,25 +257,25 @@ export default defineComponent({
       return pattern;
     },
 
-    grew_rule_from_lex_item_pair(before: lexiconItem_FE_t, after: lexiconItem_FE_t) {
+    grew_rule_from_lex_item_pair(before: lexiconItem_FE_t, after: any) {
       let commands = 'commands { ';
       let withouts = '';
-      for (const feat in after.feats) {
-        if (before.feats[feat] != after.feats[feat]) {
-          if (after.feats[feat]) {
-            withouts += `\nwithout { N.${feat} = \"${after.feats[feat]}\" }`;
-            commands += `N.${feat} = \"${after.feats[feat]}\"; `;
-          } else {
-            commands += `del_feat N.${feat}; `;
+      for (const feat in before.feats) {
+        if (before.feats[feat] != after[feat]) {
+          if (after[feat]) {
+            withouts += `\nwithout { N.${feat} = \"${after[feat]}\" }`;
+            commands += `N.${feat} = \"${after[feat]}\"; `;
           }
         }
       }
       commands += '}';
       return this.grew_pattern_from_lex_item(before) + withouts + '\n' + commands;
     },
+
      showTrees(row: any){
      this.onSearch(this.grew_pattern_from_lex_item(this.findOriginalLexiconItem(row)))
      },
+
      exportLexiconTSV() {
       const download=[];
        for ( const lexiconItem of this.passedLexiconItems) {
@@ -369,6 +301,7 @@ export default defineComponent({
            return [];
          });
      },
+
      exportLexiconJSON() {
       const download=[];
       for ( const lexiconItem of this.passedLexiconItems) {
@@ -395,6 +328,23 @@ export default defineComponent({
          });
        this.download = [];
      },
+     
+     extendTableFieldsAndColumns(){
+      this.features.sort()
+      for (const feature of this.features ){
+        this.table.fields.push(
+          {
+          name: feature,
+          label: feature,
+          sortable: true,
+          align: 'left',
+          field: feature,
+          }
+        )
+        this.table.visibleColumns.push(feature)
+      }
+     },
+
      onSearch(searchPattern: string) {
       const query = { pattern: searchPattern };
         api

@@ -30,11 +30,11 @@ export const useLexiconStore = defineStore('lexicon', {
       this.isShowLexiconModification = false;
       this.couplesLexiconItemsBeforeAfter = [];
     },
-    fetchLexicon(projectname: string, samplenames: string[], treeSelection: string) {
+    fetchLexicon(projectname: string, samplenames: string[], features: string[],) {
       this.lexiconLoading = true;
       this.purgeCurrentState();
       api
-        .getLexicon(projectname, { samplenames, treeSelection })
+        .getLexicon(projectname, { samplenames, features })
         .then((response) => {
           this.lexiconLoading = false;
           const lexiconItems = [];
@@ -112,7 +112,9 @@ function deepEqual(x: Record<string, any>, y: Record<string, any>): boolean {
 function computeUniqueKey(lexiconItem: lexiconItem_t) {
   let uniqueKey = '';
   for (const value of Object.values(lexiconItem.feats)) {
+    if(value){
     uniqueKey += value;
+    }
   }
   return uniqueKey;
 }

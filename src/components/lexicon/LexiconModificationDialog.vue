@@ -35,7 +35,7 @@
         :featdata="formattedItem.features"
         :columns="featTable.columns"
         open-features="false"
-        modifiable="true"
+        modifiable="false"
         title="Universal Features"
         :feat-options="options.annof.FEATS"
       />
@@ -170,9 +170,11 @@ export default defineComponent({
       formattedItem.gloss = [{ a: 'Gloss', v: lexiconItem.feats.Gloss }];
       formattedItem.frequency = lexiconItem.freq;
       formattedItem.key = lexiconItem.key;
-
-      formattedItem.features = [];
-
+      for (const feature of this.options.annof.FEATS) {
+        if (feature.name in lexiconItem.feats){
+        formattedItem.features.push({ a:feature.name, v: lexiconItem.feats[feature.name] });
+        }
+      }
       return formattedItem;
     },
     convertFormattedItemToLexiconItem(formattedItem: formattedItem_t) {

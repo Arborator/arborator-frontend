@@ -106,6 +106,7 @@ export default {
   projectHub: {
     tooltipCreaProject: 'Create a new project',
     tooltipChangeView: 'Change view',
+    tooltipHelp:'Click here to see the documentation',
     tooltipRightClickDelete: 'Right click to delete',
     title: 'Projects',
     sample: 'sample',

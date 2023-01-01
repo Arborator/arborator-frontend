@@ -517,8 +517,9 @@ export default defineComponent({
       if (language === 'French') {
         line = line.replace('’', "'");
         line = line.replace(/-ce|-ci|-là|-je|-tu|-t-il|-il|-t-elle|-elle|-t-ils|-ils|-t-elles|-elles|-on/gi, ' $&');
-        line = line.replace(/[,;:!?./§()*]+/gi, ' $&');
-        line = line.replace(/['()]+/gi, '$& ');
+        line = line.replace(/[,;:!?./()*]+/gi, ' $& '); // added space behind for these characters
+        line = line.replace(/[§]+/gi, ' $&'); // kept only the § with only space in front
+        line = line.replace(/[']+/gi, '$& '); // kept only the ' with only space behind
         line = line.replace(/"/gi, ' " ');
         line = line.replace(/\s+/, ' ');
         line = line.replace("aujourd' hui", "aujourd'hui");

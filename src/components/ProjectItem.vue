@@ -46,7 +46,7 @@
         {{ $t('projectHub.lastWriteAccess') }} {{ timeAgo(project.lastWriteAccess) }}
       </q-chip>
     </q-item-section>
-    <q-item-section v-for="adm in project.admins" :key="adm" side>
+    <q-item-section v-if="isLoggedIn" v-for="adm in project.admins" :key="adm" side>
       <q-chip v-if="userid == adm" size="sm">
         <q-avatar>
           <img :src="getUserInfos.picture_url || undefined" />
@@ -110,7 +110,7 @@ export default defineComponent({
     };
   },
   computed: {
-    ...mapState(useUserStore, ['getUserInfos']),
+    ...mapState(useUserStore, ['isLoggedIn','getUserInfos']),
     ...mapState(useUserStore, { userid: 'id' }),
     imageCleaned() {
       return this.project.image;

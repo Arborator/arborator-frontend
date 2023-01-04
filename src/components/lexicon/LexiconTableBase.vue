@@ -197,7 +197,7 @@ export default defineComponent({
       for (const lexiconItem of this.passedLexiconItems ){
         this.lexiconData.push({...lexiconItem.feats, key:lexiconItem.key,frequency:lexiconItem.freq})
       }
-      console.log(this.lexiconData)
+      
       return this.lexiconData;
     },
 
@@ -233,7 +233,7 @@ export default defineComponent({
     get() {
       let grewRuleConcatenated = '';
       let counter = 1;
-      console.log(this.table.selected)
+      
       for (const after of this.table.selected) {
         const before = this.findOriginalLexiconItem(after);
         const thisRule = this.grew_rule_from_lex_item_pair(before, after);

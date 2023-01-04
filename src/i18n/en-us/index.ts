@@ -169,7 +169,14 @@ export default {
     tooltipRelationTable: 'Get Relation Tables',
     tooltipWindows: ['Minimize', 'Maximize', 'Close'],
     uploadSelectDial: 'Select one or multiple conll files',
-    featureSelectDial:['Select one or multiple features','Default features are : Form, Lemma, Pos, Gloss','Select features to be shown in the lexicon table'],
+    lexiconDial:[
+    'Select one or multiple features for the Lexicon',
+    'Default features are : Form, Lemma, Pos, Gloss',
+    'Get the lexicon of my trees',
+    'Get the lexicon of my recent trees',
+    'Get the lexicon of all the trees',
+    'Get the lexicon of the recent trees',
+  ],
     projectInfoDial: {
       title: 'Project Information',
       ifAdmin: 'Contact these project administrators if you need access or further information:',

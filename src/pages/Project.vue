@@ -80,7 +80,6 @@
                     $t('projectView.tooltipAddSample')
                   }}</q-tooltip>
                 </q-btn>
-
                 <div>
                   <q-btn
                     flat
@@ -181,9 +180,9 @@
                   </q-btn-dropdown>
                   <!-- v-if="loggedWithGithub" :disable="table.selected.length<1 -->
 
-                  <q-tooltip v-if="table.selected.length < 1" :delay="300" content-class="text-white bg-primary">{{
-                    $t('projectView.tooltipGitPush[4]')
-                  }}</q-tooltip>
+                  <q-tooltip v-if="table.selected.length < 1" :delay="300" content-class="text-white bg-primary">
+                  {{ $t('projectView.tooltipGitPush[4]')}}
+                  </q-tooltip>
                   <q-tooltip v-else :delay="300" content-class="text-white bg-primary">{{ $t('projectView.tooltipGitPush[5]') }}</q-tooltip>
                 </div>
 
@@ -218,7 +217,7 @@
                   <q-tooltip v-else :delay="300" content-class="text-white bg-primary">{{ $t('projectView.tooltipGitPullSelect[1]') }}</q-tooltip>
                   <q-tooltip :delay="300" content-class="text-white bg-primary"></q-tooltip>
                 </div>
-
+                <!-- Lexicon-dialog -->
                 <div v-if="isGuest || isAdmin || isSuperAdmin">
                   <q-btn
                     flat
@@ -230,39 +229,8 @@
                   ></q-btn>
                   <q-tooltip v-if="table.selected.length < 1" :delay="300" content-class="text-white bg-primary">
                    Select the samples to create a lexicon</q-tooltip>
-                  <q-tooltip v-else :delay="300" content-class="text-white bg-primary">Create lexicon from selected samples</q-tooltip>
-                 <q-dialog v-model="isShowFeatureDialog" >
-                  <q-card>
-                    <q-bar class="bg-primary text-white ">
-                      <q-space />
-                      <q-btn dense flat icon="close" v-close-popup></q-btn>
-                    </q-bar>
-                    <q-card-section>
-                      <div class="text-h6 blue-grey-10">
-                        {{ $t('projectView.featureSelectDial[0]') }}
-                      </div>
-                    </q-card-section>
-                    <q-card-section >
-                      <q-select
-                        v-model="features"
-                        filled
-                        multiple
-                        :options="featureOptions"
-                        use-chips
-                        stack-label
-                        :label="$t('projectView.featureSelectDial[2]')"
-                        />
-                    </q-card-section>
-                    <q-card-section>
-                      <div class="text-caption text-grey">
-                        {{ $t('projectView.featureSelectDial[1]') }}
-                      </div>
-                    </q-card-section>
-                      <q-card-section>
-                      <q-btn  color="primary" @click="fetchLexicon_(features)" >Continue</q-btn>
-                       </q-card-section>
-                  </q-card>
-                </q-dialog>   
+                  <q-tooltip v-else :delay="300" class-content="text-white bg-primary">Create lexicon from selected samples</q-tooltip>
+                     
                 </div>
                 <!-- single and main button for parsing -->
                 <div>
@@ -414,6 +382,83 @@
         <GrewSearch :sentence-count="sentenceCount" :search-scope="projectName" />
         <RelationTableMain />
       </template>
+
+     <!--Lexicon Dialog-->
+     <q-dialog v-model="isShowFeatureDialog" >
+      <q-card style="width: 550px; max-width: 80vw;">
+        <q-bar class="bg-primary text-white " >
+          {{ $t('projectView.lexiconDial[0]') }}
+          <q-space/>
+          <q-btn dense flat icon="close" v-close-popup></q-btn>
+        </q-bar>
+        <q-card-section >
+          <div class="row q-gutter-md">
+            <div class="col-8 ">
+              <q-select
+                v-model="features"
+                filled
+                multiple
+                :options="featureOptions"
+                use-chips
+                stack-label
+                :label="$t('projectView.lexiconDial[1]')"
+                />
+            </div>
+            <div class="col-3">
+              <q-btn-dropdown  size="md" outline color="primary" label=" get Lexicon">
+                <q-list>
+              
+                  <q-item v-close-popup clickable @click="fetchLexicon_('user')">
+                    <q-item-section avatar>
+                      <q-avatar v-if="isLoggedIn" size="1.2rem">
+                        <img :src="avatar" />
+                      </q-avatar>
+                      <q-icon v-else name="account_circle" />
+                    </q-item-section>
+                    <q-item-section>
+                      <q-item-label>{{ $t('projectView.lexiconDial[2]') }}</q-item-label>
+                    </q-item-section>
+                  </q-item>
+
+                  <q-item v-close-popup clickable @click="fetchLexicon_('user_recent')">
+                    <q-item-section avatar>
+                      <q-avatar v-if="isLoggedIn" size="1.2rem">
+                        <img :src="avatar" />
+                        <q-badge floating transparent color="principal">+</q-badge>
+                      </q-avatar>
+                      <q-icon v-else name="account_circle" />
+                    </q-item-section>
+                    <q-item-section>
+                      <q-item-label>{{ $t('projectView.lexiconDial[3]') }}</q-item-label>
+                    </q-item-section>
+                  </q-item>
+
+                  <q-item v-if="isAdmin || isSuperAdmin" v-close-popup clickable @click="fetchLexicon_('recent')">
+                    <q-item-section avatar>
+                      <q-icon name="schedule" />
+                    </q-item-section>
+                    <q-item-section>
+                      <q-item-label>{{ $t('projectView.lexiconDial[4]') }}</q-item-label>
+                    </q-item-section>
+                  </q-item>
+
+                  <q-item v-if="isAdmin || isSuperAdmin" v-close-popup clickable @click="fetchLexicon_('all')">
+                    <q-item-section avatar>
+                      <q-icon name="ion-md-globe" />
+                    </q-item-section>
+                    <q-item-section>
+                      <q-item-label> {{ $t('projectView.lexiconDial[5]') }}</q-item-label>
+                    </q-item-section>
+                  </q-item>
+
+                </q-list>
+              </q-btn-dropdown>
+            </div>
+          </div>
+        </q-card-section>
+      </q-card>
+    </q-dialog>
+
       <!-- :sentenceCount=.number_sentences" -->
 
       <!-- upload dialog start -->
@@ -824,13 +869,13 @@ export default defineComponent({
       this.isShowParsingPanel = !this.isShowParsingPanel
 
     },
-    fetchLexicon_(features: string []) {
+    fetchLexicon_(lexiconType: string) {
       const samplenames = [];
       for (const sample of this.table.selected) {
         samplenames.push(sample.sample_name);
       }
-
-      this.fetchLexicon(this.projectName as string, samplenames as string[],features);
+      const data={samplenames:samplenames,features:this.features,lexiconType: lexiconType}
+      this.fetchLexicon(this.projectName as string, data);
       this.isShowLexiconPanel = true
       this.isShowFeatureDialog=false
     },

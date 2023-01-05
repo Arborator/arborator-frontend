@@ -225,7 +225,7 @@
                     icon="playlist_add_check"
                     :loading="table.exporting"
                     :disable="table.selected.length < 1"
-                    @click=" isShowFeatureDialog = true"
+                    @click=" isShowFeatureDialog = true ; isShowLexiconPanel=false"
                   ></q-btn>
                   <q-tooltip v-if="table.selected.length < 1" :delay="300" content-class="text-white bg-primary">
                    Select the samples to create a lexicon</q-tooltip>

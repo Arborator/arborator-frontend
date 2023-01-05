@@ -503,7 +503,7 @@
       </q-dialog>
 
       <q-dialog v-model="confirmActionDial">
-        <confirm-action :parent-action="confirmActionCallback" :arg1="confirmActionArg1"></confirm-action>
+        <confirm-action :parent-action="confirmActionCallback" :arg1="confirmActionArg1" :target-name="projectName" ></confirm-action>
       </q-dialog>
     </div>
   </q-page>

@@ -127,9 +127,15 @@
         </q-card-section>
         <!-- here starts the list mode -->
         <q-card-section v-if="listMode" style="width: 90vw; height: 60vh">
+          <div class="row" v-if="isLoggedIn">
+            <div class="col-lg-12 col-sm-12 col-xs-12 col-md-12 q-mb-md">
+              <q-space/>
+              <q-select  dense outlined style="min-width: 230px" v-model="projectType" :options="projectTypeOptions" class="float-right" :label="$t('projectHub.projectCategory')" />
+            </div>
+          </div>
           <q-list style="width: 100%" bordered>
             <q-virtual-scroll
-              :items="visibleProjects"
+              :items="filteredProjects"
               style="max-height: 60vh; width: 100%"
               :virtual-scroll-slice-size="30"
               :virtual-scroll-item-size="200"
@@ -196,7 +202,15 @@ export default defineComponent({
       projects,
       visibleProjects,
       projectDifference: false,
+      projectTypeOptions:[
+        this.$t('projectHub.allProjects'),
+        this.$t('projectHub.myProjects'),
+        this.$t('projectHub.otherProjects'),
+        this.$t('projectHub.myOldProjects'),
+        this.$t('projectHub.otherOldProjects'),
+      ],
       hover: false,
+      projectType:'',
       search: '',
       listMode: true,
       creaProjectDial: false,
@@ -230,6 +244,19 @@ export default defineComponent({
       return this.visibleProjects.filter((project) => {
         return !(this.isCreatedByMe(project)||this.isSharedWithMe(project)) && this.isOld(project);
       });
+    },
+    filteredProjects():project_extended_t[] {
+      if (this.projectType === "" ||this.projectType===this.$t('projectHub.allProjects') ) {
+        return this.visibleProjects
+      } else if (this.projectType ===  this.$t('projectHub.myProjects')){
+        return this.myProjects()
+      } else if  ( this.projectType === this.$t('projectHub.otherProjects')){
+        return this.otherProjects
+      } else if ( this.projectType=== this.$t('projectHub.myOldProjects')){
+        return this.myOldProjects
+      } else{
+        return this.otherOldProjects
+      }      
     },
   },
   mounted() {

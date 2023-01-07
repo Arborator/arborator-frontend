@@ -114,6 +114,8 @@ export default {
     rightClickSettings: 'Settings',
     rightClickDelete: 'Delete',
     emptySearch: 'Search for project',
+    projectCategory:'Category',
+    allProjects:'All the projects',
     myProjects: 'My Projects',
     myOldProjects: 'My Project Purgatory',
     myOldProjectInfo:

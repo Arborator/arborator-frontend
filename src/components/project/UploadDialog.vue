@@ -1,6 +1,6 @@
 <template>
   <q-dialog :model-value="uploadDialModel" :maximized="maximizedUploadToggle" transition-show="fade" transition-hide="fade">
-    <q-card style="max-width: 100vw">
+    <q-card style="max-width: 100vw ; min-width:40vw">
       <q-bar>
         <q-space />
         <q-btn v-if="maximizedUploadToggle" dense flat icon="minimize" @click="maximizedUploadToggle = false">
@@ -26,12 +26,16 @@
           v-model="uploadSample.attachment.file"
           label="Pick or drop files"
           use-chips
+          outlined
           clearable
           :loading="uploadSample.submitting"
           multiple
-          style="max-width: 600px, min-height:1300px"
+          input-style="height:100px"
           @update:model-value="preprocess"
         >
+        <template v-slot:prepend>
+          <q-icon name="attach_file" />
+        </template>
           <template #after>
             <q-btn
               color="primary"
@@ -42,6 +46,8 @@
               :disable="uploadSample.attachment.file.length == 0"
               @click="upload()"
             />
+            <q-tooltip v-if="uploadSample.attachment.file.length == 0" content-class="text-white bg-primary">
+              Select file to upload</q-tooltip>
           </template>
         </q-file>
       </q-card-section>

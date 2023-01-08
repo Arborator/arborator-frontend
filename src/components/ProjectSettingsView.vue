@@ -217,33 +217,6 @@
         </q-scroll-area>
       </q-card>
       <!-- shown features: -->
-      <q-card>
-        <q-markup-table v-if="guests.length > 0">
-          <thead>
-            <tr>
-              <th class="text-left">ID</th>
-              <th></th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr v-for="guest in guests" :key="guest" v-ripple clickable>
-              <td>{{ guest }}</td>
-              <td>
-                <q-btn
-                  v-show="isAdmin"
-                  dense
-                  round
-                  flat
-                  icon="remove"
-                  :color="$q.dark.isActive ? 'red-13' : 'negative'"
-                  @click="triggerConfirm(removeGuest, guest)"
-                ></q-btn>
-              </td>
-            </tr>
-          </tbody>
-        </q-markup-table>
-      </q-card>
-      <!-- shown features: -->
       <q-card class="col">
         <q-card-section>
           <div class="text-h6 text-center">
@@ -334,7 +307,7 @@
       <UserSelectTable :parent-callback="addDefaultUserTree" :general="false" :projectname="$props.projectname"></UserSelectTable>
     </q-dialog>
     <q-dialog v-model="confirmActionDial">
-      <confirm-action :parent-action="confirmActionCallback" :arg1="confirmActionArg1"></confirm-action>
+      <confirm-action :parent-action="confirmActionCallback" :arg1="confirmActionArg1" :target-name="$props.projectname"></confirm-action>
     </q-dialog>
   </q-card>
 </template>

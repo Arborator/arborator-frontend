@@ -52,7 +52,7 @@
           </q-card>
         </q-card-section>
         <!-- here starts the actual project presentation -->
-        <q-card-section v-if="!listMode" style="width: 90vw; height: 60vh">
+        <q-card-section v-if="!listMode" style="width: 90vw;">
           <!-- if mobile:  -->
           <q-virtual-scroll
             v-if="$q.platform.is.mobile"
@@ -126,7 +126,7 @@
           </div>
         </q-card-section>
         <!-- here starts the list mode -->
-        <q-card-section v-if="listMode" style="width: 90vw; height: 60vh">
+        <q-card-section v-if="listMode" style="width: 90vw;">
           <div class="row" v-if="isLoggedIn">
             <div class="col-lg-12 col-sm-12 col-xs-12 col-md-12 q-mb-md">
               <q-space/>
@@ -135,8 +135,8 @@
           </div>
           <q-list style="width: 100%" bordered>
             <q-virtual-scroll
-              :items="filteredProjects"
-              style="max-height: 60vh; width: 100%"
+              :items="getListProjects"
+              style="max-height: 100vh; width: 100%"
               :virtual-scroll-slice-size="30"
               :virtual-scroll-item-size="200"
             >
@@ -150,7 +150,15 @@
               </template>
             </q-virtual-scroll>
           </q-list>
-        </q-card-section>
+          <div class="q-pa-lg flex flex-center">
+            <q-pagination
+              v-model="pageIndex"
+              :min="currentPage"
+              :max="Math.ceil(filterProjects.length/totalItemPerPage)"
+              :input="true"
+            />
+          </div>
+        </q-card-section>  
       </q-card>
     </div>
 
@@ -225,6 +233,9 @@ export default defineComponent({
       storage,
       ayear: -3600 * 24 * 365,
       userId: '',
+      currentPage:1,
+      pageIndex:1,
+      totalItemPerPage:10,
     };
   },
   computed: {
@@ -245,7 +256,7 @@ export default defineComponent({
         return !(this.isCreatedByMe(project)||this.isSharedWithMe(project)) && this.isOld(project);
       });
     },
-    filteredProjects():project_extended_t[] {
+    filterProjects():project_extended_t[] {
       if (this.projectType === "" ||this.projectType===this.$t('projectHub.allProjects') ) {
         return this.visibleProjects
       } else if (this.projectType ===  this.$t('projectHub.myProjects')){
@@ -258,6 +269,9 @@ export default defineComponent({
         return this.otherOldProjects
       }      
     },
+     getListProjects() :project_extended_t[]{
+      return this.filterProjects.slice((this.pageIndex - 1) * this.totalItemPerPage, (this.pageIndex - 1) * this. totalItemPerPage + this. totalItemPerPage)
+    }
   },
   mounted() {
     document.title = `ArboratorGrew: ${this.$t('projectHub.title')}`;

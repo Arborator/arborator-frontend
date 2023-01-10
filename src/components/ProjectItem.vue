@@ -1,10 +1,10 @@
 <template>
   <!-- removed: v-show="visible"  -->
   <q-item clickable @click="goTo()">
-    <q-tooltip class="bg-purple text-body2" anchor="top middle" :offset="[10, 10]" :delay="100">
+    <q-tooltip v-if="isProjectAdmin || isSuperAdmin" class="bg-purple text-body2" anchor="top middle" :offset="[10, 10]" :delay="100">
       {{ $t('projectHub.tooltipRightClickDelete') }}
     </q-tooltip>
-    <q-popup-proxy transition-show="flip-up" transition-hide="flip-down" context-menu>
+    <q-popup-proxy v-if="isProjectAdmin || isSuperAdmin" transition-show="flip-up" transition-hide="flip-down" context-menu>
       <q-card>
         <q-card-section>
           <q-list>
@@ -110,11 +110,14 @@ export default defineComponent({
     };
   },
   computed: {
-    ...mapState(useUserStore, ['isLoggedIn','getUserInfos']),
+    ...mapState(useUserStore, ['isLoggedIn','getUserInfos','isSuperAdmin']),
     ...mapState(useUserStore, { userid: 'id' }),
     imageCleaned() {
       return this.project.image;
     },
+    isProjectAdmin(){
+      return this.project.admins.includes(this.userid)
+    }
   },
   methods: {
     imageEmpty() {

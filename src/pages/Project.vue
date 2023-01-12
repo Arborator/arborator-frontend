@@ -469,7 +469,7 @@
 
       <q-dialog v-model="projectSettingsDial" transition-show="slide-up" transition-hide="slide-down">
         <ProjectSettingsView
-          :project-trees-from="projectTreesFrom"
+          :project-trees-from="getProjectTreesFrom"
           :projectname="projectName"
           style="width: 90vw"
         ></ProjectSettingsView>
@@ -707,7 +707,23 @@ export default defineComponent({
     },
     featureOptions(): String[]{
         return Object.values(this.annotationFeatures.FEATS).map((value)=>value.name);
-    }
+    } ,
+    getProjectTreesFrom() {
+      
+      const projectTreesFrom: string[] = [];
+
+      for (const sample of this.samples) {
+        const sampleTreesFrom = sample.treesFrom;
+
+        for (const userId of sampleTreesFrom) {
+          if (!projectTreesFrom.includes(userId)) {
+            projectTreesFrom.push(userId);
+          }
+        }
+      }
+      return projectTreesFrom;
+    },
+
   },
   created() {
     window.addEventListener('resize', this.handleResize);
@@ -740,31 +756,21 @@ export default defineComponent({
     },
     loadProjectData() {
       this.getProjectSamples();
-      this.getProjectTreesFrom();
+      //this.getProjectTreesFrom();
     },
     getProjectSamples() {
-      api.getProjectSamples(this.projectName as string).then((response) => {
+      api
+      .getProjectSamples(this.projectName as string)
+      .then((response) => {
         this.samples = response.data;
         this.sampleNames = [];
         for (const sample of this.samples) {
           this.sampleNames.push(sample.sample_name);
         }
+        
       });
     },
-    getProjectTreesFrom() {
-      const projectTreesFrom: string[] = [];
-
-      for (const sample of this.samples) {
-        const sampleTreesFrom = sample.treesFrom;
-
-        for (const userId of sampleTreesFrom) {
-          if (!projectTreesFrom.includes(userId)) {
-            projectTreesFrom.push(userId);
-          }
-        }
-      }
-      return projectTreesFrom;
-    },
+   
     getUsers() {
       // TODO : change this function as it's downloading all users each time. It should only be users of the project
       // this method populate the `possiblesUsers` list for feeding the annotator and validator tag input choice

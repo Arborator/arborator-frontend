@@ -45,7 +45,7 @@
     <q-card-section class="q-pa-sm row items-start q-gutter-md">
       <q-card class="col col-sm-12">
         <q-list>
-          <q-item v-ripple tag="label">
+          <q-item tag="label">
             <q-item-section>
               <q-item-label>{{ $t('projectSettings.togglePrivate') }}</q-item-label>
               <q-item-label caption>{{ $t('projectSettings.togglePrivateCaption') }}</q-item-label>
@@ -66,7 +66,7 @@
               </div>
             </q-item-section>
           </q-item>
-          <q-item v-ripple tag="label">
+          <q-item  tag="label">
             <q-item-section>
               <q-item-label>{{ $t('projectSettings.toggleAllVisible') }}</q-item-label>
               <q-item-label caption>{{ $t('projectSettings.toggleAllVisibleCaption') }}</q-item-label>
@@ -76,7 +76,7 @@
             </q-item-section>
           </q-item>
 
-          <q-item v-ripple tag="label">
+          <q-item  tag="label">
             <q-item-section>
               <q-item-label>{{ $t('projectSettings.toggleExerciseMode') }}</q-item-label>
               <q-item-label caption>{{ $t('projectSettings.toggleExerciseModeCaption') }}</q-item-label>
@@ -86,7 +86,7 @@
             </q-item-section>
           </q-item>
 
-          <q-item id="option__diff-mode" v-ripple tag="label">
+          <q-item id="option__diff-mode"  tag="label">
             <q-item-section>
               <q-item-label>{{ $t('projectSettings.toggleDiffMode') }}</q-item-label>
               <q-item-label caption>{{ $t('projectSettings.toggleDiffModeCaption') }}</q-item-label>
@@ -96,15 +96,13 @@
             </q-item-section>
           </q-item>
 
-          <q-item id="option__usertree-diff" v-ripple tag="label">
+          <q-item id="option__usertree-diff"  tag="label">
             <q-item-section>
               <q-item-label>{{ $t('projectSettings.chooseUserDiff') }}</q-item-label>
               <q-item-label caption>{{ $t('projectSettings.chooseUserDiffCaption') }}</q-item-label>
             </q-item-section>
-            <q-item-section avatar>
-              <q-select v-model="diffUserIdLocal" color="blue" :options="projectTreesFrom" />
-              <!-- checked-icon="check"
-                unchecked-icon="clear" -->
+            <q-item-section >
+              <q-select label="Select user" v-model="diffUserIdLocal" color="blue" :options="projectTreesFrom" />
             </q-item-section>
           </q-item>
         </q-list>

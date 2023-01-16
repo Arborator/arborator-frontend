@@ -133,20 +133,20 @@ export default defineComponent({
     },
     selectiontype: {
       type: String as PropType<string>,
-      default: "",
+      default: '',
     },
     singlemultiple: {
       type: String as PropType<string>,
-      default: "",
+      default: '',
     },
     targetRole: {
       type: String as PropType<'admin' | 'guest' | 'annotator' | 'validator' | ''>,
-      default: "",
+      default: '',
     },
     preselected: {
       type: Object as PropType<string[]>,
       default: [],
-    }
+    },
   },
   data() {
     const data: user_t[] = [];

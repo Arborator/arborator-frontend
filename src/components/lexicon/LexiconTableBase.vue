@@ -1,5 +1,5 @@
 <template>
-  <q-card >
+  <q-card>
     <q-table
       v-bind="$attrs"
       ref="table"
@@ -43,12 +43,7 @@
       </template>
       <template #body-cell-frequency="props">
         <q-td key="frequency" :props="props">
-        <q-btn           
-        dense
-        color="secondary"
-        outline
-        :label=" props.row.frequency"
-        @click.stop="showTrees(props.row)" />
+          <q-btn dense color="secondary" outline :label="props.row.frequency" @click.stop="showTrees(props.row)" />
         </q-td>
       </template>
 
@@ -63,9 +58,8 @@
         <q-btn color="default" flat label="tsv" @click="exportLexiconTSV">
           <q-tooltip :delay="300" content-class="text-white bg-primary">{{ $t('projectView.tooltipExportLexicon[0]') }}</q-tooltip>
         </q-btn>
-        <q-btn color="default" flat label="json" @click="exportLexiconJSON" >
-          <q-tooltip :delay="300" content-class="text-white bg-primary">{{ $t('projectView.tooltipExportLexicon[1]') }}
-          </q-tooltip>
+        <q-btn color="default" flat label="json" @click="exportLexiconJSON">
+          <q-tooltip :delay="300" content-class="text-white bg-primary">{{ $t('projectView.tooltipExportLexicon[1]') }} </q-tooltip>
         </q-btn>
         <div>
           <q-btn-group v-if="compareWithBefore" flat>
@@ -78,22 +72,18 @@
           </q-btn-group>
         </div>
       </template>
-    
-    <!-- Dynamically inherit slots from parent -->
+
+      <!-- Dynamically inherit slots from parent -->
       <template v-for="slot in parentSlots" #[slot]>
         <slot :name="slot" />
       </template>
-  </q-table>
-  <q-card-section>
-    <q-dialog v-model="visuTreeDial" maximized transition-show="fade" transition-hide="fade">
-    <ResultView
-      :searchresults="resultSearch"
-      :searchscope="projectName"
-    ></ResultView>
-  </q-dialog>
-  </q-card-section>
-
-</q-card>
+    </q-table>
+    <q-card-section>
+      <q-dialog v-model="visuTreeDial" maximized transition-show="fade" transition-hide="fade">
+        <ResultView :searchresults="resultSearch" :searchscope="projectName"></ResultView>
+      </q-dialog>
+    </q-card-section>
+  </q-card>
 </template>
 
 <script lang="ts">
@@ -109,9 +99,9 @@ import { defineComponent } from 'vue';
 import { grewSearchResult_t } from 'src/api/backend-types';
 
 export default defineComponent({
-  components: { ResultView},
   name: 'LexiconTable',
-  props: ['passedLexiconItems', 'lexiconLoading', 'compareWithBefore','features'],
+  components: { ResultView },
+  props: ['passedLexiconItems', 'lexiconLoading', 'compareWithBefore', 'features'],
   setup(props, ctx) {
     const parentSlots = computed(() => Object.keys(ctx.slots));
 
@@ -119,7 +109,7 @@ export default defineComponent({
   },
   data() {
     const resultSearch: grewSearchResult_t = {};
-    const lexiconData :{}[]=[];
+    const lexiconData: {}[] = [];
     const table: table_t<lexiconItem_FE_t> = {
       fields: [
         {
@@ -186,22 +176,22 @@ export default defineComponent({
       tableKey: 0,
     };
   },
-   mounted(){
+  mounted() {
     this.extendTableFieldsAndColumns();
   },
   computed: {
     ...mapState(useLexiconStore, ['lexiconItems']),
 
-    getLexiconData(){
-      this.lexiconData =[];
-      for (const lexiconItem of this.passedLexiconItems ){
-        this.lexiconData.push({...lexiconItem.feats, key:lexiconItem.key,frequency:lexiconItem.freq})
+    getLexiconData() {
+      this.lexiconData = [];
+      for (const lexiconItem of this.passedLexiconItems) {
+        this.lexiconData.push({ ...lexiconItem.feats, key: lexiconItem.key, frequency: lexiconItem.freq });
       }
-      
+
       return this.lexiconData;
     },
 
-     projectName() {
+    projectName() {
       return this.$route.params.projectname;
     },
   },
@@ -233,7 +223,7 @@ export default defineComponent({
     get() {
       let grewRuleConcatenated = '';
       let counter = 1;
-      
+
       for (const after of this.table.selected) {
         const before = this.findOriginalLexiconItem(after);
         const thisRule = this.grew_rule_from_lex_item_pair(before, after);
@@ -272,94 +262,91 @@ export default defineComponent({
       return this.grew_pattern_from_lex_item(before) + withouts + '\n' + commands;
     },
 
-     showTrees(row: any){
-     this.onSearch(this.grew_pattern_from_lex_item(this.findOriginalLexiconItem(row)))
-     },
+    showTrees(row: any) {
+      this.onSearch(this.grew_pattern_from_lex_item(this.findOriginalLexiconItem(row)));
+    },
 
-     exportLexiconTSV() {
-      const download=[];
-       for ( const lexiconItem of this.passedLexiconItems) {
-         download.push(lexiconItem);
-       }
-       const datasample = { data: download };
-       api
-         .exportLexiconTSV(this.$route.params.projectname as string, datasample)
-         .then((response) => {
-           const url = window.URL.createObjectURL(new Blob([response.data], { type: 'text/tab-separated-values' }));
-           const link = document.createElement('a');
-           link.href = url;
-           link.setAttribute('download', `lexicon_${this.$route.params.projectname}.tsv`);
-           document.body.appendChild(link);
-           link.click();
-           document.body.removeChild(link);
-           this.table.exporting = false;
-           notifyMessage({ message: 'File downloaded' });
-           return [];
-         })
+    exportLexiconTSV() {
+      const download = [];
+      for (const lexiconItem of this.passedLexiconItems) {
+        download.push(lexiconItem);
+      }
+      const datasample = { data: download };
+      api
+        .exportLexiconTSV(this.$route.params.projectname as string, datasample)
+        .then((response) => {
+          const url = window.URL.createObjectURL(new Blob([response.data], { type: 'text/tab-separated-values' }));
+          const link = document.createElement('a');
+          link.href = url;
+          link.setAttribute('download', `lexicon_${this.$route.params.projectname}.tsv`);
+          document.body.appendChild(link);
+          link.click();
+          document.body.removeChild(link);
+          this.table.exporting = false;
+          notifyMessage({ message: 'File downloaded' });
+          return [];
+        })
         .catch((error) => {
-           notifyError({ error });
-           return [];
-         });
-     },
+          notifyError({ error });
+          return [];
+        });
+    },
 
-     exportLexiconJSON() {
-      const download=[];
-      for ( const lexiconItem of this.passedLexiconItems) {
-         download.push(lexiconItem);
-       }
-       const datasample = { data: download };
-       api
-         .exportLexiconJSON(this.$route.params.projectname as string, datasample)
-         .then((response) => {
-           const url = window.URL.createObjectURL(new Blob([response.data], { type: 'application/json' }));
-           const link = document.createElement('a');
-           link.href = url;
-           link.setAttribute('download', `lexicon_${this.$route.params.projectname}.json`);
-           document.body.appendChild(link);
-           link.click();
-           document.body.removeChild(link);
-           this.table.exporting = false;
-           notifyMessage({ message: 'File downloaded' });
-           return [];
-         })
-         .catch((error) => {
-           notifyError({ error });
-           return [];
-         });
-       this.download = [];
-     },
-     
-     extendTableFieldsAndColumns(){
-      this.features.sort()
-      for (const feature of this.features ){
-        this.table.fields.push(
-          {
+    exportLexiconJSON() {
+      const download = [];
+      for (const lexiconItem of this.passedLexiconItems) {
+        download.push(lexiconItem);
+      }
+      const datasample = { data: download };
+      api
+        .exportLexiconJSON(this.$route.params.projectname as string, datasample)
+        .then((response) => {
+          const url = window.URL.createObjectURL(new Blob([response.data], { type: 'application/json' }));
+          const link = document.createElement('a');
+          link.href = url;
+          link.setAttribute('download', `lexicon_${this.$route.params.projectname}.json`);
+          document.body.appendChild(link);
+          link.click();
+          document.body.removeChild(link);
+          this.table.exporting = false;
+          notifyMessage({ message: 'File downloaded' });
+          return [];
+        })
+        .catch((error) => {
+          notifyError({ error });
+          return [];
+        });
+      this.download = [];
+    },
+
+    extendTableFieldsAndColumns() {
+      this.features.sort();
+      for (const feature of this.features) {
+        this.table.fields.push({
           name: feature,
           label: feature,
           sortable: true,
           align: 'left',
           field: feature,
-          }
-        )
-        this.table.visibleColumns.push(feature)
-      }
-     },
-
-     onSearch(searchPattern: string) {
-      const query = { pattern: searchPattern };
-        api
-          .searchProject(this.$route.params.projectname as string, query)
-          .then((response) => {
-            this.resultSearch = response.data;            
-            this.visuTreeDial = true;
-          })
-          .catch((error) => {
-            notifyError({ error });
-          });
+        });
+        this.table.visibleColumns.push(feature);
       }
     },
+
+    onSearch(searchPattern: string) {
+      const query = { pattern: searchPattern };
+      api
+        .searchProject(this.$route.params.projectname as string, query)
+        .then((response) => {
+          this.resultSearch = response.data;
+          this.visuTreeDial = true;
+        })
+        .catch((error) => {
+          notifyError({ error });
+        });
+    },
   },
-);
+});
 </script>
 
 <style>
@@ -371,9 +358,9 @@ export default defineComponent({
   color: #ff0000;
 }
 .my-sticky-header-table th {
-   background-color:white;
+  background-color: white;
 }
-.my-sticky-header-table-dark th{
-  background-color:#121212;
+.my-sticky-header-table-dark th {
+  background-color: #121212;
 }
 </style>

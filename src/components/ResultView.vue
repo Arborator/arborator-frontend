@@ -10,8 +10,8 @@
       <q-space />
       <q-btn v-close-popup flat dense icon="close" />
     </q-bar>
-    <div v-if="queryType ==='REWRITE'  && (samplesFrozen.list.length > 0) && (isGuest || isAdmin || isSuperAdmin)" class="q-pa-md" >
-      <q-btn color="primary" label="Apply rules" @click="save"/>
+    <div v-if="queryType === 'REWRITE' && samplesFrozen.list.length > 0 && (isGuest || isAdmin || isSuperAdmin)" class="q-pa-md">
+      <q-btn color="primary" label="Apply rules" @click="save" />
     </div>
     <q-card-section>
       <div v-show="!loading" class="q-pa-md row q-gutter-md">
@@ -54,7 +54,7 @@ import api from '../api/backend-api';
 import SentenceCard from './sentence/SentenceCard.vue';
 import { useUserStore } from 'src/pinia/modules/user';
 import { useProjectStore } from 'src/pinia/modules/project';
-import { mapState } from 'pinia'; 
+import { mapState } from 'pinia';
 import { PropType, defineComponent } from 'vue';
 import { notifyError, notifyMessage } from 'src/utils/notify';
 import { grewSearchResult_t, sample_t } from 'src/api/backend-types';
@@ -75,9 +75,8 @@ export default defineComponent({
       type: String,
       required: true,
     },
-    queryType:{
-      type:String,
-
+    queryType: {
+      type: String,
     },
     parentOnShowTable: {
       type: Function as PropType<CallableFunction>,
@@ -106,13 +105,13 @@ export default defineComponent({
     };
   },
   computed: {
-    ...mapState(useProjectStore,  ['isGuest','isAdmin']),
-    ...mapState(useUserStore,['isSuperAdmin']),
+    ...mapState(useProjectStore, ['isGuest', 'isAdmin']),
+    ...mapState(useUserStore, ['isSuperAdmin']),
     sentenceCount() {
       return Object.keys(this.searchresults)
         .map((sa) => Object.keys(this.searchresults[sa]))
-        .flat().length
-         // number of keys in subobjects
+        .flat().length;
+      // number of keys in subobjects
     },
   },
   mounted() {
@@ -174,8 +173,8 @@ export default defineComponent({
      */
     save() {
       const sentenceIds: string[] = [];
-      for ( const index of Object.keys(this.samplesFrozen.selected)){
-         if (this.samplesFrozen.selected[parseInt(index)]) sentenceIds.push(this.samplesFrozen.list[parseInt(index)][1]);
+      for (const index of Object.keys(this.samplesFrozen.selected)) {
+        if (this.samplesFrozen.selected[parseInt(index)]) sentenceIds.push(this.samplesFrozen.list[parseInt(index)][1]);
       }
       for (const samplename in this.searchresultsCopy) {
         for (const sentId in this.searchresultsCopy[samplename]) {
@@ -190,15 +189,12 @@ export default defineComponent({
       }
       if (Object.keys(this.searchresultsCopy).length !== 0) {
         const datasample = { data: this.searchresultsCopy };
-        api
-        .saveConll(this.$route.params.projectname as string, datasample)
-        .then(() => {
+        api.saveConll(this.$route.params.projectname as string, datasample).then(() => {
           this.resultSearchDialog = false;
           this.parentOnShowTable(this.resultSearchDialog);
           notifyMessage({ message: 'Conll Saved' });
         });
-      } 
-      else {
+      } else {
         console.log('not ok');
       }
     },

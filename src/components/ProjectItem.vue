@@ -46,7 +46,7 @@
         {{ $t('projectHub.lastWriteAccess') }} {{ timeAgo(project.lastWriteAccess) }}
       </q-chip>
     </q-item-section>
-    <q-item-section v-if="isLoggedIn" v-for="adm in project.admins" :key="adm" side>
+    <q-item-section v-for="adm in project.admins" v-if="isLoggedIn" :key="adm" side>
       <q-chip v-if="userid == adm" size="sm">
         <q-avatar>
           <img :src="getUserInfos.picture_url || undefined" />
@@ -69,7 +69,7 @@
     </q-item-section>
 
     <q-dialog v-model="confirmActionDial">
-      <confirm-action :parent-action="confirmActionCallback" :arg1="confirmActionArg1" :targetName="project.projectName"></confirm-action>
+      <confirm-action :parent-action="confirmActionCallback" :arg1="confirmActionArg1" :target-name="project.projectName"></confirm-action>
     </q-dialog>
   </q-item>
 </template>
@@ -80,8 +80,8 @@ import ConfirmAction from '../components/ConfirmAction.vue';
 import { useUserStore } from 'src/pinia/modules/user';
 import { timeAgo } from 'src/utils/timeAgoUtils';
 
-import {defineComponent, PropType} from 'vue';
-import {project_extended_t} from "src/api/backend-types";
+import { defineComponent, PropType } from 'vue';
+import { project_extended_t } from 'src/api/backend-types';
 
 export default defineComponent({
   components: { ConfirmAction },
@@ -92,11 +92,11 @@ export default defineComponent({
     },
     parentDeleteProject: {
       type: Function as PropType<(value: string) => void>,
-      required: true
+      required: true,
     },
     parentProjectSettings: {
       type: Function as PropType<(value: string) => void>,
-      required: true
+      required: true,
     },
   },
   data() {
@@ -110,18 +110,18 @@ export default defineComponent({
     };
   },
   computed: {
-    ...mapState(useUserStore, ['isLoggedIn','getUserInfos','isSuperAdmin']),
+    ...mapState(useUserStore, ['isLoggedIn', 'getUserInfos', 'isSuperAdmin']),
     ...mapState(useUserStore, { userid: 'id' }),
     imageCleaned() {
       return this.project.image;
     },
-    isProjectAdmin(){
-      return this.project.admins.includes(this.userid)
-    }
+    isProjectAdmin() {
+      return this.project.admins.includes(this.userid);
+    },
   },
   methods: {
     imageEmpty() {
-      if (this.project.image === null || this.project.image === "") {
+      if (this.project.image === null || this.project.image === '') {
         this.project.image = "b''";
       }
       if (this.project.image === "b''") {

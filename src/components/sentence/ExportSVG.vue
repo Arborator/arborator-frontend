@@ -4,8 +4,8 @@
 
 <script lang="ts">
 import { notifyMessage } from 'src/utils/notify';
-import {defineComponent, PropType} from 'vue';
-import {sentence_bus_t} from "src/types/main_types";
+import { defineComponent, PropType } from 'vue';
+import { sentence_bus_t } from 'src/types/main_types';
 
 export default defineComponent({
   props: {
@@ -40,7 +40,7 @@ export default defineComponent({
       // todo: instead of this long string, read the actual css file and put it there.
       // var svg = this.graphInfo.conllGraph.snap.treedata.s.toString();
       const sentenceSVG = this.sentenceBus.sentenceSVGs[this.userId];
-      console.log(sentenceSVG)
+      console.log(sentenceSVG);
       let svg = sentenceSVG.snapSentence.toString();
       const style = `<style>
 <![CDATA[

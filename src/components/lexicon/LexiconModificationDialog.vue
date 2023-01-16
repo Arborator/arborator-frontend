@@ -171,8 +171,8 @@ export default defineComponent({
       formattedItem.frequency = lexiconItem.freq;
       formattedItem.key = lexiconItem.key;
       for (const feature of this.options.annof.FEATS) {
-        if (feature.name in lexiconItem.feats){
-        formattedItem.features.push({ a:feature.name, v: lexiconItem.feats[feature.name] });
+        if (feature.name in lexiconItem.feats) {
+          formattedItem.features.push({ a: feature.name, v: lexiconItem.feats[feature.name] });
         }
       }
       return formattedItem;

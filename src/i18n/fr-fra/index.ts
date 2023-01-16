@@ -13,11 +13,11 @@ export default {
   fullscreen: 'Plein écran',
   navprojects: 'Projets',
   navsettings: 'Paramètres',
-  
+
   // confirm action dialog
   confirmAction: {
     title: 'En êtes-vous certain?',
-    message: 'Vous êtes sur le point de faire une action irrémédiable. Voulez-vous vraiment continuer?'
+    message: 'Vous êtes sur le point de faire une action irrémédiable. Voulez-vous vraiment continuer?',
   },
 
   // first page (the index)
@@ -103,7 +103,7 @@ export default {
   projectHub: {
     tooltipCreaProject: 'Créer un nouveau projet',
     tooltipChangeView: "Changer l'affichage",
-    tooltipHelp:"Voir la documentation",
+    tooltipHelp: 'Voir la documentation',
     tooltipRightClickDelete: 'Clic droit pour supprimer',
     title: 'Projets',
     sample: 'échantillon',
@@ -111,8 +111,8 @@ export default {
     rightClickSettings: 'Paramètres',
     rightClickDelete: 'Supprimer',
     emptySearch: 'chercher un projet',
-    projectCategory:'Catégorie',
-    allProjects:'Tous les projets',
+    projectCategory: 'Catégorie',
+    allProjects: 'Tous les projets',
     myProjects: 'Mes projets',
     myOldProjects: 'Mon purgatoire des projets',
     myOldProjectInfo:
@@ -169,7 +169,7 @@ export default {
     tooltipRelationTable: 'Get Relation Tables',
     tooltipWindows: ['Minimize', 'Maximize', 'Close'],
     uploadSelectDial: 'Select one or multiple conll files',
-    lexiconDial:[
+    lexiconDial: [
       'Select one or multiple features for the Lexicon',
       'Default features are : Form, Lemma, Pos, Gloss',
       'Get the lexicon of my trees',
@@ -213,7 +213,7 @@ export default {
     toggleOpenProjectCaption: 'If true, anyone can edit samples',
     defaultUserTreePanel: 'Default User Tree',
     adminsPanel: 'Admins',
-    guestsPanel: "Annotateurs",
+    guestsPanel: 'Annotateurs',
     shownFeaturesPanel: 'Shown Features',
     shownFeaturesTokens: 'Choose the features to be shown under each token',
     shownFeaturesSentences: 'Choose the features to be shown under each sentence',

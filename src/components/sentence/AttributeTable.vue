@@ -14,7 +14,7 @@
             new feature && !openFeatures -> non-modifiable select -->
             <div v-if="props.row.a !== ''">
               {{ props.row.a }}
-            </div>    
+            </div>
             <q-select
               v-else-if="openFeatures == 'true'"
               v-model="props.row.a"
@@ -30,10 +30,10 @@
           </q-td>
 
           <q-td key="v" :props="props">
-            <div class="meta-data" v-if="props.row.a === 'timestamp'">
+            <div v-if="props.row.a === 'timestamp'" class="meta-data">
               {{ thisdate(props.row.v) }}
             </div>
-            <div class="meta-data" v-else-if="metadata.includes(props.row.a)">
+            <div v-else-if="metadata.includes(props.row.a)" class="meta-data">
               {{ props.row.v }}
             </div>
             <q-input
@@ -81,7 +81,7 @@
               <template v-if="prepend !== undefined" #prepend>{{ props.row.join }}</template>
             </q-select>
           </q-td>
-          <q-td v-if="modifiable === 'true' && ! metadata.includes(props.row.a) " key="actions" :props="props">
+          <q-td v-if="modifiable === 'true' && !metadata.includes(props.row.a)" key="actions" :props="props">
             <q-btn dense round flat color="grey" icon="delete" @click="deleteRow(props.row)">
               <q-tooltip :delay="300">Erase the attribute {{ props.row.a }}</q-tooltip>
             </q-btn>
@@ -109,7 +109,7 @@ export default defineComponent({
         rowsPerPage: 0, // current rows per page being displayed : 0=All
       },
       key: 0,
-      metadata:['timestamp', 'user_id', 'sent_id', 'text'] // workaround...
+      metadata: ['timestamp', 'user_id', 'sent_id', 'text'], // workaround...
     };
   },
   methods: {
@@ -170,8 +170,7 @@ export default defineComponent({
 });
 </script>
 <style>
-.meta-data
-{
- text-align:left;
+.meta-data {
+  text-align: left;
 }
 </style>

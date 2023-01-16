@@ -66,7 +66,7 @@
               </div>
             </q-item-section>
           </q-item>
-          <q-item  tag="label">
+          <q-item tag="label">
             <q-item-section>
               <q-item-label>{{ $t('projectSettings.toggleAllVisible') }}</q-item-label>
               <q-item-label caption>{{ $t('projectSettings.toggleAllVisibleCaption') }}</q-item-label>
@@ -76,7 +76,7 @@
             </q-item-section>
           </q-item>
 
-          <q-item  tag="label">
+          <q-item tag="label">
             <q-item-section>
               <q-item-label>{{ $t('projectSettings.toggleExerciseMode') }}</q-item-label>
               <q-item-label caption>{{ $t('projectSettings.toggleExerciseModeCaption') }}</q-item-label>
@@ -86,7 +86,7 @@
             </q-item-section>
           </q-item>
 
-          <q-item id="option__diff-mode"  tag="label">
+          <q-item id="option__diff-mode" tag="label">
             <q-item-section>
               <q-item-label>{{ $t('projectSettings.toggleDiffMode') }}</q-item-label>
               <q-item-label caption>{{ $t('projectSettings.toggleDiffModeCaption') }}</q-item-label>
@@ -96,13 +96,13 @@
             </q-item-section>
           </q-item>
 
-          <q-item id="option__usertree-diff"  tag="label">
+          <q-item id="option__usertree-diff" tag="label">
             <q-item-section>
               <q-item-label>{{ $t('projectSettings.chooseUserDiff') }}</q-item-label>
               <q-item-label caption>{{ $t('projectSettings.chooseUserDiffCaption') }}</q-item-label>
             </q-item-section>
-            <q-item-section >
-              <q-select label="Select user" v-model="diffUserIdLocal" color="blue" :options="projectTreesFrom" />
+            <q-item-section>
+              <q-select v-model="diffUserIdLocal" label="Select user" color="blue" :options="projectTreesFrom" />
             </q-item-section>
           </q-item>
         </q-list>
@@ -331,9 +331,9 @@ import { mapActions, mapState, mapWritableState, mapStores } from 'pinia';
 import { useProjectStore } from 'src/pinia/modules/project';
 import { useMainStore } from 'src/pinia';
 import { notifyError, notifyMessage } from 'src/utils/notify';
-import { sample_role_targetrole_t, user_t} from 'src/api/backend-types';
+import { sample_role_targetrole_t, user_t } from 'src/api/backend-types';
 
-import {defineComponent, PropType} from 'vue';
+import { defineComponent, PropType } from 'vue';
 
 export default defineComponent({
   name: 'ProjectSettingsView',

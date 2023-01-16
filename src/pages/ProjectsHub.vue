@@ -13,7 +13,7 @@
             <q-toolbar-title :class="($q.dark.isActive ? '' : 'text-primary') + ' text-bold'">
               {{ $t('projectHub.title') }}
             </q-toolbar-title>
-            <q-btn round dense icon="question_mark" color="primary" href="https://arborator.github.io/arborator-documentation/#/" target="_blank" >
+            <q-btn round dense icon="question_mark" color="primary" href="https://arborator.github.io/arborator-documentation/#/" target="_blank">
               <q-tooltip :delay="300" content-class="text-white bg-primary">{{ $t('projectHub.tooltipHelp') }}</q-tooltip>
             </q-btn>
           </q-toolbar>
@@ -52,7 +52,7 @@
           </q-card>
         </q-card-section>
         <!-- here starts the actual project presentation -->
-        <q-card-section v-if="!listMode" style="width: 90vw;">
+        <q-card-section v-if="!listMode" style="width: 90vw">
           <!-- if mobile:  -->
           <q-virtual-scroll
             v-if="$q.platform.is.mobile"
@@ -89,8 +89,9 @@
               <q-chip color="primary" class="category" text-color="white"> {{ $t('projectHub.myOldProjects') }} </q-chip><br />
               <q-chip outline color="negative" class="bg-white text-negative">{{ $t('projectHub.myOldProjectInfo') }}</q-chip>
             </div>
-            <ProjectCard v-if="isLoggedIn"
+            <ProjectCard
               v-for="project in myOldProjects"
+              v-if="isLoggedIn"
               :key="project.id"
               style="max-width: 270px"
               :project="project"
@@ -115,8 +116,9 @@
               ><br />
               <q-chip outline color="negative" class="bg-white text-negative">{{ $t('projectHub.otherOldProjectInfo') }}</q-chip>
             </div>
-            <ProjectCard v-if="isLoggedIn"
+            <ProjectCard
               v-for="project in otherOldProjects"
+              v-if="isLoggedIn"
               :key="project.id"
               style="max-width: 250px"
               :project="project"
@@ -126,11 +128,19 @@
           </div>
         </q-card-section>
         <!-- here starts the list mode -->
-        <q-card-section v-if="listMode" style="width: 90vw;">
-          <div class="row" v-if="isLoggedIn">
+        <q-card-section v-if="listMode" style="width: 90vw">
+          <div v-if="isLoggedIn" class="row">
             <div class="col-lg-12 col-sm-12 col-xs-12 col-md-12 q-mb-md">
-              <q-space/>
-              <q-select  dense outlined style="min-width: 230px" v-model="projectType" :options="projectTypeOptions" class="float-right" :label="$t('projectHub.projectCategory')" />
+              <q-space />
+              <q-select
+                v-model="projectType"
+                dense
+                outlined
+                style="min-width: 230px"
+                :options="projectTypeOptions"
+                class="float-right"
+                :label="$t('projectHub.projectCategory')"
+              />
             </div>
           </div>
           <q-list style="width: 100%" bordered>
@@ -141,7 +151,8 @@
               :virtual-scroll-item-size="200"
             >
               <template #default="{ item }">
-                <ProjectItem v-if="isLoggedIn || !isOld(item)"
+                <ProjectItem
+                  v-if="isLoggedIn || !isOld(item)"
                   :key="item.id"
                   :project="item"
                   :parent-delete-project="deleteProject"
@@ -151,14 +162,9 @@
             </q-virtual-scroll>
           </q-list>
           <div class="q-pa-lg flex flex-center">
-            <q-pagination
-              v-model="pageIndex"
-              :min="currentPage"
-              :max="Math.ceil(filterProjects.length/totalItemPerPage)"
-              :input="true"
-            />
+            <q-pagination v-model="pageIndex" :min="currentPage" :max="Math.ceil(filterProjects.length / totalItemPerPage)" :input="true" />
           </div>
-        </q-card-section>  
+        </q-card-section>
       </q-card>
     </div>
 
@@ -210,7 +216,7 @@ export default defineComponent({
       projects,
       visibleProjects,
       projectDifference: false,
-      projectTypeOptions:[
+      projectTypeOptions: [
         this.$t('projectHub.allProjects'),
         this.$t('projectHub.myProjects'),
         this.$t('projectHub.otherProjects'),
@@ -218,7 +224,7 @@ export default defineComponent({
         this.$t('projectHub.otherOldProjects'),
       ],
       hover: false,
-      projectType:'',
+      projectType: '',
       search: '',
       listMode: true,
       creaProjectDial: false,
@@ -233,9 +239,9 @@ export default defineComponent({
       storage,
       ayear: -3600 * 24 * 365,
       userId: '',
-      currentPage:1,
-      pageIndex:1,
-      totalItemPerPage:10,
+      currentPage: 1,
+      pageIndex: 1,
+      totalItemPerPage: 10,
     };
   },
   computed: {
@@ -243,35 +249,38 @@ export default defineComponent({
 
     myOldProjects(): project_extended_t[] {
       return this.visibleProjects.filter((project) => {
-        return (this.isCreatedByMe(project)||this.isSharedWithMe(project)) && this.isOld(project);
+        return (this.isCreatedByMe(project) || this.isSharedWithMe(project)) && this.isOld(project);
       });
     },
     otherProjects(): project_extended_t[] {
       return this.visibleProjects.filter((project) => {
-        return !(this.isCreatedByMe(project)||this.isSharedWithMe(project)) && !this.isOld(project);
+        return !(this.isCreatedByMe(project) || this.isSharedWithMe(project)) && !this.isOld(project);
       });
     },
     otherOldProjects(): project_extended_t[] {
       return this.visibleProjects.filter((project) => {
-        return !(this.isCreatedByMe(project)||this.isSharedWithMe(project)) && this.isOld(project);
+        return !(this.isCreatedByMe(project) || this.isSharedWithMe(project)) && this.isOld(project);
       });
     },
-    filterProjects():project_extended_t[] {
-      if (this.projectType === "" ||this.projectType===this.$t('projectHub.allProjects') ) {
-        return this.visibleProjects
-      } else if (this.projectType ===  this.$t('projectHub.myProjects')){
-        return this.myProjects()
-      } else if  ( this.projectType === this.$t('projectHub.otherProjects')){
-        return this.otherProjects
-      } else if ( this.projectType=== this.$t('projectHub.myOldProjects')){
-        return this.myOldProjects
-      } else{
-        return this.otherOldProjects
-      }      
+    filterProjects(): project_extended_t[] {
+      if (this.projectType === '' || this.projectType === this.$t('projectHub.allProjects')) {
+        return this.visibleProjects;
+      } else if (this.projectType === this.$t('projectHub.myProjects')) {
+        return this.myProjects();
+      } else if (this.projectType === this.$t('projectHub.otherProjects')) {
+        return this.otherProjects;
+      } else if (this.projectType === this.$t('projectHub.myOldProjects')) {
+        return this.myOldProjects;
+      } else {
+        return this.otherOldProjects;
+      }
     },
-     getListProjects() :project_extended_t[]{
-      return this.filterProjects.slice((this.pageIndex - 1) * this.totalItemPerPage, (this.pageIndex - 1) * this. totalItemPerPage + this. totalItemPerPage)
-    }
+    getListProjects(): project_extended_t[] {
+      return this.filterProjects.slice(
+        (this.pageIndex - 1) * this.totalItemPerPage,
+        (this.pageIndex - 1) * this.totalItemPerPage + this.totalItemPerPage
+      );
+    },
   },
   mounted() {
     document.title = `ArboratorGrew: ${this.$t('projectHub.title')}`;
@@ -286,7 +295,7 @@ export default defineComponent({
     openURL,
     myProjects() {
       return this.visibleProjects.filter((project) => {
-        return (this.isCreatedByMe(project)||this.isSharedWithMe(project)) && !this.isOld(project);
+        return (this.isCreatedByMe(project) || this.isSharedWithMe(project)) && !this.isOld(project);
       });
     },
     getProjects() {
@@ -317,8 +326,8 @@ export default defineComponent({
     isCreatedByMe(project: project_extended_t) {
       return project.admins[0] === this.userId;
     },
-    isSharedWithMe(project: project_extended_t){
-      return project.admins.includes(this.userId)|| project.guests.includes(this.userId);
+    isSharedWithMe(project: project_extended_t) {
+      return project.admins.includes(this.userId) || project.guests.includes(this.userId);
     },
     isOld(project: project_extended_t) {
       // either not used since more than a year or empty and older than an hour

@@ -20,7 +20,7 @@ export default {
   // confirm action dialog
   confirmAction: {
     title: 'Are you sure?',
-    message: 'You are about to perform an irrevocable action. Do you really want to proceed?'
+    message: 'You are about to perform an irrevocable action. Do you really want to proceed?',
   },
 
   // first page (the index)
@@ -106,7 +106,7 @@ export default {
   projectHub: {
     tooltipCreaProject: 'Create a new project',
     tooltipChangeView: 'Change view',
-    tooltipHelp:'Click here to see the documentation',
+    tooltipHelp: 'Click here to see the documentation',
     tooltipRightClickDelete: 'Right click to delete',
     title: 'Projects',
     sample: 'sample',
@@ -114,8 +114,8 @@ export default {
     rightClickSettings: 'Settings',
     rightClickDelete: 'Delete',
     emptySearch: 'Search for project',
-    projectCategory:'Category',
-    allProjects:'All the projects',
+    projectCategory: 'Category',
+    allProjects: 'All the projects',
     myProjects: 'My Projects',
     myOldProjects: 'My Project Purgatory',
     myOldProjectInfo:
@@ -171,14 +171,14 @@ export default {
     tooltipRelationTable: 'Get Relation Tables',
     tooltipWindows: ['Minimize', 'Maximize', 'Close'],
     uploadSelectDial: 'Select one or multiple conll files',
-    lexiconDial:[
-    'Select one or multiple features for the Lexicon',
-    'Default features are : Form, Lemma, Pos, Gloss',
-    'Get the lexicon of my trees',
-    'Get the lexicon of my recent trees',
-    'Get the lexicon of all the trees',
-    'Get the lexicon of the recent trees',
-  ],
+    lexiconDial: [
+      'Select one or multiple features for the Lexicon',
+      'Default features are : Form, Lemma, Pos, Gloss',
+      'Get the lexicon of my trees',
+      'Get the lexicon of my recent trees',
+      'Get the lexicon of all the trees',
+      'Get the lexicon of the recent trees',
+    ],
     projectInfoDial: {
       title: 'Project Information',
       ifAdmin: 'Contact these project administrators if you need access or further information:',

@@ -89,7 +89,7 @@ export default defineComponent({
     LexiconTableBase,
     LexiconModificationDialog,
   },
-  props: ['sampleId','features'],
+  props: ['sampleId', 'features'],
 
   data() {
     const annof: Partial<annotationFeatures_t> = {};

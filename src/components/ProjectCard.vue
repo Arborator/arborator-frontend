@@ -2,13 +2,11 @@
   <q-card
     v-show="visible"
     :class="hover ? 'shadow-12' : ''"
-    class=" my-card grid-style-transition shadow-2"
+    class="my-card grid-style-transition shadow-2"
     :style="hover ? 'transform: scale(0.95);' : ''"
     @mouseover="hover = true"
     @mouseleave="hover = false"
-
   >
-
     <q-popup-proxy v-if="canSeeSettings" transition-show="flip-up" transition-hide="flip-down" context-menu>
       <q-card>
         <q-card-section>
@@ -29,7 +27,13 @@
         </q-card-section>
       </q-card>
     </q-popup-proxy>
-    <q-img @click="goTo()" class="clickable" :ratio="16 / 9" :src="imageEmpty() ? '/images/small.niko-photos-tGTVxeOr_Rs-unsplash.jpg' : imageCleaned" basic>
+    <q-img
+      class="clickable"
+      :ratio="16 / 9"
+      :src="imageEmpty() ? '/images/small.niko-photos-tGTVxeOr_Rs-unsplash.jpg' : imageCleaned"
+      basic
+      @click="goTo()"
+    >
       <div class="absolute-bottom text-h6">
         <q-icon v-show="project.visibility === 0" name="fas fa-lock" color="negative" size="lg"></q-icon>
         <q-icon v-show="project.visibility === 1" name="fas fa-unlock-alt" color="positive" size="lg"></q-icon>
@@ -43,7 +47,7 @@
         <q-item-label>{{ project.description }}</q-item-label>
       </q-item>
 
-      <q-card-actions @click="goTo()" vertical class="q-pa-md clickable">
+      <q-card-actions vertical class="q-pa-md clickable" @click="goTo()">
         <q-chip size="md" icon="fas fa-vial" color="secondary" text-color="white">
           {{ project.numberSamples }} {{ project.numberSamples === 1 ? $t('projectHub.sample') : $t('projectHub.samples') }}
         </q-chip>
@@ -68,7 +72,7 @@
     </q-card-section>
 
     <q-dialog v-model="confirmActionDial">
-      <ConfirmAction :parent-action="confirmActionCallback" :arg1="confirmActionArg1" :targetName="project.projectName"></ConfirmAction>
+      <ConfirmAction :parent-action="confirmActionCallback" :arg1="confirmActionArg1" :target-name="project.projectName"></ConfirmAction>
     </q-dialog>
   </q-card>
 </template>
@@ -78,7 +82,7 @@ import { mapState } from 'pinia';
 import ConfirmAction from '../components/ConfirmAction.vue';
 import { useUserStore } from 'src/pinia/modules/user';
 import { timeAgo } from 'src/utils/timeAgoUtils';
-import {defineComponent, PropType} from 'vue';
+import { defineComponent, PropType } from 'vue';
 import { project_extended_t } from 'src/api/backend-types';
 
 export default defineComponent({
@@ -90,11 +94,11 @@ export default defineComponent({
     },
     parentDeleteProject: {
       type: Function as PropType<(value: string) => void>,
-      required: true
+      required: true,
     },
     parentProjectSettings: {
       type: Function as PropType<(value: string) => void>,
-      required: true
+      required: true,
     },
   },
   data() {
@@ -152,7 +156,7 @@ export default defineComponent({
      * @returns void
      */
     goTo() {
-      console.log("KK goto", this.project.projectName, this.project)
+      console.log('KK goto', this.project.projectName, this.project);
       this.$router.push({
         name: 'project',
         params: {
@@ -160,8 +164,7 @@ export default defineComponent({
           infos: this.project as any,
         },
       });
-      console.log("KK after goto")
-
+      console.log('KK after goto');
     },
     /**
      * Use the parent project settings function
@@ -191,7 +194,7 @@ export default defineComponent({
       this.confirmActionCallback = method;
     },
     imageEmpty() {
-      if (this.project.image === null || this.project.image === "") {
+      if (this.project.image === null || this.project.image === '') {
         this.project.image = "b''";
       }
       if (this.project.image === "b''") {

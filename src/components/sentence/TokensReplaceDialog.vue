@@ -1,5 +1,5 @@
 <template>
-  <q-dialog v-model="tokenDialogOpened">
+  <q-dialog v-model="tokensReplaceDialogOpened">
     <q-card style="height: 90vh; width: 90vh">
       <q-bar class="bg-primary text-white">
         <div class="text-weight-bold">Replacing "{{ currentword }}" by:</div>
@@ -24,7 +24,7 @@
           label="I know what I'm doing"
           style="width: 45%; margin-left: auto; margin-right: auto"
           no-caps
-          @click="onTokenDialogOk()"
+          @click="onTokensReplaceDialogOk()"
         >
           <q-tooltip content-class="bg-negative" content-style="font-size: 16px" transition-show="rotate" transition-hide="rotate"
             >⚠ Changing tokens breaks the comparability of different annotations of the same sentence!</q-tooltip
@@ -64,8 +64,8 @@ export default defineComponent({
       v: string;
     }[] = [];
     return {
-      tokenDialog: false,
-      tokenDialogOpened: false,
+      tokensReplaceDialog: false,
+      tokensReplaceDialogOpened: false,
       tokidsequence,
       startIndex: 0,
       endIndex: 0,
@@ -115,12 +115,12 @@ export default defineComponent({
           this.startIndex = (event.target as HTMLInputElement).selectionStart || 0;
           this.endIndex = (event.target as HTMLInputElement).selectionEnd || 0;
           this.selection = (event.target as HTMLInputElement).value.substring(this.startIndex, this.endIndex);
-          this.openTokenDialog(this.startIndex, this.endIndex, this.selection);
+          this.openTokensReplaceDialog(this.startIndex, this.endIndex, this.selection);
         } else {
           this.startIndex = 0;
           this.endIndex = this.reactiveSentencesObj[this.userId].getSentenceText().length;
           this.selection = this.reactiveSentencesObj[this.userId].getSentenceText();
-          this.openTokenDialog(this.startIndex, this.endIndex, this.selection);
+          this.openTokensReplaceDialog(this.startIndex, this.endIndex, this.selection);
         }
       }
     });
@@ -129,8 +129,8 @@ export default defineComponent({
     this.sentenceBus.off('open:tokensReplaceDialog');
   },
   methods: {
-    openTokenDialog(b: number, e: number, t: string) {
-      this.tokenDialogOpened = true;
+    openTokensReplaceDialog(b: number, e: number, t: string) {
+      this.tokensReplaceDialogOpened = true;
 
       // begin index, end index, selected token of text field in sentenceCard
       while (t[t.length - 1] === ' ') {
@@ -181,11 +181,10 @@ export default defineComponent({
       if (outts) {
         this.currentword = sentence.substring(outts[0].b, outts[outts.length - 1].e);
         this.tokl = proposedav;
-        // this.tokenDialog = !this.tokenDialog;
       }
     },
-    onTokenDialogOk() {
-      this.tokenDialog = !this.tokenDialog;
+    onTokensReplaceDialogOk() {
+      this.tokensReplaceDialog = !this.tokensReplaceDialog;
       const ttokl = this.tokl.map(({ v }) => v).filter((x) => x.trim().length > 0);
       const oldTree = this.reactiveSentencesObj[this.userId].state.treeJson;
       const oldTokensIndexes = this.tokidsequence;

@@ -189,7 +189,7 @@ export default defineComponent({
       const oldTree = this.reactiveSentencesObj[this.userId].state.treeJson;
       const oldTokensIndexes = this.tokidsequence;
       const newTokensForm = ttokl;
-      const newTree = replaceArrayOfTokens(oldTree, oldTokensIndexes, newTokensForm);
+      const newTree = replaceArrayOfTokens(oldTree, oldTokensIndexes, newTokensForm, true);
       const newMetaText = Object.values(newTree.nodesJson)
         .map(({ FORM }) => FORM)
         .join(' ');

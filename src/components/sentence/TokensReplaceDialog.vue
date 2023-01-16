@@ -1,6 +1,4 @@
 <template>
-  <!----------------- Start TokenDialog ------------------->
-
   <q-dialog v-model="tokenDialogOpened">
     <q-card style="height: 90vh; width: 90vh">
       <q-bar class="bg-primary text-white">
@@ -35,11 +33,9 @@
       </q-card-actions>
     </q-card>
   </q-dialog>
-  <!----------------- End TokenDialog ------------------->
 </template>
 
 <script lang="ts">
-import conllup from 'conllup';
 import AttributeTable from './AttributeTable.vue';
 import { mapState } from 'pinia';
 import { useProjectStore } from 'src/pinia/modules/project';
@@ -112,26 +108,25 @@ export default defineComponent({
     ...mapState(useProjectStore, ['annotationFeatures']),
   },
   mounted() {
-    this.sentenceBus.on('open:tokenDialog', ({ userId, event }) => {
+    this.sentenceBus.on('open:tokensReplaceDialog', ({ userId, event }) => {
       this.userId = userId;
       if (event.target !== null) {
-        if (event.type=== 'select'){
-        this.startIndex = (event.target as HTMLInputElement).selectionStart || 0;
-        this.endIndex = (event.target as HTMLInputElement).selectionEnd || 0;
-        this.selection = (event.target as HTMLInputElement).value.substring(this.startIndex, this.endIndex);
-        this.openTokenDialog(this.startIndex, this.endIndex, this.selection);
-        }
-        else{
+        if (event.type === 'select') {
+          this.startIndex = (event.target as HTMLInputElement).selectionStart || 0;
+          this.endIndex = (event.target as HTMLInputElement).selectionEnd || 0;
+          this.selection = (event.target as HTMLInputElement).value.substring(this.startIndex, this.endIndex);
+          this.openTokenDialog(this.startIndex, this.endIndex, this.selection);
+        } else {
           this.startIndex = 0;
           this.endIndex = this.reactiveSentencesObj[this.userId].getSentenceText().length;
-          this.selection= this.reactiveSentencesObj[this.userId].getSentenceText();
+          this.selection = this.reactiveSentencesObj[this.userId].getSentenceText();
           this.openTokenDialog(this.startIndex, this.endIndex, this.selection);
         }
-        }
+      }
     });
   },
   beforeUnmount() {
-    this.sentenceBus.off('open:tokenDialog');
+    this.sentenceBus.off('open:tokensReplaceDialog');
   },
   methods: {
     openTokenDialog(b: number, e: number, t: string) {
@@ -196,12 +191,14 @@ export default defineComponent({
       const oldTokensIndexes = this.tokidsequence;
       const newTokensForm = ttokl;
       const newTree = replaceArrayOfTokens(oldTree, oldTokensIndexes, newTokensForm);
-      const newMetaText = Object.values(newTree.nodesJson).map(({ FORM }) => FORM).join(' ');
+      const newMetaText = Object.values(newTree.nodesJson)
+        .map(({ FORM }) => FORM)
+        .join(' ');
       this.sentenceBus.emit('tree-update:tree', {
         tree: newTree,
         userId: this.userId,
-      }); 
-    this.sentenceBus.emit('changed:metaText', {newMetaText});
+      });
+      this.sentenceBus.emit('changed:metaText', { newMetaText });
     },
   },
 });

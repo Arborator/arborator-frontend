@@ -13,10 +13,8 @@
           readonly
           @select="editTokens"
         >
-        <q-tooltip anchor="center middle" self="center middle" :offset="[10, 10]" >
-         Select the sentence to edit, remove or split tokens
-        </q-tooltip>
-        <template #prepend> <q-icon name="chat_bubble_outline" /><!-- 言 --> </template>
+          <q-tooltip anchor="center middle" self="center middle" :offset="[10, 10]"> Select the sentence to edit, remove or split tokens </q-tooltip>
+          <template #prepend> <q-icon name="chat_bubble_outline" /><!-- 言 --> </template>
         </q-input>
         <q-space />
         <template v-if="openTabUser !== ''">
@@ -49,14 +47,26 @@
             >
           </q-btn>
 
-          <q-btn v-if="isLoggedIn" flat round dense icon="edit" :disable="openTabUser === ''" @click="(event)=>{editTokens(event)}">
+          <q-btn
+            v-if="isLoggedIn"
+            flat
+            round
+            dense
+            icon="edit"
+            :disable="openTabUser === ''"
+            @click="
+              (event) => {
+                editTokens(event);
+              }
+            "
+          >
             <q-tooltip>Edit the tokens</q-tooltip>
           </q-btn>
           <!-- TODO : still display the metadata when the user is not logged in, but hide all the buttons for deleting and saving them -->
           <q-btn v-if="isLoggedIn" flat round dense icon="post_add" :disable="openTabUser === ''" @click="openMetaDialog()">
             <q-tooltip>Edit this tree's metadata</q-tooltip>
           </q-btn>
-          
+
           <q-btn v-if="isLoggedIn && isTeacher" flat round dense icon="filter_9_plus" :disable="openTabUser === ''" @click="openMultiEditDialog">
             <q-tooltip>multi edit dialog</q-tooltip>
           </q-btn>
@@ -196,7 +206,7 @@
     <MetaDialog :sentence-bus="sentenceBus" />
     <ConlluDialog :sentence-bus="sentenceBus" />
     <ExportSVG :sentence-bus="sentenceBus" />
-    <TokenDialog :sentence-bus="sentenceBus" :reactive-sentences-obj="reactiveSentencesObj" @changed:metaText="changeMetaText" />
+    <TokensReplaceDialog :sentence-bus="sentenceBus" :reactive-sentences-obj="reactiveSentencesObj" @changed:metaText="changeMetaText" />
     <MultiEditDialog :sentence-bus="sentenceBus" :reactive-sentences-obj="reactiveSentencesObj" />
     <StatisticsDialog :sentence-bus="sentenceBus" :conlls="sentenceData.conlls" />
   </q-card>
@@ -216,7 +226,7 @@ import FeaturesDialog from './FeaturesDialog.vue';
 import MetaDialog from './MetaDialog.vue';
 import ConlluDialog from './ConlluDialog.vue';
 import ExportSVG from './ExportSVG.vue';
-import TokenDialog from './TokenDialog.vue';
+import TokensReplaceDialog from './TokensReplaceDialog.vue';
 import StatisticsDialog from './StatisticsDialog.vue';
 import MultiEditDialog from './MultiEditDialog.vue';
 import { reactive_sentences_obj_t, sentence_bus_events_t, sentence_bus_t } from 'src/types/main_types';
@@ -246,7 +256,7 @@ export default defineComponent({
     MetaDialog,
     ConlluDialog,
     ExportSVG,
-    TokenDialog,
+    TokensReplaceDialog,
     StatisticsDialog,
     MultiEditDialog,
   },
@@ -436,10 +446,10 @@ export default defineComponent({
      * @param {Event} event
      * @returns void
      */
-     editTokens(event: Event) {
+    editTokens(event: Event) {
       // only if a tab is open
       if (this.openTabUser !== '') {
-        this.sentenceBus.emit('open:tokenDialog', {
+        this.sentenceBus.emit('open:tokensReplaceDialog', {
           userId: this.openTabUser,
           event,
         });

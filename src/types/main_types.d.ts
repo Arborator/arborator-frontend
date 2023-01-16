@@ -50,13 +50,13 @@ export type sentence_bus_events_t = {
   'open:uposDialog': { userId: string; token: TokenJson };
   'action:saved': { userId: string };
   'export:SVG': { userId: string };
-  'open:tokenDialog': { userId: string; event: Event };
+  'open:tokensReplaceDialog': { userId: string; event: Event };
   'open:openMultiEditDialog': { userId: string };
   'changed:metaText': { newMetaText: string };
   'changed:metaText': { newMetaText: string };
   'tree-update:token': { userId: string; token: TokenJson };
   'tree-update:sentence': { sentenceJson: SentenceJson; userId: string };
-  'open:tokenDialog': { userId: string; event: Event };
+  'open:tokensReplaceDialog': { userId: string; event: Event };
   'action:undo': { userId: string };
   'action:redo': { userId: string };
   'action:addEmptyToken': { userId: string };

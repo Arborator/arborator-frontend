@@ -1,7 +1,7 @@
 <template>
   <q-dialog v-model="tokensReplaceDialogOpened">
-    <q-card style="height: 90vh; width: 90vh">
-      <q-bar class="bg-primary text-white">
+    <q-card style="width: 90vh">
+      <q-bar class="bg-primary text-white" style="height: max-content;">
         <div class="text-weight-bold">Replacing "{{ currentword }}" by:</div>
         <q-space />
         <q-btn v-close-popup flat dense icon="close" />
@@ -38,7 +38,6 @@
 <script lang="ts">
 import AttributeTable from './AttributeTable.vue';
 import { mapState } from 'pinia';
-import { useProjectStore } from 'src/pinia/modules/project';
 import { PropType } from 'vue';
 import { reactive_sentences_obj_t, sentence_bus_t } from 'src/types/main_types';
 import { replaceArrayOfTokens } from 'conllup/lib/conll';
@@ -104,9 +103,6 @@ export default defineComponent({
       },
     };
   },
-  computed: {
-    ...mapState(useProjectStore, ['annotationFeatures']),
-  },
   mounted() {
     this.sentenceBus.on('open:tokensReplaceDialog', ({ userId, event }) => {
       this.userId = userId;
@@ -168,7 +164,8 @@ export default defineComponent({
       const partlyInside = tokens.filter((tok) => tok.end > selectionBegin && tok.begin < selectionEnd);
 
       if (!partlyInside.length) {
-        // strange, shouldn't happen
+        // this happens when we select white space
+        this.tokensReplaceDialogOpened = false;
         return;
       }
 

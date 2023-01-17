@@ -165,7 +165,7 @@ export default defineComponent({
       // strictlyInside = ["jump"]
       // partlyInside = ["apple", "jump", "on"]
       const strictlyInside = tokens.filter((tok) => tok.begin >= selectionBegin && tok.end <= selectionEnd);
-      const partlyInside = tokens.filter((tok) => tok.end >= selectionBegin && tok.begin <= selectionEnd);
+      const partlyInside = tokens.filter((tok) => tok.end > selectionBegin && tok.begin < selectionEnd);
 
       if (!partlyInside.length) {
         // strange, shouldn't happen
@@ -173,26 +173,35 @@ export default defineComponent({
       }
 
       const proposedav = [];
-      if (partlyInside[0].begin < selectionBegin) {
+
+      if (partlyInside.length === 1 && strictlyInside.length === 0) {
         proposedav.push(
           { a: 1, v: partlyInside[0].form.substring(0, selectionBegin - partlyInside[0].begin) },
-          { a: 2, v: partlyInside[0].form.substring(selectionBegin - partlyInside[0].begin) }
+          { a: 2, v: partlyInside[0].form.substring(selectionBegin - partlyInside[0].begin, selectionEnd - partlyInside[0].begin) },
+          { a: 3, v: partlyInside[0].form.substring(selectionEnd - partlyInside[0].begin) }
         );
-      }
-      for (const token of strictlyInside) {
-        proposedav.push({ a: proposedav.length + 1, v: token.form });
-      }
-      if (partlyInside[partlyInside.length - 1].end > selectionEnd) {
-        proposedav.push(
-          {
-            a: proposedav.length + 1,
-            v: partlyInside[partlyInside.length - 1].form.substring(0, selectionEnd - partlyInside[partlyInside.length - 1].begin),
-          },
-          {
-            a: proposedav.length + 2,
-            v: partlyInside[partlyInside.length - 1].form.substring(selectionEnd - partlyInside[partlyInside.length - 1].begin),
-          }
-        );
+      } else {
+        if (partlyInside[0].begin < selectionBegin) {
+          proposedav.push(
+            { a: 1, v: partlyInside[0].form.substring(0, selectionBegin - partlyInside[0].begin) },
+            { a: 2, v: partlyInside[0].form.substring(selectionBegin - partlyInside[0].begin) }
+          );
+        }
+        for (const token of strictlyInside) {
+          proposedav.push({ a: proposedav.length + 1, v: token.form });
+        }
+        if (partlyInside[partlyInside.length - 1].end > selectionEnd) {
+          proposedav.push(
+            {
+              a: proposedav.length + 1,
+              v: partlyInside[partlyInside.length - 1].form.substring(0, selectionEnd - partlyInside[partlyInside.length - 1].begin),
+            },
+            {
+              a: proposedav.length + 2,
+              v: partlyInside[partlyInside.length - 1].form.substring(selectionEnd - partlyInside[partlyInside.length - 1].begin),
+            }
+          );
+        }
       }
       this.tokidsequence = partlyInside.map(({ i }) => i);
       if (partlyInside) {

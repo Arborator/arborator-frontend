@@ -129,57 +129,74 @@ export default defineComponent({
     this.sentenceBus.off('open:tokensReplaceDialog');
   },
   methods: {
-    openTokensReplaceDialog(b: number, e: number, t: string) {
+    // begin index, end index, selected token of text field in sentenceCard
+    openTokensReplaceDialog(selectionBegin: number, selectionEnd: number, selectionText: string) {
       this.tokensReplaceDialogOpened = true;
 
-      // begin index, end index, selected token of text field in sentenceCard
-      while (t[t.length - 1] === ' ') {
-        t = t.substring(0, t.length - 1);
-        e -= 1;
+      while (selectionText[selectionText.length - 1] === ' ') {
+        selectionText = selectionText.substring(0, selectionText.length - 1);
+        selectionEnd -= 1;
       }
-      while (t[0] === ' ') {
-        t = t.substring(1);
-        b += 1;
+      while (selectionText[0] === ' ') {
+        selectionText = selectionText.substring(1);
+        selectionBegin += 1;
       }
+
       const { treeJson } = this.sentenceBus.sentenceSVGs[this.userId];
-      const toks = Object.values(treeJson.nodesJson).map(({ FORM }) => FORM);
-      const spa = Object.values(treeJson.nodesJson).map(({ MISC }) => ('SpaceAfter' in MISC && MISC.SpaceAfter === 'No' ? 0 : 1));
-      const toktok = [];
-      let currp = 0;
+      const tokensForms = Object.values(treeJson.nodesJson).map(({ FORM }) => FORM);
+      const spaceAfters = Object.values(treeJson.nodesJson).map(({ MISC }) => ('SpaceAfter' in MISC && MISC.SpaceAfter === 'No' ? 0 : 1));
+
+      const tokens = [];
+      let cumulativeLength = 0;
       let sentence = '';
-      for (let i = 0; i < toks.length; i += 1) {
-        sentence += toks[i] + (spa[i] ? ' ' : '');
-        toktok.push({
+      for (let i = 0; i < tokensForms.length; i += 1) {
+        sentence += tokensForms[i] + (spaceAfters[i] ? ' ' : '');
+        tokens.push({
           i: i + 1,
-          t: toks[i],
-          b: currp,
-          e: currp + toks[i].length,
+          form: tokensForms[i],
+          begin: cumulativeLength,
+          end: cumulativeLength + tokensForms[i].length,
         });
-        currp += toks[i].length + spa[i];
+        cumulativeLength += tokensForms[i].length + spaceAfters[i];
       }
-      const ints = toktok.filter((x) => x.b >= b && x.e <= e);
-      const outts = toktok.filter((x) => (x.b >= b && x.b <= e) || (x.e >= b && x.e <= e));
-      if (!outts.length) return; // strange, shouldn't happen
+      // stricly inside VS partly inside (the following line is the sentence, and the line after is the selection (SSS represent the selected text)) :
+      //    The apple jump on the floor
+      //    °°°°°°SSSSSSSSSS°°°°°°°°°°°
+      // strictlyInside = ["jump"]
+      // partlyInside = ["apple", "jump", "on"]
+      const strictlyInside = tokens.filter((tok) => tok.begin >= selectionBegin && tok.end <= selectionEnd);
+      const partlyInside = tokens.filter((tok) => tok.end >= selectionBegin && tok.begin <= selectionEnd);
+
+      if (!partlyInside.length) {
+        // strange, shouldn't happen
+        return;
+      }
+
       const proposedav = [];
-      if (outts[0].b < b) {
-        proposedav.push({ a: 1, v: outts[0].t.substring(0, b - outts[0].b) }, { a: 2, v: outts[0].t.substring(b - outts[0].b) });
+      if (partlyInside[0].begin < selectionBegin) {
+        proposedav.push(
+          { a: 1, v: partlyInside[0].form.substring(0, selectionBegin - partlyInside[0].begin) },
+          { a: 2, v: partlyInside[0].form.substring(selectionBegin - partlyInside[0].begin) }
+        );
       }
-      for (const to of ints) proposedav.push({ a: proposedav.length + 1, v: to.t });
-      if (e < outts[outts.length - 1].e) {
+      for (const token of strictlyInside) {
+        proposedav.push({ a: proposedav.length + 1, v: token.form });
+      }
+      if (partlyInside[partlyInside.length - 1].end > selectionEnd) {
         proposedav.push(
           {
             a: proposedav.length + 1,
-            v: outts[outts.length - 1].t.substring(0, e - outts[outts.length - 1].b),
+            v: partlyInside[partlyInside.length - 1].form.substring(0, selectionEnd - partlyInside[partlyInside.length - 1].begin),
           },
           {
             a: proposedav.length + 2,
-            v: outts[outts.length - 1].t.substring(e - outts[outts.length - 1].b),
+            v: partlyInside[partlyInside.length - 1].form.substring(selectionEnd - partlyInside[partlyInside.length - 1].begin),
           }
         );
       }
-      this.tokidsequence = outts.map(({ i }) => i);
-      if (outts) {
-        this.currentword = sentence.substring(outts[0].b, outts[outts.length - 1].e);
+      this.tokidsequence = partlyInside.map(({ i }) => i);
+      if (partlyInside) {
+        this.currentword = sentence.substring(partlyInside[0].begin, partlyInside[partlyInside.length - 1].end);
         this.tokl = proposedav;
       }
     },

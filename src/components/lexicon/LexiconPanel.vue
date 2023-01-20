@@ -1,6 +1,6 @@
 <template>
   <div>
-    <LexiconModificationDialog />
+    <LexiconModificationDialog v-if="lexiconItems.length >= 1" />
     <LexiconTableBase
       v-show="lexiconItemsModified.length >= 1"
       title="Modified Lexicon"
@@ -8,9 +8,10 @@
       :passed-lexicon-items="lexiconItemsModified"
       :lexicon-loading="false"
       :features="features"
+      :key="features.length"
     >
     </LexiconTableBase>
-    <LexiconTableBase title="Lexicon" :passed-lexicon-items="lexiconItems" :lexicon-loading="lexiconLoading" :features="features"> </LexiconTableBase>
+    <LexiconTableBase title="Lexicon" :passed-lexicon-items="lexiconItems" :lexicon-loading="lexiconLoading" :features="features" :key="features.length"> </LexiconTableBase>
     <q-dialog v-model="grewDialog" seamless position="right" full-width>
       <template v-if="!(exerciseMode && !isTeacher)">
         <GrewSearch :sentence-count="lexiconItems.length" :sample-id="sampleId" :show-table="grewDialog" />
@@ -79,7 +80,7 @@ import { useProjectStore } from 'src/pinia/modules/project';
 import { useGrewSearchStore } from 'src/pinia/modules/grewSearch';
 import { annotationFeatures_t } from 'src/api/backend-types';
 
-import { defineComponent } from 'vue';
+import { defineComponent, PropType } from 'vue';
 
 export default defineComponent({
   name: 'LexiconPanel',
@@ -89,8 +90,12 @@ export default defineComponent({
     LexiconTableBase,
     LexiconModificationDialog,
   },
-  props: ['sampleId', 'features'],
-
+  props: {
+    features: {
+      type: Object as PropType<string[]>,
+      default: [],
+    },
+  },
   data() {
     const annof: Partial<annotationFeatures_t> = {};
     const catoptions: { name: string; values: string[] }[] = [];

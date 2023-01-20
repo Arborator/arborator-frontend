@@ -153,8 +153,11 @@ export default defineComponent({
     ...mapState(useLexiconStore, ['isShowLexiconModification', 'lexiconModificationItemBefore']),
   },
   watch: {
-    lexiconModificationItemBefore(newValue) {
-      this.formattedItem = this.convertLexiconItemToFormattedItem(newValue);
+    lexiconModificationItemBefore(newValue, oldValue) {
+      if(Object.keys(newValue).length > 0)
+      {
+        this.formattedItem = this.convertLexiconItemToFormattedItem(newValue);
+      } 
     },
   },
   mounted() {

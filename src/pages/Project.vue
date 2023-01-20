@@ -33,14 +33,14 @@
         </q-card-section>
 
         <!-- Lexicon Panel -->
-        <q-card-section v-if="isShowLexiconPanel">
+        <q-card-section class="shadow-4" v-if="isShowLexiconPanel">
           <q-bar class="bg-primary text-white ">
            <q-space />
             <q-btn  @click="isShowLexiconPanel = false" dense flat icon="close">
               <q-tooltip content-class="bg-white text-primary">Close</q-tooltip>
             </q-btn>
           </q-bar>
-          <LexiconPanel :features="features" :lexicon-items="lexiconItems" :sample-id="table.selected" @request="fetchLexicon_"> </LexiconPanel>
+          <LexiconMain :sample-id="table.selected"></LexiconMain>
         </q-card-section>
 
         <!-- Parsing Panel -->
@@ -225,7 +225,7 @@
                     icon="playlist_add_check"
                     :loading="table.exporting"
                     :disable="table.selected.length < 1"
-                    @click=" isShowFeatureDialog = true ; isShowLexiconPanel=false"
+                    @click="isShowLexiconPanel = true"
                   ></q-btn>
                   <q-tooltip v-if="table.selected.length < 1" :delay="300" content-class="text-white bg-primary">
                    Select the samples to create a lexicon</q-tooltip>
@@ -383,84 +383,6 @@
         <RelationTableMain />
       </template>
 
-     <!--Lexicon Dialog-->
-     <q-dialog v-model="isShowFeatureDialog" >
-      <q-card style="width: 550px; max-width: 80vw;">
-        <q-bar class="bg-primary text-white " >
-          {{ $t('projectView.lexiconDial[0]') }}
-          <q-space/>
-          <q-btn dense flat icon="close" v-close-popup></q-btn>
-        </q-bar>
-        <q-card-section >
-          <div class="row q-gutter-md">
-            <div class="col-8 ">
-              <q-select
-                v-model="features"
-                filled
-                multiple
-                :options="featureOptions"
-                use-chips
-                stack-label
-                :label="$t('projectView.lexiconDial[1]')"
-                />
-            </div>
-            <div class="col-3">
-              <q-btn-dropdown  size="md" outline color="primary" label=" get Lexicon">
-                <q-list>
-              
-                  <q-item v-close-popup clickable @click="fetchLexicon_('user')">
-                    <q-item-section avatar>
-                      <q-avatar v-if="isLoggedIn" size="1.2rem">
-                        <img :src="avatar" />
-                      </q-avatar>
-                      <q-icon v-else name="account_circle" />
-                    </q-item-section>
-                    <q-item-section>
-                      <q-item-label>{{ $t('projectView.lexiconDial[2]') }}</q-item-label>
-                    </q-item-section>
-                  </q-item>
-
-                  <q-item v-close-popup clickable @click="fetchLexicon_('user_recent')">
-                    <q-item-section avatar>
-                      <q-avatar v-if="isLoggedIn" size="1.2rem">
-                        <img :src="avatar" />
-                        <q-badge floating transparent color="principal">+</q-badge>
-                      </q-avatar>
-                      <q-icon v-else name="account_circle" />
-                    </q-item-section>
-                    <q-item-section>
-                      <q-item-label>{{ $t('projectView.lexiconDial[3]') }}</q-item-label>
-                    </q-item-section>
-                  </q-item>
-
-                  <q-item v-if="isAdmin || isSuperAdmin" v-close-popup clickable @click="fetchLexicon_('recent')">
-                    <q-item-section avatar>
-                      <q-icon name="schedule" />
-                    </q-item-section>
-                    <q-item-section>
-                      <q-item-label>{{ $t('projectView.lexiconDial[4]') }}</q-item-label>
-                    </q-item-section>
-                  </q-item>
-
-                  <q-item v-if="isAdmin || isSuperAdmin" v-close-popup clickable @click="fetchLexicon_('all')">
-                    <q-item-section avatar>
-                      <q-icon name="ion-md-globe" />
-                    </q-item-section>
-                    <q-item-section>
-                      <q-item-label> {{ $t('projectView.lexiconDial[5]') }}</q-item-label>
-                    </q-item-section>
-                  </q-item>
-
-                </q-list>
-              </q-btn-dropdown>
-            </div>
-          </div>
-        </q-card-section>
-      </q-card>
-    </q-dialog>
-
-      <!-- :sentenceCount=.number_sentences" -->
-
       <!-- upload dialog start -->
       <q-dialog v-model="assignDial" persistent transition-show="slide-up" transition-hide="slide-down">
         <user-table :samples="table.selected"></user-table>
@@ -517,14 +439,13 @@ import TagInput from '../components/TagInput.vue';
 import ProjectSettingsView from '../components/ProjectSettingsView.vue';
 import ConfirmAction from '../components/ConfirmAction.vue';
 import UploadDialog from '../components/project/UploadDialog.vue';
-import LexiconPanel from '../components/lexicon/LexiconPanel.vue';
+import LexiconMain from '../components/lexicon/LexiconMain.vue';
 import GrewSearch from '../components/grewSearch/GrewSearch.vue';
 import RelationTableMain from '../components/relationTable/RelationTableMain.vue';
 import ParsingPanel from '../components/parsing/ParsingPanel.vue'
 
 import { notifyError, notifyMessage } from 'src/utils/notify';
 import { mapActions, mapState } from 'pinia';
-import { useLexiconStore } from 'src/pinia/modules/lexicon';
 import { useProjectStore } from 'src/pinia/modules/project';
 import { useUserStore } from 'src/pinia/modules/user';
 import { sample_roles_t, sample_t, user_sample_roles_t, sample_role_targetrole_t, sample_role_action_t } from 'src/api/backend-types';
@@ -539,7 +460,7 @@ export default defineComponent({
     ProjectSettingsView,
     ConfirmAction,
     UploadDialog,
-    LexiconPanel,
+    LexiconMain,
     GrewSearch,
     RelationTableMain,
     ParsingPanel,
@@ -674,7 +595,6 @@ export default defineComponent({
       tagContext: {},
       tableKey: 0,
       initLoad: false,
-      isShowFeatureDialog:false,
       isShowLexiconPanel: false,
     };
   },
@@ -739,7 +659,6 @@ export default defineComponent({
 
   },
   methods: {
-    ...mapActions(useLexiconStore, ['fetchLexicon']),
     handleResize() {
       this.window.width = window.innerWidth;
       this.window.height = window.innerHeight;
@@ -875,17 +794,7 @@ export default defineComponent({
       this.isShowParsingPanel = !this.isShowParsingPanel
 
     },
-    fetchLexicon_(lexiconType: string) {
-      const samplenames = [];
-      for (const sample of this.table.selected) {
-        samplenames.push(sample.sample_name);
-      }
-      const data={samplenames:samplenames,features:this.features,lexiconType: lexiconType}
-      this.fetchLexicon(this.projectName as string, data);
-      this.isShowLexiconPanel = true
-      this.isShowFeatureDialog=false
-    },
-
+    
     // grewquery() {
     //     console.log('projectview',this.grewqueryc)
     //     if (this.grewqueryc==0) return

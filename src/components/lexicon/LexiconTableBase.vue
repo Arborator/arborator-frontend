@@ -1,5 +1,5 @@
 <template>
-  <q-card>
+  <q-card flat bordered>
     <q-table
       v-bind="$attrs"
       ref="table"

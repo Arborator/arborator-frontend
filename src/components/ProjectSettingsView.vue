@@ -269,7 +269,7 @@
         <q-btn
           color="bg-primary"
           text-color="primary"
-          label="reset to SUD"
+          label="Reset to SUD"
           icon="replay"
           dense
           flat
@@ -277,6 +277,18 @@
           no-caps
           @click="resetAnnotationFeaturesWrapper()"
         ></q-btn>
+        <q-btn
+          color="bg-primary"
+          text-color="primary"
+          label="Reset to UD"
+          icon="replay"
+          dense
+          flat
+          :disabled="!annofok"
+          no-caps
+          @click="resetAnnotationFeaturesUDWrapper()"
+        >
+        </q-btn>
         <q-chip text-color="primary" :icon="annofok ? 'sentiment_satisfied_alt' : 'sentiment_very_dissatisfied'">{{ annofcomment }}</q-chip>
       </q-card>
     </q-card-section>
@@ -401,6 +413,7 @@ export default defineComponent({
       'shownfeatureschoices',
       'shownmetachoices',
       'getAnnofjson',
+      'getUDAnnofJson',
     ]),
     ...mapState(useMainStore, ['isProjectAdmin']),
     showAllTreesLocal: {
@@ -475,6 +488,7 @@ export default defineComponent({
     ...mapActions(useProjectStore, [
       'updateProjectConlluSchema',
       'resetAnnotationFeatures',
+      'resetAnnotationFeaturesUD',
       'updateProjectSettings',
       'postImage',
       'updateProjectShownFeatures',
@@ -494,6 +508,7 @@ export default defineComponent({
         this.annofcomment = e as string; // This is dangerous
       }
     },
+
     saveAnnotationSettings() {
       this.updateProjectConlluSchema(this.projectname, JSON.parse(this.annofjson))
         .then(() => {
@@ -503,13 +518,17 @@ export default defineComponent({
           notifyError({ error });
         });
     },
+
     resetAnnotationFeaturesWrapper() {
       this.resetAnnotationFeatures();
-      // this.$store.dispatch('config/resetAnnotationFeatures', {
-      //   projectname: this.projectname,
-      // });
       this.annofjson = this.getAnnofjson;
     },
+
+    resetAnnotationFeaturesUDWrapper(){
+      this.resetAnnotationFeaturesUD();
+      this.annofjson = this.getUDAnnofJson;
+    },
+
     updateAdminsOrGuests(usersArray: user_t[], targetRole: sample_role_targetrole_t) {
       const newRolesArrayId = [];
       for (const user of usersArray) {
@@ -526,6 +545,7 @@ export default defineComponent({
           notifyError({ error });
         });
     },
+
     removeAdmin(userid: string) {
       api
         .deleteProjectUserAccess(this.$props.projectname, userid)
@@ -538,6 +558,7 @@ export default defineComponent({
           notifyError({ error });
         });
     },
+
     removeGuest(userid: string) {
       api
         .deleteProjectUserAccess(this.$props.projectname, userid)
@@ -550,6 +571,7 @@ export default defineComponent({
           notifyError({ error });
         });
     },
+
     addDefaultUserTree(selected: any) {
       api
         .addDefaultUserTree(this.$props.projectname, selected[0])
@@ -560,6 +582,7 @@ export default defineComponent({
           notifyError({ error });
         });
     },
+
     removeDefaultUserTree(dutid: string) {
       api
         .removeDefaultUserTree(this.$props.projectname, dutid)
@@ -570,9 +593,11 @@ export default defineComponent({
           notifyError({ error });
         });
     },
+
     saveDescription() {
       this.updateProjectSettings({ description: this.description });
     },
+
     uploadProjectImage() {
       this.uploadImage.submitting = true;
       if (this.uploadImage.image) {

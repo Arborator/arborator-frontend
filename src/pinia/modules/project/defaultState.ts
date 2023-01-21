@@ -15,6 +15,7 @@ interface configState {
   shownmeta: string[];
   TEACHER: string;
   annotationFeatures: annotationFeatures_t;
+  annotationFeaturesUD: annotationFeatures_t;
 }
 
 // default config state
@@ -165,6 +166,155 @@ export default function defaultState(): configState {
         { name: 'deep', values: ['', 'agent', 'expl', 'fixed', 'lvc', 'm', 'num', 'relcl', 'scrap', 'x'], join: '@' },
       ],
       DEPS: [{ name: 'deep', values: ['comp', 'mod', 'subj'], join: '' }],
+    },
+    annotationFeaturesUD: {
+      META: ['sent_id', 'text', 'text_en', 'text_ortho', 'speaker_id', 'sound_url'],
+      UPOS: ['ADJ', 'ADP', 'ADV', 'AUX', 'CCONJ', 'DET', 'INTJ', 'NOUN', 'NUM', 'PART', 'PRON', 'PROPN', 'PUNCT', 'SCONJ', 'VERB', 'X'],
+      XPOS: [],
+      FEATS: [
+        { name: 'Abbr', values: ['Yes'] },
+        { name: 'Animacy', values: ['Anim', 'Hum', 'Inan', 'Nhum'] },
+        { name: 'Aspect', values: ['Hab', 'Imp', 'Iter', 'Perf', 'Prog', 'Prosp'] },
+        {
+          name: 'Case',
+          values: [
+            'Abs',
+            'Acc',
+            'Erg',
+            'Nom',
+            'Abe',
+            'Ben',
+            'Cau',
+            'Cmp',
+            'Com',
+            'Dat',
+            'Dis',
+            'Equ',
+            'Gen',
+            'Ins',
+            'Par',
+            'Tem',
+            'Tra',
+            'Voc',
+            'Abl',
+            'Add',
+            'Ade',
+            'All',
+            'Del',
+            'Ela',
+            'Ess',
+            'Ill',
+            'Ine',
+            'Lat',
+            'Loc',
+            'Sub',
+            'Sup',
+            'Ter'
+          ]
+        },
+        { name: 'Definite', values: ['Com', 'Cons', 'Def', 'Ind', 'Spec'] },
+        { name: 'Degree', values: ['Abs', 'Cmp', 'Equ', 'Pos', 'Sup'] },
+        { name: 'Evident', values: ['Fh', 'Nfh'] },
+        { name: 'Foreign', values: ['Yes'] },
+        { name: 'Gender', values: ['Com', 'Fem', 'Masc', 'Neut'] },
+        { name: 'Mood', values: ['Adm', 'Cnd', 'Des','Imp', 'Ind', 'Jus', 'Nec', 'Opt', 'Pot', 'Prp', 'Qot', 'Sub'] },
+        { name: 'NumType', values: ['Card', 'Dist', 'Frac', 'Mult', 'Ord', 'Range', 'Sets'] },
+        { name: 'Number', values: ['Coll', 'Count', 'Dual', 'Grpa', 'Grpl', 'Inv', 'Pauc', 'Plur', 'Ptan', 'Sing', 'Tri'] },
+        { name: 'Person', values: ['0', '1', '2', '3', '4'] },
+        { name: 'Polarity', values: ['Neg', 'Pos'] },
+        { name: 'Polite', values: ['Elev', 'Form', 'Humb', 'Infm'] },
+        { name: 'Poss', values: ['Yes'] },
+        { name: 'PronType', values: ['Art', 'Dem', 'Emp', 'Exc', 'Ind', 'Int', 'Neg', 'Prs', 'Rcp', 'Rel', 'Tot'] },
+        { name: 'Reflex', values: ['Yes'] },
+        { name: 'Tense', values: ['Fut', 'Imp', 'Past', 'Pqp', 'Pres'] },
+        { name: 'VerbForm', values: ['Conv', 'Fin', 'Gdv', 'Ger', 'Inf', 'Part', 'Sup', 'Vnoun'] },
+        { name: 'Voice', values: ['Act', 'Antip', 'Cau', 'Dir', 'Inv', 'Mid', 'Pass', 'Rcp'] }
+      ],
+      MISC: [
+        { name: 'AlignBegin', values: 'Number' },
+        { name: 'AlignEnd', values: 'Number' },
+        {
+          name: 'ExtPos',
+          values: ['ADJ', 'ADP', 'ADV', 'AUX', 'CCONJ', 'DET', 'INTJ', 'NOUN', 'NUM', 'PART', 'PRON', 'PROPN', 'PUNCT', 'SCONJ', 'VERB', 'X']
+        },
+        { name: 'Gloss', values: 'String' },
+        { name: 'MGloss', values: 'String'}
+      ],
+      DEPREL: [
+        {
+          name: 'rel',
+          values: [
+            'acl',
+            'advcl',
+            'advmod',
+            'amod',
+            'appos',
+            'aux',
+            'case',
+            'cc',
+            'ccomp',
+            'clf',
+            'compound',
+            'conj',
+            'cop',
+            'csubj',
+            'dep',
+            'det',
+            'discourse',
+            'dislocated',
+            'expl',
+            'fixed',
+            'flat',
+            'goeswith',
+            'iobj',
+            'list',
+            'mark',
+            'nmod',
+            'nsubj',
+            'nummod',
+            'obj',
+            'obl',
+            'orphan',
+            'parataxis',
+            'punct',
+            'reparandum',
+            'root',
+            'vocative',
+            'xcomp'
+          ],
+          'join': ''
+        },
+        {
+          name: 'subrel',
+          values: [
+            '',
+            'agent',
+            'arg',
+            'emph',
+            'foreign',
+            'gov',
+            'impers',
+            'lmod',
+            'lvc',
+            'mod',
+            'name',
+            'numgov',
+            'nummod',
+            'outer',
+            'pass',
+            'poss',
+            'preconj',
+            'prt',
+            'pv',
+            'redup',
+            'relcl',
+            'svc',
+            'tmod'
+          ],
+          'join': ':'
+        }
+      ],
+      DEPS: [],
     },
   };
 }

@@ -223,7 +223,7 @@ export default {
     shownFeaturesTokens: 'Choose the features to be shown under each token',
     shownFeaturesSentences: 'Choose the features to be shown under each sentence',
     annotationSettingsInput: 'Annotation settings',
-    annotationSettingsSave: 'save annotation settings',
+    annotationSettingsSave: 'Save annotation settings',
     checkAnnotation: 'This looks like reasonable Json',
   },
   // Klang

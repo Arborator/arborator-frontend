@@ -25,6 +25,7 @@ export const useProjectStore = defineStore('project', {
       return !this.isAdmin && this.exerciseMode;
     },
     getAnnofjson: (state) => JSON.stringify(state.annotationFeatures, null, 4),
+    getUDAnnofJson: (state)=> JSON.stringify(state.annotationFeaturesUD, null, 4),
     shownmetachoices: (state) => state.annotationFeatures.META,
     shownfeatureschoices: (state) =>
       ['FORM', 'UPOS', 'LEMMA'].concat(
@@ -172,6 +173,9 @@ export const useProjectStore = defineStore('project', {
     resetAnnotationFeatures(): void {
       this.annotationFeatures = defaultState().annotationFeatures;
     },
+    resetAnnotationFeaturesUD(): void {
+      this.annotationFeatures = defaultState().annotationFeaturesUD;
+    }
     // KK IS IT IN KLANG STORE NOW ?
     // // method for fetching klang project's settings, currently only admins
     // fetchKlangProjectSettings({ projectname }: { projectname: string }) {

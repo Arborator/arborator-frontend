@@ -18,7 +18,7 @@
           <th>0</th>
           <th>All :</th>
           <td v-for="metaLabel in metaLabels" :key="metaLabel">
-            <input type="checkbox" :name="metaLabel" :checked="checkboxesAll[metaLabel]" @input="toggleAll(metaLabel)" />
+            <input type="checkbox" :name="metaLabel" :checked="checkBoxesAll[metaLabel]" @input="toggleAll(metaLabel)" />
           </td>
         </tr>
         <tr>
@@ -28,7 +28,7 @@
           <th>{{ token.ID }}</th>
           <th>{{ token.FORM }}</th>
           <td v-for="metaLabel in metaLabels" :key="metaLabel">
-            <input v-model="checkboxes[token.ID][metaLabel]" type="checkbox" :name="metaLabel" :class="metaLabel" />
+            <input v-model="checkBoxes[token.ID][metaLabel]" type="checkbox" :name="metaLabel" :class="metaLabel" />
           </td>
         </tr>
       </table>
@@ -68,14 +68,14 @@ export default defineComponent({
   data() {
     const treeJson = emptyTreeJson();
     const metaLabels: metaLabel_t[] = ['UPOS', 'DEPREL', 'HEAD', 'LEMMA'];
-    const checkboxes: { [key: string]: { [key in metaLabel_t]: boolean } } = {};
+    const checkBoxes: { [key: string]: { [key in metaLabel_t]: boolean } } = {};
     return {
       dialogOpened: false,
       userId: '',
       treeJson,
-      checkboxes,
+      checkBoxes,
       metaLabels,
-      checkboxesAll: { UPOS: false, DEPREL: false, HEAD: false, LEMMA: false },
+      checkBoxesAll: { UPOS: false, DEPREL: false, HEAD: false, LEMMA: false },
     };
   },
   mounted() {
@@ -83,14 +83,11 @@ export default defineComponent({
       this.userId = userId;
       this.treeJson = JSON.parse(JSON.stringify(this.sentenceBus.sentenceSVGs[this.userId].treeJson));
       for (const metaLabel of this.metaLabels) {
-        this.checkboxesAll[metaLabel] = false;
+        this.checkBoxesAll[metaLabel] = false;
       }
-      for (const token in this.treeJson) {
-        const checkboxesToken: { [key in metaLabel_t]: boolean } = { UPOS: false, DEPREL: false, HEAD: false, LEMMA: false };
-        // checkboxesToken["UPOS"] = false;
-        // checkboxesToken["DEPREL"] = false;
-        // checkboxesToken["HEAD"] = false;
-        this.checkboxes[token] = checkboxesToken;
+      for (const token in this.treeJson.nodesJson) {
+        const checkBoxesToken: { [key in metaLabel_t]: boolean } = { UPOS: false, DEPREL: false, HEAD: false, LEMMA: false };
+        this.checkBoxes[token] = checkBoxesToken;
       }
       this.dialogOpened = true;
     });
@@ -100,12 +97,12 @@ export default defineComponent({
   },
   methods: {
     onDialogOk() {
-      for (const token in this.treeJson) {
+      for (const token in this.treeJson.nodesJson) {
         for (const metaLabel of this.metaLabels) {
-          const toDeleteBool = this.checkboxes[token][metaLabel];
-          if (toDeleteBool) {
-            this.treeJson.nodesJson[token][metaLabel as keyof TokenJson] = '_';
-            if (metaLabel === 'HEAD') {
+         const toDeleteBool = this.checkBoxes[token][metaLabel];
+         if (toDeleteBool) {
+           this.treeJson.nodesJson[token][metaLabel as keyof TokenJson] = '_';
+           if (metaLabel === 'HEAD') {
               this.treeJson.nodesJson[token].DEPREL = '_';
             }
           }
@@ -118,14 +115,14 @@ export default defineComponent({
       this.uncheckToggles();
     },
     toggleAll(metaLabel: metaLabel_t) {
-      this.checkboxesAll[metaLabel] = !this.checkboxesAll[metaLabel];
+      this.checkBoxesAll[metaLabel] = !this.checkBoxesAll[metaLabel];
       for (const token in this.treeJson) {
-        this.checkboxes[token][metaLabel] = this.checkboxesAll[metaLabel];
-      }
+        this.checkBoxes[token][metaLabel] = this.checkBoxesAll[metaLabel];
+      } 
     },
     uncheckToggles() {
       for (const metaLabel of this.metaLabels) {
-        this.checkboxesAll[metaLabel] = false;
+        this.checkBoxesAll[metaLabel] = false;
       }
     },
   },

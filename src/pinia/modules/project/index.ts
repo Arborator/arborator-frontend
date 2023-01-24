@@ -28,7 +28,7 @@ export const useProjectStore = defineStore('project', {
     getUDAnnofJson: (state)=> JSON.stringify(state.annotationFeaturesUD, null, 4),
     shownmetachoices: (state) => state.annotationFeatures.META,
     shownfeatureschoices: (state) =>
-      ['FORM', 'UPOS', 'LEMMA'].concat(
+      ['FORM', 'UPOS', 'LEMMA', 'XPOS'].concat(
         state.annotationFeatures.FEATS.map(({ name }) => `FEATS.${name}`).concat(
           state.annotationFeatures.MISC ? state.annotationFeatures.MISC.map(({ name }) => `MISC.${name}`) : []
         )

@@ -330,8 +330,8 @@ export default defineComponent({
       return project.admins.includes(this.userId) || project.guests.includes(this.userId);
     },
     isOld(project: project_extended_t) {
-      // either not used since more than a year or empty and older than an hour
-      return project.lastAccess < this.ayear || (project.numberSamples < 1 && project.lastAccess < -3600);
+      // either not used since more than a year or empty and older than an hour or the project has no admins 
+      return project.lastAccess < this.ayear || (project.numberSamples < 1 && project.lastAccess < -3600) || (project.admins.length === 0);
     },
     toggleProjectView() {
       this.listMode = !this.listMode;

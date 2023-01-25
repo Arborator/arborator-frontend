@@ -39,7 +39,7 @@
       </q-item-label>
     </q-item-section>
     <q-item-section thumbnail>
-      <q-chip v-if="project.lastAccess > project.lastWriteAccess" size="sm" icon="fingerprint" color="info" text-color="white">
+      <q-chip size="sm" icon="fingerprint" color="info" text-color="white">
         {{ $t('projectHub.lastAccess') }} {{ timeAgo(project.lastAccess) }}
       </q-chip>
       <q-chip size="sm" icon="edit" color="primary" text-color="white">

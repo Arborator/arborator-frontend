@@ -54,7 +54,7 @@
 
         <q-space />
         <!-- v-if="project.lastAccess > project.lastWriteAccess" -->
-        <q-chip size="sm" icon="fingerprint" :color="project.lastAccess > project.lastWriteAccess ? 'info' : 'white'" text-color="white">
+        <q-chip size="sm" icon="fingerprint" :color="project.lastAccess > project.lastWriteAccess ? 'info' : 'blue-grey'" text-color="white">
           {{ $t('projectHub.lastAccess') }} {{ timeAgo(project.lastAccess) }}
         </q-chip>
         <q-chip size="sm" icon="edit" color="primary" text-color="white">

@@ -235,8 +235,8 @@ export default defineComponent({
       ],
       lang: this.$i18n.locale,
       langOptions: [
-        { value: 'en-us', label: 'EN', img: '/images/usflag.svg' },
-        { value: 'fr-fra', label: 'FR', img: '/images/frenchflag.svg' },
+        { value: 'en', label: 'EN', img: '/images/usflag.svg' },
+        { value: 'fr', label: 'FR', img: '/images/frenchflag.svg' },
       ],
     };
   },

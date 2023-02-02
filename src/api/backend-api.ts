@@ -112,7 +112,13 @@ export default {
     return API.post<{ status: 'OK' }>(`/projects/${projectname}/samples`, data, { timeout: 400000 });
   },
   exportEvaluation(projectName: string, sampleName: string) {
-    return API.get(`/projects/${projectName}/samples/${sampleName}/evaluation`);
+    return API.get(`/projects/${projectName}/samples/${sampleName}/evaluation`, {
+      headers: {
+        'Cache-Control': 'no-cache',
+        Pragma: 'no-cache',
+        Expires: '0',
+      },
+    });
   },
   exportSamplesZip(samplenames: string[], projectname: string) {
     const data = { samples: samplenames };

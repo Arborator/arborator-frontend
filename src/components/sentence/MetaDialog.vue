@@ -9,7 +9,7 @@
         <q-btn v-close-popup flat dense icon="close" />
       </q-bar>
       <AttributeTable
-        :featdata="metalist"
+        :featdata="metaList"
         :columns="featTable.columns"
         :feat-options="['String']"
         open-features="true"
@@ -55,13 +55,13 @@ export default defineComponent({
     },
   },
   data() {
-    const metalist: { a: string; v: string | number }[] = [];
+    const metaList: { a: string; v: string | number }[] = [];
     const metaJson: MetaJson = {};
     return {
       metaDialogOpened: false,
       token: {},
       userId: '',
-      metalist,
+      metaList,
       metaJson,
       featTable: {
         columns: [
@@ -101,9 +101,9 @@ export default defineComponent({
       this.userId = userId;
       this.metaJson = { ...this.sentenceBus.sentenceSVGs[userId].metaJson };
       this.metaDialogOpened = true;
-      this.metalist = [];
+      this.metaList = [];
       for (const a in this.metaJson) {
-        this.metalist.push({ a, v: this.metaJson[a] });
+        this.metaList.push({ a, v: this.metaJson[a] });
       }
       this.$emit('meta-changed', this.metaJson); // so that the sentenceCard can show the meta feature such as text and text_en
     });
@@ -114,7 +114,11 @@ export default defineComponent({
   methods: {
     onMetaDialogOk() {
       const newMetaJson: MetaJson = {};
-      this.metalist.forEach((meta) => {
+      if(this.metaList.some((meta) => meta.a === "" || meta.v === "")) {
+        notifyError({error: 'You can not save empty Meta !'});
+        return;
+      }
+      this.metaList.forEach((meta) => {
         newMetaJson[meta.a] = meta.v;
       });
       this.sentenceBus.emit('tree-update:sentence', {

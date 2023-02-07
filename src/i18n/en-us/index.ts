@@ -105,7 +105,7 @@ export default {
 
   // list of projects page
   projectHub: {
-    tooltipCreaProject: 'Create a new project',
+    tooltipCreaProject: ['Login your account to create new project', 'Create a new project'],
     tooltipChangeView: 'Change view',
     tooltipHelp: 'Click here to see the documentation',
     tooltipRightClickDelete: 'Right click to delete',

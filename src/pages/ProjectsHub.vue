@@ -4,9 +4,11 @@
       <q-card flat>
         <q-card-section class="q-pa-md row items-start q-gutter-md">
           <q-toolbar class="text-center">
-            <q-btn id="createproject" :disable="!isLoggedIn" color="primary" round dense icon="add" @click="creaProjectDial = true">
-              <q-tooltip :delay="300" content-class="text-white bg-primary">{{ $t('projectHub.tooltipCreaProject') }}</q-tooltip>
-            </q-btn>
+            <div>
+              <q-btn id="createproject" :disable="!isLoggedIn" color="primary" round dense icon="add" @click="creaProjectDial = true"></q-btn>
+              <q-tooltip v-if="!isLoggedIn" :delay="300" content-class="text-white bg-primary">{{ $t('projectHub.tooltipCreaProject[0]') }}</q-tooltip>
+              <q-tooltip v-else :delay="300" class-content="text-white bg-primary">{{ $t('projectHub.tooltipCreaProject[1 ]') }}</q-tooltip>
+            </div>
             <q-btn round dense :icon="listMode ? 'view_module' : 'list'" @click="toggleProjectView()">
               <q-tooltip :delay="300" content-class="text-white bg-primary">{{ $t('projectHub.tooltipChangeView') }}</q-tooltip>
             </q-btn>

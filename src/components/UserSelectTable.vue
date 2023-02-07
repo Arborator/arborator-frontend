@@ -102,7 +102,6 @@
             ></q-td>
             <q-td key="name" :props="props">{{ props.row.username }}</q-td>
             <q-td key="email" :props="props">{{ props.row.id }}</q-td>
-            <q-td key="super_admin" :props="props">{{ props.row.super_admin }}</q-td>
             <q-td key="last_seen" :props="props">{{ props.row.last_seen }}</q-td>
           </q-tr>
         </template>
@@ -164,12 +163,6 @@ export default defineComponent({
           name: 'email',
           label: 'Mail or ID',
           field: 'id',
-          sortable: true,
-        },
-        {
-          name: 'super_admin',
-          label: 'Admin',
-          field: 'super_admin',
           sortable: true,
         },
         {

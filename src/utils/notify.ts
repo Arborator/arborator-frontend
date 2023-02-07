@@ -59,6 +59,8 @@ export function notifyError(ArboratorGrewError: ArboratorGrewError_t) {
         // 406 is the errors for grew
         const grewErrorMessage = error.response.data.message || 'Unknown error, please contact the administrators';
         msg = `Grew internal error : ${grewErrorMessage}`;
+      } else if (error.response.status === 415) {
+        msg = error.response.message ? error.response.message : i18n.global.t('error415');
       } else {
         msg = error.response.message ? error.response.message : `${error.response.statusText} error ${error.response.status}`;
       }

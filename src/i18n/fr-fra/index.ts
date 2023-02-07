@@ -4,6 +4,7 @@ export default {
   oops: "Une erreur s'est produite : ",
   error403: "Halte ! Vous n'avez pas la permission pour cette action.",
   error401: 'Halte ! Veuillez vous connecter pour effectuer de telles actions.',
+  error415: "Halte ! Seul les fichiers ayant un format d'encodage UTF-8 sont supportés.",
   error404page: "Hum! Il n'y a rien ici...",
   welcomeback: 'Re !',
   loginbtn: 'Connecter',

@@ -34,7 +34,6 @@
         <q-toggle v-model="project.exerciseMode" :label="$t('createProjectCard.exerciseMode')" />
         <div>
           <q-btn id="submitproject" v-close-popup type="submit" :loading="submitting" label="create" color="primary" class="q-mt-md" />
-          <q-btn label="Reset" type="reset" color="primary" flat class="q-ml-sm" />
         </div>
       </q-form>
     </q-card-section>

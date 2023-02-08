@@ -1,5 +1,5 @@
 <template>
-  <q-dialog :model-value="uploadDialModel" :maximized="maximizedUploadToggle" transition-show="fade" transition-hide="fade">
+  <q-dialog :model-value="uploadDialModel" :maximized="maximizedUploadToggle" transition-show="fade" transition-hide="fade" persistent>
     <q-card style="max-width: 100vw; min-width: 40vw">
       <q-bar>
         <q-space />

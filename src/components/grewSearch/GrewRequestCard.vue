@@ -17,18 +17,18 @@
                 <q-btn v-if="currentQueryType === 'SEARCH'" color="primary" label="Search" no-caps icon="search" @click="onSearch" />
                 <q-btn v-else-if="currentQueryType === 'REWRITE'" color="primary" label="Try Rules" no-caps icon="autorenew" @click="tryRules" />
                 <q-space />
-                <q-btn label="Get link" no-caps icon="ion-md-link" @click="getgrewlink" />
+                <!--<q-btn label="Get link" no-caps icon="ion-md-link" @click="getGrewLink" />
                 <q-space />
-                <q-input v-show="grewlink.length !== 0" ref="grewlinkinput" dense class="col-10 self-stretch" :value="grewlink">
+                <q-input v-show="grewlink.length !== 0" ref="grewLinkInput" dense class="col-10 self-stretch" :value="grewlink">
                   <template #prepend>
                     <q-icon name="ion-md-link" />
                   </template>
-                </q-input>
+                </q-input>-->
               </div>
             </div>
 
             <div class="col-2 bg-primary">
-              <q-tabs v-model="searchreplacetab" dense no-caps class="bg-grey-2 primary text-primary">
+              <q-tabs v-model="searchReplaceTab" dense no-caps class="bg-grey-2 primary text-primary">
                 <q-tab name="SEARCH" icon="search" label="Search">
                   <q-tooltip content-class="bg-primary" anchor="top middle" self="bottom middle" :offset="[10, 10]">
                     Examples of Grew search statements
@@ -42,9 +42,9 @@
               </q-tabs>
               <q-separator />
 
-              <q-tab-panels v-model="searchreplacetab" animated class="shadow-2">
+              <q-tab-panels v-model="searchReplaceTab" animated class="shadow-2">
                 <q-tab-panel name="SEARCH">
-                  <q-tabs v-model="searchquerytab" dense no-caps vertical switch-indicator class="bg-grey-2 primary" indicator-color="primary">
+                  <q-tabs v-model="searchQueryTab" dense no-caps vertical switch-indicator class="bg-grey-2 primary" indicator-color="primary">
                     <template v-for="query in searchQueries" :key="query.name">
                       <q-tab v-ripple :name="query.name" :label="query.name" clickable @click="changeQuery(query.pattern, 'SEARCH')" />
                     </template>
@@ -52,7 +52,7 @@
                 </q-tab-panel>
 
                 <q-tab-panel name="REWRITE">
-                  <q-tabs v-model="searchquerytab" dense no-caps vertical switch-indicator class="bg-grey-2 primary" indicator-color="primary">
+                  <q-tabs v-model="searchQueryTab" dense no-caps vertical switch-indicator class="bg-grey-2 primary" indicator-color="primary">
                     <template v-for="query in rewriteQueries" :key="query.name">
                       <q-tab v-ripple :name="query.name" :label="query.name" clickable @click="changeQuery(query.pattern, 'REWRITE')" />
                     </template>
@@ -166,8 +166,8 @@ export default defineComponent({
   data() {
     const currentQueryType: 'SEARCH' | 'REWRITE' = grewTemplates.searchQueries[0].type as 'SEARCH' | 'REWRITE';
     return {
-      searchreplacetab: grewTemplates.searchQueries[0].type,
-      searchquerytab: grewTemplates.searchQueries[0].type,
+      searchReplaceTab: grewTemplates.searchQueries[0].type,
+      searchQueryTab: grewTemplates.searchQueries[0].type,
       currentQuery: grewTemplates.searchQueries[0].pattern,
       currentQueryType,
       rewriteCommands: '',
@@ -182,7 +182,7 @@ export default defineComponent({
       },
       searchQueries: grewTemplates.searchQueries,
       rewriteQueries: grewTemplates.rewriteQueries,
-      grewlink: '',
+      grewLink: '',
     };
   },
   computed: {
@@ -193,7 +193,7 @@ export default defineComponent({
       this.currentQueryType = this.lastQuery.type;
       this.currentQuery = this.lastQuery.text;
     }
-    this.checkgrewquery();
+    this.checkGrewQuery();
   },
   methods: {
     ...mapActions(useGrewSearchStore, ['change_last_grew_query']),
@@ -241,13 +241,14 @@ export default defineComponent({
      *
      * @returns void
      */
-    getgrewlink() {
+    getGrewLink() {
+      // FIXME
       const z = this.zip(this.currentQuery);
-      this.grewlink = `${window.location.href.split(`/projects/${this.$route.params.projectname}`)[0]}/projects/${this.$route.params.projectname}${
+      this.grewLink = `${window.location.href.split(`/projects/${this.$route.params.projectname}`)[0]}/projects/${this.$route.params.projectname}${
         this.$route.params.samplename ? `/${this.$route.params.samplename}` : ''
       }?q=${z}`;
       setTimeout(() => {
-        (this.$refs.grewlinkinput as HTMLInputElement).select();
+        (this.$refs.grewLinkInput as HTMLInputElement).select();
         document.execCommand('copy');
       }, 500);
     },
@@ -256,7 +257,7 @@ export default defineComponent({
      *
      * @returns void
      */
-    checkgrewquery() {
+    checkGrewQuery() {
       if (this.grewquery.length > 0) {
         if (this.searchQueries.filter((c) => c.name === 'custom query').length === 0) {
           let customquery = this.unzip(this.grewquery);

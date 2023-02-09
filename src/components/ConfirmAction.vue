@@ -7,7 +7,7 @@
       <q-btn v-close-popup flat dense icon="close" />
     </q-bar>
     <q-card-section> {{ $t('confirmAction.message') }}</q-card-section>
-    <q-form class="q-gutter-md" @submit="onSubmit" @reset="onReset">
+    <q-form class="q-gutter-md">
       <q-card-section>
         <q-input
           v-model="name"
@@ -23,7 +23,6 @@
       </q-card-section>
       <q-card-actions align="around">
         <q-btn v-close-popup flat label="Cancel"></q-btn>
-        <q-btn label="Reset" type="reset" color="primary" flat class="q-ml-sm" />
         <q-btn v-if="$props.targetName != null" label="Confirm" type="submit" color="primary" @keyup.enter="confirm()" @click="confirm()" />
         <q-btn v-else v-close-popup color="primary" label="Confirm" @keyup.enter="confirm()" @click="confirm()"></q-btn>
       </q-card-actions>

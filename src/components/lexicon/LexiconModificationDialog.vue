@@ -6,48 +6,50 @@
         <q-space />
         <q-btn v-close-popup flat dense icon="close" />
       </q-bar>
-      <AttributeTable
-        :featdata="formattedItem.form"
-        :columns="featTable.columns"
-        open-features="false"
-        modifiable="false"
-        title="Form"
-        :feat-options="['String']"
-      />
-      <q-separator />
-      <AttributeTable
-        :featdata="formattedItem.lemma"
-        :columns="featTable.columns"
-        open-features="false"
-        modifiable="false"
-        title="Lemma"
-        :feat-options="options.lemmaoptions"
-      />
-      <AttributeTable
-        :featdata="formattedItem.pos"
-        :columns="featTable.columns"
-        open-features="false"
-        modifiable="false"
-        title="Category"
-        :feat-options="options.catoptions"
-      />
-      <AttributeTable
-        :featdata="formattedItem.features"
-        :columns="featTable.columns"
-        open-features="false"
-        modifiable="false"
-        title="Universal Features"
-        :feat-options="options.annof.FEATS"
-      />
-      <AttributeTable
-        :featdata="formattedItem.gloss"
-        :columns="featTable.columns"
-        open-features="false"
-        modifiable="false"
-        title="Gloss"
-        :feat-options="['String']"
-      />
-      <q-separator />
+      <q-card-section style="max-height:70vh" class="scroll">
+        <AttributeTable
+          :featdata="formattedItem.form"
+          :columns="featTable.columns"
+          open-features="false"
+          modifiable="false"
+          title="Form"
+          :feat-options="['String']"
+        />
+        <q-separator />
+        <AttributeTable
+          :featdata="formattedItem.lemma"
+          :columns="featTable.columns"
+          open-features="false"
+          modifiable="false"
+          title="Lemma"
+          :feat-options="options.lemmaoptions"
+        />
+        <AttributeTable
+          :featdata="formattedItem.pos"
+          :columns="featTable.columns"
+          open-features="false"
+          modifiable="false"
+          title="Category"
+          :feat-options="options.catoptions"
+        />
+        <AttributeTable
+          :featdata="formattedItem.features"
+          :columns="featTable.columns"
+          open-features="false"
+          modifiable="false"
+          title="Universal Features"
+          :feat-options="options.annof.FEATS"
+        />
+        <AttributeTable
+          :featdata="formattedItem.gloss"
+          :columns="featTable.columns"
+          open-features="false"
+          modifiable="false"
+          title="Gloss"
+          :feat-options="['String']"
+        />
+        <q-separator />
+      </q-card-section>
       <q-card-actions align="around">
         <!-- <q-btn flat @click="ondialoghide()" label="Cancel" v-close-popup style="width: 35%; margin-left: auto; margin-right: auto" /> -->
         <!-- <q-btn flat @click="addEntry()" label="Add entry" v-close-popup style="width: 45%; margin-left: auto; margin-right: auto" /> -->

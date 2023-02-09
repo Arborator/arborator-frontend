@@ -6,16 +6,18 @@
         <q-space />
         <q-btn v-close-popup flat dense icon="close" />
       </q-bar>
-      <AttributeTable
-        :featdata="tokl"
-        :columns="featTable.columns"
-        :feat-options="['String']"
-        open-features="true"
-        modifiable="true"
-        title="Token"
-        :numbered="currentword"
-      ></AttributeTable>
-      <q-separator />
+      <q-card-section style="max-height:70vh" class="scroll">
+        <AttributeTable
+          :featdata="tokl"
+          :columns="featTable.columns"
+          :feat-options="['String']"
+          open-features="true"
+          modifiable="true"
+          title="Token"
+          :numbered="currentword"
+        ></AttributeTable>
+        <q-separator />
+      </q-card-section>
       <q-card-actions align="around">
         <q-btn v-close-popup flat label="Cancel" style="width: 45%; margin-left: auto; margin-right: auto" />
         <q-btn

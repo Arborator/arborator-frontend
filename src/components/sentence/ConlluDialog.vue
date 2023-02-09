@@ -4,16 +4,12 @@
     <q-layout view="Lhh lpR fff" container class="bg-white">
       <q-header class="bg-primary">
         <q-toolbar>
-          <q-toolbar-title>CoNLL of TODO : sentenceId </q-toolbar-title>
+          <q-toolbar-title>Text Conll</q-toolbar-title>
           <q-btn v-close-popup flat round dense icon="close" />
         </q-toolbar>
       </q-header>
-      <q-page-container>
-        <q-page>
-          <Codemirror v-model:value="conllContent" :options="cmOption" class="CodeMirror" @focus="codefocus"> </Codemirror>
-          <!-- </codemirror> -->
-          <!-- @input="codechange($event)"  ($event)-->
-        </q-page>
+      <q-page-container style="background-color: #282a36">
+        <Codemirror v-model:value="conllContent" :options="cmOption" class="CodeMirror" @focus="codefocus"> </Codemirror>
       </q-page-container>
       <q-footer>
         <q-toolbar inset>

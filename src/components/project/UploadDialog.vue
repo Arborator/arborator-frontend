@@ -27,7 +27,6 @@
           label="Pick or drop files"
           use-chips
           outlined
-          clearable
           :loading="uploadSample.submitting"
           multiple
           input-style="height:100px"

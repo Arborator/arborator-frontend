@@ -126,7 +126,7 @@ export default defineComponent({
         return this.$route.params.projectname;
     },
     principalFeatureOptions() { 
-        return ['Form', 'Lemma', 'Upos', 'Gloss'].concat(Object.values(this.annotationFeatures.FEATS).map((value) => value.name));
+        return ['form', 'lemma', 'upos', 'Gloss'].concat(Object.values(this.annotationFeatures.FEATS).map((value) => value.name));
     },
     secondaryFeatureOptions() { 
         return this.principalFeatureOptions.filter((value) => !this.principalFeatures.includes(value));

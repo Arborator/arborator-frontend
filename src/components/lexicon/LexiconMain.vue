@@ -1,24 +1,36 @@
 <template>
     <q-card flat bordered>
-        <q-card-section>
-            <div  v-if="isShowFeatures" class="text-h6 q-mb-md"> {{ $t('projectView.lexicon[0]') }}</div>
-            <div  v-if="isShowFeatures" class="row q-gutter-md">
-                <div class="col-8 ">
+        <q-card-section v-if="isShowLexiconFeatures">
+            <div class="text-h6 q-mb-md"> {{ $t('projectView.lexicon[0]') }}</div>
+            <div class="row q-gutter-md">
+                <div class="col-4 ">
                     <q-select
-                    v-model="features"
+                    style="text-transform:capitalize;"
+                    v-model="principalFeatures"
                     filled
                     multiple
-                    :options="featureOptions"
+                    :options="principalFeatureOptions"
                     use-chips
                     stack-label
                     :label="$t('projectView.lexicon[1]')"
                     />
                 </div>
+                 <div class="col-4 ">
+                    <q-select
+                    :disable="principalFeatures.length==0"
+                    v-model="secondaryFeatures"
+                    filled
+                    multiple
+                    :options="secondaryFeatureOptions"
+                    use-chips
+                    stack-label
+                    :label="$t('projectView.lexicon[2]')"
+                    />
+                </div>
                 <div class="col-3">
-                    <q-tooltip content-class="bg-white text-primary">{{ $t('projectView.lexicon[6]') }}</q-tooltip>
+                    <q-tooltip content-class="bg-white text-primary">{{ $t('projectView.lexicon[7]') }}</q-tooltip>
                     <q-btn-dropdown class="float-right" size="md" outline color="primary" label=" get Lexicon">
                         <q-list>
-
                             <q-item v-close-popup clickable @click="fetchLexicon_('user')">
                                 <q-item-section avatar>
                                     <q-avatar v-if="isLoggedIn" size="1.2rem">
@@ -27,7 +39,7 @@
                                     <q-icon v-else name="account_circle" />
                                 </q-item-section>
                                 <q-item-section>
-                                    <q-item-label>{{ $t('projectView.lexicon[2]') }}</q-item-label>
+                                    <q-item-label>{{ $t('projectView.lexicon[3]') }}</q-item-label>
                                 </q-item-section>
                             </q-item>
 
@@ -40,7 +52,7 @@
                                     <q-icon v-else name="account_circle" />
                                 </q-item-section>
                                 <q-item-section>
-                                    <q-item-label>{{ $t('projectView.lexicon[3]') }}</q-item-label>
+                                    <q-item-label>{{ $t('projectView.lexicon[4]') }}</q-item-label>
                                 </q-item-section>
                             </q-item>
 
@@ -49,7 +61,7 @@
                                     <q-icon name="schedule" />
                                 </q-item-section>
                                 <q-item-section>
-                                    <q-item-label>{{ $t('projectView.lexicon[4]') }}</q-item-label>
+                                    <q-item-label>{{ $t('projectView.lexicon[5]') }}</q-item-label>
                                 </q-item-section>
                             </q-item>
 
@@ -58,36 +70,14 @@
                                     <q-icon name="ion-md-globe" />
                                 </q-item-section>
                                 <q-item-section>
-                                    <q-item-label> {{ $t('projectView.lexicon[5]') }}</q-item-label>
+                                    <q-item-label> {{ $t('projectView.lexicon[6]') }}</q-item-label>
                                 </q-item-section>
                             </q-item>
 
                         </q-list>
                     </q-btn-dropdown>
                 </div>
-            </div>
-            <div v-if="!isShowFeatures" class="row">
-                <div class="col-lg-4 col-sm-4 col-xs-4 col-md-4 q-mb-sm">
-                    <q-btn v-if="prune != '' " flat icon="arrow_back" @click="fetchLexicon_(lexiconType), prune = ''">
-                        <q-tooltip content-class="bg-white text-primary">{{ $t('projectView.lexicon[7]') }}</q-tooltip>
-                    </q-btn>
-                </div>
-                <div class="col-lg-8 col-sm-8 col-xs-8 col-md-8 q-mb-sm">
-                    <q-space/>
-                    <q-select
-                        v-model="prune"
-                        dense
-                        outlined
-                        style="min-width: 230px"
-                        :options="features"
-                        label="Select feature"
-                        @update:model-value="getAmbiguousLexicon()"
-                        class="float-right"
-                    >
-                        <q-tooltip content-class="bg-white text-primary">{{ $t('projectView.lexicon[8]') }}</q-tooltip>
-                    </q-select>
-                </div>
-            </div>
+            </div>   
         </q-card-section>
     </q-card>
     <LexiconPanel v-if="isShowLexiconPanel" :features="features"></LexiconPanel>
@@ -103,6 +93,7 @@ import { useProjectStore } from 'src/pinia/modules/project';
 import { useUserStore } from 'src/pinia/modules/user';
 import { sample_t } from 'src/api/backend-types'
 import { defineComponent, PropType } from 'vue';
+import { format } from 'quasar';
 
 export default defineComponent({
   name: 'LexiconMain',
@@ -116,12 +107,16 @@ export default defineComponent({
     LexiconPanel
   },
   data() {
+    const principalFeatures: string[] = [];
+    const secondaryFeatures: string[] = [];
+    const features: string[] = [];
     return {
-      prune:'',
-      lexiconType:'',
-      features:[],
-      isShowLexiconPanel:false,
-      isShowFeatures:true,
+      lexiconType: '',
+      principalFeatures,
+      secondaryFeatures,
+      features,
+      isShowLexiconPanel: false,
+      isShowLexiconFeatures: true,
     };
   },
   computed: {
@@ -130,35 +125,39 @@ export default defineComponent({
     projectName() {
         return this.$route.params.projectname;
     },
-    featureOptions(): String[]{
-        return Object.values(this.annotationFeatures.FEATS).map((value)=>value.name);
+    principalFeatureOptions() { 
+        return ['Form', 'Lemma', 'Upos', 'Gloss'].concat(Object.values(this.annotationFeatures.FEATS).map((value) => value.name));
     },
+    secondaryFeatureOptions() { 
+        return this.principalFeatureOptions.filter((value) => !this.principalFeatures.includes(value));
+    }, 
   },
   methods: {
 
     ...mapActions(useLexiconStore, ['fetchLexicon']),
 
-    getAmbiguousLexicon(){
-        const pruneIndex = Object.keys(this.features).find(key => this.features[key as any ] === this.prune) as string;
-        this.fetchLexicon_(this.lexiconType, parseInt(pruneIndex)+4)
-    },
-
-    fetchLexicon_(lexiconType: string, prune: number) {
-        this.isShowLexiconPanel = false;
+    fetchLexicon_(lexiconType: string) {
+        
         const samplenames = [];
+        let prune : number; 
+
         for (const sample of this.sampleId) {
             samplenames.push(sample.sample_name);
         }
-        this.lexiconType = lexiconType
-        const data={samplenames: samplenames, features: this.features, lexiconType: this.lexiconType, prune: prune}
+        this.features = this.principalFeatures.concat(this.secondaryFeatures)
+        this.secondaryFeatures.length != 0 ?  prune = this.principalFeatures.length : prune = 0 
+
+        const data = {samplenames: samplenames, lexiconType: lexiconType, features: this.features, prune: prune}
         this.fetchLexicon(this.projectName as string, data);
+        this.isShowLexiconFeatures = false;
         this.isShowLexiconPanel = true;
-        this.isShowFeatures = false; 
+
     },
-    
     },
   },
 );
-
-
 </script>
+<style>
+
+
+</style>

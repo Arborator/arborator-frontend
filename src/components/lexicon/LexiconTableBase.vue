@@ -111,55 +111,13 @@ export default defineComponent({
     const resultSearch: grewSearchResult_t = {};
     const lexiconData: {}[] = [];
     const table: table_t<lexiconItem_FE_t> = {
-      fields: [
-        {
-          name: 'expand',
-          label: 'expand',
-          field: 'expand',
-          sortable: true,
-        },
-        {
-          name: 'form',
-          label: 'Form',
-          sortable: true,
-          align: 'left',
-          field: 'form',
-        },
-        {
-          name: 'lemma',
-          label: 'Lemma',
-          sortable: true,
-          align: 'left',
-          field: 'lemma',
-        },
-        {
-          name: 'pos',
-          label: 'POS',
-          sortable: true,
-          align: 'left',
-          field: 'upos',
-        },
-        {
-          name: 'gloss',
-          label: 'Gloss',
-          sortable: true,
-          align: 'left',
-          field: 'gloss',
-        },
-        {
-          name: 'frequency',
-          label: 'Frequency',
-          sortable: true,
-          align: 'left',
-          field: 'frequency',
-        },
-      ],
-      visibleColumns: ['form', 'lemma', 'pos', 'gloss', 'frequency'],
+      fields: [],
+      visibleColumns: [],
       filter: '',
       selected: [],
       loading: false,
       pagination: {
-        sortBy: 'name',
+        sortBy: 'key',
         descending: false,
         page: 1,
         rowsPerPage: 10,
@@ -177,7 +135,7 @@ export default defineComponent({
     };
   },
   mounted() {
-    this.extendTableFieldsAndColumns();
+    this.createTableFieldsAndColumns();
   },
   computed: {
     ...mapState(useLexiconStore, ['lexiconItems']),
@@ -319,8 +277,7 @@ export default defineComponent({
       this.download = [];
     },
 
-    extendTableFieldsAndColumns() {
-      this.features.sort();
+    createTableFieldsAndColumns() {
       for (const feature of this.features) {
         this.table.fields.push({
           name: feature,
@@ -330,7 +287,15 @@ export default defineComponent({
           field: feature,
         });
         this.table.visibleColumns.push(feature);
-      }
+      }  
+      this.table.fields.push({
+          name: 'frequency',
+          label: 'Frequency',
+          sortable: true,
+          align: 'left',
+          field: 'frequency',
+        })
+      this.table.visibleColumns.push('frequency');
     },
 
     onSearch(searchPattern: string) {

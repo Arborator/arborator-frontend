@@ -8,6 +8,14 @@
       </q-bar>
       <q-card-section style="max-height:70vh" class="scroll">
         <AttributeTable
+          :featdata="formattedItem.features"
+          :columns="featTable.columns"
+          open-features="false"
+          modifiable="false"
+          title="Universal Features"
+          :feat-options="options.annof.FEATS"
+        />
+        <AttributeTable
           :featdata="formattedItem.form"
           :columns="featTable.columns"
           open-features="false"
@@ -25,20 +33,12 @@
           :feat-options="options.lemmaoptions"
         />
         <AttributeTable
-          :featdata="formattedItem.pos"
+          :featdata="formattedItem.upos"
           :columns="featTable.columns"
           open-features="false"
           modifiable="false"
           title="Category"
           :feat-options="options.catoptions"
-        />
-        <AttributeTable
-          :featdata="formattedItem.features"
-          :columns="featTable.columns"
-          open-features="false"
-          modifiable="false"
-          title="Universal Features"
-          :feat-options="options.annof.FEATS"
         />
         <AttributeTable
           :featdata="formattedItem.gloss"
@@ -76,7 +76,7 @@ import { annotationFeatures_t } from 'src/api/backend-types';
 interface formattedItem_t {
   form: { a: string; v: string }[];
   lemma: { a: string; v: string }[];
-  pos: { a: string; v: string }[];
+  upos: { a: string; v: string }[];
   gloss: { a: string; v: string }[];
   features: { a: string; v: string }[];
   frequency: number;
@@ -100,13 +100,13 @@ export default defineComponent({
       DEPREL: [],
       DEPS: [],
     };
-    const formattedItem: formattedItem_t = { form: [], lemma: [], pos: [], gloss: [], features: [], frequency: 0, key: '' };
+    const formattedItem: formattedItem_t = { form: [], lemma: [], upos: [], gloss: [], features: [], frequency: 0, key: '' };
 
     return {
       formattedItem,
       featTable: {
         form: [],
-        pos: [],
+        upos: [],
         featl: [],
         miscl: [],
         lemma: [],
@@ -168,11 +168,11 @@ export default defineComponent({
   methods: {
     ...mapActions(useLexiconStore, ['hideLexiconModificationDialog', 'setLexiconModifiedItem', 'addCoupleLexiconItemBeforeAfter']),
     convertLexiconItemToFormattedItem(lexiconItem: lexiconItem_FE_t) {
-      const formattedItem: formattedItem_t = { form: [], lemma: [], pos: [], gloss: [], features: [], frequency: 0, key: '' };
-      formattedItem.form = [{ a: 'Form', v: lexiconItem.feats.form }];
-      formattedItem.lemma = [{ a: 'Lemma', v: lexiconItem.feats.lemma }];
-      formattedItem.pos = [{ a: 'POS', v: lexiconItem.feats.upos }];
-      formattedItem.gloss = [{ a: 'Gloss', v: lexiconItem.feats.Gloss }];
+      const formattedItem: formattedItem_t = { form: [], lemma: [], upos: [], gloss: [], features: [], frequency: 0, key: '' };
+      formattedItem.form = (lexiconItem.feats.form) ? [{ a: 'Form', v: lexiconItem.feats.form }] : []
+      formattedItem.lemma = (lexiconItem.feats.lemma) ? [{ a: 'Lemma', v: lexiconItem.feats.lemma }] : []
+      formattedItem.upos = (lexiconItem.feats.upos) ? [{ a: 'Upos', v: lexiconItem.feats.upos }] : []
+      formattedItem.gloss = (lexiconItem.feats.Gloss) ? [{ a: 'Gloss', v: lexiconItem.feats.Gloss }] : []
       formattedItem.frequency = lexiconItem.freq;
       formattedItem.key = lexiconItem.key;
       for (const feature of this.options.annof.FEATS) {
@@ -191,7 +191,7 @@ export default defineComponent({
         feats: {
           form: formattedItem.form[0].v,
           lemma: formattedItem.lemma[0].v,
-          upos: formattedItem.pos[0].v,
+          upos: formattedItem.upos[0].v,
           Gloss: formattedItem.gloss[0].v,
           ...features,
         },

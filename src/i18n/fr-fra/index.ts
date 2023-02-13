@@ -172,11 +172,13 @@ export default {
     uploadSelectDial: 'Select one or multiple conll files',
     lexiconDial: [
       'Select one or multiple features for the Lexicon',
-      'Default features are : Form, Lemma, Pos, Gloss',
+      'Main features',
+      'Auxiliary features',
       'Get the lexicon of my trees',
       'Get the lexicon of my recent trees',
       'Get the lexicon of all the trees',
       'Get the lexicon of the recent trees',
+      'Select the user type',
     ],
     projectInfoDial: {
       title: 'Project Information',

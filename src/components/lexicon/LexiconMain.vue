@@ -23,6 +23,7 @@
                     filled
                     multiple
                     :options="secondaryFeatureOptions"
+                    :option-label="(feature) => feature.charAt(0).toUpperCase() + feature.slice(1) "
                     use-chips
                     stack-label
                     :label="$t('projectView.lexicon[2]')"

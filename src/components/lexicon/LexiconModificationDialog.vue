@@ -187,12 +187,13 @@ export default defineComponent({
       for (const keyValue of formattedItem.features) {
         features[keyValue.a] = keyValue.v;
       }
+      console.log(formattedItem.form)
       const lexiconItem: lexiconItem_FE_t = {
         feats: {
-          form: formattedItem.form[0].v,
-          lemma: formattedItem.lemma[0].v,
-          upos: formattedItem.upos[0].v,
-          Gloss: formattedItem.gloss[0].v,
+          form: (formattedItem.form.length > 0) ? formattedItem.form[0].v  : '',
+          lemma: (formattedItem.lemma.length > 0) ? formattedItem.lemma[0].v  : '',
+          upos: (formattedItem.upos.length > 0) ? formattedItem.upos[0].v  : '',
+          Gloss: (formattedItem.gloss.length > 0) ? formattedItem.upos[0].v  : '',
           ...features,
         },
         freq: formattedItem.frequency,
@@ -202,8 +203,6 @@ export default defineComponent({
     },
     replaceEntry() {
       const modifiedLexiconItem = this.convertFormattedItemToLexiconItem(this.formattedItem);
-      // this.$store.dispatch('lexicon/setLexiconModifiedItem', modifiedLexiconItem);
-      // this.$store.dispatch('lexicon/addCoupleLexiconItemBeforeAfter');
       this.setLexiconModifiedItem(modifiedLexiconItem);
       this.addCoupleLexiconItemBeforeAfter();
     },

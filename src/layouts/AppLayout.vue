@@ -43,7 +43,7 @@
         <q-space />
         <div class="q-gutter-sm row items-center no-wrap" size="4rem">
           <q-icon v-show="isProjectAdmin" name="admin_panel_settings">
-            <q-tooltip> You are admin of this project </q-tooltip>
+            <q-tooltip> {{ $t('projectAdmin')}} </q-tooltip>
           </q-icon>
           <q-select v-model="lang" :options="langOptions" dense borderless options-dense map-options emit-value>
             <template #append>
@@ -51,13 +51,13 @@
                 <q-icon name="fas fa-globe" />
               </q-avatar>
             </template>
-            <q-tooltip> Switch the language of the user interface </q-tooltip>
+            <q-tooltip> {{ $t('switchLanguage')}} </q-tooltip>
           </q-select>
           <q-btn flat round :icon="$q.dark.isActive ? 'sunny' : 'brightness_2'" @click="toggleDarkMode()">
-            <q-tooltip> Toggle dark mode </q-tooltip>
+            <q-tooltip> {{ $t('darkMode')}} </q-tooltip>
           </q-btn>
           <q-btn flat round icon="question_mark"  href="https://arborator.github.io/arborator-documentation/#/" target="_blank">
-            <q-tooltip content-class="text-white bg-primary">{{ $t('projectHub.tooltipHelp') }}</q-tooltip>
+            <q-tooltip content-class="text-white bg-primary">{{ $t('documentation') }}</q-tooltip>
           </q-btn>
           <q-btn-dropdown v-show="!isLoggedIn" color="secondary" outline label="Log In" icon="account_circle">
             <q-list>
@@ -82,7 +82,7 @@
             </q-list>
           </q-btn-dropdown>
           <q-btn v-show="isLoggedIn" round flat dense color="purple">
-            <q-tooltip> User information </q-tooltip>
+            <q-tooltip> {{ $t('userInformation')}} </q-tooltip>
             <q-avatar>
               <q-icon v-if="getUserInfos.picture_url === ''" name="account_circle" />
               <q-avatar v-else :key="getUserInfos.avatarKey" color="default" text-color="white" size="xs">

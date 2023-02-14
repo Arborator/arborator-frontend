@@ -56,6 +56,9 @@
           <q-btn flat round :icon="$q.dark.isActive ? 'sunny' : 'brightness_2'" @click="toggleDarkMode()">
             <q-tooltip> Toggle dark mode </q-tooltip>
           </q-btn>
+          <q-btn flat round icon="question_mark"  href="https://arborator.github.io/arborator-documentation/#/" target="_blank">
+            <q-tooltip content-class="text-white bg-primary">{{ $t('projectHub.tooltipHelp') }}</q-tooltip>
+          </q-btn>
           <q-btn-dropdown v-show="!isLoggedIn" color="secondary" outline label="Log In" icon="account_circle">
             <q-list>
               <q-item v-close-popup clickable @click="tologin(source + '/login/google')">

@@ -15,9 +15,6 @@
             <q-toolbar-title :class="($q.dark.isActive ? '' : 'text-primary') + ' text-bold'">
               {{ $t('projectHub.title') }}
             </q-toolbar-title>
-            <q-btn round dense icon="question_mark" color="primary" href="https://arborator.github.io/arborator-documentation/#/" target="_blank">
-              <q-tooltip :delay="300" content-class="text-white bg-primary">{{ $t('projectHub.tooltipHelp') }}</q-tooltip>
-            </q-btn>
           </q-toolbar>
           <q-toolbar class="text-center">
             <q-toolbar-title>

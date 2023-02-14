@@ -281,7 +281,7 @@ export default defineComponent({
       for (const feature of this.features) {
         this.table.fields.push({
           name: feature,
-          label: feature,
+          label: feature.charAt(0).toUpperCase() + feature.slice(1) ,
           sortable: true,
           align: 'left',
           field: feature,

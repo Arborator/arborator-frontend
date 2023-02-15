@@ -135,6 +135,7 @@ export default {
 
   // page when you enter a project ( samples info, etc)
   projectView: {
+    project: 'Project',
     tooltipSettings: 'Modify project settings',
     tooltipViewAdmin: 'View administrator information',
     nodata: [
@@ -145,6 +146,8 @@ export default {
     tooltipAddSample: 'Add CoNLL files as new samples',
     tooltipExportSample: ['Select the samples you want to export', 'Export selected samples'],
     tooltipDeleteSample: ['Select the samples you want to delete', 'Delete selected samples'],
+    tooltipCreateLexicon: ['Select the samples to create a lexicon', 'Create lexicon from selected samples'],
+    tooltipParsingPanel: ['Open parsing panel', 'Close parsing panel'], 
     tooltipParser: [
       'Select samples to train a parser',
       'train with the selected samples',
@@ -176,6 +179,8 @@ export default {
     tooltipRelationTable: 'Get Relation Tables',
     tooltipWindows: ['Minimize', 'Maximize', 'Close'],
     uploadSelectDial: 'Select one or multiple conll files',
+    tableFields:['Name', 'Nb Sentences', 'Nb Tokens', 'Annotators', 'Validators', 'Prof', 'Trees From', 'Exercise Level'],
+    addUser: 'Add user',
     lexicon: [
       'Select one or multiple features for the Lexicon',
       'Main features',

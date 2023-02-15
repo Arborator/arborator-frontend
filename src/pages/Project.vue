@@ -12,7 +12,7 @@
               <q-icon v-show="visibility === 1" name="lock" :color="$q.dark.isActive ? 'red-13' : 'positive'" size="lg"></q-icon>
               <q-icon v-show="visibility === 2" name="public" :color="$q.dark.isActive ? 'red-13' : 'positive'" size="lg"></q-icon>
               <q-icon v-show="exerciseMode" name="school" color="indigo-11" size="lg"></q-icon>
-              Project {{ projectName }}
+              {{ $t('projectView.project')}} {{ projectName }}
               <q-btn
                 v-if="isSuperAdmin || isAdmin"
                 flat
@@ -228,8 +228,8 @@
                     @click="isShowLexiconPanel = true"
                   ></q-btn>
                   <q-tooltip v-if="table.selected.length < 1" :delay="300" content-class="text-white bg-primary">
-                   Select the samples to create a lexicon</q-tooltip>
-                  <q-tooltip v-else :delay="300" class-content="text-white bg-primary">Create lexicon from selected samples</q-tooltip>
+                   {{$t('projectView.tooltipCreateLexicon[0]')}}</q-tooltip>
+                  <q-tooltip v-else :delay="300" class-content="text-white bg-primary">{{$t('projectView.tooltipCreateLexicon[1]')}}</q-tooltip>
                      
                 </div>
                 <!-- single and main button for parsing -->
@@ -241,7 +241,7 @@
                     :color="isShowParsingPanel ? 'primary' : 'default'"
                     :disable="(visibility === 0 && !isGuest && !isAdmin && !isSuperAdmin)"
                   >
-                    <q-tooltip  content-class="text-body2 bg-primary">{{isShowParsingPanel ? "Close " : "Open "}}Parsing Panel</q-tooltip>
+                    <q-tooltip  content-class="text-body2 bg-primary">{{isShowParsingPanel ? $t('projectView.tooltipParsingPanel[1]') :  $t('projectView.tooltipParsingPanel[0]')}}Parsing Panel</q-tooltip>
                   </q-btn>
                 </div>
               </q-btn-group>
@@ -309,7 +309,7 @@
                     :typeahead="true"
                     typeahead-style="badges"
                     :typeahead-hide-discard="true"
-                    placeholder="add user"
+                    :placeholder="$t('projectView.addUser')"
                     :only-existing-tags="true"
                     :typeahead-always-show="false"
                     @tag-added="modifyRole"
@@ -332,7 +332,7 @@
                     :typeahead="true"
                     typeahead-style="badges"
                     :typeahead-hide-discard="true"
-                    placeholder="add user"
+                    :placeholder="$t('projectView.addUser')"
                     :only-existing-tags="true"
                     :typeahead-always-show="false"
                     @tag-added="modifyRole"

@@ -87,7 +87,7 @@ export interface sample_roles_t {
 }
 export interface sample_t {
   sample_name: string;
-  treesFrom: string;
+  treesFrom: string[];
   sentences: number;
   number_trees: number;
   tokens: number;

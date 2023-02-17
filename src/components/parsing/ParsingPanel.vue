@@ -7,7 +7,24 @@
           <q-toggle v-model="parser.param.keepUpos" label="keep UPOS" />
         </div>
       </div>
-
+      <q-separator vertical inset class="q-mx-lg" />
+      <div class="row no-wrap q-pa-md">
+        <div class="column">
+          <div class="column q-gutter-md">
+            <!-- Train Files Toggle -->
+            <q-toggle v-model="parser.param.isCustomTrainingUser" label="Custom user" />
+            <q-select
+              v-if="parser.param.isCustomTrainingUser"
+              v-model="parser.param.trainingUser"
+              filled
+              :options="allTreesFrom"
+              label="Training user"
+              stack-label
+              style="max-width: 200px; min-width: 150px"
+            />
+          </div>
+        </div>
+      </div>
       <q-separator vertical inset class="q-mx-lg" />
       <div class="row no-wrap q-pa-md">
         <div class="column">
@@ -109,6 +126,8 @@ interface parser_t {
     type: parserType_t;
     options: string[];
     keepUpos: boolean;
+    isCustomTrainingUser: boolean;
+    trainingUser: string;
     trainAll: boolean;
     parseAll: boolean;
     trainSamples: string[];
@@ -137,9 +156,11 @@ export default defineComponent({
       time: -1,
       timeInfo: '',
       param: {
-        type: 'trankitParser',
+        type: 'kirParser',
         options: ['trankitParser', 'kirParser', 'hopsParser', 'udifyParser', 'stanzaParser'],
         keepUpos: true,
+        isCustomTrainingUser: false,
+        trainingUser: '',
         trainAll: true,
         trainSamples: [],
         parseAll: true,
@@ -155,6 +176,12 @@ export default defineComponent({
   computed: {
     allSamplesNames() {
       return this.samples.map((sample) => sample.sample_name);
+    },
+    allTreesFrom() {
+      const allTreesFromWithDuplicate = this.samples.map((sample) => sample.treesFrom).reduce((a: string[], b: string[]) => [...a, ...b], []);
+      // console.log(this.samples[0].treesFrom);
+      // return [];
+      return [...new Set(allTreesFromWithDuplicate)];
     },
     trainingSentencesCount() {
       if (this.parser.param.trainAll) {
@@ -261,6 +288,7 @@ export default defineComponent({
 
       const trainingFiles = this.parser.param.trainAll ? this.allSamplesNames : this.parser.param.trainSamples;
       const toParseNames = this.parser.param.parseAll ? 'ALL' : this.parser.param.parseSamples;
+      const trainingUser = this.parser.param.isCustomTrainingUser ? this.parser.param.trainingUser : 'last';
 
       api
         .bootParserCustom(
@@ -269,7 +297,8 @@ export default defineComponent({
           this.parser.param.type,
           this.parser.param.epochs,
           this.parser.param.keepUpos,
-          toParseNames
+          toParseNames,
+          trainingUser
         )
         .then((response) => {
           // this.table.selected = [];

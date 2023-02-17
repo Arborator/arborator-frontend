@@ -252,7 +252,8 @@ export default {
     parserType: string,
     epochs: number,
     keepUpos: boolean,
-    toParseNames: string[] | 'ALL'
+    toParseNames: string[] | 'ALL',
+    trainingUser: string | 'last'
   ) {
     // TODO add custom parser params button
     const data = {
@@ -262,6 +263,7 @@ export default {
       epoch: epochs,
       keepPos: keepUpos,
       to_parse: toParseNames,
+      training_user: trainingUser,
     };
     return API.post(`/projects/${projectname}/samples/parsing`, data);
   },

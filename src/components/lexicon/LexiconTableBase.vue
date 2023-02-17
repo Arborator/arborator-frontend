@@ -64,10 +64,10 @@
         <div>
           <q-btn-group v-if="compareWithBefore" flat>
             <q-btn color="default" :disable="table.selected.length === 0" flat icon="compare_arrows" @click="get()">
-              <q-tooltip>Generate Grew Rule</q-tooltip>
+              <q-tooltip>{{ $t('projectView.tooltipRuleGrewLexicon')}}</q-tooltip>
             </q-btn>
             <q-btn color="default" :disable="table.selected.length === 0" flat icon-right="delete_forever" @click="deleteSelected()">
-              <q-tooltip>Unstage selected lexicon changes</q-tooltip>
+              <q-tooltip>{{ $t('projectView.tooltipUnstageModifiedItem')}}</q-tooltip>
             </q-btn>
           </q-btn-group>
         </div>
@@ -95,13 +95,30 @@ import { lexiconItem_FE_t, useLexiconStore } from 'src/pinia/modules/lexicon';
 import { useGrewSearchStore } from 'src/pinia/modules/grewSearch';
 import { table_t } from 'src/types/main_types';
 import { notifyError, notifyMessage } from 'src/utils/notify';
-import { defineComponent } from 'vue';
+import { defineComponent, PropType } from 'vue';
 import { grewSearchResult_t } from 'src/api/backend-types';
 
 export default defineComponent({
   name: 'LexiconTable',
+  props: {
+    passedLexiconItems: {
+      type: Object as PropType<lexiconItem_FE_t[]>,
+      required: true,
+    }, 
+    lexiconLoading: {
+      type: Boolean as PropType<boolean>,
+      required: true, 
+    }, 
+    compareWithBefore: {
+      type: Boolean as PropType<boolean>,
+      required: true,
+    },
+    features: {
+      type: Object as PropType<string[]>,
+      required: true,
+    }
+  },
   components: { ResultView },
-  props: ['passedLexiconItems', 'lexiconLoading', 'compareWithBefore', 'features'],
   setup(props, ctx) {
     const parentSlots = computed(() => Object.keys(ctx.slots));
 
@@ -145,7 +162,6 @@ export default defineComponent({
       for (const lexiconItem of this.passedLexiconItems) {
         this.lexiconData.push({ ...lexiconItem.feats, key: lexiconItem.key, frequency: lexiconItem.freq });
       }
-
       return this.lexiconData;
     },
 
@@ -155,7 +171,28 @@ export default defineComponent({
   },
   methods: {
     ...mapActions(useLexiconStore, ['setLexiconModificationItem', 'removeCoupleLexiconItemBeforeAfter']),
-    ...mapActions(useGrewSearchStore, ['switch_grew_dialog', 'change_last_grew_query']),
+    ...mapActions(useGrewSearchStore, ['switchGrewDialog', 'changeLastGrewQuery']),
+
+    createTableFieldsAndColumns() {
+      for (const feature of this.features) {
+        this.table.fields.push({
+          name: feature,
+          label: feature.charAt(0).toUpperCase() + feature.slice(1) ,
+          sortable: true,
+          align: 'left',
+          field: feature,
+        });
+        this.table.visibleColumns.push(feature);
+      }  
+      this.table.fields.push({
+          name: 'frequency',
+          label: 'Frequency',
+          sortable: true,
+          align: 'left',
+          field: 'frequency',
+        })
+      this.table.visibleColumns.push('frequency');
+    },
 
     onRowClick(evt: Event, row: any) {
       this.setLexiconModificationItem(this.findOriginalLexiconItem(row));
@@ -184,15 +221,15 @@ export default defineComponent({
 
       for (const after of this.table.selected) {
         const before = this.findOriginalLexiconItem(after);
-        const thisRule = this.grew_rule_from_lex_item_pair(before, after);
+        const thisRule = this.grewRuleFromLexiconItemPair(before, after);
         grewRuleConcatenated += `rule r${counter} {\n${thisRule}\n}\n`;
         counter = counter + 1;
       }
-      this.change_last_grew_query({ text: grewRuleConcatenated, type: 'REWRITE' });
-      this.switch_grew_dialog(true);
+      this.changeLastGrewQuery({ text: grewRuleConcatenated, type: 'REWRITE' });
+      this.switchGrewDialog(true);
     },
 
-    grew_pattern_from_lex_item(lex_item: lexiconItem_FE_t) {
+    grewPatternFromLexiconItem(lex_item: lexiconItem_FE_t) {
       let pattern = 'pattern { N[';
       for (const [feat, value] of Object.entries(lex_item.feats)) {
         if (feat && value) {
@@ -205,7 +242,7 @@ export default defineComponent({
       return pattern;
     },
 
-    grew_rule_from_lex_item_pair(before: lexiconItem_FE_t, after: any) {
+    grewRuleFromLexiconItemPair(before: lexiconItem_FE_t, after: any) {
       let commands = 'commands { ';
       let withouts = '';
       for (const feat in before.feats) {
@@ -217,11 +254,11 @@ export default defineComponent({
         }
       }
       commands += '}';
-      return this.grew_pattern_from_lex_item(before) + withouts + '\n' + commands;
+      return this.grewPatternFromLexiconItem(before) + withouts + '\n' + commands;
     },
 
     showTrees(row: any) {
-      this.onSearch(this.grew_pattern_from_lex_item(this.findOriginalLexiconItem(row)));
+      this.onSearch(this.grewPatternFromLexiconItem(this.findOriginalLexiconItem(row)));
     },
 
     exportLexiconTSV() {
@@ -231,12 +268,12 @@ export default defineComponent({
       }
       const datasample = { data: download };
       api
-        .exportLexiconTSV(this.$route.params.projectname as string, datasample)
+        .exportLexiconTSV(this.projectName as string, datasample)
         .then((response) => {
           const url = window.URL.createObjectURL(new Blob([response.data], { type: 'text/tab-separated-values' }));
           const link = document.createElement('a');
           link.href = url;
-          link.setAttribute('download', `lexicon_${this.$route.params.projectname}.tsv`);
+          link.setAttribute('download', `lexicon_${this.projectName}.tsv`);
           document.body.appendChild(link);
           link.click();
           document.body.removeChild(link);
@@ -257,12 +294,12 @@ export default defineComponent({
       }
       const datasample = { data: download };
       api
-        .exportLexiconJSON(this.$route.params.projectname as string, datasample)
+        .exportLexiconJSON(this.projectName as string, datasample)
         .then((response) => {
           const url = window.URL.createObjectURL(new Blob([response.data], { type: 'application/json' }));
           const link = document.createElement('a');
           link.href = url;
-          link.setAttribute('download', `lexicon_${this.$route.params.projectname}.json`);
+          link.setAttribute('download', `lexicon_${this.projectName}.json`);
           document.body.appendChild(link);
           link.click();
           document.body.removeChild(link);
@@ -277,31 +314,10 @@ export default defineComponent({
       this.download = [];
     },
 
-    createTableFieldsAndColumns() {
-      for (const feature of this.features) {
-        this.table.fields.push({
-          name: feature,
-          label: feature.charAt(0).toUpperCase() + feature.slice(1) ,
-          sortable: true,
-          align: 'left',
-          field: feature,
-        });
-        this.table.visibleColumns.push(feature);
-      }  
-      this.table.fields.push({
-          name: 'frequency',
-          label: 'Frequency',
-          sortable: true,
-          align: 'left',
-          field: 'frequency',
-        })
-      this.table.visibleColumns.push('frequency');
-    },
-
     onSearch(searchPattern: string) {
       const query = { pattern: searchPattern };
       api
-        .searchProject(this.$route.params.projectname as string, query)
+        .searchProject(this.projectName as string, query)
         .then((response) => {
           this.resultSearch = response.data;
           this.visuTreeDial = true;

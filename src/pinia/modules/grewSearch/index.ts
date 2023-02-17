@@ -9,10 +9,10 @@ export const useGrewSearchStore = defineStore('grewSearch', {
     };
   },
   actions: {
-    switch_grew_dialog(newDialogState: boolean) {
+    switchGrewDialog(newDialogState: boolean) {
       this.grewDialog = newDialogState;
     },
-    change_last_grew_query(query: null | { text: string; type: 'REWRITE' | 'SEARCH' }) {
+    changeLastGrewQuery(query: null | { text: string; type: 'REWRITE' | 'SEARCH' }) {
       this.lastQuery = query;
     },
     add_pending_modification(pendingModification: any) {

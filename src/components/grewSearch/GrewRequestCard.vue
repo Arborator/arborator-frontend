@@ -196,7 +196,7 @@ export default defineComponent({
     this.checkGrewQuery();
   },
   methods: {
-    ...mapActions(useGrewSearchStore, ['change_last_grew_query']),
+    ...mapActions(useGrewSearchStore, ['changeLastGrewQuery']),
     /**
      * Call parent onsearch function and update store and history
      *
@@ -204,7 +204,7 @@ export default defineComponent({
      */
     onSearch() {
       this.parentOnSearch(this.currentQuery);
-      this.change_last_grew_query({ text: this.currentQuery, type: this.currentQueryType });
+      this.changeLastGrewQuery({ text: this.currentQuery, type: this.currentQueryType });
     },
     /**
      * Call parent onsearch function and update store and history
@@ -213,7 +213,7 @@ export default defineComponent({
      */
     tryRules() {
       this.parentOnTryRules(this.currentQuery);
-      this.change_last_grew_query({ text: this.currentQuery, type: this.currentQueryType });
+      this.changeLastGrewQuery({ text: this.currentQuery, type: this.currentQueryType });
     },
     /**
      * Modify the search pattern (search string)

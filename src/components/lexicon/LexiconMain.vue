@@ -92,7 +92,7 @@
             :features="features"
             :key="features.length"
             ></LexiconTableBase>
-            <LexiconTableBase title="Lexicon" :passed-lexicon-items="lexiconItems" :lexicon-loading="lexiconLoading" :features="features" :key="features.length"> </LexiconTableBase>
+            <LexiconTableBase title="Lexicon" :compare-with-before="false" :passed-lexicon-items="lexiconItems" :lexicon-loading="lexiconLoading" :features="features" :key="features.length"> </LexiconTableBase>
         </q-card-section>
     </q-card>
 

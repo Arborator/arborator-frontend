@@ -73,15 +73,12 @@ export const useLexiconStore = defineStore('lexicon', {
       const before = this.lexiconModificationItemBefore;
       const after = this.lexiconModificationItemAfter;
       if (deepEqual(before, after)) {
-        console.log('KK not writting, before and after are the same');
         return;
       }
       for (const couple of this.couplesLexiconItemsBeforeAfter) {
         if (before.key === couple.before.key) {
           // we already have this entry, rewrite on it
-          console.log('KK rewriting');
           if (deepEqual(couple.before, after)) {
-            console.log('KK After became first before aain, deleting couple');
             this.removeCoupleLexiconItemBeforeAfter(couple.before.key);
             return;
           }

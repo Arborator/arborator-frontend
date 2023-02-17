@@ -156,7 +156,6 @@ export default defineComponent({
      * @returns void
      */
     goTo() {
-      console.log('KK goto', this.project.projectName, this.project);
       this.$router.push({
         name: 'project',
         params: {
@@ -164,7 +163,6 @@ export default defineComponent({
           infos: this.project as any,
         },
       });
-      console.log('KK after goto');
     },
     /**
      * Use the parent project settings function

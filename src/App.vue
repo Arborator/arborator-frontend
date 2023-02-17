@@ -26,7 +26,6 @@ export default defineComponent({
   },
   watch: {
     '$q.dark.isActive'(isActive: boolean) {
-      console.log('KK dark changed! ', isActive);
       if (isActive) {
         setThemeMode('DARK', true);
       } else {

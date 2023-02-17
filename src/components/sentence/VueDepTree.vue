@@ -319,7 +319,6 @@ export default defineComponent({
       }
       if (this.diffMode === 'DIFF_USER') {
         if (this.treeUserId === this.diffUserId) {
-          console.log('KK tree of the user, no diff');
           return;
         }
         this.sentenceSVG.plugDiffTree(this.reactiveSentencesObj[this.diffUserId]);

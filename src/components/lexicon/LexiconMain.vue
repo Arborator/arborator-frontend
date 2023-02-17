@@ -81,13 +81,26 @@
                 </div>
             </div>   
         </q-card-section>
+        <q-card-section v-if="isShowLexiconTable">
+            <LexiconModificationDialog v-if="lexiconItems.length >= 1" />
+            <LexiconTableBase
+            v-show="lexiconItemsModified.length >= 1"
+            title="Modified Lexicon"
+            :compare-with-before="true"
+            :passed-lexicon-items="lexiconItemsModified"
+            :lexicon-loading="false"
+            :features="features"
+            :key="features.length"
+            ></LexiconTableBase>
+            <LexiconTableBase title="Lexicon" :passed-lexicon-items="lexiconItems" :lexicon-loading="lexiconLoading" :features="features" :key="features.length"> </LexiconTableBase>
+        </q-card-section>
     </q-card>
-    <LexiconPanel v-if="isShowLexiconPanel" :features="features"></LexiconPanel>
 
 </template>
 
 <script lang="ts">
-import LexiconPanel from './LexiconPanel.vue';
+import LexiconTableBase from './LexiconTableBase.vue';
+import LexiconModificationDialog from './LexiconModificationDialog.vue';
 
 import { mapState, mapActions } from 'pinia';
 import { useLexiconStore } from 'src/pinia/modules/lexicon';
@@ -106,7 +119,8 @@ export default defineComponent({
     },
   },
   components:{
-    LexiconPanel
+    LexiconTableBase,
+    LexiconModificationDialog,
   },
   data() {
     const principalFeatures: string[] = [];
@@ -117,13 +131,14 @@ export default defineComponent({
       principalFeatures,
       secondaryFeatures,
       features,
-      isShowLexiconPanel: false,
+      isShowLexiconTable: false,
       isShowLexiconFeatures: true,
     };
   },
   computed: {
     ...mapState(useProjectStore,['annotationFeatures', 'isAdmin']),
     ...mapState(useUserStore, ['isLoggedIn', 'isSuperAdmin', 'avatar']),
+    ...mapState(useLexiconStore, ['lexiconItems', 'lexiconLoading', 'lexiconItemsModified']),
     projectName() {
         return this.$route.params.projectname;
     },
@@ -152,7 +167,7 @@ export default defineComponent({
         const data = {samplenames: samplenames, lexiconType: lexiconType, features: this.features, prune: prune}
         this.fetchLexicon(this.projectName as string, data);
         this.isShowLexiconFeatures = false;
-        this.isShowLexiconPanel = true;
+        this.isShowLexiconTable = true;
 
     },
     },

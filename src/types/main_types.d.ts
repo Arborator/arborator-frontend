@@ -51,12 +51,9 @@ export type sentence_bus_events_t = {
   'action:saved': { userId: string };
   'export:SVG': { userId: string };
   'open:tokensReplaceDialog': { userId: string; event: Event };
-  'open:openMultiEditDialog': { userId: string };
-  'changed:metaText': { newMetaText: string };
   'changed:metaText': { newMetaText: string };
   'tree-update:token': { userId: string; token: TokenJson };
   'tree-update:sentence': { sentenceJson: SentenceJson; userId: string };
-  'open:tokensReplaceDialog': { userId: string; event: Event };
   'action:undo': { userId: string };
   'action:redo': { userId: string };
   'action:addEmptyToken': { userId: string };
@@ -82,5 +79,6 @@ type timeEstimationCoefs_t = {
   [key in parserType_t]: {
     a: number;
     b: number;
+    c: number;
   };
 };

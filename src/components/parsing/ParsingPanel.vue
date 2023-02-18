@@ -1,92 +1,70 @@
 <template>
   <QCard>
-    <div class="row no-wrap q-pa-md">
-      <div class="column">
-        <div class="column q-gutter-md">
-          <q-select v-model="parser.param.type" :options="parser.param.options" label="parser type" stack-label />
-          <q-toggle v-model="parser.param.keepUpos" label="keep UPOS" />
-        </div>
+    <div class="row q-pa-md">
+      <div class="col">
+        <q-toggle v-model="parser.param.trainAll" label="Train on all files" />
+        <q-select
+          :class="{invisible: parser.param.trainAll}"
+          v-model="parser.param.trainSamples"
+          filled
+          :options="allSamplesNames"
+          multiple
+          label="Files to parse"
+          stack-label
+          style="max-width: 200px; min-width: 150px"
+        />
+        <q-toggle v-model="parser.param.parseAll" label="Parse all files" />
+        <q-select
+          :class="{invisible: parser.param.parseAll}"
+          v-model="parser.param.parseSamples"
+          filled
+          :options="allSamplesNames"
+          multiple
+          label="Files to parse"
+          stack-label
+          style="max-width: 200px; min-width: 150px"
+        />
       </div>
       <q-separator vertical inset class="q-mx-lg" />
-      <div class="row no-wrap q-pa-md">
-        <div class="column">
-          <div class="column q-gutter-md">
-            <!-- Train Files Toggle -->
-            <q-toggle v-model="parser.param.isCustomTrainingUser" label="Custom user" />
-            <q-select
-              v-if="parser.param.isCustomTrainingUser"
-              v-model="parser.param.trainingUser"
-              filled
-              :options="allTreesFrom"
-              label="Training user"
-              stack-label
-              style="max-width: 200px; min-width: 150px"
-            />
-          </div>
-        </div>
+      <div class="col">
+        <q-toggle v-model="parser.param.isCustomTrainingUser" label="Custom user" />
+        <q-select
+          :class="{invisible: !parser.param.isCustomTrainingUser}"
+          v-model="parser.param.trainingUser"
+          filled
+          :options="allTreesFrom"
+          label="Training user"
+          stack-label
+          style="max-width: 200px; min-width: 150px"
+        />
+        <q-toggle v-model="parser.param.advancedSettings" label="Advanced Settings" />
+        <q-select
+          :class="{invisible: !parser.param.advancedSettings}"
+          v-model="parser.param.type"
+          :options="parser.param.options"
+          label="parser type" stack-label />
+        <q-toggle v-model="parser.param.keepUpos" label="keep UPOS" />
       </div>
       <q-separator vertical inset class="q-mx-lg" />
-      <div class="row no-wrap q-pa-md">
-        <div class="column">
-          <div class="column q-gutter-md">
-            <!-- Train Files Toggle -->
-            <q-toggle v-model="parser.param.trainAll" label="Train on all files" />
-            <q-select
-              v-if="!parser.param.trainAll"
-              v-model="parser.param.trainSamples"
-              filled
-              :options="allSamplesNames"
-              multiple
-              label="Files to parse"
-              stack-label
-              style="max-width: 200px; min-width: 150px"
-            />
-          </div>
-        </div>
-      </div>
-      <q-separator vertical inset class="q-mx-lg" />
-      <div class="row no-wrap q-pa-md">
-        <div class="column">
-          <div class="column q-gutter-md">
-            <!-- Parse Files Toggle -->
-            <q-toggle v-model="parser.param.parseAll" label="Parse all file" />
-            <q-select
-              v-if="!parser.param.parseAll"
-              v-model="parser.param.parseSamples"
-              filled
-              :options="allSamplesNames"
-              multiple
-              label="Files to parse"
-              stack-label
-              style="max-width: 200px; min-width: 150px"
-            />
-          </div>
-        </div>
-      </div>
-      <q-separator vertical inset class="q-mx-lg" />
-
-      <div class="column items-center">
-        <div class="q-pa-sm">
-          <q-input
-            v-model.number="parser.param.epochs"
-            type="number"
-            label="epochs"
-            min="3"
-            max="300"
-            filled
-            style="max-width: 100px"
-            :rules="[(val) => (val >= 3 && val <= 300) || 'Please use 3 to 300 epochs']"
-          />
-        </div>
+      <div class="col">
+        <q-input
+          v-model.number="parser.param.epochs"
+          type="number"
+          label="epochs"
+          min="3"
+          max="300"
+          filled
+          style="max-width: 100px"
+          :rules="[(val) => (val >= 3 && val <= 300) || 'Please use 3 to 300 epochs']"
+        />
         <div class="text-subtitle1 q-mt-xs">Begin parse:</div>
         <div class="text-subtitle5 q-mb-xs">estimated time = {{ estimatedTime }}mn</div>
         <div class="text-subtitle5 q-mb-xs">({{ trainingSentencesCount }} training sentences)</div>
         <q-btn v-close-popup color="primary" label="Begin" :loading="parser.parsing" push size="sm" @click="bootParserStart()" />
         <q-btn v-if="parser.parsing" v-close-popup color="primary" label="Stop" push size="sm" @click="bootParserStop()" />
       </div>
-
       <q-separator vertical inset class="q-mx-lg" />
-      <div class="row no-wrap q-pa-md">
+      <div class="col">
         <div class="column">
           <div class="column q-gutter-md">
             <h6>Logs</h6>
@@ -106,13 +84,13 @@ import api from '../../api/backend-api';
 import { exportFile } from 'quasar';
 import { sample_t } from 'src/api/backend-types';
 import { parserType_t, timeEstimationCoefs_t } from 'src/types/main_types';
-
+// https://github.com/Arborator/djangoBootParser/blob/master/estimated_time_100ep_logline.tsv
 const timeEstimationCoefs: timeEstimationCoefs_t = {
-  kirParser: { a: 0.0919, b: 4.315 },
-  hopsParser: { a: 0.0877, b: 2.413 },
-  stanzaParser: { a: 0.0411, b: 1.793 },
-  trankitParser: { a: 0.0526, b: 3.688 },
-  udifyParser: { a: 0.149, b: 24.212 },
+  kirParser: { a: 0, b: 0.2, c: 0 },
+  hopsParser: { a: -0.887, b:  	0.09357, c: 5.329 },
+  stanzaParser: { a: 0.59, b: 0.090, c: -0.14516 },
+  trankitParser: { a: 1.406, b: 0.0432, c: -0.9326 },
+  udifyParser: { a: 5.74049, b: 0.062179, c: 8.79224 },
 };
 
 interface parser_t {
@@ -123,6 +101,7 @@ interface parser_t {
   time: number;
   timeInfo: string;
   param: {
+    advancedSettings: boolean;
     type: parserType_t;
     options: string[];
     keepUpos: boolean;
@@ -156,6 +135,7 @@ export default defineComponent({
       time: -1,
       timeInfo: '',
       param: {
+        advancedSettings: false,
         type: 'kirParser',
         options: ['trankitParser', 'kirParser', 'hopsParser', 'udifyParser', 'stanzaParser'],
         keepUpos: true,
@@ -194,14 +174,10 @@ export default defineComponent({
     estimatedTime() {
       const parserId = this.parser.param.type;
       const parserCoefs = timeEstimationCoefs[parserId];
-      const y = parserCoefs.a * this.trainingSentencesCount + parserCoefs.b;
-      const epochs = this.parser.param.epochs;
-
-      if (this.parser.param.type === 'udifyParser') {
-        return Math.floor((epochs * (y - 20)) / 100) + 20 + 2;
-      }
-
-      return Math.floor((epochs * y) / 100) + 2;
+      const x = this.trainingSentencesCount
+      const time1epochs = (parserCoefs.a * Math.log(x + 1) + parserCoefs.b * x + parserCoefs.c)/100;
+      const time = time1epochs * this.parser.param.epochs
+      return Math.floor(Math.max(time, 0))
     },
   },
   methods: {
@@ -339,3 +315,8 @@ export default defineComponent({
   },
 });
 </script>
+<style>
+  .invisible {
+    visibility: hidden;
+  }
+</style>

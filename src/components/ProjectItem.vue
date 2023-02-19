@@ -47,7 +47,7 @@
       </q-chip>
     </q-item-section>
     <q-item-section v-for="adm in project.admins" v-if="isLoggedIn" :key="adm" side>
-      <q-chip v-if="userid == adm" size="sm">
+      <q-chip v-if="userid === adm" size="sm">
         <q-avatar>
           <img :src="getUserInfos.picture_url || undefined" />
         </q-avatar>
@@ -57,14 +57,12 @@
     </q-item-section>
     <q-item-section side>
       <q-badge :color="$q.dark.isActive ? 'grey' : 'secondary'">
-        {{ project.numberSamples }} {{ project.numberSamples == 1 ? $t('projectHub.sample') : $t('projectHub.samples') }}
+        {{ project.numberSamples }} {{ project.numberSamples === 1 ? $t('projectHub.sample') : $t('projectHub.samples') }}
       </q-badge>
     </q-item-section>
     <q-item-section side>
       <div class="absolute-bottom text-h6">
-        <q-icon v-show="project.visibility === 0" name="lock" color="negative" size="lg"></q-icon>
-        <q-icon v-show="project.visibility === 1" name="lock" color="positive" size="lg"></q-icon>
-        <q-icon v-show="project.visibility === 2" name="public" color="positive" size="lg"></q-icon>
+        <ProjectIcon :visibility="project.visibility" :exercise-mode="project.exerciseMode" />
       </div>
     </q-item-section>
 
@@ -82,9 +80,10 @@ import { timeAgo } from 'src/utils/timeAgoUtils';
 
 import { defineComponent, PropType } from 'vue';
 import { project_extended_t } from 'src/api/backend-types';
+import ProjectIcon from "components/shared/ProjectIcon.vue";
 
 export default defineComponent({
-  components: { ConfirmAction },
+  components: {ProjectIcon, ConfirmAction },
   props: {
     project: {
       type: Object as PropType<project_extended_t>,

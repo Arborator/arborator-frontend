@@ -8,10 +8,7 @@
           </q-toolbar>
           <q-img class="project-image" :src="cleanedImage" basic>
             <div class="absolute-bottom text-h6" style="padding: 6px">
-              <q-icon v-show="visibility === 0" name="lock" :color="$q.dark.isActive ? 'red-13' : 'negative'" size="lg"></q-icon>
-              <q-icon v-show="visibility === 1" name="lock" :color="$q.dark.isActive ? 'red-13' : 'positive'" size="lg"></q-icon>
-              <q-icon v-show="visibility === 2" name="public" :color="$q.dark.isActive ? 'red-13' : 'positive'" size="lg"></q-icon>
-              <q-icon v-show="exerciseMode" name="school" color="indigo-11" size="lg"></q-icon>
+              <ProjectIcon :visibility="visibility" :exercise-mode="exerciseMode" />
               {{ $t('projectView.project')}} {{ projectName }}
               <q-btn
                 v-if="isSuperAdmin || isAdmin"
@@ -230,7 +227,7 @@
                   <q-tooltip v-if="table.selected.length < 1" :delay="300" content-class="text-white bg-primary">
                    {{$t('projectView.tooltipCreateLexicon[0]')}}</q-tooltip>
                   <q-tooltip v-else :delay="300" class-content="text-white bg-primary">{{$t('projectView.tooltipCreateLexicon[1]')}}</q-tooltip>
-                     
+
                 </div>
                 <!-- single and main button for parsing -->
                 <div>
@@ -442,7 +439,8 @@ import UploadDialog from '../components/project/UploadDialog.vue';
 import LexiconMain from '../components/lexicon/LexiconMain.vue';
 import GrewSearch from '../components/grewSearch/GrewSearch.vue';
 import RelationTableMain from '../components/relationTable/RelationTableMain.vue';
-import ParsingPanel from '../components/parsing/ParsingPanel.vue'
+import ParsingPanel from '../components/parsing/ParsingPanel.vue';
+import ProjectIcon from '../components/shared/ProjectIcon.vue';
 
 import { notifyError, notifyMessage } from 'src/utils/notify';
 import { mapActions, mapState } from 'pinia';
@@ -464,6 +462,7 @@ export default defineComponent({
     GrewSearch,
     RelationTableMain,
     ParsingPanel,
+    ProjectIcon,
   },
   data() {
     const samples: sample_t[] = [];
@@ -613,23 +612,23 @@ export default defineComponent({
       'isTeacher',
     ]),
     ...mapState(useUserStore, ['isLoggedIn', 'isSuperAdmin', 'loggedWithGithub', 'avatar']),
-    projectName() {
+    projectName(): string | string[] {
       return this.$route.params.projectname;
     },
-    routePath() {
+    routePath(): string {
       return this.$route.path;
     },
     noselect(): boolean {
       return this.table.selected.length < 1;
     },
-    sentenceCount() :number { 
+    sentenceCount() :number {
     return this.samples.map((sample) => sample.sentences).reduce((partialSum, a) => partialSum + a, 0);
     },
     featureOptions(): String[]{
         return Object.values(this.annotationFeatures.FEATS).map((value)=>value.name);
     } ,
-    getProjectTreesFrom() {
-      
+    getProjectTreesFrom(): string[]{
+
       const projectTreesFrom: string[] = [];
 
       for (const sample of this.samples) {
@@ -670,8 +669,7 @@ export default defineComponent({
 
     filterFields(tableJson: table_t<unknown>) {
       // to remove some fields from visiblecolumns select options
-      const tempArray = tableJson.fields.filter((obj) => obj.field !== 'syntInfo' && obj.field !== 'cat' && obj.field !== 'redistributions');
-      return tempArray;
+      return tableJson.fields.filter((obj) => obj.field !== 'syntInfo' && obj.field !== 'cat' && obj.field !== 'redistributions');
     },
     loadProjectData() {
       this.getProjectSamples();
@@ -686,10 +684,10 @@ export default defineComponent({
         for (const sample of this.samples) {
           this.sampleNames.push(sample.sample_name);
         }
-        
+
       });
     },
-   
+
     getUsers() {
       // TODO : change this function as it's downloading all users each time. It should only be users of the project
       // this method populate the `possiblesUsers` list for feeding the annotator and validator tag input choice
@@ -794,7 +792,7 @@ export default defineComponent({
       this.isShowParsingPanel = !this.isShowParsingPanel
 
     },
-    
+
     // grewquery() {
     //     console.log('projectview',this.grewqueryc)
     //     if (this.grewqueryc==0) return
@@ -890,7 +888,7 @@ export default defineComponent({
       //   // a.click();
       // });
     },
-    downloadFileAttachement(data: any, fileName: string) {
+    downloadFileAttachement(data: any, fileName: string): void {
       const fileURL = window.URL.createObjectURL(new Blob([data]));
       const fileLink = document.createElement('a');
 

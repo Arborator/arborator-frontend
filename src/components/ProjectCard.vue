@@ -35,10 +35,7 @@
       @click="goTo()"
     >
       <div class="absolute-bottom text-h6">
-        <q-icon v-show="project.visibility === 0" name="fas fa-lock" color="negative" size="lg"></q-icon>
-        <q-icon v-show="project.visibility === 1" name="fas fa-unlock-alt" color="positive" size="lg"></q-icon>
-        <q-icon v-show="project.visibility === 2" name="public" color="positive" size="lg"></q-icon>
-        <q-icon v-show="project.exerciseMode" name="school" color="indigo-11" size="lg"></q-icon>
+        <ProjectIcon :visibility="project.visibility" :exercise-mode="project.exerciseMode" />
         {{ project.projectName }}
       </div>
     </q-img>
@@ -84,9 +81,10 @@ import { useUserStore } from 'src/pinia/modules/user';
 import { timeAgo } from 'src/utils/timeAgoUtils';
 import { defineComponent, PropType } from 'vue';
 import { project_extended_t } from 'src/api/backend-types';
+import ProjectIcon from "components/shared/ProjectIcon.vue";
 
 export default defineComponent({
-  components: { ConfirmAction },
+  components: {ProjectIcon, ConfirmAction },
   props: {
     project: {
       type: Object as PropType<project_extended_t>,

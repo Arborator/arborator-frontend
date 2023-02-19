@@ -12,9 +12,7 @@
       <q-banner rounded class="col-md-4 offset-md-4 col-xs-12 col-sm-12">
         <q-img :ratio="16 / 9" :src="cleanedImage" basic>
           <div class="absolute-bottom text-h6">
-            <q-icon v-show="visibilityLocal === 0" name="lock" :color="$q.dark.isActive ? 'red-13' : 'negative'" size="lg"></q-icon>
-            <q-icon v-show="visibilityLocal === 1" name="lock" :color="$q.dark.isActive ? 'red-13' : 'positive'" size="lg"></q-icon>
-            <q-icon v-show="visibilityLocal === 2" name="public" :color="$q.dark.isActive ? 'red-13' : 'positive'" size="lg"></q-icon>
+            <ProjectIcon :visibility="visibilityLocal" :exercise-mode="exerciseModeLocal" />
             {{ projectname }}
           </div>
         </q-img>
@@ -160,7 +158,7 @@
               </tr>
             </thead>
             <tbody>
-              <tr v-for="admin in admins" :key="admin" v-ripple clickable>
+              <tr v-for="admin in admins" :key="admin" v-ripple>
                 <td>{{ admin }}</td>
                 <td>
                   <q-btn
@@ -196,7 +194,7 @@
               </tr>
             </thead>
             <tbody>
-              <tr v-for="guest in guests" :key="guest" v-ripple clickable>
+              <tr v-for="guest in guests" :key="guest" v-ripple>
                 <td>{{ guest }}</td>
                 <td>
                   <q-btn
@@ -346,10 +344,11 @@ import { notifyError, notifyMessage } from 'src/utils/notify';
 import { sample_role_targetrole_t, user_t } from 'src/api/backend-types';
 
 import { defineComponent, PropType } from 'vue';
+import ProjectIcon from 'components/shared/ProjectIcon.vue';
 
 export default defineComponent({
   name: 'ProjectSettingsView',
-  components: { Codemirror, UserSelectTable, ConfirmAction },
+  components: { ProjectIcon, Codemirror, UserSelectTable, ConfirmAction },
   props: {
     projectname: {
       type: String as PropType<string>,
@@ -524,7 +523,7 @@ export default defineComponent({
       this.annofjson = this.getAnnofjson;
     },
 
-    resetAnnotationFeaturesUDWrapper(){
+    resetAnnotationFeaturesUDWrapper() {
       this.resetAnnotationFeaturesUD();
       this.annofjson = this.getUDAnnofJson;
     },

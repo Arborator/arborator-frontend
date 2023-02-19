@@ -177,7 +177,7 @@ export default defineComponent({
       const x = this.trainingSentencesCount
       const time1epochs = (parserCoefs.a * Math.log(x + 1) + parserCoefs.b * x + parserCoefs.c)/100;
       const time = time1epochs * this.parser.param.epochs
-      return Math.floor(Math.max(time, 0))
+      return Math.floor(Math.max(time, 1))
     },
   },
   methods: {

@@ -86,7 +86,7 @@ import { sample_t } from 'src/api/backend-types';
 import { parserType_t, timeEstimationCoefs_t } from 'src/types/main_types';
 // https://github.com/Arborator/djangoBootParser/blob/master/estimated_time_100ep_logline.tsv
 const timeEstimationCoefs: timeEstimationCoefs_t = {
-  kirParser: { a: 0, b: 0.2, c: 0 },
+  kirParser: { a: 0, b: 0.02, c: 0 },
   hopsParser: { a: -0.887, b:  	0.09357, c: 5.329 },
   stanzaParser: { a: 0.59, b: 0.090, c: -0.14516 },
   trankitParser: { a: 1.406, b: 0.0432, c: -0.9326 },

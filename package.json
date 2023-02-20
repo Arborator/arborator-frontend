@@ -29,7 +29,7 @@
     "codemirror-editor-vue3": "^0.2.4",
     "conllup": "^2.1.0",
     "core-js": "^3.6.5",
-    "dependencytreejs": "^2.1.1",
+    "dependencytreejs": "^2.2.1",
     "diff": "^5.0.0",
     "jszip": "^3.7.1",
     "mitt": "^3.0.0",

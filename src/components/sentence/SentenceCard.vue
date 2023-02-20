@@ -127,7 +127,7 @@
         </template>
       </div>
       <div class="full-width row justify-end">
-        <q-input v-show="sentenceLink.length != 0" ref="linkinput" v-model="sentenceLink" dense class="col-4 self-stretch" :value="sentenceLink">
+        <q-input v-show="sentenceLink.length !== 0" ref="linkinput" v-model="sentenceLink" dense class="col-4 self-stretch" :value="sentenceLink">
           <template #prepend>
             <q-icon name="ion-md-link" />
           </template>
@@ -153,7 +153,7 @@
           :icon="diffMode && user === diffUserId ? 'school' : 'person'"
           no-caps
           :ripple="false"
-          @click="handleTabChange"
+          @contextmenu="rightClickHandler($event, user)"
           ><q-tooltip v-if="hasPendingChanges[user]">The tree has some pendings modifications not saved</q-tooltip>
           <q-tooltip v-else
             ><q-icon color="primary" name="schedule" size="14px" class="q-ml-xs" /> modified {{ lastModifiedTime[user] }} ago
@@ -164,8 +164,6 @@
       <q-tab-panels
         v-model="openTabUser"
         keep-alive
-        :animated="animated ? true : false"
-        :class="animated ? 'easeOutSine' : ''"
         @transition="transitioned"
       >
         <q-tab-panel v-for="(tree, user) in filteredConlls" :key="user" :props="tree" :name="user">
@@ -293,7 +291,6 @@ export default defineComponent({
       exportedConll: '',
       reactiveSentencesObj,
       openTabUser: '',
-      animated: false,
       sentenceData: this.$props.sentence,
       EMMETT: 'emmett.strickland',
       graphInfo: {
@@ -316,7 +313,7 @@ export default defineComponent({
   },
 
   computed: {
-    ...mapWritableState(useProjectStore, ['diffMode']),
+    ...mapWritableState(useProjectStore, ['diffMode', 'diffUserId']),
     ...mapState(useProjectStore, ['isAdmin', 'isGuest', 'isTeacher', 'guests', 'admins', 'exerciseMode', 'shownmeta', 'getProjectConfig']),
     ...mapState(useUserStore, ['isLoggedIn', 'getUserInfos']),
     lastModifiedTime() {
@@ -374,10 +371,6 @@ export default defineComponent({
     },
     isBernardCaron() {
       return this.getUserInfos.username === 'bernard.l.caron' || this.getUserInfos.username === 'kirianguiller';
-    },
-    diffUserId() {
-      const value = useProjectStore().diffUserId;
-      return value || this.userId;
     },
   },
   created() {
@@ -486,21 +479,6 @@ export default defineComponent({
       // this.canSave = event.canSave;
     },
     /**
-     * triggers when the user selects another tab, and update canUndo, canRedo,
-     * canSave status
-     */
-    handleTabChange() {
-      // wait for 10ms until this.openTabUser get changed
-      setTimeout(() => {
-        this.sentenceBus.emit('action:tabSelected', {
-          userId: this.openTabUser,
-        });
-
-        const newMetaText = this.reactiveSentencesObj[this.openTabUser].getSentenceText();
-        this.sentenceBus.emit('changed:metaText', { newMetaText });
-      }, 10);
-    },
-    /**
      * Save the graph to backend after modifying its metadata and changing it into an object
      *
      * @returns void
@@ -544,8 +522,7 @@ export default defineComponent({
               // user still don't have a tree for this sentence, creating it.
               this.sentenceData.conlls[changedConllUser] = exportedConll;
 
-              const reactiveSentence = new ReactiveSentence();
-              this.reactiveSentencesObj[changedConllUser] = reactiveSentence;
+              this.reactiveSentencesObj[changedConllUser] = new ReactiveSentence();
             }
 
             if (this.openTabUser !== changedConllUser) {
@@ -567,6 +544,13 @@ export default defineComponent({
         this.reactiveSentencesObj[this.openTabUser].fromSentenceConll(this.exportedConll);
         this.exportedConll = '';
       }
+
+      this.sentenceBus.emit('action:tabSelected', {
+        userId: this.openTabUser,
+      });
+
+      const newMetaText = this.reactiveSentencesObj[this.openTabUser].getSentenceText();
+      this.sentenceBus.emit('changed:metaText', { newMetaText });
     },
     /**
      * Set the graph infos according to the event payload. This event shoudl be trigerred from the ConllGraph
@@ -575,7 +559,7 @@ export default defineComponent({
      */
     onConllGraphUpdate(payload: any) {
       this.graphInfo = payload;
-      if (this.graphInfo.dirty === true) this.add_pending_modification(this.sentenceId);
+      if (this.graphInfo.dirty) this.add_pending_modification(this.sentenceId);
       else this.remove_pending_modification(this.sentenceId);
     },
     openMetaDialog() {
@@ -585,20 +569,11 @@ export default defineComponent({
     changeMetaText(newMetaText: string) {
       this.sentenceData.sentence = newMetaText;
     },
-
     toggleDiffMode() {
       this.diffMode = !this.diffMode;
-      // for (const otherUserId in this.reactiveSentencesObj) {
-      //   if (otherUserId !== this.diffUserId) {
-      //     if (this.sentenceBus.sentenceSVGs[otherUserId]) {
-      //       if (this.diffMode) {
-      //         this.sentenceBus.sentenceSVGs[otherUserId].plugDiffTree(this.reactiveSentencesObj[this.diffUserId] as ReactiveSentence);
-      //       }
-      //       // this.sentenceBus[otherUserId].drawTree()
-      //     }
-      //     this.conllSavedCounter += 1;
-      //   }
-      // }
+      if (!this.diffUserId) {
+        this.diffUserId = this.openTabUser;
+      }
     },
     orderConlls(filteredConlls: { [key: string]: string }) {
       const userAndTimestamps = [];
@@ -617,6 +592,31 @@ export default defineComponent({
       }
       return orderedConlls;
     },
+    /**
+     * When user right click on one of the tabs icon, if diffMode is on, it will change
+     * the current diffUser for current session
+     * @param e
+     * @param user
+     */
+    rightClickHandler(e: MouseEvent, user: string) {
+      e.preventDefault();
+      if (this.exerciseMode) return;
+      if (!this.diffMode) {
+        // if user right click on one of the tab icon while diffMode was
+        // disabled, it enable it and set to this tab user the diffUser
+        this.toggleDiffMode();
+        this.diffUserId = user;
+        return;
+      } else {
+        // we are alrady in diffmode
+        if (user == this.diffUserId) {
+          // clicked on the current diff user, we enable diffmode
+          this.toggleDiffMode();
+        } else {
+          this.diffUserId = user;
+        }
+      }
+    },
   },
 });
 </script>
@@ -624,44 +624,5 @@ export default defineComponent({
 <style>
 .scrollable {
   overflow: scroll;
-}
-
-.custom-fade-enter-active {
-  transition: all 0.3s ease;
-}
-.custom-fade-leave-active {
-  transition: all 0.8s cubic-bezier(1, 0.5, 0.8, 1);
-}
-.custom-fade-enter, .custom-fade-leave-to
-/* .slide-fade-leave-active below version 2.1.8 */ {
-  transform: translateX(10px);
-  opacity: 0;
-}
-
-.easeOutSine.q-transition--slide-right-leave-active,
-.easeOutSine.q-transition--slide-left-leave-active {
-  transition: opacity 1s !important;
-}
-
-.easeOutSine.q-transition--slide-right-enter-active,
-.easeOutSine.q-transition--slide-left-enter-active {
-  transition: opacity 1s !important;
-}
-/* transition-delay: 2s !important; */
-
-.easeOutSine.q-transition--slide-right-enter,
-.easeOutSine.q-transition--slide-left-enter {
-  opacity: 0 !important;
-  transition-delay: 2s !important;
-}
-
-.easeOutSine.q-transition--slide-right-leave-to,
-.easeOutSine.q-transition--slide-left-leave-to {
-  opacity: 0 !important;
-}
-
-.easeOutSine .q-transition--slide-right-leave-from,
-.easeOutSine .q-transition--slide-left-leave-from {
-  opacity: 1 !important;
 }
 </style>

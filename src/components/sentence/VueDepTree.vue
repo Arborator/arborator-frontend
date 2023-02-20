@@ -15,7 +15,7 @@ import { reactive_sentences_obj_t, sentence_bus_events_t, sentence_bus_t } from 
 import { ReactiveSentence } from 'dependencytreejs/src/ReactiveSentence';
 import { mapState } from 'pinia';
 import { useProjectStore } from 'src/pinia/modules/project';
-import { emptyTokenJson, emptyTreeJson } from 'conllup/lib/conll';
+import { emptyTokenJson } from 'conllup/lib/conll';
 
 interface svgClickEvent_t extends Event {
   detail: { clicked: string; targetLabel: 'FORM' | 'FEATS' | 'LEMMA' | 'DEPREL' };
@@ -97,19 +97,17 @@ export default defineComponent({
     };
   },
   computed: {
-    ...mapState(useProjectStore, ['shownfeatures', 'TEACHER', 'isTeacher', 'isStudent']),
+    ...mapState(useProjectStore, ['diffUserId', 'shownfeatures', 'TEACHER', 'isTeacher', 'isStudent']),
     ...mapState(useUserStore, ['username']),
-    diffUserId() {
-      const value = useProjectStore().diffUserId;
-      return value || this.username;
-    },
   },
   watch: {
     conllSavedCounter() {
       this.sentenceSVG.drawTree();
     },
     diffMode() {
-      // Watching diffmode
+      this.handleDiffPlugging();
+    },
+    diffUserId() {
       this.handleDiffPlugging();
     },
   },
@@ -120,10 +118,8 @@ export default defineComponent({
     this.reactiveSentence.fromSentenceConll(this.conll);
     const sentenceSVGOptions = defaultSentenceSVGOptions();
     sentenceSVGOptions.shownFeatures = this.shownfeatures;
-    sentenceSVGOptions.interactive = true;
-    if (this.isStudent === true && this.treeUserId === this.TEACHER) {
-      sentenceSVGOptions.interactive = false;
-    }
+
+    sentenceSVGOptions.interactive = !(this.isStudent && this.treeUserId === this.TEACHER);
 
     if (this.matches.length > 0) {
       sentenceSVGOptions.matches = JSON.parse(JSON.stringify(this.matches));
@@ -193,6 +189,7 @@ export default defineComponent({
 
     this.sentenceBus.on('action:tabSelected', ({ userId }) => {
       if (userId === this.treeUserId) {
+        this.sentenceSVG.drawTree();
         this.statusChangeHadler();
       }
     });
@@ -312,20 +309,20 @@ export default defineComponent({
     },
     handleDiffPlugging() {
       if (this.diffMode === 'DIFF_TEACHER') {
-        if (this.treeUserId === this.TEACHER) {
-          return;
+        if (this.treeUserId !== this.TEACHER) {
+          this.sentenceSVG.plugDiffTree(this.reactiveSentencesObj[this.TEACHER]);
+        } else {
+          this.sentenceSVG.unplugDiffTree();
         }
-        this.sentenceSVG.plugDiffTree(this.reactiveSentencesObj[this.TEACHER]);
-      }
-      if (this.diffMode === 'DIFF_USER') {
-        if (this.treeUserId === this.diffUserId) {
-          return;
+      } else if (this.diffMode === 'DIFF_USER') {
+        if (this.treeUserId !== this.diffUserId) {
+          this.sentenceSVG.plugDiffTree(this.reactiveSentencesObj[this.diffUserId]);
+        } else {
+          this.sentenceSVG.unplugDiffTree();
         }
-        this.sentenceSVG.plugDiffTree(this.reactiveSentencesObj[this.diffUserId]);
-      }
-      if (this.diffMode === 'NO_DIFF') {
-        this.sentenceSVG.teacherTreeJson = emptyTreeJson();
-        this.sentenceSVG.drawTree();
+      } else {
+        // diffMode ==== 'NO_DIFF'
+        this.sentenceSVG.unplugDiffTree();
       }
     },
   },

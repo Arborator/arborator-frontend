@@ -3,22 +3,22 @@
     <q-page-sticky :position="breakpoint ? 'bottom-right' : 'bottom-right'" :offset="breakpoint ? [18, 18] : [30, 80]" style="z-index: 999">
       <q-btn-group v-if="grewBtn" push flat rounded>
         <q-btn push color="primary" no-caps @click="userType = 'user', grewDialog = !grewDialog">
-          <q-tooltip content-class="bg-primary" content-style="font-size: 16px"> View only my trees </q-tooltip>
+          <q-tooltip content-class="bg-primary" content-style="font-size: 16px"> {{$t('projectView.tooltipFabGrewUser')}} </q-tooltip>
           <q-avatar v-if="isLoggedIn" size="1.2rem"><img :src="avatar" /></q-avatar>
           <q-icon v-else name="account_circle" />
         </q-btn>
         <q-btn push color="primary" no-caps @click="userType = 'user_recent', grewDialog = !grewDialog">
-          <q-tooltip content-class="bg-primary" content-style="font-size: 16px"> View my trees, filled up with the most recent trees </q-tooltip>
+          <q-tooltip content-class="bg-primary" content-style="font-size: 16px"> {{$t('projectView.tooltipFabGrewUserRecent')}} </q-tooltip>
           <q-avatar v-if="isLoggedIn" size="1.2rem"><img :src="avatar" /></q-avatar>
           <q-icon v-else name="account_circle" />
           <div>+</div>
         </q-btn>
         <q-btn v-if="isAdmin || isSuperAdmin" push icon="schedule" color="primary" no-caps @click="userType = 'recent', grewDialog = !grewDialog">
-          <q-tooltip content-class="bg-primary" content-style="font-size: 16px"> View most recent trees </q-tooltip>
+          <q-tooltip content-class="bg-primary" content-style="font-size: 16px"> {{$t('projectView.tooltipFabGrewRecent')}} </q-tooltip>
         </q-btn>
       </q-btn-group>
       <q-btn size="20px" round color="primary" icon="img:/svg/g.svg" @click="grewBtn = !grewBtn">
-        <q-tooltip content-class="bg-primary" content-style="font-size: 16px"> Search with Grew in this sample </q-tooltip>
+        <q-tooltip content-class="bg-primary" content-style="font-size: 16px"> {{$t('projectView.tooltipFabGrew')}} </q-tooltip>
       </q-btn>
     </q-page-sticky>
     <q-dialog v-model="grewDialog" seamless position="right" full-width>
@@ -45,7 +45,7 @@ import { mapWritableState, mapState } from 'pinia';
 import { useProjectStore } from 'src/pinia/modules/project';
 import { useUserStore } from 'src/pinia/modules/user';
 import { notifyError } from 'src/utils/notify';
-import { defineComponent } from 'vue';
+import { defineComponent, PropType } from 'vue';
 import { grewSearchResult_t } from 'src/api/backend-types';
 
 export default defineComponent({
@@ -53,7 +53,16 @@ export default defineComponent({
     GrewRequestCard,
     ResultView,
   },
-  props: ['sentenceCount', 'sampleId', 'showTable', 'searchScope'],
+  props: {
+    sentenceCount: {
+      type: Number as PropType<number>,
+      required: true,
+    }, 
+    searchScope: {
+      type: String as PropType<string>,
+      required: true, 
+    }
+  },
   data() {
     const resultSearch: grewSearchResult_t = {};
     const queryType = '';
@@ -75,9 +84,6 @@ export default defineComponent({
     ...mapWritableState(useGrewSearchStore, ['grewDialog']),
     ...mapState(useProjectStore, ['isAdmin']),
     ...mapState(useUserStore, ['isLoggedIn', 'isSuperAdmin', 'avatar', 'getUserInfos']),
-  },
-  mounted() {
-    this.grewDialog = this.showTable;
   },
   methods: {
     onShowTable(resultSearchDialog: any) {

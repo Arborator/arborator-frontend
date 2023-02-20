@@ -170,12 +170,12 @@ export default {
 
     tooltipSelectVisible: 'Sélectionner les colonnes visibles',
     tooltipFullscreen: 'tableau plein écran',
-    tooltipFabGrew: "Recherche avec Grew dans l'ensemble du projet",
+    tooltipFabGrew: "Recherche avec Grew",
     tooltipFabGrewUser: 'Voir uniquement mes arbres',
     tooltipFabGrewUserRecent: 'Voir mes arbres, avec les arbres les plus récents',
     tooltipFabGrewRecent: 'Voir les arbres les plus récents',
     tooltipFabGrewAll: 'Voir tous les arbres',
-    tooltipRelationTable: 'Get Relation Tables',
+    tooltipRelationTable: 'Obtenir la table des relations',
     tooltipWindows: ['Minimize', 'Maximize', 'Close'],
     uploadSelectDial: 'Select one or multiple conll files',
     tableFields: ['Nom', 'Nb Phrases', 'Nb Tokens', 'Annotateurs', 'Validateurs', 'Prof', 'Arbres de', "Niveau d'exercice"],
@@ -188,7 +188,7 @@ export default {
       'Obtenir le lexique de mes arbres récents',
       'Obtenir le lexique de tous les arbres',
       'Obtenir le lexique des arbres récents',
-      "Sélectionnez le type d'utilisateur",
+      "Sélectionnez le type de lexique",
     ],
     projectInfoDial: {
       title: 'Information sur le projet',

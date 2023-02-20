@@ -171,7 +171,7 @@ export default {
     tooltipSearch: 'Search a sample',
     tooltipSelectVisible: 'Select visible columns',
     tooltipFullscreen: 'Fullscreen table',
-    tooltipFabGrew: 'Search with Grew in the whole project',
+    tooltipFabGrew: 'Search with Grew',
     tooltipFabGrewUser: 'View only my trees',
     tooltipFabGrewUserRecent: 'View my trees, filled up with the most recent trees',
     tooltipFabGrewRecent: 'View most recent trees',
@@ -201,8 +201,13 @@ export default {
     tooltipUnstageModifiedItem: 'Unstage selected lexicon changes',
     tooltipValidatorLexicon: 'Import validator to compare',
     tooltipSelectValidator: 'Select a file in tsv format',
-  },
+    tootltipUserType: [
+      'View only my trees',
+      'View my trees, filled up with the most recent trees',
+      'View most recent trees'
+    ],
 
+  },
   // dialog window which displays create project card
   createProjectCard: {
     exerciseMode: 'exercise mode',

@@ -31,7 +31,7 @@
     </div>
     <template v-if="!(exerciseMode && !isTeacher)">
       <GrewSearch :sentence-count="sentenceCount" :search-scope="samplename" />
-      <RelationTableMain :samplename="samplename" />
+      <RelationTableMain :sampleName="samplename" />
     </template>
   </q-page>
 </template>

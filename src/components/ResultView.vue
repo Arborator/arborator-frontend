@@ -11,7 +11,7 @@
       <q-space/>
       <q-btn v-close-popup flat dense icon="close"/>
     </q-bar>
-    <div v-if="queryType === 'REWRITE' && samplesFrozen.list.length > 0 && (isGuest || isAdmin || isSuperAdmin)"
+    <div v-if="queryType === 'REWRITE' && samplesFrozen.list.length > 0 && canSaveTreeInProject"
          class="q-pa-md">
       <q-btn color="primary" label="Apply rules" @click="applyRules"/>
     </div>
@@ -106,7 +106,7 @@ export default defineComponent({
     };
   },
   computed: {
-    ...mapState(useProjectStore, ['isGuest', 'isAdmin']),
+    ...mapState(useProjectStore, ['isGuest', 'isAdmin', 'canSaveTreeInProject']),
     ...mapState(useUserStore, ['isSuperAdmin', 'username']),
     sentenceCount() {
       return Object.keys(this.searchresults)

@@ -2,19 +2,22 @@
   <div>
     <q-page-sticky :position="breakpoint ? 'bottom-right' : 'bottom-right'" :offset="breakpoint ? [18, 18] : [30, 80]" style="z-index: 999">
       <q-btn-group v-if="grewBtn" push flat rounded>
-        <q-btn push color="primary" no-caps @click="userType = 'user', grewDialog = !grewDialog">
+        <q-btn v-if="isLoggedIn" push color="primary" no-caps @click="userType = 'user', grewDialog = !grewDialog">
           <q-tooltip content-class="bg-primary" content-style="font-size: 16px"> {{$t('projectView.tooltipFabGrewUser')}} </q-tooltip>
           <q-avatar v-if="isLoggedIn" size="1.2rem"><img :src="avatar" /></q-avatar>
           <q-icon v-else name="account_circle" />
         </q-btn>
-        <q-btn push color="primary" no-caps @click="userType = 'user_recent', grewDialog = !grewDialog">
+        <q-btn v-if="isLoggedIn && canSeeOtherUsersTrees" push color="primary" no-caps @click="userType = 'user_recent', grewDialog = !grewDialog">
           <q-tooltip content-class="bg-primary" content-style="font-size: 16px"> {{$t('projectView.tooltipFabGrewUserRecent')}} </q-tooltip>
           <q-avatar v-if="isLoggedIn" size="1.2rem"><img :src="avatar" /></q-avatar>
           <q-icon v-else name="account_circle" />
           <div>+</div>
         </q-btn>
-        <q-btn v-if="isAdmin || isSuperAdmin" push icon="schedule" color="primary" no-caps @click="userType = 'recent', grewDialog = !grewDialog">
+        <q-btn v-if="canSeeOtherUsersTrees" push icon="schedule" color="primary" no-caps @click="userType = 'recent', grewDialog = !grewDialog">
           <q-tooltip content-class="bg-primary" content-style="font-size: 16px"> {{$t('projectView.tooltipFabGrewRecent')}} </q-tooltip>
+        </q-btn>
+        <q-btn v-if="canSeeOtherUsersTrees" push icon="groups" color="primary" no-caps @click="userType = 'all', grewDialog = !grewDialog">
+          <q-tooltip content-class="bg-primary" content-style="font-size: 16px"> {{$t('projectView.tooltipFabGrewAll')}} </q-tooltip>
         </q-btn>
       </q-btn-group>
       <q-btn size="20px" round color="primary" icon="img:/svg/g.svg" @click="grewBtn = !grewBtn">
@@ -57,10 +60,10 @@ export default defineComponent({
     sentenceCount: {
       type: Number as PropType<number>,
       required: true,
-    }, 
+    },
     searchScope: {
       type: String as PropType<string>,
-      required: true, 
+      required: true,
     }
   },
   data() {
@@ -82,7 +85,7 @@ export default defineComponent({
       return this.window.width <= 400;
     },
     ...mapWritableState(useGrewSearchStore, ['grewDialog']),
-    ...mapState(useProjectStore, ['isAdmin']),
+    ...mapState(useProjectStore, ['isAdmin', 'canSeeOtherUsersTrees']),
     ...mapState(useUserStore, ['isLoggedIn', 'isSuperAdmin', 'avatar', 'getUserInfos']),
   },
   methods: {

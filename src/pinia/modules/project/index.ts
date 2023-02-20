@@ -17,11 +17,47 @@ export const useProjectStore = defineStore('project', {
       return state.admins.includes(useUserStore().id) || useUserStore().super_admin;
     }, // return state.admins.includes(getters["getUserInfos"].id);
     isGuest: (state) => state.guests.includes(useUserStore().id) && !useUserStore().super_admin,
-    isTeacher(): boolean {
-      return this.isAdmin && this.exerciseMode;
+    isTeacher(state): boolean {
+      return this.isAdmin && state.exerciseMode;
     },
-    isStudent(): boolean {
-      return !this.isAdmin && this.exerciseMode;
+    isStudent(state): boolean {
+      return !this.isAdmin && state.exerciseMode;
+    },
+    canSaveTreeInProject(state): boolean {
+      if (!useUserStore().isLoggedIn) {
+        // people not logged in can't save in any case
+        return false
+      }
+      if (this.isTeacher) {
+        // teacher can't save a tree. They can only save special tree : base_tree and teacher
+        return false
+      }
+      if (state.visibility === 2) {
+        // anyone (logged in) can save in public project (visibility === 2)
+        return true
+      }
+      // in other projects, only members, admin or superadmin can save
+      return (this.isAdmin || this.isGuest)
+    },
+    canSeeOtherUsersTrees(state): boolean {
+      if (this.isAdmin) {
+        // isAdmin (admins and superadmins) can see everything in this project
+        return true
+      }
+      if (state.exerciseMode) {
+        // if project in exercice mode, only isAdmin can see trees of others on project scale
+        // (students still can see trees of teacher in difficulty 1 and 2, but this is addressed elsewhere)
+        return this.isAdmin
+      }
+      if (state.visibility >= 1) {
+        // everyone can see trees from other in "visible" and "public" projects
+        return true
+      }
+      if (state.visibility == 0) {
+        // only guests (and admins, but it was already returned True earlier=
+        return this.isAdmin || this.isGuest
+      }
+      return false
     },
     getAnnofjson: (state) => JSON.stringify(state.annotationFeatures, null, 4),
     getUDAnnofJson: (state) => JSON.stringify(state.annotationFeaturesUD, null, 4),

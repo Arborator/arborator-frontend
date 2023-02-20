@@ -26,31 +26,29 @@
     </div>
     <div v-show="loading" class="q-pa-md row justify-center">
       <div class="absolute-center">
-        <q-circular-progress indeterminate size="70px" :thickness="0.22" color="primary" track-color="grey-3" />
+        <q-circular-progress indeterminate size="70px" :thickness="0.22" color="primary" track-color="grey-3"/>
       </div>
     </div>
-    <template v-if="!(exerciseMode && !isTeacher)">
-      <GrewSearch :sentence-count="sentenceCount" :search-scope="samplename" />
-      <RelationTableMain :sampleName="samplename" />
-    </template>
+    <GrewSearch :sentence-count="sentenceCount" :search-scope="samplename"/>
+    <RelationTableMain :sampleName="samplename"/>
   </q-page>
 </template>
 
 <script lang="ts">
-import { LocalStorage } from 'quasar';
+import {LocalStorage} from 'quasar';
 
 import api from '../api/backend-api';
 
 import SentenceCard from '../components/sentence/SentenceCard.vue';
 import GrewSearch from '../components/grewSearch/GrewSearch.vue';
 import RelationTableMain from '../components/relationTable/RelationTableMain.vue';
-import { mapActions, mapState } from 'pinia';
-import { useProjectStore } from 'src/pinia/modules/project';
-import { useUserStore } from 'src/pinia/modules/user';
-import { notifyError } from 'src/utils/notify';
-import { useGrewSearchStore } from 'src/pinia/modules/grewSearch';
-import { sentence_t } from 'src/types/main_types';
-import { PropType, defineComponent } from 'vue';
+import {mapActions, mapState} from 'pinia';
+import {useProjectStore} from 'src/pinia/modules/project';
+import {useUserStore} from 'src/pinia/modules/user';
+import {notifyError} from 'src/utils/notify';
+import {useGrewSearchStore} from 'src/pinia/modules/grewSearch';
+import {sentence_t} from 'src/types/main_types';
+import {PropType, defineComponent} from 'vue';
 
 export default defineComponent({
   components: {
@@ -85,7 +83,7 @@ export default defineComponent({
     const sentencesFrozen: {
       list: string[];
       indexes: { [key: number]: string };
-    } = { list: [], indexes: {} };
+    } = {list: [], indexes: {}};
     const sentences: { [key: string]: sentence_t } = {};
     return {
       intr: setTimeout(() => {
@@ -97,7 +95,7 @@ export default defineComponent({
       tab: 'gold',
       loading: true,
       sentencesFrozen,
-      window: { width: 0, height: 0 },
+      window: {width: 0, height: 0},
       virtualListIndex: 15,
       scrolalaTimeStep: 10, // give the scroll 10 seconds
     };
@@ -146,7 +144,7 @@ export default defineComponent({
           }
         })
         .catch((error) => {
-          notifyError({ error });
+          notifyError({error});
           this.loading = false;
         });
     },
@@ -181,7 +179,7 @@ export default defineComponent({
       }
       const heavyList = listsentences;
       Object.freeze(heavyList);
-      this.sentencesFrozen = { list: heavyList, indexes: index2sentId };
+      this.sentencesFrozen = {list: heavyList, indexes: index2sentId};
     },
   },
 });

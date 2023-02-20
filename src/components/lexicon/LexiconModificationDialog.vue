@@ -6,7 +6,7 @@
         <q-space />
         <q-btn v-close-popup flat dense icon="close" />
       </q-bar>
-      <q-card-section style="max-height:70vh" class="scroll">
+      <q-card-section style="max-height: 70vh" class="scroll">
         <AttributeTable
           :featdata="formattedItem.features"
           :columns="featTable.columns"
@@ -156,10 +156,9 @@ export default defineComponent({
   },
   watch: {
     lexiconModificationItemBefore(newValue, oldValue) {
-      if(Object.keys(newValue).length > 0)
-      {
+      if (Object.keys(newValue).length > 0) {
         this.formattedItem = this.convertLexiconItemToFormattedItem(newValue);
-      } 
+      }
     },
   },
   mounted() {
@@ -169,10 +168,10 @@ export default defineComponent({
     ...mapActions(useLexiconStore, ['hideLexiconModificationDialog', 'setLexiconModifiedItem', 'addCoupleLexiconItemBeforeAfter']),
     convertLexiconItemToFormattedItem(lexiconItem: lexiconItem_FE_t) {
       const formattedItem: formattedItem_t = { form: [], lemma: [], upos: [], gloss: [], features: [], frequency: 0, key: '' };
-      formattedItem.form = (lexiconItem.feats.form) ? [{ a: 'Form', v: lexiconItem.feats.form }] : []
-      formattedItem.lemma = (lexiconItem.feats.lemma) ? [{ a: 'Lemma', v: lexiconItem.feats.lemma }] : []
-      formattedItem.upos = (lexiconItem.feats.upos) ? [{ a: 'Upos', v: lexiconItem.feats.upos }] : []
-      formattedItem.gloss = (lexiconItem.feats.Gloss) ? [{ a: 'Gloss', v: lexiconItem.feats.Gloss }] : []
+      formattedItem.form = lexiconItem.feats.form ? [{ a: 'Form', v: lexiconItem.feats.form }] : [];
+      formattedItem.lemma = lexiconItem.feats.lemma ? [{ a: 'Lemma', v: lexiconItem.feats.lemma }] : [];
+      formattedItem.upos = lexiconItem.feats.upos ? [{ a: 'Upos', v: lexiconItem.feats.upos }] : [];
+      formattedItem.gloss = lexiconItem.feats.Gloss ? [{ a: 'Gloss', v: lexiconItem.feats.Gloss }] : [];
       formattedItem.frequency = lexiconItem.freq;
       formattedItem.key = lexiconItem.key;
       for (const feature of this.options.annof.FEATS) {
@@ -187,13 +186,13 @@ export default defineComponent({
       for (const keyValue of formattedItem.features) {
         features[keyValue.a] = keyValue.v;
       }
-      console.log(formattedItem.form)
+      console.log(formattedItem.form);
       const lexiconItem: lexiconItem_FE_t = {
         feats: {
-          form: (formattedItem.form.length > 0) ? formattedItem.form[0].v  : '',
-          lemma: (formattedItem.lemma.length > 0) ? formattedItem.lemma[0].v  : '',
-          upos: (formattedItem.upos.length > 0) ? formattedItem.upos[0].v  : '',
-          Gloss: (formattedItem.gloss.length > 0) ? formattedItem.upos[0].v  : '',
+          form: formattedItem.form.length > 0 ? formattedItem.form[0].v : '',
+          lemma: formattedItem.lemma.length > 0 ? formattedItem.lemma[0].v : '',
+          upos: formattedItem.upos.length > 0 ? formattedItem.upos[0].v : '',
+          Gloss: formattedItem.gloss.length > 0 ? formattedItem.upos[0].v : '',
           ...features,
         },
         freq: formattedItem.frequency,

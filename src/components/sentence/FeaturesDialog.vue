@@ -10,7 +10,7 @@
         <q-space />
         <q-btn v-close-popup flat dense icon="close" />
       </q-bar>
-      <q-card-section style="max-height:70vh" class="scroll">
+      <q-card-section style="max-height: 70vh" class="scroll">
         <AttributeTable
           :featdata="featTable.featl"
           :columns="featTable.columns"

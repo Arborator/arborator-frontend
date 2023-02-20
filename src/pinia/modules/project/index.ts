@@ -1,6 +1,5 @@
 import api from '../../../api/backend-api';
 
-import { Notify } from 'quasar';
 import defaultState from './defaultState';
 import { useUserStore } from '../user';
 
@@ -25,7 +24,7 @@ export const useProjectStore = defineStore('project', {
       return !this.isAdmin && this.exerciseMode;
     },
     getAnnofjson: (state) => JSON.stringify(state.annotationFeatures, null, 4),
-    getUDAnnofJson: (state)=> JSON.stringify(state.annotationFeaturesUD, null, 4),
+    getUDAnnofJson: (state) => JSON.stringify(state.annotationFeaturesUD, null, 4),
     shownmetachoices: (state) => state.annotationFeatures.META,
     shownfeatureschoices: (state) =>
       ['FORM', 'UPOS', 'LEMMA', 'XPOS'].concat(
@@ -175,7 +174,7 @@ export const useProjectStore = defineStore('project', {
     },
     resetAnnotationFeaturesUD(): void {
       this.annotationFeatures = defaultState().annotationFeaturesUD;
-    }
+    },
     // KK IS IT IN KLANG STORE NOW ?
     // // method for fetching klang project's settings, currently only admins
     // fetchKlangProjectSettings({ projectname }: { projectname: string }) {

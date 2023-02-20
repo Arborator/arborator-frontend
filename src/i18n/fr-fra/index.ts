@@ -10,7 +10,7 @@ export default {
   loginbtn: 'Connecter',
   loginselector: 'Se connecter via',
   switchLanguage: "Changer la langue de l'interface utilisateur",
-  documentation: "Voir la documentation",
+  documentation: 'Voir la documentation',
   darkMode: 'Activer le mode sombre',
   projectAdmin: "Vous êtes l'administrateur de ce projet",
   userInformation: "Information de l'utilisateur",
@@ -178,7 +178,7 @@ export default {
     tooltipRelationTable: 'Get Relation Tables',
     tooltipWindows: ['Minimize', 'Maximize', 'Close'],
     uploadSelectDial: 'Select one or multiple conll files',
-    tableFields:['Nom', 'Nb Phrases', 'Nb Tokens', 'Annotateurs', 'Validateurs', 'Prof', 'Arbres de', "Niveau d'exercice"],
+    tableFields: ['Nom', 'Nb Phrases', 'Nb Tokens', 'Annotateurs', 'Validateurs', 'Prof', 'Arbres de', "Niveau d'exercice"],
     addUser: 'Ajouter un utilisateur',
     lexicon: [
       'Sélectionnez une ou plusieurs features pour le Lexique',

@@ -1,12 +1,12 @@
 <template>
   <q-dialog v-model="tokensReplaceDialogOpened">
     <q-card style="width: 90vh">
-      <q-bar class="bg-primary text-white" style="height: max-content;">
+      <q-bar class="bg-primary text-white" style="height: max-content">
         <div class="text-weight-bold">Replacing "{{ currentword }}" by:</div>
         <q-space />
         <q-btn v-close-popup flat dense icon="close" />
       </q-bar>
-      <q-card-section style="max-height:70vh" class="scroll">
+      <q-card-section style="max-height: 70vh" class="scroll">
         <AttributeTable
           :featdata="tokl"
           :columns="featTable.columns"

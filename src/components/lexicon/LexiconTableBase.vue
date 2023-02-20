@@ -64,10 +64,10 @@
         <div>
           <q-btn-group v-if="compareWithBefore" flat>
             <q-btn color="default" :disable="table.selected.length === 0" flat icon="compare_arrows" @click="get()">
-              <q-tooltip>{{ $t('projectView.tooltipRuleGrewLexicon')}}</q-tooltip>
+              <q-tooltip>{{ $t('projectView.tooltipRuleGrewLexicon') }}</q-tooltip>
             </q-btn>
             <q-btn color="default" :disable="table.selected.length === 0" flat icon-right="delete_forever" @click="deleteSelected()">
-              <q-tooltip>{{ $t('projectView.tooltipUnstageModifiedItem')}}</q-tooltip>
+              <q-tooltip>{{ $t('projectView.tooltipUnstageModifiedItem') }}</q-tooltip>
             </q-btn>
           </q-btn-group>
         </div>
@@ -104,11 +104,11 @@ export default defineComponent({
     passedLexiconItems: {
       type: Object as PropType<lexiconItem_FE_t[]>,
       required: true,
-    }, 
+    },
     lexiconLoading: {
       type: Boolean as PropType<boolean>,
-      required: true, 
-    }, 
+      required: true,
+    },
     compareWithBefore: {
       type: Boolean as PropType<boolean>,
       required: true,
@@ -116,7 +116,7 @@ export default defineComponent({
     features: {
       type: Object as PropType<string[]>,
       required: true,
-    }
+    },
   },
   components: { ResultView },
   setup(props, ctx) {
@@ -177,20 +177,20 @@ export default defineComponent({
       for (const feature of this.features) {
         this.table.fields.push({
           name: feature,
-          label: feature.charAt(0).toUpperCase() + feature.slice(1) ,
+          label: feature.charAt(0).toUpperCase() + feature.slice(1),
           sortable: true,
           align: 'left',
           field: feature,
         });
         this.table.visibleColumns.push(feature);
-      }  
+      }
       this.table.fields.push({
-          name: 'frequency',
-          label: 'Frequency',
-          sortable: true,
-          align: 'left',
-          field: 'frequency',
-        })
+        name: 'frequency',
+        label: 'Frequency',
+        sortable: true,
+        align: 'left',
+        field: 'frequency',
+      });
       this.table.visibleColumns.push('frequency');
     },
 

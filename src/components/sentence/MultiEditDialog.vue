@@ -99,10 +99,10 @@ export default defineComponent({
     onDialogOk() {
       for (const token in this.treeJson.nodesJson) {
         for (const metaLabel of this.metaLabels) {
-         const toDeleteBool = this.checkBoxes[token][metaLabel];
-         if (toDeleteBool) {
-           this.treeJson.nodesJson[token][metaLabel as keyof TokenJson] = '_';
-           if (metaLabel === 'HEAD') {
+          const toDeleteBool = this.checkBoxes[token][metaLabel];
+          if (toDeleteBool) {
+            this.treeJson.nodesJson[token][metaLabel as keyof TokenJson] = '_';
+            if (metaLabel === 'HEAD') {
               this.treeJson.nodesJson[token].DEPREL = '_';
             }
           }
@@ -118,7 +118,7 @@ export default defineComponent({
       this.checkBoxesAll[metaLabel] = !this.checkBoxesAll[metaLabel];
       for (const token in this.treeJson) {
         this.checkBoxes[token][metaLabel] = this.checkBoxesAll[metaLabel];
-      } 
+      }
     },
     uncheckToggles() {
       for (const metaLabel of this.metaLabels) {

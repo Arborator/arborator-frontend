@@ -6,7 +6,9 @@
           <q-toolbar class="text-center">
             <div>
               <q-btn id="createproject" :disable="!isLoggedIn" color="primary" round dense icon="add" @click="creaProjectDial = true"></q-btn>
-              <q-tooltip v-if="!isLoggedIn" :delay="300" content-class="text-white bg-primary">{{ $t('projectHub.tooltipCreaProject[0]') }}</q-tooltip>
+              <q-tooltip v-if="!isLoggedIn" :delay="300" content-class="text-white bg-primary">{{
+                $t('projectHub.tooltipCreaProject[0]')
+              }}</q-tooltip>
               <q-tooltip v-else :delay="300" class-content="text-white bg-primary">{{ $t('projectHub.tooltipCreaProject[1 ]') }}</q-tooltip>
             </div>
             <q-btn round dense :icon="listMode ? 'view_module' : 'list'" @click="toggleProjectView()">
@@ -329,8 +331,8 @@ export default defineComponent({
       return project.admins.includes(this.userId) || project.guests.includes(this.userId);
     },
     isOld(project: project_extended_t) {
-      // either not used since more than a year or empty and older than an hour or the project has no admins 
-      return project.lastAccess < this.ayear || (project.numberSamples < 1 && project.lastAccess < -3600) || (project.admins.length === 0);
+      // either not used since more than a year or empty and older than an hour or the project has no admins
+      return project.lastAccess < this.ayear || (project.numberSamples < 1 && project.lastAccess < -3600) || project.admins.length === 0;
     },
     toggleProjectView() {
       this.listMode = !this.listMode;

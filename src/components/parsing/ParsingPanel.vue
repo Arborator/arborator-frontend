@@ -4,7 +4,7 @@
       <div class="col">
         <q-toggle v-model="parser.param.trainAll" label="Train on all files" />
         <q-select
-          :class="{invisible: parser.param.trainAll}"
+          :class="{ invisible: parser.param.trainAll }"
           v-model="parser.param.trainSamples"
           filled
           :options="allSamplesNames"
@@ -15,7 +15,7 @@
         />
         <q-toggle v-model="parser.param.parseAll" label="Parse all files" />
         <q-select
-          :class="{invisible: parser.param.parseAll}"
+          :class="{ invisible: parser.param.parseAll }"
           v-model="parser.param.parseSamples"
           filled
           :options="allSamplesNames"
@@ -29,7 +29,7 @@
       <div class="col">
         <q-toggle v-model="parser.param.isCustomTrainingUser" label="Custom user" />
         <q-select
-          :class="{invisible: !parser.param.isCustomTrainingUser}"
+          :class="{ invisible: !parser.param.isCustomTrainingUser }"
           v-model="parser.param.trainingUser"
           filled
           :options="allTreesFrom"
@@ -39,10 +39,12 @@
         />
         <q-toggle v-model="parser.param.advancedSettings" label="Advanced Settings" />
         <q-select
-          :class="{invisible: !parser.param.advancedSettings}"
+          :class="{ invisible: !parser.param.advancedSettings }"
           v-model="parser.param.type"
           :options="parser.param.options"
-          label="parser type" stack-label />
+          label="parser type"
+          stack-label
+        />
         <q-toggle v-model="parser.param.keepUpos" label="keep UPOS" />
       </div>
       <q-separator vertical inset class="q-mx-lg" />
@@ -87,8 +89,8 @@ import { parserType_t, timeEstimationCoefs_t } from 'src/types/main_types';
 // https://github.com/Arborator/djangoBootParser/blob/master/estimated_time_100ep_logline.tsv
 const timeEstimationCoefs: timeEstimationCoefs_t = {
   kirParser: { a: 0, b: 0.02, c: 0 },
-  hopsParser: { a: -0.887, b:  	0.09357, c: 5.329 },
-  stanzaParser: { a: 0.59, b: 0.090, c: -0.14516 },
+  hopsParser: { a: -0.887, b: 0.09357, c: 5.329 },
+  stanzaParser: { a: 0.59, b: 0.09, c: -0.14516 },
   trankitParser: { a: 1.406, b: 0.0432, c: -0.9326 },
   udifyParser: { a: 5.74049, b: 0.062179, c: 8.79224 },
 };
@@ -174,10 +176,10 @@ export default defineComponent({
     estimatedTime() {
       const parserId = this.parser.param.type;
       const parserCoefs = timeEstimationCoefs[parserId];
-      const x = this.trainingSentencesCount
-      const time1epochs = (parserCoefs.a * Math.log(x + 1) + parserCoefs.b * x + parserCoefs.c)/100;
-      const time = time1epochs * this.parser.param.epochs
-      return Math.floor(Math.max(time, 1))
+      const x = this.trainingSentencesCount;
+      const time1epochs = (parserCoefs.a * Math.log(x + 1) + parserCoefs.b * x + parserCoefs.c) / 100;
+      const time = time1epochs * this.parser.param.epochs;
+      return Math.floor(Math.max(time, 1));
     },
   },
   methods: {
@@ -316,7 +318,7 @@ export default defineComponent({
 });
 </script>
 <style>
-  .invisible {
-    visibility: hidden;
-  }
+.invisible {
+  visibility: hidden;
+}
 </style>

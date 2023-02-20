@@ -81,10 +81,10 @@ import { useUserStore } from 'src/pinia/modules/user';
 import { timeAgo } from 'src/utils/timeAgoUtils';
 import { defineComponent, PropType } from 'vue';
 import { project_extended_t } from 'src/api/backend-types';
-import ProjectIcon from "components/shared/ProjectIcon.vue";
+import ProjectIcon from 'components/shared/ProjectIcon.vue';
 
 export default defineComponent({
-  components: {ProjectIcon, ConfirmAction },
+  components: { ProjectIcon, ConfirmAction },
   props: {
     project: {
       type: Object as PropType<project_extended_t>,

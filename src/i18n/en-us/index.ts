@@ -10,8 +10,8 @@ export default {
   welcomeback: 'Welcome back to Arborator!',
   loginbtn: 'Log in',
   loginselector: 'Connect via',
-  switchLanguage: "Switch the language of the user interface",
-  documentation: "See the documantation",
+  switchLanguage: 'Switch the language of the user interface',
+  documentation: 'See the documantation',
   darkMode: 'Toggle dark mode',
   projectAdmin: 'You are admin of this project',
   userInformation: 'User information',
@@ -147,7 +147,7 @@ export default {
     tooltipExportSample: ['Select the samples you want to export', 'Export selected samples'],
     tooltipDeleteSample: ['Select the samples you want to delete', 'Delete selected samples'],
     tooltipCreateLexicon: ['Select the samples to create a lexicon', 'Create lexicon from selected samples'],
-    tooltipParsingPanel: ['Open parsing panel', 'Close parsing panel'], 
+    tooltipParsingPanel: ['Open parsing panel', 'Close parsing panel'],
     tooltipParser: [
       'Select samples to train a parser',
       'train with the selected samples',
@@ -179,7 +179,7 @@ export default {
     tooltipRelationTable: 'Get Relation Tables',
     tooltipWindows: ['Minimize', 'Maximize', 'Close'],
     uploadSelectDial: 'Select one or multiple conll files',
-    tableFields:['Name', 'Nb Sentences', 'Nb Tokens', 'Annotators', 'Validators', 'Prof', 'Trees From', 'Exercise Level'],
+    tableFields: ['Name', 'Nb Sentences', 'Nb Tokens', 'Annotators', 'Validators', 'Prof', 'Trees From', 'Exercise Level'],
     addUser: 'Add user',
     lexicon: [
       'Select one or multiple features for the Lexicon',

@@ -9,7 +9,7 @@
           <q-img class="project-image" :src="cleanedImage" basic>
             <div class="absolute-bottom text-h6" style="padding: 6px">
               <ProjectIcon :visibility="visibility" :exercise-mode="exerciseMode" />
-              {{ $t('projectView.project')}} {{ projectName }}
+              {{ $t('projectView.project') }} {{ projectName }}
               <q-btn
                 v-if="isSuperAdmin || isAdmin"
                 flat
@@ -31,9 +31,9 @@
 
         <!-- Lexicon Panel -->
         <q-card-section class="shadow-4" v-if="isShowLexiconPanel">
-          <q-bar class="bg-primary text-white ">
-           <q-space />
-            <q-btn  @click="isShowLexiconPanel = false" dense flat icon="close">
+          <q-bar class="bg-primary text-white">
+            <q-space />
+            <q-btn @click="isShowLexiconPanel = false" dense flat icon="close">
               <q-tooltip content-class="bg-white text-primary">Close</q-tooltip>
             </q-btn>
           </q-bar>
@@ -178,7 +178,7 @@
                   <!-- v-if="loggedWithGithub" :disable="table.selected.length<1 -->
 
                   <q-tooltip v-if="table.selected.length < 1" :delay="300" content-class="text-white bg-primary">
-                  {{ $t('projectView.tooltipGitPush[4]')}}
+                    {{ $t('projectView.tooltipGitPush[4]') }}
                   </q-tooltip>
                   <q-tooltip v-else :delay="300" content-class="text-white bg-primary">{{ $t('projectView.tooltipGitPush[5]') }}</q-tooltip>
                 </div>
@@ -225,9 +225,9 @@
                     @click="isShowLexiconPanel = true"
                   ></q-btn>
                   <q-tooltip v-if="table.selected.length < 1" :delay="300" content-class="text-white bg-primary">
-                   {{$t('projectView.tooltipCreateLexicon[0]')}}</q-tooltip>
-                  <q-tooltip v-else :delay="300" class-content="text-white bg-primary">{{$t('projectView.tooltipCreateLexicon[1]')}}</q-tooltip>
-
+                    {{ $t('projectView.tooltipCreateLexicon[0]') }}</q-tooltip
+                  >
+                  <q-tooltip v-else :delay="300" class-content="text-white bg-primary">{{ $t('projectView.tooltipCreateLexicon[1]') }}</q-tooltip>
                 </div>
                 <!-- single and main button for parsing -->
                 <div>
@@ -236,9 +236,12 @@
                     icon="precision_manufacturing"
                     @click="bootParserPanelToggle()"
                     :color="isShowParsingPanel ? 'primary' : 'default'"
-                    :disable="(visibility === 0 && !isGuest && !isAdmin && !isSuperAdmin)"
+                    :disable="visibility === 0 && !isGuest && !isAdmin && !isSuperAdmin"
                   >
-                    <q-tooltip  content-class="text-body2 bg-primary">{{isShowParsingPanel ? $t('projectView.tooltipParsingPanel[1]') :  $t('projectView.tooltipParsingPanel[0]')}}Parsing Panel</q-tooltip>
+                    <q-tooltip content-class="text-body2 bg-primary"
+                      >{{ isShowParsingPanel ? $t('projectView.tooltipParsingPanel[1]') : $t('projectView.tooltipParsingPanel[0]') }}Parsing
+                      Panel</q-tooltip
+                    >
                   </q-btn>
                 </div>
               </q-btn-group>
@@ -387,11 +390,7 @@
       <UploadDialog v-model:uploadDial="uploadDial" @uploaded:sample="loadProjectData()" />
 
       <q-dialog v-model="projectSettingsDial" transition-show="slide-up" transition-hide="slide-down">
-        <ProjectSettingsView
-          :project-trees-from="getProjectTreesFrom"
-          :projectname="projectName"
-          style="width: 90vw"
-        ></ProjectSettingsView>
+        <ProjectSettingsView :project-trees-from="getProjectTreesFrom" :projectname="projectName" style="width: 90vw"></ProjectSettingsView>
       </q-dialog>
 
       <q-dialog v-model="simpleProjectInfoDialog">
@@ -422,7 +421,7 @@
       </q-dialog>
 
       <q-dialog v-model="confirmActionDial">
-        <confirm-action :parent-action="confirmActionCallback" :arg1="confirmActionArg1" :target-name="projectName" ></confirm-action>
+        <confirm-action :parent-action="confirmActionCallback" :arg1="confirmActionArg1" :target-name="projectName"></confirm-action>
       </q-dialog>
     </div>
   </q-page>
@@ -449,7 +448,6 @@ import { useUserStore } from 'src/pinia/modules/user';
 import { sample_roles_t, sample_t, user_sample_roles_t, sample_role_targetrole_t, sample_role_action_t } from 'src/api/backend-types';
 import { defineComponent } from 'vue';
 import { table_t } from 'src/types/main_types';
-
 
 export default defineComponent({
   components: {
@@ -586,7 +584,7 @@ export default defineComponent({
           value: 4,
         },
       ],
-      features:[],
+      features: [],
       sampleNames,
       isShowParsingPanel: false,
       window: { width: 0, height: 0 },
@@ -621,14 +619,13 @@ export default defineComponent({
     noselect(): boolean {
       return this.table.selected.length < 1;
     },
-    sentenceCount() :number {
-    return this.samples.map((sample) => sample.sentences).reduce((partialSum, a) => partialSum + a, 0);
+    sentenceCount(): number {
+      return this.samples.map((sample) => sample.sentences).reduce((partialSum, a) => partialSum + a, 0);
     },
-    featureOptions(): String[]{
-        return Object.values(this.annotationFeatures.FEATS).map((value)=>value.name);
-    } ,
-    getProjectTreesFrom(): string[]{
-
+    featureOptions(): String[] {
+      return Object.values(this.annotationFeatures.FEATS).map((value) => value.name);
+    },
+    getProjectTreesFrom(): string[] {
       const projectTreesFrom: string[] = [];
 
       for (const sample of this.samples) {
@@ -642,7 +639,6 @@ export default defineComponent({
       }
       return projectTreesFrom;
     },
-
   },
   created() {
     window.addEventListener('resize', this.handleResize);
@@ -655,7 +651,6 @@ export default defineComponent({
   },
   unmounted() {
     window.removeEventListener('resize', this.handleResize);
-
   },
   methods: {
     handleResize() {
@@ -676,15 +671,12 @@ export default defineComponent({
       //this.getProjectTreesFrom();
     },
     getProjectSamples() {
-      api
-      .getProjectSamples(this.projectName as string)
-      .then((response) => {
+      api.getProjectSamples(this.projectName as string).then((response) => {
         this.samples = response.data;
         this.sampleNames = [];
         for (const sample of this.samples) {
           this.sampleNames.push(sample.sample_name);
         }
-
       });
     },
 
@@ -709,7 +701,7 @@ export default defineComponent({
           .deleteSample(this.projectName as string, sample.sample_name)
           .then(() => {
             this.table.selected = [];
-            notifyMessage({message: "Delete success"})
+            notifyMessage({ message: 'Delete success' });
             this.loadProjectData();
           })
           .catch((error) => {
@@ -789,8 +781,7 @@ export default defineComponent({
         });
     },
     bootParserPanelToggle() {
-      this.isShowParsingPanel = !this.isShowParsingPanel
-
+      this.isShowParsingPanel = !this.isShowParsingPanel;
     },
 
     // grewquery() {
@@ -842,12 +833,13 @@ export default defineComponent({
       setTimeout(() => {
         // IMPORTANT : Since quasar v2 (vue v3), the update method (in q-select) occurs BEFORE the value is updated
         // So we need to use this hack of setTimeout if we want to access to the updated sample.exerciseLevel
-        api.updateSampleExerciseLevel(this.projectName as string, sample.sample_name, sample.exerciseLevel)
-          .then((response) => {notifyMessage(
-            {message: "The new exercise level was correctly saved in the server"}
-          )})
+        api
+          .updateSampleExerciseLevel(this.projectName as string, sample.sample_name, sample.exerciseLevel)
+          .then((response) => {
+            notifyMessage({ message: 'The new exercise level was correctly saved in the server' });
+          })
           .catch((error) => {
-            notifyError({ error })
+            notifyError({ error });
           });
       }, 0);
     },

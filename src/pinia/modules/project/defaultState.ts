@@ -209,15 +209,15 @@ export default function defaultState(): configState {
             'Loc',
             'Sub',
             'Sup',
-            'Ter'
-          ]
+            'Ter',
+          ],
         },
         { name: 'Definite', values: ['Com', 'Cons', 'Def', 'Ind', 'Spec'] },
         { name: 'Degree', values: ['Abs', 'Cmp', 'Equ', 'Pos', 'Sup'] },
         { name: 'Evident', values: ['Fh', 'Nfh'] },
         { name: 'Foreign', values: ['Yes'] },
         { name: 'Gender', values: ['Com', 'Fem', 'Masc', 'Neut'] },
-        { name: 'Mood', values: ['Adm', 'Cnd', 'Des','Imp', 'Ind', 'Jus', 'Nec', 'Opt', 'Pot', 'Prp', 'Qot', 'Sub'] },
+        { name: 'Mood', values: ['Adm', 'Cnd', 'Des', 'Imp', 'Ind', 'Jus', 'Nec', 'Opt', 'Pot', 'Prp', 'Qot', 'Sub'] },
         { name: 'NumType', values: ['Card', 'Dist', 'Frac', 'Mult', 'Ord', 'Range', 'Sets'] },
         { name: 'Number', values: ['Coll', 'Count', 'Dual', 'Grpa', 'Grpl', 'Inv', 'Pauc', 'Plur', 'Ptan', 'Sing', 'Tri'] },
         { name: 'Person', values: ['0', '1', '2', '3', '4'] },
@@ -228,17 +228,17 @@ export default function defaultState(): configState {
         { name: 'Reflex', values: ['Yes'] },
         { name: 'Tense', values: ['Fut', 'Imp', 'Past', 'Pqp', 'Pres'] },
         { name: 'VerbForm', values: ['Conv', 'Fin', 'Gdv', 'Ger', 'Inf', 'Part', 'Sup', 'Vnoun'] },
-        { name: 'Voice', values: ['Act', 'Antip', 'Cau', 'Dir', 'Inv', 'Mid', 'Pass', 'Rcp'] }
+        { name: 'Voice', values: ['Act', 'Antip', 'Cau', 'Dir', 'Inv', 'Mid', 'Pass', 'Rcp'] },
       ],
       MISC: [
         { name: 'AlignBegin', values: 'Number' },
         { name: 'AlignEnd', values: 'Number' },
         {
           name: 'ExtPos',
-          values: ['ADJ', 'ADP', 'ADV', 'AUX', 'CCONJ', 'DET', 'INTJ', 'NOUN', 'NUM', 'PART', 'PRON', 'PROPN', 'PUNCT', 'SCONJ', 'VERB', 'X']
+          values: ['ADJ', 'ADP', 'ADV', 'AUX', 'CCONJ', 'DET', 'INTJ', 'NOUN', 'NUM', 'PART', 'PRON', 'PROPN', 'PUNCT', 'SCONJ', 'VERB', 'X'],
         },
         { name: 'Gloss', values: 'String' },
-        { name: 'MGloss', values: 'String'}
+        { name: 'MGloss', values: 'String' },
       ],
       DEPREL: [
         {
@@ -280,9 +280,9 @@ export default function defaultState(): configState {
             'reparandum',
             'root',
             'vocative',
-            'xcomp'
+            'xcomp',
           ],
-          'join': ''
+          join: '',
         },
         {
           name: 'subrel',
@@ -309,10 +309,10 @@ export default function defaultState(): configState {
             'redup',
             'relcl',
             'svc',
-            'tmod'
+            'tmod',
           ],
-          'join': ':'
-        }
+          join: ':',
+        },
       ],
       DEPS: [],
     },

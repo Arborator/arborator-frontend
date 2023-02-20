@@ -230,13 +230,12 @@
                   <q-tooltip v-else :delay="300" class-content="text-white bg-primary">{{ $t('projectView.tooltipCreateLexicon[1]') }}</q-tooltip>
                 </div>
                 <!-- single and main button for parsing -->
-                <div>
+                <div v-if="canSaveTreeInProject">
                   <q-btn
                     flat
                     icon="precision_manufacturing"
                     @click="bootParserPanelToggle()"
                     :color="isShowParsingPanel ? 'primary' : 'default'"
-                    :disable="visibility === 0 && !isGuest && !isAdmin && !isSuperAdmin"
                   >
                     <q-tooltip content-class="text-body2 bg-primary"
                       >{{ isShowParsingPanel ? $t('projectView.tooltipParsingPanel[1]') : $t('projectView.tooltipParsingPanel[0]') }}Parsing
@@ -608,6 +607,7 @@ export default defineComponent({
       'cleanedImage',
       'description',
       'isTeacher',
+      'canSaveTreeInProject',
     ]),
     ...mapState(useUserStore, ['isLoggedIn', 'isSuperAdmin', 'loggedWithGithub', 'avatar']),
     projectName(): string | string[] {

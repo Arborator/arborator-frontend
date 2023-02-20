@@ -156,14 +156,17 @@ export default {
   getLexicon(projectname: string, data: any) {
     return API.post<getLexicon_RV>(`projects/V2/${projectname}/lexicon`, data);
   },
-  searchProject(projectname: string, query: any) {
-    return API.post<grewSearch_RV>(`projects/${projectname}/search`, query);
+  searchProject(projectname: string, data: any) {
+    return API.post<grewSearch_RV>(`projects/${projectname}/search`, data);
   },
-  searchSample(projectname: string, samplename: string, query: any) {
-    return API.post<grewSearch_RV>(`projects/${projectname}/sample/${samplename}/search`, query);
+  searchSample(projectname: string, samplename: string, data: any) {
+    return API.post<grewSearch_RV>(`projects/${projectname}/sample/${samplename}/search`, data);
   },
-  tryPackage(projectname: string, sampleId: string | null, query: string) {
-    return API.post<grewSearch_RV>(`projects/${projectname}/try-package`, { package: query, sampleId });
+  tryPackage(projectname: string, sampleId: string | null, query: any, userType: string) {
+    return API.post<grewSearch_RV>(`projects/${projectname}/try-package`, { package: query, userType, sampleId });
+  },
+  applyRule(projectname: string, data: any){
+    return API.post(`/projects/${projectname}/apply-rule`, data);
   },
   getRelationTable(projectname: string, data: any) {
     return API.post(`projects/${projectname}/relation-table`, data);

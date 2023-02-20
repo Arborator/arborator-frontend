@@ -108,7 +108,7 @@ import { grewSearchResult_t } from 'src/api/backend-types';
 
 export default defineComponent({
   components: { ResultView, QTree },
-  props: ['edges'],
+  props: ['edges', 'tableType'],
 
   data() {
     const resultSearch: grewSearchResult_t = {};
@@ -255,10 +255,11 @@ export default defineComponent({
       // this.grewDialog = false;
     },
     onSearch(searchPattern: string) {
-      const query = { pattern: searchPattern };
+      const data = { pattern: searchPattern, userType: this.tableType };
+      console.log(this.tableType)
       if (this.$route.params.samplename) {
         api
-          .searchSample(this.$route.params.projectname as string, this.$route.params.samplename as string, query)
+          .searchSample(this.$route.params.projectname as string, this.$route.params.samplename as string, data)
           .then((response) => {
             this.resultSearch = response.data;
             this.visuTreeDial = true;
@@ -268,7 +269,7 @@ export default defineComponent({
           });
       } else {
         api
-          .searchProject(this.$route.params.projectname as string, query)
+          .searchProject(this.$route.params.projectname as string, data)
           .then((response) => {
             this.resultSearch = response.data;
             this.visuTreeDial = true;

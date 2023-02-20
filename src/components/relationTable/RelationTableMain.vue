@@ -26,7 +26,7 @@
     </q-page-sticky>
 
     <q-dialog v-model="relationTableDial" transition-show="fade" transition-hide="fade">
-      <RelationTable :edges="relationTableInfos"></RelationTable>
+      <RelationTable :edges="relationTableInfos" :tableType="tableType"></RelationTable>
     </q-dialog>
   </div>
 </template>
@@ -50,6 +50,7 @@ export default defineComponent({
 
   data() {
     return {
+      tableType:'',
       relationTableDial: false,
       relationTableInfos: {},
       reltablebuttons: false,
@@ -71,6 +72,7 @@ export default defineComponent({
         .getRelationTable(this.$route.params.projectname as string, data)
         .then((response) => {
           this.relationTableInfos = response.data;
+          this.tableType = tableType;
           this.relationTableDial = true;
         })
         .catch((error) => {

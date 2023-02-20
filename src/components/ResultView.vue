@@ -43,15 +43,15 @@
         </div>
       </div>
     </q-card-section>
-    <!-- <q-card-section>
-      <q-btn color="primary" @click="save" label="Save conll" no-caps />
-    </q-card-section> -->
   </q-card>
 </template>
 
 <script lang="ts">
 import api from '../api/backend-api';
 import SentenceCard from './sentence/SentenceCard.vue';
+import conllup from 'conllup';
+const sentenceConllToJson = conllup.sentenceConllToJson;
+const sentenceJsonToConll = conllup.sentenceJsonToConll;
 import { useUserStore } from 'src/pinia/modules/user';
 import { useProjectStore } from 'src/pinia/modules/project';
 import { mapState } from 'pinia';
@@ -61,7 +61,6 @@ import { grewSearchResult_t, sample_t } from 'src/api/backend-types';
 
 export default defineComponent({
   components: { SentenceCard },
-  // props: ['searchresults', 'totalsents', 'searchscope', 'parentOnShowTable'],
   props: {
     searchresults: {
       type: Object as PropType<grewSearchResult_t>,
@@ -106,7 +105,7 @@ export default defineComponent({
   },
   computed: {
     ...mapState(useProjectStore, ['isGuest', 'isAdmin']),
-    ...mapState(useUserStore, ['isSuperAdmin']),
+    ...mapState(useUserStore, ['isSuperAdmin', 'getUserInfos']),
     sentenceCount() {
       return Object.keys(this.searchresults)
         .map((sa) => Object.keys(this.searchresults[sa]))
@@ -125,7 +124,7 @@ export default defineComponent({
      * @returns void
      */
     freezeSamples() {
-      // console.log('samples to freeze', JSON.stringify(this.searchresults) );
+      // console.log('samples to freeze', JSON.stringify(this.searchResults) );
       const listIds = []; // list: [["WAZA_10_Bluetooth-Lifestory_MG","WAZA_10_Bluetooth-Lifestory_MG__86"],["WAZA_10_Bluetooth-Lifestory_MG","WAZA_10_Bluetooth-Lifestory_MG__79"], ...
       let index = 0;
       const index2Ids: { [key: number]: string[] } = {}; // object: {"0":["WAZA_10_Bluetooth-Lifestory_MG","WAZA_10_Bluetooth-Lifestory_MG__86"],"1":["WAZA_10_Bluetooth-Lifestory_MG","WAZA_10_Bluetooth-Lifestory_MG__79"], ...
@@ -172,62 +171,37 @@ export default defineComponent({
      * @returns void
      */
     save() {
-      const sentenceIds: string[] = [];
-      for (const index of Object.keys(this.samplesFrozen.selected)) {
-        if (this.samplesFrozen.selected[parseInt(index)]) sentenceIds.push(this.samplesFrozen.list[parseInt(index)][1]);
-      }
-      for (const samplename in this.searchresultsCopy) {
-        for (const sentId in this.searchresultsCopy[samplename]) {
-          if (!sentenceIds.includes(sentId)) {
-            console.log(sentId);
-            delete this.searchresultsCopy[samplename][sentId];
+      let sentenceJson;
+      let conll;
+      this.searchresultsCopy = this.searchresults;
+      for (const sample in this.searchresults){
+        for (const sentId in this.searchresults[sample]){
+          if (!this.searchresults[sample][sentId].conlls[this.getUserInfos.username]){
+            
+            sentenceJson= sentenceConllToJson(Object.values(this.searchresults[sample][sentId].conlls)[0])
+            sentenceJson.metaJson.user_id = this.getUserInfos.username
+            sentenceJson.metaJson.timestamp = Math.round(Date.now())
+            conll = sentenceJsonToConll(sentenceJson)
+            this.searchresultsCopy[sample][sentId].conlls[this.getUserInfos.username] = conll
+            for (const userId in this.searchresultsCopy[sample][sentId].conlls){
+              if (userId !== this.getUserInfos.username ) delete this.searchresultsCopy[sample][sentId].conlls[userId]
+            }
+            console.log(this.searchresultsCopy[sample][sentId].conlls)
+
           }
-        }
-        if (Object.keys(this.searchresultsCopy[samplename]).length === 0) {
-          delete this.searchresultsCopy[samplename];
         }
       }
       if (Object.keys(this.searchresultsCopy).length !== 0) {
         const datasample = { data: this.searchresultsCopy };
-        api.saveConll(this.$route.params.projectname as string, datasample).then(() => {
+        api
+          .applyRule(this.$route.params.projectname as string, datasample)
+          .then(() => {
           this.resultSearchDialog = false;
           this.parentOnShowTable(this.resultSearchDialog);
-          notifyMessage({ message: 'Conll Saved' });
+          notifyMessage({ message: 'Rule applied' });
         });
       } else {
         console.log('not ok');
-      }
-    },
-    // var query = { results: this.searchresults, sentenceIds: sentenceIds };
-    // api
-    //   .applyRulesProject(this.$route.params.projectname, query)
-    //   .then((response) => {
-    //     // this.resultSearchDialog = true;
-    //     // this.resultSearch = response.data;
-    //     console.log(response.data)
-    //   })
-    //   .catch((error) => {
-    //     this.$store.dispatch("notifyError", {
-    //       error: error.response.data.message,
-    //     });
-    //   });
-    getProjectSamples() {
-      api.getProjectSamples(this.$route.params.projectname as string).then((response) => {
-        this.samples = response.data;
-      });
-    },
-    deleteSamples() {
-      for (const sample of this.samplesFrozen.samples) {
-        api
-          .deleteSample(this.$route.params.projectname as string, sample.sample_name)
-          .then(() => {
-            this.samplesFrozen.selected = [];
-            notifyMessage({ message: 'delete success' });
-            this.getProjectSamples();
-          })
-          .catch((error) => {
-            notifyError({ error });
-          });
       }
     },
   },

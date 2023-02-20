@@ -117,6 +117,10 @@ export default defineComponent({
       type: Object as PropType<string[]>,
       required: true,
     },
+    lexiconType: {
+      type: Object as PropType<string>,
+      required: true,
+    },
   },
   components: { ResultView },
   setup(props, ctx) {
@@ -315,9 +319,9 @@ export default defineComponent({
     },
 
     onSearch(searchPattern: string) {
-      const query = { pattern: searchPattern };
+      const data = { pattern: searchPattern, userType: this.lexiconType };
       api
-        .searchProject(this.projectName as string, query)
+        .searchProject(this.projectName as string, data)
         .then((response) => {
           this.resultSearch = response.data;
           this.visuTreeDial = true;

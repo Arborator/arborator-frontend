@@ -66,15 +66,6 @@
                   <q-item-label>{{ $t('projectView.lexicon[5]') }}</q-item-label>
                 </q-item-section>
               </q-item>
-
-              <q-item v-if="isAdmin || isSuperAdmin" v-close-popup clickable @click="fetchLexicon_('all')">
-                <q-item-section avatar>
-                  <q-icon name="ion-md-globe" />
-                </q-item-section>
-                <q-item-section>
-                  <q-item-label> {{ $t('projectView.lexicon[6]') }}</q-item-label>
-                </q-item-section>
-              </q-item>
             </q-list>
           </q-btn-dropdown>
         </div>
@@ -98,6 +89,7 @@
         :lexicon-loading="lexiconLoading"
         :features="features"
         :key="features.length"
+        :lexicon-type="lexiconType"
       >
       </LexiconTableBase>
     </q-card-section>
@@ -169,6 +161,7 @@ export default defineComponent({
 
       const data = { samplenames: samplenames, lexiconType: lexiconType, features: this.features, prune: prune };
       this.fetchLexicon(this.projectName as string, data);
+      this.lexiconType = lexiconType
       this.isShowLexiconFeatures = false;
       this.isShowLexiconTable = true;
     },

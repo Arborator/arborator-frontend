@@ -1,7 +1,23 @@
 <template>
   <div>
     <q-page-sticky :position="breakpoint ? 'bottom-right' : 'bottom-right'" :offset="breakpoint ? [18, 18] : [30, 80]" style="z-index: 999">
-      <q-btn size="20px" round color="primary" icon="img:/svg/g.svg" @click="grewDialog = !grewDialog">
+      <q-btn-group v-if="grewBtn" push flat rounded>
+        <q-btn push color="primary" no-caps @click="userType = 'user', grewDialog = !grewDialog">
+          <q-tooltip content-class="bg-primary" content-style="font-size: 16px"> View only my trees </q-tooltip>
+          <q-avatar v-if="isLoggedIn" size="1.2rem"><img :src="avatar" /></q-avatar>
+          <q-icon v-else name="account_circle" />
+        </q-btn>
+        <q-btn push color="primary" no-caps @click="userType = 'user_recent', grewDialog = !grewDialog">
+          <q-tooltip content-class="bg-primary" content-style="font-size: 16px"> View my trees, filled up with the most recent trees </q-tooltip>
+          <q-avatar v-if="isLoggedIn" size="1.2rem"><img :src="avatar" /></q-avatar>
+          <q-icon v-else name="account_circle" />
+          <div>+</div>
+        </q-btn>
+        <q-btn v-if="isAdmin || isSuperAdmin" push icon="schedule" color="primary" no-caps @click="userType = 'recent', grewDialog = !grewDialog">
+          <q-tooltip content-class="bg-primary" content-style="font-size: 16px"> View most recent trees </q-tooltip>
+        </q-btn>
+      </q-btn-group>
+      <q-btn size="20px" round color="primary" icon="img:/svg/g.svg" @click="grewBtn = !grewBtn">
         <q-tooltip content-class="bg-primary" content-style="font-size: 16px"> Search with Grew in this sample </q-tooltip>
       </q-btn>
     </q-page-sticky>
@@ -25,7 +41,9 @@ import GrewRequestCard from './GrewRequestCard.vue';
 import ResultView from '../ResultView.vue';
 import api from '../../api/backend-api';
 import { useGrewSearchStore } from 'src/pinia/modules/grewSearch';
-import { mapWritableState } from 'pinia';
+import { mapWritableState, mapState } from 'pinia';
+import { useProjectStore } from 'src/pinia/modules/project';
+import { useUserStore } from 'src/pinia/modules/user';
 import { notifyError } from 'src/utils/notify';
 import { defineComponent } from 'vue';
 import { grewSearchResult_t } from 'src/api/backend-types';
@@ -39,10 +57,13 @@ export default defineComponent({
   data() {
     const resultSearch: grewSearchResult_t = {};
     const queryType = '';
+    const userType = '';
     return {
       resultSearchDialog: false,
+      grewBtn: false,
       resultSearch,
       queryType,
+      userType,
       rulesGrew: {},
       window: { width: 0, height: 0 },
     };
@@ -52,15 +73,8 @@ export default defineComponent({
       return this.window.width <= 400;
     },
     ...mapWritableState(useGrewSearchStore, ['grewDialog']),
-    // grewDialog: {
-    //   get() {
-    //     const grewSearchStore = useGrewSearchStore();
-    //     return grewSearchStore.grew;
-    //   },
-    //   set(value) {
-    //     this.$store.dispatch('grewSearch/switch_grew_dialog', value);
-    //   },
-    // },
+    ...mapState(useProjectStore, ['isAdmin']),
+    ...mapState(useUserStore, ['isLoggedIn', 'isSuperAdmin', 'avatar', 'getUserInfos']),
   },
   mounted() {
     this.grewDialog = this.showTable;
@@ -71,11 +85,11 @@ export default defineComponent({
       this.grewDialog = false;
     },
     onSearch(searchPattern: string) {
-      const query = { pattern: searchPattern };
+      const data = { pattern: searchPattern, userType: this.userType };
       this.queryType = 'SEARCH';
       if (this.$route.params.samplename) {
         api
-          .searchSample(this.$route.params.projectname as string, this.$route.params.samplename as string, query)
+          .searchSample(this.$route.params.projectname as string, this.$route.params.samplename as string, data)
           .then((response) => {
             this.resultSearch = response.data;
             this.resultSearchDialog = true;
@@ -85,7 +99,7 @@ export default defineComponent({
           });
       } else {
         api
-          .searchProject(this.$route.params.projectname as string, query)
+          .searchProject(this.$route.params.projectname as string, data)
           .then((response) => {
             this.resultSearch = response.data;
             this.resultSearchDialog = true;
@@ -99,7 +113,7 @@ export default defineComponent({
       const sampleId = (this.$route.params.samplename as string) || null;
       this.queryType = 'REWRITE';
       api
-        .tryPackage(this.$route.params.projectname as string, sampleId, query)
+        .tryPackage(this.$route.params.projectname as string, sampleId, query, this.userType)
         .then((response) => {
           this.resultSearchDialog = true;
           this.resultSearch = response.data;

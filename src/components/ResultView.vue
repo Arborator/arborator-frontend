@@ -19,21 +19,21 @@
       <div v-show="!loading" class="q-pa-md row q-gutter-md">
         <div v-if="samplesFrozen.list.length > 0">
           <q-virtual-scroll
-              :items="samplesFrozen.list"
-              style="height: 80vh; width: 100vw"
-              :virtual-scroll-slice-size="5"
-              :virtual-scroll-item-size="200"
-              type="list"
+            :items="samplesFrozen.list"
+            style="height: 80vh; width: 100vw"
+            :virtual-scroll-slice-size="5"
+            :virtual-scroll-item-size="200"
+            type="list"
           >
             <template #default="{ item, index }">
               <SentenceCard
-                  :id="item[1]"
-                  :key="index"
-                  :sentence="searchresults[item[0]][item[1]]"
-                  :index="index"
-                  :sentence-id="item[1]"
-                  :matches="searchresults[item[0]][item[1]]"
-                  :exercise-level="4"
+                :id="item[1]"
+                :key="index"
+                :sentence="searchresults[item[0]][item[1]]"
+                :index="index"
+                :sentence-id="item[1]"
+                :matches="searchresults[item[0]][item[1]]"
+                :exercise-level="4"
               ></SentenceCard>
             </template>
           </q-virtual-scroll>
@@ -110,8 +110,8 @@ export default defineComponent({
     ...mapState(useUserStore, ['isSuperAdmin', 'username']),
     sentenceCount() {
       return Object.keys(this.searchresults)
-          .map((sa) => Object.keys(this.searchresults[sa]))
-          .flat().length;
+        .map((sa) => Object.keys(this.searchresults[sa]))
+        .flat().length;
       // number of keys in subobjects
     },
   },
@@ -159,14 +159,18 @@ export default defineComponent({
       this.searchresultsCopy = this.searchresults;
       for (const sample in this.searchresults) {
         for (const sentId in this.searchresults[sample]) {
-          if (!this.searchresults[sample][sentId].conlls[this.username]) {
-            const sentenceJson = sentenceConllToJson(Object.values(this.searchresults[sample][sentId].conlls)[0])
-            sentenceJson.metaJson.user_id = this.username
-            sentenceJson.metaJson.timestamp = Math.round(Date.now())
-            this.searchresultsCopy[sample][sentId].conlls[this.username] = sentenceJsonToConll(sentenceJson)
-            for (const userId in this.searchresultsCopy[sample][sentId].conlls) {
-              if (userId !== this.username) delete this.searchresultsCopy[sample][sentId].conlls[userId]
-            }
+          let toSaveConll = ""
+          if (this.searchresults[sample][sentId].conlls[this.username]) {
+            toSaveConll = this.searchresults[sample][sentId].conlls[this.username]
+          } else {
+            toSaveConll = Object.values(this.searchresults[sample][sentId].conlls)[0]
+          }
+          const sentenceJson = sentenceConllToJson(toSaveConll)
+          sentenceJson.metaJson.user_id = this.username
+          sentenceJson.metaJson.timestamp = Math.round(Date.now())
+          this.searchresultsCopy[sample][sentId].conlls[this.username] = sentenceJsonToConll(sentenceJson)
+          for (const userId in this.searchresultsCopy[sample][sentId].conlls) {
+            if (userId !== this.username) delete this.searchresultsCopy[sample][sentId].conlls[userId]
             toSaveCounter += 1;
           }
         }
@@ -174,12 +178,12 @@ export default defineComponent({
       if (toSaveCounter >= 1) {
         const datasample = {data: this.searchresultsCopy};
         api
-            .applyRule(this.$route.params.projectname as string, datasample)
-            .then(() => {
-              this.resultSearchDialog = false;
-              this.parentOnShowTable(this.resultSearchDialog);
-              notifyMessage({message: `Rule applied (user "${this.username}" rewrote and saved "${toSaveCounter}" at once)`});
-            });
+          .applyRule(this.$route.params.projectname as string, datasample)
+          .then(() => {
+            this.resultSearchDialog = false;
+            this.parentOnShowTable(this.resultSearchDialog);
+            notifyMessage({message: `Rule applied (user "${this.username}" rewrote and saved "${toSaveCounter}" at once)`});
+          });
       } else {
         notifyMessage({
           message: `Nothing to save (user "${this.username}" has "zero" tree matching rewriting pattern)`,

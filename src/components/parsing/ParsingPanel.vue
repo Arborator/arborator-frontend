@@ -27,7 +27,7 @@
       </div>
       <q-separator vertical inset class="q-mx-lg" />
       <div class="col">
-        <q-toggle v-model="parser.param.isCustomTrainingUser" label="Custom user" />
+        <q-toggle v-model="parser.param.isCustomTrainingUser" label="Custom Training user" />
         <q-select
           :class="{ invisible: !parser.param.isCustomTrainingUser }"
           v-model="parser.param.trainingUser"
@@ -140,7 +140,7 @@ export default defineComponent({
         advancedSettings: false,
         type: 'kirParser',
         options: ['trankitParser', 'kirParser', 'hopsParser', 'udifyParser', 'stanzaParser'],
-        keepUpos: true,
+        keepUpos: false,
         isCustomTrainingUser: false,
         trainingUser: '',
         trainAll: true,

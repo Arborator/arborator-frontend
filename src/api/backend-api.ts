@@ -264,7 +264,7 @@ export default {
       dev: 0.1,
       parser: parserType,
       epoch: epochs,
-      keepPos: keepUpos,
+      keep_upos: keepUpos,
       to_parse: toParseNames,
       training_user: trainingUser,
     };

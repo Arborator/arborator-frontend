@@ -4,21 +4,21 @@
       <q-bar :class="$q.dark.isActive ? 'bg-dark' : 'bg-white text-black'">
         <!-- class="bg-white text-black" -->
         <!--   :class="$q.dark.isActive ? 'text-white' : 'text-primary'" -->
-        <q-btn flat round icon="menu" @click="drawerLeft = !drawerLeft" />
+        <q-btn flat round icon="menu" @click="drawerLeft = !drawerLeft"/>
         <q-btn flat to="/" :ripple="false" type="a">
           <div class="q-btn__content text-center col items-center q-anchor--skip row">
-            <img v-if="$q.dark.isActive" alt="Arborator" src="/svg/arborator.grew.white.svg" style="height: 2.3vw" />
-            <img v-else alt="Arborator" src="/svg/arborator.grew.svg" style="height: 2.3vw" />
+            <img v-if="$q.dark.isActive" alt="Arborator" src="/svg/arborator.grew.white.svg" style="height: 2.3vw"/>
+            <img v-else alt="Arborator" src="/svg/arborator.grew.svg" style="height: 2.3vw"/>
           </div>
         </q-btn>
-        <q-space />
+        <q-space/>
         <q-breadcrumbs
           :active-color="$q.dark.isActive ? 'white' : 'primary'"
           :class="($q.dark.isActive ? 'text-grey' : 'text-black') + ' mobile-hide native-mobile-hide within-iframe-hide gt-xs'"
           style="max-height: 20px; max-width: 70vh; overflow: y"
         >
-          <q-breadcrumbs-el v-if="notHome" icon="home" to="/" />
-          <q-breadcrumbs-el v-if="$route.path.startsWith('/projects')" icon="view_module" to="/projects" />
+          <q-breadcrumbs-el v-if="notHome" icon="home" to="/"/>
+          <q-breadcrumbs-el v-if="$route.path.startsWith('/projects')" icon="view_module" to="/projects"/>
           <q-breadcrumbs-el
             v-if="$route.params.projectname"
             :label="$route.params.projectname"
@@ -31,39 +31,40 @@
             icon="assignment"
             :to="'/projects/' + $route.params.projectname + '/' + $route.params.samplename"
           />
-          <q-breadcrumbs-el v-if="$route.path.startsWith('/klang')" icon="music_note" :to="'/klang'" />
+          <q-breadcrumbs-el v-if="$route.path.startsWith('/klang')" icon="music_note" :to="'/klang'"/>
           <q-breadcrumbs-el
             v-if="$route.params.kprojectname"
             :label="$route.params.kprojectname"
             :to="'/klang/' + $route.params.kprojectname"
             icon="view_module"
           />
-          <q-breadcrumbs-el v-if="$route.params.ksamplename" :label="$route.params.ksamplename" />
+          <q-breadcrumbs-el v-if="$route.params.ksamplename" :label="$route.params.ksamplename"/>
         </q-breadcrumbs>
-        <q-space />
+        <q-space/>
         <div class="q-gutter-sm row items-center no-wrap" size="4rem">
           <q-icon v-show="isProjectAdmin" name="admin_panel_settings">
-            <q-tooltip> {{ $t('projectAdmin') }} </q-tooltip>
+            <q-tooltip> {{ $t('projectAdmin') }}</q-tooltip>
           </q-icon>
           <q-select v-model="lang" :options="langOptions" dense borderless options-dense map-options emit-value>
             <template #append>
               <q-avatar>
-                <q-icon name="fas fa-globe" />
+                <q-icon name="fas fa-globe"/>
               </q-avatar>
             </template>
-            <q-tooltip> {{ $t('switchLanguage') }} </q-tooltip>
+            <q-tooltip> {{ $t('switchLanguage') }}</q-tooltip>
           </q-select>
           <q-btn flat round :icon="$q.dark.isActive ? 'sunny' : 'brightness_2'" @click="toggleDarkMode()">
-            <q-tooltip> {{ $t('darkMode') }} </q-tooltip>
+            <q-tooltip> {{ $t('darkMode') }}</q-tooltip>
           </q-btn>
-          <q-btn flat round icon="question_mark" href="https://arborator.github.io/arborator-documentation/#/" target="_blank">
+          <q-btn flat round icon="question_mark" href="https://arborator.github.io/arborator-documentation/#/"
+                 target="_blank">
             <q-tooltip content-class="text-white bg-primary">{{ $t('documentation') }}</q-tooltip>
           </q-btn>
           <q-btn-dropdown v-show="!isLoggedIn" color="secondary" outline label="Log In" icon="account_circle">
             <q-list>
               <q-item v-close-popup clickable @click="tologin(source + '/login/google')">
                 <q-item-section avatar>
-                  <q-icon name="fab fa-google" />
+                  <q-icon name="fab fa-google"/>
                 </q-item-section>
                 <q-item-section>
                   <!-- <q-item-label caption>{{$t('loginselector')}}</q-item-label> -->
@@ -72,7 +73,7 @@
               </q-item>
               <q-item v-close-popup clickable @click="tologin(source + '/login/github')">
                 <q-item-section avatar>
-                  <q-icon name="fab fa-github" />
+                  <q-icon name="fab fa-github"/>
                 </q-item-section>
                 <q-item-section>
                   <!-- <q-item-label caption>{{$t('loginselector')}}</q-item-label> -->
@@ -82,11 +83,12 @@
             </q-list>
           </q-btn-dropdown>
           <q-btn v-show="isLoggedIn" round flat dense color="purple">
-            <q-tooltip> {{ $t('userInformation') }} </q-tooltip>
+            <q-tooltip> {{ $t('userInformation') }}</q-tooltip>
+
             <q-avatar>
-              <q-icon v-if="getUserInfos.picture_url === ''" name="account_circle" />
+              <q-icon v-if="getUserInfos.picture_url === ''" name="account_circle"/>
               <q-avatar v-else :key="getUserInfos.avatarKey" color="default" text-color="white" size="xs">
-                <img :src="getUserInfos.picture_url" />
+                <img :src="getUserInfos.picture_url"/>
               </q-avatar>
             </q-avatar>
             <q-menu transition-show="jump-down" transition-hide="jump-up">
@@ -95,28 +97,31 @@
                   <q-list>
                     <q-item v-ripple clickable to="/settings">
                       <q-item-section avatar>
-                        <q-icon name="settings" />
+                        <q-icon name="settings"/>
                       </q-item-section>
-                      <q-item-section> {{ $t('settings') }} </q-item-section>
+                      <q-item-section> {{ $t('settings') }}</q-item-section>
                     </q-item>
                     <q-item v-show="getUserInfos.super_admin" v-ripple clickable to="/admin">
                       <q-item-section avatar>
-                        <q-icon name="vpn_key" />
+                        <q-icon name="vpn_key"/>
                       </q-item-section>
-                      <q-item-section> {{ $t('admin') }} </q-item-section>
+                      <q-item-section> {{ $t('admin') }}</q-item-section>
                     </q-item>
                   </q-list>
                 </div>
-                <q-separator vertical inset class="q-mx-lg" />
+                <q-separator vertical inset class="q-mx-lg"/>
                 <div class="column items-center">
-                  <q-icon v-if="getUserInfos.avatarKey === ''" name="account_circle" />
+                  <q-icon v-if="getUserInfos.avatarKey === ''" name="account_circle"/>
                   <q-avatar v-else :key="getUserInfos.avatarKey" color="default" text-color="white">
-                    <img :src="getUserInfos.picture_url" />
+                    <img :src="getUserInfos.picture_url"/>
                   </q-avatar>
                   <div class="text-subtitle1 q-mt-md q-mb-xs">
                     {{ getUserInfos.username }}
                   </div>
-                  <q-btn v-close-popup color="negative" label="Logout" size="sm" @click="logout_()" />
+                  <div v-if="getUserInfos.isSuperAdmin" class="text-subtitle1 q-mt-md q-mb-xs">
+                    Super Admin !
+                  </div>
+                  <q-btn v-close-popup color="negative" label="Logout" size="sm" @click="logout_()"/>
                 </div>
               </div>
             </q-menu>
@@ -133,7 +138,9 @@
         </div>
       </q-bar>
     </q-header>
-    <q-page-container> <router-view /> </q-page-container>
+    <q-page-container>
+      <router-view/>
+    </q-page-container>
     <!-- <q-footer > -->
     <!-- <q-item-label caption class="text-center text-grey-3">
        {{$t('footer')[0]}} <q-icon name="favorite" style="font-size:22px;color: #dd137b;height:18px;vertical-align:text-bottom"/> {{$t('footer')[1]}}        <img aria-hidden="true" role="presentation" src="/svg/paris.svg" class="" style="color: #dd137b;height:18px;">
@@ -157,15 +164,16 @@
       <q-scroll-area style="height: calc(100% - 0px); margin-top: 0">
         <q-list padding>
           <div v-for="(menuItem, index) in menuList" :key="index">
-            <q-item v-show="isLoggedIn || menuItem.public" v-ripple :to="menuItem.to" clickable :active="menuItem.label === $route.path">
+            <q-item v-show="isLoggedIn || menuItem.public" v-ripple :to="menuItem.to" clickable
+                    :active="menuItem.label === $route.path">
               <q-item-section avatar>
-                <q-icon :name="menuItem.icon" />
+                <q-icon :name="menuItem.icon"/>
               </q-item-section>
               <q-item-section>
                 {{ menuItem.label }}
               </q-item-section>
             </q-item>
-            <q-separator v-if="menuItem.separator" spaced />
+            <q-separator v-if="menuItem.separator" spaced/>
           </div>
         </q-list>
       </q-scroll-area>
@@ -174,16 +182,16 @@
 </template>
 
 <script lang="ts">
-import { openURL } from 'quasar';
-import { useStorage } from 'vue3-storage';
-import { defineComponent } from 'vue';
+import {openURL} from 'quasar';
+import {useStorage} from 'vue3-storage';
+import {defineComponent} from 'vue';
 
 import '../assets/css/tags-style.css';
 // import '../assets/css/arborator-draft.css';
-import { notifyError } from 'src/utils/notify';
-import { mapActions, mapState } from 'pinia';
-import { useUserStore } from 'src/pinia/modules/user';
-import { useMainStore } from 'src/pinia';
+import {notifyError} from 'src/utils/notify';
+import {mapActions, mapState} from 'pinia';
+import {useUserStore} from 'src/pinia/modules/user';
+import {useMainStore} from 'src/pinia';
 
 export default defineComponent({
   name: 'TempLayout',
@@ -238,8 +246,8 @@ export default defineComponent({
       ],
       lang: this.$i18n.locale,
       langOptions: [
-        { value: 'en', label: 'EN', img: '/images/usflag.svg' },
-        { value: 'fr', label: 'FR', img: '/images/frenchflag.svg' },
+        {value: 'en', label: 'EN', img: '/images/usflag.svg'},
+        {value: 'fr', label: 'FR', img: '/images/frenchflag.svg'},
       ],
     };
   },
@@ -280,11 +288,11 @@ export default defineComponent({
       this.logout()
         .then(() => {
           this.$router.push('/').catch((error) => {
-            notifyError({ error });
+            notifyError({error});
           });
         })
         .catch((error) => {
-          notifyError({ error });
+          notifyError({error});
         });
     },
     setStartingLanguage() {

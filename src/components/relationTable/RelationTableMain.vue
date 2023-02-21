@@ -2,21 +2,21 @@
   <div>
     <q-page-sticky :position="breakpoint ? 'bottom-right' : 'bottom-right'" :offset="breakpoint ? [18, 88] : [30, 10]" style="z-index: 999">
       <q-btn-group v-if="reltablebuttons" push flat rounded>
-        <q-btn push color="primary" no-caps @click="getRelationTable('user')">
+        <q-btn v-if="isLoggedIn" push color="primary" no-caps @click="getRelationTable('user')">
           <q-tooltip content-class="bg-primary" content-style="font-size: 16px"> {{$t('projectView.tooltipFabGrewUser')}} </q-tooltip>
           <q-avatar v-if="isLoggedIn" size="1.2rem"><img :src="avatar" /></q-avatar>
           <q-icon v-else name="account_circle" />
         </q-btn>
-        <q-btn push color="primary" no-caps @click="getRelationTable('user_recent')">
+        <q-btn v-if="isLoggedIn && canSeeOtherUsersTrees" push color="primary" no-caps @click="getRelationTable('user_recent')">
           <q-tooltip content-class="bg-primary" content-style="font-size: 16px"> {{$t('projectView.tooltipFabGrewUserRecent')}} </q-tooltip>
           <q-avatar v-if="isLoggedIn" size="1.2rem"><img :src="avatar" /></q-avatar>
           <q-icon v-else name="account_circle" />
           <div>+</div>
         </q-btn>
-        <q-btn v-if="isAdmin || isSuperAdmin" push icon="schedule" color="primary" no-caps @click="getRelationTable('recent')">
+        <q-btn v-if="canSeeOtherUsersTrees" push icon="schedule" color="primary" no-caps @click="getRelationTable('recent')">
           <q-tooltip content-class="bg-primary" content-style="font-size: 16px"> {{$t('projectView.tooltipFabGrewRecent')}} </q-tooltip>
         </q-btn>
-        <q-btn v-if="isAdmin || isSuperAdmin" push icon="ion-md-globe" color="primary" no-caps @click="getRelationTable('all')">
+        <q-btn v-if="canSeeOtherUsersTrees" push icon="ion-md-globe" color="primary" no-caps @click="getRelationTable('all')">
           <q-tooltip content-class="bg-primary" content-style="font-size: 16px"> {{$t('projectView.tooltipFabGrewAll')}} </q-tooltip>
         </q-btn>
       </q-btn-group>
@@ -63,7 +63,7 @@ export default defineComponent({
   },
 
   computed: {
-    ...mapState(useProjectStore, ['isAdmin']),
+    ...mapState(useProjectStore, ['canSeeOtherUsersTrees']),
     ...mapState(useUserStore, ['isLoggedIn', 'isSuperAdmin', 'avatar', 'getUserInfos']),
     breakpoint(): boolean {
       return this.window.width <= 400;

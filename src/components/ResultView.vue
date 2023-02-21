@@ -155,25 +155,19 @@ export default defineComponent({
      * @returns void
      */
     applyRules() {
-      let sentenceJson;
-      let conll;
       let toSaveCounter = 0;
       this.searchresultsCopy = this.searchresults;
       for (const sample in this.searchresults) {
         for (const sentId in this.searchresults[sample]) {
           if (!this.searchresults[sample][sentId].conlls[this.username]) {
-
-            sentenceJson = sentenceConllToJson(Object.values(this.searchresults[sample][sentId].conlls)[0])
+            const sentenceJson = sentenceConllToJson(Object.values(this.searchresults[sample][sentId].conlls)[0])
             sentenceJson.metaJson.user_id = this.username
             sentenceJson.metaJson.timestamp = Math.round(Date.now())
-            conll = sentenceJsonToConll(sentenceJson)
-            this.searchresultsCopy[sample][sentId].conlls[this.username] = conll
+            this.searchresultsCopy[sample][sentId].conlls[this.username] = sentenceJsonToConll(sentenceJson)
             for (const userId in this.searchresultsCopy[sample][sentId].conlls) {
               if (userId !== this.username) delete this.searchresultsCopy[sample][sentId].conlls[userId]
             }
             toSaveCounter += 1;
-
-
           }
         }
       }

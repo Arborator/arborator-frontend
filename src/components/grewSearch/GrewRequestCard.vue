@@ -48,6 +48,7 @@
                     <template v-for="query in searchQueries" :key="query.name">
                       <q-tab v-ripple :name="query.name" :label="query.name" clickable @click="changeQuery(query.pattern, 'SEARCH')" />
                     </template>
+                     <q-tab v-if="userType === 'all'" v-ripple name="showDiffs" label="Show divergences" clickable @click="onShowDiffs()" />
                   </q-tabs>
                 </q-tab-panel>
 
@@ -162,7 +163,7 @@ CodeMirror2.defineMode('grew', () => {
 export default defineComponent({
   name: 'GrewRequestCard',
   components: { Codemirror },
-  props: ['parentOnSearch', 'parentOnTryRules', 'grewquery'],
+  props: ['parentOnSearch', 'parentOnTryRules', 'grewquery', 'parentOnShowDiffs', 'userType'],
   data() {
     const currentQueryType: 'SEARCH' | 'REWRITE' = grewTemplates.searchQueries[0].type as 'SEARCH' | 'REWRITE';
     return {
@@ -355,6 +356,9 @@ export default defineComponent({
     atou(str: string) {
       return decodeURIComponent(escape(window.atob(str)));
     },
+    onShowDiffs() {
+      this.parentOnShowDiffs();
+    }
   },
 });
 </script>

@@ -5,6 +5,7 @@ import { cookies } from '../../../boot/vue-cookies';
 import api from '../../../api/backend-api';
 import { defineStore } from 'pinia';
 import { notifyError } from 'src/utils/notify';
+import {socket} from "src/sockets/rooms";
 
 export const useUserStore = defineStore('user', {
   state: () => {
@@ -40,6 +41,7 @@ export const useUserStore = defineStore('user', {
             .then((response) => {
               this.loginSuccess = true;
               this.$patch(response.data);
+              socket.emit("join_app", {username: this.username})
               resolve();
             })
             .catch((error) => {

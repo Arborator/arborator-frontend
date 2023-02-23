@@ -5,7 +5,7 @@
   <q-icon v-show="exerciseMode" name="school" color="indigo-11" size="lg"></q-icon>
 </template>
 
-<script>
+<script lang="ts">
 export default {
   name: 'ProjectIcon',
   props: {

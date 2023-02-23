@@ -160,6 +160,12 @@ module.exports = configure((ctx) => ({
         changeOrigin: false,
         secure: false,
       },
+      '/socket.io': {
+        target: source,
+        ws: true,
+        changeOrigin: false,
+        secure: false,
+      },
       '/login': {
         target: source,
         ws: true,

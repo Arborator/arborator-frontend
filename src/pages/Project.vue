@@ -447,6 +447,7 @@ import { useUserStore } from 'src/pinia/modules/user';
 import { sample_roles_t, sample_t, user_sample_roles_t, sample_role_targetrole_t, sample_role_action_t } from 'src/api/backend-types';
 import { defineComponent } from 'vue';
 import { table_t } from 'src/types/main_types';
+import {socket} from "src/sockets/rooms";
 
 export default defineComponent({
   components: {
@@ -470,6 +471,7 @@ export default defineComponent({
       console.log('Callback not init yet');
     };
     const sampleNames: string[] = [];
+    const projectName: string = ""
 
     const table: table_t<sample_t> = {
       fields: [
@@ -537,6 +539,7 @@ export default defineComponent({
       exporting: false,
     };
     return {
+      projectName,
       table,
       multiple: [],
       options: ['Google', 'Facebook', 'Twitter', 'Apple', 'Oracle'],
@@ -609,10 +612,7 @@ export default defineComponent({
       'isTeacher',
       'canSaveTreeInProject',
     ]),
-    ...mapState(useUserStore, ['isLoggedIn', 'isSuperAdmin', 'loggedWithGithub', 'avatar']),
-    projectName(): string | string[] {
-      return this.$route.params.projectname;
-    },
+    ...mapState(useUserStore, ['isLoggedIn', 'isSuperAdmin', 'loggedWithGithub', 'avatar', 'username']),
     routePath(): string {
       return this.$route.path;
     },
@@ -645,12 +645,15 @@ export default defineComponent({
     this.handleResize();
   },
   mounted() {
+    this.projectName = this.$route.params.projectname as string
     this.getUsers();
     this.loadProjectData();
     document.title = `ArboratorGrew: ${this.projectName}`;
+    socket.emit("join_project", {username: this.username, projectName: this.projectName})
   },
-  unmounted() {
+  beforeUnmount() {
     window.removeEventListener('resize', this.handleResize);
+    socket.emit("leave_project", {username: this.username, projectName: this.projectName})
   },
   methods: {
     handleResize() {

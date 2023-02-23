@@ -170,6 +170,7 @@
         </q-list>
       </q-scroll-area>
     </q-drawer>
+    <ConnectHelper v-if="isLoggedIn"/>
   </q-layout>
 </template>
 
@@ -184,9 +185,15 @@ import { notifyError } from 'src/utils/notify';
 import { mapActions, mapState } from 'pinia';
 import { useUserStore } from 'src/pinia/modules/user';
 import { useMainStore } from 'src/pinia';
+import ConnectHelper from "layouts/ConnectHelper.vue";
+
+
 
 export default defineComponent({
   name: 'TempLayout',
+    components: {
+    ConnectHelper
+  },
   data() {
     return {
       storage: useStorage(),
@@ -246,7 +253,7 @@ export default defineComponent({
   computed: {
     ...mapState(useMainStore, ['isProjectAdmin', 'source']),
     ...mapState(useUserStore, ['getUserInfos', 'isLoggedIn']),
-    notHome() {
+    notHome(): boolean {
       return this.$route.fullPath !== '/';
     },
   },

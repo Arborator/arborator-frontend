@@ -217,7 +217,7 @@ export default {
   projectSettings: {
     title: 'Settings',
     windowClose: 'Close',
-    descriptionSave: 'save description',
+    descriptionSave: 'Save description',
     togglePrivate: 'Visibility',
     togglePrivateCaption:
       'Private projects restrain access and annotation, Visible projects restrain only annotation and Open projects allow anyone to view and contribute their annotation',
@@ -231,7 +231,6 @@ export default {
     chooseUserDiffCaption: 'user that will be used as reference for the comparaison',
     toggleOpenProject: 'Open project',
     toggleOpenProjectCaption: 'If true, anyone can edit samples',
-    defaultUserTreePanel: 'Default User Tree',
     adminsPanel: 'Admins',
     guestsPanel: 'Annotators',
     shownFeaturesPanel: 'Shown Features',

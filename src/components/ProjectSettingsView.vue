@@ -107,39 +107,6 @@
       </q-card>
     </q-card-section>
     <q-card-section class="full row justify-between q-gutter-md">
-      <q-card class="col">
-        <q-card-section>
-          <div class="text-h6 text-center">
-            {{ $t('projectSettings.defaultUserTreePanel') }}
-            <q-btn
-              v-show="isAdmin"
-              flat
-              round
-              icon="add"
-              :color="$q.dark.isActive ? 'purple-12' : 'primary'"
-              @click="addDefaultUserTreeDial = true"
-            ></q-btn>
-          </div>
-        </q-card-section>
-        <q-card-section>
-          <q-list bordered separator class="list-size">
-            <q-item v-for="dut in default_user_trees" :key="dut.id" v-ripple clickable>
-              <q-item-section>{{ dut.username }}</q-item-section>
-              <q-item-section side>
-                <q-btn
-                  v-show="isAdmin"
-                  dense
-                  round
-                  flat
-                  icon="remove"
-                  :color="$q.dark.isActive ? 'red-13' : 'negative'"
-                  @click="triggerConfirm(removeDefaultUserTree, dut.id)"
-                ></q-btn>
-              </q-item-section>
-            </q-item>
-          </q-list>
-        </q-card-section>
-      </q-card>
       <!-- admin panel -->
       <q-card class="col">
         <q-scroll-area style="height: 500px">
@@ -149,8 +116,7 @@
               <q-btn v-show="isAdmin" flat round icon="add" :color="$q.dark.isActive ? 'purple-12' : 'primary'" @click="addAdminDial = true"></q-btn>
             </div>
           </q-card-section>
-
-          <q-markup-table v-if="admins.length > 0">
+          <q-markup-table flat bordered>
             <thead>
               <tr>
                 <th class="text-left">ID</th>
@@ -186,7 +152,7 @@
             </div>
           </q-card-section>
 
-          <q-markup-table>
+          <q-markup-table flat bordered>
             <thead>
               <tr>
                 <th class="text-left">Name</th>
@@ -224,7 +190,7 @@
             v-model="shownfeaturesLocal"
             filled
             multiple
-            :options="shownfeatureschoices"
+            :options="shownFeaturesChoices"
             use-chips
             stack-label
             :label="$t('projectSettings.shownFeaturesTokens')"
@@ -235,7 +201,7 @@
             v-model="shownmetaLocal"
             filled
             multiple
-            :options="shownmetachoices"
+            :options="shownMetaChoices"
             use-chips
             stack-label
             :label="$t('projectSettings.shownFeaturesSentences')"
@@ -251,7 +217,7 @@
           </div>
         </q-card-section>
         <q-card-section>
-          <Codemirror v-model:value="annofjson" :options="cmOption" @input="checkAnnotationFeatures"></Codemirror>
+          <Codemirror v-model:value="annotationFeaturesJson" :options="cmOption" @input="checkAnnotationFeatures"></Codemirror>
         </q-card-section>
         <q-btn
           color="bg-primary"
@@ -260,7 +226,7 @@
           icon="save"
           dense
           flat
-          :disabled="!annofok"
+          :disabled="!annotationFeaturesOk"
           no-caps
           @click="saveAnnotationSettings()"
         ></q-btn>
@@ -271,7 +237,7 @@
           icon="replay"
           dense
           flat
-          :disabled="!annofok"
+          :disabled="!annotationFeaturesOk"
           no-caps
           @click="resetAnnotationFeaturesWrapper()"
         ></q-btn>
@@ -282,12 +248,12 @@
           icon="replay"
           dense
           flat
-          :disabled="!annofok"
+          :disabled="!annotationFeaturesOk"
           no-caps
           @click="resetAnnotationFeaturesUDWrapper()"
         >
         </q-btn>
-        <q-chip text-color="primary" :icon="annofok ? 'sentiment_satisfied_alt' : 'sentiment_very_dissatisfied'">{{ annofcomment }}</q-chip>
+        <q-chip text-color="primary" :icon="annotationFeaturesOk ? 'sentiment_satisfied_alt' : 'sentiment_very_dissatisfied'">{{ annotationFeaturesComment }}</q-chip>
       </q-card>
     </q-card-section>
 
@@ -311,9 +277,6 @@
         :preselected="guests"
       ></UserSelectTable>
     </q-dialog>
-    <q-dialog v-model="addDefaultUserTreeDial" transition-show="fade" transition-hide="fade">
-      <UserSelectTable :parent-callback="addDefaultUserTree" :general="false" :projectname="$props.projectname"></UserSelectTable>
-    </q-dialog>
     <q-dialog v-model="confirmActionDial">
       <confirm-action :parent-action="confirmActionCallback" :arg1="confirmActionArg1" :target-name="$props.projectname"></confirm-action>
     </q-dialog>
@@ -321,11 +284,6 @@
 </template>
 
 <script lang="ts">
-// import { codemirror } from "vue-codemirror";
-// import "codemirror/mode/python/python.js";
-// import "codemirror/lib/codemirror.css";
-// import "codemirror/theme/material-darker.css";
-
 import Codemirror from 'codemirror-editor-vue3';
 
 // plugin-style
@@ -337,18 +295,23 @@ import 'codemirror/theme/material-darker.css';
 import api from '../api/backend-api';
 import UserSelectTable from './UserSelectTable.vue';
 import ConfirmAction from './ConfirmAction.vue';
-import { mapActions, mapState, mapWritableState, mapStores } from 'pinia';
-import { useProjectStore } from 'src/pinia/modules/project';
-import { useMainStore } from 'src/pinia';
-import { notifyError, notifyMessage } from 'src/utils/notify';
-import { sample_role_targetrole_t, user_t } from 'src/api/backend-types';
+import {mapActions, mapState, mapWritableState, mapStores} from 'pinia';
+import {useProjectStore} from 'src/pinia/modules/project';
+import {useMainStore} from 'src/pinia';
+import {notifyError, notifyMessage} from 'src/utils/notify';
+import {sample_role_targetrole_t, user_t} from 'src/api/backend-types';
 
-import { defineComponent, PropType } from 'vue';
+import {defineComponent, PropType} from 'vue';
 import ProjectIcon from 'components/shared/ProjectIcon.vue';
 
 export default defineComponent({
   name: 'ProjectSettingsView',
-  components: { ProjectIcon, Codemirror, UserSelectTable, ConfirmAction },
+  components: { 
+    ProjectIcon, 
+    Codemirror, 
+    UserSelectTable, 
+    ConfirmAction 
+    },
   props: {
     projectname: {
       type: String as PropType<string>,
@@ -364,20 +327,16 @@ export default defineComponent({
       console.log('default callback');
     };
     const uploadImage: { image: string | null; submitting: boolean } = { image: null, submitting: false };
-    const addDefaultUserTreeDial = false;
-    const default_user_trees: user_t[] = [];
     return {
-      default_user_trees,
       addAdminDial: false,
       addGuestDial: false,
       confirmActionCallback,
       confirmActionDial: false,
       confirmActionArg1: '',
       uploadImage,
-      annofjson: '',
-      addDefaultUserTreeDial,
-      annofok: true,
-      annofcomment: '',
+      annotationFeaturesJson: '',
+      annotationFeaturesOk: true,
+      annotationFeaturesComment: '',
       cmOption: {
         tabSize: 8,
         styleActiveLine: true,
@@ -390,7 +349,6 @@ export default defineComponent({
     };
   },
   computed: {
-    ...mapStores(useProjectStore),
     ...mapWritableState(useProjectStore, [
       'description',
       'showAllTrees',
@@ -404,17 +362,15 @@ export default defineComponent({
       'guests',
     ]),
     ...mapState(useProjectStore, [
-      'isGuest',
       'isAdmin',
       'admins',
       'guests',
       'cleanedImage',
-      'shownfeatureschoices',
-      'shownmetachoices',
+      'shownFeaturesChoices',
+      'shownMetaChoices',
       'getAnnofjson',
       'getUDAnnofJson',
     ]),
-    ...mapState(useMainStore, ['isProjectAdmin']),
     showAllTreesLocal: {
       get() {
         return this.showAllTrees;
@@ -480,7 +436,7 @@ export default defineComponent({
     // },
   },
   mounted() {
-    this.annofjson = this.getAnnofjson;
+    this.annotationFeaturesJson = this.getAnnofjson;
   },
 
   methods: {
@@ -499,17 +455,17 @@ export default defineComponent({
      */
     checkAnnotationFeatures() {
       try {
-        JSON.parse(this.annofjson);
-        this.annofok = true;
-        this.annofcomment = this.$t('projectSettings.checkAnnotation');
+        JSON.parse(this.annotationFeaturesJson);
+        this.annotationFeaturesOk = true;
+        this.annotationFeaturesComment = this.$t('projectSettings.checkAnnotation');
       } catch (e) {
-        this.annofok = false;
-        this.annofcomment = e as string; // This is dangerous
+        this.annotationFeaturesOk = false;
+        this.annotationFeaturesComment = e as string; // This is dangerous
       }
     },
 
     saveAnnotationSettings() {
-      this.updateProjectConlluSchema(this.projectname, JSON.parse(this.annofjson))
+      this.updateProjectConlluSchema(this.projectname, JSON.parse(this.annotationFeaturesJson))
         .then(() => {
           notifyMessage({ message: 'New annotation settings saved on the server', icon: 'save' });
         })
@@ -520,12 +476,12 @@ export default defineComponent({
 
     resetAnnotationFeaturesWrapper() {
       this.resetAnnotationFeatures();
-      this.annofjson = this.getAnnofjson;
+      this.annotationFeaturesJson = this.getAnnofjson;
     },
 
     resetAnnotationFeaturesUDWrapper() {
       this.resetAnnotationFeaturesUD();
-      this.annofjson = this.getUDAnnofJson;
+      this.annotationFeaturesJson = this.getUDAnnofJson;
     },
 
     updateAdminsOrGuests(usersArray: user_t[], targetRole: sample_role_targetrole_t) {
@@ -565,28 +521,6 @@ export default defineComponent({
           notifyMessage({ message: 'Guest removal saved on the server', icon: 'save' });
           this.admins = response.data.admins;
           this.guests = response.data.guests;
-        })
-        .catch((error) => {
-          notifyError({ error });
-        });
-    },
-
-    addDefaultUserTree(selected: any) {
-      api
-        .addDefaultUserTree(this.$props.projectname, selected[0])
-        .then(() => {
-          notifyMessage({ message: 'Default user tree config saved on the server', icon: 'save' });
-        })
-        .catch((error) => {
-          notifyError({ error });
-        });
-    },
-
-    removeDefaultUserTree(dutid: string) {
-      api
-        .removeDefaultUserTree(this.$props.projectname, dutid)
-        .then(() => {
-          notifyMessage({ message: 'Default user tree removal saved on the server', icon: 'save' });
         })
         .catch((error) => {
           notifyError({ error });

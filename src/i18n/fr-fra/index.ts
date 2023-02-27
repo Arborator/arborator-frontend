@@ -103,6 +103,11 @@ export default {
     },
     footertextmadewith: "Créé avec beaucoup d'",
     footertextin: 'à', // reaaallllll basic one, not good enough but still buggy using span and html parse  navhome: 'Accueil',
+    textGetUserEmailDialog: [
+      'Nous voulons nous assurer que vous êtes toujours au courant des changements importants sur ArboratorGrew, ainsi que vous tenir informé de toute opération purgatoire qui pourrait affecter votre projet. Veuillez nous fournir votre adresse Email ci-dessous afin que nous puissions vous avertir avant toute mise à jour importante ou avant de supprimer votre projet inutilisé. Nous respectons votre vie privée et ne partagerons jamais vos informations avec qui que ce soit.',
+      "J'accepte de recevoir des courriels et des promotions",
+      'Soumettre'
+    ]
   },
 
   // list of projects page

@@ -106,6 +106,11 @@ export default {
     },
     footertextmadewith: 'Made with',
     footertextin: 'in', // reaaallllll basic one, not good enough but still buggy using span and html parse
+    textGetUserEmailDialog: [
+      'We want to make sure you are always up-to-date with important changes on ArboratorGrew, as well as keep you informed about any purgatory operation that may affect your project. Please provide us with your email address below so we can notify you before any important updates or before deleting your unused project. We value your privacy and will never share your information with anyone else.',
+      'I accept receiving emails and promotions',
+      'Submit'
+    ]
   },
 
   // list of projects page

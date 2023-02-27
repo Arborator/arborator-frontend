@@ -16,7 +16,7 @@ export const useUserStore = defineStore('user', {
     isLoggedIn: (state) => state.loginSuccess,
     hasLoginErrored: (state) => state.loginError,
     getFailedAccess: (state) => state.failedAccess,
-    loggedWithGithub: (state) => state.auth_provider === 4,
+    loggedWithGithub: (state) => state.auth_provider === "4",
     avatar: (state) => {
       if (state.picture_url) return state.picture_url;
       return 'perm_identity';

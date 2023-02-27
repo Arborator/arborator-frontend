@@ -5,7 +5,7 @@ export interface UserStateInterface {
   avatarKey: string;
 
   as_json: string | null;
-  auth_provider: number | null;
+  auth_provider: string | null;
   created_date: number | null;
   family_name: string | null;
   first_name: string | null;

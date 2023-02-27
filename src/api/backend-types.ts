@@ -3,7 +3,7 @@
 //// USER ////
 export interface user_t {
   id: string;
-  auth_provider: number;
+  auth_provider: string;
   username: string;
   first_name: string;
   family_name: string;

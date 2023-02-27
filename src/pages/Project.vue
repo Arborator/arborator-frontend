@@ -128,7 +128,7 @@
                   <q-tooltip :delay="300" content-class="text-white bg-primary">{{ $t('projectView.tooltipDeleteSample[1]') }}</q-tooltip>
                 </q-btn>
                 <!-- ion-logo-github -->
-                <div>
+               <!--<div>
                   <q-btn-dropdown v-if="loggedWithGithub" :disable="table.selected.length < 1" icon="ion-md-git-commit" flat dense>
                     <q-list>
                       <q-item v-close-popup clickable @click="commit('user')">
@@ -175,7 +175,7 @@
                       </q-item>
                     </q-list>
                   </q-btn-dropdown>
-                  <!-- v-if="loggedWithGithub" :disable="table.selected.length<1 -->
+                 
 
                   <q-tooltip v-if="table.selected.length < 1" :delay="300" content-class="text-white bg-primary">
                     {{ $t('projectView.tooltipGitPush[4]') }}
@@ -213,7 +213,7 @@
                   }}</q-tooltip>
                   <q-tooltip v-else :delay="300" content-class="text-white bg-primary">{{ $t('projectView.tooltipGitPullSelect[1]') }}</q-tooltip>
                   <q-tooltip :delay="300" content-class="text-white bg-primary"></q-tooltip>
-                </div>
+                </div>-->
                 <!-- Lexicon-dialog -->
                 <div v-if="isGuest || isAdmin || isSuperAdmin">
                   <q-btn

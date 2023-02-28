@@ -36,7 +36,7 @@
     </q-card-section>
     <!-- project description: -->
     <q-card-section>
-      <q-input v-model="description" style="height: 100px" label="Description" filled clearable type="textarea" />
+      <q-input v-model="description" style="height: 100px" label="Description" filled type="textarea" />
       <q-btn color="primary" :label="$t('projectSettings.descriptionSave')" icon="save" dense flat @click="saveDescription"></q-btn>
     </q-card-section>
     <!-- project options: -->

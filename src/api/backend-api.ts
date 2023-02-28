@@ -38,10 +38,6 @@ export default {
   // ---------------        AUTH       ---------------- //
   // -------------------------------------------------- //
   auth(provider: string) {
-    // return fetch('http://127.0.0.1:5000/login/'+provider, { mode: 'cors', method: 'GET',
-    //     //body: new URLSearchParams(data).toString(),
-    //     headers: {'Accept': 'application/json', 'Content-Type': "application/x-www-form-urlencoded" }
-    // }).then((res) => res.json())
     return API.get(provider);
   },
   logout() {
@@ -153,9 +149,6 @@ export default {
   // ----------------------------------------------------- //
   // ---------------          Grew         --------------- //
   // ----------------------------------------------------- //
-  getLexicon(projectname: string, data: any) {
-    return API.post<getLexicon_RV>(`projects/V2/${projectname}/lexicon`, data);
-  },
   searchProject(projectname: string, data: any) {
     return API.post<grewSearch_RV>(`projects/${projectname}/search`, data);
   },
@@ -175,7 +168,9 @@ export default {
   // -------------------------------------------------------- //
   // ---------------          Lexicon         --------------- //
   // -------------------------------------------------------- //
-
+  getLexicon(projectname: string, data: any) {
+    return API.post<getLexicon_RV>(`projects/V2/${projectname}/lexicon`, data);
+  },
   exportLexiconJSON(projectname: string, data: any) {
     return API.post(`projects/${projectname}/export/json`, data, {
       responseType: 'arraybuffer',
@@ -186,19 +181,6 @@ export default {
       responseType: 'arraybuffer',
     });
   },
-  transformation_grew(projectname: string, data: any) {
-    return API.post(`projects/${projectname}/transformationgrew`, data);
-  },
-  uploadValidator(projectname: string, data: any) {
-    return API.post(`projects/${projectname}/upload/validator`, data);
-  },
-  addValidator(projectname: string, data: any) {
-    return API.post(`projects/${projectname}/addvalidator`, data);
-  },
-  saveConll(projectname: string, data: any) {
-    return API.post(`/projects/${projectname}/saveConll`, data);
-  },
-
   // -------------------------------------------------------- //
   // ---------------        For Klang       --------------- //
   // -------------------------------------------------------- //
@@ -284,14 +266,6 @@ export default {
 
   getUsersTreeFrom(projectname: string) {
     return API.get(`projects/${projectname}/treesfrom`);
-  },
-  addDefaultUserTree(projectname: string, user: string) {
-    const data = { user: JSON.stringify(user) };
-    return API.post(`projects/${projectname}/defaultusertrees/add`, data);
-  },
-  removeDefaultUserTree(projectname: string, dutid: any) {
-    const data = { dut_id: dutid };
-    return API.post(`projects/${projectname}/defaultusertrees/remove`, data);
   },
   uploadProjectImage(projectname: string, form: any) {
     return API.post(`projects/${projectname}/image`, form, { headers: { 'Content-Type': 'multipart/form-data' } });

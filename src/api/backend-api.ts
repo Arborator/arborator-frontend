@@ -21,6 +21,7 @@ import {
   updateProject_RV,
   updateTree_ED,
   whoIAm_RV,
+  updateUser_ED,
   getLexicon_RV,
 } from './endpoints';
 import { sample_role_action_t, sample_role_targetrole_t, transcription_t } from './backend-types';
@@ -53,6 +54,9 @@ export default {
   },
   whoAmI() {
     return API.get<whoIAm_RV>('users/me');
+  },
+  updateUser(data: updateUser_ED) {
+    return API.put<whoIAm_RV>('users/me', data)
   },
 
   // ---------------------------------------------------- //

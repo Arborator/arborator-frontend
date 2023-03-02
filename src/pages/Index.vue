@@ -1,6 +1,7 @@
 <template>
   <q-page :class="$q.dark.isActive ? 'bg-dark' : 'bg-white'">
     <div class="q-pa-md q-gutter-sm">
+      <EmailCollectDialog />
       <section class="sectionfscreen" @mousemove="xCoordinate">
         <q-card flat class="fixed-center">
           <q-card-section>
@@ -37,12 +38,6 @@
               :class="$q.dark.isActive ? 'bg-grey-10 text-white' : 'text-blue-grey-8'"
               class="rounded-borders"
             >
-              <!-- <q-carousel-slide name="style" class="column no-wrap flex-center">
-                <q-icon name="fas fa-edit" size="56px" />
-                <div class="q-mt-md text-center text-body1">
-                  {{ $t('homepage') }}
-                </div>
-              </q-carousel-slide> -->
               <q-carousel-slide name="tv" class="column no-wrap flex-center">
                 <q-icon name="fas fa-search" size="56px" />
                 <div class="q-mt-md text-center text-body1">
@@ -248,7 +243,7 @@
                 <q-card
                   bordered
                   flat
-                  :class="hoverdraft ? 'bg-grey-2' : 'hover'"
+                  :class="hoverDraft ? 'bg-grey-2' : 'hover'"
                   class="clickable clickhl col-1 grid-style-transition shadow-7"
                   @click="openURL('https://arborator.github.io/draft/live.html')"
                 >
@@ -270,7 +265,7 @@
                 <q-card
                   bordered
                   flat
-                  :class="hoverquick ? 'bg-grey-2' : ''"
+                  :class="hoverQuick ? 'bg-grey-2' : ''"
                   class="clickable clickhl col-1 grid-style-transition shadow-7"
                   @click="openURL('https://arborator.ilpga.fr/q.cgi')"
                 >
@@ -286,7 +281,7 @@
                 <q-card
                   bordered
                   flat
-                  :class="hoverlegacy ? 'bg-grey-2' : ''"
+                  :class="hoverLegacy ? 'bg-grey-2' : ''"
                   class="clickable clickhl col-1 grid-style-transition shadow-7"
                   @click="openURL('https://arborator.ilpga.fr/')"
                 >
@@ -307,34 +302,36 @@
         <q-icon name="favorite" style="font-size: 22px; color: #dd137b; height: 18px; vertical-align: text-bottom" />
         {{ $t('homepage.footertextin') }}
         <img aria-hidden="true" role="presentation" src="/svg/paris.svg" class="" style="color: #dd137b; height: 18px" />
-        <!-- {{t('footer')[2]}} -->
-        <!-- <a href="https://team.inria.fr/almanach" target="_blank">
-        <img aria-hidden="true" role="presentation" src="/svg/almanachInria.svg" class="" style="height:18px;">
-      </a> -->
-        — v2.0 (20220203)</q-item-label
-      >
+        — v2.0 (20220203)
+      </q-item-label>
     </q-footer>
   </q-page>
 </template>
 
 <script lang="ts">
-import { openURL, copyToClipboard } from 'quasar';
-import { notifyMessage } from 'src/utils/notify';
+import EmailCollectDialog from '../components/Index/EmailCollectDialog.vue';
 
-import { defineComponent } from 'vue';
+import {notifyMessage} from 'src/utils/notify';
+import {mapActions, mapState} from 'pinia';
+import {useUserStore} from 'src/pinia/modules/user';
+
+import {openURL, copyToClipboard, LocalStorage} from 'quasar';
+import {defineComponent} from 'vue';
 
 export default defineComponent({
   name: 'PageIndex',
+  components: {
+    EmailCollectDialog,
+  },
   data() {
     return {
-      lorem: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.',
       presentation: `
       Arborator-Grew, a collaborative annotation tool for treebank development. Arborator-Grew combines the features of two preexisting tools: Arborator and Grew. Arborator is a widely used collaborative graphical online dependency treebank annotation tool. Grew is a tool for graph querying and rewriting specialized in structures needed in NLP, i.e. syntactic and semantic dependency trees and graphs. Grew also has an online version, Grew-match, where all Universal Dependencies treebanks in their classical, deep and surface-syntactic flavors can be queried. Arborator-Grew is a complete redevelopment and modernization of Arborator, replacing its own internal database storage by a new Grew API, which adds a powerful query tool to Arborator's existing treebank creation and correction features. This includes complex access control for parallel expert and crowd-sourced annotation, tree comparison visualization, and various exercise modes for teaching and training of annotators. Arborator-Grew opens up new paths of collectively creating, updating, maintaining, and curating syntactic treebanks and semantic graph banks.
       `,
       hover: false,
-      hoverdraft: false,
-      hoverquick: false,
-      hoverlegacy: false,
+      hoverDraft: false,
+      hoverQuick: false,
+      hoverLegacy: false,
       search: '',
       slide: 'style',
       xcursor: 111,
@@ -344,6 +341,7 @@ export default defineComponent({
     myColor(): string {
       return `hsl(${this.xcursor}, 50%, 50%)`;
     },
+    ...mapState(useUserStore, ['shareEmail'])
   },
   methods: {
     openURL,

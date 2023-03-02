@@ -9,6 +9,7 @@ export interface UserStateInterface {
   created_date: number | null;
   family_name: string | null;
   first_name: string | null;
+  email: string | null;
   get_id: string | null;
   get_or_create: string | null;
   id: string;
@@ -38,6 +39,7 @@ export default function defaultState(): UserStateInterface {
     created_date: null,
     family_name: null,
     first_name: null,
+    email: '',
     get_id: null,
     get_or_create: null,
     id: '',

@@ -7,6 +7,7 @@ export interface user_t {
   username: string;
   first_name: string;
   family_name: string;
+  email: string;
   picture_url: string;
   super_admin: boolean;
   created_date: number;

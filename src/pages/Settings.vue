@@ -35,7 +35,7 @@
             </q-card-section>
             <q-card-section>
               <div class="q-gutter-lg">
-                <q-input v-model="getUserInfos.id" type="email" label="Email" />
+                <q-input v-model="email" type="email" label="Email" readonly />
                 <q-input v-model="getUserInfos.first_name" type="text" label="First Name" />
                 <q-input v-model="getUserInfos.family_name" type="text" label="Last Name" />
               </div>
@@ -52,6 +52,8 @@
 </template>
 
 <script lang="ts">
+import api from '../api/backend-api';
+
 import { mapState } from 'pinia';
 import { useUserStore } from 'src/pinia/modules/user';
 import { defineComponent } from 'vue';
@@ -66,12 +68,7 @@ export default defineComponent({
     };
   },
   computed: {
-    ...mapState(useUserStore, ['avatarKey', 'getUserInfos']),
-  },
-  methods: {
-    forceRerenderAvatar() {
-      console.log('FIXME : THIS IS EMPTY');
-    },
+    ...mapState(useUserStore, ['avatarKey', 'getUserInfos', 'email']),
   },
 });
 </script>

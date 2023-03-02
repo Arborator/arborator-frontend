@@ -24,6 +24,8 @@ export type getUsers_RV = user_t[];
 
 export type whoIAm_RV = user_t;
 
+export type updateUser_ED = Partial<user_t>;
+
 export type getProjects_RV = project_extended_t[];
 
 export type createProject_ED = project_t;

@@ -3,22 +3,18 @@
     <div class="q-pa-md row q-gutter-md flex flex-center">
       <q-card flat style="max-width: 100%">
         <q-card-section class="project-header">
-          <q-toolbar class="text-center">
-            <!-- <q-toolbar-title><span :class="($q.dark.isActive?'':'text-primary') + ' text-bold'">{.name}}</span> </q-toolbar-title> -->
-          </q-toolbar>
           <q-img class="project-image" :src="cleanedImage" basic>
             <div class="absolute-bottom text-h6" style="padding: 6px">
               <ProjectIcon :visibility="visibility" :exercise-mode="exerciseMode" />
               {{ $t('projectView.project') }} {{ projectName }}
               <q-btn
-                v-if="isSuperAdmin || isAdmin"
+                v-if="isAdmin"
                 flat
                 round
                 :color="$q.dark.isActive ? 'primary' : ''"
                 icon="settings"
                 @click="projectSettingsDial = true"
               >
-                <!-- <q-btn v-if="1" flat round :color="$q.dark.isActive?'primary':''" icon="settings" @click="projectSettingsDial=true"> -->
                 <q-tooltip :delay="300" content-class="text-white bg-primary">{{ $t('projectView.tooltipSettings') }}</q-tooltip>
               </q-btn>
               <q-btn v-else flat round :color="$q.dark.isActive ? 'primary' : ''" icon="settings" @click="simpleProjectInfoDialog = true">
@@ -34,7 +30,6 @@
           <q-bar class="bg-primary text-white">
             <q-space />
             <q-btn @click="isShowLexiconPanel = false" dense flat icon="close">
-              <q-tooltip content-class="bg-white text-primary">Close</q-tooltip>
             </q-btn>
           </q-bar>
           <LexiconMain :sample-id="table.selected"></LexiconMain>
@@ -69,11 +64,10 @@
             table-style="max-height:80vh"
             :rows-per-page-options="[30]"
           >
-            <!-- @request="getProjectInfos" -->
             <template #top="props">
               <q-btn-group flat>
-                <q-btn v-if="isAdmin || isSuperAdmin" flat color="default" icon="cloud_upload" @click="uploadDial = true">
-                  <q-tooltip v-if="isSuperAdmin || isAdmin" :delay="300" content-class="text-white bg-primary">{{
+                <q-btn v-if="isAdmin" flat color="default" icon="cloud_upload" @click="uploadDial = true">
+                  <q-tooltip v-if="isAdmin" :delay="300" content-class="text-white bg-primary">{{
                     $t('projectView.tooltipAddSample')
                   }}</q-tooltip>
                 </q-btn>
@@ -107,7 +101,7 @@
                   </q-tooltip>
                 </div>
 
-                <q-btn v-if="isAdmin || isSuperAdmin" v-show="table.selected.length < 1" flat color="default" icon="delete_forever" disable>
+                <q-btn v-if="isAdmin" v-show="table.selected.length < 1" flat color="default" icon="delete_forever" disable>
                   <q-tooltip v-if="table.selected.length < 1" :delay="300" content-class="text-white bg-primary">{{
                     $t('projectView.tooltipDeleteSample[0]')
                   }}</q-tooltip>
@@ -115,7 +109,7 @@
                 </q-btn>
 
                 <q-btn
-                  v-if="isAdmin || isSuperAdmin"
+                  v-if="isAdmin"
                   v-show="table.selected.length !== 0"
                   :loading="table.loadingDelete"
                   flat
@@ -127,95 +121,7 @@
                 >
                   <q-tooltip :delay="300" content-class="text-white bg-primary">{{ $t('projectView.tooltipDeleteSample[1]') }}</q-tooltip>
                 </q-btn>
-                <!-- ion-logo-github -->
-               <!--<div>
-                  <q-btn-dropdown v-if="loggedWithGithub" :disable="table.selected.length < 1" icon="ion-md-git-commit" flat dense>
-                    <q-list>
-                      <q-item v-close-popup clickable @click="commit('user')">
-                        <q-item-section avatar>
-                          <q-avatar v-if="isLoggedIn" size="1.2rem">
-                            <img :src="avatar" />
-                          </q-avatar>
-                          <q-icon v-else name="account_circle" />
-                        </q-item-section>
-                        <q-item-section>
-                          <q-item-label>{{ $t('projectView.tooltipGitPush[0]') }}</q-item-label>
-                        </q-item-section>
-                      </q-item>
-                      <q-item v-close-popup clickable @click="commit('user_recent')">
-                        <q-item-section avatar>
-                          <q-avatar v-if="isLoggedIn" size="1.2rem">
-                            <img :src="avatar" />
-                            <q-badge floating transparent color="principal">+</q-badge>
-                          </q-avatar>
-                          <q-icon v-else name="account_circle" />
-                          <div></div>
-                        </q-item-section>
-                        <q-item-section>
-                          <q-item-label>{{ $t('projectView.tooltipGitPush[1]') }}</q-item-label>
-                        </q-item-section>
-                      </q-item>
-
-                      <q-item v-if="isAdmin || isSuperAdmin" v-close-popup clickable @click="commit('recent')">
-                        <q-item-section avatar>
-                          <q-icon name="schedule" />
-                        </q-item-section>
-                        <q-item-section>
-                          <q-item-label>{{ $t('projectView.tooltipGitPush[2]') }}</q-item-label>
-                        </q-item-section>
-                      </q-item>
-
-                      <q-item v-if="isAdmin || isSuperAdmin" v-close-popup clickable @click="commit('all')">
-                        <q-item-section avatar>
-                          <q-icon name="ion-md-globe" />
-                        </q-item-section>
-                        <q-item-section>
-                          <q-item-label>{{ $t('projectView.tooltipGitPush[3]') }}</q-item-label>
-                        </q-item-section>
-                      </q-item>
-                    </q-list>
-                  </q-btn-dropdown>
-                 
-
-                  <q-tooltip v-if="table.selected.length < 1" :delay="300" content-class="text-white bg-primary">
-                    {{ $t('projectView.tooltipGitPush[4]') }}
-                  </q-tooltip>
-                  <q-tooltip v-else :delay="300" content-class="text-white bg-primary">{{ $t('projectView.tooltipGitPush[5]') }}</q-tooltip>
-                </div>
-
-                <div>
-                  <q-btn-dropdown v-if="loggedWithGithub" :disable="false" icon="ion-md-git-pull-request" flat dense>
-                    <q-list>
-                      <q-item v-close-popup clickable :disable="table.selected.length < 1" @click="pull('user')">
-                        <q-item-section avatar>
-                          <q-avatar v-if="isLoggedIn" size="1.2rem">
-                            <img :src="avatar" />
-                          </q-avatar>
-                          <q-icon v-else name="account_circle" />
-                        </q-item-section>
-                        <q-item-section>
-                          <q-item-label>{{ $t('projectView.gitPullUser') }}</q-item-label>
-                        </q-item-section>
-                      </q-item>
-
-                      <q-item v-if="isAdmin || isSuperAdmin" v-close-popup clickable :disable="table.selected.length < 1" @click="pull('all')">
-                        <q-item-section avatar>
-                          <q-icon name="ion-md-globe" />
-                        </q-item-section>
-                        <q-item-section>
-                          <q-item-label>{{ $t('projectView.gitPullAll') }}</q-item-label>
-                        </q-item-section>
-                      </q-item>
-                    </q-list>
-                  </q-btn-dropdown>
-                  <q-tooltip v-if="table.selected.length < 1" :delay="300" content-class="text-white bg-primary">{{
-                    $t('projectView.tooltipGitPullSelect[0]')
-                  }}</q-tooltip>
-                  <q-tooltip v-else :delay="300" content-class="text-white bg-primary">{{ $t('projectView.tooltipGitPullSelect[1]') }}</q-tooltip>
-                  <q-tooltip :delay="300" content-class="text-white bg-primary"></q-tooltip>
-                </div>-->
-                <!-- Lexicon-dialog -->
-                <div v-if="isGuest || isAdmin || isSuperAdmin">
+                <div v-if="isProjectMember">
                   <q-btn
                     flat
                     color="default"
@@ -299,7 +205,7 @@
                 <q-td key="tokens" :props="props">{{ props.row.tokens }}</q-td>
                 <q-td key="annotators" :props="props">
                   <TagInput
-                    v-if="isAdmin || isSuperAdmin"
+                    v-if="isAdmin"
                     v-model="props.row.roles.annotator"
                     role="annotator"
                     :tag-context="props.row"
@@ -322,7 +228,7 @@
                 </q-td>
                 <q-td key="validators" :props="props">
                   <TagInput
-                    v-if="isAdmin || isSuperAdmin"
+                    v-if="isAdmin"
                     v-model="props.row.roles.validator"
                     role="validator"
                     :tag-context="props.row"
@@ -371,7 +277,6 @@
                     @update:model-value="updateExerciseLevel(props.row)"
                   />
                 </q-td>
-                <!-- <q-td key="exo" :props="props">{{ props.row.exo }}</q-td> -->
               </q-tr>
             </template>
           </q-table>
@@ -440,13 +345,13 @@ import RelationTableMain from '../components/relationTable/RelationTableMain.vue
 import ParsingPanel from '../components/parsing/ParsingPanel.vue';
 import ProjectIcon from '../components/shared/ProjectIcon.vue';
 
-import { notifyError, notifyMessage } from 'src/utils/notify';
-import { mapActions, mapState } from 'pinia';
-import { useProjectStore } from 'src/pinia/modules/project';
-import { useUserStore } from 'src/pinia/modules/user';
-import { sample_roles_t, sample_t, user_sample_roles_t, sample_role_targetrole_t, sample_role_action_t } from 'src/api/backend-types';
-import { defineComponent } from 'vue';
-import { table_t } from 'src/types/main_types';
+import {notifyError, notifyMessage} from 'src/utils/notify';
+import {mapActions, mapState} from 'pinia';
+import {useProjectStore} from 'src/pinia/modules/project';
+import {useUserStore} from 'src/pinia/modules/user';
+import {sample_roles_t, sample_t, user_sample_roles_t, sample_role_targetrole_t, sample_role_action_t} from 'src/api/backend-types';
+import {defineComponent} from 'vue';
+import {table_t} from 'src/types/main_types';
 
 export default defineComponent({
   components: {
@@ -541,28 +446,15 @@ export default defineComponent({
       multiple: [],
       options: ['Google', 'Facebook', 'Twitter', 'Apple', 'Oracle'],
       tab: 'texts',
-      btnTopClass: this.$q.dark.isActive ? 'white' : 'blue-grey-8',
       assignDial: false,
       uploadDial: false,
       projectSettingsDial: false,
       simpleProjectInfoDialog: false,
       confirmActionDial: false,
+      isShowParsingPanel: false,
+      isShowLexiconPanel: false,
       confirmActionCallback,
       confirmActionArg1: '',
-      lexiconItems: [],
-      project: {
-        // todo: this seems to be useless
-        infos: {
-          name: '',
-          visibility: 2,
-          is_open: false,
-          description: '',
-          image: '',
-          admins: [],
-          guests: [],
-        },
-        samples: [],
-      },
       samples,
       projectTreesFrom,
       exerciceModeOptions: [
@@ -585,13 +477,10 @@ export default defineComponent({
       ],
       features: [],
       sampleNames,
-      isShowParsingPanel: false,
       window: { width: 0, height: 0 },
       possiblesUsers,
-      tagContext: {},
       tableKey: 0,
       initLoad: false,
-      isShowLexiconPanel: false,
     };
   },
   computed: {
@@ -607,30 +496,24 @@ export default defineComponent({
       'cleanedImage',
       'description',
       'isTeacher',
+      'isProjectMember',
       'canSaveTreeInProject',
     ]),
     ...mapState(useUserStore, ['isLoggedIn', 'isSuperAdmin', 'loggedWithGithub', 'avatar']),
-    projectName(): string | string[] {
-      return this.$route.params.projectname;
+    projectName(): string {
+      return this.$route.params.projectname as string;
     },
     routePath(): string {
       return this.$route.path;
     },
-    noselect(): boolean {
-      return this.table.selected.length < 1;
-    },
     sentenceCount(): number {
       return this.samples.map((sample) => sample.sentences).reduce((partialSum, a) => partialSum + a, 0);
-    },
-    featureOptions(): String[] {
-      return Object.values(this.annotationFeatures.FEATS).map((value) => value.name);
     },
     getProjectTreesFrom(): string[] {
       const projectTreesFrom: string[] = [];
 
       for (const sample of this.samples) {
         const sampleTreesFrom = sample.treesFrom;
-
         for (const userId of sampleTreesFrom) {
           if (!projectTreesFrom.includes(userId)) {
             projectTreesFrom.push(userId);
@@ -668,7 +551,6 @@ export default defineComponent({
     },
     loadProjectData() {
       this.getProjectSamples();
-      //this.getProjectTreesFrom();
     },
     getProjectSamples() {
       api.getProjectSamples(this.projectName as string).then((response) => {
@@ -710,50 +592,6 @@ export default defineComponent({
       }
     },
 
-    commit(type: string) {
-      console.log('deprecated function push', type);
-
-      // const samplenames = [];
-      // for (const sample of this.table.selected) {
-      //   samplenames.push(sample.sample_name);
-      // }
-      // const data = { samplenames, commit_type: type };
-      // api
-      //   .commit(this.projectName, data)
-      //   .then((response) => {
-      //     console.log(777, response);
-      //     this.showNotif('top', 'GitHubPushSuccess');
-      //   })
-      //   .catch((error) => {
-      //     if (error.response.data.status === 418) {
-      //       error.response.message = error.response.data.message;
-      //       error.permanent = true;
-      //       notifyError({ error });
-      //     } else if (error.response.data.status === 204) {
-      //       notifyError({
-      //         error: error.response.data.message,
-      //       });
-      //     } else notifyError({ error });
-      //   });
-    },
-    pull(type: string) {
-      console.log('deprecated function pull', type);
-      // const samplenames = [];
-      // for (const sample of this.table.selected) {
-      //   samplenames.push(sample.sample_name);
-      // }
-      // const data = { samplenames, pull_type: type };
-      // api
-      //   .pull(this.projectName, data)
-      //   .then(() => {
-      //     console.log('wooohoo');
-      //   })
-      //   .catch((error) => {
-      //     console.log('ici il faut un popup utile indiquant comment installer l application');
-
-      //     notifyError({ error });
-      //   });
-    },
     exportSamplesZip() {
       this.table.exporting = true;
       const samplenames = [];
@@ -784,12 +622,6 @@ export default defineComponent({
       this.isShowParsingPanel = !this.isShowParsingPanel;
     },
 
-    // grewquery() {
-    //     console.log('projectview',this.grewqueryc)
-    //     if (this.grewqueryc==0) return
-    //     this.grewqueryc+= 1;
-    //     // if(this.$route.query.q && this.$route.query.q.length>0) this.searchDialog=true;
-    // },
     /**
      * Used to update tags and table view based on response
      * @param response : the response from backend
@@ -864,21 +696,6 @@ export default defineComponent({
         .catch((error) => {
           notifyError({ error });
         });
-      // window.open(`/api/projects/${projectName}/samples/${sampleName}/evaluation`);
-      // api.exportEvaluation(projectName, sampleName).then((response) => {
-      //   this.downloadFileAttachement(response.data, fileName)
-      //   // var evaluations = response.data;
-      //   // var data =
-      //   //   "text/json;charset=utf-8," +
-      //   //   encodeURIComponent(JSON.stringify(evaluations));
-
-      //   // var a = document.createElement("a");
-      //   // a.href = "data:" + data;
-      //   // a.setAttribute("download", `${sampleName}_evaluations.json`);
-
-      //   // document.body.appendChild(a);
-      //   // a.click();
-      // });
     },
     downloadFileAttachement(data: any, fileName: string): void {
       const fileURL = window.URL.createObjectURL(new Blob([data]));

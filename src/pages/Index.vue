@@ -1,7 +1,7 @@
 <template>
   <q-page :class="$q.dark.isActive ? 'bg-dark' : 'bg-white'">
     <div class="q-pa-md q-gutter-sm">
-      <EmailCollectDialog />
+      <EmailCollectDialog v-if="shareEmail" />
       <section class="sectionfscreen" @mousemove="xCoordinate">
         <q-card flat class="fixed-center">
           <q-card-section>

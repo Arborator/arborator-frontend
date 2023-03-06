@@ -248,6 +248,12 @@ export default {
     annotationSettingsSave: "Sauvegarder les paramètres d'annotation",
     checkAnnotation: 'Ceci ressemble à du JSON raisonnable',
   },
+  settingsPage:{
+    saveModifications: 'Enregistrer les modifications',
+    firstName: 'Prénom',
+    familyName: 'Nom',
+    saveModificationMessage: 'Vos informations personelles sont mises à jour',
+  },
   // Klang
   Klang: {
     projects: 'Les projets Klang',

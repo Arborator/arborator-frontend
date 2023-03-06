@@ -254,6 +254,12 @@ export default {
     annotationSettingsSave: 'Save annotation settings',
     checkAnnotation: 'This looks like reasonable Json',
   },
+  settingsPage:{
+    saveModifications: 'Save Modification',
+    firstName: 'First Name',
+    familyName: 'Last Name',
+    saveModificationMessage: 'Your personal information is updated',
+  },
   // Klang
   Klang: {
     projects: 'Klang Projects',

@@ -107,13 +107,19 @@ export default {
     footertextmadewith: 'Made with',
     footertextin: 'in', // reaaallllll basic one, not good enough but still buggy using span and html parse
     textGetUserEmailDialog: [
-      'We want to make sure you are always up-to-date with important changes on ArboratorGrew, as well as keep you informed about any purgatory operation that may affect your project. Please provide us with your email address below so we can notify you before any important updates or before deleting your unused project. We value your privacy and will never share your information with anyone else.',
-      'I accept receiving emails',
-      'Submit'
+      'For the proper management of the service, we may need to contact you, especially for the removal of unused projects. Your email will only be used for communications regarding ArboratorGrew and will not be shared with third parties.',
+      'You may refuse to the communication of your email, but if you do, we reserve the right to delete your projects without notice.',
+      'You can modify or delete your contact email at any time from your account.',
     ],
+    checkboxEmailDialog: [
+      'I understand that my email will be stored on the ArboratorGrew server located in Europe.',
+      'I refuse to share my email.',
+      'I subscribe to the newsletter that will be sent to keep me informed of new features or incidents on the platform (no more than a few emails per month).',
+    ],
+    submitMessage: "Your choices are updated",
     inputErrorText: ['Please type something', 'Please type valid email'],
     tootltipBtnSumbitUserEmail: 'Please check the box if you would like to receive Emails',
-    notShareEmailBtn: 'Decline',
+    submitEmailBtn: 'Soumettre',
   },
 
   // list of projects page

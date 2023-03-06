@@ -104,13 +104,19 @@ export default {
     footertextmadewith: "Créé avec beaucoup d'",
     footertextin: 'à', // reaaallllll basic one, not good enough but still buggy using span and html parse  navhome: 'Accueil',
     textGetUserEmailDialog: [
-      'Nous voulons nous assurer que vous êtes toujours au courant des changements importants sur ArboratorGrew, ainsi que vous tenir informé de toute opération purgatoire qui pourrait affecter votre projet. Veuillez nous fournir votre adresse Email ci-dessous afin que nous puissions vous avertir avant toute mise à jour importante ou avant de supprimer votre projet inutilisé. Nous respectons votre vie privée et ne partagerons jamais vos informations avec qui que ce soit.',
-      "J'accepte de recevoir des courriels",
-      'Soumettre'
+      'Pour la bonne gestion du service, nous pourrions avoir besoin de vous contacter, notamment pour la suppression de projects inutilisés. Votre email ne sera utilisé que pour des communications concernant ArboratorGrew et ne sera pas communiqué à des tiers.',
+      'Vous pouvez vous opposer à la communication de votre mail mais, dans ce cas, nous nous réservons le droit de supprimer vos projets sans préavis.',
+      'Vous pouvez à tout moment modifier ou supprimer votre mail de contact depuis votre compte.',
     ],
+    checkboxEmailDialog: [
+      "J'ai compris que mon mail sera stocké sur le serveur d'ArboratorGrew situé en Europe.",
+      "Je refuse de communiquer mon email.",
+      "Je m'inscris à la newsletter qui sera envoyée pour me tenir au courant des nouvelles fonctionnalités ou des incidents sur la plateforme (newsletter, pas plus de quelques mails par mois)."
+    ],
+    submitMessage: "Vos choix sont bien mis à jour",
     inputErrorText: ["S'il vous plaît, tapez quelque chose", "S'il vous plaît, tapez une adresse valide"],
     tootltipBtnSumbitUserEmail: 'Veuillez cocher la case si vous souhaitez recevoir des courriels.',
-    notShareEmailBtn: 'Refuser',
+    submitEmailBtn: 'Soumettre',
   },
 
   // list of projects page

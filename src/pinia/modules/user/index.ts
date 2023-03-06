@@ -22,12 +22,7 @@ export const useUserStore = defineStore('user', {
       return 'perm_identity';
     },
     shareEmail(state): boolean {
-      if (localStorage.getItem('shareEmail') != null){
-        return false
-      }
-      else {
-        return this.loggedWithGithub && state.email == null;
-      }
+      return !state.not_share_email && this.loggedWithGithub && state.email == null;
     }
     /**
      * This defines if a user is admin for a Arborator or Klang page. It will check in order if :

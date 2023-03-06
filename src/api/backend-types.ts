@@ -8,6 +8,8 @@ export interface user_t {
   first_name: string;
   family_name: string;
   email: string;
+  not_share_email: boolean;
+  receive_newsletter: boolean;
   picture_url: string;
   super_admin: boolean;
   created_date: number;

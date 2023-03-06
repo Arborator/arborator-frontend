@@ -3,13 +3,13 @@ export interface UserStateInterface {
   loginError: boolean;
   failedAccess: boolean;
   avatarKey: string;
-
   as_json: string | null;
   auth_provider: string | null;
   created_date: number | null;
   family_name: string | null;
   first_name: string | null;
   email: string | null;
+  not_share_email: boolean;
   get_id: string | null;
   get_or_create: string | null;
   id: string;
@@ -33,13 +33,13 @@ export default function defaultState(): UserStateInterface {
     loginError: false,
     failedAccess: false,
     avatarKey: '',
-
     as_json: null,
     auth_provider: null,
     created_date: null,
-    family_name: null,
-    first_name: null,
+    family_name: '',
+    first_name: '',
     email: '',
+    not_share_email: false,
     get_id: null,
     get_or_create: null,
     id: '',

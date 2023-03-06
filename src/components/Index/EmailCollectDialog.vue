@@ -1,6 +1,6 @@
 <template>
     <q-dialog v-model="emailCollectDialog" persistent>
-      <q-card style="max-width: 50vw;">
+      <q-card style="min-width: 50vw;">
         <q-form @submit="onSubmitEmail">
             <q-bar class="bg-primary text-white">
                 <q-space />
@@ -13,30 +13,30 @@
                 </div>
             </q-card-section>
             <q-card-section class="text-body2 text-weight-light text-justify" :class="$q.dark.isActive ? 'text-white' : 'text-blue-grey-10'"> {{ $t('homepage.textGetUserEmailDialog[0]')}} </q-card-section>
+             <q-card-section class="text-body2 text-weight-light text-justify q-pt-none" :class="$q.dark.isActive ? 'text-white' : 'text-blue-grey-10'"> {{ $t('homepage.textGetUserEmailDialog[1]')}} </q-card-section>
+              <q-card-section class="text-body2 text-weight-light text-justify q-pt-none" :class="$q.dark.isActive ? 'text-white' : 'text-blue-grey-10'"> {{ $t('homepage.textGetUserEmailDialog[2]')}} </q-card-section>
             <q-card-section>
                 <q-input 
                     v-model="email"
+                    :disable="notShareEmail == true"
                     type="email" 
                     label="Email" 
-                    :rules="[
-                        (val) => (val && val.length > 0) ||  $t('homepage.inputErrorText[0]'),
-                        (val) => (isValidEmail(val)) ||  $t('homepage.inputErrorText[1]'),
-                    ]"
+                    :rules="[emailRules]"
                 />
                 <div class="text-weight-light" :class="$q.dark.isActive ? 'text-white' : 'text-blue-grey-10'">
-                    <q-checkbox size="xs" v-model="validate" />{{ $t('homepage.textGetUserEmailDialog[1]')}}
+                    <q-checkbox size="xs" v-model="shareEmail" v-on:click.event="notShareEmail = false"/>{{ $t('homepage.checkboxEmailDialog[0]')}}
+                </div>
+                <div class="text-weight-light" :class="$q.dark.isActive ? 'text-white' : 'text-blue-grey-10'">
+                    <q-checkbox size="xs" v-model="subscribeNewsletter" v-on:click.event="notShareEmail = false" />{{ $t('homepage.checkboxEmailDialog[2]')}}
+                </div>
+                <div class="text-weight-light" :class="$q.dark.isActive ? 'text-white' : 'text-blue-grey-10'">
+                    <q-checkbox size="xs" v-model="notShareEmail" v-on:click.event="chooseNotShareEmail" />{{ $t('homepage.checkboxEmailDialog[1]')}}
                 </div>
             </q-card-section>
             <q-card-actions align="around">
                 <div>
-                    <q-btn :disable="!validate || email === ''" type="submit" color="primary">
-                        {{ $t('homepage.textGetUserEmailDialog[2]')}}
-                    </q-btn>
-                    <q-tooltip v-if="!validate" content-class="text-white bg-primary">{{ $t('homepage.tootltipBtnSumbitUserEmail')}}</q-tooltip>
-                </div>
-                <div>
-                    <q-btn outline color="red-10" @click="notShareEmail">
-                        {{ $t('homepage.notShareEmailBtn')}}
+                    <q-btn :disable="!notShareEmail && !shareEmail" type="submit" color="primary">
+                        {{ $t('homepage.submitEmailBtn')}}
                     </q-btn>
                 </div>
             </q-card-actions>
@@ -58,8 +58,10 @@ export default defineComponent({
     },
     data() {
       return {
-        emailCollectDialog: true, 
-        validate: false,
+        emailCollectDialog: true,
+        shareEmail: false,
+        notShareEmail: false,
+        subscribeNewsletter: false,
         email:'', 
       }  
     }, 
@@ -71,20 +73,27 @@ export default defineComponent({
             let emailRegExp = new RegExp('^[A-Za-z0-9._%+-]+@[a-z0-9-]+\.[A-Za-z]{2,4}$')
             return emailRegExp.test(val)
         },
+        emailRules() {
+            if (!this.notShareEmail){
+                return this.email.length > 0 || this.$t('homepage.inputErrorText[0]') , this.isValidEmail(this.email) || this.$t('homepage.inputErrorText[1]')
+            }
+        },
+        chooseNotShareEmail() {
+            this.shareEmail = false;
+            this.subscribeNewsletter = false; 
+            this.email = '';  
+        },
         onSubmitEmail() {
+            this.emailCollectDialog = false
             api
-              .updateUser({email : this.email })
+              .updateUser({email : this.email, not_share_email: this.notShareEmail, receive_newsletter: this.subscribeNewsletter })
               .then((response) => {
-                notifyMessage({message: 'Email updated'})
+                notifyMessage({message: this.$t('homepage.submitMessage')})
               })
               .catch((error) => {
                 notifyError({error})
               })
         }, 
-        notShareEmail() {
-            LocalStorage.set('shareEmail', false);
-            this.emailCollectDialog = false;
-        }
     }
 });
 </script>

@@ -57,7 +57,7 @@
 import api from '../api/backend-api';
 
 import {notifyError, notifyMessage} from 'src/utils/notify';
-import {mapState, mapWritableState} from 'pinia';
+import {mapState, mapWritableState, mapActions} from 'pinia';
 import {useUserStore} from 'src/pinia/modules/user';
 import {defineComponent} from 'vue';
 
@@ -68,20 +68,14 @@ export default defineComponent({
     ...mapState(useUserStore, ['avatarKey', 'getUserInfos']),
   },
   methods: {
+    ...mapActions(useUserStore, ['updateUserInformation']),
     onSubmitModifications(){
       const data = {
         email : this.email as string,
         first_name: this.first_name as string,
         family_name: this.family_name as string
       };
-      api
-        .updateUser(data)
-        .then((response) => {
-          notifyMessage({message: this.$t('settingsPage.saveModificationMessage')})
-        })
-        .catch((error) => {
-          notifyError({error})
-        });
+      this.updateUserInformation(data);
     }
   },
 });

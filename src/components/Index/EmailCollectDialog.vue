@@ -66,9 +66,10 @@ export default defineComponent({
       }  
     }, 
     computed: {
-        ...mapState(useUserStore, ['username'])
+        ...mapState(useUserStore, ['username']),  
     },
     methods: {
+        ...mapActions(useUserStore, ['updateUserInformation']),
         isValidEmail(val: any) {
             let emailRegExp = new RegExp('^[A-Za-z0-9._%+-]+@[a-z0-9-]+\.[A-Za-z]{2,4}$')
             return emailRegExp.test(val)
@@ -84,15 +85,9 @@ export default defineComponent({
             this.email = '';  
         },
         onSubmitEmail() {
-            this.emailCollectDialog = false
-            api
-              .updateUser({email : this.email, not_share_email: this.notShareEmail, receive_newsletter: this.subscribeNewsletter })
-              .then((response) => {
-                notifyMessage({message: this.$t('homepage.submitMessage')})
-              })
-              .catch((error) => {
-                notifyError({error})
-              })
+            this.emailCollectDialog = false;
+            const data = {email : this.email, not_share_email: this.notShareEmail, receive_newsletter: this.subscribeNewsletter};
+            this.updateUserInformation(data);
         }, 
     }
 });

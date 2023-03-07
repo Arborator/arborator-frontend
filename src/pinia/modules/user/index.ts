@@ -1,10 +1,11 @@
 import defaultState from './defaultState';
 
-import { cookies } from '../../../boot/vue-cookies';
-
+import {cookies} from '../../../boot/vue-cookies';
+import {i18n} from 'src/boot/i18n';
 import api from '../../../api/backend-api';
-import { defineStore } from 'pinia';
-import { notifyError } from 'src/utils/notify';
+import {defineStore} from 'pinia';
+import {notifyError, notifyMessage} from 'src/utils/notify';
+import {user_t} from 'src/api/backend-types';
 
 export const useUserStore = defineStore('user', {
   state: () => {
@@ -75,5 +76,20 @@ export const useUserStore = defineStore('user', {
         resolve({ status: 'disconnected' });
       });
     },
+    updateUserInformation(informationToUpdate: Partial<user_t>){
+      return new Promise((resolve, reject) => {
+        api
+          .updateUser(informationToUpdate)
+          .then((response) => {
+            this.$patch(informationToUpdate);
+            notifyMessage({ message: i18n.global.t('settingsPage.saveModificationMessage') });
+            resolve(response);
+          })
+          .catch((error) => {
+            notifyError({ error });
+            reject(error);
+          });
+      });
+    }
   },
 });

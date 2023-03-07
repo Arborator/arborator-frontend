@@ -7,9 +7,9 @@
                 <q-btn dense flat icon="close" v-close-popup /> 
             </q-bar>
             <q-card-section>
-                <div class="text-center">
-                    <img v-if="$q.dark.isActive" alt="Arborator" src="/svg/arborator.grew.white.svg" class="brandinglogo" />
-                    <img v-else alt="Arborator" src="/svg/arborator.grew.svg" class="brandinglogo" />
+                <div class="text-center" style="width: 100%;">
+                    <q-img v-if="$q.dark.isActive" alt="Arborator" src="/svg/arborator.grew.white.svg" class="brandinglogo" />
+                    <q-img v-else alt="Arborator" src="/svg/arborator.grew.svg" class="brandinglogo" />
                 </div>
             </q-card-section>
             <q-card-section class="text-body2 text-weight-light text-justify" :class="$q.dark.isActive ? 'text-white' : 'text-blue-grey-10'"> {{ $t('homepage.textGetUserEmailDialog[0]')}} </q-card-section>

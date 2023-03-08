@@ -27,9 +27,6 @@
                     <q-checkbox size="xs" v-model="shareEmail" v-on:click.event="notShareEmail = false"/>{{ $t('homepage.checkboxEmailDialog[0]')}}
                 </div>
                 <div class="text-weight-light" :class="$q.dark.isActive ? 'text-white' : 'text-blue-grey-10'">
-                    <q-checkbox size="xs" v-model="subscribeNewsletter" v-on:click.event="notShareEmail = false" />{{ $t('homepage.checkboxEmailDialog[2]')}}
-                </div>
-                <div class="text-weight-light" :class="$q.dark.isActive ? 'text-white' : 'text-blue-grey-10'">
                     <q-checkbox size="xs" v-model="notShareEmail" v-on:click.event="chooseNotShareEmail" />{{ $t('homepage.checkboxEmailDialog[1]')}}
                 </div>
             </q-card-section>
@@ -46,8 +43,7 @@
 </template>
 <script lang="ts">
 import api from '../../api/backend-api';
-import {LocalStorage} from 'quasar';
-import {notifyError, notifyMessage} from 'src/utils/notify';
+
 import {mapActions, mapState} from 'pinia';
 import {useUserStore} from 'src/pinia/modules/user';
 
@@ -61,7 +57,6 @@ export default defineComponent({
         emailCollectDialog: true,
         shareEmail: false,
         notShareEmail: false,
-        subscribeNewsletter: false,
         email:'', 
       }  
     }, 
@@ -81,12 +76,11 @@ export default defineComponent({
         },
         chooseNotShareEmail() {
             this.shareEmail = false;
-            this.subscribeNewsletter = false; 
             this.email = '';  
         },
         onSubmitEmail() {
             this.emailCollectDialog = false;
-            const data = {email : this.email, not_share_email: this.notShareEmail, receive_newsletter: this.subscribeNewsletter};
+            const data = {email : this.email, not_share_email: this.notShareEmail};
             this.updateUserInformation(data);
         }, 
     }

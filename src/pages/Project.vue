@@ -210,7 +210,7 @@
                     role="annotator"
                     :tag-context="props.row"
                     :element-id="props.row.sample_name + 'annotatortag'"
-                    :existing-tags="possiblesUsers"
+                    :existing-tags="getPossibleUsers"
                     :typeahead="true"
                     typeahead-style="badges"
                     :typeahead-hide-discard="true"
@@ -233,7 +233,7 @@
                     role="validator"
                     :tag-context="props.row"
                     :element-id="props.row.sample_name + 'validatortag'"
-                    :existing-tags="possiblesUsers"
+                    :existing-tags="getPossibleUsers"
                     :typeahead="true"
                     typeahead-style="badges"
                     :typeahead-hide-discard="true"
@@ -370,7 +370,6 @@ export default defineComponent({
     const samples: sample_t[] = [];
     const selected: sample_t[] = [];
     const projectTreesFrom: string[] = [];
-    const possiblesUsers: user_sample_roles_t[] = [];
     const confirmActionCallback: CallableFunction = () => {
       console.log('Callback not init yet');
     };
@@ -478,7 +477,6 @@ export default defineComponent({
       features: [],
       sampleNames,
       window: { width: 0, height: 0 },
-      possiblesUsers,
       tableKey: 0,
       initLoad: false,
     };
@@ -522,13 +520,22 @@ export default defineComponent({
       }
       return projectTreesFrom;
     },
+    getPossibleUsers(){
+      const possiblesUsers: user_sample_roles_t[] = []
+      for (const admin of this.admins){
+        possiblesUsers.push({ key: admin, value: admin });
+      }
+      for (const guest of this.guests){
+        possiblesUsers.push({ key: guest, value: guest })
+      }
+      return possiblesUsers;
+    }
   },
   created() {
     window.addEventListener('resize', this.handleResize);
     this.handleResize();
   },
   mounted() {
-    this.getUsers();
     this.loadProjectData();
     document.title = `ArboratorGrew: ${this.projectName}`;
   },
@@ -560,21 +567,6 @@ export default defineComponent({
           this.sampleNames.push(sample.sample_name);
         }
       });
-    },
-
-    getUsers() {
-      // TODO : change this function as it's downloading all users each time. It should only be users of the project
-      // this method populate the `possiblesUsers` list for feeding the annotator and validator tag input choice
-      api
-        .getUsers()
-        .then((response) => {
-          for (const name of response.data.map((a) => a.username)) {
-            this.possiblesUsers.push({ key: name, value: name });
-          }
-        })
-        .catch((error) => {
-          notifyError({ error });
-        });
     },
 
     deleteSamples() {

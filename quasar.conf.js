@@ -14,7 +14,7 @@ module.exports = configure((ctx) => ({
 
   // app boot file (/src/boot)
   // --> boot files are part of "main.js"
-  boot: ['i18n', 'axios', 'vue-cookies', 'vue-storage', 'vue-audio-visual', 'pinia'],
+  boot: ['i18n', 'axios', 'vue-cookies', 'vue-storage', 'vue-audio-visual', 'pinia', 'matomo'],
 
   css: ['app.scss'],
 

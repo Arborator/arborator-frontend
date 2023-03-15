@@ -1,6 +1,6 @@
 <template>
   <q-page id="container" :class="$q.dark.isActive ? 'bg-dark' : 'bg-grey-1'">
-    <div class="q-pa-md row q-gutter-md flex flex-center">
+    <div>
       <q-card flat style="max-width: 100%">
         <q-card-section class="project-header">
           <q-img class="project-image" :src="cleanedImage" basic>

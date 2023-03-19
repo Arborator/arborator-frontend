@@ -23,6 +23,8 @@ import {
   whoIAm_RV,
   updateUser_ED,
   getLexicon_RV,
+  getGithubRepositories_RV,
+  createGithubSynchronizedRepository_ED,
 } from './endpoints';
 import { sample_role_action_t, sample_role_targetrole_t, transcription_t } from './backend-types';
 
@@ -263,6 +265,18 @@ export default {
   removeParseFolder(projectname: string, projectFdname: string) {
     const data = { fdname: projectFdname };
     return API.post(`/projects/${projectname}/samples/parsing/removeFolder`, data);
+  },
+ // -------------------------------------------------------- //
+  // ---------------          Github         --------------- //
+  // -------------------------------------------------------- //
+  getGithubRepositories(projectName: string) {
+    return API.get<getGithubRepositories_RV>(`/projects/${projectName}/me/github`);
+  },
+  synchronizeWithGithubRepo(projectName: string, data: any) {
+    return API.post<createGithubSynchronizedRepository_ED>(`/projects/${projectName}/github-repository`, data);
+  },
+  getSynchronizedGithubRepository(projectName: string, username:string) {
+    return API.get(`/projects/${projectName}/${username}/github-repository`);
   },
   // -------------------------------------------------------- //
   // ---------------        To Refactor       --------------- //

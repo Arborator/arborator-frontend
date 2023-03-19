@@ -40,6 +40,10 @@
           <ParsingPanel :samples="samples"></ParsingPanel>
         </q-card-section>
 
+        <!--GithubSyncDialog-->
+        <q-dialog v-model="isShowGithubSyncPanel">
+          <GithubSyncDialog :projectName="projectName" />
+        </q-dialog>
         <q-card-section>
           <q-table
             ref="textsTable"
@@ -148,6 +152,24 @@
                       Panel</q-tooltip
                     >
                   </q-btn>
+                </div>
+                <div v-if="isProjectMember && loggedWithGithub && githubSynchronizedRepo == ''">
+                  <q-btn 
+                    flat
+                    color="default"
+                    icon="sync"
+                    @click="isShowGithubSyncPanel = true">
+                  </q-btn>
+                </div>
+                <div v-if="githubSynchronizedRepo != ''">
+                  <q-btn 
+                    outline
+                    color="primary"
+                    :label="this.githubSynchronizedRepo"
+                    >
+                  </q-btn>
+                  <q-tooltip content-class="text-white bg-primary">This Project is synchronized with {{githubSynchronizedRepo}}</q-tooltip>
+                  
                 </div>
               </q-btn-group>
 
@@ -344,6 +366,7 @@ import GrewSearch from '../components/grewSearch/GrewSearch.vue';
 import RelationTableMain from '../components/relationTable/RelationTableMain.vue';
 import ParsingPanel from '../components/parsing/ParsingPanel.vue';
 import ProjectIcon from '../components/shared/ProjectIcon.vue';
+import GithubSyncDialog from '../components/github/GithubSyncDialog.vue';
 
 import {notifyError, notifyMessage} from 'src/utils/notify';
 import {mapActions, mapState} from 'pinia';
@@ -365,6 +388,7 @@ export default defineComponent({
     RelationTableMain,
     ParsingPanel,
     ProjectIcon,
+    GithubSyncDialog
   },
   data() {
     const samples: sample_t[] = [];
@@ -440,6 +464,7 @@ export default defineComponent({
       loadingDelete: false,
       exporting: false,
     };
+    const githubSynchronizedRepo: string = '';
     return {
       table,
       multiple: [],
@@ -452,6 +477,7 @@ export default defineComponent({
       confirmActionDial: false,
       isShowParsingPanel: false,
       isShowLexiconPanel: false,
+      isShowGithubSyncPanel: false,
       confirmActionCallback,
       confirmActionArg1: '',
       samples,
@@ -479,6 +505,7 @@ export default defineComponent({
       window: { width: 0, height: 0 },
       tableKey: 0,
       initLoad: false,
+      githubSynchronizedRepo:'',
     };
   },
   computed: {
@@ -497,7 +524,7 @@ export default defineComponent({
       'isProjectMember',
       'canSaveTreeInProject',
     ]),
-    ...mapState(useUserStore, ['isLoggedIn', 'isSuperAdmin', 'loggedWithGithub', 'avatar']),
+    ...mapState(useUserStore, ['isLoggedIn', 'isSuperAdmin', 'loggedWithGithub', 'avatar', 'username']),
     projectName(): string {
       return this.$route.params.projectname as string;
     },
@@ -538,6 +565,7 @@ export default defineComponent({
   mounted() {
     this.loadProjectData();
     document.title = `ArboratorGrew: ${this.projectName}`;
+    this.getSynchronizedGithubRepo();
   },
   unmounted() {
     window.removeEventListener('resize', this.handleResize);
@@ -674,6 +702,18 @@ export default defineComponent({
 
     searchSamples(rows: sample_t[], terms: any) {
       return rows.filter((row) => row.sample_name.indexOf(terms) !== -1);
+    },
+
+    getSynchronizedGithubRepo() {
+      api
+        .getSynchronizedGithubRepository(this.projectName, this.username)
+        .then((response) => {
+          this.githubSynchronizedRepo = response.data;
+        })
+        .catch((error) => {
+          notifyError({ error });
+        });
+
     },
 
     exportEvaluation() {

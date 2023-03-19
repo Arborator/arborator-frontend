@@ -14,6 +14,8 @@ import {
   timed_tokens_t,
   grewSearchResult_t as grewSearchResult_t,
   lexiconItem_t,
+  githubRepository_t, 
+  githubSynchronizedRepository_t,
 } from './backend-types';
 
 export interface logout_RV {
@@ -93,3 +95,8 @@ export interface getOriginalTranscription_RV {
   tokens: timed_tokens_t;
   speakers: string[];
 }
+
+//////////// Github //////////
+export type getGithubRepositories_RV = githubRepository_t[]; 
+
+export type createGithubSynchronizedRepository_ED = githubSynchronizedRepository_t;

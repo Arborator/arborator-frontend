@@ -272,8 +272,8 @@ export default {
   getGithubRepositories(projectName: string) {
     return API.get<getGithubRepositories_RV>(`/projects/${projectName}/me/github`);
   },
-  synchronizeWithGithubRepo(projectName: string, data: any) {
-    return API.post<createGithubSynchronizedRepository_ED>(`/projects/${projectName}/github-repository`, data);
+  synchronizeWithGithubRepo(projectName: string, username:string, data: any) {
+    return API.post<createGithubSynchronizedRepository_ED>(`/projects/${projectName}/${username}/github-repository`, data);
   },
   getSynchronizedGithubRepository(projectName: string, username:string) {
     return API.get(`/projects/${projectName}/${username}/github-repository`);

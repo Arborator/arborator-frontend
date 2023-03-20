@@ -161,9 +161,10 @@ export default defineComponent({
             });
         }, 
         synchronizeWithGitRepo(repoName : string) {
-            const data = {repositoryName: repoName, username: this.username};
+            const data = {repositoryName: repoName};
+    
             api
-              .synchronizeWithGithubRepo(this.$route.params.projectname as string, data)
+              .synchronizeWithGithubRepo(this.$route.params.projectname as string, this.username as string,  data)
               .then((response) => {
                 notifyMessage({message: `"${this.$route.params.projectname}" is synchronized with "${repoName}"`})
               })

@@ -42,7 +42,10 @@
 
         <!--GithubSyncDialog-->
         <q-dialog v-model="isShowGithubSyncPanel">
-          <GithubSyncDialog :projectName="projectName" />
+          <GithubSyncDialog :projectName="projectName" @synchronized="reloadAfterSynchronization"  />
+        </q-dialog>
+        <q-dialog v-model="isShowCommitPanel">
+          <GithubCommitDialog :projectName="projectName" :repositoryName="githubSynchronizedRepo" />
         </q-dialog>
         <q-card-section>
           <q-table
@@ -165,7 +168,8 @@
                   <q-btn 
                     outline
                     color="primary"
-                    :label="this.githubSynchronizedRepo"
+                    label="Commit"
+                    @click="isShowCommitPanel = true"
                     >
                   </q-btn>
                   <q-tooltip content-class="text-white bg-primary">This Project is synchronized with {{githubSynchronizedRepo}}</q-tooltip>
@@ -367,6 +371,7 @@ import RelationTableMain from '../components/relationTable/RelationTableMain.vue
 import ParsingPanel from '../components/parsing/ParsingPanel.vue';
 import ProjectIcon from '../components/shared/ProjectIcon.vue';
 import GithubSyncDialog from '../components/github/GithubSyncDialog.vue';
+import GithubCommitDialog from '../components/github/GithubCommitDialog.vue'
 
 import {notifyError, notifyMessage} from 'src/utils/notify';
 import {mapActions, mapState} from 'pinia';
@@ -388,7 +393,8 @@ export default defineComponent({
     RelationTableMain,
     ParsingPanel,
     ProjectIcon,
-    GithubSyncDialog
+    GithubSyncDialog,
+    GithubCommitDialog
   },
   data() {
     const samples: sample_t[] = [];
@@ -478,6 +484,7 @@ export default defineComponent({
       isShowParsingPanel: false,
       isShowLexiconPanel: false,
       isShowGithubSyncPanel: false,
+      isShowCommitPanel: false,
       confirmActionCallback,
       confirmActionArg1: '',
       samples,
@@ -565,7 +572,7 @@ export default defineComponent({
   mounted() {
     this.loadProjectData();
     document.title = `ArboratorGrew: ${this.projectName}`;
-    this.getSynchronizedGithubRepo();
+    
   },
   unmounted() {
     window.removeEventListener('resize', this.handleResize);
@@ -579,6 +586,12 @@ export default defineComponent({
     goToRoute() {
       this.$router.push(`/projects/${this.projectName}/samples`);
     },
+
+    reloadAfterSynchronization () {
+      this.isShowGithubSyncPanel = false;
+      this.loadProjectData();
+      this.getSynchronizedGithubRepo();
+    }, 
 
     filterFields(tableJson: table_t<unknown>) {
       // to remove some fields from visiblecolumns select options

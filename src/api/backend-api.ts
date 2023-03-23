@@ -272,11 +272,17 @@ export default {
   getGithubRepositories(projectName: string) {
     return API.get<getGithubRepositories_RV>(`/projects/${projectName}/me/github`);
   },
+  createGithubRepository(projectName: string, data: any) {
+    return API.post(`/projects/${projectName}/me/github`, data);
+  },
   synchronizeWithGithubRepo(projectName: string, username:string, data: any) {
     return API.post<createGithubSynchronizedRepository_ED>(`/projects/${projectName}/${username}/github-repository`, data);
   },
   getSynchronizedGithubRepository(projectName: string, username:string) {
     return API.get(`/projects/${projectName}/${username}/github-repository`);
+  },
+  commitChanges(projectName: string, username: string, data:any) {
+    return API.post(`/projects/${projectName}/${username}/commit`, data);
   },
   // -------------------------------------------------------- //
   // ---------------        To Refactor       --------------- //

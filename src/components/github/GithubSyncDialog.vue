@@ -1,5 +1,5 @@
 <template>
-    <q-card class="" style="min-width: 50vw;">
+    <q-card style="min-width: 50vw;">
         <q-tabs v-model="tab" align="justify" narrow-indicator class="bg-primary text-white shadow-2 q-pa-md">
             <q-tab name="synchronize" label="Synchronize" />
             <q-tab name="create" label="Create" />
@@ -30,8 +30,7 @@
                             filled
                             label="Search Repository"
                             type="text"
-                            @update:model-value="searchRepo(search)"
-                            
+                            @update:model-value="searchRepo(search)"  
                         >
                             <template #append>
                                 <q-icon name="search" />
@@ -66,22 +65,37 @@
 
             <q-tab-panel name="create">
                 <div class="text-h6 text-left">Create new repository</div>
-                <q-form class="q-gutter-md">
+                <q-form class="q-gutter-md" @submit="createGithubRepository">
                     <q-input
+                        filled
                         v-model="name"
                         label="Repository Name*"
                         :rules="[
                             (val) => (val && val.length > 0) || 'Please type something',
                             (val) => (!existRepositoryName(val)) || 'Repository name exists already',
                         ]"
+                    />   
+                    <q-input filled v-model="description" label="Description" />
+                    <q-list>
+                        <q-item>
+                            <q-item-section style="text-align:left;">
+                                <q-item-label>Visibility</q-item-label>
+                                <q-item-label caption>Choose the visibility of your Github Repository.</q-item-label>
+                            </q-item-section>
+                            <q-item-section side top>
+                                <q-btn-toggle
+                                    v-model="visibility"
+                                    label="Visibility"
+                                    :options="[
+                                        { label: 'Private', value:'private' },
+                                        { label: 'Public', value: 'public' },
 
-                    />
-                    <q-input v-model="description" label="Description" />
-                    <div class="row">
-                        <q-toggle v-model="private" @click="public = false" label="Private" />
-                        <q-toggle v-model="public" @click="private = false" label="Public" />
-                    </div>
-                    <q-btn :disable="name == '' || (!private && !public)" type="submit">Create new repository</q-btn>
+                                    ]"
+                                />
+                            </q-item-section>
+                        </q-item>
+                    </q-list>
+                    <q-btn color="primary" :disable="name == '' || visibility == ''" type="submit">Create new repository</q-btn>
                 </q-form>
             </q-tab-panel>
         </q-tab-panels>
@@ -111,8 +125,7 @@ export default defineComponent({
             name: '',
             description: '',
             noRepositories: false,
-            private: false,
-            public: false,
+            visibility:'',
             currentPage: 1,
             pageIndex: 1,
             totalItemPerPage: 10,
@@ -133,7 +146,7 @@ export default defineComponent({
                 (this.pageIndex - 1) * this.totalItemPerPage,
                 (this.pageIndex - 1) * this.totalItemPerPage + this.totalItemPerPage
             );
-    },     
+        },     
     },
     mounted(){
         this.getGithubRepositories();
@@ -162,24 +175,29 @@ export default defineComponent({
         }, 
         synchronizeWithGitRepo(repoName : string) {
             const data = {repositoryName: repoName};
-    
             api
-              .synchronizeWithGithubRepo(this.$route.params.projectname as string, this.username as string,  data)
+              .synchronizeWithGithubRepo(this.projectName as string, this.username as string,  data)
               .then((response) => {
-                notifyMessage({message: `"${this.$route.params.projectname}" is synchronized with "${repoName}"`})
+                notifyMessage({message: `"${this.projectName}" is synchronized with "${repoName}"`})
+                this.$emit('synchronized')
               })
               .catch((error) => {
                 notifyError({error})}
               );
-        },
-
-
-       
-    }
-     
-
-    
-    
+        },  
+        createGithubRepository(){
+            const data = {repositoryName: this.name, description: this.description, visibility: this.visibility};
+            api
+              .createGithubRepository(this.projectName as string, data)
+              .then((response) => {
+                notifyMessage({message: `New Github repository is created`})
+                this.$emit('synchronized')
+              })
+              .catch((error) => {
+                notifyError({error})
+              })
+        }
+    }     
 });
 </script>
 <style>

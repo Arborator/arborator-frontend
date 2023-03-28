@@ -44,8 +44,8 @@
         <q-dialog v-model="isShowGithubSyncPanel">
           <GithubSyncDialog :projectName="projectName" @synchronized="reloadAfterSynchronization"  />
         </q-dialog>
-        <q-dialog v-model="isShowCommitPanel">
-          <GithubCommitDialog :projectName="projectName" :repositoryName="githubSynchronizedRepo" />
+        <q-dialog v-model="isShowCommitDialog">
+          <GithubCommitDialog :projectName="projectName" :repositoryName="githubSynchronizedRepo" @committed="isShowCommitDialog = false" />
         </q-dialog>
         <q-card-section>
           <q-table
@@ -169,7 +169,7 @@
                     outline
                     color="primary"
                     label="Commit"
-                    @click="isShowCommitPanel = true"
+                    @click="isShowCommitDialog = true"
                     >
                   </q-btn>
                   <q-tooltip content-class="text-white bg-primary">This Project is synchronized with {{githubSynchronizedRepo}}</q-tooltip>
@@ -484,7 +484,7 @@ export default defineComponent({
       isShowParsingPanel: false,
       isShowLexiconPanel: false,
       isShowGithubSyncPanel: false,
-      isShowCommitPanel: false,
+      isShowCommitDialog: false,
       confirmActionCallback,
       confirmActionArg1: '',
       samples,
@@ -572,6 +572,7 @@ export default defineComponent({
   mounted() {
     this.loadProjectData();
     document.title = `ArboratorGrew: ${this.projectName}`;
+    this.getSynchronizedGithubRepo();
     
   },
   unmounted() {

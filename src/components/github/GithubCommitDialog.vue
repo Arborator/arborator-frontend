@@ -33,12 +33,13 @@ export default defineComponent({
     },
     methods: {
         commitChanges(){
-            this.message = this.message + ':commited by Arborator-Grew'; 
-            const data = {message: this.message, repositoryName: this.repositoryName}
+            const githubMessage =  this.message + ' :commited by Arborator-Grew';
+            const data = {message: githubMessage, repositoryName: this.repositoryName}
             api
               .commitChanges(this.projectName, this.username, data)
               .then((response) => {
                 notifyMessage({message: `new commit in "${ this.repositoryName}"`})
+                this.$emit('committed')
               })
               .catch((error) => {
                 notifyError({error})

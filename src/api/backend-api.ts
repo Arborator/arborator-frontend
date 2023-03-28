@@ -223,42 +223,38 @@ export default {
   saveTranscription(projectname: string, samplename: string, username: string, data: transcription_t) {
     return API.put<transcription_t>(`klang/projects/${projectname}/samples/${samplename}/transcription/${username}`, data);
   },
-  // write bootparser default fct here:
   // ---------------------------------------------------- //
   // ---------------         Parser        --------------- //
   // ---------------------------------------------------- //
-  bootParserDefault(samplenames: string[], projectname: string) {
-    const data = { samples: samplenames, dev: 0.1, parser: 'auto', epoch: 5, to_parse: 'ALL' };
-    return API.post(`/projects/${projectname}/samples/parsing`, data);
-  },
-  bootParserCustom(
-    samplenames: string[],
-    projectname: string,
-    parserType: string,
-    epochs: number,
-    keepUpos: boolean,
-    toParseNames: string[] | 'ALL',
-    trainingUser: string | 'last'
-  ) {
-    // TODO add custom parser params button
+  parserTrainStart(projectname: string, trainSampleNames: string[], trainUser: string, maxEpoch: number) {
     const data = {
-      samples: samplenames,
-      dev: 0.1,
-      parser: parserType,
-      epoch: epochs,
-      keep_upos: keepUpos,
-      to_parse: toParseNames,
-      training_user: trainingUser,
-    };
-    return API.post(`/projects/${projectname}/samples/parsing`, data);
+      train_samples_names: trainSampleNames,
+      train_user: trainUser,
+      max_epoch: maxEpoch,
+    }
+    console.log("KK data", data)
+    return API.post(`/projects/${projectname}/samples/parser/train/start`, data);
   },
-  bootParserResults(projectname: string, parserType: string, projectFdname: string) {
-    const data = { parser: parserType, fdname: projectFdname };
-    return API.post(`/projects/${projectname}/samples/parsing/results`, data);
+  parserTrainStatus(modelInfo: { project_name: string; model_id: string }) {
+    const data = {
+      model_info: modelInfo
+    }
+    return API.post(`/projects/${modelInfo.project_name}/samples/parser/train/status`, data)
   },
-  removeParseFolder(projectname: string, projectFdname: string) {
-    const data = { fdname: projectFdname };
-    return API.post(`/projects/${projectname}/samples/parsing/removeFolder`, data);
+  parserParseStart(modelInfo: { project_name: string; model_id: string }, toParseSamplesNames: string[]) {
+    const data = {
+      model_id: modelInfo.model_id,
+      to_parse_samples_names: toParseSamplesNames,
+    }
+    return API.post(`/projects/${modelInfo.project_name}/samples/parser/parse/start`, data)
+  },
+  parserParseStatus(modelInfo: { project_name: string; model_id: string }, parseTaskId: string, parserSuffix: string) {
+    const data = {
+      model_id: modelInfo.model_id,
+      parse_task_id: parseTaskId,
+      parser_suffix: parserSuffix,
+    }
+    return API.post(`/projects/${modelInfo.project_name}/samples/parser/parse/status`, data)
   },
   // -------------------------------------------------------- //
   // ---------------        To Refactor       --------------- //

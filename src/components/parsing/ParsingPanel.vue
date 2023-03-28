@@ -2,7 +2,8 @@
   <QCard>
     <div class="row q-pa-md">
       <div class="col">
-        <q-toggle v-model="parser.param.trainAll" label="Train on all files" />
+        <p>Train Settings</p>
+        <q-toggle v-model="parser.param.trainAll" label="Train on all files"/>
         <q-select
           :class="{ invisible: parser.param.trainAll }"
           v-model="parser.param.trainSamples"
@@ -13,21 +14,7 @@
           stack-label
           style="max-width: 200px; min-width: 150px"
         />
-        <q-toggle v-model="parser.param.parseAll" label="Parse all files" />
-        <q-select
-          :class="{ invisible: parser.param.parseAll }"
-          v-model="parser.param.parseSamples"
-          filled
-          :options="allSamplesNames"
-          multiple
-          label="Files to parse"
-          stack-label
-          style="max-width: 200px; min-width: 150px"
-        />
-      </div>
-      <q-separator vertical inset class="q-mx-lg" />
-      <div class="col">
-        <q-toggle v-model="parser.param.isCustomTrainingUser" label="Custom Training user" />
+        <q-toggle v-model="parser.param.isCustomTrainingUser" label="Custom Training user"/>
         <q-select
           :class="{ invisible: !parser.param.isCustomTrainingUser }"
           v-model="parser.param.trainingUser"
@@ -37,18 +24,6 @@
           stack-label
           style="max-width: 200px; min-width: 150px"
         />
-        <q-toggle v-model="parser.param.advancedSettings" label="Advanced Settings" />
-        <q-select
-          :class="{ invisible: !parser.param.advancedSettings }"
-          v-model="parser.param.type"
-          :options="parser.param.options"
-          label="parser type"
-          stack-label
-        />
-        <q-toggle v-model="parser.param.keepUpos" label="keep UPOS" />
-      </div>
-      <q-separator vertical inset class="q-mx-lg" />
-      <div class="col">
         <q-input
           v-model.number="parser.param.epochs"
           type="number"
@@ -59,53 +34,65 @@
           style="max-width: 100px"
           :rules="[(val) => (val >= 3 && val <= 300) || 'Please use 3 to 300 epochs']"
         />
+      </div>
+      <q-separator vertical inset class="q-mx-lg"/>
+      <div class="col">
+        <p>Parse Settings</p>
+        <q-toggle v-model="parser.param.parseAll" label="Parse all files"/>
+        <q-select
+          :class="{ invisible: parser.param.parseAll }"
+          v-model="parser.param.parseSamples"
+          filled
+          :options="allSamplesNames"
+          multiple
+          label="Files to parse"
+          stack-label
+          style="max-width: 200px; min-width: 150px"
+        />
+        <q-input :dense="true" v-model="parser.param.parserSuffix" label="Parser suffix (for parsed sentences)"
+                 :hint="'Parsing will go under the name `parser' + parser.param.parserSuffix + '`'"/>
+        <q-toggle v-model="parser.param.keepUpos" label="keep UPOS"/>
+      </div>
+      <q-separator vertical inset class="q-mx-lg"/>
+      <div class="col">
         <div class="text-subtitle1 q-mt-xs">Begin parse:</div>
         <div class="text-subtitle5 q-mb-xs">estimated time = {{ estimatedTime }}mn</div>
         <div class="text-subtitle5 q-mb-xs">({{ trainingSentencesCount }} training sentences)</div>
-        <q-btn v-close-popup color="primary" label="Begin" :loading="parser.parsing" push size="sm" @click="bootParserStart()" />
-        <q-btn v-if="parser.parsing" v-close-popup color="primary" label="Stop" push size="sm" @click="bootParserStop()" />
-      </div>
-      <q-separator vertical inset class="q-mx-lg" />
-      <div class="col">
-        <div class="column">
-          <div class="column q-gutter-md">
-            <h6>Logs</h6>
-            <div v-if="parser.parsing">
-              {{ parser.progress }}
-            </div>
-          </div>
-        </div>
+        <q-btn v-close-popup color="primary" label="Begin" :loading="parser.taskStatus !== null" push size="sm"
+               @click="parserTrainStart()"/>
+        <!--        <q-btn v-if="parser.parsing" v-close-popup color="primary" label="Stop" push size="sm"-->
+        <!--               @click="bootParserStop()"/>-->
       </div>
     </div>
   </QCard>
 </template>
 
 <script lang="ts">
-import { defineComponent, PropType } from 'vue';
+import {defineComponent, PropType} from 'vue';
 import api from '../../api/backend-api';
-import { exportFile } from 'quasar';
-import { sample_t } from 'src/api/backend-types';
-import { parserType_t, timeEstimationCoefs_t } from 'src/types/main_types';
+import {exportFile} from 'quasar';
+import {sample_t} from 'src/api/backend-types';
+import {parserType_t, timeEstimationCoefs_t} from 'src/types/main_types';
+import {AxiosResponse} from "axios";
+import {notifyMessage} from "src/utils/notify";
 // https://github.com/Arborator/djangoBootParser/blob/master/estimated_time_100ep_logline.tsv
-const timeEstimationCoefs: timeEstimationCoefs_t = {
-  kirParser: { a: 0, b: 0.04, c: 0 },
-  hopsParser: { a: -0.887, b: 0.09357, c: 5.329 },
-  stanzaParser: { a: 0.59, b: 0.09, c: -0.14516 },
-  trankitParser: { a: 1.406, b: 0.0432, c: -0.9326 },
-  udifyParser: { a: 5.74049, b: 0.062179, c: 8.79224 },
-};
+const timeEstimationCoefs: timeEstimationCoefs_t = {a: 0, b: 0.04, c: 0};
+
+type taskType_t = "ASK_TRAINING" | "TRAINING" | "ASK_PARSING" | "PARSING"
+
+type taskStatus_t = null | {
+  taskType: taskType_t,
+  taskTimeStarted: number,
+  taskIntervalChecker: null | ReturnType<typeof setTimeout>,
+}
 
 interface parser_t {
-  parsing: boolean;
-  timer: any;
   progress: string;
+  taskStatus: taskStatus_t;
   sha512Fdname: string;
-  time: number;
   timeInfo: string;
   param: {
     advancedSettings: boolean;
-    type: parserType_t;
-    options: string[];
     keepUpos: boolean;
     isCustomTrainingUser: boolean;
     trainingUser: string;
@@ -114,7 +101,7 @@ interface parser_t {
     trainSamples: string[];
     parseSamples: string[];
     epochs: number;
-    epochsTok: number;
+    parserSuffix: string;
   };
 }
 
@@ -126,20 +113,20 @@ export default defineComponent({
       type: Array as PropType<sample_t[]>,
       required: true,
     },
+    parentGetProjectSamples: {
+      type: Function as PropType<() => void>,
+      required: true,
+    }
   },
 
   data() {
     const parser: parser_t = {
-      parsing: false,
-      timer: '',
+      taskStatus: null,
       progress: 'bootstrap parsing',
       sha512Fdname: '',
-      time: -1,
       timeInfo: '',
       param: {
         advancedSettings: false,
-        type: 'kirParser',
-        options: ['trankitParser', 'kirParser', 'hopsParser', 'udifyParser', 'stanzaParser'],
         keepUpos: false,
         isCustomTrainingUser: false,
         trainingUser: '',
@@ -148,7 +135,7 @@ export default defineComponent({
         parseAll: true,
         parseSamples: [],
         epochs: 10,
-        epochsTok: 5,
+        parserSuffix: '',
       },
     };
     return {
@@ -174,146 +161,113 @@ export default defineComponent({
         .reduce((partialSum, sample) => partialSum + sample.sentences, 0);
     },
     estimatedTime() {
-      const parserId = this.parser.param.type;
-      const parserCoefs = timeEstimationCoefs[parserId];
       const x = this.trainingSentencesCount;
-      const time1epochs = (parserCoefs.a * Math.log(x + 1) + parserCoefs.b * x + parserCoefs.c) / 100;
+      const time1epochs = (timeEstimationCoefs.a * Math.log(x + 1) + timeEstimationCoefs.b * x + timeEstimationCoefs.c) / 100;
       const time = time1epochs * this.parser.param.epochs;
       return Math.floor(Math.max(time, 2));
     },
   },
   methods: {
-    exportConllError(info: any) {
-      const filename = 'Error_in_train_files.txt';
-      const status = exportFile(filename, info, 'text/plain;charset=UTF-8');
-      if (status === true) {
-        this.$q.notify({ message: `Error on dataset`, color: 'positive' });
-      } else {
-        this.$q.notify({ message: `Error when download error files: ${status}`, color: 'negative' });
+    parserTrainStart() {
+      this.parser.taskStatus = {
+        taskType: "ASK_TRAINING",
+        taskTimeStarted: Date.now(),
+        taskIntervalChecker: null,
       }
-    },
-    bootParserStop() {
-      api
-        .removeParseFolder(this.$route.params.projectname as string, this.parser.sha512Fdname)
-        .then((response) => {
-          // this.parser.progress = response.data.status;
-          if (response.data.status.toLowerCase() !== 'ok') {
-            throw new Error('Failed to stop parsing, please try latter');
-          }
-          this.parser.parsing = false;
-          this.parser.timeInfo = '';
-          this.parser.time = -1;
-          // this.resetParsingProgress();
-        })
-        .catch((error) => {
-          this.$q.notify({ message: `${error}`, color: 'negative' });
-          return [];
-        });
-    },
-    getProgress(fdname: string) {
-      console.log(this.parser.timeInfo);
-      api
-        .bootParserResults(this.$route.params.projectname as string, this.parser.param.type, fdname)
-        .then((response) => {
-          // console.log('Progress: ', response.data);
-          console.log('Progress_info: ', response.data.status, 'log_path: ', response.data.logPath);
-          console.log(this.parser.parsing);
-          this.parser.progress = response.data.status;
-          if (this.parser.parsing === false) {
-            this.resetParsingProgress();
-          }
-          if (this.parser.progress.toLowerCase() === 'error') {
-            this.parser.parsing = false;
-            this.resetParsingProgress();
-            throw new Error('failed to train or parse');
-          }
-          if (this.parser.progress.toLowerCase() === 'fin') {
-            // this.loadProjectData(); // TODO : make projectData in a pinia store
 
-            this.parser.parsing = false;
-            this.resetParsingProgress();
-            this.exportScore(JSON.stringify(response.data.devScore));
-            console.log(response.data.devScore);
+      const trainSampleNames = this.parser.param.trainAll ? this.allSamplesNames : this.parser.param.trainSamples;
+      const trainUser = this.parser.param.isCustomTrainingUser ? this.parser.param.trainingUser : 'last';
+      const maxEpoch = this.parser.param.epochs;
+      api.parserTrainStart(this.$route.params.projectname as any as string, trainSampleNames, trainUser, maxEpoch).then(
+        (response) => {
+          if (response.data.status === "failure") {
+            notifyMessage({message: "Training could not start : " + response.data.error, type: "negative"})
+            this.clearCurrentTask()
+          } else {
+            notifyMessage({message: "Model training started"})
+            const modelInfo = response.data.model_info;
+            const taskIntervalChecker = setInterval(() => {
+              setTimeout(this.parserTrainStatus(modelInfo) as any, 10);
+            }, 20 * 1000);
+
+            this.parser.taskStatus = {
+              taskType: "TRAINING",
+              taskTimeStarted: Date.now(),
+              taskIntervalChecker,
+            }
           }
-        })
-        .catch((error) => {
-          this.$q.notify({ message: `${error}`, color: 'negative' });
-          this.parser.parsing = false;
-          this.resetParsingProgress();
-          return [];
-        });
+        }
+      )
     },
-    resetParsingProgress() {
-      clearInterval(this.parser.timer as any);
-      this.parser.timeInfo = '';
-      this.parser.time = -1;
-      this.parser.progress = 'bootstrap parsing';
+    parserTrainStatus(modelInfo: { project_name: string; model_id: string }) {
+      api.parserTrainStatus(modelInfo).then(
+        (response) => {
+          if (response.data.status === "failure") {
+            this.clearCurrentTask()
+          } else if (response.data.data.ready == true) {
+            this.clearCurrentTask()
+            this.parserParseStart(modelInfo)
+            notifyMessage({message: "Model training ended!"})
+          } else if (this.parser.taskStatus && Date.now() - this.parser.taskStatus.taskTimeStarted > 1000 * 60) {
+            this.clearCurrentTask()
+          }
+        }
+      )
     },
-    exportScore(f1score: any) {
-      const filename = this.parser.param.type.concat('f1_score.json');
-      const status = exportFile(filename, f1score, 'application/json');
-      console.log(status);
-      if (status === true) {
-        this.$q.notify({ message: `Score on dev set`, color: 'positive' });
-      } else {
-        this.$q.notify({ message: `Error when download score file: ${status}`, color: 'negative' });
+    parserParseStart(modelInfo: { project_name: string; model_id: string }) {
+      this.parser.taskStatus = {
+        taskType: "ASK_PARSING",
+        taskTimeStarted: Date.now(),
+        taskIntervalChecker: null,
       }
+
+      const toParseSamplesNames = this.parser.param.parseAll ? this.allSamplesNames : this.parser.param.parseSamples;
+      const parserSuffix = this.parser.param.parserSuffix;
+
+      api.parserParseStart(modelInfo, toParseSamplesNames).then(
+        (response) => {
+          if (response.data.status === "failure") {
+            notifyMessage({message: "Parsing could not start : " + response.data.error, type: "negative"})
+            this.clearCurrentTask()
+          } else {
+            notifyMessage({message: "Sentences parsing started"})
+            const parseTaskId = response.data.parse_task_id;
+            const taskIntervalChecker = setInterval(() => {
+              setTimeout(this.parserParseStatus(modelInfo, parseTaskId, parserSuffix) as any, 10);
+            }, 20 * 1000);
+
+            this.parser.taskStatus = {
+              taskType: "PARSING",
+              taskTimeStarted: Date.now(),
+              taskIntervalChecker,
+            }
+          }
+        }
+      )
     },
-
-    bootParserStart() {
-      // TODO
-      this.parser.parsing = true;
-
-      const trainingFiles = this.parser.param.trainAll ? this.allSamplesNames : this.parser.param.trainSamples;
-      const toParseNames = this.parser.param.parseAll ? 'ALL' : this.parser.param.parseSamples;
-      const trainingUser = this.parser.param.isCustomTrainingUser ? this.parser.param.trainingUser : 'last';
-
-      api
-        .bootParserCustom(
-          trainingFiles,
-          this.$route.params.projectname as any,
-          this.parser.param.type,
-          this.parser.param.epochs,
-          this.parser.param.keepUpos,
-          toParseNames,
-          trainingUser
-        )
-        .then((response) => {
-          // this.table.selected = [];
-          console.log(response);
-          if (response.data.datasetStatus.toLowerCase() !== 'ok') {
-            this.parser.parsing = false;
-            throw new Error('Failed to prepare dataset');
+    parserParseStatus(modelInfo: { project_name: string; model_id: string }, parseTaskId: string, parserSuffix: string) {
+      api.parserParseStatus(modelInfo, parseTaskId, parserSuffix).then(
+        (response) => {
+          if (response.data.status === "failure") {
+            this.clearCurrentTask()
+          } else if (response.data.data.ready == true) {
+            this.clearCurrentTask()
+            this.parentGetProjectSamples();
+            notifyMessage({message: "Sentences parsing ended!"})
+          } else if (this.parser.taskStatus && Date.now() - this.parser.taskStatus.taskTimeStarted > 1000 * 60) {
+            this.clearCurrentTask()
           }
-          if (response.data.parseStatus.toLowerCase() === 'done') {
-            this.parser.parsing = false;
-            throw new Error('Nothing new to train or parse');
-          }
-          this.parser.sha512Fdname = response.data.projectFolder;
-          console.log(this.parser.sha512Fdname);
-          this.parser.param.type = response.data.parserID;
-          this.parser.time = response.data.time;
-          if (this.parser.time > 0) {
-            this.parser.timeInfo = ' Estimated time: '.concat(this.parser.time.toString()).concat(' (min)');
-          }
-          if (response.data.dataError) {
-            console.log(response.data.dataError);
-            this.exportConllError(response.data.dataError);
-          }
-        })
-        .catch((error: any) => {
-          this.$q.notify({ message: `${error}`, color: 'negative' });
-          this.parser.parsing = false;
-          this.parser.timeInfo = '';
-          this.parser.time = -1;
-          return [];
-        });
-      if (this.parser.parsing) {
-        this.parser.timer = setInterval(() => {
-          setTimeout(this.getProgress(this.parser.sha512Fdname) as any, 10);
-        }, 20 * 1000) as any;
+        }
+      )
+    },
+    clearCurrentTask() {
+      if (this.parser.taskStatus) {
+        if (this.parser.taskStatus.taskIntervalChecker) {
+          clearInterval(this.parser.taskStatus.taskIntervalChecker);
+        }
+        this.parser.taskStatus = null
       }
-    },
+    }
   },
 });
 </script>

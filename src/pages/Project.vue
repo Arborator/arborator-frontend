@@ -42,7 +42,7 @@
 
         <!-- Parsing Panel -->
         <q-card-section v-if="isShowParsingPanel">
-          <ParsingPanel :samples="samples"></ParsingPanel>
+          <ParsingPanel :samples="samples" :parentGetProjectSamples="getProjectSamples"></ParsingPanel>
         </q-card-section>
 
         <q-card-section>
@@ -175,7 +175,7 @@
                       </q-item>
                     </q-list>
                   </q-btn-dropdown>
-                 
+
 
                   <q-tooltip v-if="table.selected.length < 1" :delay="300" content-class="text-white bg-primary">
                     {{ $t('projectView.tooltipGitPush[4]') }}

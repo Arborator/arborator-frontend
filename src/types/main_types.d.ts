@@ -76,9 +76,7 @@ export type grew_templates_t = {
 type parserType_t = 'kirParser' | 'hopsParser' | 'stanzaParser' | 'trankitParser' | 'udifyParser';
 
 type timeEstimationCoefs_t = {
-  [key in parserType_t]: {
     a: number;
     b: number;
     c: number;
-  };
 };

@@ -228,33 +228,35 @@ export default {
   // ---------------------------------------------------- //
   parserTrainStart(projectname: string, trainSampleNames: string[], trainUser: string, maxEpoch: number) {
     const data = {
+      project_name: projectname,
       train_samples_names: trainSampleNames,
       train_user: trainUser,
       max_epoch: maxEpoch,
     }
-    console.log("KK data", data)
-    return API.post(`/projects/${projectname}/samples/parser/train/start`, data);
+    return API.post(`/parser/train/start`, data);
   },
   parserTrainStatus(modelInfo: { project_name: string; model_id: string }) {
     const data = {
       model_info: modelInfo
     }
-    return API.post(`/projects/${modelInfo.project_name}/samples/parser/train/status`, data)
+    return API.post(`/parser/train/status`, data)
   },
   parserParseStart(modelInfo: { project_name: string; model_id: string }, toParseSamplesNames: string[]) {
     const data = {
+      project_name: modelInfo.project_name,
       model_id: modelInfo.model_id,
       to_parse_samples_names: toParseSamplesNames,
     }
-    return API.post(`/projects/${modelInfo.project_name}/samples/parser/parse/start`, data)
+    return API.post(`/parser/parse/start`, data)
   },
   parserParseStatus(modelInfo: { project_name: string; model_id: string }, parseTaskId: string, parserSuffix: string) {
     const data = {
+      project_name: modelInfo.project_name,
       model_id: modelInfo.model_id,
       parse_task_id: parseTaskId,
       parser_suffix: parserSuffix,
     }
-    return API.post(`/projects/${modelInfo.project_name}/samples/parser/parse/status`, data)
+    return API.post(`/parser/parse/status`, data)
   },
   // -------------------------------------------------------- //
   // ---------------        To Refactor       --------------- //

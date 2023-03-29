@@ -113,6 +113,8 @@ interface parser_t {
   };
 }
 
+const TIMEOUT_TASK_STATUS_CHECKER = 1000 * 60 * 60 * 3 // 3 hours
+const REFRESH_RATE_TASK_STATUS_CHECKER = 1000 * 10 // 10 seconds
 export default defineComponent({
   name: 'ParsingPanel',
   components: {},
@@ -194,7 +196,7 @@ export default defineComponent({
             const modelInfo = response.data.data.model_info;
             const taskIntervalChecker = setInterval(() => {
               setTimeout(this.parserTrainStatus(modelInfo) as any, 10);
-            }, 20 * 1000);
+            }, REFRESH_RATE_TASK_STATUS_CHECKER);
 
             this.taskStatus = {
               taskType: "TRAINING",
@@ -214,7 +216,7 @@ export default defineComponent({
             this.clearCurrentTask()
             this.parserParseStart(modelInfo)
             notifyMessage({message: "Model training ended!"})
-          } else if (this.taskStatus && Date.now() - this.taskStatus.taskTimeStarted > 1000 * 60) {
+          } else if (this.taskStatus && Date.now() - this.taskStatus.taskTimeStarted > TIMEOUT_TASK_STATUS_CHECKER) {
             this.clearCurrentTask()
           }
         }
@@ -240,7 +242,7 @@ export default defineComponent({
             const parseTaskId = response.data.data.parse_task_id;
             const taskIntervalChecker = setInterval(() => {
               setTimeout(this.parserParseStatus(modelInfo, parseTaskId, parserSuffix) as any, 10);
-            }, 20 * 1000);
+            }, REFRESH_RATE_TASK_STATUS_CHECKER);
 
             this.taskStatus = {
               taskType: "PARSING",
@@ -260,7 +262,7 @@ export default defineComponent({
             this.clearCurrentTask()
             this.parentGetProjectSamples();
             notifyMessage({message: "Sentences parsing ended!"})
-          } else if (this.taskStatus && Date.now() - this.taskStatus.taskTimeStarted > 1000 * 60 * 60 * 3) { // 3 hours
+          } else if (this.taskStatus && Date.now() - this.taskStatus.taskTimeStarted > TIMEOUT_TASK_STATUS_CHECKER) { // 3 hours
             this.clearCurrentTask()
           }
         }

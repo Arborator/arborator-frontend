@@ -1,104 +1,86 @@
 <template>
-    <q-card style="min-width: 50vw;">
-        <q-tabs v-model="tab" align="justify" narrow-indicator class="bg-primary text-white shadow-2 q-pa-md">
-            <q-tab name="synchronize" label="Synchronize" />
-            <q-tab name="create" label="Create" />
-        </q-tabs>
-        <q-separator/>
-        <q-tab-panels v-model="tab" animated class=" text-center">
-            <q-tab-panel class="q-gutter-md" name="synchronize">
-                <div class="row">
-                    <div class="col">
-                        <q-btn-dropdown :disable="repositories.length == 0" class="float-left" size="md" outline color="primary" label="Choose Repository owner" >
-                            <q-list :filter-method="searchRepo">
-                                <q-item v-for="user in githubOwners" @click="getRepositoriesPerOwner(user.a)" v-close-popup clickable >
-                                    <q-item-section avatar>
-                                        <q-avatar size="1.2rem">
-                                            <img :src="user.v" />
-                                        </q-avatar>
-                                    </q-item-section>
+    <q-card class="q-gutter-md" style="min-width: 50vw;">
+        <q-card-section v-if="selectedRepository == ''">
+            <div class="row">
+                <div class="col">
+                    <q-btn-dropdown :disable="repositories.length == 0" class="float-left" size="md" outline color="primary" label="Choose Repository owner" >
+                        <q-list :filter-method="searchRepo">
+                            <q-item v-for="user in githubOwners" @click="getRepositoriesPerOwner(user.a)" v-close-popup clickable >
+                                <q-item-section avatar>
+                                    <q-avatar size="1.2rem">
+                                        <img :src="user.v" />
+                                    </q-avatar>
+                                </q-item-section>
+                                <q-item-section>
+                                    <q-item-label>{{ user.a }}</q-item-label>
+                                </q-item-section>
+                            </q-item>
+                        </q-list>
+                    </q-btn-dropdown>
+                </div>
+                <div class="col">
+                    <q-input   
+                        v-model="search"
+                        filled
+                        label="Search Repository"
+                        type="text"
+                        @update:model-value="searchRepo(search)"  
+                    >
+                        <template #append>
+                            <q-icon name="search" />
+                        </template>
+                    </q-input>
+                </div>
+            </div>
+        </q-card-section>
+        <q-card-section v-if="repositoriesPerOwner.length > 0 && selectedRepository == ''">
+            <q-list bordered separator>
+                <q-item  class="row" v-for="repo in getListProjects">
+                    <q-item-section class="col-8">
+                        <q-item-label class="text-left">{{ repo.name }}</q-item-label>
+                    </q-item-section>
+                    <q-item-section class="col">
+                        <q-btn unelevated color="primary" @click="getRepoBranches(repo.name)"> synchronize</q-btn>
+                    </q-item-section>
+                </q-item>
+            </q-list>
+            <div class="q-pa-lg flex flex-center">
+                <q-pagination
+                    v-model="pageIndex" 
+                    :min="currentPage" 
+                    :max="Math.ceil(repositoriesPerOwner.length / totalItemPerPage)" 
+                    :input="true"
+                />
+            </div>
+            <div v-if="noRepositories">
+                You need to create your first Github Repository                
+            </div>
+        </q-card-section>
+        <q-card-section v-if="selectedRepository != ''">
+            <div class="row">
+                <div class="col-lg-4 col-sm-4 col-xs-4 col-md-4 q-mb-sm">
+                    <q-btn flat icon="arrow_back" @click="selectedRepository = ''"/>      
+                </div>
+            </div>
+            <q-list bordered separator>
+                <q-item class="row">
+                    <q-item-section class="col-8">
+                        <q-item-label class="text-left">{{selectedRepository}}</q-item-label>
+                    </q-item-section>
+                    <q-item-section class="col">
+                        <q-btn-dropdown split color="teal" label="Select branch">
+                            <q-list v-for="branch in listBranches">
+                                <q-item clickable v-close-popup @click="synchronizeWithGitRepo(selectedRepository, branch)">
                                     <q-item-section>
-                                        <q-item-label>{{ user.a }}</q-item-label>
+                                        <q-item-label>{{branch}}</q-item-label>
                                     </q-item-section>
                                 </q-item>
                             </q-list>
                         </q-btn-dropdown>
-                    </div>
-                    <div class="col">
-                        <q-input   
-                            v-model="search"
-                            filled
-                            label="Search Repository"
-                            type="text"
-                            @update:model-value="searchRepo(search)"  
-                        >
-                            <template #append>
-                                <q-icon name="search" />
-                            </template>
-                        </q-input>
-                    </div>
-                </div>
-                <div v-if="repositoriesPerOwner.length > 0">
-                    <q-list bordered separator>
-                        <q-item  class="row" v-for="repo in getListProjects">
-                            <q-item-section class="col-8">
-                                <q-item-label class="text-left">{{ repo.name }}</q-item-label>
-                            </q-item-section>
-                            <q-item-section class="col">
-                                <q-btn unelevated color="primary" @click="synchronizeWithGitRepo(repo.name)"> synchronize</q-btn>
-                            </q-item-section>
-                        </q-item>
-                    </q-list>
-                    <div class="q-pa-lg flex flex-center">
-                        <q-pagination
-                            v-model="pageIndex" 
-                            :min="currentPage" 
-                            :max="Math.ceil(repositoriesPerOwner.length / totalItemPerPage)" 
-                            :input="true"
-                        />
-                    </div>
-                </div>
-                <div v-if="noRepositories">
-                        You need to create your first Github Repository                
-                </div>
-            </q-tab-panel>
-
-            <q-tab-panel name="create">
-                <div class="text-h6 text-left">Create new repository</div>
-                <q-form class="q-gutter-md" @submit="createGithubRepository">
-                    <q-input
-                        filled
-                        v-model="name"
-                        label="Repository Name*"
-                        :rules="[
-                            (val) => (val && val.length > 0) || 'Please type something',
-                            (val) => (!existRepositoryName(val)) || 'Repository name exists already',
-                        ]"
-                    />   
-                    <q-input filled v-model="description" label="Description" />
-                    <q-list>
-                        <q-item>
-                            <q-item-section style="text-align:left;">
-                                <q-item-label>Visibility</q-item-label>
-                                <q-item-label caption>Choose the visibility of your Github Repository.</q-item-label>
-                            </q-item-section>
-                            <q-item-section side top>
-                                <q-btn-toggle
-                                    v-model="visibility"
-                                    label="Visibility"
-                                    :options="[
-                                        { label: 'Private', value:'private' },
-                                        { label: 'Public', value: 'public' },
-
-                                    ]"
-                                />
-                            </q-item-section>
-                        </q-item>
-                    </q-list>
-                    <q-btn color="primary" :disable="name == '' || visibility == ''" type="submit">Create new repository</q-btn>
-                </q-form>
-            </q-tab-panel>
-        </q-tab-panels>
+                    </q-item-section>
+                </q-item>
+            </q-list>
+        </q-card-section> 
     </q-card> 
 </template>
 <script lang="ts">
@@ -116,16 +98,15 @@ export default defineComponent({
     data() {
         const repositories: githubRepository_t[] =[];
         const repositoriesPerOwner: {}[]= [];
+        const listBranches : string[] =[];
         return {
             repositoriesPerOwner,
             repositories,
-            tab: 'synchronize',
+            selectedRepository:'',
             search:'',
-            current: 1,
-            name: '',
-            description: '',
+            listBranches,
+            branch:'',
             noRepositories: false,
-            visibility:'',
             currentPage: 1,
             pageIndex: 1,
             totalItemPerPage: 10,
@@ -139,7 +120,7 @@ export default defineComponent({
                 const user = {a: repo.owner_name, v: repo.owner_avatar}
                 githubUsers.push({a: repo.owner_name, v: repo.owner_avatar})
             }
-            return [...new Map(githubUsers.map((user) => [user["a"], user])).values()] 
+            return [...new Map(githubUsers.map((user) => [user["a"], user])).values()]; 
         },
         getListProjects() {
             return this.repositoriesPerOwner.slice(
@@ -154,27 +135,39 @@ export default defineComponent({
     methods: {
         getGithubRepositories() {
             api
-              .getGithubRepositories(this.projectName as string)
+              .getGithubRepositories(this.projectName as string, this.username)
               .then((response) => {
                  this.repositories = response.data;
-                 if (this.repositories.length == 0) this.noRepositories = true
+                 if (this.repositories.length == 0) this.noRepositories = true;
               })
-              .catch((error) => {console.log(error)})
+              .catch((error) => {notifyError(error)});
         },
         getRepositoriesPerOwner(owner: string) {
             this.repositoriesPerOwner = [];
-            this.repositoriesPerOwner = this.repositories.filter((repo) => repo.owner_name == owner).map((repo) => ({name: repo.name as string}))
+            this.repositoriesPerOwner = this.repositories.filter((repo) => repo.owner_name == owner).map((repo) => ({name: repo.name as string}));
         },
         existRepositoryName(repoName: string) {
-            return this.repositories.map((repo) => repo.name.split("/")[1]).includes(repoName)
+            return this.repositories.map((repo) => repo.name.split("/")[1]).includes(repoName);
         },
         searchRepo(repoName: string) {
             this.repositoriesPerOwner = this.repositories.filter((repo) => {
                 return repo.name.toLowerCase().includes(repoName.toLowerCase());
             });
+        },
+        getRepoBranches(repoName: string) {
+            this.selectedRepository = repoName;
+            api
+              .getGithubRepoBranches(this.projectName, this.username, this.selectedRepository)
+              .then((response) => {
+                this.listBranches = response.data
+                console.log(this.listBranches)
+              })
+              .catch((error) => {
+                notifyError(error)
+              });
         }, 
-        synchronizeWithGitRepo(repoName : string) {
-            const data = {repositoryName: repoName};
+        synchronizeWithGitRepo(repoName: string, branch: string) {
+            const data = {repositoryName: repoName, branch: branch};
             api
               .synchronizeWithGithubRepo(this.projectName as string, this.username as string,  data)
               .then((response) => {
@@ -185,18 +178,7 @@ export default defineComponent({
                 notifyError({error})}
               );
         },  
-        createGithubRepository(){
-            const data = {repositoryName: this.name, description: this.description, visibility: this.visibility};
-            api
-              .createGithubRepository(this.projectName as string, data)
-              .then((response) => {
-                notifyMessage({message: `New Github repository is created`})
-                this.$emit('synchronized')
-              })
-              .catch((error) => {
-                notifyError({error})
-              })
-        }
+        
     }     
 });
 </script>

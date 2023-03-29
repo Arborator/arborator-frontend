@@ -269,20 +269,23 @@ export default {
  // -------------------------------------------------------- //
   // ---------------          Github         --------------- //
   // -------------------------------------------------------- //
-  getGithubRepositories(projectName: string) {
-    return API.get<getGithubRepositories_RV>(`/projects/${projectName}/me/github`);
+  getGithubRepositories(projectName: string, username: string) {
+    return API.get<getGithubRepositories_RV>(`/projects/${projectName}/${username}/github`);
   },
-  createGithubRepository(projectName: string, data: any) {
-    return API.post(`/projects/${projectName}/me/github`, data);
+  createGithubRepository(projectName: string, username: string, data: any) {
+    return API.post(`/projects/${projectName}/${username}/github`, data);
   },
+  getGithubRepoBranches(projectName: string, username: string, repoName: string) {
+    return API.get(`/projects/${projectName}/${username}/github/branch?full_name=${repoName}`);
+  }, 
   synchronizeWithGithubRepo(projectName: string, username:string, data: any) {
-    return API.post<createGithubSynchronizedRepository_ED>(`/projects/${projectName}/${username}/github-repository`, data);
+    return API.post<createGithubSynchronizedRepository_ED>(`/projects/${projectName}/${username}/synchronize-github`, data);
   },
   getSynchronizedGithubRepository(projectName: string, username:string) {
-    return API.get(`/projects/${projectName}/${username}/github-repository`);
+    return API.get(`/projects/${projectName}/${username}/synchronize-github`);
   },
   commitChanges(projectName: string, username: string, data:any) {
-    return API.post(`/projects/${projectName}/${username}/commit`, data);
+    return API.post(`/projects/${projectName}/${username}/synchronize-github/commit`, data);
   },
   // -------------------------------------------------------- //
   // ---------------        To Refactor       --------------- //

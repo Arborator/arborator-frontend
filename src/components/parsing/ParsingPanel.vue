@@ -277,7 +277,7 @@ export default defineComponent({
       const trainSampleNames = this.param.trainAll ? this.allSamplesNames : this.param.trainSamples;
       const trainUser = this.param.isCustomTrainingUser ? this.param.trainingUser : 'last';
       const maxEpoch = this.param.epochs;
-      const baseModel = (this.param.baseModel as any).value as ModelInfo_t
+      const baseModel = this.param.baseModel ? (this.param.baseModel as any).value as ModelInfo_t : null
       api.parserTrainStart(this.$route.params.projectname as any as string, trainSampleNames, trainUser, maxEpoch, baseModel).then(
         (response) => {
           if (response.data.status === "failure") {

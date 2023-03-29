@@ -229,12 +229,13 @@ export default {
   parserList() {
     return API.get(`/parser/list`);
   },
-  parserTrainStart(projectname: string, trainSampleNames: string[], trainUser: string, maxEpoch: number) {
+  parserTrainStart(projectname: string, trainSampleNames: string[], trainUser: string, maxEpoch: number, baseModel: ModelInfo_t | null) {
     const data = {
       project_name: projectname,
       train_samples_names: trainSampleNames,
       train_user: trainUser,
       max_epoch: maxEpoch,
+      base_model: baseModel,
     }
     return API.post(`/parser/train/start`, data);
   },

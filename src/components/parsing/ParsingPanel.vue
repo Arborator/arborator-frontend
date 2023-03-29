@@ -277,7 +277,8 @@ export default defineComponent({
       const trainSampleNames = this.param.trainAll ? this.allSamplesNames : this.param.trainSamples;
       const trainUser = this.param.isCustomTrainingUser ? this.param.trainingUser : 'last';
       const maxEpoch = this.param.epochs;
-      api.parserTrainStart(this.$route.params.projectname as any as string, trainSampleNames, trainUser, maxEpoch).then(
+      const baseModel = (this.param.baseModel as any).value as ModelInfo_t
+      api.parserTrainStart(this.$route.params.projectname as any as string, trainSampleNames, trainUser, maxEpoch, baseModel).then(
         (response) => {
           if (response.data.status === "failure") {
             notifyMessage({message: "Training could not start : " + response.data.error, type: "negative"})
@@ -296,6 +297,11 @@ export default defineComponent({
             }
           }
         }
+      ).catch(
+        (error) => {
+          console.log(error);
+          this.clearCurrentTask()
+        }
       )
     },
     parserTrainStatus(modelInfo: ModelInfo_t) {
@@ -313,6 +319,11 @@ export default defineComponent({
           } else if (this.taskStatus && Date.now() - this.taskStatus.taskTimeStarted > TIMEOUT_TASK_STATUS_CHECKER) {
             this.clearCurrentTask()
           }
+        }
+      ).catch(
+        (error) => {
+          console.log(error);
+          this.clearCurrentTask()
         }
       )
     },
@@ -346,6 +357,11 @@ export default defineComponent({
             }
           }
         }
+      ).catch(
+        (error) => {
+          console.log(error);
+          this.clearCurrentTask()
+        }
       )
     },
     parserParseStatus(projectName: string, modelInfo: ModelInfo_t, parseTaskId: string, parserSuffix: string) {
@@ -360,6 +376,11 @@ export default defineComponent({
           } else if (this.taskStatus && Date.now() - this.taskStatus.taskTimeStarted > TIMEOUT_TASK_STATUS_CHECKER) { // 3 hours
             this.clearCurrentTask()
           }
+        }
+      ).catch(
+        (error) => {
+          console.log(error);
+          this.clearCurrentTask()
         }
       )
     },

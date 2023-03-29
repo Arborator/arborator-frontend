@@ -18,11 +18,6 @@
           :options="param.baseModelsOptions"
           :label="`Base Model for training or parsing`"
           style="max-width: 200px; min-width: 150px"
-<!--          :rules="[()=>{-->
-<!--            if (noSelectedBaseModelForParsingError()) {-->
-<!--              return `OTOTOTOTO`-->
-<!--            }-->
-<!--          }]"-->
         />
       </div>
       <q-separator vertical inset class="q-mx-lg"/>

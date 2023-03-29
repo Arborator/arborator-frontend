@@ -2,11 +2,20 @@
   <QCard>
     <div class="row q-pa-md">
       <div class="col">
-        <p>Train Settings</p>
-        <q-toggle v-model="parser.param.trainAll" label="Train on all files"/>
+        <p><b>General Settings</b></p>
+        <div style="display: flex; flex-direction: column">
+          <q-radio v-model="param.pipelineChoice" val="TRAIN_AND_PARSE" label="Train and Parse"/>
+          <q-radio v-model="param.pipelineChoice" val="TRAIN_ONLY" label="Train Only"/>
+          <q-radio v-model="param.pipelineChoice" val="PARSE_ONLY" label="Parse Only"/>
+        </div>
+      </div>
+      <q-separator vertical inset class="q-mx-lg"/>
+      <div v-show="param.pipelineChoice !== 'PARSE_ONLY'" class="col">
+        <p><b>Train Settings</b></p>
+        <q-toggle v-model="param.trainAll" label="Train on all files"/>
         <q-select
-          :class="{ invisible: parser.param.trainAll }"
-          v-model="parser.param.trainSamples"
+          :class="{ invisible: param.trainAll }"
+          v-model="param.trainSamples"
           filled
           :options="allSamplesNames"
           multiple
@@ -14,10 +23,10 @@
           stack-label
           style="max-width: 200px; min-width: 150px"
         />
-        <q-toggle v-model="parser.param.isCustomTrainingUser" label="Custom Training user"/>
+        <q-toggle v-model="param.isCustomTrainingUser" label="Custom Training user"/>
         <q-select
-          :class="{ invisible: !parser.param.isCustomTrainingUser }"
-          v-model="parser.param.trainingUser"
+          :class="{ invisible: !param.isCustomTrainingUser }"
+          v-model="param.trainingUser"
           filled
           :options="allTreesFrom"
           label="Training user"
@@ -25,7 +34,7 @@
           style="max-width: 200px; min-width: 150px"
         />
         <q-input
-          v-model.number="parser.param.epochs"
+          v-model.number="param.epochs"
           type="number"
           label="epochs"
           min="3"
@@ -35,13 +44,13 @@
           :rules="[(val) => (val >= 3 && val <= 300) || 'Please use 3 to 300 epochs']"
         />
       </div>
-      <q-separator vertical inset class="q-mx-lg"/>
-      <div class="col">
-        <p>Parse Settings</p>
-        <q-toggle v-model="parser.param.parseAll" label="Parse all files"/>
+      <q-separator v-show="param.pipelineChoice !== 'PARSE_ONLY'" vertical inset class="q-mx-lg"/>
+      <div v-show="param.pipelineChoice !== 'TRAIN_ONLY'" class="col">
+        <p><b>Parse Settings</b></p>
+        <q-toggle v-model="param.parseAll" label="Parse all files"/>
         <q-select
-          :class="{ invisible: parser.param.parseAll }"
-          v-model="parser.param.parseSamples"
+          :class="{ invisible: param.parseAll }"
+          v-model="param.parseSamples"
           filled
           :options="allSamplesNames"
           multiple
@@ -49,18 +58,18 @@
           stack-label
           style="max-width: 200px; min-width: 150px"
         />
-        <q-input :dense="true" v-model="parser.param.parserSuffix" label="Parser suffix (for parsed sentences)"
-                 :hint="'Parsing will go under the name `parser' + parser.param.parserSuffix + '`'"/>
-        <q-toggle v-model="parser.param.keepUpos" label="keep UPOS"/>
+        <q-input :dense="true" v-model="param.parserSuffix" label="Parser suffix (for parsed sentences)"
+                 :hint="'Parsing will go under the name `parser' + param.parserSuffix + '`'"/>
+<!--        <q-toggle v-model="param.keepUpos" label="keep UPOS"/>-->
       </div>
-      <q-separator vertical inset class="q-mx-lg"/>
+      <q-separator v-show="param.pipelineChoice !== 'TRAIN_ONLY'" vertical inset class="q-mx-lg"/>
       <div class="col">
-        <div class="text-subtitle1 q-mt-xs">Begin parse:</div>
+        <p><b>Start Pipeline</b></p>
         <div class="text-subtitle5 q-mb-xs">estimated time = {{ estimatedTime }}mn</div>
         <div class="text-subtitle5 q-mb-xs">({{ trainingSentencesCount }} training sentences)</div>
-        <q-btn v-close-popup color="primary" label="Begin" :loading="parser.taskStatus !== null" push size="sm"
+        <q-btn v-close-popup color="primary" label="START" :loading="taskStatus !== null" push size="sm"
                @click="parserTrainStart()"/>
-        <!--        <q-btn v-if="parser.parsing" v-close-popup color="primary" label="Stop" push size="sm"-->
+        <!--        <q-btn v-if="parsing" v-close-popup color="primary" label="Stop" push size="sm"-->
         <!--               @click="bootParserStop()"/>-->
       </div>
     </div>
@@ -89,9 +98,8 @@ type taskStatus_t = null | {
 interface parser_t {
   progress: string;
   taskStatus: taskStatus_t;
-  sha512Fdname: string;
-  timeInfo: string;
   param: {
+    pipelineChoice: "TRAIN_AND_PARSE" | "TRAIN_ONLY" | "PARSE_ONLY";
     advancedSettings: boolean;
     keepUpos: boolean;
     isCustomTrainingUser: boolean;
@@ -120,12 +128,11 @@ export default defineComponent({
   },
 
   data() {
-    const parser: parser_t = {
+    const data: parser_t = {
       taskStatus: null,
       progress: 'bootstrap parsing',
-      sha512Fdname: '',
-      timeInfo: '',
       param: {
+        pipelineChoice: 'TRAIN_AND_PARSE',
         advancedSettings: false,
         keepUpos: false,
         isCustomTrainingUser: false,
@@ -138,9 +145,7 @@ export default defineComponent({
         parserSuffix: '',
       },
     };
-    return {
-      parser,
-    };
+    return data;
   },
   computed: {
     allSamplesNames() {
@@ -153,31 +158,31 @@ export default defineComponent({
       return [...new Set(allTreesFromWithDuplicate)];
     },
     trainingSentencesCount() {
-      if (this.parser.param.trainAll) {
+      if (this.param.trainAll) {
         return this.samples.map((sample) => sample.sentences).reduce((partialSum, a) => partialSum + a, 0);
       }
       return this.samples
-        .filter((sample) => this.parser.param.trainSamples.includes(sample.sample_name))
+        .filter((sample) => this.param.trainSamples.includes(sample.sample_name))
         .reduce((partialSum, sample) => partialSum + sample.sentences, 0);
     },
     estimatedTime() {
       const x = this.trainingSentencesCount;
       const time1epochs = (timeEstimationCoefs.a * Math.log(x + 1) + timeEstimationCoefs.b * x + timeEstimationCoefs.c) / 100;
-      const time = time1epochs * this.parser.param.epochs;
+      const time = time1epochs * this.param.epochs;
       return Math.floor(Math.max(time, 2));
     },
   },
   methods: {
     parserTrainStart() {
-      this.parser.taskStatus = {
+      this.taskStatus = {
         taskType: "ASK_TRAINING",
         taskTimeStarted: Date.now(),
         taskIntervalChecker: null,
       }
 
-      const trainSampleNames = this.parser.param.trainAll ? this.allSamplesNames : this.parser.param.trainSamples;
-      const trainUser = this.parser.param.isCustomTrainingUser ? this.parser.param.trainingUser : 'last';
-      const maxEpoch = this.parser.param.epochs;
+      const trainSampleNames = this.param.trainAll ? this.allSamplesNames : this.param.trainSamples;
+      const trainUser = this.param.isCustomTrainingUser ? this.param.trainingUser : 'last';
+      const maxEpoch = this.param.epochs;
       api.parserTrainStart(this.$route.params.projectname as any as string, trainSampleNames, trainUser, maxEpoch).then(
         (response) => {
           if (response.data.status === "failure") {
@@ -185,12 +190,13 @@ export default defineComponent({
             this.clearCurrentTask()
           } else {
             notifyMessage({message: "Model training started"})
-            const modelInfo = response.data.model_info;
+            console.log("KK response.data.model_info", response.data.data.model_info)
+            const modelInfo = response.data.data.model_info;
             const taskIntervalChecker = setInterval(() => {
               setTimeout(this.parserTrainStatus(modelInfo) as any, 10);
             }, 20 * 1000);
 
-            this.parser.taskStatus = {
+            this.taskStatus = {
               taskType: "TRAINING",
               taskTimeStarted: Date.now(),
               taskIntervalChecker,
@@ -204,25 +210,25 @@ export default defineComponent({
         (response) => {
           if (response.data.status === "failure") {
             this.clearCurrentTask()
-          } else if (response.data.data.ready == true) {
+          } else if (response.data.data.task_status === "READY") {
             this.clearCurrentTask()
             this.parserParseStart(modelInfo)
             notifyMessage({message: "Model training ended!"})
-          } else if (this.parser.taskStatus && Date.now() - this.parser.taskStatus.taskTimeStarted > 1000 * 60) {
+          } else if (this.taskStatus && Date.now() - this.taskStatus.taskTimeStarted > 1000 * 60) {
             this.clearCurrentTask()
           }
         }
       )
     },
     parserParseStart(modelInfo: { project_name: string; model_id: string }) {
-      this.parser.taskStatus = {
+      this.taskStatus = {
         taskType: "ASK_PARSING",
         taskTimeStarted: Date.now(),
         taskIntervalChecker: null,
       }
 
-      const toParseSamplesNames = this.parser.param.parseAll ? this.allSamplesNames : this.parser.param.parseSamples;
-      const parserSuffix = this.parser.param.parserSuffix;
+      const toParseSamplesNames = this.param.parseAll ? this.allSamplesNames : this.param.parseSamples;
+      const parserSuffix = this.param.parserSuffix;
 
       api.parserParseStart(modelInfo, toParseSamplesNames).then(
         (response) => {
@@ -231,12 +237,12 @@ export default defineComponent({
             this.clearCurrentTask()
           } else {
             notifyMessage({message: "Sentences parsing started"})
-            const parseTaskId = response.data.parse_task_id;
+            const parseTaskId = response.data.data.parse_task_id;
             const taskIntervalChecker = setInterval(() => {
               setTimeout(this.parserParseStatus(modelInfo, parseTaskId, parserSuffix) as any, 10);
             }, 20 * 1000);
 
-            this.parser.taskStatus = {
+            this.taskStatus = {
               taskType: "PARSING",
               taskTimeStarted: Date.now(),
               taskIntervalChecker,
@@ -250,22 +256,22 @@ export default defineComponent({
         (response) => {
           if (response.data.status === "failure") {
             this.clearCurrentTask()
-          } else if (response.data.data.ready == true) {
+          } else if (response.data.data.task_status === "READY") {
             this.clearCurrentTask()
             this.parentGetProjectSamples();
             notifyMessage({message: "Sentences parsing ended!"})
-          } else if (this.parser.taskStatus && Date.now() - this.parser.taskStatus.taskTimeStarted > 1000 * 60) {
+          } else if (this.taskStatus && Date.now() - this.taskStatus.taskTimeStarted > 1000 * 60 * 60 * 3) { // 3 hours
             this.clearCurrentTask()
           }
         }
       )
     },
     clearCurrentTask() {
-      if (this.parser.taskStatus) {
-        if (this.parser.taskStatus.taskIntervalChecker) {
-          clearInterval(this.parser.taskStatus.taskIntervalChecker);
+      if (this.taskStatus) {
+        if (this.taskStatus.taskIntervalChecker) {
+          clearInterval(this.taskStatus.taskIntervalChecker);
         }
-        this.parser.taskStatus = null
+        this.taskStatus = null
       }
     }
   },

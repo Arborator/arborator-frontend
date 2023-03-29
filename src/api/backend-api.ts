@@ -226,6 +226,9 @@ export default {
   // ---------------------------------------------------- //
   // ---------------         Parser        --------------- //
   // ---------------------------------------------------- //
+  parserList() {
+    return API.get(`/parser/list`);
+  },
   parserTrainStart(projectname: string, trainSampleNames: string[], trainUser: string, maxEpoch: number) {
     const data = {
       project_name: projectname,

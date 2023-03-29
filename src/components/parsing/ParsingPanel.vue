@@ -11,13 +11,16 @@
             v-model="param.pipelineChoice"
           />
         </div>
+        <q-separator inset class="q-mx-lg"/>
         <q-select
           :disable="taskStatus !== null"
           v-model="param.baseModel"
           filled
           :options="param.baseModelsOptions"
-          :label="`Base Model for training or parsing`"
+          :label="`Pretrain Model`"
           style="max-width: 200px; min-width: 150px"
+          hint="Optional; We will use this model as a pretrain model for your task"
+          clearable
         />
       </div>
       <q-separator vertical inset class="q-mx-lg"/>
@@ -73,7 +76,7 @@
           stack-label
           style="max-width: 200px; min-width: 150px"
         />
-        <q-input :disable="taskStatus !== null" :dense="true" v-model="param.parserSuffix"
+        <q-input :disable="taskStatus !== null" :dense="true" filled v-model="param.parserSuffix"
                  label="Parser suffix (for parsed sentences)"
                  :hint="'Parsing will go under the name `parser' + param.parserSuffix + '`'"/>
         <!--        <q-toggle v-model="param.keepUpos" label="keep UPOS"/>-->

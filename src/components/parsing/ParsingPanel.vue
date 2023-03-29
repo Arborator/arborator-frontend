@@ -85,7 +85,7 @@ import {parserType_t, timeEstimationCoefs_t} from 'src/types/main_types';
 import {AxiosResponse} from "axios";
 import {notifyMessage} from "src/utils/notify";
 // https://github.com/Arborator/djangoBootParser/blob/master/estimated_time_100ep_logline.tsv
-const timeEstimationCoefs: timeEstimationCoefs_t = {a: 0, b: 0.04, c: 0};
+const kirParserSentPerSecSpeed: number = 140;
 
 type taskType_t = "ASK_TRAINING" | "TRAINING" | "ASK_PARSING" | "PARSING"
 
@@ -169,9 +169,11 @@ export default defineComponent({
     },
     estimatedTime() {
       const x = this.trainingSentencesCount;
-      const time1epochs = (timeEstimationCoefs.a * Math.log(x + 1) + timeEstimationCoefs.b * x + timeEstimationCoefs.c) / 100;
-      const time = time1epochs * this.param.epochs;
-      return Math.floor(Math.max(time, 2));
+      const timeInitialisationTask_s = 30;
+      const trainingEstimatedTime_s = this.param.epochs * (x / kirParserSentPerSecSpeed);
+      const parsingEstimatedTime_s = 60;
+      const totalEstimatedTime_s = timeInitialisationTask_s + trainingEstimatedTime_s + parsingEstimatedTime_s
+      return Math.ceil(totalEstimatedTime_s / 60);
     },
   },
   methods: {

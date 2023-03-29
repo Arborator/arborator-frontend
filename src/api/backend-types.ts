@@ -157,3 +157,10 @@ export interface transcription_t {
   user: string;
   transcription: Array<Array<string>>;
 }
+
+
+///////// PARSER /////////
+export interface ModelInfo_t {
+  project_name: string;
+  model_id: string;
+}

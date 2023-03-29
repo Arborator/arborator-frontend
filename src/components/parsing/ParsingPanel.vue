@@ -103,10 +103,7 @@
 <script lang="ts">
 import {defineComponent, PropType} from 'vue';
 import api from '../../api/backend-api';
-import {exportFile} from 'quasar';
-import {sample_t} from 'src/api/backend-types';
-import {parserType_t, timeEstimationCoefs_t} from 'src/types/main_types';
-import {AxiosResponse} from "axios";
+import {ModelInfo_t, sample_t} from 'src/api/backend-types';
 import {notifyMessage} from "src/utils/notify";
 // https://github.com/Arborator/djangoBootParser/blob/master/estimated_time_100ep_logline.tsv
 const kirParserSentPerSecSpeed: number = 140;
@@ -121,19 +118,14 @@ type taskStatus_t = null | {
 
 type pipelineChoice_t = "TRAIN_AND_PARSE" | "TRAIN_ONLY" | "PARSE_ONLY";
 
-type modelInfo_t = {
-  project_name: string;
-  model_id: string;
-}
-
 interface parser_t {
   progress: string;
   taskStatus: taskStatus_t;
   param: {
     pipelineChoice: pipelineChoice_t;
     pipelineOptions: { label: string; value: pipelineChoice_t }[];
-    baseModel: modelInfo_t | null;
-    baseModelsOptions: { label: string; value: modelInfo_t }[];
+    baseModel: ModelInfo_t | null;
+    baseModelsOptions: { label: string; value: ModelInfo_t }[];
     advancedSettings: boolean;
     keepUpos: boolean;
     isCustomTrainingUser: boolean;
@@ -256,7 +248,7 @@ export default defineComponent({
           if (response.data.status === "failure") {
             console.log("fetchBaseModelsAvailables FAILURE")
           } else {
-            this.param.baseModelsOptions = response.data.data.map((baseModel: modelInfo_t) => {
+            this.param.baseModelsOptions = response.data.data.map((baseModel: ModelInfo_t) => {
               return {
                 label: `${baseModel.project_name}/${baseModel.model_id}`,
                 value: baseModel
@@ -271,7 +263,7 @@ export default defineComponent({
         this.parserTrainStart();
       } else {
         if (this.param.baseModel) {
-          this.parserParseStart(this.param.baseModel);
+          this.parserParseStart((this.param.baseModel as any).value as ModelInfo_t);
         }
       }
     },
@@ -292,7 +284,6 @@ export default defineComponent({
             this.clearCurrentTask()
           } else {
             notifyMessage({message: "Model training started"})
-            console.log("KK response.data.model_info", response.data.data.model_info)
             const modelInfo = response.data.data.model_info;
             const taskIntervalChecker = setInterval(() => {
               setTimeout(this.parserTrainStatus(modelInfo) as any, 10);
@@ -307,7 +298,7 @@ export default defineComponent({
         }
       )
     },
-    parserTrainStatus(modelInfo: { project_name: string; model_id: string }) {
+    parserTrainStatus(modelInfo: ModelInfo_t) {
       api.parserTrainStatus(modelInfo).then(
         (response) => {
           if (response.data.status === "failure") {
@@ -325,17 +316,18 @@ export default defineComponent({
         }
       )
     },
-    parserParseStart(modelInfo: modelInfo_t) {
+    parserParseStart(modelInfo: ModelInfo_t) {
       this.taskStatus = {
         taskType: "ASK_PARSING",
         taskTimeStarted: Date.now(),
         taskIntervalChecker: null,
       }
 
+      const projectName = this.$route.params.projectname as any as string
       const toParseSamplesNames = this.param.parseAll ? this.allSamplesNames : this.param.parseSamples;
       const parserSuffix = this.param.parserSuffix;
 
-      api.parserParseStart(modelInfo, toParseSamplesNames).then(
+      api.parserParseStart(projectName, modelInfo, toParseSamplesNames).then(
         (response) => {
           if (response.data.status === "failure") {
             notifyMessage({message: "Parsing could not start : " + response.data.error, type: "negative"})
@@ -344,7 +336,7 @@ export default defineComponent({
             notifyMessage({message: "Sentences parsing started"})
             const parseTaskId = response.data.data.parse_task_id;
             const taskIntervalChecker = setInterval(() => {
-              setTimeout(this.parserParseStatus(modelInfo, parseTaskId, parserSuffix) as any, 10);
+              setTimeout(this.parserParseStatus(projectName, modelInfo, parseTaskId, parserSuffix) as any, 10);
             }, REFRESH_RATE_TASK_STATUS_CHECKER);
 
             this.taskStatus = {
@@ -356,8 +348,8 @@ export default defineComponent({
         }
       )
     },
-    parserParseStatus(modelInfo: { project_name: string; model_id: string }, parseTaskId: string, parserSuffix: string) {
-      api.parserParseStatus(modelInfo, parseTaskId, parserSuffix).then(
+    parserParseStatus(projectName: string, modelInfo: ModelInfo_t, parseTaskId: string, parserSuffix: string) {
+      api.parserParseStatus(projectName, modelInfo, parseTaskId, parserSuffix).then(
         (response) => {
           if (response.data.status === "failure") {
             this.clearCurrentTask()

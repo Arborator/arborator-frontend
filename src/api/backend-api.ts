@@ -23,7 +23,7 @@ import {
   whoIAm_RV,
   getLexicon_RV,
 } from './endpoints';
-import { sample_role_action_t, sample_role_targetrole_t, transcription_t } from './backend-types';
+import { sample_role_action_t, sample_role_targetrole_t, transcription_t, ModelInfo_t } from './backend-types';
 
 export const API = axios.create({
   // baseURL: 'https://arboratorgrew.elizia.net/api',
@@ -238,24 +238,24 @@ export default {
     }
     return API.post(`/parser/train/start`, data);
   },
-  parserTrainStatus(modelInfo: { project_name: string; model_id: string }) {
+  parserTrainStatus(modelInfo: ModelInfo_t) {
     const data = {
       model_info: modelInfo
     }
     return API.post(`/parser/train/status`, data)
   },
-  parserParseStart(modelInfo: { project_name: string; model_id: string }, toParseSamplesNames: string[]) {
+  parserParseStart(projectName: string, modelInfo: ModelInfo_t, toParseSamplesNames: string[]) {
     const data = {
-      project_name: modelInfo.project_name,
-      model_id: modelInfo.model_id,
+      project_name: projectName,
+      model_info: modelInfo,
       to_parse_samples_names: toParseSamplesNames,
     }
     return API.post(`/parser/parse/start`, data)
   },
-  parserParseStatus(modelInfo: { project_name: string; model_id: string }, parseTaskId: string, parserSuffix: string) {
+  parserParseStatus(projectName: string, modelInfo: ModelInfo_t, parseTaskId: string, parserSuffix: string) {
     const data = {
-      project_name: modelInfo.project_name,
-      model_id: modelInfo.model_id,
+      project_name: projectName,
+      model_info: modelInfo,
       parse_task_id: parseTaskId,
       parser_suffix: parserSuffix,
     }

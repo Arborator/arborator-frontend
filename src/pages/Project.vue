@@ -44,9 +44,6 @@
         <q-dialog v-model="isShowGithubSyncPanel">
           <GithubSyncDialog :projectName="projectName" @synchronized="reloadAfterSynchronization"  />
         </q-dialog>
-        <q-dialog v-model="isShowCommitDialog">
-          <GithubCommitDialog :projectName="projectName" :repositoryName="githubSynchronizedRepo" @committed="isShowCommitDialog = false" />
-        </q-dialog>
         <q-card-section>
           <q-table
             ref="textsTable"
@@ -160,20 +157,13 @@
                   <q-btn 
                     flat
                     color="default"
-                    icon="sync"
+                    icon="fab fa-github"
                     @click="isShowGithubSyncPanel = true">
                   </q-btn>
                 </div>
                 <div v-if="githubSynchronizedRepo != ''">
-                  <q-btn 
-                    outline
-                    color="primary"
-                    label="Commit"
-                    @click="isShowCommitDialog = true"
-                    >
-                  </q-btn>
-                  <q-tooltip content-class="text-white bg-primary">This Project is synchronized with {{githubSynchronizedRepo}}</q-tooltip>
-                  
+                  <GithubOptions :projectName="projectName" :repositoryName="githubSynchronizedRepo" @remove-sync="reloadAfterSynchronization"/>
+                  <q-tooltip content-class="text-white bg-primary">This Project is synchronized with {{githubSynchronizedRepo}}</q-tooltip> 
                 </div>
               </q-btn-group>
 
@@ -371,7 +361,7 @@ import RelationTableMain from '../components/relationTable/RelationTableMain.vue
 import ParsingPanel from '../components/parsing/ParsingPanel.vue';
 import ProjectIcon from '../components/shared/ProjectIcon.vue';
 import GithubSyncDialog from '../components/github/GithubSyncDialog.vue';
-import GithubCommitDialog from '../components/github/GithubCommitDialog.vue'
+import GithubOptions from '../components/github/GithubOptions.vue'
 
 import {notifyError, notifyMessage} from 'src/utils/notify';
 import {mapActions, mapState} from 'pinia';
@@ -394,7 +384,7 @@ export default defineComponent({
     ParsingPanel,
     ProjectIcon,
     GithubSyncDialog,
-    GithubCommitDialog
+    GithubOptions
   },
   data() {
     const samples: sample_t[] = [];
@@ -484,7 +474,6 @@ export default defineComponent({
       isShowParsingPanel: false,
       isShowLexiconPanel: false,
       isShowGithubSyncPanel: false,
-      isShowCommitDialog: false,
       confirmActionCallback,
       confirmActionArg1: '',
       samples,

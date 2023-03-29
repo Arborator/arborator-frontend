@@ -1,5 +1,11 @@
 <template>
-    <q-card class="q-gutter-md" style="min-width: 50vw;">
+    <q-card style="min-width: 50vw;">
+        <q-bar class="bg-primary text-white">
+            <q-space />
+            <div class="text-weight-bold">Github synchronization</div>
+            <q-space />
+            <q-btn v-close-popup flat dense icon="close" />
+        </q-bar>
         <q-card-section v-if="selectedRepository == ''">
             <div class="row">
                 <div class="col">
@@ -32,28 +38,28 @@
                     </q-input>
                 </div>
             </div>
-        </q-card-section>
-        <q-card-section v-if="repositoriesPerOwner.length > 0 && selectedRepository == ''">
-            <q-list bordered separator>
-                <q-item  class="row" v-for="repo in getListProjects">
-                    <q-item-section class="col-8">
-                        <q-item-label class="text-left">{{ repo.name }}</q-item-label>
-                    </q-item-section>
-                    <q-item-section class="col">
-                        <q-btn unelevated color="primary" @click="getRepoBranches(repo.name)"> synchronize</q-btn>
-                    </q-item-section>
-                </q-item>
-            </q-list>
-            <div class="q-pa-lg flex flex-center">
-                <q-pagination
-                    v-model="pageIndex" 
-                    :min="currentPage" 
-                    :max="Math.ceil(repositoriesPerOwner.length / totalItemPerPage)" 
-                    :input="true"
-                />
-            </div>
-            <div v-if="noRepositories">
-                You need to create your first Github Repository                
+            <div v-if="repositoriesPerOwner.length > 0">
+                <q-list bordered separator>
+                    <q-item  class="row" v-for="repo in getListProjects">
+                        <q-item-section class="col-8">
+                            <q-item-label class="text-left">{{ repo.name }}</q-item-label>
+                        </q-item-section>
+                        <q-item-section class="col">
+                            <q-btn unelevated color="primary" @click="getRepoBranches(repo.name)"> synchronize</q-btn>
+                        </q-item-section>
+                    </q-item>
+                </q-list>
+                <div class="q-pa-lg flex flex-center">
+                    <q-pagination
+                        v-model="pageIndex" 
+                        :min="currentPage" 
+                        :max="Math.ceil(repositoriesPerOwner.length / totalItemPerPage)" 
+                        :input="true"
+                    />
+                </div>
+                <div v-if="noRepositories">
+                    You need to create your first Github Repository                
+                </div>
             </div>
         </q-card-section>
         <q-card-section v-if="selectedRepository != ''">
@@ -68,7 +74,7 @@
                         <q-item-label class="text-left">{{selectedRepository}}</q-item-label>
                     </q-item-section>
                     <q-item-section class="col">
-                        <q-btn-dropdown split color="teal" label="Select branch">
+                        <q-btn-dropdown split color="teal" icon="fas fa-code-branch" label="Select branch">
                             <q-list v-for="branch in listBranches">
                                 <q-item clickable v-close-popup @click="synchronizeWithGitRepo(selectedRepository, branch)">
                                     <q-item-section>

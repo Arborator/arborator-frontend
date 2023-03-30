@@ -181,8 +181,9 @@ export default defineComponent({
                 this.$emit('synchronized')
               })
               .catch((error) => {
-                notifyError({error})}
-              );
+                const errorMessage = error.response.data.message
+                notifyError({error: `${errorMessage}`})
+              });
         },  
         
     }     

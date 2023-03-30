@@ -16,7 +16,7 @@
                         />
                     </div>
                     <div class="col">
-                        <q-btn-dropdown class="float-right" size="md" outline color="primary" label="Select trees to commit">
+                        <q-btn-dropdown class="float-right" size="md" color="primary" label="Select trees to commit">
                             <q-list>
                                 <q-item v-close-popup clickable @click="commitChanges(username)">
                                     <q-item-section avatar>

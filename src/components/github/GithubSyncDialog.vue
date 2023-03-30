@@ -183,7 +183,8 @@ export default defineComponent({
               .catch((error) => {
                 const errorMessage = error.response.data.message
                 notifyError({error: `${errorMessage}`})
-              });
+                this.$emit('synchronized')
+              });        
         },  
         
     }     

@@ -1,13 +1,49 @@
 <template>
     <q-card class="" style="min-width: 50vw;">
         <q-card-section>
-            <div class="text-h6 text-left">Commit change</div>
-            <q-form class="q-gutter-md" @submit="commitChanges">
-                <q-input
-                    v-model="message"
-                    label="Commit message"
-                />
-                <q-btn color="primary"  type="submit">Commit</q-btn>
+            <div class="text-h6 text-left">Commit changes</div>
+        </q-card-section>
+        <q-separator />
+        <q-card-section class="text-body2 text-weight-light text-justify" :class="$q.dark.isActive ? 'text-white' : 'text-blue-grey-10'"> All the made commits are pushed to a separate remote branch named arboratorgrew in order to not impact your Master branch. Once you are sure about your changes you can easily merge the changes to your master branch from Github    </q-card-section>
+        <q-card-section>
+            <q-form class="q-gutter-md">
+                <div class="row">
+                    <div class="col-8">
+                        <q-input
+                            filled
+                            v-model="message"
+                            label="Commit message"
+                        />
+                    </div>
+                    <div class="col">
+                        <q-btn-dropdown class="float-right" size="md" outline color="primary" label="Select trees to commit">
+                            <q-list>
+                                <q-item v-close-popup clickable @click="commitChanges(username)">
+                                    <q-item-section avatar>
+                                        <q-avatar size="1.2rem">
+                                            <img :src="avatar" />
+                                        </q-avatar>
+                                    </q-item-section>
+                                    <q-item-section>
+                                        <q-item-label>Commit My trees</q-item-label>
+                                    </q-item-section>
+                                </q-item>
+
+                                <q-item v-close-popup clickable @click="commitChanges('last')">
+                                    <q-item-section avatar>
+                                        <q-avatar size="1.2rem">
+                                            <img :src="avatar" />
+                                            <q-badge floating transparent color="principal">+</q-badge>
+                                        </q-avatar>
+                                    </q-item-section>
+                                    <q-item-section>
+                                        <q-item-label>Commit my trees filled the most recent ones</q-item-label>
+                                    </q-item-section>
+                                </q-item>
+                            </q-list>
+                        </q-btn-dropdown>
+                    </div>
+                </div>
             </q-form>
         </q-card-section>
     </q-card> 
@@ -22,29 +58,30 @@ import {notifyError, notifyMessage} from 'src/utils/notify';
 import {defineComponent} from 'vue';
 export default defineComponent({
     name: 'GithubCommitDialog',
-    props:['projectName', 'repositoryName'],
+    props:['projectName', 'repositoryName'], 
     data() {
         return {
-            message:''
+            options: ['My trees Filled with the most recent one', 'My trees'],
+            message: '', 
         }
     },
     computed:{
-        ...mapState(useUserStore, ['username']),
+        ...mapState(useUserStore, ['username', 'avatar']),
     },
     methods: {
-        commitChanges(){
+        commitChanges(userType: string){
             const githubMessage =  this.message + ' :commited by Arborator-Grew';
-            const data = {message: githubMessage, repositoryName: this.repositoryName}
+            const data = {message: githubMessage, repositoryName: this.repositoryName, userType: userType};
             api
               .commitChanges(this.projectName, this.username, data)
               .then((response) => {
-                notifyMessage({message: `new commit in "${ this.repositoryName}"`})
+                notifyMessage({message: `new commit in "${ this.repositoryName}"`});
                 this.$emit('committed')
               })
               .catch((error) => {
-                notifyError({error})
-              })
-        }
+                notifyError({error});
+              });
+        },
        
     }   
 });

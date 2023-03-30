@@ -9,7 +9,7 @@
       @click="onMainClick"
     >
         <q-list>
-            <q-item clickable v-close-popup @click="isShowCommitDialog = true">
+            <q-item :disable="changesNumber == 0" clickable v-close-popup @click="isShowCommitDialog = true">
                 <q-item-section avatar>
                     <q-avatar icon="commit" />
                 </q-item-section>
@@ -45,7 +45,7 @@
         </q-list>
     </q-btn-dropdown>
     <q-dialog v-model="isShowCommitDialog">
-        <GithubCommitDialog :projectName="projectName" :repositoryName="repositoryName" />
+        <GithubCommitDialog :projectName="projectName" :repositoryName="repositoryName" @committed="reloadAfterCommit" />
     </q-dialog>
 </template>
 <script lang="ts">
@@ -83,21 +83,25 @@ export default defineComponent({
                 this.changesNumber = response.data;
               })
               .catch((error) => {
-                notifyError({error})
+                notifyError({error});
               });
         }, 
         deleteSynchronization() {
             api
               .deleteSynchronization(this.projectName, this.username)
               .then((response) => {
-                notifyMessage({message: `The synchronization with "${this.repositoryName}" is removed`})
+                notifyMessage({message: `The synchronization with "${this.repositoryName}" is removed`});
                 this.$emit("remove-sync")
               })
               .catch((error) => {
-                notifyError({error})
+                notifyError({error});
               });
-        }
-       
+        },
+        reloadAfterCommit() {
+            this.isShowCommitDialog = false;
+            this.getChanges();
+
+        } 
     }   
 });
 </script>

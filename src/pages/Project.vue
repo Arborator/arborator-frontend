@@ -153,7 +153,7 @@
                     >
                   </q-btn>
                 </div>
-                <div v-if="isProjectMember && loggedWithGithub && githubSynchronizedRepo == ''">
+                <div v-if="isAllowdedToSync">
                   <q-btn 
                     flat
                     color="default"
@@ -552,6 +552,9 @@ export default defineComponent({
         possiblesUsers.push({ key: guest, value: guest })
       }
       return possiblesUsers;
+    },
+    isAllowdedToSync(): boolean{
+      return this.isAdmin && this.loggedWithGithub && this.githubSynchronizedRepo == '';
     }
   },
   created() {

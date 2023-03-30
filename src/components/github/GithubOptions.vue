@@ -21,7 +21,7 @@
                     <q-badge color="primary" :label="changesNumber" />
                 </q-item-section>
             </q-item>
-            <q-item clickable v-close-popup @click="onItemClick">
+            <q-item clickable v-close-popup>
                 <q-item-section avatar>
                     <q-avatar icon="ion-md-git-pull-request" />
                 </q-item-section>

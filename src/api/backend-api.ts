@@ -239,9 +239,10 @@ export default {
     }
     return API.post(`/parser/train/start`, data);
   },
-  parserTrainStatus(modelInfo: ModelInfo_t) {
+  parserTrainStatus(modelInfo: ModelInfo_t, trainTaskId: string) {
     const data = {
-      model_info: modelInfo
+      model_info: modelInfo,
+      train_task_id: trainTaskId,
     }
     return API.post(`/parser/train/status`, data)
   },

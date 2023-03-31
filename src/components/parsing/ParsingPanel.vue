@@ -289,8 +289,9 @@ export default defineComponent({
           } else {
             notifyMessage({message: "Model training started"})
             const modelInfo = response.data.data.model_info;
+            const trainTaskId = response.data.data.train_task_id;
             const taskIntervalChecker = setInterval(() => {
-              setTimeout(this.parserTrainStatus(modelInfo) as any, 10);
+              setTimeout(this.parserTrainStatus(modelInfo, trainTaskId) as any, 10);
             }, REFRESH_RATE_TASK_STATUS_CHECKER);
 
             this.taskStatus = {
@@ -307,12 +308,12 @@ export default defineComponent({
         }
       )
     },
-    parserTrainStatus(modelInfo: ModelInfo_t) {
-      api.parserTrainStatus(modelInfo).then(
+    parserTrainStatus(modelInfo: ModelInfo_t, trainTaskId: string) {
+      api.parserTrainStatus(modelInfo, trainTaskId).then(
         (response) => {
           if (response.data.status === "failure") {
             this.clearCurrentTask()
-          } else if (response.data.data.task_status === "READY") {
+          } else if (response.data.data) {
             notifyMessage({message: "Model training ended!"})
             this.clearCurrentTask()
             this.fetchBaseModelsAvailables()
@@ -372,7 +373,7 @@ export default defineComponent({
         (response) => {
           if (response.data.status === "failure") {
             this.clearCurrentTask()
-          } else if (response.data.data.task_status === "READY") {
+          } else if (response.data.data) {
             this.clearCurrentTask()
             this.parentGetProjectSamples();
             notifyMessage({message: "Sentences parsing ended!"})

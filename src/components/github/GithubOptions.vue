@@ -21,15 +21,17 @@
                     <q-badge color="primary" :label="changesNumber" />
                 </q-item-section>
             </q-item>
-            <q-item clickable v-close-popup>
+            <q-item clickable v-close-popup @click="pullChanges()
+            ">
                 <q-item-section avatar>
                     <q-avatar icon="ion-md-git-pull-request" />
                 </q-item-section>
                 <q-item-section>
                     <q-item-label>Pull</q-item-label>
-                    <q-item-label caption></q-item-label>
+                    <q-item-label v-if="checkPulls" caption> there is changes to pull</q-item-label>
+                    <q-item-label v-else caption> there is nothing to pull</q-item-label>
                 </q-item-section>
-                <q-item-section side>
+                <q-item-section v-if="checkPulls" side>
                     <q-icon name="info" color="amber" />
                 </q-item-section>
             </q-item>
@@ -66,6 +68,7 @@ export default defineComponent({
     data() {
         return {
             isShowCommitDialog: false,
+            checkPulls: false,
             changesNumber: 0,
         }
     },
@@ -74,6 +77,7 @@ export default defineComponent({
     },
     mounted() {
         this.getChanges();
+        this.getPulls();
     },
     methods: {
         getChanges() {
@@ -86,6 +90,16 @@ export default defineComponent({
                 notifyError({error});
               });
         }, 
+        getPulls() {
+            api
+              .checkPull(this.projectName, this.username)
+              .then((response) => {
+                this.checkPulls = response.data;
+              })
+              .catch((error) => {
+                notifyError({error});
+              });
+        },
         deleteSynchronization() {
             api
               .deleteSynchronization(this.projectName, this.username)
@@ -100,8 +114,19 @@ export default defineComponent({
         reloadAfterCommit() {
             this.isShowCommitDialog = false;
             this.getChanges();
+        }, 
+        pullChanges() {
+            const data = {repositoryName : this.repositoryName}
+            api
+              .pullChanges(this.projectName, this.username, data)
+              .then((response) => {
+                    notifyMessage({message: `The changes from ${this.repositoryName} are pulled in ${this.projectName}`})
+               })
+              .catch((error) => {
+                    notifyError({error});
+              });
 
-        } 
+        }
     }   
 });
 </script>

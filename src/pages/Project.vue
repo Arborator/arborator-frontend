@@ -474,6 +474,7 @@ export default defineComponent({
       isShowParsingPanel: false,
       isShowLexiconPanel: false,
       isShowGithubSyncPanel: false,
+      isDeleteSync: false,
       confirmActionCallback,
       confirmActionArg1: '',
       samples,
@@ -554,7 +555,7 @@ export default defineComponent({
       return possiblesUsers;
     },
     isAllowdedToSync(): boolean{
-      return this.isAdmin && this.loggedWithGithub && this.githubSynchronizedRepo == '';
+      return this.isAdmin && this.loggedWithGithub && this.githubSynchronizedRepo == '' && !this.isDeleteSync;
     }
   },
   created() {
@@ -581,6 +582,7 @@ export default defineComponent({
     },
 
     reloadAfterSynchronization () {
+      this.isDeleteSync = true;
       this.isShowGithubSyncPanel = false;
       this.loadProjectData();
       this.getSynchronizedGithubRepo();

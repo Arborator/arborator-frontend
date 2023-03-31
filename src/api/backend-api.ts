@@ -293,6 +293,12 @@ export default {
   commitChanges(projectName: string, username: string, data:any) {
     return API.post(`/projects/${projectName}/${username}/synchronize-github/commit`, data);
   },
+  checkPull(projectName: string, username: string){
+    return API.get(`/projects/${projectName}/${username}/synchronize-github/pull`);
+  },
+  pullChanges(projectName: string, username: string, data: any){
+    return API.post(`/projects/${projectName}/${username}/synchronize-github/pull`, data);
+  },
   // -------------------------------------------------------- //
   // ---------------        To Refactor       --------------- //
   // -------------------------------------------------------- //

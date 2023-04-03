@@ -40,10 +40,6 @@
           <ParsingPanel :samples="samples"></ParsingPanel>
         </q-card-section>
 
-        <!--GithubSyncDialog-->
-        <q-dialog v-model="isShowGithubSyncPanel">
-          <GithubSyncDialog :projectName="projectName" @synchronized="reloadAfterSynchronization"  />
-        </q-dialog>
         <q-card-section>
           <q-table
             ref="textsTable"
@@ -154,14 +150,6 @@
                   </q-btn>
                 </div>
                 <div v-if="isAllowdedToSync">
-                  <q-btn 
-                    flat
-                    color="default"
-                    icon="fab fa-github"
-                    @click="isShowGithubSyncPanel = true">
-                  </q-btn>
-                </div>
-                <div v-if="githubSynchronizedRepo != ''">
                   <GithubOptions :projectName="projectName" :repositoryName="githubSynchronizedRepo" @remove-sync="reloadAfterSynchronization"/>
                   <q-tooltip content-class="text-white bg-primary">This Project is synchronized with {{githubSynchronizedRepo}}</q-tooltip> 
                 </div>
@@ -360,8 +348,7 @@ import GrewSearch from '../components/grewSearch/GrewSearch.vue';
 import RelationTableMain from '../components/relationTable/RelationTableMain.vue';
 import ParsingPanel from '../components/parsing/ParsingPanel.vue';
 import ProjectIcon from '../components/shared/ProjectIcon.vue';
-import GithubSyncDialog from '../components/github/GithubSyncDialog.vue';
-import GithubOptions from '../components/github/GithubOptions.vue'
+import GithubOptions from '../components/github/GithubOptions.vue';
 
 import {notifyError, notifyMessage} from 'src/utils/notify';
 import {mapActions, mapState} from 'pinia';
@@ -383,7 +370,6 @@ export default defineComponent({
     RelationTableMain,
     ParsingPanel,
     ProjectIcon,
-    GithubSyncDialog,
     GithubOptions
   },
   data() {
@@ -473,7 +459,6 @@ export default defineComponent({
       confirmActionDial: false,
       isShowParsingPanel: false,
       isShowLexiconPanel: false,
-      isShowGithubSyncPanel: false,
       isDeleteSync: false,
       confirmActionCallback,
       confirmActionArg1: '',
@@ -555,7 +540,7 @@ export default defineComponent({
       return possiblesUsers;
     },
     isAllowdedToSync(): boolean{
-      return this.isAdmin && this.loggedWithGithub && this.githubSynchronizedRepo == '' && !this.isDeleteSync;
+      return this.isAdmin && this.loggedWithGithub && this.githubSynchronizedRepo != '' && !this.isDeleteSync;
     }
   },
   created() {
@@ -583,9 +568,7 @@ export default defineComponent({
 
     reloadAfterSynchronization () {
       this.isDeleteSync = true;
-      this.isShowGithubSyncPanel = false;
       this.loadProjectData();
-      this.getSynchronizedGithubRepo();
     }, 
 
     filterFields(tableJson: table_t<unknown>) {

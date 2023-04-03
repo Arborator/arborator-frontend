@@ -1,93 +1,86 @@
 <template>
-    <q-card style="min-width: 50vw;">
-        <q-bar class="bg-primary text-white">
-            <q-space />
-            <div class="text-weight-bold">Github synchronization</div>
-            <q-space />
-            <q-btn v-close-popup flat dense icon="close" />
-        </q-bar>
-        <q-card-section v-if="selectedRepository == ''">
-            <div class="row">
-                <div class="col">
-                    <q-btn-dropdown :disable="repositories.length == 0" class="float-left" size="md" outline color="primary" label="Choose Repository owner" >
-                        <q-list :filter-method="searchRepo">
-                            <q-item v-for="user in githubOwners" @click="getRepositoriesPerOwner(user.a)" v-close-popup clickable >
-                                <q-item-section avatar>
-                                    <q-avatar size="1.2rem">
-                                        <img :src="user.v" />
-                                    </q-avatar>
-                                </q-item-section>
+    <q-card-section v-if="selectedRepository == ''">
+        <div class="row">
+            <div class="col">
+                <q-btn-dropdown :disable="repositories.length == 0" class="float-left" size="md" outline color="primary" label="Choose Repository owner" >
+                    <q-list :filter-method="searchRepo">
+                        <q-item v-for="user in githubOwners" @click="getRepositoriesPerOwner(user.a)" clickable >
+                            <q-item-section avatar>
+                                <q-avatar size="1.2rem">
+                                    <img :src="user.v" />
+                                </q-avatar>
+                            </q-item-section>
+                            <q-item-section>
+                                <q-item-label>{{ user.a }}</q-item-label>
+                            </q-item-section>
+                        </q-item>
+                    </q-list>
+                </q-btn-dropdown>
+            </div>
+            <div class="col">
+                <q-input   
+                    v-model="search"
+                    filled
+                    label="Search Repository"
+                    type="text"
+                    @update:model-value="searchRepo(search)"  
+                >
+                    <template #append>
+                        <q-icon name="search" />
+                    </template>
+                </q-input>
+            </div>
+        </div>
+        <div v-if="repositoriesPerOwner.length > 0">
+            <q-list bordered separator>
+                <q-item  class="row" v-for="repo in getListProjects">
+                    <q-item-section class="col-8">
+                        <q-item-label class="text-left">{{ repo.name }}</q-item-label>
+                    </q-item-section>
+                    <q-item-section class="col">
+                        <q-btn unelevated color="primary" @click="getRepoBranches(repo.name)"> synchronize</q-btn>
+                    </q-item-section>
+                </q-item>
+            </q-list>
+            <div class="q-pa-lg flex flex-center">
+                <q-pagination
+                    v-model="pageIndex" 
+                    :min="currentPage" 
+                    :max="Math.ceil(repositoriesPerOwner.length / totalItemPerPage)" 
+                    :input="true"
+                />
+            </div>
+            <div v-if="noRepositories">
+                You need to create your first Github Repository                
+            </div>
+        </div>
+    </q-card-section>
+    <q-card-section v-if="selectedRepository != ''">
+        <div class="row">
+            <div class="col-lg-4 col-sm-4 col-xs-4 col-md-4 q-mb-sm">
+                <q-btn flat icon="arrow_back" @click="selectedRepository = ''"/>      
+            </div>
+        </div>
+        <q-list bordered separator>
+            <q-item class="row">
+                <q-item-section class="col-8">
+                    <q-item-label class="text-left">{{selectedRepository}}</q-item-label>
+                </q-item-section>
+                <q-item-section class="col">
+                    <q-btn-dropdown split color="teal" icon="fas fa-code-branch" label="Select branch">
+                        <q-list v-for="branch in listBranches">
+                            <q-item clickable v-close-popup @click="synchronizeWithGitRepo(selectedRepository, branch)">
                                 <q-item-section>
-                                    <q-item-label>{{ user.a }}</q-item-label>
+                                    <q-item-label>{{branch}}</q-item-label>
                                 </q-item-section>
                             </q-item>
                         </q-list>
                     </q-btn-dropdown>
-                </div>
-                <div class="col">
-                    <q-input   
-                        v-model="search"
-                        filled
-                        label="Search Repository"
-                        type="text"
-                        @update:model-value="searchRepo(search)"  
-                    >
-                        <template #append>
-                            <q-icon name="search" />
-                        </template>
-                    </q-input>
-                </div>
-            </div>
-            <div v-if="repositoriesPerOwner.length > 0">
-                <q-list bordered separator>
-                    <q-item  class="row" v-for="repo in getListProjects">
-                        <q-item-section class="col-8">
-                            <q-item-label class="text-left">{{ repo.name }}</q-item-label>
-                        </q-item-section>
-                        <q-item-section class="col">
-                            <q-btn unelevated color="primary" @click="getRepoBranches(repo.name)"> synchronize</q-btn>
-                        </q-item-section>
-                    </q-item>
-                </q-list>
-                <div class="q-pa-lg flex flex-center">
-                    <q-pagination
-                        v-model="pageIndex" 
-                        :min="currentPage" 
-                        :max="Math.ceil(repositoriesPerOwner.length / totalItemPerPage)" 
-                        :input="true"
-                    />
-                </div>
-                <div v-if="noRepositories">
-                    You need to create your first Github Repository                
-                </div>
-            </div>
-        </q-card-section>
-        <q-card-section v-if="selectedRepository != ''">
-            <div class="row">
-                <div class="col-lg-4 col-sm-4 col-xs-4 col-md-4 q-mb-sm">
-                    <q-btn flat icon="arrow_back" @click="selectedRepository = ''"/>      
-                </div>
-            </div>
-            <q-list bordered separator>
-                <q-item class="row">
-                    <q-item-section class="col-8">
-                        <q-item-label class="text-left">{{selectedRepository}}</q-item-label>
-                    </q-item-section>
-                    <q-item-section class="col">
-                        <q-btn-dropdown split color="teal" icon="fas fa-code-branch" label="Select branch">
-                            <q-list v-for="branch in listBranches">
-                                <q-item clickable v-close-popup @click="synchronizeWithGitRepo(selectedRepository, branch)">
-                                    <q-item-section>
-                                        <q-item-label>{{branch}}</q-item-label>
-                                    </q-item-section>
-                                </q-item>
-                            </q-list>
-                        </q-btn-dropdown>
-                    </q-item-section>
-                </q-item>
-            </q-list>
-        </q-card-section> 
-    </q-card> 
+                </q-item-section>
+            </q-item>
+        </q-list>
+    </q-card-section> 
+    
 </template>
 <script lang="ts">
 import api from '../../api/backend-api';
@@ -165,11 +158,10 @@ export default defineComponent({
             api
               .getGithubRepoBranches(this.projectName, this.username, this.selectedRepository)
               .then((response) => {
-                this.listBranches = response.data
-                console.log(this.listBranches)
+                this.listBranches = response.data;
               })
               .catch((error) => {
-                notifyError(error)
+                notifyError(error);
               });
         }, 
         synchronizeWithGitRepo(repoName: string, branch: string) {
@@ -178,12 +170,12 @@ export default defineComponent({
               .synchronizeWithGithubRepo(this.projectName as string, this.username as string,  data)
               .then((response) => {
                 notifyMessage({message: `"${this.projectName}" is synchronized with "${repoName}"`})
-                this.$emit('synchronized')
+                this.$emit('created');
               })
               .catch((error) => {
-                const errorMessage = error.response.data.message
-                notifyError({error: `${errorMessage}`})
-                this.$emit('synchronized')
+                const errorMessage = error.response.data.message;
+                notifyError({error: `${errorMessage}`});
+                this.$emit('created');
               });        
         },  
         

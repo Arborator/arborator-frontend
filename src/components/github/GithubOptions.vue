@@ -6,7 +6,6 @@
       no-caps
       icon="fab fa-github"
       label="Github Options"
-      @click="onMainClick"
     >
         <q-list>
             <q-item :disable="changesNumber == 0" clickable v-close-popup @click="isShowCommitDialog = true">
@@ -21,7 +20,7 @@
                     <q-badge color="primary" :label="changesNumber" />
                 </q-item-section>
             </q-item>
-            <q-item clickable v-close-popup @click="pullChanges()
+            <q-item clickable :disable="!checkPulls" v-close-popup @click="pullChanges()
             ">
                 <q-item-section avatar>
                     <q-avatar icon="ion-md-git-pull-request" />
@@ -70,12 +69,14 @@ export default defineComponent({
             isShowCommitDialog: false,
             checkPulls: false,
             changesNumber: 0,
+            intr: setTimeout(() => {}, 0),
         }
     },
     computed:{
         ...mapState(useUserStore, ['username']),
     },
     mounted() {
+        this.intr = setInterval(this.getPulls, 60000)
         this.getChanges();
         this.getPulls();
     },

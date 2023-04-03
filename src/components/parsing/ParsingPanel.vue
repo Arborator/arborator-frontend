@@ -251,10 +251,10 @@ export default defineComponent({
           if (response.data.status === "failure") {
             console.log("fetchBaseModelsAvailables FAILURE")
           } else {
-            this.param.baseModelsOptions = response.data.data.map((baseModel: ModelInfo_t) => {
+            this.param.baseModelsOptions = response.data.data.map((baseModelMeta) => {
               return {
-                label: `${baseModel.project_name}/${baseModel.model_id}`,
-                value: baseModel
+                label: `${baseModelMeta.model_info.project_name} - ${baseModelMeta.model_info.model_id} (${baseModelMeta.scores_best.epoch} epochs ; ${baseModelMeta.scores_best.LAS_epoch} LAS ; ${baseModelMeta.scores_best.n_sentences_train + baseModelMeta.scores_best.n_sentences_test} sents)`,
+                value: baseModelMeta.model_info
               }
             })
           }

@@ -13,7 +13,7 @@ import {
   user_t,
   timed_tokens_t,
   grewSearchResult_t as grewSearchResult_t,
-  lexiconItem_t,
+  lexiconItem_t, ModelInfo_t, ScoresHistory_t, ScoresBest_t,
 } from './backend-types';
 
 export interface logout_RV {
@@ -91,3 +91,20 @@ export interface getOriginalTranscription_RV {
   tokens: timed_tokens_t;
   speakers: string[];
 }
+
+
+////////// PARSER /////////////
+interface parser_generic_RV_failure {
+  status: "failure";
+  error: string;
+}
+
+interface parserList_RV_success {
+  status: "success";
+  data: {
+    model_info: ModelInfo_t;
+    scores_best: ScoresBest_t;
+    scores_history: ScoresHistory_t;
+  }[]
+}
+export type parserList_RV = parser_generic_RV_failure | parserList_RV_success

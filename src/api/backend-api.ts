@@ -21,7 +21,7 @@ import {
   updateProject_RV,
   updateTree_ED,
   whoIAm_RV,
-  getLexicon_RV,
+  getLexicon_RV, parserList_RV_success, parserList_RV,
 } from './endpoints';
 import { sample_role_action_t, sample_role_targetrole_t, transcription_t, ModelInfo_t } from './backend-types';
 
@@ -227,7 +227,7 @@ export default {
   // ---------------         Parser        --------------- //
   // ---------------------------------------------------- //
   parserList() {
-    return API.get(`/parser/list`);
+    return API.get<parserList_RV>(`/parser/list`);
   },
   parserTrainStart(projectname: string, trainSampleNames: string[], trainUser: string, maxEpoch: number, baseModel: ModelInfo_t | null) {
     const data = {

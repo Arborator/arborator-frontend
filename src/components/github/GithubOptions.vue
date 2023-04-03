@@ -14,7 +14,8 @@
                 </q-item-section>
                 <q-item-section>
                     <q-item-label>commit</q-item-label>
-                    <q-item-label caption>You have {{changesNumber}} changes to commit</q-item-label>
+                    <q-item-label v-if="changesNumber > 0" caption>You have {{changesNumber}} changes to commit</q-item-label>
+                    <q-item-label v-else caption>You don't have changes to commit</q-item-label>
                 </q-item-section>
                 <q-item-section side top>
                     <q-badge color="primary" :label="changesNumber" />
@@ -76,7 +77,7 @@ export default defineComponent({
         ...mapState(useUserStore, ['username']),
     },
     mounted() {
-        this.intr = setInterval(this.getPulls, 60000)
+        this.intr = setInterval(this.getPulls, 5000);
         this.getChanges();
         this.getPulls();
     },

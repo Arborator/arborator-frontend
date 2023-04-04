@@ -119,7 +119,8 @@
                   :disable="!isAdmin && !isSuperAdmin"
                   @click="triggerConfirm(deleteSamples)"
                 >
-                  <q-tooltip :delay="300" content-class="text-white bg-primary">{{ $t('projectView.tooltipDeleteSample[1]') }}</q-tooltip>
+                  <q-tooltip v-if="githubSynchronizedRepo != ''" content-class="text-white bg-primary">This action will delete the file from your synchronized github repository also</q-tooltip>
+                  <q-tooltip v-else :delay="300" content-class="text-white bg-primary">{{ $t('projectView.tooltipDeleteSample[1]') }}</q-tooltip>
                 </q-btn>
                 <div v-if="isProjectMember">
                   <q-btn
@@ -600,7 +601,26 @@ export default defineComponent({
           .catch((error) => {
             notifyError({ error });
           });
+        if (this.githubSynchronizedRepo != ''){
+          this.deleteSampleFromGithub(sample.sample_name);
+        }
       }
+    },
+
+    deleteSampleFromGithub(sampleName: string) {
+      api
+        .deleteFileFromGithub(this.projectName, this.username, sampleName)
+        .then(() => {
+          notifyMessage({ message: 'Delete from Github' });
+          this.loadProjectData();
+        })
+        .catch((error) => {
+          notifyError({ error });
+        });
+    },
+
+    displayWarning(){
+      if (this.githubSynchronizedRepo != '') notifyMessage({message: 'These files will be also deleted from your synchronized Github repository', type: 'warning', position: 'top'})
     },
 
     exportSamplesZip() {
@@ -687,6 +707,7 @@ export default defineComponent({
       }, 0);
     },
     triggerConfirm(method: CallableFunction) {
+      this.displayWarning()
       this.confirmActionDial = true;
       this.confirmActionCallback = method;
     },

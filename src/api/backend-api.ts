@@ -299,6 +299,9 @@ export default {
   pullChanges(projectName: string, username: string, data: any){
     return API.post(`/projects/${projectName}/${username}/synchronize-github/pull`, data);
   },
+  deleteFileFromGithub(projectName: string, username: string, fileName: string){
+    return API.delete(`/projects/${projectName}/${username}/synchronize-github/${fileName}`);
+  },
   // -------------------------------------------------------- //
   // ---------------        To Refactor       --------------- //
   // -------------------------------------------------------- //

@@ -317,7 +317,8 @@ export default defineComponent({
           if (response.data.status === "failure") {
             this.clearCurrentTask()
           } else if (response.data.data.ready) {
-            notifyMessage({message: "Model training ended!"})
+            const scores_best = response.data.data.scores_best
+            notifyMessage({message: `Model ${modelInfo.model_id}: training ended ; LAS=${scores_best.LAS_chuliu_epoch} ; best_epoch=${scores_best.epoch}`})
             this.clearCurrentTask()
             this.fetchBaseModelsAvailables()
             if (this.param.pipelineChoice === "TRAIN_AND_PARSE") {

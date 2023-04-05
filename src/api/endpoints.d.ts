@@ -108,3 +108,36 @@ interface parserList_RV_success {
   }[]
 }
 export type parserList_RV = parser_generic_RV_failure | parserList_RV_success
+
+
+interface parserTrainStatus_RV_success {
+  status: "success";
+  data: {
+    ready: false;
+    scores_best: ScoresBest_t;
+    scores_history: ScoresHistory_t;
+  } |
+    {
+      ready: true;
+      model_info: ModelInfo_t;
+      scores_best: ScoresBest_t;
+      scores_history: ScoresHistory_t;
+    }
+}
+
+export type parserTrainStatus_RV = parser_generic_RV_failure | parserTrainStatus_RV_success
+
+
+interface parserParseStatus_RV_success {
+  status: "success";
+  data: {
+    ready: false;
+  } |
+    {
+      ready: true;
+      model_info: ModelInfo_t;
+    }
+}
+
+
+export type parserParseStatus_RV = parser_generic_RV_failure | parserParseStatus_RV_success

@@ -94,8 +94,8 @@
         <!--               @click="bootParserStop()"/>-->
         <div v-if="taskStatus !== null">
           <div class="text-subtitle5 q-mb-xs">Current task : {{ taskStatus.taskType }}</div>
-          <div v-if="taskStatus.additionalInfo" class="text-subtitle5 q-mb-xs">Additional info :
-            {{ taskStatus.additionalInfo }}
+          <div v-if="taskStatus.taskAdditionalMessage" class="text-subtitle5 q-mb-xs">
+            {{ taskAdditionalMessage }}
           </div>
         </div>
       </div>
@@ -115,6 +115,7 @@ type taskType_t = "ASK_TRAINING" | "TRAINING" | "ASK_PARSING" | "PARSING"
 
 type taskStatus_t = null | {
   taskType: taskType_t,
+  taskAdditionalMessage?: string;
   taskTimeStarted: number,
   taskIntervalChecker: null | ReturnType<typeof setTimeout>,
 }
@@ -313,7 +314,7 @@ export default defineComponent({
         (response) => {
           if (response.data.status === "failure") {
             this.clearCurrentTask()
-          } else if (response.data.data) {
+          } else if (response.data.data.ready) {
             notifyMessage({message: "Model training ended!"})
             this.clearCurrentTask()
             this.fetchBaseModelsAvailables()
@@ -322,6 +323,11 @@ export default defineComponent({
             }
           } else if (this.taskStatus && Date.now() - this.taskStatus.taskTimeStarted > TIMEOUT_TASK_STATUS_CHECKER) {
             this.clearCurrentTask()
+          } else if (!response.data.data.ready) {
+            if (this.taskStatus) {
+              const last_epoch = response.data.data.scores_history[response.data.data.scores_history.length -1]
+              this.taskStatus.taskAdditionalMessage = `epoch ${last_epoch.epoch} ; LAS=${last_epoch.LAS_chuliu_epoch}`
+            }
           }
         }
       ).catch(
@@ -373,7 +379,7 @@ export default defineComponent({
         (response) => {
           if (response.data.status === "failure") {
             this.clearCurrentTask()
-          } else if (response.data.data) {
+          } else if (response.data.data.ready) {
             this.clearCurrentTask()
             this.parentGetProjectSamples();
             notifyMessage({message: "Sentences parsing ended!"})

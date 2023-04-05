@@ -21,7 +21,7 @@ import {
   updateProject_RV,
   updateTree_ED,
   whoIAm_RV,
-  getLexicon_RV, parserList_RV_success, parserList_RV,
+  getLexicon_RV, parserList_RV_success, parserList_RV, parserTrainStatus_RV, parserParseStatus_RV,
 } from './endpoints';
 import { sample_role_action_t, sample_role_targetrole_t, transcription_t, ModelInfo_t } from './backend-types';
 
@@ -244,7 +244,7 @@ export default {
       model_info: modelInfo,
       train_task_id: trainTaskId,
     }
-    return API.post(`/parser/train/status`, data)
+    return API.post<parserTrainStatus_RV>(`/parser/train/status`, data)
   },
   parserParseStart(projectName: string, modelInfo: ModelInfo_t, toParseSamplesNames: string[]) {
     const data = {
@@ -261,7 +261,7 @@ export default {
       parse_task_id: parseTaskId,
       parser_suffix: parserSuffix,
     }
-    return API.post(`/parser/parse/status`, data)
+    return API.post<parserParseStatus_RV>(`/parser/parse/status`, data)
   },
   // -------------------------------------------------------- //
   // ---------------        To Refactor       --------------- //

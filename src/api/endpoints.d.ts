@@ -114,8 +114,8 @@ interface parserTrainStatus_RV_success {
   status: "success";
   data: {
     ready: false;
-    scores_best: ScoresBest_t;
-    scores_history: ScoresHistory_t;
+    scores_best: ScoresBest_t | null;
+    scores_history: ScoresHistory_t | null;
   } |
     {
       ready: true;

@@ -299,6 +299,8 @@ export default defineComponent({
               taskType: "TRAINING",
               taskTimeStarted: Date.now(),
               taskIntervalChecker,
+              taskAdditionalMessage: `model initialisation and data preparation`,
+
             }
           }
         }
@@ -325,8 +327,9 @@ export default defineComponent({
             this.clearCurrentTask()
           } else if (!response.data.data.ready) {
             if (this.taskStatus) {
-              const last_epoch = response.data.data.scores_history[response.data.data.scores_history.length -1]
-              this.taskStatus.taskAdditionalMessage = `epoch ${last_epoch.epoch} ; LAS=${last_epoch.LAS_chuliu_epoch}`
+              if (response.data.data.scores_history) {
+                const last_epoch = response.data.data.scores_history[response.data.data.scores_history.length - 1]
+                this.taskStatus.taskAdditionalMessage = `epoch ${last_epoch.epoch} ; LAS=${last_epoch.LAS_chuliu_epoch}`
             }
           }
         }

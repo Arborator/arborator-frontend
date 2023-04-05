@@ -95,7 +95,7 @@
         <div v-if="taskStatus !== null">
           <div class="text-subtitle5 q-mb-xs">Current task : {{ taskStatus.taskType }}</div>
           <div v-if="taskStatus.taskAdditionalMessage" class="text-subtitle5 q-mb-xs">
-            {{ taskAdditionalMessage }}
+            {{ taskStatus.taskAdditionalMessage }}
           </div>
         </div>
       </div>

@@ -1,9 +1,13 @@
 <template>
-  <q-dialog v-model="creatDialog" transition-show="fade" transition-hide="fade">
+  <q-dialog v-model="creatDialog" transition-show="fade" transition-hide="fade" persistent>
     <q-card :class="$q.dark.isActive ? 'bg-dark' : 'bg-grey-1'" style="min-width: 50vw;">
       <div v-if="loggedWithGithub">
         <q-linear-progress size="10px" :value="progress" color="primary" />
       </div>
+      <q-bar class="bg-primary text-white">
+        <q-space />
+        <q-btn  @click="closeDialog" flat dense icon="close" />
+      </q-bar>
       <q-card-section>
         <div class="text-h6 text-left">Create new Project</div>
       </q-card-section>
@@ -117,7 +121,7 @@ export default defineComponent({
             this.isShowSyncBtn = true;
           }
           else {
-            this.creatDialog = false
+           this.closeDialog();
           }
           notifyMessage({
            message: `${this.project.projectName} uploaded and created.`,
@@ -131,6 +135,12 @@ export default defineComponent({
     reloadAfterSync() {
       this.creatDialog = false;
       this.parentGetProjects();
+      this.$emit('created');
+    },
+
+    closeDialog() {
+       this.creatDialog = false;
+       this.$emit('created');
     }
 
   },

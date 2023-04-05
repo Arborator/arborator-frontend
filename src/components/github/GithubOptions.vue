@@ -21,15 +21,14 @@
                     <q-badge color="primary" :label="changesNumber" />
                 </q-item-section>
             </q-item>
-            <q-item clickable :disable="!checkPulls" v-close-popup @click="pullChanges()
-            ">
+            <q-item>
                 <q-item-section avatar>
                     <q-avatar icon="ion-md-git-pull-request" />
                 </q-item-section>
                 <q-item-section>
                     <q-item-label>Pull</q-item-label>
-                    <q-item-label v-if="checkPulls" caption> there is changes to pull</q-item-label>
-                    <q-item-label v-else caption> there is nothing to pull</q-item-label>
+                    <q-item-label class="clickable" v-if="!checkPulls" clickable @click="getPulls()" caption>refresh to see if there is pulls</q-item-label>
+                    <q-item-label v-else class="clickable" clickable @click="pullChanges()" caption>Pull changes</q-item-label>
                 </q-item-section>
                 <q-item-section v-if="checkPulls" side>
                     <q-icon name="info" color="amber" />
@@ -70,14 +69,12 @@ export default defineComponent({
             isShowCommitDialog: false,
             checkPulls: false,
             changesNumber: 0,
-            intr: setTimeout(() => {}, 0),
         }
     },
     computed:{
         ...mapState(useUserStore, ['username']),
     },
     mounted() {
-        this.intr = setInterval(this.getPulls, 5000);
         this.getChanges();
         this.getPulls();
     },
@@ -127,12 +124,15 @@ export default defineComponent({
               .catch((error) => {
                     notifyError({error});
               });
-
         }
     }   
 });
 </script>
-<style>
 
+<style lang="stylus">
+.clickable:hover {
+  cursor: pointer;
+  color: blue;
+}
 </style>
 

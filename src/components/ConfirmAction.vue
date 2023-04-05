@@ -41,7 +41,7 @@ export default defineComponent({
     },
     arg1: {
       type: String as PropType<string>,
-      required: true,
+      required: false,
     },
     targetName: {
       type: String as PropType<string>,

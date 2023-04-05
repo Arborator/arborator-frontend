@@ -43,7 +43,7 @@
                     <q-item-label caption>Open new Pull request from your changes</q-item-label>
                 </q-item-section>
             </q-item>
-            <q-item clickable v-close-popup @click="deleteSynchronization()">
+            <q-item clickable v-close-popup @click="triggerConfirm(deleteSynchronization)">
                 <q-item-section avatar>
                     <q-avatar icon="cancel_presentation" />
                 </q-item-section>
@@ -60,10 +60,14 @@
     <q-dialog v-model="isShowPullRequestDialog">
         <GithubPullRequestDialog :projectName="projectName" :repositoryName="repositoryName" @created="isShowPullRequestDialog = false" />
     </q-dialog>
+    <q-dialog v-model="confirmActionDial">
+      <ConfirmAction  :parent-action="confirmActionCallback" :target-name="projectName"/>
+    </q-dialog>
 </template>
 <script lang="ts">
 import GithubCommitDialog from './GithubCommitDialog.vue';
 import GithubPullRequestDialog from './GithubPullRequestDialog.vue';
+import ConfirmAction from 'src/components/ConfirmAction.vue';
 import api from '../../api/backend-api';
 import {mapState} from 'pinia';
 import {useUserStore} from 'src/pinia/modules/user';
@@ -74,7 +78,8 @@ import {defineComponent} from 'vue';
 export default defineComponent({
     components: {
         GithubCommitDialog,
-        GithubPullRequestDialog
+        GithubPullRequestDialog, 
+        ConfirmAction
     },
     name: 'GithubOptions',
     props:['projectName', 'repositoryName'],
@@ -82,6 +87,8 @@ export default defineComponent({
         return {
             isShowCommitDialog: false,
             isShowPullRequestDialog: false,
+            confirmActionDial: false,
+            confirmActionCallback: null,
             checkPulls: false,
             changesNumber: 0,
         }
@@ -119,7 +126,7 @@ export default defineComponent({
               .deleteSynchronization(this.projectName, this.username)
               .then((response) => {
                 notifyMessage({message: `The synchronization with "${this.repositoryName}" is removed`});
-                this.$emit("remove-sync")
+                this.$emit("remove")
               })
               .catch((error) => {
                 notifyError({error});
@@ -139,7 +146,14 @@ export default defineComponent({
               .catch((error) => {
                     notifyError({error});
               });
-        }
+        },
+
+        triggerConfirm(method: CallableFunction) {
+            notifyMessage({message: `Once you remove the synchronization, you will not be able to synchronize again this project with any Github Repository`, type:'warning', position:'top'})
+            this.confirmActionDial = true;
+            this.confirmActionCallback = method;
+        },
+
     }   
 });
 </script>

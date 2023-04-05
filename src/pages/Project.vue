@@ -151,7 +151,7 @@
                   </q-btn>
                 </div>
                 <div v-if="isAllowdedToSync">
-                  <GithubOptions :projectName="projectName" :repositoryName="githubSynchronizedRepo" @remove-sync="reloadAfterSynchronization"/>
+                  <GithubOptions :projectName="projectName" :repositoryName="githubSynchronizedRepo" @remove="reloadAfterSynchronization"/>
                   <q-tooltip content-class="text-white bg-primary">This Project is synchronized with {{githubSynchronizedRepo}}</q-tooltip> 
                 </div>
               </q-btn-group>

@@ -252,12 +252,15 @@ export default defineComponent({
           if (response.data.status === "failure") {
             console.log("fetchBaseModelsAvailables FAILURE")
           } else {
-            this.param.baseModelsOptions = response.data.data.map((baseModelMeta) => {
+            const options = response.data.data.map((baseModelMeta) => {
               return {
                 label: `${baseModelMeta.model_info.project_name} - ${baseModelMeta.model_info.model_id} (${baseModelMeta.scores_best.epoch} epochs ; ${baseModelMeta.scores_best.LAS_epoch} LAS ; ${baseModelMeta.scores_best.n_sentences_train + baseModelMeta.scores_best.n_sentences_test} sents)`,
                 value: baseModelMeta.model_info
               }
             })
+            options.sort((a, b) => (a.label < b.label) ? 1 : -1)
+            this.param.baseModelsOptions = options
+
           }
         }
       )

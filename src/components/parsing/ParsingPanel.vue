@@ -330,6 +330,7 @@ export default defineComponent({
               if (response.data.data.scores_history) {
                 const last_epoch = response.data.data.scores_history[response.data.data.scores_history.length - 1]
                 this.taskStatus.taskAdditionalMessage = `epoch ${last_epoch.epoch} ; LAS=${last_epoch.LAS_chuliu_epoch}`
+              }
             }
           }
         }

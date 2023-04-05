@@ -302,6 +302,9 @@ export default {
   deleteFileFromGithub(projectName: string, username: string, fileName: string){
     return API.delete(`/projects/${projectName}/${username}/synchronize-github/${fileName}`);
   },
+  openPullRequest(projectName: string, username: string, data: any){
+    return API.post(`/projects/${projectName}/${username}/synchronize-github/pull-request`, data);
+  },
   // -------------------------------------------------------- //
   // ---------------        To Refactor       --------------- //
   // -------------------------------------------------------- //

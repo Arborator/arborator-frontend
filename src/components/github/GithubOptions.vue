@@ -34,6 +34,15 @@
                     <q-icon name="info" color="amber" />
                 </q-item-section>
             </q-item>
+            <q-item clickable v-close-popup @click="isShowPullRequestDialog = true">
+                <q-item-section avatar>
+                    <q-avatar icon="ion-md-git-merge" />
+                </q-item-section>
+                <q-item-section>
+                    <q-item-label>Pull Request</q-item-label>
+                    <q-item-label caption>Open new Pull request from your changes</q-item-label>
+                </q-item-section>
+            </q-item>
             <q-item clickable v-close-popup @click="deleteSynchronization()">
                 <q-item-section avatar>
                     <q-avatar icon="cancel_presentation" />
@@ -48,9 +57,13 @@
     <q-dialog v-model="isShowCommitDialog">
         <GithubCommitDialog :projectName="projectName" :repositoryName="repositoryName" @committed="reloadAfterCommit" />
     </q-dialog>
+    <q-dialog v-model="isShowPullRequestDialog">
+        <GithubPullRequestDialog :projectName="projectName" :repositoryName="repositoryName" @created="isShowPullRequestDialog = false" />
+    </q-dialog>
 </template>
 <script lang="ts">
-import GithubCommitDialog from './GithubCommitDialog.vue'
+import GithubCommitDialog from './GithubCommitDialog.vue';
+import GithubPullRequestDialog from './GithubPullRequestDialog.vue';
 import api from '../../api/backend-api';
 import {mapState} from 'pinia';
 import {useUserStore} from 'src/pinia/modules/user';
@@ -61,12 +74,14 @@ import {defineComponent} from 'vue';
 export default defineComponent({
     components: {
         GithubCommitDialog,
+        GithubPullRequestDialog
     },
     name: 'GithubOptions',
     props:['projectName', 'repositoryName'],
     data() {
         return {
             isShowCommitDialog: false,
+            isShowPullRequestDialog: false,
             checkPulls: false,
             changesNumber: 0,
         }

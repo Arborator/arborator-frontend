@@ -1,5 +1,5 @@
 <template>
-    <q-card class="" style="min-width: 50vw;">
+    <q-card style="min-width: 50vw;">
         <q-card-section>
             <div class="text-h6 text-left">Commit changes</div>
         </q-card-section>

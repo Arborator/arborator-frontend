@@ -4,7 +4,8 @@
             <div class="text-h6 text-left">Pull Request</div>
         </q-card-section>
         <q-separator />
-        <q-card-section>
+        <q-card-section v-if="listBranches.length == 1">You should have at least two branches in order to open new pull request</q-card-section>
+        <q-card-section v-if="listBranches.length > 1">
             <div class="row q-gutter-md">
                 <div class="col-8">
                     <q-input
@@ -69,7 +70,8 @@ export default defineComponent({
                 this.$emit('created');
               })
               .catch((error) => {
-                notifyError({error});
+                const errorMessage = error.response.data.message;
+                notifyError({error: `${errorMessage}`});
               });
         } 
     }   

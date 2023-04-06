@@ -70,7 +70,7 @@ export default defineComponent({
     },
     methods: {
         commitChanges(userType: string){
-            const githubMessage =  this.message + ' :commited by Arborator-Grew';
+            const githubMessage =  this.message + ': commited by ArboratorGrew';
             const data = {message: githubMessage, repositoryName: this.repositoryName, userType: userType};
             api
               .commitChanges(this.projectName, this.username, data)

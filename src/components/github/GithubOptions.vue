@@ -74,7 +74,7 @@ import {useUserStore} from 'src/pinia/modules/user';
 import {notifyError, notifyMessage} from 'src/utils/notify';
 
 
-import {defineComponent} from 'vue';
+import {defineComponent, PropType} from 'vue';
 export default defineComponent({
     components: {
         GithubCommitDialog,
@@ -83,12 +83,14 @@ export default defineComponent({
     },
     name: 'GithubOptions',
     props:['projectName', 'repositoryName'],
+    
     data() {
+        const confirmActionCallback = null as unknown as CallableFunction;
         return {
             isShowCommitDialog: false,
             isShowPullRequestDialog: false,
             confirmActionDial: false,
-            confirmActionCallback: null,
+            confirmActionCallback,
             checkPulls: false,
             changesNumber: 0,
         }

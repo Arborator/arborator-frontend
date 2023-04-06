@@ -1,13 +1,13 @@
 <template>
   <q-dialog v-model="creatDialog" transition-show="fade" transition-hide="fade" persistent>
     <q-card :class="$q.dark.isActive ? 'bg-dark' : 'bg-grey-1'" style="min-width: 50vw;">
-      <div v-if="loggedWithGithub">
-        <q-linear-progress size="10px" :value="progress" color="primary" />
-      </div>
       <q-bar class="bg-primary text-white">
         <q-space />
         <q-btn  @click="closeDialog" flat dense icon="close" />
       </q-bar>
+      <div v-if="loggedWithGithub">
+        <q-linear-progress size="10px" :value="progress" color="primary" />
+      </div>
       <q-card-section>
         <div class="text-h6 text-left">Create new Project</div>
       </q-card-section>
@@ -38,7 +38,7 @@
           <q-toggle v-model="project.showAllTrees" label="Show All Trees" />
           <q-toggle v-model="project.exerciseMode" :label="$t('createProjectCard.exerciseMode')" />
           <div class="row q-gutter-md justify-center">
-            <q-btn :disable="project.projectName" id="submitproject" type="submit"  label="Create" color="primary" />
+            <q-btn :disable="project.projectName == ''" id="submitproject" type="submit"  label="Create" color="primary" />
           </div>
         </q-form>
       </q-card-section>
@@ -133,6 +133,7 @@ export default defineComponent({
         });
     },
     reloadAfterSync() {
+      this.progress = 1;
       this.creatDialog = false;
       this.parentGetProjects();
       this.$emit('created');

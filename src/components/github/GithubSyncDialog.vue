@@ -38,7 +38,7 @@
                         <q-item-label class="text-left">{{ repo.name }}</q-item-label>
                     </q-item-section>
                     <q-item-section class="col">
-                        <q-btn unelevated color="primary" @click="getRepoBranches(repo.name)"> synchronize</q-btn>
+                        <q-btn unelevated color="primary" @click="getRepoBranches(repo.name)">Select</q-btn>
                     </q-item-section>
                 </q-item>
             </q-list>
@@ -67,19 +67,20 @@
                     <q-item-label class="text-left">{{selectedRepository}}</q-item-label>
                 </q-item-section>
                 <q-item-section class="col">
-                    <q-btn-dropdown split color="teal" icon="fas fa-code-branch" label="Select branch">
-                        <q-list v-for="branch in listBranches">
-                            <q-item clickable v-close-popup @click="synchronizeWithGitRepo(selectedRepository, branch)">
-                                <q-item-section>
-                                    <q-item-label>{{branch}}</q-item-label>
-                                </q-item-section>
-                            </q-item>
-                        </q-list>
-                    </q-btn-dropdown>
+                    <q-select v-model="branch" :options="listBranches" label="Select the branch"></q-select>
                 </q-item-section>
             </q-item>
         </q-list>
-    </q-card-section> 
+        <div :class="$q.dark.isActive ? 'text-white' : 'text-blue-grey-10'" class="q-pa-sm">
+            <q-radio dense size="md" v-model="branchSyn" val="arboratorgrew" /> Use  <span style="background-color: #DCEAEA;"><code>arboratorgrew</code></span>  branch for your commits and pulls made using ArboratorGrew.
+        </div>
+        <div :class="$q.dark.isActive ? 'text-white' : 'text-blue-grey-10'" class="q-pa-sm">
+            <q-radio dense size="md" v-model="branchSyn" val="default" /> Use the selected branch (Be careful if your working with repository that has many users).
+        </div>
+        <div class="row q-gutter-md justify-center">
+            <q-btn :disable="branch == ''" color="primary" @click="synchronizeWithGitRepo(selectedRepository, branch, branchSyn)">Synchronize</q-btn>
+        </div>
+    </q-card-section>
     
 </template>
 <script lang="ts">
@@ -105,6 +106,7 @@ export default defineComponent({
             search:'',
             listBranches,
             branch:'',
+            branchSyn:'arboratorgrew',
             noRepositories: false,
             currentPage: 1,
             pageIndex: 1,
@@ -164,8 +166,9 @@ export default defineComponent({
                 notifyError(error);
               });
         }, 
-        synchronizeWithGitRepo(repoName: string, branch: string) {
-            const data = {repositoryName: repoName, branch: branch};
+        synchronizeWithGitRepo(repoName: string, branch: string, branchSyn: string) {
+            if (branchSyn == 'default') branchSyn = branch;
+            const data = {repositoryName: repoName, branch: branch, branchSyn: branchSyn};
             api
               .synchronizeWithGithubRepo(this.projectName as string, this.username as string,  data)
               .then((response) => {

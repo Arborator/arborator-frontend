@@ -30,7 +30,7 @@
         <q-select
           :disable="taskStatus !== null"
           :class="{ invisible: param.trainAll }"
-          v-model="param.trainSamples"
+          v-model="param.trainSamplesNames"
           filled
           :options="allSamplesNames"
           multiple
@@ -44,7 +44,7 @@
           :class="{ invisible: !param.isCustomTrainingUser }"
           v-model="param.trainingUser"
           filled
-          :options="allTreesFrom"
+          :options="trainingTreesFrom"
           label="Training user"
           stack-label
           style="max-width: 200px; min-width: 150px"
@@ -68,7 +68,7 @@
         <q-select
           :disable="taskStatus !== null"
           :class="{ invisible: param.parseAll }"
-          v-model="param.parseSamples"
+          v-model="param.parseSamplesNames"
           filled
           :options="allSamplesNames"
           multiple
@@ -85,10 +85,11 @@
           :class="{ invisible: !param.isCustomParsingUser }"
           v-model="param.parsingUser"
           filled
-          :options="allTreesFrom"
+          :options="parsingTreesFrom"
           label="Parsing user"
           stack-label
           style="max-width: 200px; min-width: 150px"
+          :validate=""
         />
         <q-toggle :disable="taskStatus !== null" v-model="param.keepHeads" label="keep existing heads"/>
 
@@ -150,8 +151,8 @@ interface parser_t {
     parsingUser: string;
     trainAll: boolean;
     parseAll: boolean;
-    trainSamples: string[];
-    parseSamples: string[];
+    trainSamplesNames: string[];
+    parseSamplesNames: string[];
     epochs: number;
     parserSuffix: string;
     keepHeads: boolean;
@@ -194,9 +195,9 @@ export default defineComponent({
         isCustomParsingUser: false,
         parsingUser: '',
         trainAll: true,
-        trainSamples: [],
+        trainSamplesNames: [],
         parseAll: true,
-        parseSamples: [],
+        parseSamplesNames: [],
         epochs: 10,
         parserSuffix: '',
         keepHeads: false,
@@ -211,27 +212,37 @@ export default defineComponent({
     allSamplesNames() {
       return this.samples.map((sample) => sample.sample_name);
     },
+    trainingSamplesSelected() {
+      if (this.param.trainAll) {
+        return this.samples
+      } else {
+        return this.samples
+        .filter((sample) => this.param.trainSamplesNames.includes(sample.sample_name))
+      }
+    },
+    parsingSamplesSelected() {
+      if (this.param.parseAll) {
+        return this.samples
+      } else {
+        return this.samples
+        .filter((sample) => this.param.parseSamplesNames.includes(sample.sample_name))
+      }
+    },
     allTreesFrom() {
-      const allTreesFromWithDuplicate = this.samples.map((sample) => sample.treesFrom).reduce((a: string[], b: string[]) => [...a, ...b], []);
-      // console.log(this.samples[0].treesFrom);
-      // return [];
-      return [...new Set(allTreesFromWithDuplicate)];
+      return this.getTreesUsersFromSamples(this.samples)
+    },
+    trainingTreesFrom() {
+      return this.getTreesUsersFromSamples(this.trainingSamplesSelected)
+    },
+    parsingTreesFrom() {
+      return this.getTreesUsersFromSamples(this.parsingSamplesSelected)
     },
     trainingSentencesCount() {
-      if (this.param.trainAll) {
-        return this.samples.map((sample) => sample.sentences).reduce((partialSum, a) => partialSum + a, 0);
-      }
-      return this.samples
-        .filter((sample) => this.param.trainSamples.includes(sample.sample_name))
-        .reduce((partialSum, sample) => partialSum + sample.sentences, 0);
+      return this.trainingSamplesSelected.reduce((partialSum, sample) => partialSum + sample.sentences, 0);
     },
     parsingSentencesCount() {
-      if (this.param.parseAll) {
-        return this.samples.map((sample) => sample.sentences).reduce((partialSum, a) => partialSum + a, 0);
-      }
-      return this.samples
-        .filter((sample) => this.param.parseSamples.includes(sample.sample_name))
-        .reduce((partialSum, sample) => partialSum + sample.sentences, 0);
+      return this.parsingSamplesSelected.reduce((partialSum, sample) => partialSum + sample.sentences, 0);
+
     },
     estimatedTime() {
       const timeInitialisationTrainingTask_s = 30;
@@ -242,10 +253,10 @@ export default defineComponent({
       return Math.ceil(totalEstimatedTime_s / 60);
     },
     noTrainFileSelectedError() {
-      return (this.param.pipelineChoice !== "PARSE_ONLY" && this.param.trainAll === false && this.param.trainSamples.length === 0);
+      return (this.param.pipelineChoice !== "PARSE_ONLY" && this.param.trainAll === false && this.param.trainSamplesNames.length === 0);
     },
     noParseFileSelectedError() {
-      return (this.param.pipelineChoice !== "TRAIN_ONLY" && this.param.parseAll === false && this.param.parseSamples.length === 0);
+      return (this.param.pipelineChoice !== "TRAIN_ONLY" && this.param.parseAll === false && this.param.parseSamplesNames.length === 0);
     },
     noSelectedBaseModelForParsingError() {
       return (this.param.pipelineChoice === "PARSE_ONLY" && !this.param.baseModel)
@@ -264,6 +275,10 @@ export default defineComponent({
     },
   },
   methods: {
+    getTreesUsersFromSamples(samples: sample_t[]) {
+      const allTreesFromWithDuplicate = samples.map((sample) => sample.treesFrom).reduce((a: string[], b: string[]) => [...a, ...b], []);
+      return [...new Set(allTreesFromWithDuplicate)];
+    },
     fetchBaseModelsAvailables() {
       api.parserList().then(
         (response) => {
@@ -299,7 +314,7 @@ export default defineComponent({
         taskIntervalChecker: null,
       }
 
-      const trainSampleNames = this.param.trainAll ? this.allSamplesNames : this.param.trainSamples;
+      const trainSampleNames = this.param.trainAll ? this.allSamplesNames : this.param.trainSamplesNames;
       const trainUser = this.param.isCustomTrainingUser ? this.param.trainingUser : 'last';
       const maxEpoch = this.param.epochs;
       const baseModel = this.param.baseModel ? (this.param.baseModel as any).value as ModelInfo_t : null
@@ -371,7 +386,7 @@ export default defineComponent({
       }
 
       const projectName = this.$route.params.projectname as any as string
-      const toParseSamplesNames = this.param.parseAll ? this.allSamplesNames : this.param.parseSamples;
+      const toParseSamplesNames = this.param.parseAll ? this.allSamplesNames : this.param.parseSamplesNames;
       const parserSuffix = this.param.parserSuffix;
       const parsingUser = this.param.isCustomParsingUser ? this.param.parsingUser : 'last';
       const parsingSettings: ParsingSettings_t = {

@@ -89,7 +89,6 @@
           label="Parsing user"
           stack-label
           style="max-width: 200px; min-width: 150px"
-          :validate=""
         />
         <q-toggle :disable="taskStatus !== null" v-model="param.keepHeads" label="keep existing heads"/>
 

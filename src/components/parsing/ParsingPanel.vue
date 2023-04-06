@@ -79,7 +79,7 @@
         <q-input :disable="taskStatus !== null" :dense="true" filled v-model="param.parserSuffix"
                  label="Parser suffix (for parsed sentences)"
                  :hint="'Parsing will go under the name `parser' + param.parserSuffix + '`'"/>
-        <!--        <q-toggle v-model="param.keepUpos" label="keep UPOS"/>-->
+        <q-toggle v-model="param.keepHeads" label="keep existing heads"/>
       </div>
       <q-separator v-show="param.pipelineChoice !== 'TRAIN_ONLY'" vertical inset class="q-mx-lg"/>
       <div class="col">
@@ -106,7 +106,7 @@
 <script lang="ts">
 import {defineComponent, PropType} from 'vue';
 import api from '../../api/backend-api';
-import {ModelInfo_t, sample_t} from 'src/api/backend-types';
+import {ModelInfo_t, ParsingSettings_t, sample_t} from 'src/api/backend-types';
 import {notifyMessage} from "src/utils/notify";
 // https://github.com/Arborator/djangoBootParser/blob/master/estimated_time_100ep_logline.tsv
 const kirParserSentPerSecSpeed: number = 140;
@@ -140,6 +140,7 @@ interface parser_t {
     parseSamples: string[];
     epochs: number;
     parserSuffix: string;
+    keepHeads: boolean;
   };
 }
 
@@ -182,6 +183,7 @@ export default defineComponent({
         parseSamples: [],
         epochs: 10,
         parserSuffix: '',
+        keepHeads: false,
       },
     };
     return data;
@@ -355,8 +357,10 @@ export default defineComponent({
       const projectName = this.$route.params.projectname as any as string
       const toParseSamplesNames = this.param.parseAll ? this.allSamplesNames : this.param.parseSamples;
       const parserSuffix = this.param.parserSuffix;
-
-      api.parserParseStart(projectName, modelInfo, toParseSamplesNames).then(
+      const parsingSettings: ParsingSettings_t = {
+        keep_heads: this.param.keepHeads ? "EXISTING" : "NONE"
+      }
+      api.parserParseStart(projectName, modelInfo, toParseSamplesNames, parsingSettings).then(
         (response) => {
           if (response.data.status === "failure") {
             notifyMessage({message: "Parsing could not start : " + response.data.error, type: "negative"})

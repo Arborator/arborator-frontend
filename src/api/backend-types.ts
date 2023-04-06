@@ -188,3 +188,7 @@ interface ScoresOneEpoch_t {
 export type ScoresBest_t = ScoresOneEpoch_t
 
 export type ScoresHistory_t = ScoresOneEpoch_t[]
+
+export interface ParsingSettings_t {
+  keep_heads: "NONE" | "EXISTING"
+}

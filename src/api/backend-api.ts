@@ -23,7 +23,13 @@ import {
   whoIAm_RV,
   getLexicon_RV, parserList_RV_success, parserList_RV, parserTrainStatus_RV, parserParseStatus_RV,
 } from './endpoints';
-import { sample_role_action_t, sample_role_targetrole_t, transcription_t, ModelInfo_t } from './backend-types';
+import {
+  sample_role_action_t,
+  sample_role_targetrole_t,
+  transcription_t,
+  ModelInfo_t,
+  ParsingSettings_t
+} from './backend-types';
 
 export const API = axios.create({
   // baseURL: 'https://arboratorgrew.elizia.net/api',
@@ -246,11 +252,12 @@ export default {
     }
     return API.post<parserTrainStatus_RV>(`/parser/train/status`, data)
   },
-  parserParseStart(projectName: string, modelInfo: ModelInfo_t, toParseSamplesNames: string[]) {
+  parserParseStart(projectName: string, modelInfo: ModelInfo_t, toParseSamplesNames: string[], parsingSettings: ParsingSettings_t) {
     const data = {
       project_name: projectName,
       model_info: modelInfo,
       to_parse_samples_names: toParseSamplesNames,
+      parsing_settings: parsingSettings,
     }
     return API.post(`/parser/parse/start`, data)
   },

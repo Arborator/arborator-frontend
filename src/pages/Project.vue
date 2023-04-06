@@ -151,7 +151,7 @@
                   </q-btn>
                 </div>
                 <div v-if="isAllowdedToSync">
-                  <GithubOptions :projectName="projectName" :repositoryName="githubSynchronizedRepo" @remove="reloadAfterSynchronization"/>
+                  <GithubOptions :projectName="projectName" :repositoryName="githubSynchronizedRepo" :key="reload" @remove="reloadAfterSynchronization" @pulled="loadProjectData"/>
                   <q-tooltip content-class="text-white bg-primary">This Project is synchronized with {{githubSynchronizedRepo}}</q-tooltip> 
                 </div>
               </q-btn-group>
@@ -489,6 +489,7 @@ export default defineComponent({
       tableKey: 0,
       initLoad: false,
       githubSynchronizedRepo:'',
+      reload: 0,
     };
   },
   computed: {
@@ -578,6 +579,7 @@ export default defineComponent({
     },
     loadProjectData() {
       this.getProjectSamples();
+      this.reload +=1;
     },
     getProjectSamples() {
       api.getProjectSamples(this.projectName as string).then((response) => {

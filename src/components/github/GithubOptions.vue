@@ -28,7 +28,7 @@
                 <q-item-section>
                     <q-item-label>Pull</q-item-label>
                     <q-item-label class="clickable" v-if="!checkPulls" clickable @click="getPulls()" caption>refresh to see if there is pulls</q-item-label>
-                    <q-item-label v-else class="clickable" clickable @click="pullChanges()" caption>Pull changes</q-item-label>
+                    <q-item-label v-else class="clickable" clickable v-close-popup @click="pullChanges()" caption>Pull changes</q-item-label>
                 </q-item-section>
                 <q-item-section v-if="checkPulls" side>
                     <q-icon name="info" color="amber" />
@@ -143,7 +143,8 @@ export default defineComponent({
             api
               .pullChanges(this.projectName, this.username, data)
               .then((response) => {
-                    notifyMessage({message: `The changes from ${this.repositoryName} are pulled in ${this.projectName}`})
+                    notifyMessage({message: `The changes from ${this.repositoryName} are pulled in ${this.projectName}`});
+                    this.$emit('pulled')
                })
               .catch((error) => {
                     notifyError({error});

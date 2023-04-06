@@ -2,7 +2,7 @@
     <q-card-section v-if="selectedRepository == ''">
         <div class="row">
             <div class="col">
-                <q-btn-dropdown :disable="repositories.length == 0" class="float-left" size="md" outline color="primary" label="Choose Repository owner" >
+                <q-btn-dropdown :disable="repositories.length == 0" class="float-left" size="md" outline color="primary" :label="$t('github.chooseRepoOwner')" >
                     <q-list :filter-method="searchRepo">
                         <q-item v-for="user in githubOwners" @click="getRepositoriesPerOwner(user.a)" clickable >
                             <q-item-section avatar>
@@ -21,7 +21,7 @@
                 <q-input   
                     v-model="search"
                     filled
-                    label="Search Repository"
+                    :label="$t('github.search')"
                     type="text"
                     @update:model-value="searchRepo(search)"  
                 >
@@ -38,7 +38,7 @@
                         <q-item-label class="text-left">{{ repo.name }}</q-item-label>
                     </q-item-section>
                     <q-item-section class="col">
-                        <q-btn unelevated color="primary" @click="getRepoBranches(repo.name)">Select</q-btn>
+                        <q-btn unelevated color="primary" @click="getRepoBranches(repo.name)" :label="$t('github.select')" />
                     </q-item-section>
                 </q-item>
             </q-list>
@@ -51,7 +51,7 @@
                 />
             </div>
             <div v-if="noRepositories">
-                You need to create your first Github Repository                
+                {{$t('github.noGithubRepos')}}              
             </div>
         </div>
     </q-card-section>
@@ -67,18 +67,18 @@
                     <q-item-label class="text-left">{{selectedRepository}}</q-item-label>
                 </q-item-section>
                 <q-item-section class="col">
-                    <q-select v-model="branch" :options="listBranches" label="Select the branch"></q-select>
+                    <q-select v-model="branch" :options="listBranches" :label="$t('github.selectBranch')"></q-select>
                 </q-item-section>
             </q-item>
         </q-list>
         <div :class="$q.dark.isActive ? 'text-white' : 'text-blue-grey-10'" class="q-pa-sm">
-            <q-radio dense size="md" v-model="branchSyn" val="arboratorgrew" /> Use  <span style="background-color: #DCEAEA;"><code>arboratorgrew</code></span>  branch for your commits and pulls made using ArboratorGrew.
+            <q-radio dense size="md" v-model="branchSyn" val="arboratorgrew" />{{$t('github.github.arboratorgrewBranch[0]')}}<span style="background-color: #DCEAEA;"><code>arboratorgrew</code></span>  {{$t('github.arboratorgrewBranch[1]')}}
         </div>
         <div :class="$q.dark.isActive ? 'text-white' : 'text-blue-grey-10'" class="q-pa-sm">
-            <q-radio dense size="md" v-model="branchSyn" val="default" /> Use the selected branch (Be careful if your working with repository that has many users).
+            <q-radio dense size="md" v-model="branchSyn" val="default" /> {{$t('github.defaultBranch')}}
         </div>
         <div class="row q-gutter-md justify-center">
-            <q-btn :disable="branch == ''" color="primary" @click="synchronizeWithGitRepo(selectedRepository, branch, branchSyn)">Synchronize</q-btn>
+            <q-btn :disable="branch == ''" color="primary" @click="synchronizeWithGitRepo(selectedRepository, branch, branchSyn)">{{$t('github.synchronize')}}</q-btn>
         </div>
     </q-card-section>
     
@@ -177,7 +177,7 @@ export default defineComponent({
             api
               .synchronizeWithGithubRepo(this.projectName as string, this.username as string,  data)
               .then((response) => {
-                notifyMessage({message: `"${this.projectName}" is synchronized with "${repoName}"`})
+                notifyMessage({message: `"${this.projectName}" ${this.$t('github.synchronizeMessage')} "${repoName}"`})
                 this.$emit('created');
               })
               .catch((error) => {

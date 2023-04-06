@@ -9,7 +9,7 @@
         <q-linear-progress size="10px" :value="progress" color="primary" />
       </div>
       <q-card-section>
-        <div class="text-h6 text-left">Create new Project</div>
+        <div class="text-h6 text-left">{{$t('createProjectCard.title')}}</div>
       </q-card-section>
       <q-card-section v-if="!isShowSyncBtn && !isShowGithubSyncPanel" style="min-height: 20vw;">
         <q-form id="createprojectform" class="q-gutter-md" @submit="onSubmit">
@@ -17,7 +17,7 @@
             id="projectnameinput"
             v-model="project.projectName"
             filled
-            label="Project name"
+            :label="$t('createProjectCard.projectName')"
             lazy-rules
             :rules="[(val) => (val && val.length > 0) || 'Please type something']"
           />
@@ -29,24 +29,24 @@
               glossy
               toggle-color="primary"
               :options="[
-                { label: 'Private', value: 0 },
-                { label: 'Visible', value: 1 },
-                { label: 'Open', value: 2 },
+                { label: $t('createProjectCard.visibilityMode[0]'), value: 0 },
+                { label: $t('createProjectCard.visibilityMode[1]'), value: 1 },
+                { label: $t('createProjectCard.visibilityMode[2]'), value: 2 },
               ]"
             />
           </div>
-          <q-toggle v-model="project.showAllTrees" label="Show All Trees" />
+          <q-toggle v-model="project.showAllTrees" :label="$t('createProjectCard.showAllTrees')" label="Show All Trees" />
           <q-toggle v-model="project.exerciseMode" :label="$t('createProjectCard.exerciseMode')" />
           <div class="row q-gutter-md justify-center">
-            <q-btn :disable="project.projectName == ''" id="submitproject" type="submit"  label="Create" color="primary" />
+            <q-btn :disable="project.projectName == ''" id="submitproject" type="submit" :label="$t('createProjectCard.create')" color="primary" />
           </div>
         </q-form>
       </q-card-section>
       <q-card-section v-if="canSyncWithGithub" class="row justify-center q-gutter-md">
-        <q-btn @click="isShowGithubSyncPanel = true, progress= 0.8" label="synchronize with Github" color="primary" class="items-center"/> 
+        <q-btn @click="isShowGithubSyncPanel = true, progress= 0.8" :label="$t('github.synchronizeBtn')" color="primary" class="items-center"/> 
       </q-card-section>
       <q-card-section v-if="canSyncWithGithub">
-        <div class="row justify-center q-gutter-md clickable" v-close-popup>Skip Synchronization</div>
+        <div class="row justify-center q-gutter-md clickable" v-close-popup>{{$t('github.skipSync')}}</div>
       </q-card-section>
       <GithubSyncDialog v-if="isShowGithubSyncPanel" :projectName="project.projectName"  @created="reloadAfterSync"/>
     </q-card>
@@ -124,7 +124,7 @@ export default defineComponent({
            this.closeDialog();
           }
           notifyMessage({
-           message: `${this.project.projectName} uploaded and created.`,
+           message: `${this.project.projectName} ${this.$t('createProjectCard.createMessage')}`,
           });
         })
         .catch((error) => {

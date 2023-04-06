@@ -14,8 +14,8 @@
                 </q-item-section>
                 <q-item-section>
                     <q-item-label>commit</q-item-label>
-                    <q-item-label v-if="changesNumber > 0" caption>You have {{changesNumber}} changes to commit</q-item-label>
-                    <q-item-label v-else caption>You don't have changes to commit</q-item-label>
+                    <q-item-label v-if="changesNumber > 0" caption> {{$t('github.commitNotif[0]')}} {{changesNumber}} <span v-if="changesNumber === 1">{{$t('github.commitNotif[1]')}}</span><span v-else>{{$t('github.commitNotif[2]')}}</span></q-item-label>
+                    <q-item-label v-else caption> {{$t('github.commitNotif[3]')}} </q-item-label>
                 </q-item-section>
                 <q-item-section side top>
                     <q-badge color="primary" :label="changesNumber" />
@@ -27,8 +27,8 @@
                 </q-item-section>
                 <q-item-section>
                     <q-item-label>Pull</q-item-label>
-                    <q-item-label class="clickable" v-if="!checkPulls" clickable @click="getPulls()" caption>refresh to see if there is pulls</q-item-label>
-                    <q-item-label v-else class="clickable" clickable v-close-popup @click="pullChanges()" caption>Pull changes</q-item-label>
+                    <q-item-label class="clickable" v-if="!checkPulls" clickable @click="getPulls()" caption> {{$t('github.pullNotif[0]')}} </q-item-label>
+                    <q-item-label v-else class="clickable" clickable v-close-popup @click="pullChanges()" caption> {{$t('github.pullNotif[1]')}} </q-item-label>
                 </q-item-section>
                 <q-item-section v-if="checkPulls" side>
                     <q-icon name="info" color="amber" />
@@ -40,7 +40,7 @@
                 </q-item-section>
                 <q-item-section>
                     <q-item-label>Pull Request</q-item-label>
-                    <q-item-label caption>Open new Pull request from your changes</q-item-label>
+                    <q-item-label caption>{{$t('github.pullRequest')}}</q-item-label>
                 </q-item-section>
             </q-item>
             <q-item clickable v-close-popup @click="triggerConfirm(deleteSynchronization)">
@@ -48,8 +48,8 @@
                     <q-avatar icon="cancel_presentation" />
                 </q-item-section>
                 <q-item-section>
-                    <q-item-label>Remove synchronization</q-item-label>
-                    <q-item-label caption>Your project is synchronized with {{repositoryName}}</q-item-label>
+                    <q-item-label> {{$t('github.removeSync[0]')}} </q-item-label>
+                    <q-item-label caption> {{$t('github.removeSync[1]')}} {{repositoryName}}</q-item-label>
                 </q-item-section>
             </q-item>
         </q-list>

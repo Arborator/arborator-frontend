@@ -224,7 +224,13 @@ export default {
   },
   // dialog window which displays create project card
   createProjectCard: {
+    title: 'Create New Project',
+    projectName: 'Project name',
+    visibilityMode: ['Private', 'Visible', 'Open'],
     exerciseMode: 'exercise mode',
+    showAllTrees: 'Show All Trees',
+    create: 'Create',
+    createMessage: 'is created', 
   },
 
   // window which displays project settings
@@ -259,6 +265,23 @@ export default {
     firstName: 'First Name',
     familyName: 'Last Name',
     saveModificationMessage: 'Your personal information is updated',
+  },
+  github:{
+    synchronizeBtn: 'Synchronize with github',
+    skipSync: 'Skip synchronization',
+    chooseRepoOwner: 'Repository Owner',
+    search: 'Search a repository',
+    select: 'Select',
+    noGithubRepos: 'You need to create your first Github Repository', 
+    selectBranch: 'Select a branch',
+    arboratorgrewBranch:['Use ','branch for your commits and pulls made using ArboratorGrew.'],
+    defaultBranch: ' Use the selected branch (Be careful if you work with a repository that has many collaborators).',
+    synchronize: 'Synchronize',
+    synchronizeMessage: 'is synchronized with',
+    commitNotif: ['You have', 'change', 'changes', "You don't have changes to commit"], 
+    pullNotif: ['refresh to see if there is pulls', 'Pull changes'], 
+    pullRequest: 'Open new Pull request from your changes',
+    removeSynchronization: ['Remove synchronization', 'Your project is synchronized with'],
   },
   // Klang
   Klang: {

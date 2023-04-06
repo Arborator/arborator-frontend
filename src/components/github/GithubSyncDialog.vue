@@ -91,10 +91,15 @@ import {githubRepository_t} from '../../api/backend-types';
 import {notifyError, notifyMessage} from 'src/utils/notify';
 
 
-import {defineComponent} from 'vue';
+import {defineComponent, PropType} from 'vue';
 export default defineComponent({
     name: 'GithubSyncDialog',
-    props:['projectName'],
+     props:{
+        projectName: {
+            type: String as PropType<string>,
+            required: true,
+        },
+     },
     data() {
         const repositories: githubRepository_t[] =[];
         const repositoriesPerOwner: {}[]= [];

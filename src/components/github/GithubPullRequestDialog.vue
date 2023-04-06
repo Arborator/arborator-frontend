@@ -31,10 +31,19 @@ import {useUserStore} from 'src/pinia/modules/user';
 import {notifyError, notifyMessage} from 'src/utils/notify';
 
 
-import {defineComponent} from 'vue';
+import {defineComponent, PropType} from 'vue';
 export default defineComponent({
     name: 'GithubPullRequestDialog',
-    props:['projectName', 'repositoryName'],
+    props:{
+        projectName: {
+            type: String as PropType<string>,
+            required: true,
+        },
+        repositoryName: {
+            type: String as PropType<string>,
+            required: true,
+        }
+    },
     data() {
         const listBranches: string[] =[];
         return {

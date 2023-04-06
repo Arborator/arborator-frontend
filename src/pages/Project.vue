@@ -552,8 +552,7 @@ export default defineComponent({
   mounted() {
     this.loadProjectData();
     document.title = `ArboratorGrew: ${this.projectName}`;
-    this.getSynchronizedGithubRepo();
-    
+    if (this.isLoggedIn) this.getSynchronizedGithubRepo(); 
   },
   unmounted() {
     window.removeEventListener('resize', this.handleResize);

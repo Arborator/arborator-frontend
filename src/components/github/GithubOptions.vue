@@ -82,8 +82,16 @@ export default defineComponent({
         ConfirmAction
     },
     name: 'GithubOptions',
-    props:['projectName', 'repositoryName'],
-    
+    props:{
+        projectName: {
+            type: String as PropType<string>,
+            required: true,
+        },
+        repositoryName: {
+            type: String as PropType<string>,
+            required: true,
+        }
+    },
     data() {
         const confirmActionCallback = null as unknown as CallableFunction;
         return {

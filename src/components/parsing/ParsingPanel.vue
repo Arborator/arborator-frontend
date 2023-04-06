@@ -79,7 +79,19 @@
         <q-input :disable="taskStatus !== null" :dense="true" filled v-model="param.parserSuffix"
                  label="Parser suffix (for parsed sentences)"
                  :hint="'Parsing will go under the name `parser' + param.parserSuffix + '`'"/>
-        <q-toggle v-model="param.keepHeads" label="keep existing heads"/>
+        <q-toggle :disable="taskStatus !== null" v-model="param.isCustomParsingUser" label="Custom Parsing user"/>
+        <q-select
+          :disable="taskStatus !== null"
+          :class="{ invisible: !param.isCustomParsingUser }"
+          v-model="param.parsingUser"
+          filled
+          :options="allTreesFrom"
+          label="Parsing user"
+          stack-label
+          style="max-width: 200px; min-width: 150px"
+        />
+        <q-toggle :disable="taskStatus !== null" v-model="param.keepHeads" label="keep existing heads"/>
+
       </div>
       <q-separator v-show="param.pipelineChoice !== 'TRAIN_ONLY'" vertical inset class="q-mx-lg"/>
       <div class="col">
@@ -134,6 +146,8 @@ interface parser_t {
     keepUpos: boolean;
     isCustomTrainingUser: boolean;
     trainingUser: string;
+    isCustomParsingUser: boolean;
+    parsingUser: string;
     trainAll: boolean;
     parseAll: boolean;
     trainSamples: string[];
@@ -177,6 +191,8 @@ export default defineComponent({
         keepUpos: false,
         isCustomTrainingUser: false,
         trainingUser: '',
+        isCustomParsingUser: false,
+        parsingUser: '',
         trainAll: true,
         trainSamples: [],
         parseAll: true,
@@ -357,10 +373,11 @@ export default defineComponent({
       const projectName = this.$route.params.projectname as any as string
       const toParseSamplesNames = this.param.parseAll ? this.allSamplesNames : this.param.parseSamples;
       const parserSuffix = this.param.parserSuffix;
+      const parsingUser = this.param.isCustomParsingUser ? this.param.parsingUser : 'last';
       const parsingSettings: ParsingSettings_t = {
         keep_heads: this.param.keepHeads ? "EXISTING" : "NONE"
       }
-      api.parserParseStart(projectName, modelInfo, toParseSamplesNames, parsingSettings).then(
+      api.parserParseStart(projectName, modelInfo, toParseSamplesNames, parsingUser, parsingSettings).then(
         (response) => {
           if (response.data.status === "failure") {
             notifyMessage({message: "Parsing could not start : " + response.data.error, type: "negative"})

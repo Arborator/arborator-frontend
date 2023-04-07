@@ -1,10 +1,10 @@
 <template>
     <q-card-section v-if="selectedRepository == ''">
-        <div class="row">
+        <div class="row q-mb-xs">
             <div class="col">
                 <q-btn-dropdown :disable="repositories.length == 0" class="float-left" size="md" outline color="primary" :label="$t('github.chooseRepoOwner')" >
                     <q-list :filter-method="searchRepo">
-                        <q-item v-for="user in githubOwners" @click="getRepositoriesPerOwner(user.a)" clickable >
+                        <q-item v-for="user in githubOwners" @click="getRepositoriesPerOwner(user.a)" clickable v-close-popup >
                             <q-item-section avatar>
                                 <q-avatar size="1.2rem">
                                     <img :src="user.v" />
@@ -67,12 +67,12 @@
                     <q-item-label class="text-left">{{selectedRepository}}</q-item-label>
                 </q-item-section>
                 <q-item-section class="col">
-                    <q-select v-model="branch" :options="listBranches" :label="$t('github.selectBranch')"></q-select>
+                    <q-select  filled v-model="branch" :options="listBranches" :label="$t('github.selectBranch')"></q-select>
                 </q-item-section>
             </q-item>
         </q-list>
         <div :class="$q.dark.isActive ? 'text-white' : 'text-blue-grey-10'" class="q-pa-sm">
-            <q-radio dense size="md" v-model="branchSyn" val="arboratorgrew" />{{$t('github.github.arboratorgrewBranch[0]')}}<span style="background-color: #DCEAEA;"><code>arboratorgrew</code></span>  {{$t('github.arboratorgrewBranch[1]')}}
+            <q-radio dense size="md" v-model="branchSyn" val="arboratorgrew" />{{$t('github.arboratorgrewBranch[0]')}}<span style="background-color: #DCEAEA;"><code>arboratorgrew</code></span>  {{$t('github.arboratorgrewBranch[1]')}}
         </div>
         <div :class="$q.dark.isActive ? 'text-white' : 'text-blue-grey-10'" class="q-pa-sm">
             <q-radio dense size="md" v-model="branchSyn" val="default" /> {{$t('github.defaultBranch')}}
@@ -115,7 +115,7 @@ export default defineComponent({
             noRepositories: false,
             currentPage: 1,
             pageIndex: 1,
-            totalItemPerPage: 10,
+            totalItemPerPage: 8,
         }
     },
     computed: {

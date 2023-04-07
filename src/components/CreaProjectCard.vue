@@ -93,7 +93,7 @@ export default defineComponent({
   computed: {
     ...mapState(useUserStore, ['username', 'loggedWithGithub']),
     canSyncWithGithub(){
-      return this.loggedWithGithub && this.isShowSyncBtn && !this.isShowGithubSyncPanel;
+      return this.loggedWithGithub && this.isShowSyncBtn && !this.isShowGithubSyncPanel; 
     }
   },
   methods: {
@@ -116,7 +116,7 @@ export default defineComponent({
         .then(() => {
           this.parentGetProjects();
           this.submitting = false;
-          if (this.loggedWithGithub) {
+          if (this.loggedWithGithub && !this.project.exerciseMode) {
             this.progress = 0.4;
             this.isShowSyncBtn = true;
           }

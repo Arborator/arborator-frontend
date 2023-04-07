@@ -542,7 +542,7 @@ export default defineComponent({
       return possiblesUsers;
     },
     isAllowdedToSync(): boolean{
-      return this.isAdmin && this.loggedWithGithub && this.githubSynchronizedRepo != '' && !this.isDeleteSync;
+      return this.isAdmin && this.loggedWithGithub && this.githubSynchronizedRepo != '' && !this.isDeleteSync && !this.exerciseMode && !this.isTeacher;
     }
   },
   created() {

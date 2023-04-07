@@ -51,7 +51,7 @@
         />
         <q-input
           :disable="taskStatus !== null"
-          v-model.number="param.epochs"
+          v-model.number="param.maxEpoch"
           type="number"
           label="epochs"
           min="3"
@@ -152,7 +152,7 @@ interface parser_t {
     parseAll: boolean;
     trainSamplesNames: string[];
     parseSamplesNames: string[];
-    epochs: number;
+    maxEpoch: number;
     parserSuffix: string;
     keepHeads: boolean;
   };
@@ -197,7 +197,7 @@ export default defineComponent({
         trainSamplesNames: [],
         parseAll: true,
         parseSamplesNames: [],
-        epochs: 10,
+        maxEpoch: 100,
         parserSuffix: '',
         keepHeads: false,
       },
@@ -245,7 +245,7 @@ export default defineComponent({
     },
     estimatedTime() {
       const timeInitialisationTrainingTask_s = 30;
-      const trainingEstimatedTime_s = this.param.epochs * (0.5 + this.trainingSentencesCount / kirParserSentPerSecSpeed);
+      const trainingEstimatedTime_s = this.param.maxEpoch * (0.5 + this.trainingSentencesCount / kirParserSentPerSecSpeed);
       const timeInitialisationParsingTask_s = 30;
       const parsingEstimatedTime_s = this.parsingSentencesCount / kirParserSentPerSecSpeed;
       const totalEstimatedTime_s = timeInitialisationTrainingTask_s + trainingEstimatedTime_s + timeInitialisationParsingTask_s + parsingEstimatedTime_s
@@ -315,7 +315,7 @@ export default defineComponent({
 
       const trainSampleNames = this.param.trainAll ? this.allSamplesNames : this.param.trainSamplesNames;
       const trainUser = this.param.isCustomTrainingUser ? this.param.trainingUser : 'last';
-      const maxEpoch = this.param.epochs;
+      const maxEpoch = this.param.maxEpoch;
       const baseModel = this.param.baseModel ? (this.param.baseModel as any).value as ModelInfo_t : null
       api.parserTrainStart(this.$route.params.projectname as any as string, trainSampleNames, trainUser, maxEpoch, baseModel).then(
         (response) => {

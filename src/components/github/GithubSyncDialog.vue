@@ -173,7 +173,7 @@ export default defineComponent({
         }, 
         synchronizeWithGitRepo(repoName: string, branch: string, branchSyn: string) {
             if (branchSyn == 'default') branchSyn = branch;
-            const data = {repositoryName: repoName, branch: branch, branchSyn: branchSyn};
+            const data = {repositoryName: repoName, branchImport: branch, branchSyn: branchSyn};
             api
               .synchronizeWithGithubRepo(this.projectName as string, this.username as string,  data)
               .then((response) => {

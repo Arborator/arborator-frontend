@@ -36,6 +36,7 @@ export interface project_with_diff_t {
   exerciseMode: boolean;
   diffMode: boolean;
   diffUserId: string;
+  freezed: boolean;
 }
 
 export interface project_extended_t {
@@ -46,6 +47,7 @@ export interface project_extended_t {
   visibility: number;
   showAllTrees: boolean;
   exerciseMode: boolean;
+  freezed: boolean;
 
   admins: string[];
   guests: string[];

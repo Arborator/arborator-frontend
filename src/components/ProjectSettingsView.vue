@@ -433,7 +433,6 @@ export default defineComponent({
         });
       },
     },
-    // },
   },
   mounted() {
     this.annotationFeaturesJson = this.getAnnofjson;

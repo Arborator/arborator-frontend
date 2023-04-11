@@ -66,7 +66,7 @@
           >
             <template #top="props">
               <q-btn-group flat>
-                <q-btn v-if="isAdmin" flat color="default" icon="cloud_upload" @click="uploadDial = true">
+                <q-btn v-if="isAdmin" :disable="isFreezed" flat color="default" icon="cloud_upload" @click="uploadDial = true">
                   <q-tooltip v-if="isAdmin" :delay="300" content-class="text-white bg-primary">{{
                     $t('projectView.tooltipAddSample')
                   }}</q-tooltip>
@@ -116,7 +116,7 @@
                   color="default"
                   text-color="red"
                   icon="delete_forever"
-                  :disable="!isAdmin && !isSuperAdmin"
+                  :disable="!isAdmin"
                   @click="triggerConfirm(deleteSamples)"
                 >
                   <q-tooltip v-if="githubSynchronizedRepo != ''" content-class="text-white bg-primary">This action will delete the file from your synchronized github repository also</q-tooltip>
@@ -128,7 +128,7 @@
                     color="default"
                     icon="playlist_add_check"
                     :loading="table.exporting"
-                    :disable="table.selected.length < 1"
+                    :disable="table.selected.length < 1 || isFreezed"
                     @click="isShowLexiconPanel = true"
                   ></q-btn>
                   <q-tooltip v-if="table.selected.length < 1" :delay="300" content-class="text-white bg-primary">
@@ -139,6 +139,7 @@
                 <!-- single and main button for parsing -->
                 <div v-if="canSaveTreeInProject">
                   <q-btn
+                    :disable="isFreezed"
                     flat
                     icon="precision_manufacturing"
                     @click="bootParserPanelToggle()"
@@ -148,6 +149,17 @@
                       >{{ isShowParsingPanel ? $t('projectView.tooltipParsingPanel[1]') : $t('projectView.tooltipParsingPanel[0]') }}Parsing
                       Panel</q-tooltip
                     >
+                  </q-btn>
+                </div>
+                <div v-if="isOwner">
+                  <q-btn
+                    flat
+                    icon="block"
+                    :color="freezed ? 'primary' : 'default'"
+                    @click="freezeProject"
+                  >
+                    <q-tooltip v-if="!freezed" content-class="text-white bg-primary">freeze the project</q-tooltip>
+                    <q-tooltip v-else>The project is freezed</q-tooltip>
                   </q-btn>
                 </div>
                 <div v-if="isAllowdedToSync">
@@ -195,7 +207,7 @@
                 </q-td>
                 <q-td key="samplename" :props="props">
                   <q-btn
-                    :disable="props.row.sentences === 0"
+                    :disable="isFreezed"
                     outline
                     color="white"
                     :text-color="$q.dark.isActive ? 'white' : 'black'"
@@ -287,7 +299,7 @@
           </q-table>
         </q-card-section>
       </q-card>
-      <template v-if="!exerciseMode && !isTeacher">
+      <template v-if="!exerciseMode && !isTeacher && !isFreezed">
         <GrewSearch :sentence-count="sentenceCount" :search-scope="projectName" />
         <RelationTableMain />
       </template>
@@ -352,7 +364,7 @@ import ProjectIcon from '../components/shared/ProjectIcon.vue';
 import GithubOptions from '../components/github/GithubOptions.vue';
 
 import {notifyError, notifyMessage} from 'src/utils/notify';
-import {mapActions, mapState} from 'pinia';
+import {mapActions, mapState, mapWritableState} from 'pinia';
 import {useProjectStore} from 'src/pinia/modules/project';
 import {useUserStore} from 'src/pinia/modules/user';
 import {sample_roles_t, sample_t, user_sample_roles_t, sample_role_targetrole_t, sample_role_action_t} from 'src/api/backend-types';
@@ -507,7 +519,10 @@ export default defineComponent({
       'isTeacher',
       'isProjectMember',
       'canSaveTreeInProject',
+      'isOwner',
+      'freezed',
     ]),
+    ...mapWritableState(useProjectStore, ['freezed']),
     ...mapState(useUserStore, ['isLoggedIn', 'isSuperAdmin', 'loggedWithGithub', 'avatar', 'username']),
     projectName(): string {
       return this.$route.params.projectname as string;
@@ -543,6 +558,9 @@ export default defineComponent({
     },
     isAllowdedToSync(): boolean{
       return this.isAdmin && this.loggedWithGithub && this.githubSynchronizedRepo != '' && !this.isDeleteSync && !this.exerciseMode && !this.isTeacher;
+    }, 
+    isFreezed(): boolean{
+      return !this.isOwner && this.freezed;
     }
   },
   created() {
@@ -551,6 +569,7 @@ export default defineComponent({
   },
   mounted() {
     this.loadProjectData();
+    this.notifyFreezedProject();
     document.title = `ArboratorGrew: ${this.projectName}`;
     if (this.isLoggedIn) this.getSynchronizedGithubRepo(); 
   },
@@ -558,6 +577,7 @@ export default defineComponent({
     window.removeEventListener('resize', this.handleResize);
   },
   methods: {
+    ...mapActions(useProjectStore, ['updateProjectSettings']),
     handleResize() {
       this.window.width = window.innerWidth;
       this.window.height = window.innerHeight;
@@ -605,6 +625,17 @@ export default defineComponent({
         if (this.githubSynchronizedRepo != ''){
           this.deleteSampleFromGithub(sample.sample_name);
         }
+      }
+    },
+    
+    freezeProject(){
+      notifyMessage({message: this.freezed ? `Your project is unfreezed` : `Your project is freezed`})
+      this.updateProjectSettings({freezed: !this.freezed})
+    },
+
+    notifyFreezedProject(){
+      if (this.isFreezed){
+        notifyMessage({message: `This project is freezed by the owner`, position:'top', type:'warning'});
       }
     },
 

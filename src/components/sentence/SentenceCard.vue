@@ -14,11 +14,12 @@
           readonly
           @select="editTokens"
         >
-          <q-tooltip anchor="center middle" self="center middle" :offset="[10, 10]"> Select the sentence to edit, remove
+          <q-tooltip  anchor="bottom middle" self="center middle" :offset="[10, 10]"> Select the sentence to edit, remove
             or split tokens
           </q-tooltip>
           <template #prepend>
-            <q-icon name="chat_bubble_outline"/><!-- 言 --> </template>
+            <q-icon name="chat_bubble_outline"/><!-- 言 --> 
+          </template>
         </q-input>
         <q-space/>
         <template v-if="openTabUser !== ''">

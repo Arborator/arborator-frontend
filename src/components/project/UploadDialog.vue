@@ -263,13 +263,13 @@ export default defineComponent({
           if (error.response) {
             error.message = error.response.data.message;
             error.permanent = true;
+            notifyError({ error: error.message})
           }
           this.$emit('uploaded:sample'); // tell to the parent that a new sample was uploaded and to fetch all samples
 
           error.caption = 'Check your file please and try again.';
           this.uploadSample.submitting = false;
           this.uploadDialModel = false;
-          notifyError({ error });
         });
     },
   },

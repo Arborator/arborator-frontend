@@ -5,7 +5,7 @@
         <p><b>General Settings</b></p>
         <div style="display: flex; flex-direction: column">
           <q-option-group
-            :disable="taskStatus !== null"
+            :disable="disableUI"
             :options="param.pipelineOptions"
             type="radio"
             v-model="param.pipelineChoice"
@@ -13,7 +13,7 @@
         </div>
         <q-separator inset class="q-mx-lg"/>
         <q-select
-          :disable="taskStatus !== null"
+          :disable="disableUI"
           v-model="param.baseModel"
           filled
           :options="param.baseModelsOptions"
@@ -26,9 +26,9 @@
       <q-separator vertical inset class="q-mx-lg"/>
       <div v-show="param.pipelineChoice !== 'PARSE_ONLY'" class="col">
         <p><b>Train Settings</b></p>
-        <q-toggle :disable="taskStatus !== null" v-model="param.trainAll" label="Train on all files"/>
+        <q-toggle :disable="disableUI" v-model="param.trainAll" label="Train on all files"/>
         <q-select
-          :disable="taskStatus !== null"
+          :disable="disableUI"
           :class="{ invisible: param.trainAll }"
           v-model="param.trainSamplesNames"
           filled
@@ -38,9 +38,9 @@
           stack-label
           style="max-width: 200px; min-width: 150px"
         />
-        <q-toggle :disable="taskStatus !== null" v-model="param.isCustomTrainingUser" label="Custom Training user"/>
+        <q-toggle :disable="disableUI" v-model="param.isCustomTrainingUser" label="Custom Training user"/>
         <q-select
-          :disable="taskStatus !== null"
+          :disable="disableUI"
           :class="{ invisible: !param.isCustomTrainingUser }"
           v-model="param.trainingUser"
           filled
@@ -50,7 +50,7 @@
           style="max-width: 200px; min-width: 150px"
         />
         <q-input
-          :disable="taskStatus !== null"
+          :disable="disableUI"
           v-model.number="param.maxEpoch"
           type="number"
           label="epochs"
@@ -64,9 +64,9 @@
       <q-separator v-show="param.pipelineChoice !== 'PARSE_ONLY'" vertical inset class="q-mx-lg"/>
       <div v-show="param.pipelineChoice !== 'TRAIN_ONLY'" class="col">
         <p><b>Parse Settings</b></p>
-        <q-toggle :disable="taskStatus !== null" v-model="param.parseAll" label="Parse all files"/>
+        <q-toggle :disable="disableUI" v-model="param.parseAll" label="Parse all files"/>
         <q-select
-          :disable="taskStatus !== null"
+          :disable="disableUI"
           :class="{ invisible: param.parseAll }"
           v-model="param.parseSamplesNames"
           filled
@@ -76,12 +76,12 @@
           stack-label
           style="max-width: 200px; min-width: 150px"
         />
-        <q-input :disable="taskStatus !== null" :dense="true" filled v-model="param.parserSuffix"
+        <q-input :disable="disableUI" :dense="true" filled v-model="param.parserSuffix"
                  label="Parser suffix (for parsed sentences)"
                  :hint="'Parsing will go under the name `parser' + param.parserSuffix + '`'"/>
-        <q-toggle :disable="taskStatus !== null" v-model="param.isCustomParsingUser" label="Custom Parsing user"/>
+        <q-toggle :disable="disableUI" v-model="param.isCustomParsingUser" label="Custom Parsing user"/>
         <q-select
-          :disable="taskStatus !== null"
+          :disable="disableUI"
           :class="{ invisible: !param.isCustomParsingUser }"
           v-model="param.parsingUser"
           filled
@@ -90,7 +90,7 @@
           stack-label
           style="max-width: 200px; min-width: 150px"
         />
-        <q-toggle :disable="taskStatus !== null" v-model="param.keepHeads" label="keep existing heads"/>
+        <q-toggle :disable="disableUI" v-model="param.keepHeads" label="keep existing heads"/>
 
       </div>
       <q-separator v-show="param.pipelineChoice !== 'TRAIN_ONLY'" vertical inset class="q-mx-lg"/>
@@ -99,7 +99,7 @@
         <div class="text-subtitle5 q-mb-xs">training sentences : {{ trainingSentencesCount }}</div>
         <div class="text-subtitle5 q-mb-xs">parsing sentences : {{ parsingSentencesCount }}</div>
         <div class="text-subtitle5 q-mb-xs">estimated time = {{ estimatedTime }}mn</div>
-        <q-btn v-close-popup color="primary" :disable="paramError" label="START" :loading="taskStatus !== null" push
+        <q-btn v-close-popup color="primary" :disable="paramError || isHealthy===false" label="START" :loading="taskStatus !== null" push
                size="sm"
                @click="parserPipelineStart()"/>
         <!--        <q-btn v-if="parsing" v-close-popup color="primary" label="Stop" push size="sm"-->
@@ -109,6 +109,9 @@
           <div v-if="taskStatus.taskAdditionalMessage" class="text-subtitle5 q-mb-xs">
             {{ taskStatus.taskAdditionalMessage }}
           </div>
+        </div>
+        <div v-if="isHealthy===false">
+          <p class="text-subtitle5 q-mb-xs text-red-14">/!\ Sorry, the parsing server is unreachable, and it's not under our control. Please come back in some time.</p>
         </div>
       </div>
     </div>
@@ -137,6 +140,7 @@ type pipelineChoice_t = "TRAIN_AND_PARSE" | "TRAIN_ONLY" | "PARSE_ONLY";
 interface parser_t {
   progress: string;
   taskStatus: taskStatus_t;
+  isHealthy: boolean;
   param: {
     pipelineChoice: pipelineChoice_t;
     pipelineOptions: { label: string; value: pipelineChoice_t }[];
@@ -178,6 +182,7 @@ export default defineComponent({
     const data: parser_t = {
       taskStatus: null,
       progress: 'bootstrap parsing',
+      isHealthy: true,
       param: {
         pipelineChoice: 'TRAIN_AND_PARSE',
         pipelineOptions: [
@@ -272,6 +277,9 @@ export default defineComponent({
       }
       return false
     },
+    disableUI() {
+      return this.taskStatus || this.isHealthy === false
+    }
   },
   methods: {
     getTreesUsersFromSamples(samples: sample_t[]) {
@@ -282,7 +290,8 @@ export default defineComponent({
       api.parserList().then(
         (response) => {
           if (response.data.status === "failure") {
-            console.log("fetchBaseModelsAvailables FAILURE")
+            notifyMessage({message: "Sorry, the parsing server is unreachable and not under our control, please come back later", type: "negative"})
+            this.isHealthy = false;
           } else {
             const options = response.data.data.map((baseModelMeta) => {
               return {

@@ -4,7 +4,6 @@
             <div class="text-h6 text-left">Commit changes</div>
         </q-card-section>
         <q-separator />
-        <q-card-section class="text-body2 text-weight-light text-justify" :class="$q.dark.isActive ? 'text-white' : 'text-blue-grey-10'"> All the made commits are pushed to a separate remote branch named arboratorgrew in order to not impact your Master branch. Once you are sure about your changes you can easily merge the changes to your master branch from Github    </q-card-section>
         <q-card-section>
             <q-form class="q-gutter-md">
                 <div class="row">
@@ -71,7 +70,7 @@ export default defineComponent({
     },
     data() {
         return {
-            options: ['My trees Filled with the most recent one', 'My trees'],
+            options: ['My trees filled up with the most recent ones', 'My trees'],
             message: '', 
         }
     },

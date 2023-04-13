@@ -6,7 +6,7 @@ export default {
   error403: 'Hey you! You do not have the permissions for this action. Please contact the administrator.',
   error401: 'Hey you! Please log in to do any further actions of that type.',
   error404page: "Doh! There's nothing here...",
-  error415: 'Hey you! Only files with UTF-8 encoding format are supported.',
+  error415: 'Hey you! Only CONLL files with UTF-8 encoding format are supported.',
   welcomeback: 'Welcome back to Arborator!',
   loginbtn: 'Log in',
   loginselector: 'Connect via',

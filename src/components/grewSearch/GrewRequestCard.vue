@@ -27,8 +27,8 @@
               </div>
             </div>
 
-            <div class="col-2 bg-primary">
-              <q-tabs v-model="searchReplaceTab" dense no-caps class="bg-grey-2 primary text-primary">
+            <div class="col-2">
+              <q-tabs v-model="searchReplaceTab" dense no-caps class="primary text-primary">
                 <q-tab name="SEARCH" icon="search" label="Search">
                   <q-tooltip content-class="bg-primary" anchor="top middle" self="bottom middle" :offset="[10, 10]">
                     Examples of Grew search statements
@@ -44,7 +44,7 @@
 
               <q-tab-panels v-model="searchReplaceTab" animated class="shadow-2">
                 <q-tab-panel name="SEARCH">
-                  <q-tabs v-model="searchQueryTab" dense no-caps vertical switch-indicator class="bg-grey-2 primary" indicator-color="primary">
+                  <q-tabs v-model="searchQueryTab" dense no-caps vertical switch-indicator class="primary" indicator-color="primary">
                     <template v-for="query in searchQueries" :key="query.name">
                       <q-tab v-ripple :name="query.name" :label="query.name" clickable @click="changeQuery(query.pattern, 'SEARCH')" />
                     </template>
@@ -53,7 +53,7 @@
                 </q-tab-panel>
 
                 <q-tab-panel name="REWRITE">
-                  <q-tabs v-model="searchQueryTab" dense no-caps vertical switch-indicator class="bg-grey-2 primary" indicator-color="primary">
+                  <q-tabs v-model="searchQueryTab" dense no-caps vertical switch-indicator class="primary" indicator-color="primary">
                     <template v-for="query in rewriteQueries" :key="query.name">
                       <q-tab v-ripple :name="query.name" :label="query.name" clickable @click="changeQuery(query.pattern, 'REWRITE')" />
                     </template>

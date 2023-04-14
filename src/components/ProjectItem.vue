@@ -56,7 +56,7 @@
       <q-chip v-else icon="account_circle" :label="adm" size="sm" />
     </q-item-section>
     <q-item-section side>
-      <q-badge :color="$q.dark.isActive ? 'grey' : 'secondary'">
+      <q-badge color="secondary">
         {{ project.numberSamples }} {{ project.numberSamples === 1 ? $t('projectHub.sample') : $t('projectHub.samples') }}
       </q-badge>
     </q-item-section>

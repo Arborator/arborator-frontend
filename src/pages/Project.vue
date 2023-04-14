@@ -11,7 +11,6 @@
                 v-if="isAdmin"
                 flat
                 round
-                :color="$q.dark.isActive ? 'primary' : ''"
                 icon="settings"
                 @click="projectSettingsDial = true"
               >
@@ -42,6 +41,7 @@
 
         <q-card-section>
           <q-table
+            bordered
             ref="textsTable"
             :key="tableKey"
             v-model:pagination="table.pagination"
@@ -815,7 +815,7 @@ export default defineComponent({
   }
 
   .q-table__top, .q-table__bottom, thead tr:first-child th { /* bg color is important for th; just specify one */
-    background-color: $black-1; /* #eeeeee */
+    background-color: #1d1d1d;
   }
 
   thead tr:first-child th {

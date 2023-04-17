@@ -1,12 +1,13 @@
 {
-	"searchQueries": [ 
-		{"type": "SEARCH", "name":"POS query", "pattern":"% Search for a token of a given upos\n% Available tags: ADJ, ADP, ADV, AUX, CONJ, DET, INTJ, NOUN, NUM, PART, PRON, PROPN, PUNCT, SCONJ, SYM, VERB, X\npattern { N [upos=\"NUM\"] }"}, 
+	"searchQueries": [
+		{"type": "SEARCH", "name":"POS query", "pattern":"% Search for a token of a given upos\n% Available tags: ADJ, ADP, ADV, AUX, CONJ, DET, INTJ, NOUN, NUM, PART, PRON, PROPN, PUNCT, SCONJ, SYM, VERB, X\npattern { N [upos=\"NUM\"] }"},
 		{"type": "SEARCH", "name":"Form query", "pattern":"% Search for a given word form\npattern { N [form=\"Form_to_search\"] }"},
 		{"type": "SEARCH", "name":"Lemma query", "pattern":"% Search for a given lemma (lemmatization is not available for all languages)\n\npattern { N [lemma=\"Lemma_to_search\"] }"},
 		{"type": "SEARCH", "name":"Dependency relation query", "pattern":"% Search for a dependency relation\n% Available relations are:\n%   acl, acl:relcl, advcl, advmod, amod, appos, aux, aux:pass, case, cc, ccomp,\n%   compound, conj, cop, csubj, dep, det, discourse, obj, expl, iobj, mark,\n%   fixed, flat, neg, nmod, nmod:poss, nsubj, nsubj:pass, nummod, parataxis, punct, root, xcomp\n\npattern { GOV -[advcl]-> DEP }"},
 		{"type": "SEARCH", "name":"Relation and tags query", "pattern":"% Search for a \"det\" dependency relation\n% such that the governor's tag is different from NOUN, PROPN and ADJ\n\npattern {\nGOV [upos <> NOUN|ADJ|PROPN];\nGOV -[det]-> DEP;\n}"}
 	],
 	"rewriteQueries": [
-		{"type": "REWRITE", "name":"Rewrite POS", "pattern":"rule r1 { pattern { N [upos=VERB] } commands { N.upos = V } }", "sampleIds": []}
+		{"type": "REWRITE", "name":"Rewrite POS", "pattern":"rule r1 { pattern { N [upos=VERB] } commands { N.upos = V } }", "sampleIds": []},
+		{"type": "REWRITE", "name":"Rewrite DEPREL", "pattern":"rule r1 {\n  pattern { e: GOV -[compound:vo]-> DEP }\n  commands { \n  \t% If you want to rename the label main:aux@deep in one time :\n    e.label = \"comp:obj@m\";\n    \n    % % Or if you want to rename feature by feature : \n    % e.1 = comp;\n    % e.2 = obj;\n\t% e.deep = m;\n\t}\n}", "sampleIds": []}
 	]
 }

@@ -151,6 +151,9 @@ export default {
   updateTree(projectname: string, samplename: string, data: updateTree_ED) {
     return API.post(`/projects/${projectname}/samples/${samplename}/trees`, data);
   },
+  deleteUserTrees(projectName: string, sampleName: string, username: string) {
+    return API.delete(`/projects/${projectName}/samples/${sampleName}/trees/${username}`)
+  },
 
   // ----------------------------------------------------- //
   // ---------------          Grew         --------------- //

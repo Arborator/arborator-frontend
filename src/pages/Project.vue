@@ -152,15 +152,30 @@
                   </q-btn>
                 </div>
                 <div v-if="isOwner">
-                  <q-btn
-                    flat
-                    icon="block"
-                    :color="freezed ? 'primary' : 'default'"
-                    @click="freezeProject"
-                  >
-                    <q-tooltip v-if="!freezed" content-class="text-white bg-primary">freeze the project</q-tooltip>
-                    <q-tooltip v-else>The project is freezed</q-tooltip>
-                  </q-btn>
+                  <q-btn-dropdown flat icon="more_vert">
+                     <q-list>
+                      <q-item clickable v-close-popup @click="freezeProject">
+                        <q-item-section avatar>
+                          <q-avatar icon="block" />
+                        </q-item-section>
+                        <q-item-section>
+                          <q-item-label>Freeze the project</q-item-label>
+                          <q-item-label v-if="freezed" caption>The project is freezed</q-item-label>
+                        </q-item-section>
+                      </q-item>
+
+                      <q-item clickable :disable="table.selected.length < 1" v-close-popup @click="removeUserTreesDial = true">
+                        <q-item-section avatar>
+                          <q-avatar icon="person_remove" />
+                        </q-item-section>
+                        <q-item-section>
+                          <q-item-label>Remove user Trees</q-item-label>
+                          <q-item-label v-if="table.selected.length < 1" caption>Select Samples</q-item-label>
+                        </q-item-section>
+                      </q-item>
+                    </q-list>
+                  </q-btn-dropdown>
+                  <q-tooltip>More</q-tooltip>
                 </div>
                 <div v-if="isAllowdedToSync">
                   <GithubOptions :projectName="projectName" :repositoryName="githubSynchronizedRepo" :key="reload" @remove="reloadAfterSynchronization" @pulled="loadProjectData"/>
@@ -341,6 +356,20 @@
         </q-card>
       </q-dialog>
 
+      <q-dialog v-model="removeUserTreesDial">
+        <q-card style="width: 300vh">
+          <q-card-section>
+            <div class="text-h6">Remove user trees from the selected samples</div>
+          </q-card-section>
+          <q-card-section class="q-gutter-md"> 
+            <q-select filled v-model="user" label="Select user" :options="getTreesFrom(table.selected)" />
+            <div class="row justify-center">
+               <q-btn color="primary" @click="triggerConfirm(removeUserTrees)" label="Remove Trees" />
+            </div>
+          </q-card-section>
+        </q-card>
+      </q-dialog>
+
       <q-dialog v-model="confirmActionDial">
         <confirm-action :parent-action="confirmActionCallback" :arg1="confirmActionArg1" :target-name="projectName"></confirm-action>
       </q-dialog>
@@ -473,6 +502,8 @@ export default defineComponent({
       isShowParsingPanel: false,
       isShowLexiconPanel: false,
       isDeleteSync: false,
+      removeUserTreesDial: false,
+      user: '',
       confirmActionCallback,
       confirmActionArg1: '',
       samples,
@@ -534,17 +565,7 @@ export default defineComponent({
       return this.samples.map((sample) => sample.sentences).reduce((partialSum, a) => partialSum + a, 0);
     },
     getProjectTreesFrom(): string[] {
-      const projectTreesFrom: string[] = [];
-
-      for (const sample of this.samples) {
-        const sampleTreesFrom = sample.treesFrom;
-        for (const userId of sampleTreesFrom) {
-          if (!projectTreesFrom.includes(userId)) {
-            projectTreesFrom.push(userId);
-          }
-        }
-      }
-      return projectTreesFrom;
+      return this.getTreesFrom(this.samples)
     },
     getPossibleUsers(){
       const possiblesUsers: user_sample_roles_t[] = []
@@ -758,6 +779,35 @@ export default defineComponent({
           notifyError({ error });
         });
 
+    },
+
+    getTreesFrom(samples: sample_t[]){
+      const treesFrom: string[] = [];
+
+      for (const sample of samples) {
+        const sampleTreesFrom = sample.treesFrom;
+        for (const userId of sampleTreesFrom) {
+          if (!treesFrom.includes(userId)) {
+            treesFrom.push(userId);
+          }
+        }
+      }
+      return treesFrom;
+    },
+
+    removeUserTrees(){
+      for (const sample of this.table.selected) {
+        api
+          .deleteUserTrees(this.projectName as string, sample.sample_name, this.user)
+          .then(() => {
+            notifyMessage({ message: `${this.user} trees are removed successfully`});
+            this.removeUserTreesDial = false;
+            this.loadProjectData();
+          })
+          .catch((error) => {
+            notifyError({ error });
+          });
+      }
     },
 
     exportEvaluation() {

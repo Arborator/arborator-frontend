@@ -1,55 +1,53 @@
 <template>
-  <div>
-    <q-page-sticky :position="breakpoint ? 'bottom-right' : 'bottom-right'" :offset="breakpoint ? [18, 18] : [30, 80]"
-                   style="z-index: 999">
-      <q-btn-group v-if="showGrewBtn" push flat rounded>
-        <q-btn v-if="isLoggedIn" push color="primary" no-caps @click="openGrewDialog('user')">
-          <q-tooltip content-class="bg-primary" content-style="font-size: 16px">
-            {{ $t('projectView.tooltipFabGrewUser') }}
-          </q-tooltip>
-          <q-avatar v-if="isLoggedIn" size="1.2rem"><img :src="avatar"/></q-avatar>
-          <q-icon v-else name="account_circle"/>
-        </q-btn>
-        <q-btn v-if="isLoggedIn && canSeeOtherUsersTrees" push color="primary" no-caps
-               @click="openGrewDialog('user_recent')">
-          <q-tooltip content-class="bg-primary" content-style="font-size: 16px">
-            {{ $t('projectView.tooltipFabGrewUserRecent') }}
-          </q-tooltip>
-          <q-avatar v-if="isLoggedIn" size="1.2rem"><img :src="avatar"/></q-avatar>
-          <q-icon v-else name="account_circle"/>
-          <div>+</div>
-        </q-btn>
-        <q-btn v-if="canSeeOtherUsersTrees" push icon="schedule" color="primary" no-caps
-               @click="openGrewDialog('recent')">
-          <q-tooltip content-class="bg-primary" content-style="font-size: 16px">
-            {{ $t('projectView.tooltipFabGrewRecent') }}
-          </q-tooltip>
-        </q-btn>
-        <q-btn v-if="canSeeOtherUsersTrees" push icon="groups" color="primary" no-caps @click="openGrewDialog('all')">
-          <q-tooltip content-class="bg-primary" content-style="font-size: 16px">
-            {{ $t('projectView.tooltipFabGrewAll') }}
-          </q-tooltip>
-        </q-btn>
-      </q-btn-group>
-      <q-btn size="20px" round color="primary" icon="img:/svg/g.svg" @click="showGrewBtn = !showGrewBtn">
-        <q-tooltip content-class="bg-primary" content-style="font-size: 16px"> {{ $t('projectView.tooltipFabGrew') }}
+  <q-page-sticky :position="breakpoint ? 'bottom-right' : 'bottom-right'" :offset="breakpoint ? [18, 18] : [30, 80]"
+                 style="z-index: 999">
+    <q-btn-group v-if="showGrewBtn" push flat rounded>
+      <q-btn v-if="isLoggedIn" push color="primary" no-caps @click="openGrewDialog('user')">
+        <q-tooltip content-class="bg-primary" content-style="font-size: 16px">
+          {{ $t('projectView.tooltipFabGrewUser') }}
+        </q-tooltip>
+        <q-avatar v-if="isLoggedIn" size="1.2rem"><img :src="avatar"/></q-avatar>
+        <q-icon v-else name="account_circle"/>
+      </q-btn>
+      <q-btn v-if="isLoggedIn && canSeeOtherUsersTrees" push color="primary" no-caps
+             @click="openGrewDialog('user_recent')">
+        <q-tooltip content-class="bg-primary" content-style="font-size: 16px">
+          {{ $t('projectView.tooltipFabGrewUserRecent') }}
+        </q-tooltip>
+        <q-avatar v-if="isLoggedIn" size="1.2rem"><img :src="avatar"/></q-avatar>
+        <q-icon v-else name="account_circle"/>
+        <div>+</div>
+      </q-btn>
+      <q-btn v-if="canSeeOtherUsersTrees" push icon="schedule" color="primary" no-caps
+             @click="openGrewDialog('recent')">
+        <q-tooltip content-class="bg-primary" content-style="font-size: 16px">
+          {{ $t('projectView.tooltipFabGrewRecent') }}
         </q-tooltip>
       </q-btn>
-    </q-page-sticky>
-    <q-dialog v-model="grewDialog" seamless position="right" full-width>
-      <GrewRequestCard :parent-on-search="onSearch" :parent-on-try-rules="onTryRules" :grewquery="$route.query.q || ''"
-                       :userType="userType" :parent-on-show-diffs="onShowDiffs"></GrewRequestCard>
-    </q-dialog>
-    <q-dialog v-model="resultSearchDialog" transition-show="fade" transition-hide="fade">
-      <ResultView
-        :searchresults="resultSearch"
-        :totalsents="sentenceCount"
-        :searchscope="searchScope"
-        :parent-on-show-table="onShowTable"
-        :query-type="queryType"
-      ></ResultView>
-    </q-dialog>
-  </div>
+      <q-btn v-if="canSeeOtherUsersTrees" push icon="groups" color="primary" no-caps @click="openGrewDialog('all')">
+        <q-tooltip content-class="bg-primary" content-style="font-size: 16px">
+          {{ $t('projectView.tooltipFabGrewAll') }}
+        </q-tooltip>
+      </q-btn>
+    </q-btn-group>
+    <q-btn size="20px" round color="primary" icon="img:/svg/g.svg" @click="showGrewBtn = !showGrewBtn">
+      <q-tooltip content-class="bg-primary" content-style="font-size: 16px"> {{ $t('projectView.tooltipFabGrew') }}
+      </q-tooltip>
+    </q-btn>
+  </q-page-sticky>
+  <q-dialog v-model="grewDialog" seamless position="right" full-width>
+    <GrewRequestCard :parent-on-search="onSearch" :parent-on-try-rules="onTryRules" :grewquery="$route.query.q || ''"
+                     :userType="userType" :parent-on-show-diffs="onShowDiffs"></GrewRequestCard>
+  </q-dialog>
+  <q-dialog v-model="resultSearchDialog" transition-show="fade" transition-hide="fade">
+    <ResultView
+      :searchresults="resultSearch"
+      :totalsents="sentenceCount"
+      :searchscope="searchScope"
+      :parent-on-show-table="onShowTable"
+      :query-type="queryType"
+    ></ResultView>
+  </q-dialog>
 </template>
 
 <script lang="ts">

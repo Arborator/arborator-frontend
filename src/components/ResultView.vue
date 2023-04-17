@@ -16,34 +16,26 @@
       <q-btn color="primary" label="Apply rules" @click="applyRules"/>
     </div>
     <q-card-section>
-      <div v-show="!loading" class="q-pa-md row q-gutter-md">
-        <div v-if="samplesFrozen.list.length > 0">
-          <q-virtual-scroll
-            :items="samplesFrozen.list"
-            style="height: 80vh; width: 100vw"
-            :virtual-scroll-slice-size="5"
-            :virtual-scroll-item-size="200"
-            type="list"
-          >
-            <template #default="{ item, index }">
-              <SentenceCard
-                :id="item[1]"
-                :key="index"
-                :sentence="searchresults[item[0]][item[1]]"
-                :index="index"
-                :sentence-id="item[1]"
-                :matches="searchresults[item[0]][item[1]]"
-                :exercise-level="4"
-              ></SentenceCard>
-            </template>
-          </q-virtual-scroll>
-        </div>
-      </div>
-      <div v-show="loading" class="q-pa-md row justify-center">
-        <div class="col">
-          <q-circular-progress indeterminate size="70px" :thickness="0.22" color="primary"
-                               :track-color="$q.dark.isActive ? 'grey' : 'grey-3'"/>
-        </div>
+      <div v-if="samplesFrozen.list.length > 0">
+        <q-virtual-scroll
+          :items="samplesFrozen.list"
+          style="height: 80vh; width: 100vw"
+          :virtual-scroll-slice-size="5"
+          :virtual-scroll-item-size="200"
+          type="list"
+        >
+          <template #default="{ item, index }">
+            <SentenceCard
+              :id="item[1]"
+              :key="index"
+              :sentence="searchresults[item[0]][item[1]]"
+              :index="index"
+              :sentence-id="item[1]"
+              :matches="searchresults[item[0]][item[1]]"
+              :exercise-level="4"
+            ></SentenceCard>
+          </template>
+        </q-virtual-scroll>
       </div>
     </q-card-section>
   </q-card>

@@ -132,7 +132,7 @@ export default defineComponent({
       const selectedIndex: { [key: number]: boolean } = {};
       this.searchresultsCopy = this.searchresults;
       // this is sent to the sentenceCard: searchresults[item[0]][item[1]], items from this.samplesFrozen.list
-      for (const sampleId in this.searchresults) {
+      for (const sampleId of Object.keys(this.searchresults).sort()) {
         for (const sentId in this.searchresults[sampleId]) {
           listIds.push([sampleId, sentId]);
           index2Ids[index] = [sampleId, sentId];

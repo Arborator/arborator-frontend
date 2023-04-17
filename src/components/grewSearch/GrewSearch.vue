@@ -239,8 +239,6 @@ export default defineComponent({
             notifyError({error});
           });
       }
-
-      console.log("KK onShowDiffs");
     }
   },
 });

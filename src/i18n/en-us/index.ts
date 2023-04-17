@@ -168,20 +168,8 @@ export default {
       'Click to set the parameters for parser',
       'Click to interrupt parsing',
     ],
-    tooltipGitPush: [
-      'Push only my trees of the selected samples',
-      'Push my trees of the selected samples, filled up with the most recent trees',
-      'Push the most recent trees',
-      'Push all trees of the selected samples',
-      'Select the samples you want to commit and push to GitHub',
-      'Commit and push the selected samples to GitHub',
-    ],
-    gitPullUser: 'Replace my trees from the selected samples with the ones from GitHub',
-    gitPullAll: 'Replace all trees from the selected samples with the ones from GitHub',
-    tooltipGitPullSelect: [
-      'Select the samples you want to update from your GitHub folder',
-      'Pull data from your GitHub folder onto the selected samples',
-    ],
+    tooltipMore: 'More options',
+    tooltipSynchronizedProject: 'This project is synchronized with',
     tooltipSearch: 'Search a sample',
     tooltipSelectVisible: 'Select visible columns',
     tooltipFullscreen: 'Fullscreen table',
@@ -192,6 +180,7 @@ export default {
     tooltipFabGrewAll: 'View all trees',
     tooltipRelationTable: 'Get Relation Tables',
     tooltipWindows: ['Minimize', 'Maximize', 'Close'],
+    search: 'Search', 
     uploadSelectDial: 'Select one or multiple conll files',
     tableFields: ['Name', 'Nb Sentences', 'Nb Tokens', 'Annotators', 'Validators', 'Prof', 'Trees From', 'Exercise Level'],
     addUser: 'Add user',
@@ -220,7 +209,9 @@ export default {
       'View my trees, filled up with the most recent trees',
       'View most recent trees'
     ],
-
+    freezeProject: ['Freeze this project', 'This project is freezed'],
+    removeUserTrees: ["Remove user's trees", "Select samples"], 
+    
   },
   // dialog window which displays create project card
   createProjectCard: {

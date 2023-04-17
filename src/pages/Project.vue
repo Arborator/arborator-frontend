@@ -159,8 +159,8 @@
                           <q-avatar icon="block" />
                         </q-item-section>
                         <q-item-section>
-                          <q-item-label>Freeze the project</q-item-label>
-                          <q-item-label v-if="freezed" caption>The project is freezed</q-item-label>
+                          <q-item-label>{{ $t('projectView.freezeProject[0]')}}</q-item-label>
+                          <q-item-label v-if="freezed" caption>{{$t('projectView.freezeProject[1]')}}</q-item-label>
                         </q-item-section>
                       </q-item>
 
@@ -169,23 +169,23 @@
                           <q-avatar icon="person_remove" />
                         </q-item-section>
                         <q-item-section>
-                          <q-item-label>Remove user Trees</q-item-label>
-                          <q-item-label v-if="table.selected.length < 1" caption>Select Samples</q-item-label>
+                          <q-item-label>{{ $t('projectView.removeUserTrees[0]')}}</q-item-label>
+                          <q-item-label v-if="table.selected.length < 1" caption>{{ $t('projectView.removeUserTrees[1]')}}</q-item-label>
                         </q-item-section>
                       </q-item>
                     </q-list>
                   </q-btn-dropdown>
-                  <q-tooltip>More</q-tooltip>
+                  <q-tooltip> {{$t('projectView.tooltipMore')}} </q-tooltip>
                 </div>
                 <div v-if="isAllowdedToSync">
                   <GithubOptions :projectName="projectName" :repositoryName="githubSynchronizedRepo" :key="reload" @remove="reloadAfterSynchronization" @pulled="loadProjectData"/>
-                  <q-tooltip content-class="text-white bg-primary">This Project is synchronized with {{githubSynchronizedRepo}}</q-tooltip> 
+                  <q-tooltip content-class="text-white bg-primary"> {{$t('projectView.tooltipSynchronizedProject')}} {{githubSynchronizedRepo}}</q-tooltip> 
                 </div>
               </q-btn-group>
 
               <q-space />
 
-              <q-input v-model="table.filter" dense debounce="300" placeholder="Search" text-color="blue-grey-8">
+              <q-input v-model="table.filter" dense debounce="300" :placeholder="$t('projectView.search')" text-color="blue-grey-8">
                 <template #append>
                   <q-icon name="search" />
                 </template>
@@ -427,49 +427,49 @@ export default defineComponent({
       fields: [
         {
           name: 'samplename',
-          label: 'Name',
+          label: this.$t('projectView.tableFields[0]'),
           sortable: true,
           field: 'samplename',
         },
         {
           name: 'sentences',
-          label: 'Nb Sentences',
+          label: this.$t('projectView.tableFields[1]'),
           sortable: true,
           field: 'sentences',
         },
         {
           name: 'tokens',
-          label: 'Nb Tokens',
+          label: this.$t('projectView.tableFields[2]'),
           sortable: true,
           field: 'number_tokens',
         },
         {
           name: 'annotators',
-          label: 'Annotators',
+          label: this.$t('projectView.tableFields[3]'),
           sortable: true,
           field: 'roles.annotator',
         },
         {
           name: 'validators',
-          label: 'Validators',
+          label: this.$t('projectView.tableFields[4]'),
           sortable: true,
           field: 'roles.validator',
         },
         {
           name: 'profs',
-          label: 'Profs',
+          label: this.$t('projectView.tableFields[5]'),
           sortable: true,
           field: 'roles.prof',
         },
         {
           name: 'treesFrom',
-          label: 'Trees From',
+          label: this.$t('projectView.tableFields[6]'),
           sortable: true,
           field: 'treesFrom',
         },
         {
           name: 'exerciseLevel',
-          label: 'Exercise Level',
+          label: this.$t('projectView.tableFields[7]'),
           sortable: true,
           field: 'exerciseLevel',
         },

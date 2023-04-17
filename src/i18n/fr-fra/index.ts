@@ -158,7 +158,7 @@ export default {
     tooltipAddSample: 'Ajouter un échantillon (fichier CoNLL)',
     tooltipExportSample: ['Sélectionnez les échantillons à exporter', 'Exporter les échantillons sélectionnés'],
     tooltipDeleteSample: ['Sélectionnez les échantillons à supprimer', 'Supprimer les échantillons sélectionnés'],
-    tootltipCreateLexicon: ['Sélectionnez les échantillons pour créer le lexique', "Créer le lexique à partir d'échantillons sélectionnés"],
+    tooltipCreateLexicon: ['Sélectionnez les échantillons pour créer le lexique', "Créer le lexique à partir d'échantillons sélectionnés"],
     tooltipParsingPanel: ['Ouvrir le parseur', 'Fermer le parseur'],
     tooltipParser: [
       'Sélectionner les échantillons pour entraîner le parseur',
@@ -166,22 +166,9 @@ export default {
       'Cliquer et choisir les paramètres pour le parseur',
       'Cliquer pour arrêter le parseur',
     ],
-    tooltipGitPush: [
-      'Pousser seulement mes arbres des échantillons sélectionnés',
-      'Pousser mes plus récents arbres des échantillons sélectionnés',
-      'Pousser les arbres les plus récents',
-      'Pousser tous les abres des échantillons sélectionnés',
-      'Sélectionner les échantillons à engager (commit) et à pousser sur GitHub',
-      'Engager et pousser sur GitHub les échantillons sélectionnés',
-    ],
-    gitPullUser: 'Replace my trees from the selected samples with the ones from GitHub',
-    gitPullAll: 'Replace all trees from the selected samples with the ones from GitHub',
-    tooltipGitPullSelect: [
-      'Select the samples you want to update from your GitHub folder',
-      'Pull data from your GitHub folder onto the selected samples',
-    ],
+    tooltipMore: "Plus d'options",
+    tooltipSynchronizedProject: 'Ce projet est synchronisé avec',
     tooltipSearch: 'Rechercher un échantillon',
-
     tooltipSelectVisible: 'Sélectionner les colonnes visibles',
     tooltipFullscreen: 'tableau plein écran',
     tooltipFabGrew: "Recherche avec Grew",
@@ -191,6 +178,7 @@ export default {
     tooltipFabGrewAll: 'Voir tous les arbres',
     tooltipRelationTable: 'Obtenir la table des relations',
     tooltipWindows: ['Minimize', 'Maximize', 'Close'],
+    search: 'Rechercher',
     uploadSelectDial: 'Select one or multiple conll files',
     tableFields: ['Nom', 'Nb Phrases', 'Nb Tokens', 'Annotateurs', 'Validateurs', 'Prof', 'Arbres de', "Niveau d'exercice"],
     addUser: 'Ajouter un utilisateur',
@@ -214,6 +202,8 @@ export default {
     tooltipUnstageModifiedItem: 'Unstage les changements de lexique sélectionnés',
     tooltipValidatorLexicon: 'Importer le validateur pour comparer',
     tooltipSelectValidator: 'Selectionner un fichier au format tsv',
+    freezeProject: ['Désactiver ce projet', 'Ce projet est désactivé'],
+    removeUserTrees: ["Supprimer les arbres d'un utilisateur", "Sélectionnez des échantillons" ]
   },
 
   // dialog window which displays create project card

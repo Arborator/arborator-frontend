@@ -11,6 +11,7 @@ export default {
   loginselector: 'Se connecter via',
   switchLanguage: "Changer la langue de l'interface utilisateur",
   documentation: 'Voir la documentation',
+  feedback:'Des questions, des propositions de fonctionnalités ou des rapports de bogues ? Consultez notre page Github issues',
   darkMode: 'Activer le mode sombre',
   projectAdmin: "Vous êtes l'administrateur de ce projet",
   userInformation: "Information de l'utilisateur",

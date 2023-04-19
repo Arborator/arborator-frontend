@@ -12,6 +12,7 @@ export default {
   loginselector: 'Connect via',
   switchLanguage: 'Switch the language of the user interface',
   documentation: 'See the documantation',
+  feedback:'Any questions, feature requests or bug report ? See our github issues page',
   darkMode: 'Toggle dark mode',
   projectAdmin: 'You are admin of this project',
   userInformation: 'User information',

@@ -49,6 +49,8 @@
                       <q-tab v-ripple :name="query.name" :label="query.name" clickable @click="changeQuery(query.pattern, 'SEARCH')" />
                     </template>
                      <q-tab v-if="userType === 'all'" v-ripple name="showDiffs" label="Show divergences" clickable @click="onShowDiffs()" />
+                     <q-tab><a href="https://grew.fr/doc/request/" target="_blank">Documentation</a></q-tab>
+
                   </q-tabs>
                 </q-tab-panel>
 
@@ -57,6 +59,7 @@
                     <template v-for="query in rewriteQueries" :key="query.name">
                       <q-tab v-ripple :name="query.name" :label="query.name" clickable @click="changeQuery(query.pattern, 'REWRITE')" />
                     </template>
+                    <q-tab><a href="https://grew.fr/doc/commands/" target="_blank">Documentation</a></q-tab>
                   </q-tabs>
                 </q-tab-panel>
               </q-tab-panels>

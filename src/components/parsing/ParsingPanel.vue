@@ -278,7 +278,7 @@ export default defineComponent({
       return false
     },
     disableUI() {
-      return this.taskStatus || this.isHealthy === false
+      return !!this.taskStatus || (this.isHealthy === false)
     }
   },
   methods: {

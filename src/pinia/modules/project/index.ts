@@ -15,7 +15,7 @@ export const useProjectStore = defineStore('project', {
   getters: {
     getProjectConfig: (state) => state,
     isOwner: (state) =>{
-      return state.admins[0] === useUserStore().id || useUserStore().super_admin;
+      return state.admins[0] === useUserStore().id;
     },
     isAdmin: (state) => {
       return state.admins.includes(useUserStore().id) || useUserStore().super_admin;

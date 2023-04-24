@@ -643,7 +643,7 @@ export default defineComponent({
           .catch((error) => {
             notifyError({ error });
           });
-        if (this.githubSynchronizedRepo != ''){
+        if (this.githubSynchronizedRepo != '' && this.isOwner){
           this.deleteSampleFromGithub(sample.sample_name);
         }
       }
@@ -760,7 +760,7 @@ export default defineComponent({
       }, 0);
     },
     triggerConfirm(method: CallableFunction) {
-      this.displayWarning()
+      if (this.githubSynchronizedRepo != '' && this.isOwner) this.displayWarning();
       this.confirmActionDial = true;
       this.confirmActionCallback = method;
     },

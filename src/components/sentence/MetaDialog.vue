@@ -4,7 +4,7 @@
   <q-dialog v-model="metaDialogOpened">
     <q-card style="width: 110vh">
       <q-bar class="bg-primary text-white">
-        <div class="text-weight-bold">Metadata of this sentence</div>
+        <div class="text-weight-bold">{{$t('attributeTable.metadata')}}</div>
         <q-space />
         <q-btn v-close-popup flat dense icon="close" />
       </q-bar>
@@ -14,13 +14,13 @@
         :feat-options="['String']"
         open-features="true"
         modifiable="true"
-        title="Meta Sentence Features"
+        :title="$t('attributeTable.metadata')"
       ></AttributeTable>
       <!-- @feature-changed="informFeatureChanged()" -->
       <q-separator />
       <!-- todo: adapt informFeatureChanged also to metadata -->
       <q-card-actions align="around">
-        <q-btn v-close-popup flat label="Cancel" style="width: 45%; margin-left: auto; margin-right: auto" />
+        <q-btn v-close-popup flat :label="$t('cancel')" style="width: 45%; margin-left: auto; margin-right: auto" />
         <q-btn
           v-close-popup
           color="primary"

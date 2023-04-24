@@ -25,6 +25,9 @@ export default {
   confirmAction: {
     title: 'En êtes-vous certain?',
     message: 'Vous êtes sur le point de faire une action irrémédiable. Voulez-vous vraiment continuer?',
+    warning: ['Veuillez taper quelque chose', 'Le nom du projet ne correspond pas'],
+    hint: 'Tapez le nom du projet', 
+    label: 'Le nom du projet*',
   },
 
   // first page (the index)
@@ -283,8 +286,30 @@ export default {
     addToken: 'Ajouter un nouveau token', 
     editToken: 'Editer les tokens', 
     saveModif: "L'arbre a quelques modifications qui n'ont pas été encore sauvegardées.",
-    modified: ['Modifié il y a ']
+    modified: ['Modifié il y a '],
+    modifTime: ['sencondes', 'minutes', 'heures', 'jours'],
+    conllText: 'Texte Conll', 
+    statisticDial: "Statistiques de l'arbre ouvert",
+   
+
   },
+  attributeTable: {
+    addFeature: 'Ajouter un nouveau feature',
+    eraseAttribute: "Supprimer l'attribut",
+    features: 'Caractéristiques de',
+    category:['Sélectionner une catégorie pour', 'Catégorie'],
+    metadata: 'Les métadonnées de cette phrase', 
+    relation: ['Sélectionner une relation qui va de', 'vers', 'Relation de dépendence'],
+    tokenReplaceDial: [
+      'Remplacer', 
+      'par',
+      "Le changement de tokens perturbe la comparabilité des différentes annotations d'une même phrase.",
+      'Remplacement',
+    ]
+  },
+  cancel: 'Annuler',
+  delete: 'Supprimer',
+  confirm: 'Confirmer',
   // Klang
   Klang: {
     projects: 'Les projets Klang',

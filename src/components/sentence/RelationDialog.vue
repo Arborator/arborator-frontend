@@ -2,7 +2,7 @@
   <q-dialog v-model="relationDialogOpened">
     <q-card>
       <q-bar v-if="gov && dep" class="bg-primary text-white">
-        <div class="text-weight-bold">Select a relation going from "{{ gov.FORM }}" to "{{ dep.FORM }}"</div>
+        <div class="text-weight-bold">{{$t('attributeTable.relation[0]')}} "{{ gov.FORM }}" {{$t('attributeTable.relation[1]')}} "{{ dep.FORM }}"</div>
         <q-space />
         <q-btn v-close-popup flat dense icon="close" />
       </q-bar>
@@ -12,17 +12,17 @@
         :feat-options="options.currentoptions"
         open-features="false"
         modifiable="false"
-        title="Dependency relation"
+        :title="$t('attributeTable.relation[2]')"
         prepend="true"
       ></AttributeTable>
       <!-- @feature-changed="informFeatureChanged()" -->
       <q-space />
 
       <q-card-actions>
-        <q-btn v-close-popup flat label="Cancel" style="width: 25%; margin-left: auto; margin-right: auto" />
+        <q-btn v-close-popup flat :label="$t('cancel')" style="width: 25%; margin-left: auto; margin-right: auto" />
         <!-- @click="ondialoghide()" -->
         <q-space />
-        <q-btn v-close-popup color="negative" label="Delete" style="width: 25%; margin-left: auto" @click="onDeleteRelation()" />
+        <q-btn v-close-popup color="negative" :label="$t('delete')" style="width: 25%; margin-left: auto" @click="onDeleteRelation()" />
         <q-space />
         <q-btn v-close-popup color="primary" label="Ok" style="width: 25%; margin-left: auto; margin-right: auto" @click="onChangeRelation()" />
       </q-card-actions>

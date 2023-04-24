@@ -344,13 +344,13 @@ export default defineComponent({
         if (timeDifferenceNumber < 10) {
           timeDifferenceString = '< 10s';
         } else if (timeDifferenceNumber / 60 < 1) {
-          timeDifferenceString = `${Math.round(timeDifferenceNumber)} seconds`;
+          timeDifferenceString = `${Math.round(timeDifferenceNumber)} ${this.$t('sentenceCard.modifTime[0]')}`;
         } else if (timeDifferenceNumber / (60 * 60) < 1) {
-          timeDifferenceString = `${Math.round(timeDifferenceNumber / 60)} minutes`;
+          timeDifferenceString = `${Math.round(timeDifferenceNumber / 60)} ${this.$t('sentenceCard.modifTime[1]')}`;
         } else if (timeDifferenceNumber / (60 * 60 * 24) < 1) {
-          timeDifferenceString = `${Math.round(timeDifferenceNumber / (60 * 60))} hours`;
+          timeDifferenceString = `${Math.round(timeDifferenceNumber / (60 * 60))} ${this.$t('sentenceCard.modifTime[2]')}`;
         } else if (timeDifferenceNumber / (60 * 60 * 24 * 365) < 1) {
-          timeDifferenceString = `${Math.round(timeDifferenceNumber / (60 * 60 * 24))} days`;
+          timeDifferenceString = `${Math.round(timeDifferenceNumber / (60 * 60 * 24))} ${this.$t('sentenceCard.modifTime[3]')}`;
         }
         lastModifiedTime[user] = timeDifferenceString;
       }

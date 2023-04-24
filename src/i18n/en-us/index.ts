@@ -28,6 +28,9 @@ export default {
   confirmAction: {
     title: 'Are you sure?',
     message: 'You are about to perform an irrevocable action. Do you really want to proceed?',
+    warning: ['Please type something', 'The project name does not correspond'], 
+    hint: 'Type the project name', 
+    label: 'Your project name*',
   },
 
   // first page (the index)
@@ -291,8 +294,28 @@ export default {
     editToken: 'Edit tokens',
     saveModif: 'The tree has some pendings modifications not saved', 
     modified: ['Modified', 'ago'],
+    modifTime: ['senconds', 'minutes', 'hours', 'days'],
+    conllText: 'Text Conll', 
+    statisticDial: 'Stastistics of the current opened tree',
 
   },
+  attributeTable: {
+    addFeature: 'Add new feature',
+    eraseFeature: 'Erase the attribute', 
+    features: 'Features of',
+    category: ['Select a category for', 'Category'],
+    metadata: ['Metadata of this sentence'], 
+    relation: ['Select a relation going from', 'to', 'Dependency relation'], 
+    tokenReplaceDial: [
+      'Replacing',
+      'by',
+      'Changing tokens breaks the comparability of different annotations of the same sentence',
+      'Replacement',
+    ],
+  },
+  cancel:'Cancel',
+  delete: 'Delete',
+  confirm: 'Confirm',
   // Klang
   Klang: {
     projects: 'Klang Projects',

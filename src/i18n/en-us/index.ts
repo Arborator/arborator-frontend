@@ -276,7 +276,22 @@ export default {
     removeSync: ['Remove synchronization', 'Your project is synchronized with'],
   },
   sentenceCard: {
-    
+    selectTooltip: 'Select the sentence to split the tokens',
+    annotationErrors: 'See your annotation errors',
+    saveTeacher: 'Save as teacher',
+    saveBaseTree: 'Save as base_tree',
+    saveTree: ["Save tree", "as"], 
+    editMetadata: "Edit this trees's metadata",
+    multiEditDial: 'Multi edit dialog', 
+    DiffMode: ['Enter', 'Leave', 'Diff mode'], 
+    treeLink: 'Get direct link to this tree', 
+    treeConll: 'Get CoNLL-U of this tree', 
+    treeSVG: 'Get SVG of this tree',
+    addToken: 'Add new token',
+    editToken: 'Edit tokens',
+    saveModif: 'The tree has some pendings modifications not saved', 
+    modified: ['Modified', 'ago'],
+
   },
   // Klang
   Klang: {

@@ -268,6 +268,23 @@ export default {
     pullRequest: 'Ouvrir une nouvelle Pull request à partir de vos changements',
     removeSync: ['Supprimer la synchronisation', 'Votre projet est synchronisé avec']
   },
+  sentenceCard: {
+    selectTooltip: 'Sélectionnez la phrase pour diviser les tokens',
+    annotationErrors: "Voir vos erreurs d'annotation", 
+    saveTeacher: 'Sauvegarder comme enseignant',
+    saveBaseTree: 'Sauvegarder comme arbre de base',
+    saveTree: ["Sauvegarder l'arbre", "comme"],
+    editMetadata: 'Editer les métadonnées de cet arbre',
+    multiEditDial: 'Dialogue de multi-édition',
+    diffMode: ['Activer', 'Désactiver', 'le mode Diff'], 
+    treeLink: 'Obtenir un lien direct vers cet arbre',
+    treeConll: 'Obtenir CoNLL-U de cet arbre',
+    treeSVG: 'Obtenir le SVG de cet arbre',
+    addToken: 'Ajouter un nouveau token', 
+    editToken: 'Editer les tokens', 
+    saveModif: "L'arbre a quelques modifications qui n'ont pas été encore sauvegardées.",
+    modified: ['Modifié il y a ']
+  },
   // Klang
   Klang: {
     projects: 'Les projets Klang',

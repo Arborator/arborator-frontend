@@ -273,7 +273,10 @@ export default {
     commitNotif: ['You have', 'change', 'changes', "You don't have changes to commit"], 
     pullNotif: ['refresh to see if there is pulls', 'Pull changes'], 
     pullRequest: 'Open new Pull request from your changes',
-    removeSynchronization: ['Remove synchronization', 'Your project is synchronized with'],
+    removeSync: ['Remove synchronization', 'Your project is synchronized with'],
+  },
+  sentenceCard: {
+    
   },
   // Klang
   Klang: {

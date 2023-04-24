@@ -117,6 +117,7 @@ export default defineComponent({
     onShowTable(resultSearchDialog: any) {
       this.resultSearchDialog = resultSearchDialog;
       this.grewDialog = false;
+      if (this.queryType == 'REWRITE') this.$emit('reload');
     },
     onSearch(searchPattern: string) {
       const data = {pattern: searchPattern, userType: this.userType};

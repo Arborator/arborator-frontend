@@ -18,7 +18,6 @@
             :sentence-id="item"
             search-result=""
             :exercise-level="exerciseLevel"
-            @refresh:trees="getSampleTrees"
           >
           </SentenceCard>
         </template>
@@ -29,8 +28,8 @@
         <q-circular-progress indeterminate size="70px" :thickness="0.22" color="primary" track-color="grey-3"/>
       </div>
     </div>
-    <GrewSearch :sentence-count="sentenceCount" :search-scope="samplename"/>
-    <RelationTableMain :sampleName="samplename"/>
+    <GrewSearch :sentence-count="sentenceCount" :search-scope="samplename" @reload="refreshWindow" />
+    <RelationTableMain :sampleName="samplename" />
   </q-page>
 </template>
 
@@ -126,6 +125,9 @@ export default defineComponent({
     handleResize() {
       this.window.width = window.innerWidth;
       this.window.height = window.innerHeight;
+    },
+    refreshWindow() {
+      location.reload();
     },
     getSampleTrees() {
       this.loading = true;

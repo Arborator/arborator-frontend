@@ -67,7 +67,9 @@
                     <q-item-label class="text-left">{{selectedRepository}}</q-item-label>
                 </q-item-section>
                 <q-item-section class="col">
-                    <q-select  filled v-model="branch" :options="listBranches" :label="$t('github.selectBranch')"></q-select>
+                    <q-select  filled v-model="branch" :options="listBranches" :label="$t('github.selectBranch')">
+                        <q-tooltip>{{$t('github.selectBranch')}}</q-tooltip>
+                    </q-select>
                 </q-item-section>
             </q-item>
         </q-list>

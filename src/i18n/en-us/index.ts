@@ -268,7 +268,7 @@ export default {
     search: 'Search a repository',
     select: 'Select',
     noGithubRepos: 'You need to create your first Github Repository', 
-    selectBranch: 'Select a branch',
+    selectBranch: 'Select a branch to clone',
     arboratorgrewBranch:['Use ','branch for your commits and pulls made using ArboratorGrew.'],
     defaultBranch: ' Use the selected branch (Be careful if you work with a repository that has many collaborators).',
     synchronize: 'Synchronize',

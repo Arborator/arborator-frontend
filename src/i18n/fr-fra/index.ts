@@ -261,7 +261,7 @@ export default {
     search: 'Rechercher un dépôt',
     select: 'Sélectionner',
     noGithubRepos: "Vous devez d'abord créer votre premier dépôt Github",
-    selectBranch: 'Séléctionner une branche',
+    selectBranch: 'Séléctionner une branche à cloner',
     arboratorgrewBranch: [' Utiliser la branche ', 'pour vos commits et pulls effectués avec ArboratorGrew.'],
     defaultBranch: ' Utiliser la branche sélectionnée (Attention si vous travaillez avec un dépôt qui a de nombreux collaborateurs).',
     synchronize: 'Synchroniser',

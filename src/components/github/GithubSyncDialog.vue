@@ -78,7 +78,14 @@
             <q-radio dense size="md" v-model="branchSyn" val="default" /> {{$t('github.defaultBranch')}}
         </div>
         <div class="row q-gutter-md justify-center">
-            <q-btn :disable="branch == ''" color="primary" @click="synchronizeWithGitRepo(selectedRepository, branch, branchSyn)">{{$t('github.synchronize')}}</q-btn>
+            <q-btn :loading="loading" :disable="branch == ''" color="primary" @click="synchronizeWithGitRepo(selectedRepository, branch, branchSyn)">{{$t('github.synchronize')}}
+                <template v-slot:loading>
+                    <q-spinner
+                        color="grey-11"
+                        size="xs"
+                    />
+                </template>
+            </q-btn>
         </div>
     </q-card-section>
     
@@ -116,6 +123,7 @@ export default defineComponent({
             currentPage: 1,
             pageIndex: 1,
             totalItemPerPage: 8,
+            loading: false,
         }
     },
     computed: {
@@ -171,18 +179,21 @@ export default defineComponent({
                 notifyError(error);
               });
         }, 
-        synchronizeWithGitRepo(repoName: string, branch: string, branchSyn: string) {
+        async synchronizeWithGitRepo(repoName: string, branch: string, branchSyn: string) {
             if (branchSyn == 'default') branchSyn = branch;
             const data = {repositoryName: repoName, branchImport: branch, branchSyn: branchSyn};
+            this.loading = true;
             api
               .synchronizeWithGithubRepo(this.projectName as string, this.username as string,  data)
               .then((response) => {
-                notifyMessage({message: `"${this.projectName}" ${this.$t('github.synchronizeMessage')} "${repoName}"`})
+                notifyMessage({message: `"${this.projectName}" ${this.$t('github.synchronizeMessage')} "${repoName}"`});
+                this.loading = false;
                 this.$emit('created');
               })
               .catch((error) => {
                 const errorMessage = error.response.data.message;
                 notifyError({error: `${errorMessage}`});
+                this.loading = false;
                 this.$emit('created');
               });        
         },  

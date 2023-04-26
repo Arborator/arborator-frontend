@@ -282,7 +282,7 @@ export default {
     return API.get(`/projects/${projectName}/${username}/github/branch?full_name=${repoName}`);
   }, 
   synchronizeWithGithubRepo(projectName: string, username: string, data: any) {
-    return API.post<createGithubSynchronizedRepository_ED>(`/projects/${projectName}/${username}/synchronize-github`, data);
+    return API.post<createGithubSynchronizedRepository_ED>(`/projects/${projectName}/${username}/synchronize-github`, data, { timeout: 4000000 });
   },
   getSynchronizedGithubRepository(projectName: string, username: string) {
     return API.get(`/projects/${projectName}/${username}/synchronize-github`);

@@ -72,7 +72,7 @@
             </q-item>
         </q-list>
         <div :class="$q.dark.isActive ? 'text-white' : 'text-blue-grey-10'" class="q-pa-sm">
-            <q-radio dense size="md" v-model="branchSyn" val="arboratorgrew" />{{$t('github.arboratorgrewBranch[0]')}}<span style="background-color: #DCEAEA;"><code>arboratorgrew</code></span>  {{$t('github.arboratorgrewBranch[1]')}}
+            <q-radio dense size="md" v-model="branchSyn" val="arboratorgrew" />{{$t('github.arboratorgrewBranch[0]')}}<span style="background-color:#7f90c0;"><code>arboratorgrew</code></span>  {{$t('github.arboratorgrewBranch[1]')}}
         </div>
         <div :class="$q.dark.isActive ? 'text-white' : 'text-blue-grey-10'" class="q-pa-sm">
             <q-radio dense size="md" v-model="branchSyn" val="default" /> {{$t('github.defaultBranch')}}

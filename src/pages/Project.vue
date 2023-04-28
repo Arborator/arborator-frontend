@@ -323,7 +323,7 @@
       <q-dialog v-model="assignDial" persistent transition-show="slide-up" transition-hide="slide-down">
         <user-table :samples="table.selected"></user-table>
       </q-dialog>
-      <UploadDialog v-model:uploadDial="uploadDial" @uploaded:sample="loadProjectData()" />
+      <UploadDialog v-model:uploadDial="uploadDial" :samples="samples" @uploaded:sample="loadProjectData()" />
 
       <q-dialog v-model="projectSettingsDial" transition-show="slide-up" transition-hide="slide-down">
         <ProjectSettingsView :project-trees-from="getProjectTreesFrom" :projectname="projectName" style="width: 90vw"></ProjectSettingsView>

@@ -33,7 +33,7 @@
         </div>
         <div v-if="repositoriesPerOwner.length > 0">
             <q-list bordered separator>
-                <q-item  v-close-popup class="row" v-for="repo in getListProjects">
+                <q-item class="row" v-for="repo in getListProjects">
                     <q-item-section class="col-8">
                         <q-item-label class="text-left">{{ repo.name }}</q-item-label>
                     </q-item-section>

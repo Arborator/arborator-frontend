@@ -82,6 +82,7 @@ export default defineComponent({
         ConfirmAction
     },
     name: 'GithubOptions',
+    emits: ['remove', 'pulled'],
     props:{
         projectName: {
             type: String as PropType<string>,

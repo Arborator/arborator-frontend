@@ -103,6 +103,7 @@ import {notifyError, notifyMessage} from 'src/utils/notify';
 import {defineComponent, PropType} from 'vue';
 export default defineComponent({
     name: 'GithubSyncDialog',
+    emits: ['created'],
      props:{
         projectName: {
             type: String as PropType<string>,

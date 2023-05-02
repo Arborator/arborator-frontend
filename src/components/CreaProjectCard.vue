@@ -66,6 +66,8 @@ export default defineComponent({
   components: {
     GithubSyncDialog,
   },
+  name:'CreaProjectCard',
+  emits: ['created'],
   props: {
     parentGetProjects: {
       type: Function as PropType<() => void>,

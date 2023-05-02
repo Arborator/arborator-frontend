@@ -6,7 +6,7 @@
         <q-separator />
         <q-card-section>
             <q-form class="q-gutter-md">
-                <div class="row">
+                <div class="row q-gutter-md">
                     <div class="col-8">
                         <q-input
                             filled
@@ -15,33 +15,32 @@
                         />
                     </div>
                     <div class="col">
-                        <q-btn-dropdown class="float-right" size="md" color="primary" label="Select trees to commit">
-                            <q-list>
-                                <q-item v-close-popup clickable @click="commitChanges(username)">
+                        <q-select
+                            filled
+                            v-model="trees"
+                            :options="options"
+                            label="Select trees to commit"
+                            color="primary"
+                            options-selected-class="primary"
+                        >
+                            <template v-slot:option="scope">
+                                <q-item v-bind="scope.itemProps" v-on="scope.itemEvents">
                                     <q-item-section avatar>
-                                        <q-avatar size="1.2rem">
+                                        <q-avatar size="1.2rem" >
                                             <img :src="avatar" />
-                                        </q-avatar>
+                                             <q-badge v-if="scope.opt.label != 'My trees'" floating transparent color="principal">+</q-badge>
+                                        </q-avatar>  
                                     </q-item-section>
                                     <q-item-section>
-                                        <q-item-label>Commit My trees</q-item-label>
+                                        <q-item-label>{{scope.opt.label}}</q-item-label>
                                     </q-item-section>
                                 </q-item>
-
-                                <q-item v-close-popup clickable @click="commitChanges('last')">
-                                    <q-item-section avatar>
-                                        <q-avatar size="1.2rem">
-                                            <img :src="avatar" />
-                                            <q-badge floating transparent color="principal">+</q-badge>
-                                        </q-avatar>
-                                    </q-item-section>
-                                    <q-item-section>
-                                        <q-item-label>Commit my trees filled the most recent ones</q-item-label>
-                                    </q-item-section>
-                                </q-item>
-                            </q-list>
-                        </q-btn-dropdown>
+                            </template>
+                        </q-select>  
                     </div>
+                </div>
+                <div class="row q-gutter-md justify-center">
+                    <q-btn :disable="trees == ''" label="commit" color="primary" @click="commitChanges(trees.user)"/>
                 </div>
             </q-form>
         </q-card-section>
@@ -70,8 +69,12 @@ export default defineComponent({
     },
     data() {
         return {
-            options: ['My trees filled up with the most recent ones', 'My trees'],
-            message: '', 
+            options: [
+                { label: 'My trees', user: 'username' },
+                { label:'My trees filled up with the most recent ones', user: 'last' }, 
+            ],
+            message: '',
+            trees: '', 
         }
     },
     computed:{
@@ -80,6 +83,7 @@ export default defineComponent({
     methods: {
         commitChanges(userType: string){
             const githubMessage =  this.message + ': committed by ArboratorGrew';
+            if (userType == 'username' ) userType = this.username 
             const data = {message: githubMessage, repositoryName: this.repositoryName, userType: userType};
             api
               .commitChanges(this.projectName, this.username, data)

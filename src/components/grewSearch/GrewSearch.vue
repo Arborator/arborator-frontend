@@ -1,43 +1,17 @@
 <template>
-  <q-page-sticky :position="breakpoint ? 'bottom-right' : 'bottom-right'" :offset="breakpoint ? [18, 18] : [30, 80]"
-                 style="z-index: 999">
-    <q-btn-group v-if="showGrewBtn" push flat rounded>
-      <q-btn v-if="isLoggedIn" push color="primary" no-caps @click="openGrewDialog('user')">
-        <q-tooltip content-class="bg-primary" content-style="font-size: 16px">
-          {{ $t('projectView.tooltipFabGrewUser') }}
-        </q-tooltip>
-        <q-avatar v-if="isLoggedIn" size="1.2rem"><img :src="avatar"/></q-avatar>
-        <q-icon v-else name="account_circle"/>
-      </q-btn>
-      <q-btn v-if="isLoggedIn && canSeeOtherUsersTrees" push color="primary" no-caps
-             @click="openGrewDialog('user_recent')">
-        <q-tooltip content-class="bg-primary" content-style="font-size: 16px">
-          {{ $t('projectView.tooltipFabGrewUserRecent') }}
-        </q-tooltip>
-        <q-avatar v-if="isLoggedIn" size="1.2rem"><img :src="avatar"/></q-avatar>
-        <q-icon v-else name="account_circle"/>
-        <div>+</div>
-      </q-btn>
-      <q-btn v-if="canSeeOtherUsersTrees" push icon="schedule" color="primary" no-caps
-             @click="openGrewDialog('recent')">
-        <q-tooltip content-class="bg-primary" content-style="font-size: 16px">
-          {{ $t('projectView.tooltipFabGrewRecent') }}
-        </q-tooltip>
-      </q-btn>
-      <q-btn v-if="canSeeOtherUsersTrees" push icon="groups" color="primary" no-caps @click="openGrewDialog('all')">
-        <q-tooltip content-class="bg-primary" content-style="font-size: 16px">
-          {{ $t('projectView.tooltipFabGrewAll') }}
-        </q-tooltip>
-      </q-btn>
-    </q-btn-group>
-    <q-btn size="20px" round color="primary" icon="img:/svg/g.svg" @click="showGrewBtn = !showGrewBtn">
+  <q-page-sticky :position="breakpoint ? 'bottom-right' : 'bottom-right'" :offset="breakpoint ? [18, 18] : [30, 80]" style="z-index: 999">
+    <q-btn size="20px" round color="primary" icon="img:/svg/g.svg" @click="grewDialog = !grewDialog">
       <q-tooltip content-class="bg-primary" content-style="font-size: 16px"> {{ $t('projectView.tooltipFabGrew') }}
       </q-tooltip>
     </q-btn>
   </q-page-sticky>
   <q-dialog v-model="grewDialog" seamless position="right" full-width>
-    <GrewRequestCard :parent-on-search="onSearch" :parent-on-try-rules="onTryRules" :grewquery="$route.query.q || ''"
-                     :userType="userType" :parent-on-show-diffs="onShowDiffs"></GrewRequestCard>
+    <GrewRequestCard 
+      :parent-on-search="onSearch" 
+      :parent-on-try-rules="onTryRules" 
+      :grewquery="$route.query.q || ''"
+      :parent-on-show-diffs="onShowDiffs"
+    ></GrewRequestCard>
   </q-dialog>
   <q-dialog v-model="resultSearchDialog" transition-show="fade" transition-hide="fade">
     <ResultView
@@ -56,14 +30,12 @@ import ResultView from '../ResultView.vue';
 import api from '../../api/backend-api';
 import {useGrewSearchStore} from 'src/pinia/modules/grewSearch';
 import {mapWritableState, mapState} from 'pinia';
-import {useProjectStore} from 'src/pinia/modules/project';
 import {useUserStore} from 'src/pinia/modules/user';
 import {notifyError} from 'src/utils/notify';
 import {defineComponent, PropType} from 'vue';
 import {grewSearchResult_t} from 'src/api/backend-types';
 import {sentenceConllToJson, SentenceJson} from "conllup/lib/conll";
 
-type userType_t = 'user' | 'user_recent' | 'recent' | 'all'
 export default defineComponent({
   components: {
     GrewRequestCard,
@@ -82,19 +54,13 @@ export default defineComponent({
   data() {
     const result: {
       resultSearchDialog: boolean,
-      showGrewBtn: boolean,
-      resultSearch: grewSearchResult_t
+      resultSearch: grewSearchResult_t,
       queryType: string,
-      userType: userType_t,
-      rulesGrew: any,
       window: { width: number; height: number },
     } = {
       resultSearchDialog: false,
-      showGrewBtn: false,
       resultSearch: {},
       queryType: "",
-      userType: "user",
-      rulesGrew: {},
       window: {width: 0, height: 0},
     };
     return result
@@ -104,20 +70,16 @@ export default defineComponent({
       return this.window.width <= 400;
     },
     ...mapWritableState(useGrewSearchStore, ['grewDialog']),
-    ...mapState(useProjectStore, ['canSeeOtherUsersTrees']),
-    ...mapState(useUserStore, ['isLoggedIn', 'avatar', 'username']),
+    ...mapState(useUserStore, ['username']),
   },
   methods: {
-    openGrewDialog(userType: userType_t) {
-      this.grewDialog = true;
-      this.userType = userType;
-    },
+
     onShowTable(resultSearchDialog: any) {
       this.resultSearchDialog = resultSearchDialog;
       this.grewDialog = false;
     },
-    onSearch(searchPattern: string) {
-      const data = {pattern: searchPattern, userType: this.userType};
+    onSearch(searchPattern: string, userType: string) {
+      const data = {pattern: searchPattern, userType: userType};
       this.queryType = 'SEARCH';
       if (this.$route.params.samplename) {
         api
@@ -141,11 +103,11 @@ export default defineComponent({
           });
       }
     },
-    onTryRules(query: string) {
+    onTryRules(query: string, userType: string) {
       const sampleId = (this.$route.params.samplename as string) || null;
       this.queryType = 'REWRITE';
       api
-        .tryPackage(this.$route.params.projectname as string, sampleId, query, this.userType)
+        .tryPackage(this.$route.params.projectname as string, sampleId, query, userType)
         .then((response) => {
           this.resultSearchDialog = true;
           this.resultSearch = response.data;
@@ -156,11 +118,11 @@ export default defineComponent({
           });
         });
     },
-    onShowDiffs() {
-      if (this.userType !== "all") {
+    onShowDiffs(userType: string) {
+      if (userType !== "all") {
         return
       }
-      const data = {pattern: "pattern { }", userType: this.userType};
+      const data = {pattern: "pattern { }", userType: userType};
 
       function sentencesJsonHaveDiffs(leftSentenceJson: SentenceJson, rightSentenceJson: SentenceJson): boolean {
         const leftNodesJson = leftSentenceJson.treeJson.nodesJson

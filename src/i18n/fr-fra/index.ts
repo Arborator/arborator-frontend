@@ -212,6 +212,15 @@ export default {
     exerciseMode: 'Mode exercice',
   },
 
+  grewSearch: {
+    treesType: "Sélectionner le type d'arbres",
+    search: 'Rechercher',
+    rewrite: 'Réécrire',
+    tryRules: 'Essayer les règles',
+    grewSearchTooltip: 'Examples de requêtes de recherche de Grew',
+    grewRewriteTooltip: 'Examples de requêtes de recherche et remplacement de Grew',
+    grewBtnTooltip: "Vous devez d'abord sélectionner le type d'arbre", 
+  },
   // window which displays project settings
   projectSettings: {
     title: 'Paramètres',

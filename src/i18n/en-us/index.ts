@@ -218,6 +218,15 @@ export default {
     exerciseMode: 'exercise mode',
   },
 
+  grewSearch: {
+    treesType: 'Select trees type',
+    search: 'Search',
+    rewrite: 'Rewrite',
+    tryRules: 'Try rules',
+    grewSearchTooltip: 'Examples of Grew search statements',
+    grewRewriteTooltip: 'Examples of Grew search and replacement statements',
+    grewBtnTooltip: 'You have to select trees type first', 
+  },
   // window which displays project settings
   projectSettings: {
     title: 'Settings',

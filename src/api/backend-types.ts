@@ -93,6 +93,7 @@ export interface sample_t {
   tokens: number;
   exerciseLevel: number;
   roles: sample_roles_t;
+  treeByUser: { [key: string]: number };
 }
 
 export type sample_role_targetrole_t = 'annotator' | 'validator';

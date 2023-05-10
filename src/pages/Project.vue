@@ -344,17 +344,17 @@
                   </q-list>
                 </q-td>
                 <q-td key="treesFrom" :props="props">
-                  <q-item-label v-if="props.row.treesFrom.length >= 5" caption>
+                  <q-item-label v-if="Object.keys(props.row.treeByUser).length >= 5" caption>
                     {{ props.row.treesFrom.length }} users
                     <q-tooltip>
-                      <p v-for="userId in props.row.treesFrom" :key="userId" :props="userId">
-                        {{ userId }}
+                      <p v-for="(nSentences, userId, index) in props.row.treeByUser" :key="userId" :props="userId">
+                        {{ userId }} ({{ nSentences }})
                       </p>
                     </q-tooltip>
                   </q-item-label>
                   <q-list v-else dense>
-                    <q-item v-for="userId in props.row.treesFrom" :key="userId" :props="userId">
-                      <q-item-label caption>{{ userId }}</q-item-label>
+                    <q-item v-for="(nSentences, userId, index) in props.row.treeByUser" :key="userId" :props="userId">
+                      <q-item-label caption>{{ userId }} ({{ nSentences }})</q-item-label>
                     </q-item>
                   </q-list>
                 </q-td>

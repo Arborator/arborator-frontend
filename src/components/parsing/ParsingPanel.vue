@@ -96,8 +96,8 @@
       <q-separator v-show="param.pipelineChoice !== 'TRAIN_ONLY'" vertical inset class="q-mx-lg"/>
       <div class="col">
         <p><b>Pipeline Summary</b></p>
-        <div class="text-subtitle5 q-mb-xs">training sentences : {{ trainingSentencesCount }}</div>
-        <div class="text-subtitle5 q-mb-xs">parsing sentences : {{ parsingSentencesCount }}</div>
+        <div v-if="param.pipelineChoice !== `PARSE_ONLY`" class="text-subtitle5 q-mb-xs">training sentences : {{ trainingSentencesCount }}</div>
+        <div v-if="param.pipelineChoice !== `TRAIN_ONLY`" class="text-subtitle5 q-mb-xs">parsing sentences : {{ parsingSentencesCount }}</div>
         <div class="text-subtitle5 q-mb-xs">estimated time = {{ estimatedTime }}mn</div>
         <q-btn v-close-popup color="primary" :disable="paramError || isHealthy===false" label="START" :loading="taskStatus !== null" push
                size="sm"
@@ -242,18 +242,31 @@ export default defineComponent({
       return this.getTreesUsersFromSamples(this.parsingSamplesSelected)
     },
     trainingSentencesCount() {
-      return this.trainingSamplesSelected.reduce((partialSum, sample) => partialSum + sample.sentences, 0);
+      if (this.param.isCustomTrainingUser === false || this.param.trainingUser === "") {
+        return this.trainingSamplesSelected.reduce((partialSum, sample) => partialSum + sample.sentences, 0);
+      } else {
+        return this.trainingSamplesSelected.reduce((partialSum, sample) => partialSum + sample.treeByUser[this.param.trainingUser], 0);
+      }
     },
     parsingSentencesCount() {
-      return this.parsingSamplesSelected.reduce((partialSum, sample) => partialSum + sample.sentences, 0);
-
+      if (this.param.isCustomParsingUser === false || this.param.parsingUser === "") {
+        return this.parsingSamplesSelected.reduce((partialSum, sample) => partialSum + sample.sentences, 0);
+      } else {
+        return this.parsingSamplesSelected.reduce((partialSum, sample) => partialSum + sample.treeByUser[this.param.parsingUser], 0);
+      }
     },
     estimatedTime() {
-      const timeInitialisationTrainingTask_s = 30;
+      const timeInitialisationTrainingTask_s = 60;
       const trainingEstimatedTime_s = this.param.maxEpoch * (0.5 + this.trainingSentencesCount / kirParserSentPerSecSpeed);
-      const timeInitialisationParsingTask_s = 30;
+      const timeInitialisationParsingTask_s = 60;
       const parsingEstimatedTime_s = this.parsingSentencesCount / kirParserSentPerSecSpeed;
-      const totalEstimatedTime_s = timeInitialisationTrainingTask_s + trainingEstimatedTime_s + timeInitialisationParsingTask_s + parsingEstimatedTime_s
+      let totalEstimatedTime_s = 0;
+      if (this.param.pipelineChoice !== "PARSE_ONLY") {
+        totalEstimatedTime_s += timeInitialisationTrainingTask_s + trainingEstimatedTime_s;
+      }
+      if (this.param.pipelineChoice !== "TRAIN_ONLY") {
+        totalEstimatedTime_s += timeInitialisationParsingTask_s + parsingEstimatedTime_s;
+      }
       return Math.ceil(totalEstimatedTime_s / 60);
     },
     noTrainFileSelectedError() {
@@ -278,7 +291,7 @@ export default defineComponent({
       return false
     },
     disableUI() {
-      return !!this.taskStatus || (this.isHealthy === false)
+      return  !!this.taskStatus || (this.isHealthy === false)
     }
   },
   methods: {

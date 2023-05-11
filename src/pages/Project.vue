@@ -83,8 +83,8 @@
                     color="default"
                     icon="cloud_download"
                     :loading="table.exporting"
-                    :disable="(visibility === 0 && !isGuest && !isAdmin && !isSuperAdmin) || table.selected.length < 1"
-                    @click="exportSamplesZip()"
+                    :disable="(visibility === 0 && !isGuest && !isAdmin) || table.selected.length < 1"
+                    @click="chooseExportedTrees = true"
                   ></q-btn>
                   <q-tooltip v-if="table.selected.length < 1" :delay="300" content-class="text-white bg-primary">{{
                     $t('projectView.tooltipExportSample[0]')
@@ -381,6 +381,9 @@
         <GrewSearch :sentence-count="sentenceCount" :search-scope="projectName" />
         <RelationTableMain />
       </template>
+      <q-dialog v-model="chooseExportedTrees">
+        <ExportDialog :samples="table.selected" />
+      </q-dialog>
 
       <!-- upload dialog start -->
       <q-dialog v-model="assignDial" persistent transition-show="slide-up" transition-hide="slide-down">
@@ -434,6 +437,7 @@ import TagInput from '../components/TagInput.vue';
 import ProjectSettingsView from '../components/ProjectSettingsView.vue';
 import ConfirmAction from '../components/ConfirmAction.vue';
 import UploadDialog from '../components/project/UploadDialog.vue';
+import ExportDialog from '../components/project/ExportDialog.vue';
 import LexiconMain from '../components/lexicon/LexiconMain.vue';
 import GrewSearch from '../components/grewSearch/GrewSearch.vue';
 import RelationTableMain from '../components/relationTable/RelationTableMain.vue';
@@ -455,6 +459,7 @@ export default defineComponent({
     ProjectSettingsView,
     ConfirmAction,
     UploadDialog,
+    ExportDialog,
     LexiconMain,
     GrewSearch,
     RelationTableMain,
@@ -592,6 +597,7 @@ export default defineComponent({
       tableKey: 0,
       initLoad: false,
       isShowLexiconPanel: false,
+      chooseExportedTrees: false,
     };
   },
   computed: {
@@ -753,32 +759,6 @@ export default defineComponent({
 
       //     notifyError({ error });
       //   });
-    },
-    exportSamplesZip() {
-      this.table.exporting = true;
-      const samplenames = [];
-      for (const sample of this.table.selected) {
-        samplenames.push(sample.sample_name);
-      }
-      api
-        .exportSamplesZip(samplenames, this.projectName as string)
-        .then((response) => {
-          const url = window.URL.createObjectURL(new Blob([response.data], { type: 'application/zip' }));
-          const link = document.createElement('a');
-          link.href = url;
-          link.setAttribute('download', `dump_${this.projectName}.zip`);
-          document.body.appendChild(link);
-          link.click();
-          document.body.removeChild(link);
-          this.table.exporting = false;
-          notifyMessage({ message: 'Files downloaded' });
-          return [];
-        })
-        .catch((error) => {
-          this.table.exporting = false;
-          notifyError({ error });
-          return [];
-        });
     },
     bootParserPanelToggle() {
       this.isShowParsingPanel = !this.isShowParsingPanel;

@@ -122,8 +122,7 @@ export default {
       },
     });
   },
-  exportSamplesZip(samplenames: string[], projectname: string) {
-    const data = { samples: samplenames };
+  exportSamplesZip(projectname: string, data: any) {
     return API.post(`/projects/${projectname}/samples/export`, data, {
       responseType: 'arraybuffer',
     });

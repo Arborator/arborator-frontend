@@ -218,6 +218,15 @@ export default {
     exerciseMode: 'exercise mode',
   },
 
+  exportSamples: {
+    title: 'Select the trees you want to export',
+    exportMyTrees: 'Export only my trees', 
+    exportRecentTrees: 'Export the most recent trees',
+    exportTreesOfUsers: 'Export trees from other users', 
+    selectOtherUsers: 'Select the users whose trees you want to export',
+    export: 'Export'
+  },
+
   grewSearch: {
     treesType: 'Select trees type',
     search: 'Search',

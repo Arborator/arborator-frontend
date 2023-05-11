@@ -212,6 +212,15 @@ export default {
     exerciseMode: 'Mode exercice',
   },
 
+  exportSamples: {
+    title: 'Sélectionnez les arbres que vous souhaitez exporter',
+    exportMyTrees: 'Exporter uniquement mes arbres', 
+    exportRecentTrees: 'Exporter les arbres les plus récents',
+    exportTreesOfUsers: "Exporter des arbres d'autres utilisateurs", 
+    selectOtherUsers: 'Sélectionnez les utilisateurs dont vous souhaitez exporter leurs arbres',
+    export: 'Exporter'
+  },
+
   grewSearch: {
     treesType: "Sélectionner le type d'arbres",
     search: 'Rechercher',

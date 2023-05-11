@@ -51,13 +51,14 @@
 <script lang="ts">
 import { notifyError, notifyMessage } from 'src/utils/notify';
 import api from '../../api/backend-api';
-import { defineComponent } from 'vue';
+import { defineComponent, PropType } from 'vue';
+import { sample_t } from 'src/api/backend-types';
 import { mapState } from 'pinia';
 import { useUserStore } from 'src/pinia/modules/user';
-import { useProjectStore } from 'src/pinia/modules/project';
+
 
 export default defineComponent({
-    name: 'ConfirmAction',
+    name: 'ExportDialog',
     props: {
         samples: {
             type: Object as PropType<sample_t[]>,

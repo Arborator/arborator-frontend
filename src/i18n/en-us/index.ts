@@ -220,7 +220,7 @@ export default {
 
   exportSamples: {
     title: 'Select the trees you want to export',
-    exportMyTrees: 'Export only my trees', 
+    exportMyTrees: 'Export my trees', 
     exportRecentTrees: 'Export the most recent trees',
     exportTreesOfUsers: 'Export trees from other users', 
     selectOtherUsers: 'Select the users whose trees you want to export',

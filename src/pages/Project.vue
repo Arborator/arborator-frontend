@@ -127,93 +127,6 @@
                 >
                   <q-tooltip :delay="300" content-class="text-white bg-primary">{{ $t('projectView.tooltipDeleteSample[1]') }}</q-tooltip>
                 </q-btn>
-                <!-- ion-logo-github -->
-               <!--<div>
-                  <q-btn-dropdown v-if="loggedWithGithub" :disable="table.selected.length < 1" icon="ion-md-git-commit" flat dense>
-                    <q-list>
-                      <q-item v-close-popup clickable @click="commit('user')">
-                        <q-item-section avatar>
-                          <q-avatar v-if="isLoggedIn" size="1.2rem">
-                            <img :src="avatar" />
-                          </q-avatar>
-                          <q-icon v-else name="account_circle" />
-                        </q-item-section>
-                        <q-item-section>
-                          <q-item-label>{{ $t('projectView.tooltipGitPush[0]') }}</q-item-label>
-                        </q-item-section>
-                      </q-item>
-                      <q-item v-close-popup clickable @click="commit('user_recent')">
-                        <q-item-section avatar>
-                          <q-avatar v-if="isLoggedIn" size="1.2rem">
-                            <img :src="avatar" />
-                            <q-badge floating transparent color="principal">+</q-badge>
-                          </q-avatar>
-                          <q-icon v-else name="account_circle" />
-                          <div></div>
-                        </q-item-section>
-                        <q-item-section>
-                          <q-item-label>{{ $t('projectView.tooltipGitPush[1]') }}</q-item-label>
-                        </q-item-section>
-                      </q-item>
-
-                      <q-item v-if="isAdmin || isSuperAdmin" v-close-popup clickable @click="commit('recent')">
-                        <q-item-section avatar>
-                          <q-icon name="schedule" />
-                        </q-item-section>
-                        <q-item-section>
-                          <q-item-label>{{ $t('projectView.tooltipGitPush[2]') }}</q-item-label>
-                        </q-item-section>
-                      </q-item>
-
-                      <q-item v-if="isAdmin || isSuperAdmin" v-close-popup clickable @click="commit('all')">
-                        <q-item-section avatar>
-                          <q-icon name="ion-md-globe" />
-                        </q-item-section>
-                        <q-item-section>
-                          <q-item-label>{{ $t('projectView.tooltipGitPush[3]') }}</q-item-label>
-                        </q-item-section>
-                      </q-item>
-                    </q-list>
-                  </q-btn-dropdown>
-
-
-                  <q-tooltip v-if="table.selected.length < 1" :delay="300" content-class="text-white bg-primary">
-                    {{ $t('projectView.tooltipGitPush[4]') }}
-                  </q-tooltip>
-                  <q-tooltip v-else :delay="300" content-class="text-white bg-primary">{{ $t('projectView.tooltipGitPush[5]') }}</q-tooltip>
-                </div>
-
-                <div>
-                  <q-btn-dropdown v-if="loggedWithGithub" :disable="false" icon="ion-md-git-pull-request" flat dense>
-                    <q-list>
-                      <q-item v-close-popup clickable :disable="table.selected.length < 1" @click="pull('user')">
-                        <q-item-section avatar>
-                          <q-avatar v-if="isLoggedIn" size="1.2rem">
-                            <img :src="avatar" />
-                          </q-avatar>
-                          <q-icon v-else name="account_circle" />
-                        </q-item-section>
-                        <q-item-section>
-                          <q-item-label>{{ $t('projectView.gitPullUser') }}</q-item-label>
-                        </q-item-section>
-                      </q-item>
-
-                      <q-item v-if="isAdmin || isSuperAdmin" v-close-popup clickable :disable="table.selected.length < 1" @click="pull('all')">
-                        <q-item-section avatar>
-                          <q-icon name="ion-md-globe" />
-                        </q-item-section>
-                        <q-item-section>
-                          <q-item-label>{{ $t('projectView.gitPullAll') }}</q-item-label>
-                        </q-item-section>
-                      </q-item>
-                    </q-list>
-                  </q-btn-dropdown>
-                  <q-tooltip v-if="table.selected.length < 1" :delay="300" content-class="text-white bg-primary">{{
-                    $t('projectView.tooltipGitPullSelect[0]')
-                  }}</q-tooltip>
-                  <q-tooltip v-else :delay="300" content-class="text-white bg-primary">{{ $t('projectView.tooltipGitPullSelect[1]') }}</q-tooltip>
-                  <q-tooltip :delay="300" content-class="text-white bg-primary"></q-tooltip>
-                </div>-->
                 <!-- Lexicon-dialog -->
                 <div v-if="isGuest || isAdmin || isSuperAdmin">
                   <q-btn
@@ -378,7 +291,7 @@
         </q-card-section>
       </q-card>
       <template v-if="!exerciseMode && !isTeacher">
-        <GrewSearch :sentence-count="sentenceCount" :search-scope="projectName" />
+        <GrewSearch :user-ids="getProjectTreesFrom" :sentence-count="sentenceCount" :search-scope="projectName" />
         <RelationTableMain />
       </template>
       <q-dialog v-model="chooseExportedTrees">
@@ -716,60 +629,10 @@ export default defineComponent({
       }
     },
 
-    commit(type: string) {
-      console.log('deprecated function push', type);
-
-      // const samplenames = [];
-      // for (const sample of this.table.selected) {
-      //   samplenames.push(sample.sample_name);
-      // }
-      // const data = { samplenames, commit_type: type };
-      // api
-      //   .commit(this.projectName, data)
-      //   .then((response) => {
-      //     console.log(777, response);
-      //     this.showNotif('top', 'GitHubPushSuccess');
-      //   })
-      //   .catch((error) => {
-      //     if (error.response.data.status === 418) {
-      //       error.response.message = error.response.data.message;
-      //       error.permanent = true;
-      //       notifyError({ error });
-      //     } else if (error.response.data.status === 204) {
-      //       notifyError({
-      //         error: error.response.data.message,
-      //       });
-      //     } else notifyError({ error });
-      //   });
-    },
-    pull(type: string) {
-      console.log('deprecated function pull', type);
-      // const samplenames = [];
-      // for (const sample of this.table.selected) {
-      //   samplenames.push(sample.sample_name);
-      // }
-      // const data = { samplenames, pull_type: type };
-      // api
-      //   .pull(this.projectName, data)
-      //   .then(() => {
-      //     console.log('wooohoo');
-      //   })
-      //   .catch((error) => {
-      //     console.log('ici il faut un popup utile indiquant comment installer l application');
-
-      //     notifyError({ error });
-      //   });
-    },
+    
     bootParserPanelToggle() {
       this.isShowParsingPanel = !this.isShowParsingPanel;
     },
-
-    // grewquery() {
-    //     console.log('projectview',this.grewqueryc)
-    //     if (this.grewqueryc==0) return
-    //     this.grewqueryc+= 1;
-    //     // if(this.$route.query.q && this.$route.query.q.length>0) this.searchDialog=true;
-    // },
     /**
      * Used to update tags and table view based on response
      * @param response : the response from backend
@@ -844,21 +707,7 @@ export default defineComponent({
         .catch((error) => {
           notifyError({ error });
         });
-      // window.open(`/api/projects/${projectName}/samples/${sampleName}/evaluation`);
-      // api.exportEvaluation(projectName, sampleName).then((response) => {
-      //   this.downloadFileAttachement(response.data, fileName)
-      //   // var evaluations = response.data;
-      //   // var data =
-      //   //   "text/json;charset=utf-8," +
-      //   //   encodeURIComponent(JSON.stringify(evaluations));
-
-      //   // var a = document.createElement("a");
-      //   // a.href = "data:" + data;
-      //   // a.setAttribute("download", `${sampleName}_evaluations.json`);
-
-      //   // document.body.appendChild(a);
-      //   // a.click();
-      // });
+      
     },
     downloadFileAttachement(data: any, fileName: string): void {
       const fileURL = window.URL.createObjectURL(new Blob([data]));

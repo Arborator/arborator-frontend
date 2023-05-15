@@ -169,6 +169,9 @@ export default {
   getRelationTable(projectname: string, data: any) {
     return API.post(`projects/${projectname}/relation-table`, data);
   },
+  showDiffsInProject(projectName: string, data: any) {
+    return API.post<grewSearch_RV>(`projects/${projectName}/show-diff`, data)
+  },
 
   // -------------------------------------------------------- //
   // ---------------          Lexicon         --------------- //

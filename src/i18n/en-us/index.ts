@@ -235,6 +235,10 @@ export default {
     grewSearchTooltip: 'Examples of Grew search statements',
     grewRewriteTooltip: 'Examples of Grew search and replacement statements',
     grewBtnTooltip: 'You have to select trees type first', 
+    showDiffTitle: 'Select the set of features  and users for which you look for differences',
+    showDiffUsersSelect: 'Select the set of users', 
+    showDiffFaturesSelect: 'Select the set of features',
+    showDiffBtn: 'Show differences',
   },
   // window which displays project settings
   projectSettings: {

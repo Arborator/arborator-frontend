@@ -122,6 +122,7 @@ export default defineComponent({
       let index = 0;
       const index2Ids: { [key: number]: string[] } = {}; // object: {"0":["WAZA_10_Bluetooth-Lifestory_MG","WAZA_10_Bluetooth-Lifestory_MG__86"],"1":["WAZA_10_Bluetooth-Lifestory_MG","WAZA_10_Bluetooth-Lifestory_MG__79"], ...
       const selectedIndex: { [key: number]: boolean } = {};
+      console.log(this.searchresults)
       this.searchresultsCopy = this.searchresults;
       // this is sent to the sentenceCard: searchresults[item[0]][item[1]], items from this.samplesFrozen.list
       for (const sampleId of Object.keys(this.searchresults).sort()) {

@@ -12,7 +12,7 @@
             <div class="col-10">
               <q-select dense outlined v-model="type" :options="userOptions" :label="$t('grewSearch.treesType')" color="primary">
                 <template v-slot:option="scope">
-                  <q-item v-bind="scope.itemProps" v-on="scope.itemEvents">
+                  <q-item v-bind="scope.itemProps">
                     <q-item-section avatar>
                       <q-avatar v-if="scope.opt.value == 'user' || scope.opt.value == 'user_recent'" size="1.2rem" >
                         <img :src="avatar" />
@@ -55,7 +55,7 @@
                     <template v-for="query in searchQueries" :key="query.name">
                       <q-tab v-ripple :name="query.name" :label="query.name" clickable @click="changeQuery(query.pattern, 'SEARCH')" />
                     </template>
-                     <q-tab v-ripple v-if="type.value =='all'" name="showDiffs" label="Show divergences" clickable @click="onShowDiffs()" />
+                     <q-tab v-ripple v-if="type.value =='all'" name="showDiffs" label="Show divergences" clickable @click="isShowDiff = true" />
                      <q-tab><a href="https://grew.fr/doc/request/" target="_blank">Documentation</a></q-tab>
                   </q-tabs>
                 </q-tab-panel>
@@ -84,6 +84,48 @@
       </q-form>
     </q-card-section>
   </q-card>
+  <q-dialog v-model="isShowDiff">
+    <q-card style="width: 150vw;">
+      <q-bar class="bg-primary text-white">
+        <q-space />
+        <q-btn v-close-popup flat dense icon="close" />
+      </q-bar>
+      <q-card-section>
+        <div class="text-h6">
+          {{ $t('grewSearch.showDiffTitle') }}
+        </div>
+      </q-card-section>
+      <q-card-section class="q-gutter-md">
+        <div class="row q-gutter-sm">
+          <div class="col">
+            <q-select
+              v-model="features"
+              filled
+              multiple
+              :options="featuresSet"
+              use-chips
+              stack-label
+              :label="$t('grewSearch.showDiffFaturesSelect')"
+            />
+          </div>
+          <div class="col">
+            <q-select
+              v-model="otherUsers"
+              filled
+              multiple
+              :options="usersSet"
+              use-chips
+              stack-label
+              :label="$t('grewSearch.showDiffUsersSelect')"
+            />
+          </div>
+        </div>
+        <div class="row">
+          <q-btn :disable="otherUsers.length == 0" v-close-popup :label="$t('grewSearch.showDiffBtn')" color="primary" @click="onShowDiffs" />
+        </div>
+      </q-card-section>
+    </q-card>
+  </q-dialog>
 </template>
 
 <script lang="ts">
@@ -127,10 +169,6 @@ CodeMirror2.defineMode('grew', () => {
   }
   function tokenBase(stream: any, state: any) {
     const ch = stream.next();
-    // if (ch === '"') {
-    //   state.tokenize = tokenString;
-    //   return state.tokenize(stream, state);
-    // }
     if (ch === '%') {
       stream.skipToEnd();
       return 'comment';
@@ -184,10 +222,12 @@ CodeMirror2.defineMode('grew', () => {
 export default defineComponent({
   name: 'GrewRequestCard',
   components: { Codemirror },
-  props: ['parentOnSearch', 'parentOnTryRules', 'grewquery', 'parentOnShowDiffs'],
+  props: ['parentOnSearch', 'parentOnTryRules', 'grewquery', 'parentOnShowDiffs', 'users'],
   data() {
     const currentQueryType: 'SEARCH' | 'REWRITE' = grewTemplates.searchQueries[0].type as 'SEARCH' | 'REWRITE';
     const type : {value: string, label: string, icon: string} = {value : '', label: '', icon : ''};
+    const otherUsers : string[] = [];
+    const features : string[] = [];
     return {
       searchReplaceTab: grewTemplates.searchQueries[0].type,
       searchQueryTab: grewTemplates.searchQueries[0].type,
@@ -212,13 +252,25 @@ export default defineComponent({
         { value: 'recent', label: this.$t('projectView.tooltipFabGrewRecent'), icon: 'schedule' },
         { value: 'all', label: this.$t('projectView.tooltipFabGrewAll'), icon: 'groups' },
       ],
+      isShowDiff:false,
+      otherUsers,
+      features,
     };
   },
   computed: {
     ...mapState(useGrewSearchStore, ['lastQuery']),
     ...mapState(useUserStore, ['isLoggedIn', 'avatar', 'username']),
+    ...mapState(useProjectStore, ['shownFeaturesChoices']),
     userOptions() {
       return this.searchReplaceTab === 'REWRITE' ? this.options.slice(0, -1) : this.options;
+    },
+    featuresSet() {
+      var featuresSet: string[] = [];
+      featuresSet = this.shownFeaturesChoices.filter((feat: any) => feat != 'FORM');
+      return featuresSet;
+    },
+    usersSet() {
+      return this.users.filter((user: any) => user != this.username);
     }
   },
   watch: {
@@ -380,8 +432,9 @@ export default defineComponent({
     atou(str: string) {
       return decodeURIComponent(escape(window.atob(str)));
     },
+
     onShowDiffs() {
-      this.parentOnShowDiffs(this.type.value);
+      this.parentOnShowDiffs(this.type.value, this.otherUsers, this.features);
     }
   },
 });

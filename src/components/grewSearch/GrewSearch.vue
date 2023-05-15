@@ -10,7 +10,8 @@
       :parent-on-search="onSearch" 
       :parent-on-try-rules="onTryRules" 
       :grewquery="$route.query.q || ''"
-      :parent-on-show-diffs="onShowDiffs"
+      :parent-on-show-diffs="onShowDiffsProject"
+      :users="userIds"
     ></GrewRequestCard>
   </q-dialog>
   <q-dialog v-model="resultSearchDialog" transition-show="fade" transition-hide="fade">
@@ -49,6 +50,10 @@ export default defineComponent({
     searchScope: {
       type: String as PropType<string>,
       required: true,
+    },
+    userIds: {
+      type: Object as PropType<string[]>,
+      required: true,
     }
   },
   data() {
@@ -86,6 +91,7 @@ export default defineComponent({
           .searchSample(this.$route.params.projectname as string, this.$route.params.samplename as string, data)
           .then((response) => {
             this.resultSearch = response.data;
+            console.log(this.resultSearch)
             this.resultSearchDialog = true;
           })
           .catch((error) => {
@@ -118,88 +124,19 @@ export default defineComponent({
           });
         });
     },
-    onShowDiffs(userType: string) {
-      if (userType !== "all") {
-        return
-      }
-      const data = {pattern: "pattern { }", userType: userType};
-
-      function sentencesJsonHaveDiffs(leftSentenceJson: SentenceJson, rightSentenceJson: SentenceJson): boolean {
-        const leftNodesJson = leftSentenceJson.treeJson.nodesJson
-        const rightNodesJson = rightSentenceJson.treeJson.nodesJson
-        if (Object.values(leftNodesJson).length !== Object.values(rightNodesJson).length) {
-          return true
-        }
-        // both tree have same token length
-        for (const tokenId in leftNodesJson) {
-          const leftToken = leftNodesJson[tokenId]
-          const rightToken = rightNodesJson[tokenId]
-          if (JSON.stringify(leftToken) !== JSON.stringify(rightToken)) {
-            return true
-          }
-        }
-        return false
-      }
-
-      function postProcessDiffs(grewSearchResult: grewSearchResult_t, thisUserId: string): grewSearchResult_t {
-        const postProcessedResult: grewSearchResult_t = {}
-        for (const sampleName in grewSearchResult) {
-          postProcessedResult[sampleName] = {}
-          for (const sentId in grewSearchResult[sampleName]) {
-            if (grewSearchResult[sampleName][sentId].conlls[thisUserId]) {
-              const usersThatHaveDiffs: string[] = [];
-              const userSentenceJson = sentenceConllToJson(grewSearchResult[sampleName][sentId].conlls[thisUserId])
-              for (const otherUserId in grewSearchResult[sampleName][sentId].conlls) {
-                if (otherUserId !== thisUserId) {
-                  // different tree, we can compare the tree and look for diffs
-                  const otherSentenceJson = sentenceConllToJson(grewSearchResult[sampleName][sentId].conlls[otherUserId])
-                  if (sentencesJsonHaveDiffs(userSentenceJson, otherSentenceJson)) {
-                    usersThatHaveDiffs.push(otherUserId);
-                  }
-                }
-              }
-              if (usersThatHaveDiffs.length >= 1) {
-                // user tree has differences with at least another tree, adding them
-                postProcessedResult[sampleName][sentId] = {
-                  sentence: grewSearchResult[sampleName][sentId].sentence,
-                  sample_name: grewSearchResult[sampleName][sentId].sample_name,
-                  conlls: {},
-                  matches: {},
-                  packages: {},
-                }
-                postProcessedResult[sampleName][sentId].conlls[thisUserId] = grewSearchResult[sampleName][sentId].conlls[thisUserId]
-                for (const otherUserId of usersThatHaveDiffs) {
-                  postProcessedResult[sampleName][sentId].conlls[otherUserId] = grewSearchResult[sampleName][sentId].conlls[otherUserId]
-                }
-              }
-            }
-          }
-        }
-        return postProcessedResult
-      }
-
-      if (this.$route.params.samplename) {
-        api
-          .searchSample(this.$route.params.projectname as string, this.$route.params.samplename as string, data)
-          .then((response) => {
-            this.resultSearch = postProcessDiffs(response.data, this.username);
-            this.resultSearchDialog = true;
-          })
-          .catch((error) => {
-            notifyError({error});
-          });
-      } else {
-        api
-          .searchProject(this.$route.params.projectname as string, data)
-          .then((response) => {
-            this.resultSearch = postProcessDiffs(response.data, this.username);
-            this.resultSearchDialog = true;
-          })
-          .catch((error) => {
-            notifyError({error});
-          });
-      }
-    }
+    onShowDiffsProject(userType: string, otherUsers: string[], features: string[]) {
+      const data = {otherUsers: otherUsers, features: features, username: this.username};
+      api
+        .showDiffsInProject(this.$route.params.projectname as string, data)
+        .then((response) => {
+          this.resultSearch = response.data;
+          this.resultSearchDialog = true;
+        })
+        .catch((error) => {
+          notifyError(error)
+        })
+    },
+    
   },
 });
 </script>

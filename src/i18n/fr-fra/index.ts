@@ -228,7 +228,11 @@ export default {
     tryRules: 'Essayer les règles',
     grewSearchTooltip: 'Examples de requêtes de recherche de Grew',
     grewRewriteTooltip: 'Examples de requêtes de recherche et remplacement de Grew',
-    grewBtnTooltip: "Vous devez d'abord sélectionner le type d'arbre", 
+    grewBtnTooltip: "Vous devez d'abord sélectionner le type d'arbre",
+    showDiffTitle: 'Sélectionnez la liste des features et des utilisateurs dont vous cherchez la différence',
+    showDiffUsersSelect: 'Sélectionnez la liste des utilisateurs', 
+    showDiffFaturesSelect: 'Sélectionnez la liste des features',
+    showDiffBtn: 'Afficher les différences',
   },
   // window which displays project settings
   projectSettings: {

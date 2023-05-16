@@ -151,6 +151,20 @@
                     >
                   </q-btn>
                 </div>
+                <div>
+                  <q-btn
+                    v-if="isAllowdedToSync && githubSynchronizedRepo == ''"
+                    :disable="isFreezed"
+                    flat
+                    icon="fab fa-github"
+                    @click="isShowSyncDialog = true"
+                  >
+                  </q-btn>
+                  <q-tooltip>
+                    Synchronize with github
+                  </q-tooltip>
+
+                </div>
                 <div v-if="isOwner">
                   <q-btn-dropdown flat icon="more_vert">
                      <q-list>
@@ -177,8 +191,8 @@
                   </q-btn-dropdown>
                   <q-tooltip> {{$t('projectView.tooltipMore')}} </q-tooltip>
                 </div>
-                <div v-if="isAllowdedToSync">
-                  <GithubOptions :projectName="projectName" :repositoryName="githubSynchronizedRepo" :key="reload" @remove="reloadAfterSynchronization" @pulled="loadProjectData"/>
+                <div v-if="githubSynchronizedRepo != '' && isAllowdedToSync">
+                  <GithubOptions :projectName="projectName" :repositoryName="githubSynchronizedRepo" :key="reload" @remove="reloadAfterDeleteSynchronization " @pulled="loadProjectData"/>
                   <q-tooltip content-class="text-white bg-primary"> {{$t('projectView.tooltipSynchronizedProject')}} {{githubSynchronizedRepo}}</q-tooltip> 
                 </div>
               </q-btn-group>
@@ -329,6 +343,12 @@
         <ProjectSettingsView :project-trees-from="getProjectTreesFrom" :projectname="projectName" style="width: 90vw"></ProjectSettingsView>
       </q-dialog>
 
+      <q-dialog v-model="isShowSyncDialog">
+        <q-card style="min-width: 50vw;">
+          <GithubSyncDialog :project-name="projectName" @created="reloadAfterSync"></GithubSyncDialog>
+        </q-card>
+      </q-dialog>
+
       <q-dialog v-model="simpleProjectInfoDialog">
         <q-card style="width: 300px">
           <q-card-section>
@@ -391,6 +411,7 @@ import RelationTableMain from '../components/relationTable/RelationTableMain.vue
 import ParsingPanel from '../components/parsing/ParsingPanel.vue';
 import ProjectIcon from '../components/shared/ProjectIcon.vue';
 import GithubOptions from '../components/github/GithubOptions.vue';
+import GithubSyncDialog from 'src/components/github/GithubSyncDialog.vue';
 
 import {notifyError, notifyMessage} from 'src/utils/notify';
 import {mapActions, mapState, mapWritableState} from 'pinia';
@@ -412,7 +433,8 @@ export default defineComponent({
     RelationTableMain,
     ParsingPanel,
     ProjectIcon,
-    GithubOptions
+    GithubOptions, 
+    GithubSyncDialog,
   },
   data() {
     const samples: sample_t[] = [];
@@ -531,6 +553,7 @@ export default defineComponent({
       window: { width: 0, height: 0 },
       tableKey: 0,
       initLoad: false,
+      isShowSyncDialog : false,
       githubSynchronizedRepo:'',
       reload: 0,
     };
@@ -578,7 +601,7 @@ export default defineComponent({
       return possiblesUsers;
     },
     isAllowdedToSync(): boolean{
-      return this.isAdmin && this.loggedWithGithub && this.githubSynchronizedRepo != '' && !this.isDeleteSync && !this.exerciseMode && !this.isTeacher;
+      return this.isAdmin && this.loggedWithGithub  && !this.exerciseMode && !this.isTeacher;
     }, 
     isFreezed(): boolean{
       return !this.isOwner && this.freezed;
@@ -608,7 +631,13 @@ export default defineComponent({
       this.$router.push(`/projects/${this.projectName}/samples`);
     },
 
-    reloadAfterSynchronization () {
+    reloadAfterSync() {
+      this.loadProjectData();
+      this.isShowSyncDialog = false;
+      this.getSynchronizedGithubRepo();
+    },
+
+    reloadAfterDeleteSynchronization () {
       this.isDeleteSync = true;
       this.loadProjectData();
     }, 

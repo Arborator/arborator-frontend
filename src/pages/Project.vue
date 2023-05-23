@@ -36,7 +36,7 @@
 
         <!-- Parsing Panel -->
         <q-card-section v-if="isShowParsingPanel">
-          <ParsingPanel :samples="samples"></ParsingPanel>
+          <ParsingPanel :samples="samples" :parentGetProjectSamples="getProjectSamples"></ParsingPanel>
         </q-card-section>
 
         <q-card-section>
@@ -77,8 +77,8 @@
                     color="default"
                     icon="cloud_download"
                     :loading="table.exporting"
-                    :disable="(visibility === 0 && !isGuest && !isAdmin && !isSuperAdmin) || table.selected.length < 1"
-                    @click="exportSamplesZip()"
+                    :disable="(visibility === 0 && !isGuest && !isAdmin) || table.selected.length < 1"
+                    @click="chooseExportedTrees = true"
                   ></q-btn>
                   <q-tooltip v-if="table.selected.length < 1" :delay="300" content-class="text-white bg-primary">{{
                     $t('projectView.tooltipExportSample[0]')
@@ -297,17 +297,17 @@
                   </q-list>
                 </q-td>
                 <q-td key="treesFrom" :props="props">
-                  <q-item-label v-if="props.row.treesFrom.length >= 5" caption>
+                  <q-item-label v-if="Object.keys(props.row.treeByUser).length >= 5" caption>
                     {{ props.row.treesFrom.length }} users
                     <q-tooltip>
-                      <p v-for="userId in props.row.treesFrom" :key="userId" :props="userId">
-                        {{ userId }}
+                      <p v-for="(nSentences, userId, index) in props.row.treeByUser" :key="userId" :props="userId">
+                        {{ userId }} ({{ nSentences }})
                       </p>
                     </q-tooltip>
                   </q-item-label>
                   <q-list v-else dense>
-                    <q-item v-for="userId in props.row.treesFrom" :key="userId" :props="userId">
-                      <q-item-label caption>{{ userId }}</q-item-label>
+                    <q-item v-for="(nSentences, userId, index) in props.row.treeByUser" :key="userId" :props="userId">
+                      <q-item-label caption>{{ userId }} ({{ nSentences }})</q-item-label>
                     </q-item>
                   </q-list>
                 </q-td>
@@ -330,9 +330,12 @@
         </q-card-section>
       </q-card>
       <template v-if="!exerciseMode && !isTeacher && !isFreezed">
-        <GrewSearch :sentence-count="sentenceCount" :search-scope="projectName" />
+        <GrewSearch :user-ids="getProjectTreesFrom" :sentence-count="sentenceCount" :search-scope="projectName" />
         <RelationTableMain />
       </template>
+      <q-dialog v-model="chooseExportedTrees">
+        <ExportDialog :samples="table.selected" />
+      </q-dialog>
 
       <!-- upload dialog start -->
       <q-dialog v-model="assignDial" persistent transition-show="slide-up" transition-hide="slide-down">
@@ -406,6 +409,7 @@ import TagInput from '../components/TagInput.vue';
 import ProjectSettingsView from '../components/ProjectSettingsView.vue';
 import ConfirmAction from '../components/ConfirmAction.vue';
 import UploadDialog from '../components/project/UploadDialog.vue';
+import ExportDialog from '../components/project/ExportDialog.vue';
 import LexiconMain from '../components/lexicon/LexiconMain.vue';
 import GrewSearch from '../components/grewSearch/GrewSearch.vue';
 import RelationTableMain from '../components/relationTable/RelationTableMain.vue';
@@ -429,6 +433,7 @@ export default defineComponent({
     ProjectSettingsView,
     ConfirmAction,
     UploadDialog,
+    ExportDialog,
     LexiconMain,
     GrewSearch,
     RelationTableMain,
@@ -555,6 +560,7 @@ export default defineComponent({
       tableKey: 0,
       initLoad: false,
       isShowSyncDialog : false,
+      chooseExportedTrees: false,
       githubSynchronizedRepo:'',
       reload: 0,
     };
@@ -602,7 +608,7 @@ export default defineComponent({
       return possiblesUsers;
     },
     isAllowdedToSync(): boolean{
-      return this.isAdmin && this.loggedWithGithub  && !this.exerciseMode && !this.isTeacher;
+      return this.isSuperAdmin && this.loggedWithGithub  && !this.exerciseMode && !this.isTeacher;
     }, 
     isFreezed(): boolean{
       return !this.isOwner && this.freezed;
@@ -706,32 +712,6 @@ export default defineComponent({
       if (this.githubSynchronizedRepo != '') notifyMessage({message: 'These files will be also deleted from your synchronized Github repository', type: 'warning', position: 'top'})
     },
 
-    exportSamplesZip() {
-      this.table.exporting = true;
-      const samplenames = [];
-      for (const sample of this.table.selected) {
-        samplenames.push(sample.sample_name);
-      }
-      api
-        .exportSamplesZip(samplenames, this.projectName as string)
-        .then((response) => {
-          const url = window.URL.createObjectURL(new Blob([response.data], { type: 'application/zip' }));
-          const link = document.createElement('a');
-          link.href = url;
-          link.setAttribute('download', `dump_${this.projectName}.zip`);
-          document.body.appendChild(link);
-          link.click();
-          document.body.removeChild(link);
-          this.table.exporting = false;
-          notifyMessage({ message: 'Files downloaded' });
-          return [];
-        })
-        .catch((error) => {
-          this.table.exporting = false;
-          notifyError({ error });
-          return [];
-        });
-    },
     bootParserPanelToggle() {
       this.isShowParsingPanel = !this.isShowParsingPanel;
     },

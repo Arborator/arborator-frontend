@@ -260,7 +260,7 @@ function sentenceBusFactory(): sentence_bus_t {
 }
 
 import {defineComponent} from 'vue';
-import {grewSearchResultSentence_t} from 'src/api/backend-types';
+import {grewSearchResultSentence_t, matches_t} from 'src/api/backend-types';
 
 export default defineComponent({
   name: 'SentenceCard',
@@ -297,7 +297,7 @@ export default defineComponent({
       default: () => {
         return [];
       },
-      type: Array as PropType<string[]>,
+      type: Object as PropType<matches_t>,
     },
   },
   data() {

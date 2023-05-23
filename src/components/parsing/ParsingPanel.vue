@@ -2,55 +2,56 @@
   <QCard>
     <div class="row q-pa-md">
       <div class="col">
-        <q-toggle v-model="parser.param.trainAll" label="Train on all files" />
+        <p><b>General Settings</b></p>
+        <div style="display: flex; flex-direction: column">
+          <q-option-group
+            :disable="disableUI"
+            :options="param.pipelineOptions"
+            type="radio"
+            v-model="param.pipelineChoice"
+          />
+        </div>
+        <q-separator inset class="q-mx-lg"/>
         <q-select
-          :class="{ invisible: parser.param.trainAll }"
-          v-model="parser.param.trainSamples"
+          :disable="disableUI"
+          v-model="param.baseModel"
           filled
-          :options="allSamplesNames"
-          multiple
-          label="Files to parse"
-          stack-label
+          :options="param.baseModelsOptions"
+          :label="`Pretrain Model`"
           style="max-width: 200px; min-width: 150px"
-        />
-        <q-toggle v-model="parser.param.parseAll" label="Parse all files" />
-        <q-select
-          :class="{ invisible: parser.param.parseAll }"
-          v-model="parser.param.parseSamples"
-          filled
-          :options="allSamplesNames"
-          multiple
-          label="Files to parse"
-          stack-label
-          style="max-width: 200px; min-width: 150px"
+          hint="Optional; We will use this model as a pretrain model for your task"
+          clearable
         />
       </div>
-      <q-separator vertical inset class="q-mx-lg" />
-      <div class="col">
-        <q-toggle v-model="parser.param.isCustomTrainingUser" label="Custom Training user" />
+      <q-separator vertical inset class="q-mx-lg"/>
+      <div v-show="param.pipelineChoice !== 'PARSE_ONLY'" class="col">
+        <p><b>Train Settings</b></p>
+        <q-toggle :disable="disableUI" v-model="param.trainAll" label="Train on all files"/>
         <q-select
-          :class="{ invisible: !parser.param.isCustomTrainingUser }"
-          v-model="parser.param.trainingUser"
+          :disable="disableUI"
+          :class="{ invisible: param.trainAll }"
+          v-model="param.trainSamplesNames"
           filled
-          :options="allTreesFrom"
+          :options="allSamplesNames"
+          multiple
+          label="Files to parse"
+          stack-label
+          style="max-width: 200px; min-width: 150px"
+        />
+        <q-toggle :disable="disableUI" v-model="param.isCustomTrainingUser" label="Custom Training user"/>
+        <q-select
+          :disable="disableUI"
+          :class="{ invisible: !param.isCustomTrainingUser }"
+          v-model="param.trainingUser"
+          filled
+          :options="trainingTreesFrom"
           label="Training user"
           stack-label
           style="max-width: 200px; min-width: 150px"
         />
-        <q-toggle v-model="parser.param.advancedSettings" label="Advanced Settings" />
-        <q-select
-          :class="{ invisible: !parser.param.advancedSettings }"
-          v-model="parser.param.type"
-          :options="parser.param.options"
-          label="parser type"
-          stack-label
-        />
-        <q-toggle v-model="parser.param.keepUpos" label="keep UPOS" />
-      </div>
-      <q-separator vertical inset class="q-mx-lg" />
-      <div class="col">
         <q-input
-          v-model.number="parser.param.epochs"
+          :disable="disableUI"
+          v-model.number="param.maxEpoch"
           type="number"
           label="epochs"
           min="3"
@@ -59,21 +60,58 @@
           style="max-width: 100px"
           :rules="[(val) => (val >= 3 && val <= 300) || 'Please use 3 to 300 epochs']"
         />
-        <div class="text-subtitle1 q-mt-xs">Begin parse:</div>
-        <div class="text-subtitle5 q-mb-xs">estimated time = {{ estimatedTime }}mn</div>
-        <div class="text-subtitle5 q-mb-xs">({{ trainingSentencesCount }} training sentences)</div>
-        <q-btn v-close-popup color="primary" label="Begin" :loading="parser.parsing" push size="sm" @click="bootParserStart()" />
-        <q-btn v-if="parser.parsing" v-close-popup color="primary" label="Stop" push size="sm" @click="bootParserStop()" />
       </div>
-      <q-separator vertical inset class="q-mx-lg" />
+      <q-separator v-show="param.pipelineChoice !== 'PARSE_ONLY'" vertical inset class="q-mx-lg"/>
+      <div v-show="param.pipelineChoice !== 'TRAIN_ONLY'" class="col">
+        <p><b>Parse Settings</b></p>
+        <q-toggle :disable="disableUI" v-model="param.parseAll" label="Parse all files"/>
+        <q-select
+          :disable="disableUI"
+          :class="{ invisible: param.parseAll }"
+          v-model="param.parseSamplesNames"
+          filled
+          :options="allSamplesNames"
+          multiple
+          label="Files to parse"
+          stack-label
+          style="max-width: 200px; min-width: 150px"
+        />
+        <q-input :disable="disableUI" :dense="true" filled v-model="param.parserSuffix"
+                 label="Parser suffix (for parsed sentences)"
+                 :hint="'Parsing will go under the name `parser' + param.parserSuffix + '`'"/>
+        <q-toggle :disable="disableUI" v-model="param.isCustomParsingUser" label="Custom Parsing user"/>
+        <q-select
+          :disable="disableUI"
+          :class="{ invisible: !param.isCustomParsingUser }"
+          v-model="param.parsingUser"
+          filled
+          :options="parsingTreesFrom"
+          label="Parsing user"
+          stack-label
+          style="max-width: 200px; min-width: 150px"
+        />
+        <q-toggle :disable="disableUI" v-model="param.keepHeads" label="keep existing heads"/>
+
+      </div>
+      <q-separator v-show="param.pipelineChoice !== 'TRAIN_ONLY'" vertical inset class="q-mx-lg"/>
       <div class="col">
-        <div class="column">
-          <div class="column q-gutter-md">
-            <h6>Logs</h6>
-            <div v-if="parser.parsing">
-              {{ parser.progress }}
-            </div>
+        <p><b>Pipeline Summary</b></p>
+        <div v-if="param.pipelineChoice !== `PARSE_ONLY`" class="text-subtitle5 q-mb-xs">training sentences : {{ trainingSentencesCount }}</div>
+        <div v-if="param.pipelineChoice !== `TRAIN_ONLY`" class="text-subtitle5 q-mb-xs">parsing sentences : {{ parsingSentencesCount }}</div>
+        <div class="text-subtitle5 q-mb-xs">estimated time = {{ estimatedTime }}mn</div>
+        <q-btn v-close-popup color="primary" :disable="paramError || isHealthy===false" label="START" :loading="taskStatus !== null" push
+               size="sm"
+               @click="parserPipelineStart()"/>
+        <!--        <q-btn v-if="parsing" v-close-popup color="primary" label="Stop" push size="sm"-->
+        <!--               @click="bootParserStop()"/>-->
+        <div v-if="taskStatus !== null">
+          <div class="text-subtitle5 q-mb-xs">Current task : {{ taskStatus.taskType }}</div>
+          <div v-if="taskStatus.taskAdditionalMessage" class="text-subtitle5 q-mb-xs">
+            {{ taskStatus.taskAdditionalMessage }}
           </div>
+        </div>
+        <div v-if="isHealthy===false">
+          <p class="text-subtitle5 q-mb-xs text-red-14">/!\ Sorry, the parsing server is unreachable, and it's not under our control. Please come back in some time.</p>
         </div>
       </div>
     </div>
@@ -81,43 +119,51 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, PropType } from 'vue';
+import {defineComponent, PropType} from 'vue';
 import api from '../../api/backend-api';
-import { exportFile } from 'quasar';
-import { sample_t } from 'src/api/backend-types';
-import { parserType_t, timeEstimationCoefs_t } from 'src/types/main_types';
+import {ModelInfo_t, ParsingSettings_t, sample_t} from 'src/api/backend-types';
+import {notifyMessage} from "src/utils/notify";
 // https://github.com/Arborator/djangoBootParser/blob/master/estimated_time_100ep_logline.tsv
-const timeEstimationCoefs: timeEstimationCoefs_t = {
-  kirParser: { a: 0, b: 0.04, c: 0 },
-  hopsParser: { a: -0.887, b: 0.09357, c: 5.329 },
-  stanzaParser: { a: 0.59, b: 0.09, c: -0.14516 },
-  trankitParser: { a: 1.406, b: 0.0432, c: -0.9326 },
-  udifyParser: { a: 5.74049, b: 0.062179, c: 8.79224 },
-};
+const kirParserSentPerSecSpeed: number = 140;
+
+type taskType_t = "ASK_TRAINING" | "TRAINING" | "ASK_PARSING" | "PARSING"
+
+type taskStatus_t = null | {
+  taskType: taskType_t,
+  taskAdditionalMessage?: string;
+  taskTimeStarted: number,
+  taskIntervalChecker: null | ReturnType<typeof setTimeout>,
+}
+
+type pipelineChoice_t = "TRAIN_AND_PARSE" | "TRAIN_ONLY" | "PARSE_ONLY";
 
 interface parser_t {
-  parsing: boolean;
-  timer: any;
   progress: string;
-  sha512Fdname: string;
-  time: number;
-  timeInfo: string;
+  taskStatus: taskStatus_t;
+  isHealthy: boolean;
   param: {
+    pipelineChoice: pipelineChoice_t;
+    pipelineOptions: { label: string; value: pipelineChoice_t }[];
+    baseModel: ModelInfo_t | null;
+    baseModelsOptions: { label: string; value: ModelInfo_t }[];
     advancedSettings: boolean;
-    type: parserType_t;
-    options: string[];
     keepUpos: boolean;
     isCustomTrainingUser: boolean;
     trainingUser: string;
+    isCustomParsingUser: boolean;
+    parsingUser: string;
     trainAll: boolean;
     parseAll: boolean;
-    trainSamples: string[];
-    parseSamples: string[];
-    epochs: number;
-    epochsTok: number;
+    trainSamplesNames: string[];
+    parseSamplesNames: string[];
+    maxEpoch: number;
+    parserSuffix: string;
+    keepHeads: boolean;
   };
 }
 
+const TIMEOUT_TASK_STATUS_CHECKER = 1000 * 60 * 60 * 3 // 3 hours
+const REFRESH_RATE_TASK_STATUS_CHECKER = 1000 * 10 // 10 seconds
 export default defineComponent({
   name: 'ParsingPanel',
   components: {},
@@ -126,194 +172,304 @@ export default defineComponent({
       type: Array as PropType<sample_t[]>,
       required: true,
     },
+    parentGetProjectSamples: {
+      type: Function as PropType<() => void>,
+      required: true,
+    }
   },
 
   data() {
-    const parser: parser_t = {
-      parsing: false,
-      timer: '',
+    const data: parser_t = {
+      taskStatus: null,
       progress: 'bootstrap parsing',
-      sha512Fdname: '',
-      time: -1,
-      timeInfo: '',
+      isHealthy: true,
       param: {
+        pipelineChoice: 'TRAIN_AND_PARSE',
+        pipelineOptions: [
+          {label: "Train and Parse", value: "TRAIN_AND_PARSE"},
+          {label: "Train Only", value: "TRAIN_ONLY"},
+          {label: "Parse Only", value: "PARSE_ONLY"},
+        ],
+        baseModel: null,
+        baseModelsOptions: [],
         advancedSettings: false,
-        type: 'kirParser',
-        options: ['trankitParser', 'kirParser', 'hopsParser', 'udifyParser', 'stanzaParser'],
         keepUpos: false,
         isCustomTrainingUser: false,
         trainingUser: '',
+        isCustomParsingUser: false,
+        parsingUser: '',
         trainAll: true,
-        trainSamples: [],
+        trainSamplesNames: [],
         parseAll: true,
-        parseSamples: [],
-        epochs: 10,
-        epochsTok: 5,
+        parseSamplesNames: [],
+        maxEpoch: 100,
+        parserSuffix: '',
+        keepHeads: false,
       },
     };
-    return {
-      parser,
-    };
+    return data;
+  },
+  mounted() {
+    this.fetchBaseModelsAvailables();
   },
   computed: {
     allSamplesNames() {
       return this.samples.map((sample) => sample.sample_name);
     },
+    trainingSamplesSelected() {
+      if (this.param.trainAll) {
+        return this.samples
+      } else {
+        return this.samples
+        .filter((sample) => this.param.trainSamplesNames.includes(sample.sample_name))
+      }
+    },
+    parsingSamplesSelected() {
+      if (this.param.parseAll) {
+        return this.samples
+      } else {
+        return this.samples
+        .filter((sample) => this.param.parseSamplesNames.includes(sample.sample_name))
+      }
+    },
     allTreesFrom() {
-      const allTreesFromWithDuplicate = this.samples.map((sample) => sample.treesFrom).reduce((a: string[], b: string[]) => [...a, ...b], []);
-      // console.log(this.samples[0].treesFrom);
-      // return [];
-      return [...new Set(allTreesFromWithDuplicate)];
+      return this.getTreesUsersFromSamples(this.samples)
+    },
+    trainingTreesFrom() {
+      return this.getTreesUsersFromSamples(this.trainingSamplesSelected)
+    },
+    parsingTreesFrom() {
+      return this.getTreesUsersFromSamples(this.parsingSamplesSelected)
     },
     trainingSentencesCount() {
-      if (this.parser.param.trainAll) {
-        return this.samples.map((sample) => sample.sentences).reduce((partialSum, a) => partialSum + a, 0);
+      if (this.param.isCustomTrainingUser === false || this.param.trainingUser === "") {
+        return this.trainingSamplesSelected.reduce((partialSum, sample) => partialSum + sample.sentences, 0);
+      } else {
+        return this.trainingSamplesSelected.reduce((partialSum, sample) => partialSum + sample.treeByUser[this.param.trainingUser], 0);
       }
-      return this.samples
-        .filter((sample) => this.parser.param.trainSamples.includes(sample.sample_name))
-        .reduce((partialSum, sample) => partialSum + sample.sentences, 0);
+    },
+    parsingSentencesCount() {
+      if (this.param.isCustomParsingUser === false || this.param.parsingUser === "") {
+        return this.parsingSamplesSelected.reduce((partialSum, sample) => partialSum + sample.sentences, 0);
+      } else {
+        return this.parsingSamplesSelected.reduce((partialSum, sample) => partialSum + sample.treeByUser[this.param.parsingUser], 0);
+      }
     },
     estimatedTime() {
-      const parserId = this.parser.param.type;
-      const parserCoefs = timeEstimationCoefs[parserId];
-      const x = this.trainingSentencesCount;
-      const time1epochs = (parserCoefs.a * Math.log(x + 1) + parserCoefs.b * x + parserCoefs.c) / 100;
-      const time = time1epochs * this.parser.param.epochs;
-      return Math.floor(Math.max(time, 2));
+      const timeInitialisationTrainingTask_s = 60;
+      const trainingEstimatedTime_s = this.param.maxEpoch * (0.5 + this.trainingSentencesCount / kirParserSentPerSecSpeed);
+      const timeInitialisationParsingTask_s = 60;
+      const parsingEstimatedTime_s = this.parsingSentencesCount / kirParserSentPerSecSpeed;
+      let totalEstimatedTime_s = 0;
+      if (this.param.pipelineChoice !== "PARSE_ONLY") {
+        totalEstimatedTime_s += timeInitialisationTrainingTask_s + trainingEstimatedTime_s;
+      }
+      if (this.param.pipelineChoice !== "TRAIN_ONLY") {
+        totalEstimatedTime_s += timeInitialisationParsingTask_s + parsingEstimatedTime_s;
+      }
+      return Math.ceil(totalEstimatedTime_s / 60);
     },
+    noTrainFileSelectedError() {
+      return (this.param.pipelineChoice !== "PARSE_ONLY" && this.param.trainAll === false && this.param.trainSamplesNames.length === 0);
+    },
+    noParseFileSelectedError() {
+      return (this.param.pipelineChoice !== "TRAIN_ONLY" && this.param.parseAll === false && this.param.parseSamplesNames.length === 0);
+    },
+    noSelectedBaseModelForParsingError() {
+      return (this.param.pipelineChoice === "PARSE_ONLY" && !this.param.baseModel)
+    },
+    paramError() {
+      if (this.noTrainFileSelectedError) {
+        return true
+      }
+      if (this.noParseFileSelectedError) {
+        return true
+      }
+      if (this.noSelectedBaseModelForParsingError) {
+        return true
+      }
+      return false
+    },
+    disableUI() {
+      return  !!this.taskStatus || (this.isHealthy === false)
+    }
   },
   methods: {
-    exportConllError(info: any) {
-      const filename = 'Error_in_train_files.txt';
-      const status = exportFile(filename, info, 'text/plain;charset=UTF-8');
-      if (status === true) {
-        this.$q.notify({ message: `Error on dataset`, color: 'positive' });
+    getTreesUsersFromSamples(samples: sample_t[]) {
+      const allTreesFromWithDuplicate = samples.map((sample) => sample.treesFrom).reduce((a: string[], b: string[]) => [...a, ...b], []);
+      return [...new Set(allTreesFromWithDuplicate)];
+    },
+    fetchBaseModelsAvailables() {
+      api.parserList().then(
+        (response) => {
+          if (response.data.status === "failure") {
+            notifyMessage({message: "Sorry, the parsing server is unreachable and not under our control, please come back later", type: "negative"})
+            this.isHealthy = false;
+          } else {
+            const options = response.data.data.map((baseModelMeta) => {
+              return {
+                label: `${baseModelMeta.model_info.project_name} - ${baseModelMeta.model_info.model_id} (${baseModelMeta.scores_best.epoch} epochs ; ${baseModelMeta.scores_best.LAS_epoch} LAS ; ${baseModelMeta.scores_best.n_sentences_train + baseModelMeta.scores_best.n_sentences_test} sents)`,
+                value: baseModelMeta.model_info
+              }
+            })
+            options.sort((a, b) => (a.label < b.label) ? 1 : -1)
+            this.param.baseModelsOptions = options
+
+          }
+        }
+      )
+    },
+    parserPipelineStart() {
+      if (this.param.pipelineChoice === "TRAIN_AND_PARSE" || this.param.pipelineChoice === "TRAIN_ONLY") {
+        this.parserTrainStart();
       } else {
-        this.$q.notify({ message: `Error when download error files: ${status}`, color: 'negative' });
+        if (this.param.baseModel) {
+          this.parserParseStart((this.param.baseModel as any).value as ModelInfo_t);
+        }
       }
     },
-    bootParserStop() {
-      api
-        .removeParseFolder(this.$route.params.projectname as string, this.parser.sha512Fdname)
-        .then((response) => {
-          // this.parser.progress = response.data.status;
-          if (response.data.status.toLowerCase() !== 'ok') {
-            throw new Error('Failed to stop parsing, please try latter');
-          }
-          this.parser.parsing = false;
-          this.parser.timeInfo = '';
-          this.parser.time = -1;
-          // this.resetParsingProgress();
-        })
-        .catch((error) => {
-          this.$q.notify({ message: `${error}`, color: 'negative' });
-          return [];
-        });
-    },
-    getProgress(fdname: string) {
-      console.log(this.parser.timeInfo);
-      api
-        .bootParserResults(this.$route.params.projectname as string, this.parser.param.type, fdname)
-        .then((response) => {
-          // console.log('Progress: ', response.data);
-          console.log('Progress_info: ', response.data.status, 'log_path: ', response.data.logPath);
-          console.log(this.parser.parsing);
-          this.parser.progress = response.data.status;
-          if (this.parser.parsing === false) {
-            this.resetParsingProgress();
-          }
-          if (this.parser.progress.toLowerCase() === 'error') {
-            this.parser.parsing = false;
-            this.resetParsingProgress();
-            throw new Error('failed to train or parse');
-          }
-          if (this.parser.progress.toLowerCase() === 'fin') {
-            // this.loadProjectData(); // TODO : make projectData in a pinia store
-
-            this.parser.parsing = false;
-            this.resetParsingProgress();
-            this.exportScore(JSON.stringify(response.data.devScore));
-            console.log(response.data.devScore);
-          }
-        })
-        .catch((error) => {
-          this.$q.notify({ message: `${error}`, color: 'negative' });
-          this.parser.parsing = false;
-          this.resetParsingProgress();
-          return [];
-        });
-    },
-    resetParsingProgress() {
-      clearInterval(this.parser.timer as any);
-      this.parser.timeInfo = '';
-      this.parser.time = -1;
-      this.parser.progress = 'bootstrap parsing';
-    },
-    exportScore(f1score: any) {
-      const filename = this.parser.param.type.concat('f1_score.json');
-      const status = exportFile(filename, f1score, 'application/json');
-      console.log(status);
-      if (status === true) {
-        this.$q.notify({ message: `Score on dev set`, color: 'positive' });
-      } else {
-        this.$q.notify({ message: `Error when download score file: ${status}`, color: 'negative' });
+    parserTrainStart() {
+      this.taskStatus = {
+        taskType: "ASK_TRAINING",
+        taskTimeStarted: Date.now(),
+        taskIntervalChecker: null,
       }
+
+      const trainSampleNames = this.param.trainAll ? this.allSamplesNames : this.param.trainSamplesNames;
+      const trainUser = this.param.isCustomTrainingUser ? this.param.trainingUser : 'last';
+      const maxEpoch = this.param.maxEpoch;
+      const baseModel = this.param.baseModel ? (this.param.baseModel as any).value as ModelInfo_t : null
+      api.parserTrainStart(this.$route.params.projectname as any as string, trainSampleNames, trainUser, maxEpoch, baseModel).then(
+        (response) => {
+          if (response.data.status === "failure") {
+            notifyMessage({message: "Training could not start : " + response.data.error, type: "negative"})
+            this.clearCurrentTask()
+          } else {
+            notifyMessage({message: "Model training started"})
+            const modelInfo = response.data.data.model_info;
+            const trainTaskId = response.data.data.train_task_id;
+            const taskIntervalChecker = setInterval(() => {
+              setTimeout(this.parserTrainStatus(modelInfo, trainTaskId) as any, 10);
+            }, REFRESH_RATE_TASK_STATUS_CHECKER);
+
+            this.taskStatus = {
+              taskType: "TRAINING",
+              taskTimeStarted: Date.now(),
+              taskIntervalChecker,
+              taskAdditionalMessage: `model initialisation and data preparation`,
+
+            }
+          }
+        }
+      ).catch(
+        (error) => {
+          console.log(error);
+          this.clearCurrentTask()
+        }
+      )
     },
-
-    bootParserStart() {
-      // TODO
-      this.parser.parsing = true;
-
-      const trainingFiles = this.parser.param.trainAll ? this.allSamplesNames : this.parser.param.trainSamples;
-      const toParseNames = this.parser.param.parseAll ? 'ALL' : this.parser.param.parseSamples;
-      const trainingUser = this.parser.param.isCustomTrainingUser ? this.parser.param.trainingUser : 'last';
-
-      api
-        .bootParserCustom(
-          trainingFiles,
-          this.$route.params.projectname as any,
-          this.parser.param.type,
-          this.parser.param.epochs,
-          this.parser.param.keepUpos,
-          toParseNames,
-          trainingUser
-        )
-        .then((response) => {
-          // this.table.selected = [];
-          console.log(response);
-          if (response.data.datasetStatus.toLowerCase() !== 'ok') {
-            this.parser.parsing = false;
-            throw new Error('Failed to prepare dataset');
+    parserTrainStatus(modelInfo: ModelInfo_t, trainTaskId: string) {
+      api.parserTrainStatus(modelInfo, trainTaskId).then(
+        (response) => {
+          if (response.data.status === "failure") {
+            this.clearCurrentTask()
+          } else if (response.data.data.ready) {
+            const scores_best = response.data.data.scores_best
+            notifyMessage({message: `Model ${modelInfo.model_id}: training ended ; LAS=${scores_best.LAS_chuliu_epoch} ; best_epoch=${scores_best.epoch}`})
+            this.clearCurrentTask()
+            this.fetchBaseModelsAvailables()
+            if (this.param.pipelineChoice === "TRAIN_AND_PARSE") {
+              this.parserParseStart(modelInfo)
+            }
+          } else if (this.taskStatus && Date.now() - this.taskStatus.taskTimeStarted > TIMEOUT_TASK_STATUS_CHECKER) {
+            this.clearCurrentTask()
+          } else if (!response.data.data.ready) {
+            if (this.taskStatus) {
+              if (response.data.data.scores_history) {
+                const last_epoch = response.data.data.scores_history[response.data.data.scores_history.length - 1]
+                const best_epoch = response.data.data.scores_best
+                if (best_epoch) {
+                  this.taskStatus.taskAdditionalMessage = `epoch ${last_epoch.epoch} ; LAS=${last_epoch.LAS_chuliu_epoch} (best: epoch ${best_epoch.epoch} ; LAS=${best_epoch.LAS_chuliu_epoch})`
+                }
+              }
+            }
           }
-          if (response.data.parseStatus.toLowerCase() === 'done') {
-            this.parser.parsing = false;
-            throw new Error('Nothing new to train or parse');
-          }
-          this.parser.sha512Fdname = response.data.projectFolder;
-          console.log(this.parser.sha512Fdname);
-          this.parser.param.type = response.data.parserID;
-          this.parser.time = response.data.time;
-          if (this.parser.time > 0) {
-            this.parser.timeInfo = ' Estimated time: '.concat(this.parser.time.toString()).concat(' (min)');
-          }
-          if (response.data.dataError) {
-            console.log(response.data.dataError);
-            this.exportConllError(response.data.dataError);
-          }
-        })
-        .catch((error: any) => {
-          this.$q.notify({ message: `${error}`, color: 'negative' });
-          this.parser.parsing = false;
-          this.parser.timeInfo = '';
-          this.parser.time = -1;
-          return [];
-        });
-      if (this.parser.parsing) {
-        this.parser.timer = setInterval(() => {
-          setTimeout(this.getProgress(this.parser.sha512Fdname) as any, 10);
-        }, 20 * 1000) as any;
+        }
+      ).catch(
+        (error) => {
+          console.log(error);
+          this.clearCurrentTask()
+        }
+      )
+    },
+    parserParseStart(modelInfo: ModelInfo_t) {
+      this.taskStatus = {
+        taskType: "ASK_PARSING",
+        taskTimeStarted: Date.now(),
+        taskIntervalChecker: null,
       }
+
+      const projectName = this.$route.params.projectname as any as string
+      const toParseSamplesNames = this.param.parseAll ? this.allSamplesNames : this.param.parseSamplesNames;
+      const parserSuffix = this.param.parserSuffix;
+      const parsingUser = this.param.isCustomParsingUser ? this.param.parsingUser : 'last';
+      const parsingSettings: ParsingSettings_t = {
+        keep_heads: this.param.keepHeads ? "EXISTING" : "NONE"
+      }
+      api.parserParseStart(projectName, modelInfo, toParseSamplesNames, parsingUser, parsingSettings).then(
+        (response) => {
+          if (response.data.status === "failure") {
+            notifyMessage({message: "Parsing could not start : " + response.data.error, type: "negative"})
+            this.clearCurrentTask()
+          } else {
+            notifyMessage({message: "Sentences parsing started"})
+            const parseTaskId = response.data.data.parse_task_id;
+            const taskIntervalChecker = setInterval(() => {
+              setTimeout(this.parserParseStatus(projectName, modelInfo, parseTaskId, parserSuffix) as any, 10);
+            }, REFRESH_RATE_TASK_STATUS_CHECKER);
+
+            this.taskStatus = {
+              taskType: "PARSING",
+              taskTimeStarted: Date.now(),
+              taskIntervalChecker,
+            }
+          }
+        }
+      ).catch(
+        (error) => {
+          console.log(error);
+          this.clearCurrentTask()
+        }
+      )
     },
+    parserParseStatus(projectName: string, modelInfo: ModelInfo_t, parseTaskId: string, parserSuffix: string) {
+      api.parserParseStatus(projectName, modelInfo, parseTaskId, parserSuffix).then(
+        (response) => {
+          if (response.data.status === "failure") {
+            this.clearCurrentTask()
+          } else if (response.data.data.ready) {
+            this.clearCurrentTask()
+            this.parentGetProjectSamples();
+            notifyMessage({message: "Sentences parsing ended!"})
+          } else if (this.taskStatus && Date.now() - this.taskStatus.taskTimeStarted > TIMEOUT_TASK_STATUS_CHECKER) { // 3 hours
+            this.clearCurrentTask()
+          }
+        }
+      ).catch(
+        (error) => {
+          console.log(error);
+          this.clearCurrentTask()
+        }
+      )
+    },
+    clearCurrentTask() {
+      if (this.taskStatus) {
+        if (this.taskStatus.taskIntervalChecker) {
+          clearInterval(this.taskStatus.taskIntervalChecker);
+        }
+        this.taskStatus = null
+      }
+    }
   },
 });
 </script>

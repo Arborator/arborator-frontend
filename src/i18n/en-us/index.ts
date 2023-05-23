@@ -228,6 +228,28 @@ export default {
     createMessage: 'is created', 
   },
 
+  exportSamples: {
+    title: 'Select the trees you want to export',
+    exportMyTrees: 'Export my trees', 
+    exportRecentTrees: 'Export the most recent trees',
+    exportTreesOfUsers: 'Export trees from other users', 
+    selectOtherUsers: 'Select the users whose trees you want to export',
+    export: 'Export'
+  },
+
+  grewSearch: {
+    treesType: 'Select trees type',
+    search: 'Search',
+    rewrite: 'Rewrite',
+    tryRules: 'Try rules',
+    grewSearchTooltip: 'Examples of Grew search statements',
+    grewRewriteTooltip: 'Examples of Grew search and replacement statements',
+    grewBtnTooltip: 'You have to select trees type first', 
+    showDiffTitle: 'Select the set of features  and users for which you look for differences',
+    showDiffUsersSelect: 'Select the set of users', 
+    showDiffFaturesSelect: 'Select the set of features',
+    showDiffBtn: 'Show differences',
+  },
   // window which displays project settings
   projectSettings: {
     title: 'Settings',

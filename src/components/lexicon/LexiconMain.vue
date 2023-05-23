@@ -71,8 +71,11 @@
         </div>
       </div>
     </q-card-section>
-    <q-card-section v-if="isShowLexiconTable">
+    <q-card-section v-if="isShowLexiconTable" class="q-gutter-md">
       <LexiconModificationDialog v-if="lexiconItems.length >= 1" />
+      <div v-if="lexiconItemsModified.length >= 1">
+        <q-btn outline color="primary" icon="refresh" @click="fetchLexicon_(lexiconType)"> reload</q-btn>
+      </div>
       <LexiconTableBase
         v-show="lexiconItemsModified.length >= 1"
         title="Modified Lexicon"
@@ -80,7 +83,8 @@
         :passed-lexicon-items="lexiconItemsModified"
         :lexicon-loading="false"
         :features="features"
-        :key="features.length"
+        :key="lexiconItemsModified.length"
+        :lexicon-type="lexiconType"
       ></LexiconTableBase>
       <LexiconTableBase
         title="Lexicon"

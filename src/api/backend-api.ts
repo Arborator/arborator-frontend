@@ -22,11 +22,17 @@ import {
   updateTree_ED,
   whoIAm_RV,
   updateUser_ED,
-  getLexicon_RV,
+  getLexicon_RV, parserList_RV_success, parserList_RV, parserTrainStatus_RV, parserParseStatus_RV,
   getGithubRepositories_RV,
   createGithubSynchronizedRepository_ED,
 } from './endpoints';
-import { sample_role_action_t, sample_role_targetrole_t, transcription_t } from './backend-types';
+import {
+  sample_role_action_t,
+  sample_role_targetrole_t,
+  transcription_t,
+  ModelInfo_t,
+  ParsingSettings_t
+} from './backend-types';
 
 export const API = axios.create({
   // baseURL: 'https://arboratorgrew.elizia.net/api',
@@ -122,8 +128,7 @@ export default {
       },
     });
   },
-  exportSamplesZip(samplenames: string[], projectname: string) {
-    const data = { samples: samplenames };
+  exportSamplesZip(projectname: string, data: any) {
     return API.post(`/projects/${projectname}/samples/export`, data, {
       responseType: 'arraybuffer',
     });
@@ -172,6 +177,9 @@ export default {
   },
   getRelationTable(projectname: string, data: any) {
     return API.post(`projects/${projectname}/relation-table`, data);
+  },
+  showDiffsInProject(projectName: string, data: any) {
+    return API.post<grewSearch_RV>(`projects/${projectName}/show-diff`, data)
   },
 
   // -------------------------------------------------------- //
@@ -232,42 +240,47 @@ export default {
   saveTranscription(projectname: string, samplename: string, username: string, data: transcription_t) {
     return API.put<transcription_t>(`klang/projects/${projectname}/samples/${samplename}/transcription/${username}`, data);
   },
-  // write bootparser default fct here:
   // ---------------------------------------------------- //
   // ---------------         Parser        --------------- //
   // ---------------------------------------------------- //
-  bootParserDefault(samplenames: string[], projectname: string) {
-    const data = { samples: samplenames, dev: 0.1, parser: 'auto', epoch: 5, to_parse: 'ALL' };
-    return API.post(`/projects/${projectname}/samples/parsing`, data);
+  parserList() {
+    return API.get<parserList_RV>(`/parser/list`);
   },
-  bootParserCustom(
-    samplenames: string[],
-    projectname: string,
-    parserType: string,
-    epochs: number,
-    keepUpos: boolean,
-    toParseNames: string[] | 'ALL',
-    trainingUser: string | 'last'
-  ) {
-    // TODO add custom parser params button
+  parserTrainStart(projectname: string, trainSampleNames: string[], trainUser: string, maxEpoch: number, baseModel: ModelInfo_t | null) {
     const data = {
-      samples: samplenames,
-      dev: 0.1,
-      parser: parserType,
-      epoch: epochs,
-      keep_upos: keepUpos,
-      to_parse: toParseNames,
-      training_user: trainingUser,
-    };
-    return API.post(`/projects/${projectname}/samples/parsing`, data);
+      project_name: projectname,
+      train_samples_names: trainSampleNames,
+      train_user: trainUser,
+      max_epoch: maxEpoch,
+      base_model: baseModel,
+    }
+    return API.post(`/parser/train/start`, data);
   },
-  bootParserResults(projectname: string, parserType: string, projectFdname: string) {
-    const data = { parser: parserType, fdname: projectFdname };
-    return API.post(`/projects/${projectname}/samples/parsing/results`, data);
+  parserTrainStatus(modelInfo: ModelInfo_t, trainTaskId: string) {
+    const data = {
+      model_info: modelInfo,
+      train_task_id: trainTaskId,
+    }
+    return API.post<parserTrainStatus_RV>(`/parser/train/status`, data)
   },
-  removeParseFolder(projectname: string, projectFdname: string) {
-    const data = { fdname: projectFdname };
-    return API.post(`/projects/${projectname}/samples/parsing/removeFolder`, data);
+  parserParseStart(projectName: string, modelInfo: ModelInfo_t, toParseSamplesNames: string[], parsingUser: string, parsingSettings: ParsingSettings_t) {
+    const data = {
+      project_name: projectName,
+      model_info: modelInfo,
+      to_parse_samples_names: toParseSamplesNames,
+      parsing_settings: parsingSettings,
+      parsing_user: parsingUser,
+    }
+    return API.post(`/parser/parse/start`, data)
+  },
+  parserParseStatus(projectName: string, modelInfo: ModelInfo_t, parseTaskId: string, parserSuffix: string) {
+    const data = {
+      project_name: projectName,
+      model_info: modelInfo,
+      parse_task_id: parseTaskId,
+      parser_suffix: parserSuffix,
+    }
+    return API.post<parserParseStatus_RV>(`/parser/parse/status`, data)
   },
  // -------------------------------------------------------- //
   // ---------------          Github         --------------- //

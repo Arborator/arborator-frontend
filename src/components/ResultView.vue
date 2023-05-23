@@ -16,34 +16,26 @@
       <q-btn color="primary" label="Apply rules" @click="applyRules"/>
     </div>
     <q-card-section>
-      <div v-show="!loading" class="q-pa-md row q-gutter-md">
-        <div v-if="samplesFrozen.list.length > 0">
-          <q-virtual-scroll
-            :items="samplesFrozen.list"
-            style="height: 80vh; width: 100vw"
-            :virtual-scroll-slice-size="5"
-            :virtual-scroll-item-size="200"
-            type="list"
-          >
-            <template #default="{ item, index }">
-              <SentenceCard
-                :id="item[1]"
-                :key="index"
-                :sentence="searchresults[item[0]][item[1]]"
-                :index="index"
-                :sentence-id="item[1]"
-                :matches="searchresults[item[0]][item[1]]"
-                :exercise-level="4"
-              ></SentenceCard>
-            </template>
-          </q-virtual-scroll>
-        </div>
-      </div>
-      <div v-show="loading" class="q-pa-md row justify-center">
-        <div class="col">
-          <q-circular-progress indeterminate size="70px" :thickness="0.22" color="primary"
-                               :track-color="$q.dark.isActive ? 'grey' : 'grey-3'"/>
-        </div>
+      <div v-if="samplesFrozen.list.length > 0">
+        <q-virtual-scroll
+          :items="samplesFrozen.list"
+          style="height: 80vh; width: 100vw"
+          :virtual-scroll-slice-size="5"
+          :virtual-scroll-item-size="200"
+          type="list"
+        >
+          <template #default="{ item, index }">
+            <SentenceCard
+              :id="item[1]"
+              :key="index"
+              :sentence="searchresults[item[0]][item[1]]"
+              :index="index"
+              :sentence-id="item[1]"
+              :matches="searchresults[item[0]][item[1]]"
+              :exercise-level="4"
+            ></SentenceCard>
+          </template>
+        </q-virtual-scroll>
       </div>
     </q-card-section>
   </q-card>
@@ -130,9 +122,10 @@ export default defineComponent({
       let index = 0;
       const index2Ids: { [key: number]: string[] } = {}; // object: {"0":["WAZA_10_Bluetooth-Lifestory_MG","WAZA_10_Bluetooth-Lifestory_MG__86"],"1":["WAZA_10_Bluetooth-Lifestory_MG","WAZA_10_Bluetooth-Lifestory_MG__79"], ...
       const selectedIndex: { [key: number]: boolean } = {};
+      console.log(this.searchresults)
       this.searchresultsCopy = this.searchresults;
       // this is sent to the sentenceCard: searchresults[item[0]][item[1]], items from this.samplesFrozen.list
-      for (const sampleId in this.searchresults) {
+      for (const sampleId of Object.keys(this.searchresults).sort()) {
         for (const sentId in this.searchresults[sampleId]) {
           listIds.push([sampleId, sentId]);
           index2Ids[index] = [sampleId, sentId];

@@ -221,6 +221,28 @@ export default {
     createMessage: 'est créé', 
   },
 
+  exportSamples: {
+    title: 'Sélectionnez les arbres que vous souhaitez exporter',
+    exportMyTrees: 'Exporter mes arbres', 
+    exportRecentTrees: 'Exporter les arbres les plus récents',
+    exportTreesOfUsers: "Exporter des arbres d'autres utilisateurs", 
+    selectOtherUsers: 'Sélectionnez les utilisateurs dont vous souhaitez exporter leurs arbres',
+    export: 'Exporter'
+  },
+
+  grewSearch: {
+    treesType: "Sélectionner le type d'arbres",
+    search: 'Rechercher',
+    rewrite: 'Réécrire',
+    tryRules: 'Essayer les règles',
+    grewSearchTooltip: 'Examples de requêtes de recherche de Grew',
+    grewRewriteTooltip: 'Examples de requêtes de recherche et remplacement de Grew',
+    grewBtnTooltip: "Vous devez d'abord sélectionner le type d'arbre",
+    showDiffTitle: 'Sélectionnez la liste des features et des utilisateurs dont vous cherchez la différence',
+    showDiffUsersSelect: 'Sélectionnez la liste des utilisateurs', 
+    showDiffFaturesSelect: 'Sélectionnez la liste des features',
+    showDiffBtn: 'Afficher les différences',
+  },
   // window which displays project settings
   projectSettings: {
     title: 'Paramètres',

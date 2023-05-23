@@ -97,6 +97,7 @@ export interface sample_t {
   tokens: number;
   exerciseLevel: number;
   roles: sample_roles_t;
+  treeByUser: { [key: string]: number };
 }
 
 export type sample_role_targetrole_t = 'annotator' | 'validator';
@@ -160,6 +161,41 @@ export interface transcription_t {
   title: string;
   user: string;
   transcription: Array<Array<string>>;
+}
+
+
+///////// PARSER /////////
+export interface ModelInfo_t {
+  project_name: string;
+  model_id: string;
+}
+
+interface ScoresOneEpoch_t {
+		LAS_epoch: number;
+		LAS_chuliu_epoch: number;
+		acc_head_epoch: number;
+		acc_deprel_epoch: number;
+		acc_uposs_epoch: number;
+		acc_xposs_epoch: number;
+		acc_feats_epoch: number;
+		acc_lemma_scripts_epoch: number;
+		loss_head_epoch: number;
+		loss_deprel_epoch: number;
+		loss_xposs_epoch: number;
+		loss_feats_epoch: number;
+		loss_lemma_scripts_epoch: number;
+		loss_epoch: number;
+		n_sentences_train: number;
+		n_sentences_test: number;
+		epoch: number;
+}
+
+export type ScoresBest_t = ScoresOneEpoch_t
+
+export type ScoresHistory_t = ScoresOneEpoch_t[]
+
+export interface ParsingSettings_t {
+  keep_heads: "NONE" | "EXISTING"
 }
 
 //////////////Github ///////////////////

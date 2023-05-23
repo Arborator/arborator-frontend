@@ -5,50 +5,58 @@
       <q-space />
       <q-btn v-close-popup flat dense icon="close" />
     </q-bar>
-
-    <q-card-section style="width: 80vw; height: 80vh">
+    <q-card-section style="width: 80vw; height: 85vh">
       <q-form class="q-gutter-md" @reset="onResetSearch">
         <div class="q-pa-xs">
           <div class="row">
             <div class="col-10">
+              <q-select dense outlined v-model="type" :options="userOptions" :label="$t('grewSearch.treesType')" color="primary">
+                <template v-slot:option="scope">
+                  <q-item v-bind="scope.itemProps">
+                    <q-item-section avatar>
+                      <q-avatar v-if="scope.opt.value == 'user' || scope.opt.value == 'user_recent'" size="1.2rem" >
+                        <img :src="avatar" />
+                        <q-badge v-if="scope.opt.value == 'user_recent'" floating transparent color="principal">+</q-badge>
+                      </q-avatar>
+                      <q-icon v-else :name="scope.opt.icon" />  
+                    </q-item-section>
+                    <q-item-section>
+                      <q-item-label>{{scope.opt.label}}</q-item-label>
+                    </q-item-section>
+                  </q-item>
+                </template>
+              </q-select>
+            </div> 
+          </div>
+          <div class="row">
+            <div class="col-10">
               <Codemirror v-model:value="currentQuery" style="height: 70vh" :options="cmOption"></Codemirror>
               <q-separator />
-              <div class="full-width row justify-start">
-                <q-btn v-if="currentQueryType === 'SEARCH'" color="primary" label="Search" no-caps icon="search" @click="onSearch" />
-                <q-btn v-else-if="currentQueryType === 'REWRITE'" color="primary" label="Try Rules" no-caps icon="autorenew" @click="tryRules" />
-                <q-space />
-                <!--<q-btn label="Get link" no-caps icon="ion-md-link" @click="getGrewLink" />
-                <q-space />
-                <q-input v-show="grewlink.length !== 0" ref="grewLinkInput" dense class="col-10 self-stretch" :value="grewlink">
-                  <template #prepend>
-                    <q-icon name="ion-md-link" />
-                  </template>
-                </q-input>-->
-              </div>
             </div>
 
-            <div class="col-2">
-              <q-tabs v-model="searchReplaceTab" dense no-caps class="primary text-primary">
-                <q-tab name="SEARCH" icon="search" label="Search">
+            <div class="col-2 bg-primary">
+              <q-tabs v-model="searchReplaceTab" dense no-caps class="bg-grey-2 primary text-primary">
+                <q-tab name="SEARCH" icon="search" :label="$t('grewSearch.search')">
                   <q-tooltip content-class="bg-primary" anchor="top middle" self="bottom middle" :offset="[10, 10]">
-                    Examples of Grew search statements
+                    {{$t('grewSearch.grewSearchTooltip')}}
                   </q-tooltip>
                 </q-tab>
-                <q-tab name="REWRITE" icon="autorenew" label="Rewrite">
+                <q-tab name="REWRITE" icon="autorenew" :label="$t('grewSearch.rewrite')">
                   <q-tooltip content-class="bg-primary" anchor="top middle" self="bottom middle" :offset="[10, 10]">
-                    Examples of Grew search and replacement statements
+                    {{$t('grewSearch.grewRewriteTooltip')}}
                   </q-tooltip>
                 </q-tab>
               </q-tabs>
               <q-separator />
 
-              <q-tab-panels v-model="searchReplaceTab" animated class="shadow-2">
+              <q-tab-panels v-model="searchReplaceTab" animated class="shadow-2" @input="type  == null">
                 <q-tab-panel name="SEARCH">
                   <q-tabs v-model="searchQueryTab" dense no-caps vertical switch-indicator class="primary" indicator-color="primary">
                     <template v-for="query in searchQueries" :key="query.name">
                       <q-tab v-ripple :name="query.name" :label="query.name" clickable @click="changeQuery(query.pattern, 'SEARCH')" />
                     </template>
-                     <q-tab v-if="userType === 'all'" v-ripple name="showDiffs" label="Show divergences" clickable @click="onShowDiffs()" />
+                     <q-tab v-ripple v-if="type.value =='all'" name="showDiffs" label="Show divergences" clickable @click="isShowDiff = true" />
+                     <q-tab><a href="https://grew.fr/doc/request/" target="_blank">Documentation</a></q-tab>
                   </q-tabs>
                 </q-tab-panel>
 
@@ -57,15 +65,67 @@
                     <template v-for="query in rewriteQueries" :key="query.name">
                       <q-tab v-ripple :name="query.name" :label="query.name" clickable @click="changeQuery(query.pattern, 'REWRITE')" />
                     </template>
+                    <q-tab><a href="https://grew.fr/doc/commands/" target="_blank">Documentation</a></q-tab>
                   </q-tabs>
                 </q-tab-panel>
               </q-tab-panels>
+            </div>
+          </div>
+          <div class="row">
+            <div>
+              <q-btn :disable="!type.value" v-if="searchReplaceTab === 'SEARCH'" color="primary" :label="$t('grewSearch.search')" no-caps icon="search" @click="onSearch" />
+              <q-btn :disable="!type.value" v-else-if="searchReplaceTab === 'REWRITE'" color="primary" :label="$t('grewSearch.tryRules')" no-caps icon="autorenew" @click="tryRules" />
+              <q-tooltip v-if="!type.value" content-class="bg-primary" anchor="top middle" self="bottom middle" :offset="[10, 10]">
+                {{$t('grewSearch.grewBtnTooltip')}}
+              </q-tooltip>
             </div>
           </div>
         </div>
       </q-form>
     </q-card-section>
   </q-card>
+  <q-dialog v-model="isShowDiff">
+    <q-card style="width: 150vw;">
+      <q-bar class="bg-primary text-white">
+        <q-space />
+        <q-btn v-close-popup flat dense icon="close" />
+      </q-bar>
+      <q-card-section>
+        <div class="text-h6">
+          {{ $t('grewSearch.showDiffTitle') }}
+        </div>
+      </q-card-section>
+      <q-card-section class="q-gutter-md">
+        <div class="row q-gutter-sm">
+          <div class="col">
+            <q-select
+              v-model="features"
+              filled
+              multiple
+              :options="featuresSet"
+              use-chips
+              stack-label
+              :label="$t('grewSearch.showDiffFaturesSelect')"
+            />
+          </div>
+          <div class="col">
+            <q-select
+              v-model="otherUsers"
+              filled
+              multiple
+              :options="usersSet"
+              use-chips
+              stack-label
+              :label="$t('grewSearch.showDiffUsersSelect')"
+            />
+          </div>
+        </div>
+        <div class="row">
+          <q-btn :disable="otherUsers.length == 0" v-close-popup :label="$t('grewSearch.showDiffBtn')" color="primary" @click="onShowDiffs" />
+        </div>
+      </q-card-section>
+    </q-card>
+  </q-dialog>
 </template>
 
 <script lang="ts">
@@ -75,8 +135,11 @@ import Codemirror from 'codemirror-editor-vue3';
 
 import 'codemirror/lib/codemirror.css';
 import grewTemplates from '../../assets/grew-templates.json';
-import { mapActions, mapState } from 'pinia';
-import { useGrewSearchStore } from 'src/pinia/modules/grewSearch';
+import {mapActions, mapState, mapWritableState} from 'pinia';
+import {useGrewSearchStore} from 'src/pinia/modules/grewSearch';
+import {useUserStore} from 'src/pinia/modules/user';
+import {useProjectStore} from 'src/pinia/modules/project';
+
 
 import { defineComponent } from 'vue';
 // import 'codemirror/theme/material.css'
@@ -106,10 +169,6 @@ CodeMirror2.defineMode('grew', () => {
   }
   function tokenBase(stream: any, state: any) {
     const ch = stream.next();
-    // if (ch === '"') {
-    //   state.tokenize = tokenString;
-    //   return state.tokenize(stream, state);
-    // }
     if (ch === '%') {
       stream.skipToEnd();
       return 'comment';
@@ -163,9 +222,12 @@ CodeMirror2.defineMode('grew', () => {
 export default defineComponent({
   name: 'GrewRequestCard',
   components: { Codemirror },
-  props: ['parentOnSearch', 'parentOnTryRules', 'grewquery', 'parentOnShowDiffs', 'userType'],
+  props: ['parentOnSearch', 'parentOnTryRules', 'grewquery', 'parentOnShowDiffs', 'users'],
   data() {
     const currentQueryType: 'SEARCH' | 'REWRITE' = grewTemplates.searchQueries[0].type as 'SEARCH' | 'REWRITE';
+    const type : {value: string, label: string, icon: string} = {value : '', label: '', icon : ''};
+    const otherUsers : string[] = [];
+    const features : string[] = [];
     return {
       searchReplaceTab: grewTemplates.searchQueries[0].type,
       searchQueryTab: grewTemplates.searchQueries[0].type,
@@ -183,11 +245,40 @@ export default defineComponent({
       },
       searchQueries: grewTemplates.searchQueries,
       rewriteQueries: grewTemplates.rewriteQueries,
-      grewLink: '',
+      type,
+      options: [
+        { value: 'user', label: this.$t('projectView.tooltipFabGrewUser')},
+        { value: 'user_recent', label: this.$t('projectView.tooltipFabGrewUserRecent')},
+        { value: 'recent', label: this.$t('projectView.tooltipFabGrewRecent'), icon: 'schedule' },
+        { value: 'all', label: this.$t('projectView.tooltipFabGrewAll'), icon: 'groups' },
+      ],
+      isShowDiff:false,
+      otherUsers,
+      features,
     };
   },
   computed: {
     ...mapState(useGrewSearchStore, ['lastQuery']),
+    ...mapState(useUserStore, ['isLoggedIn', 'avatar', 'username']),
+    ...mapState(useProjectStore, ['shownFeaturesChoices']),
+    userOptions() {
+      return this.searchReplaceTab === 'REWRITE' ? this.options.slice(0, -1) : this.options;
+    },
+    featuresSet() {
+      var featuresSet: string[] = [];
+      featuresSet = this.shownFeaturesChoices.filter((feat: any) => feat != 'FORM');
+      return featuresSet;
+    },
+    usersSet() {
+      return this.users.filter((user: any) => user != this.username);
+    }
+  },
+  watch: {
+    searchReplaceTab(newVal, oldVal){
+      if (newVal === 'REWRITE'){
+        this.type = {value: '', label: '', icon:''};
+      }
+    }
   },
   mounted() {
     if (this.lastQuery !== null) {
@@ -204,7 +295,7 @@ export default defineComponent({
      * @returns void
      */
     onSearch() {
-      this.parentOnSearch(this.currentQuery);
+      this.parentOnSearch(this.currentQuery, this.type.value);
       this.changeLastGrewQuery({ text: this.currentQuery, type: this.currentQueryType });
     },
     /**
@@ -213,7 +304,7 @@ export default defineComponent({
      * @returns void
      */
     tryRules() {
-      this.parentOnTryRules(this.currentQuery);
+      this.parentOnTryRules(this.currentQuery, this.type.value);
       this.changeLastGrewQuery({ text: this.currentQuery, type: this.currentQueryType });
     },
     /**
@@ -225,7 +316,7 @@ export default defineComponent({
     changeQuery(query: string, type: 'SEARCH' | 'REWRITE') {
       this.currentQuery = query;
       this.currentQueryType = type;
-      console.log(this.currentQuery);
+      this.type = {value : '', label: '', icon: ''};
     },
 
     /**
@@ -237,22 +328,7 @@ export default defineComponent({
       this.currentQuery = '';
       this.rewriteCommands = '';
     },
-    /**
-     * Retrieve the grew link based on windows location (current url)
-     *
-     * @returns void
-     */
-    getGrewLink() {
-      // FIXME
-      const z = this.zip(this.currentQuery);
-      this.grewLink = `${window.location.href.split(`/projects/${this.$route.params.projectname}`)[0]}/projects/${this.$route.params.projectname}${
-        this.$route.params.samplename ? `/${this.$route.params.samplename}` : ''
-      }?q=${z}`;
-      setTimeout(() => {
-        (this.$refs.grewLinkInput as HTMLInputElement).select();
-        document.execCommand('copy');
-      }, 500);
-    },
+   
     /**
      * Grew query check : verify if it is not empty, and if it's a custom query
      *
@@ -261,9 +337,9 @@ export default defineComponent({
     checkGrewQuery() {
       if (this.grewquery.length > 0) {
         if (this.searchQueries.filter((c) => c.name === 'custom query').length === 0) {
-          let customquery = this.unzip(this.grewquery);
-          // this.queries.unshift({ name: 'custom query', pattern: customquery }); //FIXME
-          this.changeQuery(customquery, this.currentQueryType);
+          let customQuery = this.unzip(this.grewquery);
+          // this.queries.unshift({ name: 'custom query', pattern: customQuery }); //FIXME
+          this.changeQuery(customQuery, this.currentQueryType);
           this.onSearch(); // autostart the query?
         }
       }
@@ -356,8 +432,9 @@ export default defineComponent({
     atou(str: string) {
       return decodeURIComponent(escape(window.atob(str)));
     },
+
     onShowDiffs() {
-      this.parentOnShowDiffs();
+      this.parentOnShowDiffs(this.type.value, this.otherUsers, this.features);
     }
   },
 });

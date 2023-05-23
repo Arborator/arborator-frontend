@@ -28,8 +28,8 @@
         <q-circular-progress indeterminate size="70px" :thickness="0.22" color="primary" track-color="grey-3"/>
       </div>
     </div>
-    <GrewSearch :sentence-count="sentenceCount" :search-scope="samplename" @reload="refreshWindow" />
-    <RelationTableMain :sampleName="samplename" />
+    <GrewSearch :user-ids="userIds" :sentence-count="sentenceCount" :search-scope="samplename" />
+    <RelationTableMain :sampleName="samplename"/>
   </q-page>
 </template>
 
@@ -106,6 +106,18 @@ export default defineComponent({
     sentenceCount() {
       return Object.keys(this.sentences).length;
     },
+    userIds(){
+      var userIds: string[] = [];
+      for (const sentId of Object.values(this.sentences)){
+        var sentence = JSON.parse(JSON.stringify(sentId));
+        for(const userId in sentence.conlls){
+          if (! userIds.includes(userId)){
+            userIds.push(userId);
+          }
+        }  
+      }
+      return userIds;
+    }
   },
   created() {
     window.addEventListener('resize', this.handleResize);

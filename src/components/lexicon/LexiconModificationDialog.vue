@@ -156,6 +156,7 @@ export default defineComponent({
   },
   watch: {
     lexiconModificationItemBefore(newValue, oldValue) {
+      console.log(newValue)
       if (Object.keys(newValue).length > 0) {
         this.formattedItem = this.convertLexiconItemToFormattedItem(newValue);
       }
@@ -186,7 +187,6 @@ export default defineComponent({
       for (const keyValue of formattedItem.features) {
         features[keyValue.a] = keyValue.v;
       }
-      console.log(formattedItem.form);
       const lexiconItem: lexiconItem_FE_t = {
         feats: {
           form: formattedItem.form.length > 0 ? formattedItem.form[0].v : '',

@@ -118,7 +118,7 @@ export default defineComponent({
       required: true,
     },
     lexiconType: {
-      type: Object as PropType<string>,
+      type: String as PropType<string>,
       required: true,
     },
   },

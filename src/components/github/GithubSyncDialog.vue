@@ -198,7 +198,13 @@ export default defineComponent({
                 notifyError({error: `${errorMessage}`});
                 this.loading = false;
                 this.$emit('created');
-              });        
+              });  
+              setTimeout(() => {this.$q.notify({
+                message: this.$t('github.syncWarningMessage'),
+                color: 'warning',
+                position: 'top',
+                timeout: 5000
+            })}, 10000);      
         },  
         
     }     

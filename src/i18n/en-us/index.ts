@@ -213,7 +213,7 @@ export default {
       'View my trees, filled up with the most recent trees',
       'View most recent trees'
     ],
-    freezeProject: ['Freeze this project', 'This project is freezed'],
+    freezeProject: ['Freeze this project', 'Unfreeze this project', 'This project is freezed'],
     removeUserTrees: ["Remove user's trees", "Select samples"], 
     
   },
@@ -272,6 +272,7 @@ export default {
     arboratorgrewBranch:['Use ','branch for your commits and pulls made using ArboratorGrew.'],
     defaultBranch: ' Use the selected branch (Be careful if you work with a repository that has many collaborators).',
     synchronize: 'Synchronize',
+    syncWarningMessage: 'The repository is large, the synchronization will take some time',
     synchronizeMessage: 'is synchronized with',
     commitNotif: ['You have', 'change', 'changes', "You don't have changes to commit"], 
     pullNotif: ['refresh to see if there is pulls', 'Pull changes'], 

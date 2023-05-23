@@ -174,7 +174,8 @@
                         </q-item-section>
                         <q-item-section>
                           <q-item-label>{{ $t('projectView.freezeProject[0]')}}</q-item-label>
-                          <q-item-label v-if="freezed" caption>{{$t('projectView.freezeProject[1]')}}</q-item-label>
+                          <q-item-label v-if="freezed">{{ $t('projectView.freezeProject[1]')}}</q-item-label>
+                          <q-item-label v-if="freezed" caption>{{$t('projectView.freezeProject[2]')}}</q-item-label>
                         </q-item-section>
                       </q-item>
 

@@ -206,7 +206,7 @@ export default {
     tooltipUnstageModifiedItem: 'Unstage les changements de lexique sélectionnés',
     tooltipValidatorLexicon: 'Importer le validateur pour comparer',
     tooltipSelectValidator: 'Selectionner un fichier au format tsv',
-    freezeProject: ['Désactiver ce projet', 'Ce projet est désactivé'],
+    freezeProject: ['Désactiver ce projet', 'Réactiver ce projet','Ce projet est désactivé'],
     removeUserTrees: ["Supprimer les arbres d'un utilisateur", "Sélectionnez des échantillons" ]
   },
 
@@ -265,6 +265,7 @@ export default {
     arboratorgrewBranch: [' Utiliser la branche ', 'pour vos commits et pulls effectués avec ArboratorGrew.'],
     defaultBranch: ' Utiliser la branche sélectionnée (Attention si vous travaillez avec un dépôt qui a de nombreux collaborateurs).',
     synchronize: 'Synchroniser',
+    syncWarningMessage: 'Le dépôt est volumineux, la synchronisarion prendra un peu de temps',
     synchronizeMessage: 'est synchronisé avec', 
     commitNotif: ['Vous avez ', 'changement', 'changements', "Vous n'avez pas aucun commit à effectuer"],
     pullNotif: ["rafraîchir pour voir s'il y a des pulls", "Récupérer les modifications"],

@@ -5,7 +5,7 @@
         <q-space />
         <q-btn  @click="closeDialog" flat dense icon="close" />
       </q-bar>
-      <div v-if="loggedWithGithub && isSuperAdmin">
+      <div v-if="loggedWithGithub && isAllowedGitFeature">
         <q-linear-progress size="10px" :value="progress" color="primary" />
       </div>
       <q-card-section>
@@ -35,7 +35,7 @@
               ]"
             />
           </div>
-          <q-toggle v-model="project.showAllTrees" :label="$t('createProjectCard.showAllTrees')" label="Show All Trees" />
+          <q-toggle v-model="project.showAllTrees" :label="$t('createProjectCard.showAllTrees')"  />
           <q-toggle v-model="project.exerciseMode" :label="$t('createProjectCard.exerciseMode')" />
           <div class="row q-gutter-md justify-center">
             <q-btn :disable="project.projectName == ''" id="submitproject" type="submit" :label="$t('createProjectCard.create')" color="primary" />
@@ -93,9 +93,9 @@ export default defineComponent({
     };
   },
   computed: {
-    ...mapState(useUserStore, ['username', 'loggedWithGithub', 'isSuperAdmin']),
+    ...mapState(useUserStore, ['username', 'loggedWithGithub', 'isSuperAdmin', 'isAllowedGitFeature']),
     canSyncWithGithub(){
-      return this.isSuperAdmin && this.loggedWithGithub && this.isShowSyncBtn && !this.isShowGithubSyncPanel; 
+      return this.isAllowedGitFeature && this.loggedWithGithub && this.isShowSyncBtn && !this.isShowGithubSyncPanel; 
     }
   },
   methods: {
@@ -118,7 +118,7 @@ export default defineComponent({
         .then(() => {
           this.parentGetProjects();
           this.submitting = false;
-          if (this.loggedWithGithub && !this.project.exerciseMode && this.isSuperAdmin) {
+          if (this.loggedWithGithub && !this.project.exerciseMode && this.isAllowedGitFeature) {
             this.progress = 0.4;
             this.isShowSyncBtn = true;
           }

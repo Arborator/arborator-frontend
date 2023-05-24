@@ -18,6 +18,10 @@ export const useUserStore = defineStore('user', {
     hasLoginErrored: (state) => state.loginError,
     getFailedAccess: (state) => state.failedAccess,
     loggedWithGithub: (state) => state.auth_provider === "4",
+    isAllowedGitFeature(state): Boolean{
+      const usernames = ["kirianguiller", "gguibon", "kimgerdes", "bguil", "khansadaoudi"]
+      return usernames.includes(state.username)
+    },
     avatar: (state) => {
       if (state.picture_url) return state.picture_url;
       return 'perm_identity';
@@ -25,6 +29,7 @@ export const useUserStore = defineStore('user', {
     shareEmail(state): boolean {
       return !state.not_share_email && this.loggedWithGithub && state.email == null;
     }
+    
     /**
      * This defines if a user is admin for a Arborator or Klang page. It will check in order if :
      * - user is super admin

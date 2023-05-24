@@ -584,7 +584,7 @@ export default defineComponent({
       'freezed',
     ]),
     ...mapWritableState(useProjectStore, ['freezed']),
-    ...mapState(useUserStore, ['isLoggedIn', 'isSuperAdmin', 'loggedWithGithub', 'avatar', 'username']),
+    ...mapState(useUserStore, ['isLoggedIn', 'isSuperAdmin', 'loggedWithGithub', 'avatar', 'username','isAllowedGitFeature']),
     projectName(): string {
       return this.$route.params.projectname as string;
     },
@@ -608,7 +608,7 @@ export default defineComponent({
       return possiblesUsers;
     },
     isAllowdedToSync(): boolean{
-      return this.isSuperAdmin && this.loggedWithGithub  && !this.exerciseMode && !this.isTeacher;
+      return this.isAllowedGitFeature && this.loggedWithGithub  && !this.exerciseMode && !this.isTeacher;
     }, 
     isFreezed(): boolean{
       return !this.isOwner && this.freezed;

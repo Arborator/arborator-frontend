@@ -3,7 +3,7 @@
     <q-card-section v-if="isShowLexiconFeatures">
       <div class="text-h6 q-mb-md">{{ $t('projectView.lexicon[0]') }}</div>
       <div class="row q-gutter-md">
-        <div class="col-4">
+        <div class="col-5">
           <q-select
             style="text-transform: capitalize"
             v-model="principalFeatures"
@@ -16,7 +16,7 @@
             :label="$t('projectView.lexicon[1]')"
           />
         </div>
-        <div class="col-4">
+        <div class="col-5">
           <q-select
             :disable="principalFeatures.length === 0"
             v-model="secondaryFeatures"
@@ -29,7 +29,7 @@
             :label="$t('projectView.lexicon[2]')"
           />
         </div>
-        <div class="col-3">
+        <div>
           <q-tooltip content-class="bg-white text-primary">{{ $t('projectView.lexicon[7]') }}</q-tooltip>
           <q-btn-dropdown class="float-right" size="md" outline color="primary" label=" get Lexicon">
             <q-list>

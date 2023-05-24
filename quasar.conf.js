@@ -14,7 +14,7 @@ module.exports = configure((ctx) => ({
 
   // app boot file (/src/boot)
   // --> boot files are part of "main.js"
-  boot: ['i18n', 'axios', 'vue-cookies', 'vue-storage', 'vue-audio-visual', 'pinia'],
+  boot: ['i18n', 'axios', 'vue-cookies', 'vue-storage', 'vue-audio-visual', 'pinia', 'matomo'],
 
   css: ['app.scss'],
 
@@ -115,6 +115,7 @@ module.exports = configure((ctx) => ({
     plugins: ['Notify', 'LoadingBar', 'Loading', 'AppVisibility', 'AppFullscreen', 'BottomSheet', 'LocalStorage'],
     config: {
       notify: { position: 'top-right', timeout: 2000, color: 'positive' },
+      dark:"auto"
     },
   },
 

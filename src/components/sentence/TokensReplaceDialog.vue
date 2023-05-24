@@ -2,7 +2,7 @@
   <q-dialog v-model="tokensReplaceDialogOpened">
     <q-card style="width: 90vh">
       <q-bar class="bg-primary text-white" style="height: max-content">
-        <div class="text-weight-bold">Replacing "{{ currentword }}" by:</div>
+        <div class="text-weight-bold">{{$t('attributeTable.tokenReplaceDial[0]')}} "{{ currentword }}" {{$t('attributeTable.tokenReplaceDial[1]')}}:</div>
         <q-space />
         <q-btn v-close-popup flat dense icon="close" />
       </q-bar>
@@ -19,17 +19,17 @@
         <q-separator />
       </q-card-section>
       <q-card-actions align="around">
-        <q-btn v-close-popup flat label="Cancel" style="width: 45%; margin-left: auto; margin-right: auto" />
+        <q-btn v-close-popup flat :label="$t('cancel')" style="width: 45%; margin-left: auto; margin-right: auto" />
         <q-btn
           v-close-popup
           color="primary"
-          label="I know what I'm doing"
+          :label="$t('attributeTable.tokenReplaceDial[3]')"
           style="width: 45%; margin-left: auto; margin-right: auto"
           no-caps
           @click="onTokensReplaceDialogOk()"
         >
           <q-tooltip content-class="bg-negative" content-style="font-size: 16px" transition-show="rotate" transition-hide="rotate"
-            >⚠ Changing tokens breaks the comparability of different annotations of the same sentence!</q-tooltip
+            >⚠ {{$t('attributeTable.tokenReplaceDial[2]')}}</q-tooltip
           >
         </q-btn>
       </q-card-actions>

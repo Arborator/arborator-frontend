@@ -21,7 +21,10 @@ import {
   updateProject_RV,
   updateTree_ED,
   whoIAm_RV,
+  updateUser_ED,
   getLexicon_RV, parserList_RV_success, parserList_RV, parserTrainStatus_RV, parserParseStatus_RV,
+  getGithubRepositories_RV,
+  createGithubSynchronizedRepository_ED,
 } from './endpoints';
 import {
   sample_role_action_t,
@@ -59,6 +62,9 @@ export default {
   },
   whoAmI() {
     return API.get<whoIAm_RV>('users/me');
+  },
+  updateUser(data: updateUser_ED) {
+    return API.put<whoIAm_RV>('users/me', data)
   },
 
   // ---------------------------------------------------- //
@@ -149,6 +155,9 @@ export default {
   },
   updateTree(projectname: string, samplename: string, data: updateTree_ED) {
     return API.post(`/projects/${projectname}/samples/${samplename}/trees`, data);
+  },
+  deleteUserTrees(projectName: string, sampleName: string, username: string) {
+    return API.delete(`/projects/${projectName}/samples/${sampleName}/trees/${username}`)
   },
 
   // ----------------------------------------------------- //
@@ -272,6 +281,45 @@ export default {
       parser_suffix: parserSuffix,
     }
     return API.post<parserParseStatus_RV>(`/parser/parse/status`, data)
+  },
+ // -------------------------------------------------------- //
+  // ---------------          Github         --------------- //
+  // -------------------------------------------------------- //
+  getGithubRepositories(projectName: string, username: string) {
+    return API.get<getGithubRepositories_RV>(`/projects/${projectName}/${username}/github`);
+  },
+  createGithubRepository(projectName: string, username: string, data: any) {
+    return API.post(`/projects/${projectName}/${username}/github`, data);
+  },
+  getGithubRepoBranches(projectName: string, username: string, repoName: string) {
+    return API.get(`/projects/${projectName}/${username}/github/branch?full_name=${repoName}`);
+  }, 
+  synchronizeWithGithubRepo(projectName: string, username: string, data: any) {
+    return API.post<createGithubSynchronizedRepository_ED>(`/projects/${projectName}/${username}/synchronize-github`, data, { timeout: 4000000 });
+  },
+  getSynchronizedGithubRepository(projectName: string, username: string) {
+    return API.get(`/projects/${projectName}/${username}/synchronize-github`);
+  },
+  deleteSynchronization(projectName: string, username: string) {
+    return API.delete(`/projects/${projectName}/${username}/synchronize-github`);
+  },
+  getChanges(projectName: string, username: string) {
+    return API.get(`/projects/${projectName}/${username}/synchronize-github/commit`)
+  },
+  commitChanges(projectName: string, username: string, data:any) {
+    return API.post(`/projects/${projectName}/${username}/synchronize-github/commit`, data);
+  },
+  checkPull(projectName: string, username: string){
+    return API.get(`/projects/${projectName}/${username}/synchronize-github/pull`);
+  },
+  pullChanges(projectName: string, username: string, data: any){
+    return API.post(`/projects/${projectName}/${username}/synchronize-github/pull`, data);
+  },
+  deleteFileFromGithub(projectName: string, username: string, fileName: string){
+    return API.delete(`/projects/${projectName}/${username}/synchronize-github/${fileName}`);
+  },
+  openPullRequest(projectName: string, username: string, data: any){
+    return API.post(`/projects/${projectName}/${username}/synchronize-github/pull-request`, data);
   },
   // -------------------------------------------------------- //
   // ---------------        To Refactor       --------------- //

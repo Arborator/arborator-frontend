@@ -7,6 +7,8 @@ export interface user_t {
   username: string;
   first_name: string;
   family_name: string;
+  email: string;
+  not_share_email: boolean;
   picture_url: string;
   super_admin: boolean;
   created_date: number;
@@ -34,6 +36,7 @@ export interface project_with_diff_t {
   exerciseMode: boolean;
   diffMode: boolean;
   diffUserId: string;
+  freezed: boolean;
 }
 
 export interface project_extended_t {
@@ -44,6 +47,7 @@ export interface project_extended_t {
   visibility: number;
   showAllTrees: boolean;
   exerciseMode: boolean;
+  freezed: boolean;
 
   admins: string[];
   guests: string[];
@@ -192,4 +196,16 @@ export type ScoresHistory_t = ScoresOneEpoch_t[]
 
 export interface ParsingSettings_t {
   keep_heads: "NONE" | "EXISTING"
+}
+
+//////////////Github ///////////////////
+export interface githubRepository_t {
+  name: String, 
+  owner_name: String, 
+  owner_avatar: String,
+}
+export interface githubSynchronizedRepository_t {
+  user_id: string, 
+  project_name: string, 
+  repositoryName: string,
 }

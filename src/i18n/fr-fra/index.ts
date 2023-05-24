@@ -4,13 +4,14 @@ export default {
   oops: "Une erreur s'est produite : ",
   error403: "Halte ! Vous n'avez pas la permission pour cette action.",
   error401: 'Halte ! Veuillez vous connecter pour effectuer de telles actions.',
-  error415: "Halte ! Seul les fichiers ayant un format d'encodage UTF-8 sont supportés.",
+  error415: "Halte ! Seul les fichiers CONLL ayant un format d'encodage UTF-8 sont supportés.",
   error404page: "Hum! Il n'y a rien ici...",
   welcomeback: 'Re !',
   loginbtn: 'Connecter',
   loginselector: 'Se connecter via',
   switchLanguage: "Changer la langue de l'interface utilisateur",
   documentation: 'Voir la documentation',
+  feedback:'Des questions, des propositions de fonctionnalités ou des rapports de bogues ? Consultez notre page Github issues',
   darkMode: 'Activer le mode sombre',
   projectAdmin: "Vous êtes l'administrateur de ce projet",
   userInformation: "Information de l'utilisateur",
@@ -24,6 +25,9 @@ export default {
   confirmAction: {
     title: 'En êtes-vous certain?',
     message: 'Vous êtes sur le point de faire une action irrémédiable. Voulez-vous vraiment continuer?',
+    warning: ['Veuillez taper quelque chose', 'Le nom du projet ne correspond pas'],
+    hint: 'Tapez le nom du projet', 
+    label: 'Le nom du projet*',
   },
 
   // first page (the index)
@@ -104,10 +108,19 @@ export default {
     footertextmadewith: "Créé avec beaucoup d'",
     footertextin: 'à', // reaaallllll basic one, not good enough but still buggy using span and html parse  navhome: 'Accueil',
     textGetUserEmailDialog: [
-      'Nous voulons nous assurer que vous êtes toujours au courant des changements importants sur ArboratorGrew, ainsi que vous tenir informé de toute opération purgatoire qui pourrait affecter votre projet. Veuillez nous fournir votre adresse Email ci-dessous afin que nous puissions vous avertir avant toute mise à jour importante ou avant de supprimer votre projet inutilisé. Nous respectons votre vie privée et ne partagerons jamais vos informations avec qui que ce soit.',
-      "J'accepte de recevoir des courriels et des promotions",
-      'Soumettre'
-    ]
+      'Pour la bonne gestion du service, nous pourrions avoir besoin de vous contacter, notamment pour la suppression de projects inutilisés. Votre email ne sera utilisé que pour des communications concernant ArboratorGrew et ne sera pas communiqué à des tiers.',
+      'Vous pouvez vous opposer à la communication de votre mail mais, dans ce cas, nous nous réservons le droit de supprimer vos projets sans préavis.',
+      'Vous pouvez à tout moment modifier ou supprimer votre mail de contact depuis votre compte.',
+    ],
+    checkboxEmailDialog: [
+      "J'ai compris que mon mail sera stocké sur le serveur d'ArboratorGrew situé en Europe.",
+      "Je refuse de communiquer mon email.",
+      "Je m'inscris à la newsletter qui sera envoyée pour me tenir au courant des nouvelles fonctionnalités ou des incidents sur la plateforme (newsletter, pas plus de quelques mails par mois)."
+    ],
+    submitMessage: "Vos choix sont bien mis à jour",
+    inputErrorText: ["S'il vous plaît, tapez quelque chose", "S'il vous plaît, tapez une adresse valide"],
+    tootltipBtnSumbitUserEmail: 'Veuillez cocher la case si vous souhaitez recevoir des courriels.',
+    submitEmailBtn: 'Soumettre',
   },
 
   // list of projects page
@@ -149,7 +162,7 @@ export default {
     tooltipAddSample: 'Ajouter un échantillon (fichier CoNLL)',
     tooltipExportSample: ['Sélectionnez les échantillons à exporter', 'Exporter les échantillons sélectionnés'],
     tooltipDeleteSample: ['Sélectionnez les échantillons à supprimer', 'Supprimer les échantillons sélectionnés'],
-    tootltipCreateLexicon: ['Sélectionnez les échantillons pour créer le lexique', "Créer le lexique à partir d'échantillons sélectionnés"],
+    tooltipCreateLexicon: ['Sélectionnez les échantillons pour créer le lexique', "Créer le lexique à partir d'échantillons sélectionnés"],
     tooltipParsingPanel: ['Ouvrir le parseur', 'Fermer le parseur'],
     tooltipParser: [
       'Sélectionner les échantillons pour entraîner le parseur',
@@ -157,22 +170,9 @@ export default {
       'Cliquer et choisir les paramètres pour le parseur',
       'Cliquer pour arrêter le parseur',
     ],
-    tooltipGitPush: [
-      'Pousser seulement mes arbres des échantillons sélectionnés',
-      'Pousser mes plus récents arbres des échantillons sélectionnés',
-      'Pousser les arbres les plus récents',
-      'Pousser tous les abres des échantillons sélectionnés',
-      'Sélectionner les échantillons à engager (commit) et à pousser sur GitHub',
-      'Engager et pousser sur GitHub les échantillons sélectionnés',
-    ],
-    gitPullUser: 'Replace my trees from the selected samples with the ones from GitHub',
-    gitPullAll: 'Replace all trees from the selected samples with the ones from GitHub',
-    tooltipGitPullSelect: [
-      'Select the samples you want to update from your GitHub folder',
-      'Pull data from your GitHub folder onto the selected samples',
-    ],
+    tooltipMore: "Plus d'options",
+    tooltipSynchronizedProject: 'Ce projet est synchronisé avec',
     tooltipSearch: 'Rechercher un échantillon',
-
     tooltipSelectVisible: 'Sélectionner les colonnes visibles',
     tooltipFullscreen: 'tableau plein écran',
     tooltipFabGrew: "Recherche avec Grew",
@@ -182,6 +182,7 @@ export default {
     tooltipFabGrewAll: 'Voir tous les arbres',
     tooltipRelationTable: 'Obtenir la table des relations',
     tooltipWindows: ['Minimize', 'Maximize', 'Close'],
+    search: 'Rechercher',
     uploadSelectDial: 'Select one or multiple conll files',
     tableFields: ['Nom', 'Nb Phrases', 'Nb Tokens', 'Annotateurs', 'Validateurs', 'Prof', 'Arbres de', "Niveau d'exercice"],
     addUser: 'Ajouter un utilisateur',
@@ -205,11 +206,19 @@ export default {
     tooltipUnstageModifiedItem: 'Unstage les changements de lexique sélectionnés',
     tooltipValidatorLexicon: 'Importer le validateur pour comparer',
     tooltipSelectValidator: 'Selectionner un fichier au format tsv',
+    freezeProject: ['Désactiver ce projet', 'Réactiver ce projet','Ce projet est désactivé'],
+    removeUserTrees: ["Supprimer les arbres d'un utilisateur", "Sélectionnez des échantillons" ]
   },
 
   // dialog window which displays create project card
   createProjectCard: {
+    title: 'Créer un nouveau projet',
+    projectName: 'Nom du projet',
+    visibilityMode: ['Privé', 'Visible', 'Ouvert'],
     exerciseMode: 'Mode exercice',
+    showAllTrees:'Afficher tous les arbres',
+    create: 'Créer',
+    createMessage: 'est créé', 
   },
 
   exportSamples: {
@@ -261,6 +270,69 @@ export default {
     annotationSettingsSave: "Sauvegarder les paramètres d'annotation",
     checkAnnotation: 'Ceci ressemble à du JSON raisonnable',
   },
+  settingsPage:{
+    saveModifications: 'Enregistrer les modifications',
+    firstName: 'Prénom',
+    familyName: 'Nom',
+    saveModificationMessage: 'Vos informations personelles sont mises à jour',
+  },
+  github:{
+    synchronizeBtn: 'Synchroniser avec github',
+    skipSync: 'Ignorer la synchronisation',
+    chooseRepoOwner: 'Propriétaire du dépôt',
+    search: 'Rechercher un dépôt',
+    select: 'Sélectionner',
+    noGithubRepos: "Vous devez d'abord créer votre premier dépôt Github",
+    selectBranch: 'Séléctionner une branche à cloner',
+    arboratorgrewBranch: [' Utiliser la branche ', 'pour vos commits et pulls effectués avec ArboratorGrew.'],
+    defaultBranch: ' Utiliser la branche sélectionnée (Attention si vous travaillez avec un dépôt qui a de nombreux collaborateurs).',
+    synchronize: 'Synchroniser',
+    syncWarningMessage: 'Le dépôt est volumineux, la synchronisarion prendra un peu de temps',
+    synchronizeMessage: 'est synchronisé avec', 
+    commitNotif: ['Vous avez ', 'changement', 'changements', "Vous n'avez pas aucun commit à effectuer"],
+    pullNotif: ["rafraîchir pour voir s'il y a des pulls", "Récupérer les modifications"],
+    pullRequest: 'Ouvrir une nouvelle Pull request à partir de vos changements',
+    removeSync: ['Supprimer la synchronisation', 'Votre projet est synchronisé avec']
+  },
+  sentenceCard: {
+    selectTooltip: 'Sélectionnez la phrase pour diviser les tokens',
+    annotationErrors: "Voir vos erreurs d'annotation", 
+    saveTeacher: 'Sauvegarder comme enseignant',
+    saveBaseTree: 'Sauvegarder comme arbre de base',
+    saveTree: ["Sauvegarder l'arbre", "comme"],
+    editMetadata: 'Editer les métadonnées de cet arbre',
+    multiEditDial: 'Dialogue de multi-édition',
+    diffMode: ['Activer', 'Désactiver', 'le mode Diff'], 
+    treeLink: 'Obtenir un lien direct vers cet arbre',
+    treeConll: 'Obtenir CoNLL-U de cet arbre',
+    treeSVG: 'Obtenir le SVG de cet arbre',
+    addToken: 'Ajouter un nouveau token', 
+    editToken: 'Editer les tokens', 
+    saveModif: "L'arbre a quelques modifications qui n'ont pas été encore sauvegardées.",
+    modified: ['Modifié il y a '],
+    modifTime: ['sencondes', 'minutes', 'heures', 'jours'],
+    conllText: 'Texte Conll', 
+    statisticDial: "Statistiques de l'arbre ouvert",
+   
+
+  },
+  attributeTable: {
+    addFeature: 'Ajouter un nouveau feature',
+    eraseAttribute: "Supprimer l'attribut",
+    features: 'Caractéristiques de',
+    category:['Sélectionner une catégorie pour', 'Catégorie'],
+    metadata: 'Les métadonnées de cette phrase', 
+    relation: ['Sélectionner une relation qui va de', 'vers', 'Relation de dépendence'],
+    tokenReplaceDial: [
+      'Remplacer', 
+      'par',
+      "Le changement de tokens perturbe la comparabilité des différentes annotations d'une même phrase.",
+      'Remplacement',
+    ]
+  },
+  cancel: 'Annuler',
+  delete: 'Supprimer',
+  confirm: 'Confirmer',
   // Klang
   Klang: {
     projects: 'Les projets Klang',

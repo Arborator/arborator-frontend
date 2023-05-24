@@ -29,19 +29,21 @@
       <div class="col-md-1"></div>
       <div class="col-md-4 col-xs-12">
         <q-card flat>
-          <q-form>
+          <q-form @submit="onSubmitModifications">
             <q-card-section>
               <div class="text-h6 text-blue-grey-8">Personal Informations</div>
             </q-card-section>
             <q-card-section>
               <div class="q-gutter-lg">
-                <q-input v-model="getUserInfos.id" type="email" label="Email" />
-                <q-input v-model="getUserInfos.first_name" type="text" label="First Name" />
-                <q-input v-model="getUserInfos.family_name" type="text" label="Last Name" />
+                <q-input v-model="email" type="email" label="Email" />
+                <q-input v-model="first_name" type="text" :label="$t('settingsPage.firstName')" />
+                <q-input v-model="family_name" type="text" :label="$t('settingsPage.familyName')" />
               </div>
             </q-card-section>
             <q-card-actions align="right">
-              <q-btn label="Save Modifications" type="submit" icon="save" color="primary" :loading="savingModifs" />
+              <q-btn type="submit" icon="save" color="primary">
+                {{ $t('settingsPage.saveModifications')}}
+              </q-btn>
             </q-card-actions>
           </q-form>
         </q-card>
@@ -52,26 +54,29 @@
 </template>
 
 <script lang="ts">
-import { mapState } from 'pinia';
-import { useUserStore } from 'src/pinia/modules/user';
-import { defineComponent } from 'vue';
+import api from '../api/backend-api';
+
+import {notifyError, notifyMessage} from 'src/utils/notify';
+import {mapState, mapWritableState, mapActions} from 'pinia';
+import {useUserStore} from 'src/pinia/modules/user';
+import {defineComponent} from 'vue';
 
 export default defineComponent({
   name: 'Settings',
-  data() {
-    return {
-      savingModifs: false,
-      isPwd: true,
-      tempPwd: '',
-    };
-  },
   computed: {
+    ...mapWritableState(useUserStore, ['email', 'first_name', 'family_name']),
     ...mapState(useUserStore, ['avatarKey', 'getUserInfos']),
   },
   methods: {
-    forceRerenderAvatar() {
-      console.log('FIXME : THIS IS EMPTY');
-    },
+    ...mapActions(useUserStore, ['updateUserInformation']),
+    onSubmitModifications(){
+      const data = {
+        email : this.email as string,
+        first_name: this.first_name as string,
+        family_name: this.family_name as string
+      };
+      this.updateUserInformation(data);
+    }
   },
 });
 </script>

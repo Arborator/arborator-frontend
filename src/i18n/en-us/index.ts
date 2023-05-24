@@ -6,12 +6,13 @@ export default {
   error403: 'Hey you! You do not have the permissions for this action. Please contact the administrator.',
   error401: 'Hey you! Please log in to do any further actions of that type.',
   error404page: "Doh! There's nothing here...",
-  error415: 'Hey you! Only files with UTF-8 encoding format are supported.',
+  error415: 'Hey you! Only CONLL files with UTF-8 encoding format are supported.',
   welcomeback: 'Welcome back to Arborator!',
   loginbtn: 'Log in',
   loginselector: 'Connect via',
   switchLanguage: 'Switch the language of the user interface',
   documentation: 'See the documantation',
+  feedback:'Any questions, feature requests or bug report ? See our github issues page',
   darkMode: 'Toggle dark mode',
   projectAdmin: 'You are admin of this project',
   userInformation: 'User information',
@@ -27,6 +28,9 @@ export default {
   confirmAction: {
     title: 'Are you sure?',
     message: 'You are about to perform an irrevocable action. Do you really want to proceed?',
+    warning: ['Please type something', 'The project name does not correspond'], 
+    hint: 'Type the project name', 
+    label: 'Your project name*',
   },
 
   // first page (the index)
@@ -107,10 +111,19 @@ export default {
     footertextmadewith: 'Made with',
     footertextin: 'in', // reaaallllll basic one, not good enough but still buggy using span and html parse
     textGetUserEmailDialog: [
-      'We want to make sure you are always up-to-date with important changes on ArboratorGrew, as well as keep you informed about any purgatory operation that may affect your project. Please provide us with your email address below so we can notify you before any important updates or before deleting your unused project. We value your privacy and will never share your information with anyone else.',
-      'I accept receiving emails and promotions',
-      'Submit'
-    ]
+      'For the proper management of the service, we may need to contact you, especially for the removal of unused projects. Your email will only be used for communications regarding ArboratorGrew and will not be shared with third parties.',
+      'You may refuse to the communication of your email, but if you do, we reserve the right to delete your projects without notice.',
+      'You can modify or delete your contact email at any time from your account.',
+    ],
+    checkboxEmailDialog: [
+      'I understand that my email will be stored on the ArboratorGrew server located in Europe.',
+      'I refuse to share my email.',
+      'I subscribe to the newsletter that will be sent to keep me informed of new features or incidents on the platform (no more than a few emails per month).',
+    ],
+    submitMessage: "Your choices are updated",
+    inputErrorText: ['Please type something', 'Please type valid email'],
+    tootltipBtnSumbitUserEmail: 'Please check the box if you would like to receive Emails',
+    submitEmailBtn: 'Soumettre',
   },
 
   // list of projects page
@@ -159,20 +172,8 @@ export default {
       'Click to set the parameters for parser',
       'Click to interrupt parsing',
     ],
-    tooltipGitPush: [
-      'Push only my trees of the selected samples',
-      'Push my trees of the selected samples, filled up with the most recent trees',
-      'Push the most recent trees',
-      'Push all trees of the selected samples',
-      'Select the samples you want to commit and push to GitHub',
-      'Commit and push the selected samples to GitHub',
-    ],
-    gitPullUser: 'Replace my trees from the selected samples with the ones from GitHub',
-    gitPullAll: 'Replace all trees from the selected samples with the ones from GitHub',
-    tooltipGitPullSelect: [
-      'Select the samples you want to update from your GitHub folder',
-      'Pull data from your GitHub folder onto the selected samples',
-    ],
+    tooltipMore: 'More options',
+    tooltipSynchronizedProject: 'This project is synchronized with',
     tooltipSearch: 'Search a sample',
     tooltipSelectVisible: 'Select visible columns',
     tooltipFullscreen: 'Fullscreen table',
@@ -183,6 +184,7 @@ export default {
     tooltipFabGrewAll: 'View all trees',
     tooltipRelationTable: 'Get Relation Tables',
     tooltipWindows: ['Minimize', 'Maximize', 'Close'],
+    search: 'Search', 
     uploadSelectDial: 'Select one or multiple conll files',
     tableFields: ['Name', 'Nb Sentences', 'Nb Tokens', 'Annotators', 'Validators', 'Prof', 'Trees From', 'Exercise Level'],
     addUser: 'Add user',
@@ -211,11 +213,19 @@ export default {
       'View my trees, filled up with the most recent trees',
       'View most recent trees'
     ],
-
+    freezeProject: ['Freeze this project', 'Unfreeze this project', 'This project is freezed'],
+    removeUserTrees: ["Remove user's trees", "Select samples"], 
+    
   },
   // dialog window which displays create project card
   createProjectCard: {
+    title: 'Create New Project',
+    projectName: 'Project name',
+    visibilityMode: ['Private', 'Visible', 'Open'],
     exerciseMode: 'exercise mode',
+    showAllTrees: 'Show All Trees',
+    create: 'Create',
+    createMessage: 'is created', 
   },
 
   exportSamples: {
@@ -267,6 +277,68 @@ export default {
     annotationSettingsSave: 'Save annotation settings',
     checkAnnotation: 'This looks like reasonable Json',
   },
+  settingsPage:{
+    saveModifications: 'Save Modification',
+    firstName: 'First Name',
+    familyName: 'Last Name',
+    saveModificationMessage: 'Your personal information is updated',
+  },
+  github:{
+    synchronizeBtn: 'Synchronize with github',
+    skipSync: 'Skip synchronization',
+    chooseRepoOwner: 'Repository Owner',
+    search: 'Search a repository',
+    select: 'Select',
+    noGithubRepos: 'You need to create your first Github Repository', 
+    selectBranch: 'Select a branch to clone',
+    arboratorgrewBranch:['Use ','branch for your commits and pulls made using ArboratorGrew.'],
+    defaultBranch: ' Use the selected branch (Be careful if you work with a repository that has many collaborators).',
+    synchronize: 'Synchronize',
+    syncWarningMessage: 'The repository is large, the synchronization will take some time',
+    synchronizeMessage: 'is synchronized with',
+    commitNotif: ['You have', 'change', 'changes', "You don't have changes to commit"], 
+    pullNotif: ['refresh to see if there is pulls', 'Pull changes'], 
+    pullRequest: 'Open new Pull request from your changes',
+    removeSync: ['Remove synchronization', 'Your project is synchronized with'],
+  },
+  sentenceCard: {
+    selectTooltip: 'Select the sentence to split the tokens',
+    annotationErrors: 'See your annotation errors',
+    saveTeacher: 'Save as teacher',
+    saveBaseTree: 'Save as base_tree',
+    saveTree: ["Save tree", "as"], 
+    editMetadata: "Edit this trees's metadata",
+    multiEditDial: 'Multi edit dialog', 
+    DiffMode: ['Enter', 'Leave', 'Diff mode'], 
+    treeLink: 'Get direct link to this tree', 
+    treeConll: 'Get CoNLL-U of this tree', 
+    treeSVG: 'Get SVG of this tree',
+    addToken: 'Add new token',
+    editToken: 'Edit tokens',
+    saveModif: 'The tree has some pendings modifications not saved', 
+    modified: ['Modified', 'ago'],
+    modifTime: ['senconds', 'minutes', 'hours', 'days'],
+    conllText: 'Text Conll', 
+    statisticDial: 'Stastistics of the current opened tree',
+
+  },
+  attributeTable: {
+    addFeature: 'Add new feature',
+    eraseFeature: 'Erase the attribute', 
+    features: 'Features of',
+    category: ['Select a category for', 'Category'],
+    metadata: ['Metadata of this sentence'], 
+    relation: ['Select a relation going from', 'to', 'Dependency relation'], 
+    tokenReplaceDial: [
+      'Replacing',
+      'by',
+      'Changing tokens breaks the comparability of different annotations of the same sentence',
+      'Replacement',
+    ],
+  },
+  cancel:'Cancel',
+  delete: 'Delete',
+  confirm: 'Confirm',
   // Klang
   Klang: {
     projects: 'Klang Projects',

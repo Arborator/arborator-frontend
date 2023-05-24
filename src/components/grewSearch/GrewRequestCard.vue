@@ -51,7 +51,7 @@
 
               <q-tab-panels v-model="searchReplaceTab" animated class="shadow-2" @input="type  == null">
                 <q-tab-panel name="SEARCH">
-                  <q-tabs v-model="searchQueryTab" dense no-caps vertical switch-indicator class="bg-grey-2 primary" indicator-color="primary">
+                  <q-tabs v-model="searchQueryTab" dense no-caps vertical switch-indicator class="primary" indicator-color="primary">
                     <template v-for="query in searchQueries" :key="query.name">
                       <q-tab v-ripple :name="query.name" :label="query.name" clickable @click="changeQuery(query.pattern, 'SEARCH')" />
                     </template>
@@ -61,7 +61,7 @@
                 </q-tab-panel>
 
                 <q-tab-panel name="REWRITE">
-                  <q-tabs v-model="searchQueryTab" dense no-caps vertical switch-indicator class="bg-grey-2 primary" indicator-color="primary">
+                  <q-tabs v-model="searchQueryTab" dense no-caps vertical switch-indicator class="primary" indicator-color="primary">
                     <template v-for="query in rewriteQueries" :key="query.name">
                       <q-tab v-ripple :name="query.name" :label="query.name" clickable @click="changeQuery(query.pattern, 'REWRITE')" />
                     </template>

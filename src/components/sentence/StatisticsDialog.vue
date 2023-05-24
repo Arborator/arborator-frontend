@@ -5,7 +5,7 @@
     <!-- :maximized="maximizedToggle" -->
     <q-card style="height: 300px">
       <q-bar class="bg-primary text-white">
-        <div class="text-weight-bold">Stastistics of the current opened tree "{{ userId }}"</div>
+        <div class="text-weight-bold">{{$t('sentenceCard.statisticDial')}} "{{ userId }}"</div>
         <q-space />
         <q-btn v-close-popup flat dense icon="close" />
       </q-bar>

@@ -1,6 +1,6 @@
 <template>
   <!-- removed: v-show="visible"  -->
-  <q-item clickable @click="goTo()">
+  <q-item clickable @click.native.prevent="goTo()">
     <q-tooltip v-if="isProjectAdmin || isSuperAdmin" class="bg-purple text-body2" anchor="top middle" :offset="[10, 10]" :delay="100">
       {{ $t('projectHub.tooltipRightClickDelete') }}
     </q-tooltip>
@@ -46,7 +46,20 @@
         {{ $t('projectHub.lastWriteAccess') }} {{ timeAgo(project.lastWriteAccess) }}
       </q-chip>
     </q-item-section>
-    <q-item-section v-for="adm in project.admins" v-if="isLoggedIn" :key="adm" side>
+    <q-item-section v-if="project.admins.length > 2" style="max-width:30px;"> 
+      <q-btn size="sm" flat icon="expand_more" @click.native.stop>
+        <q-menu>
+          <q-list bordered separator>
+            <q-item v-for="adm in MoreAdmins" v-close-popup thumbnail>
+              <q-item-section>
+                <q-item-label class="text-weight-light"> {{adm}}</q-item-label>
+              </q-item-section>
+            </q-item>
+          </q-list>
+        </q-menu>
+      </q-btn>
+    </q-item-section>
+    <q-item-section v-for="adm in displayedAdmins" v-if="isLoggedIn" :key="adm" side>
       <q-chip v-if="userid === adm" size="sm">
         <q-avatar>
           <img :src="getUserInfos.picture_url || undefined" />
@@ -56,7 +69,7 @@
       <q-chip v-else icon="account_circle" :label="adm" size="sm" />
     </q-item-section>
     <q-item-section side>
-      <q-badge :color="$q.dark.isActive ? 'grey' : 'secondary'">
+      <q-badge color="secondary">
         {{ project.numberSamples }} {{ project.numberSamples === 1 ? $t('projectHub.sample') : $t('projectHub.samples') }}
       </q-badge>
     </q-item-section>
@@ -104,6 +117,7 @@ export default defineComponent({
     };
     return {
       confirmActionDial: false,
+      showListAdmins: false,
       confirmActionCallback,
       confirmActionArg1: '',
     };
@@ -117,6 +131,12 @@ export default defineComponent({
     isProjectAdmin() {
       return this.project.admins.includes(this.userid);
     },
+    displayedAdmins() {
+      return this.project.admins.slice(0, 2)
+    },
+    MoreAdmins() {
+      return this.project.admins.filter(admin => !this.displayedAdmins.includes(admin));
+    }
   },
   methods: {
     imageEmpty() {

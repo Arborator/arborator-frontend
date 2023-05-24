@@ -107,15 +107,23 @@
 <script lang="ts">
 import { notifyError, notifyMessage } from 'src/utils/notify';
 import api from '../../api/backend-api';
+import { sample_t } from 'src/api/backend-types';
 import { useModelWrapper } from '../../composables/modelWrapper.js';
-import { defineComponent } from 'vue';
+import { defineComponent, PropType } from 'vue';
 import { mapState } from 'pinia';
 import { useUserStore } from 'src/pinia/modules/user';
 import { useProjectStore } from 'src/pinia/modules/project';
 
 export default defineComponent({
   props: {
-    uploadDial: { type: Boolean, required: true },
+    uploadDial: { 
+      type: Boolean as PropType<boolean>, 
+      required: true, 
+      },
+    samples: { 
+      type: Object as PropType<sample_t[]>, 
+      required: true,
+      }
   },
   setup(props, { emit }) {
     return {
@@ -124,7 +132,6 @@ export default defineComponent({
   },
   data() {
     let maximizedUploadToggle = false;
-
     let columns: {
       name: string;
       required: boolean;
@@ -155,6 +162,7 @@ export default defineComponent({
     ];
 
     const userIds: { old: string; new: string }[] = [];
+    const userIntersPerSample: {sampleName: string, userIds: string[]}[]= [];
     const uploadSample: {
       submitting: boolean;
       attachment: { name: string | null; file: File[] };
@@ -168,10 +176,10 @@ export default defineComponent({
       robot: { active: false, name: 'parser', exerciseModeName: 'teacher' },
       uploadSample,
       userIds,
-      userIdsList: [],
       userIdsPreprocessed: false,
+      proceed: false,
       columns,
-
+      userIntersPerSample,
       alerts: {
         uploadsuccess: { color: 'positive', message: 'Upload success' },
         uploadfail: {
@@ -205,30 +213,18 @@ export default defineComponent({
 
   methods: {
     async preprocess() {
-      if (!this.uploadSample.attachment.file) {
-        return;
-      }
-
-      this.userIds = [
-        {
-          old: 'default',
-          new: this.username,
-        },
-      ];
+      this.userIds = [{old: 'default', new: this.username}];
+      this.userIntersPerSample = [];
       for (const file of this.uploadSample.attachment.file) {
         const reader = new FileReader();
         reader.onload = () => {
           const lines = (reader as { result: string }).result.split(/[\r\n]+/g);
-          // lines.forEach((line) => {
           for (const line of lines) {
-            if (line[0] === '#') {
-              if (line.slice(2, 9) === 'user_id') {
-                const splittedMeta = line.split(' ');
-                const userId = splittedMeta[splittedMeta.length - 1];
+            if (line.includes("# user_id = ")) {
+                const userId = line.split('# user_id = ')[1];
                 if (!this.userIds.map((userIdLocal) => userIdLocal.old).includes(userId)) {
                   this.userIds.unshift({ old: userId, new: userId });
-                }
-              }
+                } 
             }
           }
         };
@@ -236,7 +232,44 @@ export default defineComponent({
       }
       this.userIdsPreprocessed = true;
     },
+    checkUsersInter(file : File) {
+      const sampleName = file.name.split(".conllu")[0];
+      let interUser: string[] = [];
+      let treesFrom: string[] = [];
+      const sample = this.samples.filter((sample) => sample.sample_name == sampleName)[0];
+      if (sample){  
+        treesFrom = sample.treesFrom;
+        interUser = treesFrom.filter(userId => this.userIds.map(user => user.new).includes(userId));
+        if (interUser.length > 0 ) this.userIntersPerSample.push({sampleName: sample.sample_name, userIds: interUser});
+      }
+    },
+    notifyWarning() {
+      let warningMessage = 'You are uploading data for users ';
+      this.userIntersPerSample.forEach((existedSample, index, array) => {
+        for (const userId of existedSample.userIds){
+          warningMessage += `"${userId}", `;
+        }
+        warningMessage += `which have trees in "${existedSample.sampleName}" sample.`;
+        if (index !== array.length - 1) { warningMessage += ' And ';}
+      }); 
+      warningMessage += 'The new trees will erase the previous ones if any. Do you want to proceed?';
+        this.$q.notify({
+          message: warningMessage,
+          color: 'warning',
+          position: 'top',
+          actions: [
+            { label: 'Proceed', handler: () => { this.uploadSamples(); } },
+            { label: 'Dismiss', handler: () => { this.uploadDialModel = false; } }
+          ], 
+          timeout: 20000,
+        });
+     
+    },
     upload() {
+      for (const file of this.uploadSample.attachment.file) this.checkUsersInter(file);
+      this.userIntersPerSample.length > 0 ?  this.notifyWarning() :this.uploadSamples();
+    },
+    uploadSamples() {
       const form = new FormData();
       if (this.exerciseMode) {
         this.robot.name = 'teacher';
@@ -263,15 +296,15 @@ export default defineComponent({
           if (error.response) {
             error.message = error.response.data.message;
             error.permanent = true;
+            notifyError({ error: error.message})
           }
           this.$emit('uploaded:sample'); // tell to the parent that a new sample was uploaded and to fetch all samples
 
           error.caption = 'Check your file please and try again.';
           this.uploadSample.submitting = false;
           this.uploadDialModel = false;
-          notifyError({ error });
         });
-    },
+    }        
   },
 });
 </script>

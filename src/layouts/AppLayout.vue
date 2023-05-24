@@ -59,6 +59,9 @@
           <q-btn flat round icon="question_mark" href="https://arborator.github.io/arborator-documentation/#/" target="_blank">
             <q-tooltip content-class="text-white bg-primary">{{ $t('documentation') }}</q-tooltip>
           </q-btn>
+          <q-btn flat round icon="feedback" href="https://github.com/Arborator/arborator-frontend/issues" target="_blank">
+            <q-tooltip content-class="text-white bg-primary">{{ $t('feedback') }}</q-tooltip>
+          </q-btn>
           <q-btn-dropdown v-show="!isLoggedIn" color="secondary" outline label="Log In" icon="account_circle">
             <q-list>
               <q-item v-close-popup clickable @click="tologin(source + '/login/google')">

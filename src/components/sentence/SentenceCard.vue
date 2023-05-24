@@ -3,7 +3,7 @@
     <q-card-section>
       <div class="row items-center">
         <span class="text-grey">{{ index + 1 }}</span>
-        <q-chip class="text-center" :color="$q.dark.isActive ? 'primary' : ''" dense> {{ sentenceId }}
+        <q-chip class="text-center" :color="$q.dark.isActive ? 'grey' : ''" dense> {{ sentenceId }}
         </q-chip
         >&nbsp;&nbsp;&nbsp;
         <q-input
@@ -14,11 +14,11 @@
           readonly
           @select="editTokens"
         >
-          <q-tooltip anchor="center middle" self="center middle" :offset="[10, 10]"> Select the sentence to edit, remove
-            or split tokens
+          <q-tooltip  anchor="bottom middle" self="center middle" :offset="[10, 10]"> {{ $t('sentenceCard.selectTooltip')}}
           </q-tooltip>
           <template #prepend>
-            <q-icon name="chat_bubble_outline"/><!-- 言 --> </template>
+            <q-icon name="chat_bubble_outline"/><!-- 言 --> 
+          </template>
         </q-input>
         <q-space/>
         <template v-if="openTabUser !== ''">
@@ -31,16 +31,16 @@
             :disable="openTabUser === ''"
             @click="openStatisticsDialog"
           >
-            <q-tooltip>See your annotation errors</q-tooltip>
+            <q-tooltip>{{$t('sentenceCard.annotationErrors')}}</q-tooltip>
           </q-btn>
 
           <q-btn v-if="isTeacher" flat round dense icon="school" :disable="openTabUser === ''" @click="save('teacher')">
-            <q-tooltip>Save as teacher</q-tooltip>
+            <q-tooltip>{{$t('sentenceCard.saveTeacher')}}</q-tooltip>
           </q-btn>
 
           <q-btn v-if="isTeacher" flat round dense icon="linear_scale" :disable="openTabUser === ''"
                  @click="save('base_tree')">
-            <q-tooltip>Save as base_tree</q-tooltip>
+            <q-tooltip>{{$t('sentenceCard.saveBaseTree')}}</q-tooltip>
           </q-btn>
 
           <q-btn v-if="isBernardCaron" flat round dense icon="face" :disable="openTabUser === ''" @click="save(EMMETT)">
@@ -50,7 +50,7 @@
           <q-btn v-if="canSaveTreeInProject" flat round dense icon="save"
                  :disable="openTabUser === '' || !canSave" @click="save('')">
             <q-tooltip
-            >Save the tree of {{ openTabUser }} as <b>{{ userId }}</b></q-tooltip
+            >{{$t('sentenceCard.saveTree[0]')}} {{ openTabUser }} {{$t('sentenceCard.saveTree[1]')}} <b>{{ userId }}</b></q-tooltip
             >
           </q-btn>
 
@@ -58,12 +58,12 @@
           <!-- TODO : still display the metadata when the user is not logged in, but hide all the buttons for deleting and saving them -->
           <q-btn v-if="isLoggedIn" flat round dense icon="post_add" :disable="openTabUser === ''"
                  @click="openMetaDialog()">
-            <q-tooltip>Edit this tree's metadata</q-tooltip>
+            <q-tooltip>{{$t('sentenceCard.editMetadata')}}</q-tooltip>
           </q-btn>
 
           <q-btn v-if="isLoggedIn && isTeacher" flat round dense icon="filter_9_plus" :disable="openTabUser === ''"
                  @click="openMultiEditDialog">
-            <q-tooltip>multi edit dialog</q-tooltip>
+            <q-tooltip>{{$t('sentenceCard.multiEditDial')}}</q-tooltip>
           </q-btn>
 
           <q-btn-dropdown :disable="openTabUser === ''" icon="more_vert" flat dense>
@@ -74,7 +74,7 @@
                   <q-avatar icon="ion-git-network" color="primary" text-color="white"/>
                 </q-item-section>
                 <q-item-section>
-                  <q-item-label>{{ diffMode ? 'Leave' : 'Enter' }} Diff Mode</q-item-label>
+                  <q-item-label>{{ diffMode ? $t('sentenceCard.diffMode[1]') : $t('sentenceCard.diffMode[0]') }} {{$t('sentenceCard.diffMode[2]')}}</q-item-label>
                 </q-item-section>
               </q-item>
 
@@ -83,7 +83,7 @@
                   <q-avatar icon="ion-md-link" color="primary" text-color="white"/>
                 </q-item-section>
                 <q-item-section>
-                  <q-item-label>Get direct link to this tree</q-item-label>
+                  <q-item-label>{{$t('sentenceCard.treeLink')}}</q-item-label>
                 </q-item-section>
               </q-item>
 
@@ -92,7 +92,7 @@
                   <q-avatar icon="format_list_numbered" color="primary" text-color="white"/>
                 </q-item-section>
                 <q-item-section>
-                  <q-item-label>Get CoNLL-U of this tree</q-item-label>
+                  <q-item-label>{{$t('sentenceCard.treeConll')}}</q-item-label>
                 </q-item-section>
               </q-item>
 
@@ -101,7 +101,7 @@
                   <q-avatar icon="ion-md-color-palette" color="primary" text-color="white"/>
                 </q-item-section>
                 <q-item-section>
-                  <q-item-label>Get SVG of this tree</q-item-label>
+                  <q-item-label>{{$t('sentenceCard.treeSVG')}}</q-item-label>
                 </q-item-section>
               </q-item>
 
@@ -110,7 +110,7 @@
                   <q-avatar icon="add" color="primary" text-color="white"/>
                 </q-item-section>
                 <q-item-section>
-                  <q-item-label>Add a new token</q-item-label>
+                  <q-item-label> {{$t('sentenceCard.addToken')}}</q-item-label>
                 </q-item-section>
               </q-item>
               <q-item clickable
@@ -124,7 +124,7 @@
                   <q-avatar icon="edit" color="primary" text-color="white"/>
                 </q-item-section>
                 <q-item-section>
-                  <q-item-label>Edit the tokens</q-item-label>
+                  <q-item-label>{{$t('sentenceCard.editToken')}}</q-item-label>
                 </q-item-section>
               </q-item>
             </q-list>
@@ -167,11 +167,11 @@
           :ripple="false"
           @contextmenu="rightClickHandler($event, user)"
         >
-          <q-tooltip v-if="hasPendingChanges[user]">The tree has some pendings modifications not saved</q-tooltip>
+          <q-tooltip v-if="hasPendingChanges[user]">{{$t('sentenceCard.saveModif')}}</q-tooltip>
           <q-tooltip v-else
           >
             <q-icon color="primary" name="schedule" size="14px" class="q-ml-xs"/>
-            modified {{ lastModifiedTime[user] }} ago
+            {{$t('sentenceCard.modified[0]')}} {{ lastModifiedTime[user] }}  {{ $i18n.locale == 'en' ? $t('sentenceCard.modified[1]') : ''}}
           </q-tooltip>
         </q-tab>
       </q-tabs>
@@ -344,13 +344,13 @@ export default defineComponent({
         if (timeDifferenceNumber < 10) {
           timeDifferenceString = '< 10s';
         } else if (timeDifferenceNumber / 60 < 1) {
-          timeDifferenceString = `${Math.round(timeDifferenceNumber)} seconds`;
+          timeDifferenceString = `${Math.round(timeDifferenceNumber)} ${this.$t('sentenceCard.modifTime[0]')}`;
         } else if (timeDifferenceNumber / (60 * 60) < 1) {
-          timeDifferenceString = `${Math.round(timeDifferenceNumber / 60)} minutes`;
+          timeDifferenceString = `${Math.round(timeDifferenceNumber / 60)} ${this.$t('sentenceCard.modifTime[1]')}`;
         } else if (timeDifferenceNumber / (60 * 60 * 24) < 1) {
-          timeDifferenceString = `${Math.round(timeDifferenceNumber / (60 * 60))} hours`;
+          timeDifferenceString = `${Math.round(timeDifferenceNumber / (60 * 60))} ${this.$t('sentenceCard.modifTime[2]')}`;
         } else if (timeDifferenceNumber / (60 * 60 * 24 * 365) < 1) {
-          timeDifferenceString = `${Math.round(timeDifferenceNumber / (60 * 60 * 24))} days`;
+          timeDifferenceString = `${Math.round(timeDifferenceNumber / (60 * 60 * 24))} ${this.$t('sentenceCard.modifTime[3]')}`;
         }
         lastModifiedTime[user] = timeDifferenceString;
       }

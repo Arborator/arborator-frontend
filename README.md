@@ -4,11 +4,10 @@ Here is the running application: https://arboratorgrew.elizia.net/
 
 Don't hesitate to create an account to try it out
 
-## Wiki (work in progress)
+## Documentation
 
-Arborator-Grew's wiki is available here: https://github.com/Arborator/arborator-frontend/wiki
-
-This wiki will contain the full User Guide, which is currently a work-in-progress.
+Arborator-Grew's documentation is available here: 
+https://arborator.github.io/arborator-documentation/#/
 
 ## Important external docs
 - Grew server documentation : https://grew.fr/usage/grew_server

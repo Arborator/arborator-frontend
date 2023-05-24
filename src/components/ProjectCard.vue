@@ -1,5 +1,6 @@
 <template>
   <q-card
+    bordered
     v-show="visible"
     :class="hover ? 'shadow-12' : ''"
     class="my-card grid-style-transition shadow-2"

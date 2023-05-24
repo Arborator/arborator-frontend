@@ -18,7 +18,6 @@
             :sentence-id="item"
             search-result=""
             :exercise-level="exerciseLevel"
-            @refresh:trees="getSampleTrees"
           >
           </SentenceCard>
         </template>
@@ -138,6 +137,9 @@ export default defineComponent({
     handleResize() {
       this.window.width = window.innerWidth;
       this.window.height = window.innerHeight;
+    },
+    refreshWindow() {
+      location.reload();
     },
     getSampleTrees() {
       this.loading = true;

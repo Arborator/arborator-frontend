@@ -168,10 +168,8 @@
         </q-card-section>
       </q-card>
     </div>
-
-    <q-dialog v-model="creaProjectDial" transition-show="fade" transition-hide="fade">
-      <CreaProjectCard :parent-get-projects="getProjects"></CreaProjectCard>
-    </q-dialog>
+    
+    <CreaProjectCard v-if="creaProjectDial" :parent-get-projects="getProjects" @created="creaProjectDial = false"></CreaProjectCard>
 
     <q-dialog v-model="projectSettingsDial" transition-show="slide-up" transition-hide="slide-down">
       <ProjectSettingsView :projectname="projectnameTarget" style="width: 90vw"></ProjectSettingsView>

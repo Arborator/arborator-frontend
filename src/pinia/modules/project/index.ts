@@ -6,6 +6,7 @@ import { useUserStore } from '../user';
 import { defineStore } from 'pinia';
 import { notifyMessage, notifyError } from 'src/utils/notify';
 import { annotationFeatures_t, project_extended_t, project_with_diff_t } from 'src/api/backend-types';
+import { stat } from 'fs';
 
 export const useProjectStore = defineStore('project', {
   state: () => {
@@ -13,9 +14,12 @@ export const useProjectStore = defineStore('project', {
   },
   getters: {
     getProjectConfig: (state) => state,
+    isOwner: (state) =>{
+      return state.admins[0] === useUserStore().id;
+    },
     isAdmin: (state) => {
       return state.admins.includes(useUserStore().id) || useUserStore().super_admin;
-    }, // return state.admins.includes(getters["getUserInfos"].id);
+    }, 
     isGuest: (state) => state.guests.includes(useUserStore().id) && !useUserStore().super_admin,
     isTeacher(state): boolean {
       return this.isAdmin && state.exerciseMode;
@@ -59,6 +63,9 @@ export const useProjectStore = defineStore('project', {
       }
       return false
     },
+    isProjectMember(): boolean {
+      return this.isAdmin || this.isGuest
+    },
     getAnnofjson: (state) => JSON.stringify(state.annotationFeatures, null, 4),
     getUDAnnofJson: (state) => JSON.stringify(state.annotationFeaturesUD, null, 4),
     shownMetaChoices: (state) => state.annotationFeatures.META,
@@ -94,6 +101,7 @@ export const useProjectStore = defineStore('project', {
           this.visibility = response.data.visibility;
           this.image = response.data.image;
           this.description = response.data.description;
+          this.freezed = response.data.freezed;
         })
         .then(() => {
           api.getProjectUsersAccess(projectname).then((response) => {

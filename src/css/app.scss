@@ -10,3 +10,27 @@
   margin: 5px;
   font-size: 12px;
 }
+
+.body--light{
+  --q-primary       : #4a2769;
+  --q-secondary     : #15a700;
+  --q-accent        : #dd137b;
+  --q-positive      : #15a700;
+  --q-negative      : #dd137b;
+  --q-info          : #7f90c0;
+  --q-warning       : #F2C037;
+  --q-background    : #FFFFFF;
+}
+
+.body--dark{
+  --q-primary       : #bb86fc;
+  --q-secondary     : #00a696;
+  --q-accent        : #dd137b;
+  --q-positive      : #00a696;
+  --q-background    : #121212;
+  --q-negative      : #cf6679;
+  --q-info          : #7f90c0;
+  --q-warning       : #F2C037;
+
+}
+

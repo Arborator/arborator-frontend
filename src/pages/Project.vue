@@ -1,24 +1,19 @@
 <template>
   <q-page id="container" :class="$q.dark.isActive ? 'bg-dark' : 'bg-grey-1'">
-    <div class="q-pa-md row q-gutter-md flex flex-center">
+    <div>
       <q-card flat style="max-width: 100%">
         <q-card-section class="project-header">
-          <q-toolbar class="text-center">
-            <!-- <q-toolbar-title><span :class="($q.dark.isActive?'':'text-primary') + ' text-bold'">{.name}}</span> </q-toolbar-title> -->
-          </q-toolbar>
           <q-img class="project-image" :src="cleanedImage" basic>
             <div class="absolute-bottom text-h6" style="padding: 6px">
               <ProjectIcon :visibility="visibility" :exercise-mode="exerciseMode" />
               {{ $t('projectView.project') }} {{ projectName }}
               <q-btn
-                v-if="isSuperAdmin || isAdmin"
+                v-if="isAdmin"
                 flat
                 round
-                :color="$q.dark.isActive ? 'primary' : ''"
                 icon="settings"
                 @click="projectSettingsDial = true"
               >
-                <!-- <q-btn v-if="1" flat round :color="$q.dark.isActive?'primary':''" icon="settings" @click="projectSettingsDial=true"> -->
                 <q-tooltip :delay="300" content-class="text-white bg-primary">{{ $t('projectView.tooltipSettings') }}</q-tooltip>
               </q-btn>
               <q-btn v-else flat round :color="$q.dark.isActive ? 'primary' : ''" icon="settings" @click="simpleProjectInfoDialog = true">
@@ -34,7 +29,6 @@
           <q-bar class="bg-primary text-white">
             <q-space />
             <q-btn @click="isShowLexiconPanel = false" dense flat icon="close">
-              <q-tooltip content-class="bg-white text-primary">Close</q-tooltip>
             </q-btn>
           </q-bar>
           <LexiconMain :sample-id="table.selected"></LexiconMain>
@@ -47,6 +41,7 @@
 
         <q-card-section>
           <q-table
+            bordered
             ref="textsTable"
             :key="tableKey"
             v-model:pagination="table.pagination"
@@ -69,11 +64,10 @@
             table-style="max-height:80vh"
             :rows-per-page-options="[30]"
           >
-            <!-- @request="getProjectInfos" -->
             <template #top="props">
               <q-btn-group flat>
-                <q-btn v-if="isAdmin || isSuperAdmin" flat color="default" icon="cloud_upload" @click="uploadDial = true">
-                  <q-tooltip v-if="isSuperAdmin || isAdmin" :delay="300" content-class="text-white bg-primary">{{
+                <q-btn v-if="isAdmin" :disable="isFreezed" flat color="default" icon="cloud_upload" @click="uploadDial = true">
+                  <q-tooltip v-if="isAdmin" :delay="300" content-class="text-white bg-primary">{{
                     $t('projectView.tooltipAddSample')
                   }}</q-tooltip>
                 </q-btn>
@@ -107,7 +101,7 @@
                   </q-tooltip>
                 </div>
 
-                <q-btn v-if="isAdmin || isSuperAdmin" v-show="table.selected.length < 1" flat color="default" icon="delete_forever" disable>
+                <q-btn v-if="isAdmin" v-show="table.selected.length < 1" flat color="default" icon="delete_forever" disable>
                   <q-tooltip v-if="table.selected.length < 1" :delay="300" content-class="text-white bg-primary">{{
                     $t('projectView.tooltipDeleteSample[0]')
                   }}</q-tooltip>
@@ -115,26 +109,26 @@
                 </q-btn>
 
                 <q-btn
-                  v-if="isAdmin || isSuperAdmin"
+                  v-if="isAdmin"
                   v-show="table.selected.length !== 0"
                   :loading="table.loadingDelete"
                   flat
                   color="default"
                   text-color="red"
                   icon="delete_forever"
-                  :disable="!isAdmin && !isSuperAdmin"
+                  :disable="!isAdmin"
                   @click="triggerConfirm(deleteSamples)"
                 >
-                  <q-tooltip :delay="300" content-class="text-white bg-primary">{{ $t('projectView.tooltipDeleteSample[1]') }}</q-tooltip>
+                  <q-tooltip v-if="githubSynchronizedRepo != ''" content-class="text-white bg-primary">This action will delete the file from your synchronized github repository also</q-tooltip>
+                  <q-tooltip v-else :delay="300" content-class="text-white bg-primary">{{ $t('projectView.tooltipDeleteSample[1]') }}</q-tooltip>
                 </q-btn>
-                <!-- Lexicon-dialog -->
-                <div v-if="isGuest || isAdmin || isSuperAdmin">
+                <div v-if="isProjectMember">
                   <q-btn
                     flat
                     color="default"
                     icon="playlist_add_check"
                     :loading="table.exporting"
-                    :disable="table.selected.length < 1"
+                    :disable="table.selected.length < 1 || isFreezed"
                     @click="isShowLexiconPanel = true"
                   ></q-btn>
                   <q-tooltip v-if="table.selected.length < 1" :delay="300" content-class="text-white bg-primary">
@@ -145,6 +139,7 @@
                 <!-- single and main button for parsing -->
                 <div v-if="canSaveTreeInProject">
                   <q-btn
+                    :disable="isFreezed"
                     flat
                     icon="precision_manufacturing"
                     @click="bootParserPanelToggle()"
@@ -156,11 +151,56 @@
                     >
                   </q-btn>
                 </div>
+                <div>
+                  <q-btn
+                    v-if="isAllowdedToSync && githubSynchronizedRepo == ''"
+                    :disable="isFreezed"
+                    flat
+                    icon="fab fa-github"
+                    @click="isShowSyncDialog = true"
+                  >
+                  </q-btn>
+                  <q-tooltip>
+                    Synchronize with github
+                  </q-tooltip>
+
+                </div>
+                <div v-if="isOwner">
+                  <q-btn-dropdown flat icon="more_vert">
+                     <q-list>
+                      <q-item clickable v-close-popup @click="freezeProject">
+                        <q-item-section avatar>
+                          <q-avatar icon="block" />
+                        </q-item-section>
+                        <q-item-section>
+                          <q-item-label>{{ $t('projectView.freezeProject[0]')}}</q-item-label>
+                          <q-item-label v-if="freezed">{{ $t('projectView.freezeProject[1]')}}</q-item-label>
+                          <q-item-label v-if="freezed" caption>{{$t('projectView.freezeProject[2]')}}</q-item-label>
+                        </q-item-section>
+                      </q-item>
+
+                      <q-item clickable :disable="table.selected.length < 1" v-close-popup @click="removeUserTreesDial = true">
+                        <q-item-section avatar>
+                          <q-avatar icon="person_remove" />
+                        </q-item-section>
+                        <q-item-section>
+                          <q-item-label>{{ $t('projectView.removeUserTrees[0]')}}</q-item-label>
+                          <q-item-label v-if="table.selected.length < 1" caption>{{ $t('projectView.removeUserTrees[1]')}}</q-item-label>
+                        </q-item-section>
+                      </q-item>
+                    </q-list>
+                  </q-btn-dropdown>
+                  <q-tooltip> {{$t('projectView.tooltipMore')}} </q-tooltip>
+                </div>
+                <div v-if="githubSynchronizedRepo != '' && isAllowdedToSync">
+                  <GithubOptions :projectName="projectName" :repositoryName="githubSynchronizedRepo" :key="reload" @remove="reloadAfterDeleteSynchronization " @pulled="loadProjectData"/>
+                  <q-tooltip content-class="text-white bg-primary"> {{$t('projectView.tooltipSynchronizedProject')}} {{githubSynchronizedRepo}}</q-tooltip> 
+                </div>
               </q-btn-group>
 
               <q-space />
 
-              <q-input v-model="table.filter" dense debounce="300" placeholder="Search" text-color="blue-grey-8">
+              <q-input v-model="table.filter" dense debounce="300" :placeholder="$t('projectView.search')" text-color="blue-grey-8">
                 <template #append>
                   <q-icon name="search" />
                 </template>
@@ -197,7 +237,7 @@
                 </q-td>
                 <q-td key="samplename" :props="props">
                   <q-btn
-                    :disable="props.row.sentences === 0"
+                    :disable="isFreezed"
                     outline
                     color="white"
                     :text-color="$q.dark.isActive ? 'white' : 'black'"
@@ -212,12 +252,12 @@
                 <q-td key="tokens" :props="props">{{ props.row.tokens }}</q-td>
                 <q-td key="annotators" :props="props">
                   <TagInput
-                    v-if="isAdmin || isSuperAdmin"
+                    v-if="isAdmin"
                     v-model="props.row.roles.annotator"
                     role="annotator"
                     :tag-context="props.row"
                     :element-id="props.row.sample_name + 'annotatortag'"
-                    :existing-tags="possiblesUsers"
+                    :existing-tags="getPossibleUsers"
                     :typeahead="true"
                     typeahead-style="badges"
                     :typeahead-hide-discard="true"
@@ -235,12 +275,12 @@
                 </q-td>
                 <q-td key="validators" :props="props">
                   <TagInput
-                    v-if="isAdmin || isSuperAdmin"
+                    v-if="isAdmin"
                     v-model="props.row.roles.validator"
                     role="validator"
                     :tag-context="props.row"
                     :element-id="props.row.sample_name + 'validatortag'"
-                    :existing-tags="possiblesUsers"
+                    :existing-tags="getPossibleUsers"
                     :typeahead="true"
                     typeahead-style="badges"
                     :typeahead-hide-discard="true"
@@ -284,13 +324,12 @@
                     @update:model-value="updateExerciseLevel(props.row)"
                   />
                 </q-td>
-                <!-- <q-td key="exo" :props="props">{{ props.row.exo }}</q-td> -->
               </q-tr>
             </template>
           </q-table>
         </q-card-section>
       </q-card>
-      <template v-if="!exerciseMode && !isTeacher">
+      <template v-if="!exerciseMode && !isTeacher && !isFreezed">
         <GrewSearch :user-ids="getProjectTreesFrom" :sentence-count="sentenceCount" :search-scope="projectName" />
         <RelationTableMain />
       </template>
@@ -302,10 +341,16 @@
       <q-dialog v-model="assignDial" persistent transition-show="slide-up" transition-hide="slide-down">
         <user-table :samples="table.selected"></user-table>
       </q-dialog>
-      <UploadDialog v-model:uploadDial="uploadDial" @uploaded:sample="loadProjectData()" />
+      <UploadDialog v-model:uploadDial="uploadDial" :samples="samples" @uploaded:sample="loadProjectData()" />
 
       <q-dialog v-model="projectSettingsDial" transition-show="slide-up" transition-hide="slide-down">
         <ProjectSettingsView :project-trees-from="getProjectTreesFrom" :projectname="projectName" style="width: 90vw"></ProjectSettingsView>
+      </q-dialog>
+
+      <q-dialog v-model="isShowSyncDialog">
+        <q-card style="min-width: 50vw;">
+          <GithubSyncDialog :project-name="projectName" @created="reloadAfterSync"></GithubSyncDialog>
+        </q-card>
       </q-dialog>
 
       <q-dialog v-model="simpleProjectInfoDialog">
@@ -335,6 +380,20 @@
         </q-card>
       </q-dialog>
 
+      <q-dialog v-model="removeUserTreesDial">
+        <q-card style="width: 300vh">
+          <q-card-section>
+            <div class="text-h6">Remove user trees from the selected samples</div>
+          </q-card-section>
+          <q-card-section class="q-gutter-md"> 
+            <q-select filled v-model="user" label="Select user" :options="getTreesFrom(table.selected)" />
+            <div class="row justify-center">
+               <q-btn color="primary" @click="triggerConfirm(removeUserTrees)" label="Remove Trees" />
+            </div>
+          </q-card-section>
+        </q-card>
+      </q-dialog>
+
       <q-dialog v-model="confirmActionDial">
         <confirm-action :parent-action="confirmActionCallback" :arg1="confirmActionArg1" :target-name="projectName"></confirm-action>
       </q-dialog>
@@ -356,14 +415,16 @@ import GrewSearch from '../components/grewSearch/GrewSearch.vue';
 import RelationTableMain from '../components/relationTable/RelationTableMain.vue';
 import ParsingPanel from '../components/parsing/ParsingPanel.vue';
 import ProjectIcon from '../components/shared/ProjectIcon.vue';
+import GithubOptions from '../components/github/GithubOptions.vue';
+import GithubSyncDialog from 'src/components/github/GithubSyncDialog.vue';
 
-import { notifyError, notifyMessage } from 'src/utils/notify';
-import { mapActions, mapState } from 'pinia';
-import { useProjectStore } from 'src/pinia/modules/project';
-import { useUserStore } from 'src/pinia/modules/user';
-import { sample_roles_t, sample_t, user_sample_roles_t, sample_role_targetrole_t, sample_role_action_t } from 'src/api/backend-types';
-import { defineComponent } from 'vue';
-import { table_t } from 'src/types/main_types';
+import {notifyError, notifyMessage} from 'src/utils/notify';
+import {mapActions, mapState, mapWritableState} from 'pinia';
+import {useProjectStore} from 'src/pinia/modules/project';
+import {useUserStore} from 'src/pinia/modules/user';
+import {sample_roles_t, sample_t, user_sample_roles_t, sample_role_targetrole_t, sample_role_action_t} from 'src/api/backend-types';
+import {defineComponent} from 'vue';
+import {table_t} from 'src/types/main_types';
 
 export default defineComponent({
   components: {
@@ -378,12 +439,13 @@ export default defineComponent({
     RelationTableMain,
     ParsingPanel,
     ProjectIcon,
+    GithubOptions, 
+    GithubSyncDialog,
   },
   data() {
     const samples: sample_t[] = [];
     const selected: sample_t[] = [];
     const projectTreesFrom: string[] = [];
-    const possiblesUsers: user_sample_roles_t[] = [];
     const confirmActionCallback: CallableFunction = () => {
       console.log('Callback not init yet');
     };
@@ -393,49 +455,49 @@ export default defineComponent({
       fields: [
         {
           name: 'samplename',
-          label: 'Name',
+          label: this.$t('projectView.tableFields[0]'),
           sortable: true,
           field: 'samplename',
         },
         {
           name: 'sentences',
-          label: 'Nb Sentences',
+          label: this.$t('projectView.tableFields[1]'),
           sortable: true,
           field: 'sentences',
         },
         {
           name: 'tokens',
-          label: 'Nb Tokens',
+          label: this.$t('projectView.tableFields[2]'),
           sortable: true,
           field: 'number_tokens',
         },
         {
           name: 'annotators',
-          label: 'Annotators',
+          label: this.$t('projectView.tableFields[3]'),
           sortable: true,
           field: 'roles.annotator',
         },
         {
           name: 'validators',
-          label: 'Validators',
+          label: this.$t('projectView.tableFields[4]'),
           sortable: true,
           field: 'roles.validator',
         },
         {
           name: 'profs',
-          label: 'Profs',
+          label: this.$t('projectView.tableFields[5]'),
           sortable: true,
           field: 'roles.prof',
         },
         {
           name: 'treesFrom',
-          label: 'Trees From',
+          label: this.$t('projectView.tableFields[6]'),
           sortable: true,
           field: 'treesFrom',
         },
         {
           name: 'exerciseLevel',
-          label: 'Exercise Level',
+          label: this.$t('projectView.tableFields[7]'),
           sortable: true,
           field: 'exerciseLevel',
         },
@@ -454,33 +516,24 @@ export default defineComponent({
       loadingDelete: false,
       exporting: false,
     };
+    const githubSynchronizedRepo: string = '';
     return {
       table,
       multiple: [],
       options: ['Google', 'Facebook', 'Twitter', 'Apple', 'Oracle'],
       tab: 'texts',
-      btnTopClass: this.$q.dark.isActive ? 'white' : 'blue-grey-8',
       assignDial: false,
       uploadDial: false,
       projectSettingsDial: false,
       simpleProjectInfoDialog: false,
       confirmActionDial: false,
+      isShowParsingPanel: false,
+      isShowLexiconPanel: false,
+      isDeleteSync: false,
+      removeUserTreesDial: false,
+      user: '',
       confirmActionCallback,
       confirmActionArg1: '',
-      lexiconItems: [],
-      project: {
-        // todo: this seems to be useless
-        infos: {
-          name: '',
-          visibility: 2,
-          is_open: false,
-          description: '',
-          image: '',
-          admins: [],
-          guests: [],
-        },
-        samples: [],
-      },
       samples,
       projectTreesFrom,
       exerciceModeOptions: [
@@ -503,14 +556,13 @@ export default defineComponent({
       ],
       features: [],
       sampleNames,
-      isShowParsingPanel: false,
       window: { width: 0, height: 0 },
-      possiblesUsers,
-      tagContext: {},
       tableKey: 0,
       initLoad: false,
-      isShowLexiconPanel: false,
+      isShowSyncDialog : false,
       chooseExportedTrees: false,
+      githubSynchronizedRepo:'',
+      reload: 0,
     };
   },
   computed: {
@@ -526,52 +578,57 @@ export default defineComponent({
       'cleanedImage',
       'description',
       'isTeacher',
+      'isProjectMember',
       'canSaveTreeInProject',
+      'isOwner',
+      'freezed',
     ]),
-    ...mapState(useUserStore, ['isLoggedIn', 'isSuperAdmin', 'loggedWithGithub', 'avatar']),
-    projectName(): string | string[] {
-      return this.$route.params.projectname;
+    ...mapWritableState(useProjectStore, ['freezed']),
+    ...mapState(useUserStore, ['isLoggedIn', 'isSuperAdmin', 'loggedWithGithub', 'avatar', 'username']),
+    projectName(): string {
+      return this.$route.params.projectname as string;
     },
     routePath(): string {
       return this.$route.path;
     },
-    noselect(): boolean {
-      return this.table.selected.length < 1;
-    },
     sentenceCount(): number {
       return this.samples.map((sample) => sample.sentences).reduce((partialSum, a) => partialSum + a, 0);
     },
-    featureOptions(): String[] {
-      return Object.values(this.annotationFeatures.FEATS).map((value) => value.name);
-    },
     getProjectTreesFrom(): string[] {
-      const projectTreesFrom: string[] = [];
-
-      for (const sample of this.samples) {
-        const sampleTreesFrom = sample.treesFrom;
-
-        for (const userId of sampleTreesFrom) {
-          if (!projectTreesFrom.includes(userId)) {
-            projectTreesFrom.push(userId);
-          }
-        }
-      }
-      return projectTreesFrom;
+      return this.getTreesFrom(this.samples)
     },
+    getPossibleUsers(){
+      const possiblesUsers: user_sample_roles_t[] = []
+      for (const admin of this.admins){
+        possiblesUsers.push({ key: admin, value: admin });
+      }
+      for (const guest of this.guests){
+        possiblesUsers.push({ key: guest, value: guest })
+      }
+      return possiblesUsers;
+    },
+    isAllowdedToSync(): boolean{
+      return this.isSuperAdmin && this.loggedWithGithub  && !this.exerciseMode && !this.isTeacher;
+    }, 
+    isFreezed(): boolean{
+      return !this.isOwner && this.freezed;
+    }
   },
   created() {
     window.addEventListener('resize', this.handleResize);
     this.handleResize();
   },
   mounted() {
-    this.getUsers();
     this.loadProjectData();
+    this.notifyFreezedProject();
     document.title = `ArboratorGrew: ${this.projectName}`;
+    if (this.isLoggedIn) this.getSynchronizedGithubRepo(); 
   },
   unmounted() {
     window.removeEventListener('resize', this.handleResize);
   },
   methods: {
+    ...mapActions(useProjectStore, ['updateProjectSettings']),
     handleResize() {
       this.window.width = window.innerWidth;
       this.window.height = window.innerHeight;
@@ -581,13 +638,24 @@ export default defineComponent({
       this.$router.push(`/projects/${this.projectName}/samples`);
     },
 
+    reloadAfterSync() {
+      this.loadProjectData();
+      this.isShowSyncDialog = false;
+      this.getSynchronizedGithubRepo();
+    },
+
+    reloadAfterDeleteSynchronization () {
+      this.isDeleteSync = true;
+      this.loadProjectData();
+    }, 
+
     filterFields(tableJson: table_t<unknown>) {
       // to remove some fields from visiblecolumns select options
       return tableJson.fields.filter((obj) => obj.field !== 'syntInfo' && obj.field !== 'cat' && obj.field !== 'redistributions');
     },
     loadProjectData() {
       this.getProjectSamples();
-      //this.getProjectTreesFrom();
+      this.reload +=1;
     },
     getProjectSamples() {
       api.getProjectSamples(this.projectName as string).then((response) => {
@@ -597,21 +665,6 @@ export default defineComponent({
           this.sampleNames.push(sample.sample_name);
         }
       });
-    },
-
-    getUsers() {
-      // TODO : change this function as it's downloading all users each time. It should only be users of the project
-      // this method populate the `possiblesUsers` list for feeding the annotator and validator tag input choice
-      api
-        .getUsers()
-        .then((response) => {
-          for (const name of response.data.map((a) => a.username)) {
-            this.possiblesUsers.push({ key: name, value: name });
-          }
-        })
-        .catch((error) => {
-          notifyError({ error });
-        });
     },
 
     deleteSamples() {
@@ -626,13 +679,43 @@ export default defineComponent({
           .catch((error) => {
             notifyError({ error });
           });
+        if (this.githubSynchronizedRepo != '' && this.isOwner){
+          this.deleteSampleFromGithub(sample.sample_name);
+        }
+      }
+    },
+    
+    freezeProject(){
+      notifyMessage({message: this.freezed ? `Your project is unfreezed` : `Your project is freezed`})
+      this.updateProjectSettings({freezed: !this.freezed})
+    },
+
+    notifyFreezedProject(){
+      if (this.isFreezed){
+        notifyMessage({message: `This project is freezed by the owner`, position:'top', type:'warning'});
       }
     },
 
-    
+    deleteSampleFromGithub(sampleName: string) {
+      api
+        .deleteFileFromGithub(this.projectName, this.username, sampleName)
+        .then(() => {
+          notifyMessage({ message: 'Delete from Github' });
+          this.loadProjectData();
+        })
+        .catch((error) => {
+          notifyError({ error });
+        });
+    },
+
+    displayWarning(){
+      if (this.githubSynchronizedRepo != '') notifyMessage({message: 'These files will be also deleted from your synchronized Github repository', type: 'warning', position: 'top'})
+    },
+
     bootParserPanelToggle() {
       this.isShowParsingPanel = !this.isShowParsingPanel;
     },
+
     /**
      * Used to update tags and table view based on response
      * @param response : the response from backend
@@ -687,12 +770,54 @@ export default defineComponent({
       }, 0);
     },
     triggerConfirm(method: CallableFunction) {
+      if (this.githubSynchronizedRepo != '' && this.isOwner) this.displayWarning();
       this.confirmActionDial = true;
       this.confirmActionCallback = method;
     },
 
     searchSamples(rows: sample_t[], terms: any) {
       return rows.filter((row) => row.sample_name.indexOf(terms) !== -1);
+    },
+
+    getSynchronizedGithubRepo() {
+      api
+        .getSynchronizedGithubRepository(this.projectName, this.username)
+        .then((response) => {
+          this.githubSynchronizedRepo = response.data;
+        })
+        .catch((error) => {
+          notifyError({ error });
+        });
+
+    },
+
+    getTreesFrom(samples: sample_t[]){
+      const treesFrom: string[] = [];
+
+      for (const sample of samples) {
+        const sampleTreesFrom = sample.treesFrom;
+        for (const userId of sampleTreesFrom) {
+          if (!treesFrom.includes(userId)) {
+            treesFrom.push(userId);
+          }
+        }
+      }
+      return treesFrom;
+    },
+
+    removeUserTrees(){
+      for (const sample of this.table.selected) {
+        api
+          .deleteUserTrees(this.projectName as string, sample.sample_name, this.user)
+          .then(() => {
+            notifyMessage({ message: `${this.user} trees are removed successfully`});
+            this.removeUserTreesDial = false;
+            this.loadProjectData();
+          })
+          .catch((error) => {
+            notifyError({ error });
+          });
+      }
     },
 
     exportEvaluation() {
@@ -707,7 +832,6 @@ export default defineComponent({
         .catch((error) => {
           notifyError({ error });
         });
-      
     },
     downloadFileAttachement(data: any, fileName: string): void {
       const fileURL = window.URL.createObjectURL(new Blob([data]));
@@ -751,7 +875,7 @@ export default defineComponent({
   }
 
   .q-table__top, .q-table__bottom, thead tr:first-child th { /* bg color is important for th; just specify one */
-    background-color: $black-1; /* #eeeeee */
+    background-color: #1d1d1d;
   }
 
   thead tr:first-child th {

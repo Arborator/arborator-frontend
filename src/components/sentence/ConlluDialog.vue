@@ -4,7 +4,7 @@
     <q-layout view="Lhh lpR fff" container class="bg-white">
       <q-header class="bg-primary">
         <q-toolbar>
-          <q-toolbar-title>Text Conll</q-toolbar-title>
+          <q-toolbar-title>{{$t('sentenceCard.conllText')}}</q-toolbar-title>
           <q-btn v-close-popup flat round dense icon="close" />
         </q-toolbar>
       </q-header>
@@ -14,7 +14,7 @@
       <q-footer>
         <q-toolbar inset>
           <!-- <q-toolbar-title>Footer</q-toolbar-title> --><q-space />
-          <q-btn v-close-popup flat no-caps label="Cancel" />
+          <q-btn v-close-popup flat no-caps :label="$t('cancel')" />
           <q-btn v-close-popup color="primary" label="Ok" :disabled="currentConllContent === conllContent" @click="onConllDialogOk()" />
         </q-toolbar>
       </q-footer>

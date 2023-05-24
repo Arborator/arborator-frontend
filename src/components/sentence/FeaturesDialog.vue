@@ -6,7 +6,7 @@
     <!-- @hide="ondialoghide()" @keyup.enter="onFeatureDialogOk()" @keyup.enter="ononefeaturemodified()"-->
     <q-card>
       <q-bar class="bg-primary text-white">
-        <div class="text-weight-bold">Features of "{{ token['FORM'] }}"</div>
+        <div class="text-weight-bold"> {{$t('attributeTable.features')}} "{{ token['FORM'] }}"</div>
         <q-space />
         <q-btn v-close-popup flat dense icon="close" />
       </q-bar>
@@ -53,7 +53,7 @@
         <q-separator />
       </q-card-section>
       <q-card-actions align="around">
-        <q-btn v-close-popup flat label="Cancel" style="width: 45%; margin-left: auto; margin-right: auto" @click="ondialoghide()" />
+        <q-btn v-close-popup flat :label="$t('cancel')" style="width: 45%; margin-left: auto; margin-right: auto" @click="ondialoghide()" />
         <q-btn v-close-popup color="primary" label="Ok" style="width: 45%; margin-left: auto; margin-right: auto" @click="onFeatureDialogOk()" />
         <!-- :disabled="!someFeatureChanged" -->
       </q-card-actions>

@@ -70,7 +70,7 @@
               <q-item-label caption>{{ $t('projectSettings.toggleAllVisibleCaption') }}</q-item-label>
             </q-item-section>
             <q-item-section avatar>
-              <q-toggle v-model="showAllTreesLocal" color="blue" checked-icon="check" unchecked-icon="clear" />
+              <q-toggle v-model="showAllTreesLocal" color="primary" checked-icon="check" unchecked-icon="clear" />
             </q-item-section>
           </q-item>
 
@@ -80,7 +80,7 @@
               <q-item-label caption>{{ $t('projectSettings.toggleExerciseModeCaption') }}</q-item-label>
             </q-item-section>
             <q-item-section avatar>
-              <q-toggle v-model="exerciseModeLocal" color="blue" checked-icon="check" unchecked-icon="clear" />
+              <q-toggle v-model="exerciseModeLocal" color="primary" checked-icon="check" unchecked-icon="clear" />
             </q-item-section>
           </q-item>
 
@@ -90,7 +90,7 @@
               <q-item-label caption>{{ $t('projectSettings.toggleDiffModeCaption') }}</q-item-label>
             </q-item-section>
             <q-item-section avatar>
-              <q-toggle v-model="diffModeLocal" color="blue" checked-icon="check" unchecked-icon="clear" />
+              <q-toggle v-model="diffModeLocal" color="primary" checked-icon="check" unchecked-icon="clear" />
             </q-item-section>
           </q-item>
 
@@ -100,7 +100,7 @@
               <q-item-label caption>{{ $t('projectSettings.chooseUserDiffCaption') }}</q-item-label>
             </q-item-section>
             <q-item-section>
-              <q-select v-model="diffUserIdLocal" :disable="!diffModeLocal" label="Select user" color="blue" :options="projectTreesFrom" />
+              <q-select v-model="diffUserIdLocal" :disable="!diffModeLocal" label="Select user" color="primary" :options="projectTreesFrom" />
             </q-item-section>
           </q-item>
         </q-list>
@@ -108,12 +108,12 @@
     </q-card-section>
     <q-card-section class="full row justify-between q-gutter-md">
       <!-- admin panel -->
-      <q-card class="col">
+      <q-card bordered class="col">
         <q-scroll-area style="height: 500px">
           <q-card-section>
             <div class="text-h6 text-center">
               {{ $t('projectSettings.adminsPanel') }}
-              <q-btn v-show="isAdmin" flat round icon="add" :color="$q.dark.isActive ? 'purple-12' : 'primary'" @click="addAdminDial = true"></q-btn>
+              <q-btn v-show="isAdmin" flat round icon="add" color="primary" @click="addAdminDial = true"></q-btn>
             </div>
           </q-card-section>
           <q-markup-table flat bordered>
@@ -143,12 +143,12 @@
         </q-scroll-area>
       </q-card>
       <!-- guest panel: -->
-      <q-card class="col">
+      <q-card bordered class="col">
         <q-scroll-area style="height: 500px">
           <q-card-section>
             <div class="text-h6 text-center">
               {{ $t('projectSettings.guestsPanel') }}
-              <q-btn v-show="isAdmin" flat round icon="add" :color="$q.dark.isActive ? 'purple-12' : 'primary'" @click="addGuestDial = true"></q-btn>
+              <q-btn v-show="isAdmin" flat round icon="add" color="primary" @click="addGuestDial = true"></q-btn>
             </div>
           </q-card-section>
 
@@ -179,7 +179,7 @@
         </q-scroll-area>
       </q-card>
       <!-- shown features: -->
-      <q-card class="col">
+      <q-card bordered class="col">
         <q-card-section>
           <div class="text-h6 text-center">
             {{ $t('projectSettings.shownFeaturesPanel') }}
@@ -433,7 +433,6 @@ export default defineComponent({
         });
       },
     },
-    // },
   },
   mounted() {
     this.annotationFeaturesJson = this.getAnnofjson;

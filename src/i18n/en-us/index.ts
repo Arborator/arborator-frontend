@@ -247,6 +247,7 @@ export default {
     grewBtnTooltip: 'You have to select trees type first', 
     showDiffTitle: 'Select the set of features  and users for which you look for differences',
     showDiffUsersSelect: 'Select the set of users', 
+    showDiffUsersTooltip: 'You have to select at least two users',
     showDiffFaturesSelect: 'Select the set of features',
     showDiffBtn: 'Show differences',
   },

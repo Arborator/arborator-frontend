@@ -125,8 +125,8 @@ export default defineComponent({
           });
         });
     },
-    onShowDiffsProject(userType: string, otherUsers: string[], features: string[]) {
-      const data = {otherUsers: otherUsers, features: features, username: this.username};
+    onShowDiffsProject(otherUsers: string[], features: string[]) {
+      const data = {otherUsers: otherUsers, features: features};
       api
         .showDiffsInProject(this.$route.params.projectname as string, data)
         .then((response) => {

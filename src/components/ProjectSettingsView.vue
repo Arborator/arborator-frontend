@@ -119,7 +119,7 @@
           <q-markup-table flat bordered>
             <thead>
               <tr>
-                <th class="text-left">ID</th>
+                <th class="text-left">Name</th>
                 <th></th>
               </tr>
             </thead>
@@ -295,9 +295,8 @@ import 'codemirror/theme/material-darker.css';
 import api from '../api/backend-api';
 import UserSelectTable from './UserSelectTable.vue';
 import ConfirmAction from './ConfirmAction.vue';
-import {mapActions, mapState, mapWritableState, mapStores} from 'pinia';
+import {mapActions, mapState, mapWritableState,} from 'pinia';
 import {useProjectStore} from 'src/pinia/modules/project';
-import {useMainStore} from 'src/pinia';
 import {notifyError, notifyMessage} from 'src/utils/notify';
 import {sample_role_targetrole_t, user_t} from 'src/api/backend-types';
 

@@ -50,7 +50,7 @@
       <q-btn size="sm" flat icon="expand_more" @click.native.stop>
         <q-menu>
           <q-list bordered separator>
-            <q-item v-for="adm in MoreAdmins" v-close-popup thumbnail>
+            <q-item v-for="adm in moreAdmins" v-close-popup thumbnail>
               <q-item-section>
                 <q-item-label class="text-weight-light"> {{adm}}</q-item-label>
               </q-item-section>
@@ -60,7 +60,7 @@
       </q-btn>
     </q-item-section>
     <q-item-section v-for="adm in displayedAdmins" v-if="isLoggedIn" :key="adm" side>
-      <q-chip v-if="userid === adm" size="sm">
+      <q-chip v-if="username === adm" size="sm">
         <q-avatar>
           <img :src="getUserInfos.picture_url || undefined" />
         </q-avatar>
@@ -123,18 +123,17 @@ export default defineComponent({
     };
   },
   computed: {
-    ...mapState(useUserStore, ['isLoggedIn', 'getUserInfos', 'isSuperAdmin']),
-    ...mapState(useUserStore, { userid: 'id' }),
+    ...mapState(useUserStore, ['isLoggedIn', 'getUserInfos', 'isSuperAdmin', 'username']),
     imageCleaned() {
       return this.project.image;
     },
     isProjectAdmin() {
-      return this.project.admins.includes(this.userid);
+      return this.project.admins.includes(this.username);
     },
     displayedAdmins() {
       return this.project.admins.slice(0, 2)
     },
-    MoreAdmins() {
+    moreAdmins() {
       return this.project.admins.filter(admin => !this.displayedAdmins.includes(admin));
     }
   },

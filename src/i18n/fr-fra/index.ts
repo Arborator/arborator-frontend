@@ -240,6 +240,7 @@ export default {
     grewBtnTooltip: "Vous devez d'abord sélectionner le type d'arbre",
     showDiffTitle: 'Sélectionnez la liste des features et des utilisateurs dont vous cherchez la différence',
     showDiffUsersSelect: 'Sélectionnez la liste des utilisateurs', 
+    showDiffUsersTooltip: 'Vous devez sélectionner au moins deux utilisateurs',
     showDiffFaturesSelect: 'Sélectionnez la liste des features',
     showDiffBtn: 'Afficher les différences',
   },

@@ -15,12 +15,12 @@ export const useProjectStore = defineStore('project', {
   getters: {
     getProjectConfig: (state) => state,
     isOwner: (state) =>{
-      return state.admins[0] === useUserStore().id;
+      return state.admins[0] === useUserStore().username;
     },
     isAdmin: (state) => {
-      return state.admins.includes(useUserStore().id) || useUserStore().super_admin;
+      return state.admins.includes(useUserStore().username) || useUserStore().super_admin;
     }, 
-    isGuest: (state) => state.guests.includes(useUserStore().id) && !useUserStore().super_admin,
+    isGuest: (state) => state.guests.includes(useUserStore().username) && !useUserStore().super_admin,
     isTeacher(state): boolean {
       return this.isAdmin && state.exerciseMode;
     },

@@ -183,7 +183,7 @@
       >
         <q-tab-panel v-for="(tree, user) in filteredConlls" :key="user" :props="tree" :name="user">
           <q-card flat>
-            <q-card-section :class="($q.dark.isActive ? '' : '') + ' scrollable'">
+            <q-card-section :class="($q.dark.isActive ? '' : '') + ' scrollable'" @scroll="synchronizeScroll">
               <VueDepTree
                 v-if="reactiveSentencesObj"
                 :card-id="index"
@@ -332,7 +332,7 @@ export default defineComponent({
 
   computed: {
     ...mapWritableState(useProjectStore, ['diffMode', 'diffUserId']),
-    ...mapState(useProjectStore, ['isAdmin', 'isGuest', 'isTeacher', 'guests', 'admins', 'exerciseMode', 'shownmeta', 'getProjectConfig', 'canSaveTreeInProject']),
+    ...mapState(useProjectStore, ['isAdmin', 'isGuest', 'isTeacher', 'guests', 'exerciseMode', 'shownmeta', 'getProjectConfig', 'canSaveTreeInProject']),
     ...mapState(useUserStore, ['isLoggedIn', 'getUserInfos']),
     lastModifiedTime() {
       // this.forceRerender; it was like this when i found it. Should it have = 0 ?

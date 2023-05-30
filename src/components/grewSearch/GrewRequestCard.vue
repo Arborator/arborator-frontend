@@ -113,15 +113,16 @@
               v-model="otherUsers"
               filled
               multiple
-              :options="usersSet"
+              :options="users"
               use-chips
               stack-label
               :label="$t('grewSearch.showDiffUsersSelect')"
             />
+            <q-tooltip>{{$t('grewSearch.showDiffUsersTooltip')}}</q-tooltip>
           </div>
         </div>
         <div class="row">
-          <q-btn :disable="otherUsers.length == 0" v-close-popup :label="$t('grewSearch.showDiffBtn')" color="primary" @click="onShowDiffs" />
+          <q-btn :disable="otherUsers.length < 2" v-close-popup :label="$t('grewSearch.showDiffBtn')" color="primary" @click="onShowDiffs" />
         </div>
       </q-card-section>
     </q-card>
@@ -171,18 +172,16 @@ export default defineComponent({
   computed: {
     ...mapState(useGrewSearchStore, ['lastQuery']),
     ...mapState(useUserStore, ['isLoggedIn', 'avatar', 'username']),
-    ...mapState(useProjectStore, ['shownFeaturesChoices']),
+    ...mapState(useProjectStore, ['shownFeaturesChoices', 'annotationFeatures']),
     userOptions() {
       return this.searchReplaceTab === 'REWRITE' ? this.usersToApplyOptions.filter(option=> option.value !== "all") : this.usersToApplyOptions;
     },
     featuresSet() {
       var featuresSet: string[] = [];
-      featuresSet = this.shownFeaturesChoices.filter((feat) => feat != 'FORM');
+      featuresSet = this.shownFeaturesChoices.filter((feat) => feat != 'FORM')
+      featuresSet.push('DEPREL')
       return featuresSet;
     },
-    usersSet() {
-      return this.users.filter((user: any) => user != this.username);
-    }
   },
   watch: {
     searchReplaceTab(newVal, oldVal){
@@ -242,7 +241,7 @@ export default defineComponent({
     },
 
     onShowDiffs() {
-      this.parentOnShowDiffs(this.usersToApply.value, this.otherUsers, this.features);
+      this.parentOnShowDiffs(this.otherUsers, this.features);
     }
   },
 });

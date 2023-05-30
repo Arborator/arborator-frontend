@@ -83,6 +83,7 @@ import { timeAgo } from 'src/utils/timeAgoUtils';
 import { defineComponent, PropType } from 'vue';
 import { project_extended_t } from 'src/api/backend-types';
 import ProjectIcon from 'components/shared/ProjectIcon.vue';
+import { useProjectStore } from 'src/pinia/modules/project';
 
 export default defineComponent({
   components: { ProjectIcon, ConfirmAction },
@@ -110,16 +111,16 @@ export default defineComponent({
     };
   },
   computed: {
-    ...mapState(useUserStore, ['isLoggedIn', 'getUserInfos']),
+    ...mapState(useUserStore, ['isLoggedIn', 'username', 'isSuperAdmin']),
     canSeeSettings() {
       // FIXME : can be refactored a lot (we have isProjectAdmin in useMainStore that cover all of this)
       if (!this.isLoggedIn) {
         return false;
       }
-      if (this.project.admins.includes(this.getUserInfos.id)) {
+      if (this.project.admins.includes(this.username)) {
         return true;
       }
-      if (this.getUserInfos.super_admin) {
+      if (this.isSuperAdmin) {
         return true;
       }
       return false;

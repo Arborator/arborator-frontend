@@ -237,14 +237,13 @@ export default defineComponent({
       confirmActionArg1: '',
       storage,
       ayear: -3600 * 24 * 365,
-      userId: '',
       currentPage: 1,
       pageIndex: 1,
       totalItemPerPage: 10,
     };
   },
   computed: {
-    ...mapState(useUserStore, ['isLoggedIn']),
+    ...mapState(useUserStore, ['isLoggedIn', 'username']),
 
     myOldProjects(): project_extended_t[] {
       return this.visibleProjects.filter((project) => {
@@ -285,8 +284,6 @@ export default defineComponent({
     document.title = `ArboratorGrew: ${this.$t('projectHub.title')}`;
     this.storage = useStorage();
     this.initLoading = true;
-    this.userId = useUserStore().id;
-    // this.listMode = this.$storage.getStorageSync("project_view", false);
     this.listMode = this.storage.getStorageSync('project_view') || false;
     this.getProjects();
   },
@@ -323,10 +320,10 @@ export default defineComponent({
       this.visibleProjects.sort((a, b) => b.lastAccess - a.lastAccess);
     },
     isCreatedByMe(project: project_extended_t) {
-      return project.admins[0] === this.userId;
+      return project.admins[0] === this.username;
     },
     isSharedWithMe(project: project_extended_t) {
-      return project.admins.includes(this.userId) || project.guests.includes(this.userId);
+      return project.admins.includes(this.username) || project.guests.includes(this.username);
     },
     isOld(project: project_extended_t) {
       // either not used since more than a year or empty and older than an hour or the project has no admins

@@ -158,7 +158,7 @@
                 </div>
 
                 <!-- Single and main button for Constructicon -->
-                <div v-if="isAdmin">
+                <div>
                   <q-btn
                     flat
                     icon="account_tree"

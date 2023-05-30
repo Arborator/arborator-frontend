@@ -2,7 +2,7 @@
   <div :class="$q.dark.isActive ? 'bg-dark' : 'bg-grey-1'">
     <q-bar class="bg-primary text-white">
       <q-toolbar-title>Constructicon</q-toolbar-title>
-      <q-btn flat dense icon="file_upload" @click="uploadConstructiconDialog = true">
+      <q-btn v-if="isAdmin" flat dense icon="file_upload" @click="uploadConstructiconDialog = true">
         <q-tooltip>upload existing constructicon</q-tooltip>
       </q-btn>
       <q-dialog v-model="uploadConstructiconDialog">
@@ -45,6 +45,7 @@
 
           <!-- Add new item -->
           <q-btn
+            v-if="isAdmin"
             :disable="editMode"
             class="q-mt-md"
             color="primary"
@@ -92,10 +93,10 @@
           <div style="position: absolute; bottom: 0; left: 0; right: 0;">
             <q-toolbar class="q-pa-md" style="display: flex; justify-content: space-between;">
               <div style="display: flex; justify-content: space-between;">
-                <q-btn color="primary" @click="changeEditMode">
+                <q-btn v-if="isAdmin" color="primary" @click="changeEditMode">
                   {{ editMode ? 'Save' : 'Edit' }}
                 </q-btn>
-                <q-btn color="primary" @click="deleteItem">
+                <q-btn v-if="isAdmin" color="primary" @click="deleteItem">
                   Delete
                 </q-btn>
               </div>
@@ -117,7 +118,7 @@ import {v4 as uuidv4} from 'uuid';
 
 import {defineComponent} from "vue";
 import GrewCodeMirror from "components/codemirrors/GrewCodeMirror.vue";
-import {mapActions, mapWritableState} from "pinia";
+import {mapActions, mapState, mapWritableState} from "pinia";
 import {useGrewSearchStore} from "src/pinia/modules/grewSearch";
 import {ConstructiconEntry_t} from "src/api/backend-types";
 import {api} from "boot/axios";
@@ -158,7 +159,7 @@ export default defineComponent({
     backendApi() {
       return backendApi
     },
-    ...mapWritableState(useProjectStore, ['name']),
+    ...mapState(useProjectStore, ['name', 'isAdmin']),
     // filter the items based on the search term
     filteredEntries(): ConstructiconEntry_t[] {
       return this.constructiconEntries.filter(entry =>

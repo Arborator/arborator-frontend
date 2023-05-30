@@ -132,6 +132,18 @@ export interface grewSearchResult_t {
   [sampleId: string]: grewSearchResultSample_t;
 }
 
+
+//// CONSTRUCTICON ////
+
+export interface ConstructiconEntry_t {
+  id: string,
+  title: string,
+  description: string,
+  grew_query: string,
+  tags: string[],
+
+}
+
 //// LEXICON ////
 export interface lexiconItem_t {
   feats: { [key: string]: any };
@@ -200,12 +212,12 @@ export interface ParsingSettings_t {
 
 //////////////Github ///////////////////
 export interface githubRepository_t {
-  name: String, 
-  owner_name: String, 
+  name: String,
+  owner_name: String,
   owner_avatar: String,
 }
 export interface githubSynchronizedRepository_t {
-  user_id: string, 
-  project_name: string, 
+  user_id: string,
+  project_name: string,
   repositoryName: string,
 }

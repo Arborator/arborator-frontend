@@ -10,7 +10,7 @@
         <div class="q-pa-xs">
           <div class="row">
             <div class="col-10">
-              <q-select dense outlined v-model="type" :options="userOptions" :label="$t('grewSearch.treesType')" color="primary">
+              <q-select dense outlined v-model="usersToApply" :options="userOptions" :label="$t('grewSearch.treesType')" color="primary">
                 <template v-slot:option="scope">
                   <q-item v-bind="scope.itemProps">
                     <q-item-section avatar>
@@ -18,7 +18,7 @@
                         <img :src="avatar" />
                         <q-badge v-if="scope.opt.value == 'user_recent'" floating transparent color="principal">+</q-badge>
                       </q-avatar>
-                      <q-icon v-else :name="scope.opt.icon" />  
+                      <q-icon v-else :name="scope.opt.icon" />
                     </q-item-section>
                     <q-item-section>
                       <q-item-label>{{scope.opt.label}}</q-item-label>
@@ -26,11 +26,11 @@
                   </q-item>
                 </template>
               </q-select>
-            </div> 
+            </div>
           </div>
           <div class="row">
             <div class="col-10">
-              <Codemirror v-model:value="currentQuery" style="height: 70vh" :options="cmOption"></Codemirror>
+              <GrewCodeMirror v-model:value="currentQuery" style="height: 70vh"></GrewCodeMirror>
               <q-separator />
             </div>
 
@@ -49,13 +49,13 @@
               </q-tabs>
               <q-separator />
 
-              <q-tab-panels v-model="searchReplaceTab" animated class="shadow-2" @input="type  == null">
+              <q-tab-panels v-model="searchReplaceTab" animated class="shadow-2" @input="usersToApply  == null">
                 <q-tab-panel name="SEARCH">
                   <q-tabs v-model="searchQueryTab" dense no-caps vertical switch-indicator class="primary" indicator-color="primary">
                     <template v-for="query in searchQueries" :key="query.name">
                       <q-tab v-ripple :name="query.name" :label="query.name" clickable @click="changeQuery(query.pattern, 'SEARCH')" />
                     </template>
-                     <q-tab v-ripple v-if="type.value =='all'" name="showDiffs" label="Show divergences" clickable @click="isShowDiff = true" />
+                     <q-tab v-ripple v-if="usersToApply.value === 'all'" name="showDiffs" label="Show divergences" clickable @click="isShowDiff = true" />
                      <q-tab><a href="https://grew.fr/doc/request/" target="_blank">Documentation</a></q-tab>
                   </q-tabs>
                 </q-tab-panel>
@@ -73,9 +73,9 @@
           </div>
           <div class="row">
             <div>
-              <q-btn :disable="!type.value" v-if="searchReplaceTab === 'SEARCH'" color="primary" :label="$t('grewSearch.search')" no-caps icon="search" @click="onSearch" />
-              <q-btn :disable="!type.value" v-else-if="searchReplaceTab === 'REWRITE'" color="primary" :label="$t('grewSearch.tryRules')" no-caps icon="autorenew" @click="tryRules" />
-              <q-tooltip v-if="!type.value" content-class="bg-primary" anchor="top middle" self="bottom middle" :offset="[10, 10]">
+              <q-btn :disable="!usersToApply.value" v-if="searchReplaceTab === 'SEARCH'" color="primary" :label="$t('grewSearch.search')" no-caps icon="search" @click="onSearch" />
+              <q-btn :disable="!usersToApply.value" v-else-if="searchReplaceTab === 'REWRITE'" color="primary" :label="$t('grewSearch.tryRules')" no-caps icon="autorenew" @click="tryRules" />
+              <q-tooltip v-if="!usersToApply.value" content-class="bg-primary" anchor="top middle" self="bottom middle" :offset="[10, 10]">
                 {{$t('grewSearch.grewBtnTooltip')}}
               </q-tooltip>
             </div>
@@ -129,103 +129,28 @@
 </template>
 
 <script lang="ts">
-import CodeMirror2 from 'codemirror';
-// import { codemirror } from "vue-codemirror";
-import Codemirror from 'codemirror-editor-vue3';
+import { defineComponent } from 'vue';
 
-import 'codemirror/lib/codemirror.css';
 import grewTemplates from '../../assets/grew-templates.json';
 import {mapActions, mapState, mapWritableState} from 'pinia';
 import {useGrewSearchStore} from 'src/pinia/modules/grewSearch';
 import {useUserStore} from 'src/pinia/modules/user';
 import {useProjectStore} from 'src/pinia/modules/project';
-
-
-import { defineComponent } from 'vue';
-// import 'codemirror/theme/material.css'
-
-CodeMirror2.defineMode('grew', () => {
-  const words = {
-    global: 'builtin',
-    pattern: 'builtin',
-    commands: 'builtin',
-    without: 'builtin',
-  };
-  function tokenString(stream: any, state: any) {
-    let next;
-    let end = false;
-    let escaped = false;
-    while ((next = stream.next()) !== null) {
-      if (next === '"' && !escaped) {
-        end = true;
-        break;
-      }
-      escaped = !escaped && next === '\\';
-    }
-    if (end && !escaped) {
-      state.tokenize = tokenBase;
-    }
-    return 'string';
-  }
-  function tokenBase(stream: any, state: any) {
-    const ch = stream.next();
-    if (ch === '%') {
-      stream.skipToEnd();
-      return 'comment';
-    }
-    if (ch === '=') {
-      return 'quote';
-    }
-    if (ch === '<') {
-      if (stream.eat('>')) {
-        return 'quote';
-      }
-    }
-    if (ch === '-') {
-      const nextCh = stream.next();
-      if (nextCh === '[' || nextCh === '>') {
-        return 'quote';
-      }
-    }
-    if (ch === ']') {
-      if (stream.eat('-') && stream.eat('>')) {
-        return 'quote';
-      }
-    }
-    if (/\d/.test(ch)) {
-      stream.eatWhile(/[\d]/);
-      if (stream.eat('.')) {
-        stream.eatWhile(/[\d]/);
-      }
-      return 'number';
-    }
-    if (/[+\-*&%=<>!?|]/.test(ch)) {
-      return 'operator';
-    }
-    stream.eatWhile(/\w/);
-    const cur = stream.current() as 'global' | 'pattern' | 'commands' | 'without';
-    return words[cur] || 'variable';
-  }
-
-  return {
-    startState() {
-      return { tokenize: tokenBase, commentLevel: 0 };
-    },
-    token(stream: any, state: any) {
-      if (stream.eatSpace()) return null;
-      return state.tokenize(stream, state);
-    },
-    lineComment: '%',
-  };
-});
+import GrewCodeMirror from "components/codemirrors/GrewCodeMirror.vue";
 
 export default defineComponent({
   name: 'GrewRequestCard',
-  components: { Codemirror },
-  props: ['parentOnSearch', 'parentOnTryRules', 'grewquery', 'parentOnShowDiffs', 'users'],
+  components: { GrewCodeMirror },
+  props: ['parentOnSearch', 'parentOnTryRules', 'parentOnShowDiffs', 'users'],
   data() {
     const currentQueryType: 'SEARCH' | 'REWRITE' = grewTemplates.searchQueries[0].type as 'SEARCH' | 'REWRITE';
-    const type : {value: string, label: string, icon: string} = {value : '', label: '', icon : ''};
+    const usersToApplyOptions = [
+        { value: 'user', label: this.$t('projectView.tooltipFabGrewUser')},
+        { value: 'user_recent', label: this.$t('projectView.tooltipFabGrewUserRecent')},
+        { value: 'recent', label: this.$t('projectView.tooltipFabGrewRecent'), icon: 'schedule' },
+        { value: 'all', label: this.$t('projectView.tooltipFabGrewAll'), icon: 'groups' },
+      ];
+    const usersToApply = usersToApplyOptions[0];
     const otherUsers : string[] = [];
     const features : string[] = [];
     return {
@@ -234,25 +159,11 @@ export default defineComponent({
       currentQuery: grewTemplates.searchQueries[0].pattern,
       currentQueryType,
       rewriteCommands: '',
-      cmOption: {
-        tabSize: 4,
-        styleActiveLine: true,
-        lineNumbers: true,
-        lineWrapping: true,
-        line: true,
-        mode: 'grew',
-        theme: this.$q.dark.isActive ? 'material-darker' : 'default',
-      },
       searchQueries: grewTemplates.searchQueries,
       rewriteQueries: grewTemplates.rewriteQueries,
-      type,
-      options: [
-        { value: 'user', label: this.$t('projectView.tooltipFabGrewUser')},
-        { value: 'user_recent', label: this.$t('projectView.tooltipFabGrewUserRecent')},
-        { value: 'recent', label: this.$t('projectView.tooltipFabGrewRecent'), icon: 'schedule' },
-        { value: 'all', label: this.$t('projectView.tooltipFabGrewAll'), icon: 'groups' },
-      ],
-      isShowDiff:false,
+      usersToApply,
+      usersToApplyOptions,
+      isShowDiff: false,
       otherUsers,
       features,
     };
@@ -262,11 +173,11 @@ export default defineComponent({
     ...mapState(useUserStore, ['isLoggedIn', 'avatar', 'username']),
     ...mapState(useProjectStore, ['shownFeaturesChoices']),
     userOptions() {
-      return this.searchReplaceTab === 'REWRITE' ? this.options.slice(0, -1) : this.options;
+      return this.searchReplaceTab === 'REWRITE' ? this.usersToApplyOptions.filter(option=> option.value !== "all") : this.usersToApplyOptions;
     },
     featuresSet() {
       var featuresSet: string[] = [];
-      featuresSet = this.shownFeaturesChoices.filter((feat: any) => feat != 'FORM');
+      featuresSet = this.shownFeaturesChoices.filter((feat) => feat != 'FORM');
       return featuresSet;
     },
     usersSet() {
@@ -275,8 +186,8 @@ export default defineComponent({
   },
   watch: {
     searchReplaceTab(newVal, oldVal){
-      if (newVal === 'REWRITE'){
-        this.type = {value: '', label: '', icon:''};
+      if (newVal === 'REWRITE' && this.usersToApply.value === 'all'){
+        this.usersToApply = this.usersToApplyOptions[0];
       }
     }
   },
@@ -285,7 +196,6 @@ export default defineComponent({
       this.currentQueryType = this.lastQuery.type;
       this.currentQuery = this.lastQuery.text;
     }
-    this.checkGrewQuery();
   },
   methods: {
     ...mapActions(useGrewSearchStore, ['changeLastGrewQuery']),
@@ -295,7 +205,7 @@ export default defineComponent({
      * @returns void
      */
     onSearch() {
-      this.parentOnSearch(this.currentQuery, this.type.value);
+      this.parentOnSearch(this.currentQuery, this.usersToApply.value);
       this.changeLastGrewQuery({ text: this.currentQuery, type: this.currentQueryType });
     },
     /**
@@ -304,7 +214,7 @@ export default defineComponent({
      * @returns void
      */
     tryRules() {
-      this.parentOnTryRules(this.currentQuery, this.type.value);
+      this.parentOnTryRules(this.currentQuery, this.usersToApply.value);
       this.changeLastGrewQuery({ text: this.currentQuery, type: this.currentQueryType });
     },
     /**
@@ -316,7 +226,9 @@ export default defineComponent({
     changeQuery(query: string, type: 'SEARCH' | 'REWRITE') {
       this.currentQuery = query;
       this.currentQueryType = type;
-      this.type = {value : '', label: '', icon: ''};
+      if (type === 'REWRITE' && this.usersToApply.value === 'all') {
+        this.usersToApply = this.usersToApplyOptions[0];
+      }
     },
 
     /**
@@ -328,113 +240,9 @@ export default defineComponent({
       this.currentQuery = '';
       this.rewriteCommands = '';
     },
-   
-    /**
-     * Grew query check : verify if it is not empty, and if it's a custom query
-     *
-     * @returns void
-     */
-    checkGrewQuery() {
-      if (this.grewquery.length > 0) {
-        if (this.searchQueries.filter((c) => c.name === 'custom query').length === 0) {
-          let customQuery = this.unzip(this.grewquery);
-          // this.queries.unshift({ name: 'custom query', pattern: customQuery }); //FIXME
-          this.changeQuery(customQuery, this.currentQueryType);
-          this.onSearch(); // autostart the query?
-        }
-      }
-    },
-    /**
-     * Apply LZW-compression to a string (s) and return base64 compressed string.
-     *
-     * @param {string} s
-     * @returns void
-     */
-    zip(s: any) {
-      try {
-        const dict: { [key: string]: any } = {};
-        const data = `${s}`.split('');
-        const out = [];
-        let currChar;
-        let phrase = data[0];
-        let code = 256;
-        for (let i = 1; i < data.length; i += 1) {
-          currChar = data[i];
-          if (dict[phrase + currChar] !== null) {
-            phrase += currChar;
-          } else {
-            out.push(phrase.length > 1 ? dict[phrase] : phrase.charCodeAt(0));
-            dict[phrase + currChar] = code;
-            code += 1;
-            phrase = currChar;
-          }
-        }
-        out.push(phrase.length > 1 ? dict[phrase] : phrase.charCodeAt(0));
-        for (let j = 0; j < out.length; j += 1) {
-          out[j] = String.fromCharCode(out[j]);
-        }
-        return this.utoa(out.join(''));
-      } catch (e) {
-        console.log('Failed to zip string return empty string', e);
-        return '';
-      }
-    },
-    /**
-     * Decompress an LZW-encoded base64 string
-     *
-     * @param {string} base64ZippedString a string result representing zipped base64; result from the above zip(s) method
-     * @returns void
-     */
-    unzip(base64ZippedString: string) {
-      try {
-        const s = this.atou(base64ZippedString);
-        const dict: { [key: string]: string } = {};
-        const data = `${s}`.split('');
-        let currChar = data[0];
-        let oldPhrase = currChar;
-        const out = [currChar];
-        let code = 256;
-        let phrase;
-        for (let i = 1; i < data.length; i += 1) {
-          const currCode = data[i].charCodeAt(0);
-          if (currCode < 256) {
-            phrase = data[i];
-          } else {
-            phrase = dict[currCode] ? dict[currCode] : oldPhrase + currChar;
-          }
-          out.push(phrase);
-          currChar = phrase.charAt(0);
-          dict[code] = oldPhrase + currChar;
-          code += 1;
-          oldPhrase = phrase;
-        }
-        return out.join('');
-      } catch (e) {
-        console.log('Failed to unzip string return empty string', e);
-        return '';
-      }
-    },
-    /**
-     * ucs-2 string to base64 encoded ascii
-     *
-     * @param {string} str
-     * @returns void
-     */
-    utoa(str: string) {
-      return window.btoa(unescape(encodeURIComponent(str)));
-    },
-    /**
-     * base64 encoded ascii to ucs-2 string
-     *
-     * @param {string} str
-     * @returns void
-     */
-    atou(str: string) {
-      return decodeURIComponent(escape(window.atob(str)));
-    },
 
     onShowDiffs() {
-      this.parentOnShowDiffs(this.type.value, this.otherUsers, this.features);
+      this.parentOnShowDiffs(this.usersToApply.value, this.otherUsers, this.features);
     }
   },
 });

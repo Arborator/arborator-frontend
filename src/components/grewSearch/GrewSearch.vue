@@ -6,11 +6,10 @@
     </q-btn>
   </q-page-sticky>
   <q-dialog v-model="grewDialog" seamless position="right" full-width>
-    <GrewRequestCard 
-      :parent-on-search="onSearch" 
-      :parent-on-try-rules="onTryRules" 
-      :grewquery="$route.query.q || ''"
-      :parent-on-show-diffs="onShowDiffsProject"
+    <GrewRequestCard
+      :parentOnSearch="onSearch"
+      :parentOnTryRules="onTryRules"
+      :parentOnShowDiffs="onShowDiffsProject"
       :users="userIds"
     ></GrewRequestCard>
   </q-dialog>
@@ -19,7 +18,7 @@
       :searchresults="resultSearch"
       :totalsents="sentenceCount"
       :searchscope="searchScope"
-      :parent-on-show-table="onShowTable"
+      :parentOnShowTable="onShowTable"
       :query-type="queryType"
     ></ResultView>
   </q-dialog>
@@ -35,7 +34,6 @@ import {useUserStore} from 'src/pinia/modules/user';
 import {notifyError} from 'src/utils/notify';
 import {defineComponent, PropType} from 'vue';
 import {grewSearchResult_t} from 'src/api/backend-types';
-import {sentenceConllToJson, SentenceJson} from "conllup/lib/conll";
 
 export default defineComponent({
   components: {
@@ -78,7 +76,6 @@ export default defineComponent({
     ...mapState(useUserStore, ['username']),
   },
   methods: {
-
     onShowTable(resultSearchDialog: any) {
       this.resultSearchDialog = resultSearchDialog;
       this.grewDialog = false;
@@ -137,7 +134,7 @@ export default defineComponent({
           notifyError(error)
         })
     },
-    
+
   },
 });
 </script>

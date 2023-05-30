@@ -39,6 +39,11 @@
           <ParsingPanel :samples="samples" :parentGetProjectSamples="getProjectSamples"></ParsingPanel>
         </q-card-section>
 
+        <!-- Constructicon Dialog -->
+        <q-dialog v-model="isShowConstructiconDialogCop" seamless full-width>
+          <ConstructiconDialog/>
+        </q-dialog>
+
         <q-card-section>
           <q-table
             bordered
@@ -151,6 +156,21 @@
                     >
                   </q-btn>
                 </div>
+
+                <!-- Single and main button for Constructicon -->
+                <div v-if="isAdmin">
+                  <q-btn
+                    flat
+                    icon="account_tree"
+                    @click="isShowConstructiconDialogCop = true"
+                  >
+                    <q-tooltip content-class="text-body2 bg-primary"
+                      >See Constructicon</q-tooltip
+                    >
+                  </q-btn>
+                </div>
+
+                <!-- Button for github synchronization -->
                 <div>
                   <q-btn
                     v-if="isAllowdedToSync && githubSynchronizedRepo == ''"
@@ -165,6 +185,8 @@
                   </q-tooltip>
 
                 </div>
+
+                <!-- Buttons for more options -->
                 <div v-if="isOwner">
                   <q-btn-dropdown flat icon="more_vert">
                      <q-list>
@@ -192,9 +214,11 @@
                   </q-btn-dropdown>
                   <q-tooltip> {{$t('projectView.tooltipMore')}} </q-tooltip>
                 </div>
+
+                <!-- Other github options (only for synchronized projects) -->
                 <div v-if="githubSynchronizedRepo != '' && isAllowdedToSync">
                   <GithubOptions :projectName="projectName" :repositoryName="githubSynchronizedRepo" :key="reload" @remove="reloadAfterDeleteSynchronization " @pulled="loadProjectData"/>
-                  <q-tooltip content-class="text-white bg-primary"> {{$t('projectView.tooltipSynchronizedProject')}} {{githubSynchronizedRepo}}</q-tooltip> 
+                  <q-tooltip content-class="text-white bg-primary"> aaa {{$t('projectView.tooltipSynchronizedProject')}} {{githubSynchronizedRepo}}</q-tooltip>
                 </div>
               </q-btn-group>
 
@@ -385,7 +409,7 @@
           <q-card-section>
             <div class="text-h6">Remove user trees from the selected samples</div>
           </q-card-section>
-          <q-card-section class="q-gutter-md"> 
+          <q-card-section class="q-gutter-md">
             <q-select filled v-model="user" label="Select user" :options="getTreesFrom(table.selected)" />
             <div class="row justify-center">
                <q-btn color="primary" @click="triggerConfirm(removeUserTrees)" label="Remove Trees" />
@@ -417,6 +441,7 @@ import ParsingPanel from '../components/parsing/ParsingPanel.vue';
 import ProjectIcon from '../components/shared/ProjectIcon.vue';
 import GithubOptions from '../components/github/GithubOptions.vue';
 import GithubSyncDialog from 'src/components/github/GithubSyncDialog.vue';
+import ConstructiconDialog from "src/components/constructicon/ConstructiconDialog.vue";
 
 import {notifyError, notifyMessage} from 'src/utils/notify';
 import {mapActions, mapState, mapWritableState} from 'pinia';
@@ -428,6 +453,7 @@ import {table_t} from 'src/types/main_types';
 
 export default defineComponent({
   components: {
+    ConstructiconDialog,
     UserTable,
     TagInput,
     ProjectSettingsView,
@@ -439,7 +465,7 @@ export default defineComponent({
     RelationTableMain,
     ParsingPanel,
     ProjectIcon,
-    GithubOptions, 
+    GithubOptions,
     GithubSyncDialog,
   },
   data() {
@@ -563,6 +589,7 @@ export default defineComponent({
       chooseExportedTrees: false,
       githubSynchronizedRepo:'',
       reload: 0,
+      isShowConstructiconDialogCop: false,
     };
   },
   computed: {
@@ -609,7 +636,7 @@ export default defineComponent({
     },
     isAllowdedToSync(): boolean{
       return this.isSuperAdmin && this.loggedWithGithub  && !this.exerciseMode && !this.isTeacher;
-    }, 
+    },
     isFreezed(): boolean{
       return !this.isOwner && this.freezed;
     }
@@ -622,7 +649,7 @@ export default defineComponent({
     this.loadProjectData();
     this.notifyFreezedProject();
     document.title = `ArboratorGrew: ${this.projectName}`;
-    if (this.isLoggedIn) this.getSynchronizedGithubRepo(); 
+    if (this.isLoggedIn) this.getSynchronizedGithubRepo();
   },
   unmounted() {
     window.removeEventListener('resize', this.handleResize);
@@ -647,7 +674,7 @@ export default defineComponent({
     reloadAfterDeleteSynchronization () {
       this.isDeleteSync = true;
       this.loadProjectData();
-    }, 
+    },
 
     filterFields(tableJson: table_t<unknown>) {
       // to remove some fields from visiblecolumns select options
@@ -684,7 +711,7 @@ export default defineComponent({
         }
       }
     },
-    
+
     freezeProject(){
       notifyMessage({message: this.freezed ? `Your project is unfreezed` : `Your project is freezed`})
       this.updateProjectSettings({freezed: !this.freezed})

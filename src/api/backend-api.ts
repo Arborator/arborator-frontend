@@ -24,14 +24,14 @@ import {
   updateUser_ED,
   getLexicon_RV, parserList_RV_success, parserList_RV, parserTrainStatus_RV, parserParseStatus_RV,
   getGithubRepositories_RV,
-  createGithubSynchronizedRepository_ED,
+  createGithubSynchronizedRepository_ED, getConstructiconEntries_RV, saveConstructiconEntry_RV,
 } from './endpoints';
 import {
   sample_role_action_t,
   sample_role_targetrole_t,
   transcription_t,
   ModelInfo_t,
-  ParsingSettings_t
+  ParsingSettings_t, ConstructiconEntry_t
 } from './backend-types';
 
 export const API = axios.create({
@@ -181,7 +181,22 @@ export default {
   showDiffsInProject(projectName: string, data: any) {
     return API.post<grewSearch_RV>(`projects/${projectName}/show-diff`, data)
   },
-
+  // -------------------------------------------------------- //
+  // ---------------       Constructicon      --------------- //
+  // -------------------------------------------------------- //
+  getConstructiconEntries(projectname: string) {
+    return API.get<getConstructiconEntries_RV>(`constructicon/project/${projectname}`);
+  },
+  saveConstructiconEntry(projectname: string, data: ConstructiconEntry_t) {
+    console.log("KK data", data)
+    return API.post<saveConstructiconEntry_RV>(`constructicon/project/${projectname}`, data);
+  },
+  deleteConstructiconEntry(projectname: string, entryId: string) {
+    return API.delete(`constructicon/project/${projectname}/${entryId}`);
+  },
+  generateURLforConstructiconUpload(projectname: string) {
+    return `${API.defaults.baseURL}/constructicon/project/${projectname}/upload-entire-constructicon`
+  },
   // -------------------------------------------------------- //
   // ---------------          Lexicon         --------------- //
   // -------------------------------------------------------- //
@@ -293,7 +308,7 @@ export default {
   },
   getGithubRepoBranches(projectName: string, username: string, repoName: string) {
     return API.get(`/projects/${projectName}/${username}/github/branch?full_name=${repoName}`);
-  }, 
+  },
   synchronizeWithGithubRepo(projectName: string, username: string, data: any) {
     return API.post<createGithubSynchronizedRepository_ED>(`/projects/${projectName}/${username}/synchronize-github`, data, { timeout: 4000000 });
   },

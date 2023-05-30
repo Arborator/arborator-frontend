@@ -14,8 +14,8 @@ import {
   timed_tokens_t,
   grewSearchResult_t as grewSearchResult_t,
   lexiconItem_t, ModelInfo_t, ScoresHistory_t, ScoresBest_t,
-  githubRepository_t, 
-  githubSynchronizedRepository_t,
+  githubRepository_t,
+  githubSynchronizedRepository_t, ConstructiconEntry_t,
 } from './backend-types';
 
 export interface logout_RV {
@@ -90,6 +90,10 @@ export type grewSearch_RV = grewSearchResult_t;
 //// LEXICON
 export type getLexicon_RV = lexiconItem_t[];
 
+//// CONSTRUCTICON
+export type getConstructiconEntries_RV = ConstructiconEntry_t[];
+export type saveConstructiconEntry_RV = { success: boolean; message: string; };
+
 /////////////// KLANG //////////:
 export interface getOriginalTranscription_RV {
   tokens: timed_tokens_t;
@@ -147,6 +151,6 @@ interface parserParseStatus_RV_success {
 export type parserParseStatus_RV = parser_generic_RV_failure | parserParseStatus_RV_success
 
 //////////// Github //////////
-export type getGithubRepositories_RV = githubRepository_t[]; 
+export type getGithubRepositories_RV = githubRepository_t[];
 
 export type createGithubSynchronizedRepository_ED = githubSynchronizedRepository_t;

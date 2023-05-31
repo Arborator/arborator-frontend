@@ -26,6 +26,7 @@ export default defineComponent({
   },
   watch: {
     '$q.dark.isActive'(isActive: boolean) {
+      console.log("KK isActive", isActive)
       if (isActive) {
         setThemeMode('DARK', true);
       } else {
@@ -42,11 +43,13 @@ export default defineComponent({
 
     // fetched local storage version of the darkmode ('dm')
     const darkIsActiveLocalStorage = this.storage.getStorageSync('dm') as boolean | 'auto' | undefined;
-
+    console.log("KK darkIsActiveLocalStorage", darkIsActiveLocalStorage)
     // set to dark if dm was set in local storage
     if (darkIsActiveLocalStorage !== undefined) {
       this.$q.dark.set(darkIsActiveLocalStorage);
+      setThemeMode('DARK', true);
     }
+
 
     try {
       this.$i18n.locale = this.storage.getStorageSync('arbolang') as string;

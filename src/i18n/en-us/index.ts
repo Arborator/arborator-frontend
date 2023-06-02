@@ -310,7 +310,7 @@ export default {
     saveTree: ["Save tree", "as"], 
     editMetadata: "Edit this trees's metadata",
     multiEditDial: 'Multi edit dialog', 
-    DiffMode: ['Enter', 'Leave', 'Diff mode'], 
+    diffMode: ['Enter', 'Leave', 'Diff mode'], 
     treeLink: 'Get direct link to this tree', 
     treeConll: 'Get CoNLL-U of this tree', 
     treeSVG: 'Get SVG of this tree',

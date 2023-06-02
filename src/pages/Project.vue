@@ -218,7 +218,7 @@
                 <!-- Other github options (only for synchronized projects) -->
                 <div v-if="githubSynchronizedRepo != '' && isAllowdedToSync">
                   <GithubOptions :projectName="projectName" :repositoryName="githubSynchronizedRepo" :key="reload" @remove="reloadAfterDeleteSynchronization " @pulled="loadProjectData"/>
-                  <q-tooltip content-class="text-white bg-primary"> aaa {{$t('projectView.tooltipSynchronizedProject')}} {{githubSynchronizedRepo}}</q-tooltip>
+                  <q-tooltip content-class="text-white bg-primary"> {{$t('projectView.tooltipSynchronizedProject')}} {{githubSynchronizedRepo}}</q-tooltip>
                 </div>
               </q-btn-group>
 
@@ -635,7 +635,7 @@ export default defineComponent({
       return possiblesUsers;
     },
     isAllowdedToSync(): boolean{
-      return this.isAllowedGitFeature && this.loggedWithGithub  && !this.exerciseMode && !this.isTeacher;
+      return this.isAllowedGitFeature && this.loggedWithGithub && this.isAdmin  && !this.exerciseMode && !this.isTeacher;
     },
     isFreezed(): boolean{
       return !this.isOwner && this.freezed;

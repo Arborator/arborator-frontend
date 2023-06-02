@@ -190,8 +190,8 @@ export default {
     addUser: 'Add user',
     lexicon: [
       'Select one or multiple features for the Lexicon',
-      'Main features',
-      'Auxiliary features',
+      'Similar features',
+      'Ambiguous features',
       'Get the lexicon of my trees',
       'Get the lexicon of my recent trees',
       'Get the lexicon of all the trees',

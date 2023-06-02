@@ -188,8 +188,8 @@ export default {
     addUser: 'Ajouter un utilisateur',
     lexicon: [
       'Sélectionnez une ou plusieurs features pour le Lexique',
-      'Features prinicipales',
-      'Features auxiliares',
+      'Features similaires',
+      'Features ambiguës',
       'Obtenir le lexique de mes arbres',
       'Obtenir le lexique de mes arbres récents',
       'Obtenir le lexique de tous les arbres',

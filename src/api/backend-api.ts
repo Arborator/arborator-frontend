@@ -201,15 +201,15 @@ export default {
   // ---------------          Lexicon         --------------- //
   // -------------------------------------------------------- //
   getLexicon(projectname: string, data: any) {
-    return API.post<getLexicon_RV>(`projects/V2/${projectname}/lexicon`, data);
+    return API.post<getLexicon_RV>(`projects/${projectname}/lexicon`, data);
   },
   exportLexiconJSON(projectname: string, data: any) {
-    return API.post(`projects/${projectname}/export/json`, data, {
+    return API.post(`projects/${projectname}/lexicon/export-json`, data, {
       responseType: 'arraybuffer',
     });
   },
   exportLexiconTSV(projectname: string, data: any) {
-    return API.post(`projects/${projectname}/export/tsv`, data, {
+    return API.post(`projects/${projectname}/lexicon/export-tsv`, data, {
       responseType: 'arraybuffer',
     });
   },

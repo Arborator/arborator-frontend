@@ -408,7 +408,7 @@ export default defineComponent({
     });
   },
   methods: {
-    ...mapActions(useGrewSearchStore, ['remove_pending_modification']),
+    ...mapActions(useGrewSearchStore, ['removePendingModification']),
     /**
      * Set the sentence link and copy it after 500 ms
      *
@@ -577,8 +577,8 @@ export default defineComponent({
      */
     onConllGraphUpdate(payload: any) {
       this.graphInfo = payload;
-      if (this.graphInfo.dirty) this.add_pending_modification(this.sentenceId);
-      else this.remove_pending_modification(this.sentenceId);
+      if (this.graphInfo.dirty) this.addPendingModification(this.sentenceId);
+      else this.removePendingModification(this.sentenceId);
     },
     openMetaDialog() {
       // "this.openTabUser" contains the user name

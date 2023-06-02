@@ -15,13 +15,13 @@ export const useGrewSearchStore = defineStore('grewSearch', {
     changeLastGrewQuery(query: null | { text: string; type: 'REWRITE' | 'SEARCH' }) {
       this.lastQuery = query;
     },
-    add_pending_modification(pendingModification: any) {
+    addPendingModification(pendingModification: any) {
       this.pendingModifications.add(pendingModification);
     },
-    remove_pending_modification(pendingModification: any) {
+    removePendingModification(pendingModification: any) {
       this.pendingModifications.delete(pendingModification);
     },
-    empty_pending_modification() {
+    emptyPendingModification() {
       this.pendingModifications.clear();
     },
   },

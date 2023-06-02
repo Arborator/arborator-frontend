@@ -59,7 +59,7 @@ export default defineComponent({
     if (this.pendingModifications.size > 0) {
       const answer = window.confirm('Do you really want to leave? you have unsaved changes!');
       if (answer) {
-        this.empty_pending_modification();
+        this.emptyPendingModification();
         next();
       } else {
         next(false);
@@ -133,7 +133,7 @@ export default defineComponent({
   },
 
   methods: {
-    ...mapActions(useGrewSearchStore, ['empty_pending_modification']),
+    ...mapActions(useGrewSearchStore, ['emptyPendingModification']),
     handleResize() {
       this.window.width = window.innerWidth;
       this.window.height = window.innerHeight;

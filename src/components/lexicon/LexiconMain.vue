@@ -161,14 +161,35 @@ export default defineComponent({
         samplenames.push(sample.sample_name);
       }
       this.features = this.principalFeatures.concat(this.secondaryFeatures);
-      this.secondaryFeatures.length != 0 ? (prune = this.principalFeatures.length) : (prune = 0);
-
+      if (this.secondaryFeatures.length != 0) {
+        prune = this.principalFeatures.length;
+        this.displayMessage();
+      }
+      else{
+        prune = 0;
+      }
       const data = { samplenames: samplenames, lexiconType: lexiconType, features: this.features, prune: prune };
       this.fetchLexicon(this.projectName as string, data);
       this.lexiconType = lexiconType
       this.isShowLexiconFeatures = false;
       this.isShowLexiconTable = true;
     },
+    displayMessage(){
+      var message : string = 'We search all lexicon entries that have the same ';
+      this.principalFeatures.forEach(element => {
+        message += `"${element}", `;
+      });
+      message += 'and different ';
+      this.secondaryFeatures.forEach(element => {
+        message += `"${element}", `;
+      });
+      this.$q.notify({
+          message: message,
+          color: 'positive',
+          position: 'top', 
+          timeout: 3000,
+        });
+    }
   },
 });
 </script>

@@ -156,7 +156,6 @@ export default defineComponent({
   },
   watch: {
     lexiconModificationItemBefore(newValue, oldValue) {
-      console.log(newValue)
       if (Object.keys(newValue).length > 0) {
         this.formattedItem = this.convertLexiconItemToFormattedItem(newValue);
       }

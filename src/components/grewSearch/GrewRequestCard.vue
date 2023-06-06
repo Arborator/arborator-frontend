@@ -179,7 +179,7 @@ export default defineComponent({
     featuresSet() {
       var featuresSet: string[] = [];
       featuresSet = this.shownFeaturesChoices.filter((feat) => feat != 'FORM')
-      featuresSet.push('DEPREL')
+      featuresSet.splice(2,0,'DEPREL', 'HEAD')
       return featuresSet;
     },
   },

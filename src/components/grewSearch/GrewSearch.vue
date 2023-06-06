@@ -123,7 +123,11 @@ export default defineComponent({
         });
     },
     onShowDiffsProject(otherUsers: string[], features: string[]) {
-      const data = {otherUsers: otherUsers, features: features};
+      let sampleName: string | string[] = '';
+      if (this.$route.params.samplename){
+        sampleName = this.$route.params.samplename;
+      }
+      const data = {otherUsers: otherUsers, features: features, sampleName: sampleName}
       api
         .showDiffsInProject(this.$route.params.projectname as string, data)
         .then((response) => {

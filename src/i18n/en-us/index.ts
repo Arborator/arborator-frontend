@@ -328,7 +328,7 @@ export default {
     eraseFeature: 'Erase the attribute', 
     features: 'Features of',
     category: ['Select a category for', 'Category'],
-    metadata: ['Metadata of this sentence'], 
+    metadata: 'Metadata of this sentence', 
     relation: ['Select a relation going from', 'to', 'Dependency relation'], 
     tokenReplaceDial: [
       'Replacing',

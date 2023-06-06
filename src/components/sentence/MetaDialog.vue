@@ -11,7 +11,7 @@
       <AttributeTable
         :featdata="metaList"
         :columns="featTable.columns"
-        :feat-options="['String']"
+        :feat-options="metaOptions"
         open-features="true"
         modifiable="true"
         :title="$t('attributeTable.metadata')"
@@ -91,10 +91,19 @@ export default defineComponent({
     };
   },
   computed: {
-    ...mapState(useProjectStore, ['annotationFeatures']),
+    ...mapState(useProjectStore, ['shownMetaChoices']),
     someFeatureChanged() {
       return true;
     },
+    metaOptions() {
+     let metaOptions: {name: string, values: string}[] =  [];
+     for (const metaOption of this.shownMetaChoices){
+      if (!Object.keys(this.metaJson).includes(metaOption)){
+      metaOptions.push({name: metaOption, values: 'string' });
+      }
+     }
+     return metaOptions;
+    }
   },
   mounted() {
     this.sentenceBus.on('open:metaDialog', ({ userId }: { userId: string }) => {

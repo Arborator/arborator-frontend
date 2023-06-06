@@ -1,13 +1,13 @@
 <template>
-  <router-view />
+  <router-view/>
 </template>
 
 <script lang="ts">
-import { defineComponent } from 'vue';
+import {defineComponent} from 'vue';
 
-import { useStorage } from 'vue3-storage';
-import { useUserStore } from './pinia/modules/user/index';
-import { setThemeMode } from 'dependencytreejs/src/StylesheetHandler';
+import {useStorage} from 'vue3-storage';
+import {useUserStore} from './pinia/modules/user/index';
+import {setThemeMode} from 'dependencytreejs/src/StylesheetHandler';
 
 export default defineComponent({
   name: 'App',
@@ -24,32 +24,9 @@ export default defineComponent({
       },
     };
   },
-  watch: {
-    '$q.dark.isActive'(isActive: boolean) {
-      console.log("KK isActive", isActive)
-      if (isActive) {
-        setThemeMode('DARK', true);
-      } else {
-        setThemeMode('LIGHT', true);
-      }
-    },
-  },
   mounted() {
     const userStore = useUserStore();
     userStore.checkSession().then(() => console.log('App.vue session checked with pinia store'));
-
-    // init dependencytreejs mode to light
-    setThemeMode('LIGHT', true);
-
-    // fetched local storage version of the darkmode ('dm')
-    const darkIsActiveLocalStorage = this.storage.getStorageSync('dm') as boolean | 'auto' | undefined;
-    console.log("KK darkIsActiveLocalStorage", darkIsActiveLocalStorage)
-    // set to dark if dm was set in local storage
-    if (darkIsActiveLocalStorage !== undefined) {
-      this.$q.dark.set(darkIsActiveLocalStorage);
-      setThemeMode('DARK', true);
-    }
-
 
     try {
       this.$i18n.locale = this.storage.getStorageSync('arbolang') as string;
@@ -62,8 +39,7 @@ export default defineComponent({
 </script>
 
 <style>
-svg[xmlns="http://www.w3.org/2000/svg"]
-{
+svg[xmlns="http://www.w3.org/2000/svg"] {
   display: none;
 }
 </style>

@@ -187,6 +187,7 @@ import { notifyError } from 'src/utils/notify';
 import { mapActions, mapState } from 'pinia';
 import { useUserStore } from 'src/pinia/modules/user';
 import { useMainStore } from 'src/pinia';
+import {setThemeMode as setThemeModeForDepTrees} from "dependencytreejs/src/StylesheetHandler";
 
 export default defineComponent({
   name: 'TempLayout',
@@ -263,13 +264,22 @@ export default defineComponent({
     this.isProjectAdmin;
     this.storage = useStorage();
     this.setStartingLanguage();
+
+    // fetched local storage version of the darkmode ('dm')
+    const darkIsActiveLocalStorage = this.storage.getStorageSync('dm') as boolean | undefined;
+    // set to dark if dm was set in local storage
+    this.setDarkMode(darkIsActiveLocalStorage !== undefined ? darkIsActiveLocalStorage : this.$q.dark.isActive);
   },
   methods: {
     ...mapActions(useUserStore, ['logout']),
     openURL,
     toggleDarkMode() {
-      this.$q.dark.toggle();
-      this.storage.setStorageSync('dm', this.$q.dark.isActive);
+      this.setDarkMode(!this.$q.dark.isActive);
+    },
+    setDarkMode(isActive: boolean) {
+      this.$q.dark.set(isActive);
+      this.storage.setStorageSync('dm', isActive);
+      setThemeModeForDepTrees(isActive ? 'DARK' : 'LIGHT', true);
     },
     tologin(url: string) {
       window.location.assign(url);

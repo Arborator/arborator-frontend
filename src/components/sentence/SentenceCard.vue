@@ -183,7 +183,7 @@
       >
         <q-tab-panel v-for="(tree, user) in filteredConlls" :key="user" :props="tree" :name="user">
           <q-card flat>
-            <q-card-section :class="($q.dark.isActive ? '' : '') + ' scrollable'" @scroll="synchronizeScroll">
+            <q-card-section :class="($q.dark.isActive ? '' : '') + ' scrollable'" >
               <VueDepTree
                 v-if="reactiveSentencesObj"
                 :card-id="index"

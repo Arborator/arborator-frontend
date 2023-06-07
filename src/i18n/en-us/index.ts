@@ -250,6 +250,9 @@ export default {
     showDiffUsersTooltip: 'You have to select at least two users',
     showDiffFaturesSelect: 'Select the set of features',
     showDiffBtn: 'Show differences',
+    applyRule: 'Apply rule',
+    applyRuleTooltip: 'Select at least one tree to which you wish to apply the rule',
+    selectAllTooltip: 'Select All',
   },
   // window which displays project settings
   projectSettings: {

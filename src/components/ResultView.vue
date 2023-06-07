@@ -1,5 +1,5 @@
 <template>
-  <q-card style="max-width: 100vw">
+  <q-card style="min-width: 100vw">
     <q-bar class="bg-primary text-white">
       <q-icon name="img:/svg/grew.svg" size="7rem"/>
       <q-space/>
@@ -12,29 +12,43 @@
       <q-btn v-close-popup flat dense icon="close"/>
     </q-bar>
     <div v-if="queryType === 'REWRITE' && samplesFrozen.list.length > 0 && canSaveTreeInProject"
-         class="q-pa-md">
-      <q-btn color="primary" label="Apply rules" @click="applyRules"/>
+         class="row q-pa-md">
+      <div>
+        <q-btn :disable="!atLeastOneSelected" color="primary" :label="$t('grewSearch.applyRule')" @click="applyRules" />
+        <q-tooltip v-if="!atLeastOneSelected">{{ $t('grewSearch.applyRuleTooltip') }}</q-tooltip>
+      </div>
     </div>
     <q-card-section>
       <div v-if="samplesFrozen.list.length > 0">
+        <div class="q-pa-md">
+          <q-checkbox v-if="queryType === 'REWRITE'" v-model="all" @click="selectAllSentences()">
+            <q-tooltip>{{ $t('grewSearch.selectAllTooltip') }}</q-tooltip>
+          </q-checkbox>
+          <q-separator />
+        </div>
         <q-virtual-scroll
           :items="samplesFrozen.list"
           style="height: 80vh; width: 100vw"
           :virtual-scroll-slice-size="5"
-          :virtual-scroll-item-size="200"
-          type="list"
+          v-slot="{ item, index }"
         >
-          <template #default="{ item, index }">
-            <SentenceCard
-              :id="item[1]"
-              :key="index"
-              :sentence="searchresults[item[0]][item[1]]"
-              :index="index"
-              :sentence-id="item[1]"
-              :matches="searchresults[item[0]][item[1]]"
-              :exercise-level="4"
-            ></SentenceCard>
-          </template>
+          <q-item :key="index">
+            <q-item-section side top v-if="queryType === 'REWRITE'">
+              <q-checkbox v-model="samplesFrozen.selected[index]" ></q-checkbox>
+            </q-item-section>
+            <q-separator dark vertical inset />
+            <q-item-section>
+              <SentenceCard
+                :id="item[1]"
+                :key="index"
+                :sentence="searchresults[item[0]][item[1]]"
+                :index="index"
+                :sentence-id="item[1]"
+                :matches="searchresults[item[0]][item[1]]"
+                :exercise-level="4"
+              ></SentenceCard>
+            </q-item-section>
+          </q-item>
         </q-virtual-scroll>
       </div>
     </q-card-section>
@@ -95,6 +109,7 @@ export default defineComponent({
       inResult: true,
       selected: [],
       samples,
+      all: false,
     };
   },
   computed: {
@@ -104,12 +119,13 @@ export default defineComponent({
       return Object.keys(this.searchresults)
         .map((sa) => Object.keys(this.searchresults[sa]))
         .flat().length;
-      // number of keys in subobjects
     },
-  },
+    atLeastOneSelected() {
+      return Object.values(this.samplesFrozen.selected).some((index) => index == true );
+    }
+},
   mounted() {
     this.freezeSamples();
-    // this.getProjectConfig();
   },
   methods: {
     /**
@@ -128,7 +144,7 @@ export default defineComponent({
         for (const sentId in this.searchresults[sampleId]) {
           listIds.push([sampleId, sentId]);
           index2Ids[index] = [sampleId, sentId];
-          selectedIndex[index] = true;
+          selectedIndex[index] = false;
           this.searchresultsCopy[sampleId][sentId].sample_name = sampleId;
           index += 1;
         }
@@ -141,21 +157,37 @@ export default defineComponent({
         samples: JSON.parse(JSON.stringify(this.samples)),
       };
     },
-    /**
-     * Save the graph to backend after modifying its metadata and changing it into an object
-     *
-     * @returns void
-     */
+    
+    selectAllSentences() {
+      for(const item in this.samplesFrozen.selected){
+        this.all ? this.samplesFrozen.selected[item] = true : this.samplesFrozen.selected[item] = false;
+      }
+    },
+
+    getSelectedResults() {
+      let selectedResults: grewSearchResult_t = {};
+      for(const item in this.samplesFrozen.selected){
+        if (this.samplesFrozen.selected[item] === true){
+          const sampleId = this.samplesFrozen.indexes[item][0];
+          const sentId = this.samplesFrozen.indexes[item][1];
+          if (!selectedResults[sampleId])  selectedResults[sampleId] = {};
+          selectedResults[sampleId][sentId] = this.searchresults[sampleId][sentId];
+        }  
+      }
+      return selectedResults; 
+      
+    },
     applyRules() {
       let toSaveCounter = 0;
-      this.searchresultsCopy = this.searchresults;
-      for (const sample in this.searchresults) {
-        for (const sentId in this.searchresults[sample]) {
+      let selectedResults = this.getSelectedResults();
+      this.searchresultsCopy = selectedResults;
+      for (const sample in selectedResults) {
+        for (const sentId in selectedResults[sample]) {
           let toSaveConll = ""
-          if (this.searchresults[sample][sentId].conlls[this.username]) {
-            toSaveConll = this.searchresults[sample][sentId].conlls[this.username]
+          if (selectedResults[sample][sentId].conlls[this.username]) {
+            toSaveConll = selectedResults[sample][sentId].conlls[this.username]
           } else {
-            toSaveConll = Object.values(this.searchresults[sample][sentId].conlls)[0]
+            toSaveConll = Object.values(selectedResults[sample][sentId].conlls)[0]
           }
           const sentenceJson = sentenceConllToJson(toSaveConll)
           sentenceJson.metaJson.user_id = this.username
@@ -167,7 +199,7 @@ export default defineComponent({
           }
         }
       }
-      if (toSaveCounter >= 1) {
+     if (toSaveCounter >= 1) {
         const datasample = {data: this.searchresultsCopy};
         api
           .applyRule(this.$route.params.projectname as string, datasample)

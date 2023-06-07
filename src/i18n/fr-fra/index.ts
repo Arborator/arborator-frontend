@@ -243,6 +243,9 @@ export default {
     showDiffUsersTooltip: 'Vous devez sélectionner au moins deux utilisateurs',
     showDiffFaturesSelect: 'Sélectionnez la liste des features',
     showDiffBtn: 'Afficher les différences',
+    applyRule: 'Appliquer la règle',
+    applyRuleTooltip: 'Sélectionnez au moins un arbre sur lequel vous souhaitez appliquer la règle',
+    selectAllTooltip: 'Selectionnez tous',
   },
   // window which displays project settings
   projectSettings: {

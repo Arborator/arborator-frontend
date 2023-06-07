@@ -168,10 +168,12 @@
           @contextmenu="rightClickHandler($event, user)"
         >
           <q-tooltip v-if="hasPendingChanges[user]">{{$t('sentenceCard.saveModif')}}</q-tooltip>
-          <q-tooltip v-else
-          >
+          <q-tooltip v-else-if="lastModifiedTime[user]">
             <q-icon color="primary" name="schedule" size="14px" class="q-ml-xs"/>
             {{$t('sentenceCard.modified[0]')}} {{ lastModifiedTime[user] }}  {{ $i18n.locale == 'en' ? $t('sentenceCard.modified[1]') : ''}}
+          </q-tooltip>
+          <q-tooltip v-else>
+            {{ $t('sentenceCard.automaticParsing') }}
           </q-tooltip>
         </q-tab>
       </q-tabs>

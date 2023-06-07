@@ -322,6 +322,7 @@ export default {
     saveModif: 'The tree has some pendings modifications not saved', 
     modified: ['Modified', 'ago'],
     modifTime: ['senconds', 'minutes', 'hours', 'days'],
+    automaticParsing: 'Automatic parsing',
     conllText: 'Text Conll', 
     statisticDial: 'Stastistics of the current opened tree',
 

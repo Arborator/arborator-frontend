@@ -11,7 +11,7 @@ export default {
   loginselector: 'Se connecter via',
   switchLanguage: "Changer la langue de l'interface utilisateur",
   documentation: 'Voir la documentation',
-  feedback:'Des questions, des propositions de fonctionnalités ou des rapports de bogues ? Consultez notre page Github issues',
+  feedback: 'Des questions, des propositions de fonctionnalités ou des rapports de bogues ? Consultez notre page Github issues',
   darkMode: 'Activer le mode sombre',
   projectAdmin: "Vous êtes l'administrateur de ce projet",
   userInformation: "Information de l'utilisateur",
@@ -26,7 +26,7 @@ export default {
     title: 'En êtes-vous certain?',
     message: 'Vous êtes sur le point de faire une action irrémédiable. Voulez-vous vraiment continuer?',
     warning: ['Veuillez taper quelque chose', 'Le nom du projet ne correspond pas'],
-    hint: 'Tapez le nom du projet', 
+    hint: 'Tapez le nom du projet',
     label: 'Le nom du projet*',
   },
 
@@ -206,8 +206,8 @@ export default {
     tooltipUnstageModifiedItem: 'Unstage les changements de lexique sélectionnés',
     tooltipValidatorLexicon: 'Importer le validateur pour comparer',
     tooltipSelectValidator: 'Selectionner un fichier au format tsv',
-    freezeProject: ['Désactiver ce projet', 'Réactiver ce projet','Ce projet est désactivé'],
-    removeUserTrees: ["Supprimer les arbres d'un utilisateur", "Sélectionnez des échantillons" ]
+    freezeProject: ['Désactiver ce projet', 'Réactiver ce projet', 'Ce projet est désactivé'],
+    removeUserTrees: ["Supprimer les arbres d'un utilisateur", "Sélectionnez des échantillons"]
   },
 
   // dialog window which displays create project card
@@ -216,16 +216,16 @@ export default {
     projectName: 'Nom du projet',
     visibilityMode: ['Privé', 'Visible', 'Ouvert'],
     exerciseMode: 'Mode exercice',
-    showAllTrees:'Afficher tous les arbres',
+    showAllTrees: 'Afficher tous les arbres',
     create: 'Créer',
-    createMessage: 'est créé', 
+    createMessage: 'est créé',
   },
 
   exportSamples: {
     title: 'Sélectionnez les arbres que vous souhaitez exporter',
-    exportMyTrees: 'Exporter mes arbres', 
+    exportMyTrees: 'Exporter mes arbres',
     exportRecentTrees: 'Exporter les arbres les plus récents',
-    exportTreesOfUsers: "Exporter des arbres d'autres utilisateurs", 
+    exportTreesOfUsers: "Exporter des arbres d'autres utilisateurs",
     selectOtherUsers: 'Sélectionnez les utilisateurs dont vous souhaitez exporter leurs arbres',
     export: 'Exporter'
   },
@@ -239,7 +239,7 @@ export default {
     grewRewriteTooltip: 'Examples de requêtes de recherche et remplacement de Grew',
     grewBtnTooltip: "Vous devez d'abord sélectionner le type d'arbre",
     showDiffTitle: 'Sélectionnez la liste des features et des utilisateurs dont vous cherchez la différence',
-    showDiffUsersSelect: 'Sélectionnez la liste des utilisateurs', 
+    showDiffUsersSelect: 'Sélectionnez la liste des utilisateurs',
     showDiffUsersTooltip: 'Vous devez sélectionner au moins deux utilisateurs',
     showDiffFaturesSelect: 'Sélectionnez la liste des features',
     showDiffBtn: 'Afficher les différences',
@@ -274,13 +274,13 @@ export default {
     annotationSettingsSave: "Sauvegarder les paramètres d'annotation",
     checkAnnotation: 'Ceci ressemble à du JSON raisonnable',
   },
-  settingsPage:{
+  settingsPage: {
     saveModifications: 'Enregistrer les modifications',
     firstName: 'Prénom',
     familyName: 'Nom',
     saveModificationMessage: 'Vos informations personelles sont mises à jour',
   },
-  github:{
+  github: {
     synchronizeBtn: 'Synchroniser avec github',
     skipSync: 'Ignorer la synchronisation',
     chooseRepoOwner: 'Propriétaire du dépôt',
@@ -292,7 +292,7 @@ export default {
     defaultBranch: ' Utiliser la branche sélectionnée (Attention si vous travaillez avec un dépôt qui a de nombreux collaborateurs).',
     synchronize: 'Synchroniser',
     syncWarningMessage: 'Le dépôt est volumineux, la synchronisarion prendra un peu de temps',
-    synchronizeMessage: 'est synchronisé avec', 
+    synchronizeMessage: 'est synchronisé avec',
     commitNotif: ['Vous avez ', 'changement', 'changements', "Vous n'avez pas aucun commit à effectuer"],
     pullNotif: ["rafraîchir pour voir s'il y a des pulls", "Récupérer les modifications"],
     pullRequest: 'Ouvrir une nouvelle Pull request à partir de vos changements',
@@ -300,35 +300,36 @@ export default {
   },
   sentenceCard: {
     selectTooltip: 'Sélectionnez la phrase pour diviser les tokens',
-    annotationErrors: "Voir vos erreurs d'annotation", 
+    annotationErrors: "Voir vos erreurs d'annotation",
     saveTeacher: 'Sauvegarder comme enseignant',
     saveBaseTree: 'Sauvegarder comme arbre de base',
     saveTree: ["Sauvegarder l'arbre", "comme"],
     editMetadata: 'Editer les métadonnées de cet arbre',
     multiEditDial: 'Dialogue de multi-édition',
-    diffMode: ['Activer', 'Désactiver', 'le mode Diff'], 
+    diffMode: ['Activer', 'Désactiver', 'le mode Diff'],
     treeLink: 'Obtenir un lien direct vers cet arbre',
     treeConll: 'Obtenir CoNLL-U de cet arbre',
     treeSVG: 'Obtenir le SVG de cet arbre',
-    addToken: 'Ajouter un nouveau token', 
-    editToken: 'Editer les tokens', 
+    addToken: 'Ajouter un nouveau token',
+    editToken: 'Editer les tokens',
     saveModif: "L'arbre a quelques modifications qui n'ont pas été encore sauvegardées.",
     modified: ['Modifié il y a '],
     modifTime: ['sencondes', 'minutes', 'heures', 'jours'],
-    conllText: 'Texte Conll', 
+    automaticParsing: 'Parsing automatique',
+    conllText: 'Texte Conll',
     statisticDial: "Statistiques de l'arbre ouvert",
-   
+
 
   },
   attributeTable: {
     addFeature: 'Ajouter un nouveau feature',
     eraseAttribute: "Supprimer l'attribut",
     features: 'Caractéristiques de',
-    category:['Sélectionner une catégorie pour', 'Catégorie'],
-    metadata: 'Les métadonnées de cette phrase', 
+    category: ['Sélectionner une catégorie pour', 'Catégorie'],
+    metadata: 'Les métadonnées de cette phrase',
     relation: ['Sélectionner une relation qui va de', 'vers', 'Relation de dépendence'],
     tokenReplaceDial: [
-      'Remplacer', 
+      'Remplacer',
       'par',
       "Le changement de tokens perturbe la comparabilité des différentes annotations d'une même phrase.",
       'Remplacement',

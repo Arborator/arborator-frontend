@@ -32,12 +32,13 @@
           :virtual-scroll-slice-size="5"
           v-slot="{ item, index }"
         >
+         
           <q-item :key="index">
             <q-item-section side top v-if="queryType === 'REWRITE'">
               <q-checkbox v-model="samplesFrozen.selected[index]" ></q-checkbox>
             </q-item-section>
             <q-separator dark vertical inset />
-            <q-item-section>
+            <q-item-section style="overflow-x: auto;">
               <SentenceCard
                 :id="item[1]"
                 :key="index"
@@ -49,6 +50,7 @@
               ></SentenceCard>
             </q-item-section>
           </q-item>
+          
         </q-virtual-scroll>
       </div>
     </q-card-section>

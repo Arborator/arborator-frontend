@@ -643,6 +643,6 @@ export default defineComponent({
 
 <style>
 .scrollable {
-  overflow: scroll;
+  overflow-x: auto;
 }
 </style>

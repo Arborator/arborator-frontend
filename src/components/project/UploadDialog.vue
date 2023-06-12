@@ -48,8 +48,11 @@
                  Each sentence on a separate line, the tokens are separated by spaces.
                 </div>
               </div>
-              <q-input v-model="text" outlined type="textarea" />
-              <q-btn>Tokenize</q-btn>
+              <q-input outlined v-model="text" type="textarea" label="text" />
+              <q-input outlined v-model="sampleName" label ="Sample Name" />
+              <div class="row q-pa-md">
+                <q-btn v-close-popup :disable="!disableTokenizeBtn" color="primary" @click="tokenizeSample">Tokenize</q-btn>
+              </div>
             </q-tab-panel>
 
             <q-tab-panel name="inputFile">
@@ -216,6 +219,8 @@ export default defineComponent({
       { value: 'horizontal', label: 'Horizontal'},
       { value: 'vertical', label:'Vertical'}
     ];
+    const option : {value: string, label: string} = {value: '', label: ''};
+    const lang: {value: string, label: string} = {value: '', label: ''};
     const langOptions = [
       { value: 'en', label: 'English' },
       { value: 'fr', label: 'French' }, 
@@ -232,10 +237,11 @@ export default defineComponent({
       userIntersPerSample,
       tab: 'inputText',
       tokenizeOptions,
-      option: '',
+      option,
       text: '',
       langOptions,
-      lang: '',
+      lang,
+      sampleName: '',
     };
   },
 
@@ -243,6 +249,17 @@ export default defineComponent({
     ...mapState(useUserStore, { userid: 'id' }),
     ...mapState(useUserStore, ['username']),
     ...mapState(useProjectStore, ['exerciseMode']),
+    disableTokenizeBtn() {
+      if (this.option.value == 'plainText'){
+        return this.text != '' && this.sampleName != '' && this.lang.value != '';
+      }
+      else if (this.option.value){
+        return this.text != '' && this.sampleName != '';
+      }
+      else {
+        return false;
+      }
+    }
   },
 
   methods: {
@@ -338,7 +355,26 @@ export default defineComponent({
           this.uploadSample.submitting = false;
           this.uploadDialModel = false;
         });
-    }        
+    },
+    tokenizeSample() {
+      const data = {
+        username: this.username,
+        text: this.text,
+        option: this.option.value,
+        lang: this.lang.value,
+        sampleName: this.sampleName,
+
+      };
+      api
+        .tokenizeSample(this.$route.params.projectname as string, data)
+        .then((response) => {
+          notifyMessage({ message: 'upload success' });
+          this.$emit('uploaded:sample');
+        })
+        .catch((error) =>{
+          notifyError({ error: 'Invalid request'})
+        });
+    }      
   },
 });
 </script>

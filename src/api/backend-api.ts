@@ -119,6 +119,9 @@ export default {
   uploadSample(projectname: string, data: any) {
     return API.post<{ status: 'OK' }>(`/projects/${projectname}/samples`, data, { timeout: 400000 });
   },
+  tokenizeSample(projectName: string, data: any) {
+    return API.post(`/projects/${projectName}/samples/tokenize`, data, { timeout: 400000 });
+  },
   exportEvaluation(projectName: string, sampleName: string) {
     return API.get(`/projects/${projectName}/samples/${sampleName}/evaluation`, {
       headers: {

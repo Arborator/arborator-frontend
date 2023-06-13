@@ -84,7 +84,7 @@ export const useProjectStore = defineStore('project', {
   },
   actions: {
     /*
-     * For now, `configShown` regroup information about `shownmeta` and `shownfeatures`
+     * For now, `configShown` regroup information about `shownMeta` and `shownFeatures`
      * while `configConllu` regroup the information about `annotationfeatures`
      * both of these config are saved on different servers (resp arborator-flask and grew_server)
      * so we need to keep separate the logic in Vuex, API calls and so on
@@ -109,8 +109,8 @@ export const useProjectStore = defineStore('project', {
             this.guests = response.data.guests;
           });
           api.getProjectFeatures(projectname).then((response) => {
-            this.shownmeta = response.data.shownmeta;
-            this.shownfeatures = response.data.shownfeatures;
+            this.shownMeta = response.data.shownMeta;
+            this.shownFeatures = response.data.shownFeatures;
           });
           api
             .getProjectConlluSchema(projectname)
@@ -166,7 +166,7 @@ export const useProjectStore = defineStore('project', {
           });
       });
     },
-    updateProjectShownFeatures({ projectname, toUpdateObject }: { projectname: string; toUpdateObject: any }) {
+    updateProjectshownFeatures({ projectname, toUpdateObject }: { projectname: string; toUpdateObject: any }) {
       return new Promise((resolve, reject) => {
         api
           .updateProjectFeatures(projectname, toUpdateObject)

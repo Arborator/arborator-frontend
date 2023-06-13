@@ -102,8 +102,6 @@
         <q-btn v-close-popup color="primary" :disable="paramError || isHealthy===false" label="START" :loading="taskStatus !== null" push
                size="sm"
                @click="parserPipelineStart()"/>
-        <!--        <q-btn v-if="parsing" v-close-popup color="primary" label="Stop" push size="sm"-->
-        <!--               @click="bootParserStop()"/>-->
         <div v-if="taskStatus !== null">
           <div class="text-subtitle5 q-mb-xs">Current task : {{ taskStatus.taskType }}</div>
           <div v-if="taskStatus.taskAdditionalMessage" class="text-subtitle5 q-mb-xs">
@@ -123,7 +121,6 @@ import {defineComponent, PropType} from 'vue';
 import api from '../../api/backend-api';
 import {ModelInfo_t, ParsingSettings_t, sample_t} from 'src/api/backend-types';
 import {notifyMessage} from "src/utils/notify";
-// https://github.com/Arborator/djangoBootParser/blob/master/estimated_time_100ep_logline.tsv
 const kirParserSentPerSecSpeed: number = 140;
 
 type taskType_t = "ASK_TRAINING" | "TRAINING" | "ASK_PARSING" | "PARSING"

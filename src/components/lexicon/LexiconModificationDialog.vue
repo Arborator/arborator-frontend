@@ -51,8 +51,6 @@
         <q-separator />
       </q-card-section>
       <q-card-actions align="around">
-        <!-- <q-btn flat @click="ondialoghide()" label="Cancel" v-close-popup style="width: 35%; margin-left: auto; margin-right: auto" /> -->
-        <!-- <q-btn flat @click="addEntry()" label="Add entry" v-close-popup style="width: 45%; margin-left: auto; margin-right: auto" /> -->
         <q-btn
           v-close-popup
           color="primary"
@@ -60,7 +58,6 @@
           style="width: 45%; margin-left: auto; margin-right: auto"
           @click="replaceEntry()"
         />
-        <!-- :loading="exporting" -->
       </q-card-actions>
     </q-card>
   </q-dialog>

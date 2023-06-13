@@ -97,7 +97,7 @@ export default defineComponent({
     };
   },
   computed: {
-    ...mapState(useProjectStore, ['diffUserId', 'shownfeatures', 'TEACHER', 'isTeacher', 'isStudent']),
+    ...mapState(useProjectStore, ['diffUserId', 'shownFeatures', 'TEACHER', 'isTeacher', 'isStudent']),
     ...mapState(useUserStore, ['username']),
   },
   watch: {
@@ -117,7 +117,7 @@ export default defineComponent({
     this.reactiveSentence.attach(this);
     this.reactiveSentence.fromSentenceConll(this.conll);
     const sentenceSVGOptions = defaultSentenceSVGOptions();
-    sentenceSVGOptions.shownFeatures = this.shownfeatures;
+    sentenceSVGOptions.shownFeatures = this.shownFeatures;
 
     sentenceSVGOptions.interactive = !(this.isStudent && this.treeUserId === this.TEACHER);
 

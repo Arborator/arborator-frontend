@@ -35,8 +35,6 @@ import {
 } from './backend-types';
 
 export const API = axios.create({
-  // baseURL: 'https://arboratorgrew.elizia.net/api',
-  // baseURL: `/api`,
   baseURL: process.env.DEV ? '/api' : `${process.env.API}/api`,
   timeout: 50000,
   withCredentials: false,
@@ -112,10 +110,8 @@ export default {
   // ---------------        Samples       --------------- //
   // ---------------------------------------------------- //
   getProjectSamples(projectname: string) {
-    // this call flask api that call grew api
     return API.get<getProjectSamples_RV>(`/projects/${projectname}/samples`);
   },
-  // KK FIXME : fix this data: any
   uploadSample(projectname: string, data: any) {
     return API.post<{ status: 'OK' }>(`/projects/${projectname}/samples`, data, { timeout: 400000 });
   },

@@ -8,8 +8,8 @@ import {
   sample_role_action_t,
   sample_role_targetrole_t,
   sample_t,
-  shownfeatures,
-  shownmeta,
+  shownFeatures,
+  shownMeta,
   user_t,
   timed_tokens_t,
   grewSearchResult_t as grewSearchResult_t,
@@ -39,13 +39,13 @@ export type updateProject_ED = Partial<project_with_diff_t>;
 export type updateProject_RV = project_with_diff_t;
 
 export interface getProjectFeatures_RV {
-  shownmeta: shownmeta;
-  shownfeatures: shownfeatures;
+  shownMeta: shownMeta;
+  shownFeatures: shownFeatures;
 }
 
 export interface updateProjectFeatures_ED {
-  shownfeatures?: string[];
-  shownmeta?: string[];
+  shownFeatures?: string[];
+  shownMeta?: string[];
 }
 
 export interface getProjectConlluSchema_RV {

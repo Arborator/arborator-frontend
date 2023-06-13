@@ -187,7 +187,7 @@
         </q-card-section>
         <q-card-section>
           <q-select
-            v-model="shownfeaturesLocal"
+            v-model="shownFeaturesLocal"
             filled
             multiple
             :options="shownFeaturesChoices"
@@ -198,7 +198,7 @@
         </q-card-section>
         <q-card-section>
           <q-select
-            v-model="shownmetaLocal"
+            v-model="shownMetaLocal"
             filled
             multiple
             :options="shownMetaChoices"
@@ -355,8 +355,8 @@ export default defineComponent({
       'diffMode',
       'diffUserId',
       'visibility',
-      'shownfeatures',
-      'shownmeta',
+      'shownFeatures',
+      'shownMeta',
       'admins',
       'guests',
     ]),
@@ -410,25 +410,25 @@ export default defineComponent({
         this.updateProjectSettings({ visibility: value });
       },
     },
-    shownfeaturesLocal: {
+    shownFeaturesLocal: {
       get() {
-        return this.shownfeatures;
+        return this.shownFeatures;
       },
       set(value: string[]) {
-        this.updateProjectShownFeatures({
+        this.updateProjectshownFeatures({
           projectname: this.$props.projectname,
-          toUpdateObject: { shownfeatures: value },
+          toUpdateObject: { shownFeatures: value },
         });
       },
     },
-    shownmetaLocal: {
+    shownMetaLocal: {
       get() {
-        return this.shownmeta;
+        return this.shownMeta;
       },
       set(value: string[]) {
-        this.updateProjectShownFeatures({
+        this.updateProjectshownFeatures({
           projectname: this.$props.projectname,
-          toUpdateObject: { shownmeta: value },
+          toUpdateObject: { shownMeta: value },
         });
       },
     },
@@ -444,7 +444,7 @@ export default defineComponent({
       'resetAnnotationFeaturesUD',
       'updateProjectSettings',
       'postImage',
-      'updateProjectShownFeatures',
+      'updateProjectshownFeatures',
     ]),
     /**
      * Parse annotation features. Display a related informative message dependeing on success

@@ -62,8 +62,8 @@ export default defineComponent({
       DEPREL: [],
       DEPS: [],
     };
-    const shownfeatures: string[] = [];
-    const shownmeta: string[] = [];
+    const shownFeatures: string[] = [];
+    const shownMeta: string[] = [];
     const dep: TokenJson = emptyTokenJson();
     const gov: TokenJson = emptyTokenJson();
     const depDeprel = '';
@@ -90,8 +90,8 @@ export default defineComponent({
       options: {
         // attribute table dialog specific stuff
         annof, // = annotationFeatures from conf!!!
-        shownfeatures,
-        shownmeta,
+        shownFeatures,
+        shownMeta,
         annofFEATS: {}, // obj version (instead of list)
         annofMISC: {}, // obj version (instead of list)
         splitregex: new RegExp('', ''),
@@ -131,12 +131,12 @@ export default defineComponent({
     };
   },
   computed: {
-    ...mapState(useProjectStore, ['annotationFeatures', 'shownfeatures', 'shownmeta']),
+    ...mapState(useProjectStore, ['annotationFeatures', 'shownFeatures', 'shownMeta']),
   },
   created() {
     this.options.annof = this.annotationFeatures;
-    this.options.shownfeatures = this.shownfeatures;
-    this.options.shownmeta = this.shownmeta;
+    this.options.shownFeatures = this.shownFeatures;
+    this.options.shownMeta = this.shownMeta;
     // precompute to check for changes quickly:
     this.options.annofFEATS = this.options.annof.FEATS.reduce((obj, r) => {
       if (r.values) (obj as { [key: string]: string[] })[r.name] = r.values;

@@ -12,8 +12,8 @@ interface configState {
   freezed: boolean;
   diffMode: boolean;
   diffUserId: string;
-  shownfeatures: string[];
-  shownmeta: string[];
+  shownFeatures: string[];
+  shownMeta: string[];
   TEACHER: string;
   annotationFeatures: annotationFeatures_t;
   annotationFeaturesUD: annotationFeatures_t;
@@ -33,8 +33,8 @@ export default function defaultState(): configState {
     freezed: false,
     diffMode: false,
     diffUserId: '',
-    shownfeatures: ['FORM', 'UPOS', 'LEMMA', 'MISC.Gloss'],
-    shownmeta: ['text_en'],
+    shownFeatures: ['FORM', 'UPOS', 'LEMMA', 'MISC.Gloss'],
+    shownMeta: ['text_en'],
     TEACHER: 'teacher',
 
     annotationFeatures: {

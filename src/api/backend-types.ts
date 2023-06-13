@@ -16,16 +16,6 @@ export interface user_t {
 }
 
 //// PROJECT ////
-// export interface project_t {
-//   id: number;
-//   projectName: string;
-//   description: string;
-//   image: string;
-//   visibility: number;
-//   showAllTrees: boolean;
-//   exerciseMode: boolean;
-// }
-
 export interface project_with_diff_t {
   id: number;
   projectName: string;
@@ -59,9 +49,9 @@ export interface project_extended_t {
   lastWriteAccess: number;
 }
 
-export type shownmeta = string[];
+export type shownMeta = string[];
 
-export type shownfeatures = string[];
+export type shownFeatures = string[];
 
 export interface annotationFeatures_t {
   META: string[];

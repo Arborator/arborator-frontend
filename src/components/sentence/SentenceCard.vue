@@ -209,7 +209,7 @@
         </q-tab-panel>
       </q-tab-panels>
       <q-list v-if="openTabUser" class="sentence__meta-features" dense>
-        <q-item v-for="meta in shownmeta" :key="meta">
+        <q-item v-for="meta in shownMeta" :key="meta">
           <q-chip dense size="xs">{{ meta }}
           </q-chip
           >
@@ -305,7 +305,7 @@ export default defineComponent({
   data() {
     const hasPendingChanges: { [key: string]: boolean } = {};
     const reactiveSentencesObj: reactive_sentences_obj_t = {};
-    const shownmetanames: string[] = [];
+    const shownMetanames: string[] = [];
     return {
       sentenceBus: sentenceBusFactory(),
       exportedConll: '',
@@ -319,9 +319,9 @@ export default defineComponent({
         redo: false,
         user: '',
       },
-      shownmetanames,
+      shownMetanames,
       conllSavedCounter: 0,
-      shownmetas: {},
+      shownMetas: {},
       view: null,
       sentenceLink: '',
       canUndo: false,
@@ -334,7 +334,7 @@ export default defineComponent({
 
   computed: {
     ...mapWritableState(useProjectStore, ['diffMode', 'diffUserId']),
-    ...mapState(useProjectStore, ['isAdmin', 'isGuest', 'isTeacher', 'guests', 'exerciseMode', 'shownmeta', 'getProjectConfig', 'canSaveTreeInProject']),
+    ...mapState(useProjectStore, ['isAdmin', 'isGuest', 'isTeacher', 'guests', 'exerciseMode', 'shownMeta', 'getProjectConfig', 'canSaveTreeInProject']),
     ...mapState(useUserStore, ['isLoggedIn', 'getUserInfos']),
     lastModifiedTime() {
       // this.forceRerender; it was like this when i found it. Should it have = 0 ?
@@ -394,7 +394,7 @@ export default defineComponent({
     },
   },
   created() {
-    this.shownmetanames = this.getProjectConfig.shownmeta;
+    this.shownMetanames = this.getProjectConfig.shownMeta;
 
     for (const [userId, conll] of Object.entries(this.sentence.conlls)) {
       const reactiveSentence = new ReactiveSentence();

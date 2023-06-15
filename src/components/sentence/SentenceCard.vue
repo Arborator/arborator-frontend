@@ -113,20 +113,7 @@
                   <q-item-label> {{$t('sentenceCard.addToken')}}</q-item-label>
                 </q-item-section>
               </q-item>
-              <q-item clickable
-                      @click="
-              (event) => {
-                editTokens(event);
-              }
-            "
-              >
-                <q-item-section avatar>
-                  <q-avatar icon="edit" color="primary" text-color="white"/>
-                </q-item-section>
-                <q-item-section>
-                  <q-item-label>{{$t('sentenceCard.editToken')}}</q-item-label>
-                </q-item-section>
-              </q-item>
+            
             </q-list>
           </q-btn-dropdown>
           <q-btn v-if="isLoggedIn" flat round dense icon="undo" :disable="openTabUser === '' || !canUndo"

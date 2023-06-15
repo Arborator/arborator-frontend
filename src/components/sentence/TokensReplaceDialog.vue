@@ -72,6 +72,7 @@
 import { reactive_sentences_obj_t, sentence_bus_t } from 'src/types/main_types';
 import { replaceArrayOfTokens } from 'conllup/lib/conll';
 import { defineComponent, PropType} from 'vue';
+import { tSThisType } from '@babel/types';
 
 
 export default defineComponent({
@@ -112,9 +113,9 @@ export default defineComponent({
         const sentence = (event.target as HTMLInputElement).value
         if ((sentence[this.startIndex-1] == ' ' || this.startIndex == 0) && sentence[this.endIndex] == ' ')
         {
-          this.tokensReplaceDialogOpened = true;
+          this.selection = (event.target as HTMLInputElement).value.substring(this.startIndex, this.endIndex);
+          this.selection.includes(' ') ? this.tokensReplaceDialogOpened = false : this.tokensReplaceDialogOpened = true;
         }
-        this.selection = (event.target as HTMLInputElement).value.substring(this.startIndex, this.endIndex);
       }
     });
   },

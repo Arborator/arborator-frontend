@@ -309,7 +309,7 @@ export default defineComponent({
                 value: baseModelMeta.model_info
               }
             })
-            options.sort((a, b) => (a.label < b.label) ? 1 : -1)
+            options.sort((a, b) => a.label.toLowerCase().localeCompare(b.label.toLowerCase())) // sort by label (case-insensitive)
             this.param.baseModelsOptions = options
 
           }

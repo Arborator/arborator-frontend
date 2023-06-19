@@ -5,44 +5,74 @@
         <q-space />
         <q-btn v-close-popup flat dense icon="close" />
       </q-bar>
-        <q-list bordered separator>
-          <q-item  clickable v-close-popup @click="tokenReplaceOptions('merge_right')">
-            <q-item-section avatar>
-              <q-avatar icon="ion-md-return-right"  />
-            </q-item-section>
-            <q-item-section>Merge right</q-item-section>
-          </q-item>
-          <q-item  clickable v-close-popup @click="tokenReplaceOptions('merge_left')">
-            <q-item-section avatar>
-              <q-avatar icon="ion-md-return-left" />
-            </q-item-section>
-            <q-item-section>Merge left</q-item-section>
-          </q-item>
-          <q-item clickable v-close-popup @click="isShowFusion = true">
-            <q-item-section avatar>
-              <q-avatar>
-                <q-icon name="content_cut" />
-              </q-avatar>
-            </q-item-section>
-            <q-item-section>Split token</q-item-section>
-          </q-item>
-          <q-item clickable v-close-popup @click="tokenReplaceOptions('insert')">
-            <q-item-section avatar>
-              <q-avatar>
-                <q-icon name="add" />
-              </q-avatar>
-            </q-item-section>
-            <q-item-section>Insert token</q-item-section>
-          </q-item>
-          <q-item clickable v-close-popup @click="tokenReplaceOptions('delete')">
-            <q-item-section avatar>
-              <q-avatar>
-                <q-icon name="delete" />
-              </q-avatar>
-            </q-item-section>
-            <q-item-section>Delete token</q-item-section>
-          </q-item>
-        </q-list>
+      <q-list bordered separator>
+        <q-item clickable>
+          <q-item-section avatar>
+            <q-avatar>
+              <q-icon name="merge" />
+            </q-avatar>
+          </q-item-section>
+          <q-item-section>Merge</q-item-section>
+          <q-item-section side>
+            <q-icon name="keyboard_arrow_right" />
+          </q-item-section>
+          <q-menu anchor="top end" self="top start">
+            <q-list>
+              <q-item  clickable v-close-popup @click="tokenReplaceOptions('merge_right')">
+                <q-item-section>Merge right</q-item-section>
+              </q-item>
+              <q-item  clickable v-close-popup @click="tokenReplaceOptions('merge_left')">
+                <q-item-section>Merge left</q-item-section>
+              </q-item>
+            </q-list>
+          </q-menu>
+        </q-item>
+        <q-item clickable>
+          <q-item-section avatar>
+            <q-avatar>
+              <q-icon name="add" />
+            </q-avatar>
+          </q-item-section>
+          <q-item-section>Insert</q-item-section>
+          <q-item-section side>
+            <q-icon name="keyboard_arrow_right" />
+          </q-item-section>
+          <q-menu anchor="top end" self="top start">
+            <q-list>
+              <q-item  clickable v-close-popup @click="tokenReplaceOptions('insert_before')">
+                <q-item-section>Insert before</q-item-section>
+              </q-item>
+              <q-item  clickable v-close-popup @click="tokenReplaceOptions('insert_after')">
+                <q-item-section>Insert after</q-item-section>
+              </q-item>
+            </q-list>
+          </q-menu>
+        </q-item>
+        <q-item clickable v-close-popup @click="isShowFusion = true">
+          <q-item-section avatar>
+            <q-avatar>
+              <q-icon name="content_cut" />
+            </q-avatar>
+          </q-item-section>
+          <q-item-section>Split token</q-item-section>
+        </q-item>
+        <q-item clickable v-close-popup @click="tokenReplaceOptions('insert')">
+          <q-item-section avatar>
+            <q-avatar>
+              <q-icon name="add" />
+            </q-avatar>
+          </q-item-section>
+          <q-item-section>Insert token</q-item-section>
+        </q-item>
+        <q-item clickable v-close-popup @click="tokenReplaceOptions('delete')">
+          <q-item-section avatar>
+            <q-avatar>
+              <q-icon name="delete" />
+            </q-avatar>
+          </q-item-section>
+          <q-item-section>Delete token</q-item-section>
+        </q-item>
+      </q-list>
     </q-card>
   </q-dialog>
   <q-dialog v-model="isShowFusion">
@@ -147,7 +177,11 @@ export default defineComponent({
         this.tokensForms = [tokens[token.i-2].form+token.form];
         this.tokensIndexes = [token.i-1, token.i];
       }
-      else if (option == 'insert'){
+      else if (option == 'insert_before'){
+        this.tokensForms = ["_", token.form];
+        this.tokensIndexes = [token.i];
+      }
+      else if (option == 'insert_after'){
         this.tokensForms = [token.form, "_"];
         this.tokensIndexes = [token.i];
       }

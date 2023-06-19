@@ -1,16 +1,16 @@
 <template>
-  <!-------------------- Start uposDialog -------------------->
-  <q-dialog v-model="uposDialogOpened" @keyup.enter="onChangeUpos()">
+  <!-------------------- Start xposDialog -------------------->
+  <q-dialog v-model="xposDialogOpened" @keyup.enter="onChangeXpos()">
     <!-- @hide="ondialoghide()" -->
     <!-- :maximized="maximizedToggle" -->
     <q-card style="height: 300px">
       <q-bar class="bg-primary text-white">
-        <div class="text-weight-bold">UPOS : {{$t('attributeTable.category[0]')}} "{{ token.FORM }}"</div>
+        <div class="text-weight-bold">XPOS : {{$t('attributeTable.category[0]')}} "{{ token.FORM }}"</div>
         <q-space />
         <q-btn v-close-popup flat dense icon="close" />
       </q-bar>
       <q-card-section style="height: 200px">
-        <q-select id="catselect" v-model="token.UPOS" filled :options="annotationFeatures.UPOS" :label="$t('attributeTable.category[1]')" style="width: 250px" />
+        <q-select id="catselect" v-model="token.XPOS" filled :options="annotationFeatures.XPOS" :label="$t('attributeTable.category[1]')" style="width: 250px" />
       </q-card-section>
       <q-separator />
       <q-card-actions>
@@ -18,7 +18,7 @@
         <q-space />
 
         <!-- @click="ondialoghide()" -->
-        <q-btn v-close-popup color="negative" :label="$t('delete')" style="width: 25%; margin-left: auto; margin-right: auto" @click="onDeleteUpos()" />
+        <q-btn v-close-popup color="negative" :label="$t('delete')" style="width: 25%; margin-left: auto; margin-right: auto" @click="onDeleteXpos()" />
         <q-space />
         <q-btn
           id="catselectvalidate"
@@ -26,14 +26,14 @@
           color="primary"
           label="Ok"
           style="width: 25%; margin-left: auto; margin-right: auto"
-          @click="onChangeUpos()"
+          @click="onChangeXpos()"
         />
         <!-- :disabled="snap.currentcategory === snap.category" -->
       </q-card-actions>
     </q-card>
   </q-dialog>
 
-  <!----------------- End uposDialog ------------------->
+  <!----------------- End xposDialog ------------------->
 </template>
 
 <script lang="ts">
@@ -55,7 +55,7 @@ export default defineComponent({
   data() {
     const token = emptyTokenJson();
     return {
-      uposDialogOpened: false,
+      xposDialogOpened: false,
       token,
       userId: '',
     };
@@ -64,25 +64,25 @@ export default defineComponent({
     ...mapState(useProjectStore, ['annotationFeatures']),
   },
   mounted() {
-    this.sentenceBus.on('open:uposDialog', ({ token, userId }) => {
+    this.sentenceBus.on('open:xposDialog', ({ token, userId }) => {
       this.token = token;
       this.userId = userId;
-      this.uposDialogOpened = true;
+      this.xposDialogOpened = true;
     });
   },
   beforeUnmount() {
-    this.sentenceBus.off('open:uposDialog');
+    this.sentenceBus.off('open:xposDialog');
   },
   methods: {
-    onChangeUpos() {
-      this.uposDialogOpened = false;
+    onChangeXpos() {
+      this.xposDialogOpened = false;
       this.sentenceBus.emit('tree-update:token', {
         token: this.token,
         userId: this.userId,
       });
     },
-    onDeleteUpos() {
-      this.token.UPOS = '_';
+    onDeleteXpos() {
+      this.token.XPOS = '_';
       this.sentenceBus.emit('tree-update:token', {
         token: this.token,
         userId: this.userId,

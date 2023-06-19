@@ -17,7 +17,7 @@
           <q-tooltip  anchor="bottom middle" self="center middle" :offset="[10, 10]"> {{ $t('sentenceCard.selectTooltip')}}
           </q-tooltip>
           <template #prepend>
-            <q-icon name="chat_bubble_outline"/><!-- 言 --> 
+            <q-icon name="chat_bubble_outline"/><!-- 言 -->
           </template>
         </q-input>
         <q-space/>
@@ -113,7 +113,7 @@
                   <q-item-label> {{$t('sentenceCard.addToken')}}</q-item-label>
                 </q-item-section>
               </q-item>
-            
+
             </q-list>
           </q-btn-dropdown>
           <q-btn v-if="isLoggedIn" flat round dense icon="undo" :disable="openTabUser === '' || !canUndo"
@@ -206,6 +206,7 @@
     </q-card-section>
     <RelationDialog :sentence-bus="sentenceBus"/>
     <UposDialog :sentence-bus="sentenceBus"/>
+    <XposDialog :sentence-bus="sentenceBus"/>
     <FeaturesDialog :sentence-bus="sentenceBus"/>
     <MetaDialog :sentence-bus="sentenceBus"/>
     <ConlluDialog :sentence-bus="sentenceBus"/>
@@ -227,6 +228,7 @@ import api from '../../api/backend-api';
 import VueDepTree from './VueDepTree.vue';
 import RelationDialog from './RelationDialog.vue';
 import UposDialog from './UposDialog.vue';
+import XposDialog from './XposDialog.vue';
 import FeaturesDialog from './FeaturesDialog.vue';
 import MetaDialog from './MetaDialog.vue';
 import ConlluDialog from './ConlluDialog.vue';
@@ -257,6 +259,7 @@ export default defineComponent({
     VueDepTree,
     RelationDialog,
     UposDialog,
+    XposDialog,
     FeaturesDialog,
     MetaDialog,
     ConlluDialog,

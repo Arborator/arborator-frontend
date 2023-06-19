@@ -48,6 +48,7 @@ export type sentence_bus_events_t = {
   'open:relationDialog': { userId: string; dep: TokenJson; gov: TokenJson };
   'open:featuresDialog': { userId: string; token: TokenJson };
   'open:uposDialog': { userId: string; token: TokenJson };
+  'open:xposDialog': { userId: string; token: TokenJson };
   'action:saved': { userId: string };
   'export:SVG': { userId: string };
   'open:tokensReplaceDialog': { userId: string; event: Event };

@@ -211,7 +211,7 @@ export default defineComponent({
   },
   computed: {
     allSamplesNames() {
-      return this.samples.map((sample) => sample.sample_name);
+      return this.samples.map((sample) => sample.sample_name).sort(this.caseUnsensitiveCompare);
     },
     trainingSamplesSelected() {
       if (this.param.trainAll) {
@@ -309,12 +309,14 @@ export default defineComponent({
                 value: baseModelMeta.model_info
               }
             })
-            options.sort((a, b) => a.label.toLowerCase().localeCompare(b.label.toLowerCase())) // sort by label (case-insensitive)
+            options.sort((a, b) => this.caseUnsensitiveCompare(a.label, b.label)) // sort by label (case-insensitive)
             this.param.baseModelsOptions = options
-
           }
         }
       )
+    },
+    caseUnsensitiveCompare(a: string, b: string) {
+      return a.toLowerCase().localeCompare(b.toLowerCase());
     },
     parserPipelineStart() {
       if (this.param.pipelineChoice === "TRAIN_AND_PARSE" || this.param.pipelineChoice === "TRAIN_ONLY") {

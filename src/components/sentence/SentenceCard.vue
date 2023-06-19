@@ -2,10 +2,13 @@
   <q-card :id="index">
     <q-card-section>
       <div class="row items-center">
-        <span class="text-grey">{{ index + 1 }}</span>
-        <q-chip class="text-center" :color="$q.dark.isActive ? 'grey' : ''" dense> {{ sentenceId }}
-        </q-chip
-        >&nbsp;&nbsp;&nbsp;
+        <span class="text-center" :color="$q.dark.isActive ? 'grey' : ''" dense>
+          {{ index + 1 }}
+          <q-tooltip>
+            sent_id = {{ sentenceId }}
+          </q-tooltip>
+        </span>
+
         <q-input
           v-model="sentenceData.sentence"
           style="width: 65%"
@@ -196,7 +199,7 @@
         </q-tab-panel>
       </q-tab-panels>
       <q-list v-if="openTabUser" class="sentence__meta-features" dense>
-        <q-item v-for="meta in shownMeta" :key="meta">
+        <q-item v-for="meta in (shownMeta.length > 0 ? shownMeta : Object.keys(reactiveSentencesObj[openTabUser].state.metaJson))" :key="meta">
           <q-chip dense size="xs">{{ meta }}
           </q-chip
           >

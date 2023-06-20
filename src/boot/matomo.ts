@@ -1,13 +1,13 @@
 import { boot } from 'quasar/wrappers';
 import { VueMatomo } from 'vue-matomo';
 import routes from '../router/routes';
-
+import Router from '../router/index';
 export default boot(({ app }) => {
     app.use(VueMatomo, {
         host: 'https://matomo.elizia.net',
         siteId: 1,
         trackerFileName: 'matomo',
-        router: routes,
+        router: Router,
         enableLinkTracking: true,
         requireConsent: false,
         trackInitialView: true,

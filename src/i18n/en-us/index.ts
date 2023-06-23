@@ -301,7 +301,7 @@ export default {
     syncWarningMessage: 'The repository is large, the synchronization will take some time',
     synchronizeMessage: 'is synchronized with',
     commitNotif: ['You have', 'change', 'changes', "You don't have changes to commit"], 
-    pullNotif: ['refresh to see if there is pulls', 'Pull changes'], 
+    pullNotif: ['Check pull', 'Refresh to see if there are changes to pull', 'Pull available', 'Pull changes'], 
     pullRequest: 'Open new Pull request from your changes',
     removeSync: ['Remove synchronization', 'Your project is synchronized with'],
   },

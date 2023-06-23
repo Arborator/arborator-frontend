@@ -177,7 +177,7 @@ export default defineComponent({
               .getGithubRepoBranches(this.projectName, this.username, this.selectedRepository)
               .then((response) => {
                 this.listBranches = response.data;
-                if (this.listBranches.length == 1) this.branch = this.listBranches[0];
+                this.branch = this.listBranches[0];
               })
               .catch((error) => {
                 notifyError(error);

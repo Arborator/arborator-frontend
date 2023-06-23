@@ -294,7 +294,7 @@ export default {
     syncWarningMessage: 'Le dépôt est volumineux, la synchronisarion prendra un peu de temps',
     synchronizeMessage: 'est synchronisé avec',
     commitNotif: ['Vous avez ', 'changement', 'changements', "Vous n'avez pas aucun commit à effectuer"],
-    pullNotif: ["rafraîchir pour voir s'il y a des pulls", "Récupérer les modifications"],
+    pullNotif: ['Vérifier le pull',"Rafraîchir pour voir s'il y a changements", "Pull disponible", "Récupérer les modifications"],
     pullRequest: 'Ouvrir une nouvelle Pull request à partir de vos changements',
     removeSync: ['Supprimer la synchronisation', 'Votre projet est synchronisé avec']
   },

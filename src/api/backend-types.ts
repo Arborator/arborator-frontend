@@ -207,7 +207,6 @@ export interface githubRepository_t {
   owner_avatar: String,
 }
 export interface githubSynchronizedRepository_t {
-  user_id: string,
-  project_name: string,
   repositoryName: string,
+  branch: string,
 }

@@ -40,7 +40,7 @@
                     </div>
                 </div>
                 <div class="row q-gutter-md justify-center">
-                    <q-btn :disable="trees == ''" label="commit" color="primary" @click="commitChanges(trees.user)"/>
+                    <q-btn :disable="trees.user == ''" label="commit" color="primary" @click="commitChanges(trees.user)"/>
                 </div>
             </q-form>
         </q-card-section>
@@ -68,13 +68,16 @@ export default defineComponent({
         }
     },
     data() {
-        return {
-            options: [
+        const options = [
                 { label: 'My trees', user: 'username' },
                 { label:'My trees filled up with the most recent ones', user: 'last' }, 
-            ],
+            ];
+        const trees: {label: string, user: string} = options[0];
+        
+        return {
             message: '',
-            trees: '', 
+            trees,
+            options,
         }
     },
     computed:{

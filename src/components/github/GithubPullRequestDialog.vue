@@ -4,8 +4,8 @@
             <div class="text-h6 text-left">Pull Request</div>
         </q-card-section>
         <q-separator />
-        <q-card-section v-if="listBranches.length == 1">You should have at least two branches in order to open new pull request</q-card-section>
-        <q-card-section v-if="listBranches.length > 1">
+        <q-card-section v-if="listBranches.length == 0">You should have at least two branches in order to open new pull request</q-card-section>
+        <q-card-section v-else>
             <div class="row q-gutter-md">
                 <div class="col-8">
                     <q-input
@@ -46,25 +46,43 @@ export default defineComponent({
         }
     },
     data() {
-        const listBranches: string[] =[];
+        const branches: string[] =[];
         return {
-            listBranches: [],
+            branches,
             title: '', 
             branch:'',
+            synchronizedBranch:'',
         }
     },
     computed:{
         ...mapState(useUserStore, ['username']),
+        listBranches(): string[]{
+            let listBranches: string[] = [];
+            listBranches = this.branches.filter((branch) => branch != this.synchronizedBranch);
+            this.branch = listBranches[0];
+            return listBranches;
+        }
     },
     mounted(){
+        this.getSynchronizedGithubRepo();
         this.getRepoBranches();
     },
     methods: {
+        getSynchronizedGithubRepo() {
+            api
+                .getSynchronizedGithubRepository(this.projectName, this.username)
+                .then((response) => {
+                    this.synchronizedBranch = response.data.branch;
+                })
+                .catch((error) => {
+                notifyError({ error });
+                });
+        },
         getRepoBranches(){
             api
               .getGithubRepoBranches(this.projectName, this.username, this.repositoryName)
               .then((response) => {
-                this.listBranches = response.data;
+                this.branches = response.data;
               })
               .catch((error) => {
                 notifyError(error);

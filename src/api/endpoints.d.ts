@@ -153,4 +153,4 @@ export type parserParseStatus_RV = parser_generic_RV_failure | parserParseStatus
 //////////// Github //////////
 export type getGithubRepositories_RV = githubRepository_t[];
 
-export type createGithubSynchronizedRepository_ED = githubSynchronizedRepository_t;
+export type getGithubSynchronizedRepository_RV = githubSynchronizedRepository_t;

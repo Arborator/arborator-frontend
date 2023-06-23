@@ -542,7 +542,6 @@ export default defineComponent({
       loadingDelete: false,
       exporting: false,
     };
-    const githubSynchronizedRepo: string = '';
     return {
       table,
       multiple: [],
@@ -810,12 +809,11 @@ export default defineComponent({
       api
         .getSynchronizedGithubRepository(this.projectName, this.username)
         .then((response) => {
-          this.githubSynchronizedRepo = response.data;
+          this.githubSynchronizedRepo = response.data.repositoryName;
         })
         .catch((error) => {
           notifyError({ error });
         });
-
     },
 
     getTreesFrom(samples: sample_t[]){

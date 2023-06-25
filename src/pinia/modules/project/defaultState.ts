@@ -85,6 +85,10 @@ export default function defaultState(): configState {
         { name: 'Definite', values: ['Com', 'Cons', 'Def', 'Ind', 'Spec'] },
         { name: 'Degree', values: ['Abs', 'Cmp', 'Equ', 'Pos', 'Sup'] },
         { name: 'Evident', values: ['Fh', 'Nfh'] },
+        {
+          name: 'ExtPos',
+          values: ['ADJ', 'ADP', 'ADV', 'AUX', 'CCONJ', 'DET', 'INTJ', 'NOUN', 'NUM', 'PART', 'PRON', 'PROPN', 'PUNCT', 'SCONJ', 'VERB', 'X'],
+        },
         { name: 'Foreign', values: ['Yes'] },
         { name: 'Gender', values: ['Com', 'Fem', 'Masc', 'Neut'] },
         { name: 'Mood', values: ['Adm', 'Cnd', 'Des', 'Imp', 'Ind', 'Jus', 'Nec', 'Opt', 'Pot', 'Prp', 'Qot', 'Sub'] },
@@ -103,10 +107,6 @@ export default function defaultState(): configState {
       MISC: [
         { name: 'AlignBegin', values: 'Number' },
         { name: 'AlignEnd', values: 'Number' },
-        {
-          name: 'EXTPOS',
-          values: ['ADJ', 'ADP', 'ADV', 'AUX', 'CCONJ', 'DET', 'INTJ', 'NOUN', 'NUM', 'PART', 'PRON', 'PROPN', 'PUNCT', 'SCONJ', 'VERB', 'X'],
-        },
         { name: 'Gloss', values: 'String' },
       ],
       DEPREL: [
@@ -217,6 +217,10 @@ export default function defaultState(): configState {
         { name: 'Definite', values: ['Com', 'Cons', 'Def', 'Ind', 'Spec'] },
         { name: 'Degree', values: ['Abs', 'Cmp', 'Equ', 'Pos', 'Sup'] },
         { name: 'Evident', values: ['Fh', 'Nfh'] },
+        {
+          name: 'ExtPos',
+          values: ['ADJ', 'ADP', 'ADV', 'AUX', 'CCONJ', 'DET', 'INTJ', 'NOUN', 'NUM', 'PART', 'PRON', 'PROPN', 'PUNCT', 'SCONJ', 'VERB', 'X'],
+        },
         { name: 'Foreign', values: ['Yes'] },
         { name: 'Gender', values: ['Com', 'Fem', 'Masc', 'Neut'] },
         { name: 'Mood', values: ['Adm', 'Cnd', 'Des', 'Imp', 'Ind', 'Jus', 'Nec', 'Opt', 'Pot', 'Prp', 'Qot', 'Sub'] },
@@ -235,10 +239,6 @@ export default function defaultState(): configState {
       MISC: [
         { name: 'AlignBegin', values: 'Number' },
         { name: 'AlignEnd', values: 'Number' },
-        {
-          name: 'ExtPos',
-          values: ['ADJ', 'ADP', 'ADV', 'AUX', 'CCONJ', 'DET', 'INTJ', 'NOUN', 'NUM', 'PART', 'PRON', 'PROPN', 'PUNCT', 'SCONJ', 'VERB', 'X'],
-        },
         { name: 'Gloss', values: 'String' },
         { name: 'MGloss', values: 'String' },
       ],

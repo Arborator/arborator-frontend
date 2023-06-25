@@ -108,6 +108,7 @@ export default function defaultState(): configState {
         { name: 'AlignBegin', values: 'Number' },
         { name: 'AlignEnd', values: 'Number' },
         { name: 'Gloss', values: 'String' },
+        { name: 'Subject', values: ['Instanciated', 'Generic', 'NoRaising', 'ObjRaising', 'OblRaising', 'SubjRaising']},
       ],
       DEPREL: [
         {
@@ -166,7 +167,7 @@ export default function defaultState(): configState {
           ],
           join: ':',
         },
-        { name: 'deep', values: ['', 'agent', 'expl', 'fixed', 'lvc', 'm', 'num', 'relcl', 'scrap', 'x'], join: '@' },
+        { name: 'deep', values: ['', 'agent', 'expl', 'fixed', 'lvc', 'm', 'num', 'relcl', 'scrap'], join: '@' },
       ],
       DEPS: [{ name: 'deep', values: ['comp', 'mod', 'subj'], join: '' }],
     },
@@ -242,6 +243,7 @@ export default function defaultState(): configState {
         { name: 'AlignEnd', values: 'Number' },
         { name: 'Gloss', values: 'String' },
         { name: 'MGloss', values: 'String' },
+        { name: 'Subject', values: ['Instanciated', 'Generic', 'NoRaising', 'ObjRaising', 'OblRaising', 'SubjRaising']},
       ],
       DEPREL: [
         {

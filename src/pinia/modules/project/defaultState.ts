@@ -127,6 +127,7 @@ export default function defaultState(): configState {
             'punct',
             'root',
             'subj',
+            'udep'
             'unk',
             'vocative',
           ],

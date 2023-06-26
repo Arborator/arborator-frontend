@@ -187,22 +187,32 @@ export default defineComponent({
             if (branchSyn == 'default') branchSyn = branch;
             const data = {repositoryName: repoName, branchImport: branch, branchSyn: branchSyn};
             this.loading = true;
+            var interval = setTimeout(() => {this.$q.notify({
+                message: this.$t('github.syncWarningMessage'),
+                color: 'warning',
+                position: 'top',
+                timeout: 5000
+            })}, 10000); 
             api
               .synchronizeWithGithubRepo(this.projectName as string, this.username as string,  data)
               .then((response) => {
                 notifyMessage({message: `"${this.projectName}" ${this.$t('github.synchronizeMessage')} "${repoName}"`});
                 this.loading = false;
                 this.$emit('created');
+                clearTimeout(interval);
               })
               .catch((error) => {
                 const errorMessage = error.response.data.message;
                 notifyError({error: `${errorMessage}`});
                 this.loading = false;
                 this.$emit('created');
-              });      
-        },  
+              }); 
+            
+
+        },       
+    },  
     }     
-});
+);
 </script>
 <style>
 

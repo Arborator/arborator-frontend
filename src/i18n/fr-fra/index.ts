@@ -291,7 +291,7 @@ export default {
     arboratorgrewBranch: [' Utiliser la branche ', 'pour vos commits et pulls effectués avec ArboratorGrew.'],
     defaultBranch: ' Utiliser la branche sélectionnée (Attention si vous travaillez avec un dépôt qui a de nombreux collaborateurs).',
     synchronize: 'Synchroniser',
-    syncWarningMessage: 'Le dépôt est volumineux, la synchronisarion prendra un peu de temps',
+    syncWarningMessage: 'Le dépôt est volumineux, la synchronisarion prendra un certain temps',
     synchronizeMessage: 'est synchronisé avec',
     commitNotif: ['Vous avez ', 'changement', 'changements', "Vous n'avez pas aucun commit à effectuer"],
     pullNotif: ['Vérifier le pull',"Rafraîchir pour voir s'il y a changements", "Pull disponible", "Récupérer les modifications"],

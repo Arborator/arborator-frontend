@@ -128,6 +128,9 @@ export default defineComponent({
                 .checkPull(this.projectName, this.username)
                 .then((response) => {
                     this.checkPulls = response.data;
+                    if (!this.checkPulls){
+                        notifyMessage({ message: `You don't have changes to pull` });
+                    }
                 })
                 .catch((error) => {
                     notifyError({ error });
@@ -137,7 +140,6 @@ export default defineComponent({
             api
                 .deleteSynchronization(this.projectName, this.username)
                 .then((response) => {
-                    notifyMessage({ message: `The synchronization with "${this.repositoryName}" is removed` });
                     this.$emit("remove")
                 })
                 .catch((error) => {

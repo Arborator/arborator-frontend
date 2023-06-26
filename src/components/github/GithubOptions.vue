@@ -34,7 +34,7 @@
                     <q-icon name="info" color="secondary" />
                 </q-item-section>
             </q-item>
-            <q-item v-close-popup @click="isShowPullRequestDialog = true">
+            <q-item clickable v-close-popup @click="isShowPullRequestDialog = true">
                 <q-item-section avatar>
                     <q-avatar icon="ion-md-git-merge" />
                 </q-item-section>

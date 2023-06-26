@@ -216,7 +216,7 @@
                 </div>
 
                 <!-- Other github options (only for synchronized projects) -->
-                <div v-if="githubSynchronizedRepo != '' && isAllowdedToSync">
+                <div v-if="githubSynchronizedRepo && isAllowdedToSync" >
                   <GithubOptions :projectName="projectName" :repositoryName="githubSynchronizedRepo" :key="reload" @remove="reloadAfterDeleteSynchronization " @pulled="loadProjectData"/>
                   <q-tooltip content-class="text-white bg-primary"> {{$t('projectView.tooltipSynchronizedProject')}} {{githubSynchronizedRepo}}</q-tooltip>
                 </div>
@@ -648,7 +648,7 @@ export default defineComponent({
     this.loadProjectData();
     this.notifyFreezedProject();
     document.title = `ArboratorGrew: ${this.projectName}`;
-    if (this.isLoggedIn) this.getSynchronizedGithubRepo();
+    if (this.isAllowdedToSync) this.getSynchronizedGithubRepo();
   },
   unmounted() {
     window.removeEventListener('resize', this.handleResize);

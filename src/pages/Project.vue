@@ -673,6 +673,7 @@ export default defineComponent({
     reloadAfterDeleteSynchronization () {
       this.isDeleteSync = true;
       this.loadProjectData();
+      this.getSynchronizedGithubRepo();
     },
 
     filterFields(tableJson: table_t<unknown>) {

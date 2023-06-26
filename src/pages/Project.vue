@@ -173,7 +173,7 @@
                 <!-- Button for github synchronization -->
                 <div>
                   <q-btn
-                    v-if="isAllowdedToSync && githubSynchronizedRepo == ''"
+                    v-if="isAllowdedToSync && !githubSynchronizedRepo"
                     :disable="isFreezed"
                     flat
                     icon="fab fa-github"
@@ -218,7 +218,7 @@
                 </div>
 
                 <!-- Other github options (only for synchronized projects) -->
-                <div v-if="githubSynchronizedRepo && isAllowdedToSync" >
+                <div v-if="isAllowdedToSync && githubSynchronizedRepo && !isDeleteSync" >
                   <GithubOptions :projectName="projectName" :repositoryName="githubSynchronizedRepo" :key="reload" @remove="reloadAfterDeleteSynchronization " @pulled="loadProjectData"/>
                   <q-tooltip content-class="text-white bg-primary"> {{$t('projectView.tooltipSynchronizedProject')}} {{githubSynchronizedRepo}}</q-tooltip>
                 </div>
@@ -610,6 +610,7 @@ export default defineComponent({
       'canSaveTreeInProject',
       'isOwner',
       'freezed',
+      'isAllowdedToSync',
     ]),
     ...mapWritableState(useProjectStore, ['freezed']),
     ...mapState(useUserStore, ['isLoggedIn', 'isSuperAdmin', 'loggedWithGithub', 'avatar', 'username','isAllowedGitFeature']),
@@ -635,9 +636,6 @@ export default defineComponent({
       }
       return possiblesUsers;
     },
-    isAllowdedToSync(): boolean{
-      return this.isAllowedGitFeature && this.loggedWithGithub && this.isAdmin  && !this.exerciseMode && !this.isTeacher;
-    },
     isFreezed(): boolean{
       return !this.isOwner && this.freezed;
     }
@@ -650,7 +648,7 @@ export default defineComponent({
     this.loadProjectData();
     this.notifyFreezedProject();
     document.title = `ArboratorGrew: ${this.projectName}`;
-    if (this.isAllowdedToSync) this.getSynchronizedGithubRepo();
+    if (this.isLoggedIn) this.getSynchronizedGithubRepo();
   },
   unmounted() {
     window.removeEventListener('resize', this.handleResize);

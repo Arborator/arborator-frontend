@@ -164,7 +164,6 @@ export default defineComponent({
         },
 
         triggerConfirm(method: CallableFunction) {
-            notifyMessage({ message: `Once you remove the synchronization, you will not be able to synchronize again this project with any Github Repository`, type: 'warning', position: 'top' })
             this.confirmActionDial = true;
             this.confirmActionCallback = method;
         },

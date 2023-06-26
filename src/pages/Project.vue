@@ -194,10 +194,12 @@
                         <q-item-section avatar>
                           <q-avatar icon="block" />
                         </q-item-section>
-                        <q-item-section>
+                        <q-item-section v-if="!freezed">
                           <q-item-label>{{ $t('projectView.freezeProject[0]')}}</q-item-label>
-                          <q-item-label v-if="freezed">{{ $t('projectView.freezeProject[1]')}}</q-item-label>
-                          <q-item-label v-if="freezed" caption>{{$t('projectView.freezeProject[2]')}}</q-item-label>
+                        </q-item-section>
+                        <q-item-section v-else>
+                          <q-item-label >{{ $t('projectView.freezeProject[1]')}}</q-item-label>
+                          <q-item-label caption>{{$t('projectView.freezeProject[2]')}}</q-item-label>
                         </q-item-section>
                       </q-item>
 
@@ -712,7 +714,7 @@ export default defineComponent({
     },
 
     freezeProject(){
-      notifyMessage({message: this.freezed ? `Your project is unfreezed` : `Your project is freezed`})
+      notifyMessage({message: this.freezed ? `Your project is unfreezed` : `Your project is freezed the are other collaborators can't add new changes`})
       this.updateProjectSettings({freezed: !this.freezed})
     },
 

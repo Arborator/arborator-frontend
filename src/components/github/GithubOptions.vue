@@ -76,6 +76,7 @@ import { notifyError, notifyMessage } from 'src/utils/notify';
 
 
 import { defineComponent, PropType } from 'vue';
+import { useProjectStore } from 'src/pinia/modules/project';
 export default defineComponent({
     components: {
         GithubCommitDialog,
@@ -107,6 +108,7 @@ export default defineComponent({
     },
     computed: {
         ...mapState(useUserStore, ['username']),
+        ...mapState(useProjectStore, ['isOwner']),
     },
     mounted() {
         this.getChanges();
@@ -128,7 +130,7 @@ export default defineComponent({
                 .checkPull(this.projectName, this.username)
                 .then((response) => {
                     this.checkPulls = response.data;
-                    if (!this.checkPulls){
+                    if (!this.checkPulls && this.isOwner){
                         notifyMessage({ message: `You don't have changes to pull` });
                     }
                 })

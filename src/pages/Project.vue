@@ -124,7 +124,7 @@
                   :disable="!isAdmin"
                   @click="triggerConfirm(deleteSamples)"
                 >
-                  <q-tooltip v-if="githubSynchronizedRepo != ''" content-class="text-white bg-primary">This action will delete the file from your synchronized github repository also</q-tooltip>
+                  <q-tooltip v-if="githubSynchronizedRepo" content-class="text-white bg-primary">This action will delete the file from your synchronized github repository also</q-tooltip>
                   <q-tooltip v-else :delay="300" content-class="text-white bg-primary">{{ $t('projectView.tooltipDeleteSample[1]') }}</q-tooltip>
                 </q-btn>
                 <div v-if="isProjectMember">
@@ -706,7 +706,7 @@ export default defineComponent({
           .catch((error) => {
             notifyError({ error });
           });
-        if (this.githubSynchronizedRepo != '' && this.isOwner){
+        if (this.githubSynchronizedRepo && this.isOwner){
           this.deleteSampleFromGithub(sample.sample_name);
         }
       }
@@ -736,7 +736,7 @@ export default defineComponent({
     },
 
     displayWarning(){
-      if (this.githubSynchronizedRepo != '') notifyMessage({message: 'These files will be also deleted from your synchronized Github repository', type: 'warning', position: 'top'})
+       notifyMessage({message: 'These files will be also deleted from your synchronized Github repository', type: 'warning', position: 'top'})
     },
 
     bootParserPanelToggle() {
@@ -797,7 +797,7 @@ export default defineComponent({
       }, 0);
     },
     triggerConfirm(method: CallableFunction) {
-      if (this.githubSynchronizedRepo != '' && this.isOwner) this.displayWarning();
+      if (this.githubSynchronizedRepo && this.isOwner) this.displayWarning();
       this.confirmActionDial = true;
       this.confirmActionCallback = method;
     },

@@ -304,6 +304,15 @@ export default {
     pullNotif: ['Check pull', 'Refresh to see if there are changes to pull', 'Pull available', 'Pull changes'], 
     pullRequest: 'Open new Pull request from your changes',
     removeSync: ['Remove synchronization', 'Your project is synchronized with'],
+    deletionWarning: 'This action will also remove the file from your synchronized github repository.',
+    commitDialog: {
+      title: 'Commit the changes',
+      commitInput: 'Commit message',
+      commitTreeSelect: 'Select the trees to commit',
+      commitTreeOptions: ['My trees', 'My trees filled up with the most recent ones'],
+      commitMessage: 'New commit to',
+    
+    }
   },
   sentenceCard: {
     selectTooltip: 'Select the sentence to split the tokens',

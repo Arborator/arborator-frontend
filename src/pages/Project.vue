@@ -124,7 +124,7 @@
                   :disable="!isAdmin"
                   @click="triggerConfirm(deleteSamples)"
                 >
-                  <q-tooltip v-if="githubSynchronizedRepo" content-class="text-white bg-primary">This action will delete the file from your synchronized github repository also</q-tooltip>
+                  <q-tooltip v-if="githubSynchronizedRepo" content-class="text-white bg-primary">{{ $t('github.deletionWarning') }}</q-tooltip>
                   <q-tooltip v-else :delay="300" content-class="text-white bg-primary">{{ $t('projectView.tooltipDeleteSample[1]') }}</q-tooltip>
                 </q-btn>
                 <div v-if="isProjectMember">

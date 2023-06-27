@@ -296,7 +296,15 @@ export default {
     commitNotif: ['Vous avez ', 'changement', 'changements', "Vous n'avez pas aucun commit à effectuer"],
     pullNotif: ['Vérifier le pull',"Rafraîchir pour voir s'il y a changements", "Pull disponible", "Récupérer les modifications"],
     pullRequest: 'Ouvrir une nouvelle Pull request à partir de vos changements',
-    removeSync: ['Supprimer la synchronisation', 'Votre projet est synchronisé avec']
+    removeSync: ['Supprimer la synchronisation', 'Votre projet est synchronisé avec'],
+    deletionWarning: 'Cette action supprimera également le fichier de votre dépôt github synchronisé.',
+    commitDialog: {
+      title: 'Commit les changements',
+      commitInput: 'Le message du commit',
+      commitTreeSelect: 'Sélectionner le type des arbres',
+      commitTreeOptions: ['Mes arbres', 'Mes arbres remplis par les plus récents'],
+      commitMessage: 'Nouveau commit dans',
+    }
   },
   sentenceCard: {
     selectTooltip: 'Sélectionnez la phrase pour diviser les tokens',

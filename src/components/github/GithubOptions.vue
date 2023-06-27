@@ -112,7 +112,6 @@ export default defineComponent({
     },
     mounted() {
         this.getChanges();
-        this.getPulls();
     },
     methods: {
         getChanges() {

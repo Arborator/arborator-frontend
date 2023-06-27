@@ -1,7 +1,7 @@
 <template>
     <q-card style="min-width: 50vw;">
         <q-card-section>
-            <div class="text-h6 text-left">Commit changes</div>
+            <div class="text-h6 text-left">{{ $t('github.commitDialog.title') }}</div>
         </q-card-section>
         <q-separator />
         <q-card-section>
@@ -11,7 +11,7 @@
                         <q-input
                             filled
                             v-model="message"
-                            label="Commit message"
+                            :label="$t('github.commitDialog.commitInput')"
                         />
                     </div>
                     <div class="col">
@@ -19,7 +19,7 @@
                             filled
                             v-model="trees"
                             :options="options"
-                            label="Select trees to commit"
+                            :label="$t('github.commitDialog.commitTreeSelect')"
                             color="primary"
                             options-selected-class="primary"
                         >
@@ -69,8 +69,8 @@ export default defineComponent({
     },
     data() {
         const options = [
-                { label: 'My trees', user: 'username' },
-                { label:'My trees filled up with the most recent ones', user: 'last' }, 
+                { label: this.$t('github.commitDialog.commitTreeOptions[0]'), user: 'username' },
+                { label: this.$t('github.commitDialog.commitTreeOptions[1]'), user: 'last' }, 
             ];
         const trees: {label: string, user: string} = options[0];
         
@@ -91,7 +91,7 @@ export default defineComponent({
             api
               .commitChanges(this.projectName, this.username, data)
               .then((response) => {
-                notifyMessage({message: `new commit in "${ this.repositoryName}"`});
+                notifyMessage({message:  this.$t('github.commitDialog.commitMessage') + `"${ this.repositoryName}"`});
                 this.$emit('committed')
               })
               .catch((error) => {

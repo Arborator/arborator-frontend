@@ -356,7 +356,7 @@
         </q-card-section>
       </q-card>
       <template v-if="!exerciseMode && !isTeacher && !isFreezed">
-        <GrewSearch :user-ids="getProjectTreesFrom" :sentence-count="sentenceCount" :search-scope="projectName" />
+        <GrewSearch :user-ids="getProjectTreesFrom" :sentence-count="sentenceCount" :search-scope="projectName" @reload="loadProjectData" />
         <RelationTableMain />
       </template>
       <q-dialog v-model="chooseExportedTrees">

@@ -370,6 +370,7 @@ export default defineComponent({
         .then((response) => {
           notifyMessage({ message: 'upload success' });
           this.$emit('uploaded:sample');
+          this.uploadDialModel = false;
         })
         .catch((error) =>{
           notifyError({ error: 'Invalid request'})

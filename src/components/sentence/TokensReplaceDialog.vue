@@ -56,14 +56,6 @@
           </q-item-section>
           <q-item-section>Split token</q-item-section>
         </q-item>
-        <q-item clickable v-close-popup @click="tokenReplaceOptions('insert')">
-          <q-item-section avatar>
-            <q-avatar>
-              <q-icon name="add" />
-            </q-avatar>
-          </q-item-section>
-          <q-item-section>Insert token</q-item-section>
-        </q-item>
         <q-item clickable v-close-popup @click="tokenReplaceOptions('delete')">
           <q-item-section avatar>
             <q-avatar>
@@ -88,9 +80,20 @@
           <q-input
             v-model="selection"
             filled
+            label="Multiword"
           />
+          <q-input v-model="firstToken" filled label="First token"></q-input>
           <q-input v-model="secondToken" filled label="Second token" />
-          <q-btn v-close-popup label="Split" color="primary" @click="tokenReplaceOptions('split')" />
+          <q-checkbox v-model="multiword" label="Add multiword token"></q-checkbox>
+          <div class="row q-gutter-md justify-center">
+            <q-btn 
+              :disable="!firstToken && !secondToken"
+              v-close-popup 
+              label="Split" 
+              color="primary" 
+              @click="tokenReplaceOptions('split')" 
+               />
+          </div>
         </div>
         </q-card-section>
     </q-card>
@@ -102,7 +105,6 @@
 import { reactive_sentences_obj_t, sentence_bus_t } from 'src/types/main_types';
 import { replaceArrayOfTokens } from 'conllup/lib/conll';
 import { defineComponent, PropType} from 'vue';
-import { tSThisType } from '@babel/types';
 
 
 export default defineComponent({
@@ -131,6 +133,8 @@ export default defineComponent({
       isShowFusion: false,
       userId: '',
       secondToken:'',
+      firstToken:'',
+      multiword: false,
       
     };
   },
@@ -191,7 +195,7 @@ export default defineComponent({
       }
       else { 
         this.tokensIndexes = [token.i];
-        this.tokensForms = [this.selection, this.secondToken];
+        this.tokensForms = [this.firstToken, this.secondToken];
         this.secondToken = '';
 
       }
@@ -202,9 +206,25 @@ export default defineComponent({
       const tokensIndexes = this.tokensIndexes;
       const newTokensForm = this.tokensForms;
       const newTree = replaceArrayOfTokens(oldTree, tokensIndexes, newTokensForm, true);
+      if (this.multiword){
+        const newGroupJson = {
+          DEPREL: "_",
+          DEPS: {}, 
+          FEATS: {},
+          FORM: this.selection,
+          HEAD: -1,
+          ID: String(tokensIndexes[0])+"-"+String(tokensIndexes[0]+1),
+          LEMMA: "_",
+          MISC: {},
+          UPOS: "_",
+          XPOS: "_",
+        };
+        newTree["groupsJson"][newGroupJson.ID] = newGroupJson;
+      }
       const newMetaText = Object.values(newTree.nodesJson)
         .map(({ FORM }) => FORM)
-        .join(' ');
+        .join(' ');  
+      console.log(newTree)                                                           
       this.sentenceBus.emit('tree-update:tree', {
         tree: newTree,
         userId: this.userId,

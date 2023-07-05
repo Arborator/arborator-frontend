@@ -108,7 +108,8 @@ import { defineComponent, PropType} from 'vue';
 
 
 export default defineComponent({
-  
+  name:'TokensReplaceDialog',
+  emits:['changed:metaText'],
   props: {
     sentenceBus: {
       type: Object as PropType<sentence_bus_t>,

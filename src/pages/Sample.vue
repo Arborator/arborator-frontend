@@ -28,7 +28,7 @@
         <q-circular-progress indeterminate size="70px" :thickness="0.22" color="primary" track-color="grey-3"/>
       </div>
     </div>
-    <GrewSearch :user-ids="userIds" :sentence-count="sentenceCount" :search-scope="samplename" />
+    <GrewSearch :user-ids="userIds" :sentence-count="sentenceCount" :search-scope="samplename" @reload="refreshWindow" />
     <RelationTableMain :sampleName="samplename"/>
   </q-page>
 </template>

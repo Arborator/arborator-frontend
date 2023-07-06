@@ -1,6 +1,6 @@
 <template>
   <q-layout view="hHh Lpr fFf">
-    <q-header :class="$q.dark.isActive ? 'bg-dark' : 'bg-white'">
+    <q-header :class="$q.dark.isActive ? 'bg-dark' : 'bg-white'" id="main-header">
       <q-bar :class="$q.dark.isActive ? 'bg-dark' : 'bg-white text-black'">
         <!-- class="bg-white text-black" -->
         <!--   :class="$q.dark.isActive ? 'text-white' : 'text-primary'" -->
@@ -14,7 +14,7 @@
         <q-space />
         <q-breadcrumbs
           :active-color="$q.dark.isActive ? 'white' : 'primary'"
-          :class="($q.dark.isActive ? 'text-grey' : 'text-black') + ' mobile-hide native-mobile-hide within-iframe-hide gt-xs'"
+          :class="($q.dark.isActive ? 'text-grey' : 'text-black') + ' mobile-hide native-mobile-hide within-iframe-hide gt-xs overflow-auto text-no-wrap'"
           style="max-height: 20px; max-width: 70vh; overflow: y"
         >
           <q-breadcrumbs-el v-if="notHome" icon="home" to="/" />

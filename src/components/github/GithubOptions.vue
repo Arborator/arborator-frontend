@@ -1,5 +1,5 @@
 <template>
-    <q-btn-dropdown outline split color="primary" no-caps icon="fab fa-github" label="Github Options">
+    <q-btn-dropdown outline color="primary" no-caps icon="fab fa-github" label="Github Options">
         <q-list>
             <q-item :disable="changesNumber == 0" clickable v-close-popup @click="isShowCommitDialog = true">
                 <q-item-section avatar>

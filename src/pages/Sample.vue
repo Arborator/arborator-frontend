@@ -24,7 +24,9 @@
         <q-circular-progress indeterminate size="70px" :thickness="0.22" color="primary" track-color="grey-3"/>
       </div>
     </div>
+
     <GrewSearch :user-ids="userIds" :sentence-count="numberOfTrees" :search-scope="samplename" />
+    
     <RelationTableMain :sampleName="samplename"/>
   </div>
 </template>

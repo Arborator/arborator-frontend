@@ -46,7 +46,7 @@
         {{ $t('projectHub.lastWriteAccess') }} {{ timeAgo(project.lastWriteAccess) }}
       </q-chip>
     </q-item-section>
-    <q-item-section v-if="project.admins.length > 2" style="max-width:30px;"> 
+    <q-item-section v-if="project.admins.length > 2 && isLoggedIn" style="max-width:30px;"> 
       <q-btn size="sm" flat icon="expand_more" @click.native.stop>
         <q-menu>
           <q-list bordered separator>

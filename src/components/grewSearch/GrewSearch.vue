@@ -40,6 +40,7 @@ export default defineComponent({
     GrewRequestCard,
     ResultView,
   },
+  emits: ['reload'],
   props: {
     sentenceCount: {
       type: Number as PropType<number>,

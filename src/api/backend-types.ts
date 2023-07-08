@@ -111,6 +111,7 @@ export type packages_t = { [userId: string]: package_t[] };
 export interface grewSearchResultSentence_t {
   sentence: string;
   conlls: conlls_t;
+  sent_id: string;
   matches: matches_t | undefined;
   packages: packages_t | undefined;
   sample_name?: string;

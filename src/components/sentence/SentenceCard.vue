@@ -1,9 +1,9 @@
 <template>
-  <q-card :id="index">
-    <q-card-section>
-      <div class="row items-center">
-        <span class="text-grey">{{ index + 1 }}</span>
-        <q-chip class="text-center" :color="$q.dark.isActive ? 'grey' : ''" dense> {{ sentenceId }}
+  <div :id="index" class="custom-bottom-border">
+    <div>
+      <q-bar class="row items-center custom-frame1">
+        <span class="text-grey" style="padding-left: 10px">{{ index + 1 }}</span>
+        <q-chip class="text-center" :color="$q.dark.isActive ? 'grey' : ''" dense> {{ sentence.sent_id }}
         </q-chip
         >&nbsp;&nbsp;&nbsp;
         <q-input
@@ -12,13 +12,12 @@
           class="row items-center justify-center"
           v-bind="$attrs"
           readonly
+          borderless
           @select="editTokens"
         >
-          <q-tooltip  anchor="bottom middle" self="center middle" :offset="[10, 10]"> {{ $t('sentenceCard.selectTooltip')}}
+          <q-tooltip anchor="bottom middle" self="center middle" :offset="[10, 10]">
+            {{ $t('sentenceCard.selectTooltip') }}
           </q-tooltip>
-          <template #prepend>
-            <q-icon name="chat_bubble_outline"/><!-- 言 -->
-          </template>
         </q-input>
         <q-space/>
         <template v-if="openTabUser !== ''">
@@ -31,16 +30,16 @@
             :disable="openTabUser === ''"
             @click="openStatisticsDialog"
           >
-            <q-tooltip>{{$t('sentenceCard.annotationErrors')}}</q-tooltip>
+            <q-tooltip>{{ $t('sentenceCard.annotationErrors') }}</q-tooltip>
           </q-btn>
 
           <q-btn v-if="isTeacher" flat round dense icon="school" :disable="openTabUser === ''" @click="save('teacher')">
-            <q-tooltip>{{$t('sentenceCard.saveTeacher')}}</q-tooltip>
+            <q-tooltip>{{ $t('sentenceCard.saveTeacher') }}</q-tooltip>
           </q-btn>
 
           <q-btn v-if="isTeacher" flat round dense icon="linear_scale" :disable="openTabUser === ''"
                  @click="save('base_tree')">
-            <q-tooltip>{{$t('sentenceCard.saveBaseTree')}}</q-tooltip>
+            <q-tooltip>{{ $t('sentenceCard.saveBaseTree') }}</q-tooltip>
           </q-btn>
 
           <q-btn v-if="isBernardCaron" flat round dense icon="face" :disable="openTabUser === ''" @click="save(EMMETT)">
@@ -50,7 +49,9 @@
           <q-btn v-if="canSaveTreeInProject" flat round dense icon="save"
                  :disable="openTabUser === '' || !canSave" @click="save('')">
             <q-tooltip
-            >{{$t('sentenceCard.saveTree[0]')}} {{ openTabUser }} {{$t('sentenceCard.saveTree[1]')}} <b>{{ userId }}</b></q-tooltip
+            >{{ $t('sentenceCard.saveTree[0]') }} {{ openTabUser }} {{ $t('sentenceCard.saveTree[1]') }} <b>{{
+                userId
+              }}</b></q-tooltip
             >
           </q-btn>
 
@@ -58,12 +59,12 @@
           <!-- TODO : still display the metadata when the user is not logged in, but hide all the buttons for deleting and saving them -->
           <q-btn v-if="isLoggedIn" flat round dense icon="post_add" :disable="openTabUser === ''"
                  @click="openMetaDialog()">
-            <q-tooltip>{{$t('sentenceCard.editMetadata')}}</q-tooltip>
+            <q-tooltip>{{ $t('sentenceCard.editMetadata') }}</q-tooltip>
           </q-btn>
 
           <q-btn v-if="isLoggedIn && isTeacher" flat round dense icon="filter_9_plus" :disable="openTabUser === ''"
                  @click="openMultiEditDialog">
-            <q-tooltip>{{$t('sentenceCard.multiEditDial')}}</q-tooltip>
+            <q-tooltip>{{ $t('sentenceCard.multiEditDial') }}</q-tooltip>
           </q-btn>
 
           <q-btn-dropdown :disable="openTabUser === ''" icon="more_vert" flat dense>
@@ -74,7 +75,9 @@
                   <q-avatar icon="ion-git-network" color="primary" text-color="white"/>
                 </q-item-section>
                 <q-item-section>
-                  <q-item-label>{{ diffMode ? $t('sentenceCard.diffMode[1]') : $t('sentenceCard.diffMode[0]') }} {{$t('sentenceCard.diffMode[2]')}}</q-item-label>
+                  <q-item-label>{{ diffMode ? $t('sentenceCard.diffMode[1]') : $t('sentenceCard.diffMode[0]') }}
+                    {{ $t('sentenceCard.diffMode[2]') }}
+                  </q-item-label>
                 </q-item-section>
               </q-item>
 
@@ -83,7 +86,7 @@
                   <q-avatar icon="ion-md-link" color="primary" text-color="white"/>
                 </q-item-section>
                 <q-item-section>
-                  <q-item-label>{{$t('sentenceCard.treeLink')}}</q-item-label>
+                  <q-item-label>{{ $t('sentenceCard.treeLink') }}</q-item-label>
                 </q-item-section>
               </q-item>
 
@@ -92,7 +95,7 @@
                   <q-avatar icon="format_list_numbered" color="primary" text-color="white"/>
                 </q-item-section>
                 <q-item-section>
-                  <q-item-label>{{$t('sentenceCard.treeConll')}}</q-item-label>
+                  <q-item-label>{{ $t('sentenceCard.treeConll') }}</q-item-label>
                 </q-item-section>
               </q-item>
 
@@ -101,7 +104,7 @@
                   <q-avatar icon="ion-md-color-palette" color="primary" text-color="white"/>
                 </q-item-section>
                 <q-item-section>
-                  <q-item-label>{{$t('sentenceCard.treeSVG')}}</q-item-label>
+                  <q-item-label>{{ $t('sentenceCard.treeSVG') }}</q-item-label>
                 </q-item-section>
               </q-item>
 
@@ -110,7 +113,7 @@
                   <q-avatar icon="add" color="primary" text-color="white"/>
                 </q-item-section>
                 <q-item-section>
-                  <q-item-label> {{$t('sentenceCard.addToken')}}</q-item-label>
+                  <q-item-label> {{ $t('sentenceCard.addToken') }}</q-item-label>
                 </q-item-section>
               </q-item>
 
@@ -123,25 +126,19 @@
                  :class="'redo-button'" @click="redo()">
           </q-btn>
         </template>
-      </div>
-      <div class="full-width row justify-end">
-        <q-input v-show="sentenceLink.length !== 0" ref="linkinput" v-model="sentenceLink" dense
-                 class="col-4 self-stretch" :value="sentenceLink">
-          <template #prepend>
-            <q-icon name="ion-md-link"/>
-          </template>
-        </q-input>
-      </div>
+      </q-bar>
 
       <q-tabs
+        class="custom-frame1"
         v-model="openTabUser"
-        :class="($q.dark.isActive ? 'text-grey-5' : 'text-grey-8') + ' shadow-2'"
+        :class="($q.dark.isActive ? 'text-grey-5' : 'text-grey-8')"
         dense
         :active-color="$q.dark.isActive ? 'info' : 'accent'"
         :active-bg-color="$q.dark.isActive ? '' : 'grey-2'"
       >
         <!-- v-for="(tree, user) in filteredConlls" -->
         <q-tab
+          class="small-tab"
           v-for="(tree, user) in filteredConlls"
           :key="`${reactiveSentencesObj[user].state.metaJson.timestamp}-${user}`"
           :props="user"
@@ -154,17 +151,17 @@
           :ripple="false"
           @contextmenu="rightClickHandler($event, user)"
         >
-          <q-tooltip v-if="hasPendingChanges[user]">{{$t('sentenceCard.saveModif')}}</q-tooltip>
+          <q-tooltip v-if="hasPendingChanges[user]">{{ $t('sentenceCard.saveModif') }}</q-tooltip>
           <q-tooltip v-else-if="lastModifiedTime[user]">
             <q-icon color="primary" name="schedule" size="14px" class="q-ml-xs"/>
-            {{$t('sentenceCard.modified[0]')}} {{ lastModifiedTime[user] }}  {{ $i18n.locale == 'en' ? $t('sentenceCard.modified[1]') : ''}}
+            {{ $t('sentenceCard.modified[0]') }} {{ lastModifiedTime[user] }}
+            {{ $i18n.locale == 'en' ? $t('sentenceCard.modified[1]') : '' }}
           </q-tooltip>
           <q-tooltip v-else>
             {{ $t('sentenceCard.automaticParsing') }}
           </q-tooltip>
         </q-tab>
       </q-tabs>
-      <q-separator/>
       <q-tab-panels
         v-model="openTabUser"
         keep-alive
@@ -172,7 +169,7 @@
       >
         <q-tab-panel v-for="(tree, user) in filteredConlls" :key="user" :props="tree" :name="user">
           <q-card flat>
-            <q-card-section :class="($q.dark.isActive ? '' : '') + ' scrollable'" >
+            <q-card-section :class="($q.dark.isActive ? '' : '') + ' scrollable'">
               <VueDepTree
                 v-if="reactiveSentencesObj"
                 :card-id="index"
@@ -180,7 +177,7 @@
                 :reactive-sentence="reactiveSentencesObj[user]"
                 :reactive-sentences-obj="reactiveSentencesObj"
                 :diff-mode="showDiffTeacher ? 'DIFF_TEACHER' : diffMode ? 'DIFF_USER' : 'NO_DIFF'"
-                :sentence-id="sentenceId"
+                :sentence-id="sentence.sent_id"
                 :sentence-bus="sentenceBus"
                 :tree-user-id="user"
                 :conll-saved-counter="conllSavedCounter"
@@ -203,19 +200,24 @@
           {{ reactiveSentencesObj[openTabUser].state.metaJson[meta] }}
         </q-item>
       </q-list>
-    </q-card-section>
-    <RelationDialog :sentence-bus="sentenceBus"/>
-    <UposDialog :sentence-bus="sentenceBus"/>
-    <XposDialog :sentence-bus="sentenceBus"/>
-    <FeaturesDialog :sentence-bus="sentenceBus"/>
-    <MetaDialog :sentence-bus="sentenceBus"/>
-    <ConlluDialog :sentence-bus="sentenceBus"/>
-    <ExportSVG :sentence-bus="sentenceBus"/>
-    <TokensReplaceDialog :sentence-bus="sentenceBus" :reactive-sentences-obj="reactiveSentencesObj"
-                         @changed:metaText="changeMetaText"/>
-    <MultiEditDialog :sentence-bus="sentenceBus" :reactive-sentences-obj="reactiveSentencesObj"/>
-    <StatisticsDialog :sentence-bus="sentenceBus" :conlls="sentenceData.conlls"/>
-  </q-card>
+    </div>
+
+    <!--    ALL DIALOGS-->
+    <template>
+      <RelationDialog :sentence-bus="sentenceBus"/>
+      <UposDialog :sentence-bus="sentenceBus"/>
+      <XposDialog :sentence-bus="sentenceBus"/>
+      <FeaturesDialog :sentence-bus="sentenceBus"/>
+      <MetaDialog :sentence-bus="sentenceBus"/>
+      <ConlluDialog :sentence-bus="sentenceBus"/>
+      <ExportSVG :sentence-bus="sentenceBus"/>
+      <TokensReplaceDialog :sentence-bus="sentenceBus" :reactive-sentences-obj="reactiveSentencesObj"
+                           @changed:metaText="changeMetaText"/>
+      <MultiEditDialog :sentence-bus="sentenceBus" :reactive-sentences-obj="reactiveSentencesObj"/>
+      <StatisticsDialog :sentence-bus="sentenceBus" :conlls="sentenceData.conlls"/>
+    </template>
+
+  </div>
 </template>
 
 <script lang="ts">
@@ -273,10 +275,6 @@ export default defineComponent({
       type: Number as PropType<number>,
       required: true,
     },
-    sentenceId: {
-      type: String as PropType<string>,
-      required: true,
-    },
     exerciseLevel: {
       type: Number as PropType<number>,
       required: true,
@@ -286,9 +284,7 @@ export default defineComponent({
       required: true,
     },
     matches: {
-      default: () => {
-        return [];
-      },
+      default: () => [] as matches_t[],
       type: Object as PropType<matches_t>,
     },
   },
@@ -385,7 +381,6 @@ export default defineComponent({
   },
   created() {
     this.shownMetanames = this.getProjectConfig.shownMeta;
-
     for (const [userId, conll] of Object.entries(this.sentence.conlls)) {
       const reactiveSentence = new ReactiveSentence();
       reactiveSentence.fromSentenceConll(conll as string);
@@ -509,7 +504,7 @@ export default defineComponent({
       const exportedConll = this.reactiveSentencesObj[openedTreeUser].exportConllWithModifiedMeta(metaToReplace);
 
       const data = {
-        sent_id: this.sentenceId,
+        sent_id: this.sentence.sent_id,
         conll: exportedConll,
         user_id: changedConllUser,
       };
@@ -569,8 +564,8 @@ export default defineComponent({
      */
     onConllGraphUpdate(payload: any) {
       this.graphInfo = payload;
-      if (this.graphInfo.dirty) this.addPendingModification(this.sentenceId);
-      else this.removePendingModification(this.sentenceId);
+      if (this.graphInfo.dirty) this.addPendingModification(this.sentence.sent_id);
+      else this.removePendingModification(this.sentence.sent_id);
     },
     openMetaDialog() {
       // "this.openTabUser" contains the user name

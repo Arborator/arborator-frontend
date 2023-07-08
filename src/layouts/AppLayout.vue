@@ -1,6 +1,6 @@
 <template>
   <q-layout view="hHh Lpr fFf">
-    <q-header :class="$q.dark.isActive ? 'bg-dark' : 'bg-white'" id="main-header">
+    <q-header :class="`${$q.dark.isActive ? 'bg-dark' : 'bg-white'} custom-bottom-border`" id="main-header">
       <q-bar :class="$q.dark.isActive ? 'bg-dark' : 'bg-white text-black'">
         <!-- class="bg-white text-black" -->
         <!--   :class="$q.dark.isActive ? 'text-white' : 'text-primary'" -->
@@ -305,7 +305,7 @@ export default defineComponent({
       if (this.storage === null) {
         return;
       }
-      const langStorage = this.storage.setStorageSync('arbolang', this.lang);
+      const langStorage = this.storage.getStorageSync('arbolang');
       if (langStorage == null) {
         if (defaultLang.includes('fr')) {
           this.lang = 'fr';
@@ -321,4 +321,61 @@ export default defineComponent({
   },
 });
 </script>
-<style></style>
+<style>
+
+.body--light .custom-frame1 {
+  background-color: #f1f1f1;
+}
+
+.body--light .custom-frame2 {
+  background-color: #f8f8f8;
+}
+
+.body--light .custom-top-border {
+  border-top: 1px solid #e0e0e0;
+}
+
+.body--light .custom-bottom-border {
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.body--light .custom-right-border {
+  border-right: 1px solid #e0e0e0;
+}
+
+.body--dark .custom-frame1 {
+  background-color: #2b2d30;
+}
+
+.body--dark .custom-frame2 {
+  background-color: #1e1e1e;
+}
+
+.body--dark .custom-top-border {
+  border-top: 1px solid #545454;
+}
+
+.body--dark .custom-bottom-border {
+  border-bottom: 1px solid #545454;
+}
+
+.body--dark .custom-right-border {
+  border-right: 1px solid #545454;
+}
+
+.small-tab.q-tab {
+  min-height: 0;
+}
+
+.small-tab .q-icon {
+  width: 16px;
+  height: 16px;
+  font-size: 16px;
+}
+
+.small-tab .q-tab__label {
+  font-size: 10px;
+}
+
+
+</style>

@@ -33,8 +33,6 @@ export interface table_t<T> {
   exporting?: boolean;
 }
 
-export type sentence_t = unknown;
-
 export interface reactive_sentences_obj_t {
   [key: string]: ReactiveSentence;
 }
@@ -72,12 +70,3 @@ export type grew_templates_t = {
   rewriteQueries: grew_query_t[];
 };
 
-// Parser Types
-
-type parserType_t = 'kirParser' | 'hopsParser' | 'stanzaParser' | 'trankitParser' | 'udifyParser';
-
-type timeEstimationCoefs_t = {
-    a: number;
-    b: number;
-    c: number;
-};

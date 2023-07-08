@@ -1,5 +1,5 @@
 <template>
-  <q-card style="min-width: 100vw">
+  <div style="min-width: 99vw; min-height: 50vh" class="custom-frame2">
     <q-bar class="bg-primary text-white">
       <q-icon name="img:/svg/grew.svg" size="7rem"/>
       <q-space/>
@@ -11,50 +11,52 @@
       <q-space/>
       <q-btn v-close-popup flat dense icon="close"/>
     </q-bar>
-    <div v-if="queryType === 'REWRITE' && samplesFrozen.list.length > 0 && canSaveTreeInProject"
-         class="row q-pa-md">
-      <div>
-        <q-btn :disable="!atLeastOneSelected" color="primary" :label="$t('grewSearch.applyRule')" @click="applyRules" />
-        <q-tooltip v-if="!atLeastOneSelected">{{ $t('grewSearch.applyRuleTooltip') }}</q-tooltip>
-      </div>
-    </div>
-    <q-card-section>
-      <div v-if="samplesFrozen.list.length > 0">
-        <div class="q-pa-md">
-          <q-checkbox v-if="queryType === 'REWRITE'" v-model="all" @click="selectAllSentences()">
-            <q-tooltip>{{ $t('grewSearch.selectAllTooltip') }}</q-tooltip>
-          </q-checkbox>
-          <q-separator />
-        </div>
+    <div>
+      <template v-if="samplesFrozen.list.length > 0">
+
         <q-virtual-scroll
           :items="samplesFrozen.list"
-          style="height: 80vh; width: 100vw"
-          :virtual-scroll-slice-size="5"
+          style="max-width: 99vw"
+          :virtual-scroll-slice-size="30"
           v-slot="{ item, index }"
         >
-         
-          <q-item :key="index">
-            <q-item-section side top v-if="queryType === 'REWRITE'">
-              <q-checkbox v-model="samplesFrozen.selected[index]" ></q-checkbox>
-            </q-item-section>
-            <q-separator dark vertical inset />
-            <q-item-section style="overflow-x: auto;">
+
+          <div :key="index" style="display: flex;">
+            <template v-if="queryType === 'REWRITE'">
+              <q-checkbox class="custom-frame2 custom-right-border"
+                          v-model="samplesFrozen.selected[index]"></q-checkbox>
+            </template>
+            <div style="flex-grow: 1; overflow: auto">
               <SentenceCard
-                :id="item[1]"
                 :key="index"
                 :sentence="searchresults[item[0]][item[1]]"
                 :index="index"
-                :sentence-id="item[1]"
                 :matches="searchresults[item[0]][item[1]]"
                 :exercise-level="4"
               ></SentenceCard>
-            </q-item-section>
-          </q-item>
-          
+            </div>
+          </div>
+
         </q-virtual-scroll>
+      </template>
+    </div>
+    <q-bar class="absolute-bottom row custom-frame2" style="padding-left: 0"
+           v-if="queryType === 'REWRITE' && samplesFrozen.list.length > 0 && canSaveTreeInProject"
+    >
+      <div>
+        <q-checkbox v-if="queryType === 'REWRITE'" v-model="all" @click="selectAllSentences()">
+          <q-tooltip>{{ $t('grewSearch.selectAllTooltip') }}</q-tooltip>
+        </q-checkbox>
       </div>
-    </q-card-section>
-  </q-card>
+      <div>
+        <q-btn :disable="!atLeastOneSelected" color="primary" :label="$t('grewSearch.applyRule')" @click="applyRules">
+        <q-tooltip v-if="!atLeastOneSelected">{{ $t('grewSearch.applyRuleTooltip') }}</q-tooltip>
+        </q-btn>
+      </div>
+
+    </q-bar>
+
+  </div>
 </template>
 
 
@@ -123,9 +125,9 @@ export default defineComponent({
         .flat().length;
     },
     atLeastOneSelected() {
-      return Object.values(this.samplesFrozen.selected).some((index) => index == true );
+      return Object.values(this.samplesFrozen.selected).some((index) => index == true);
     }
-},
+  },
   mounted() {
     this.freezeSamples();
   },
@@ -159,25 +161,25 @@ export default defineComponent({
         samples: JSON.parse(JSON.stringify(this.samples)),
       };
     },
-    
+
     selectAllSentences() {
-      for(const item in this.samplesFrozen.selected){
+      for (const item in this.samplesFrozen.selected) {
         this.all ? this.samplesFrozen.selected[item] = true : this.samplesFrozen.selected[item] = false;
       }
     },
 
     getSelectedResults() {
       let selectedResults: grewSearchResult_t = {};
-      for(const item in this.samplesFrozen.selected){
-        if (this.samplesFrozen.selected[item] === true){
+      for (const item in this.samplesFrozen.selected) {
+        if (this.samplesFrozen.selected[item] === true) {
           const sampleId = this.samplesFrozen.indexes[item][0];
           const sentId = this.samplesFrozen.indexes[item][1];
-          if (!selectedResults[sampleId])  selectedResults[sampleId] = {};
+          if (!selectedResults[sampleId]) selectedResults[sampleId] = {};
           selectedResults[sampleId][sentId] = this.searchresults[sampleId][sentId];
-        }  
+        }
       }
-      return selectedResults; 
-      
+      return selectedResults;
+
     },
     applyRules() {
       let toSaveCounter = 0;
@@ -201,7 +203,7 @@ export default defineComponent({
           }
         }
       }
-     if (toSaveCounter >= 1) {
+      if (toSaveCounter >= 1) {
         const datasample = {data: this.searchresultsCopy};
         api
           .applyRule(this.$route.params.projectname as string, datasample)
@@ -220,3 +222,11 @@ export default defineComponent({
   },
 });
 </script>
+
+<style scoped>
+.absolute-bottom {
+  position: sticky;
+  bottom: 0;
+  z-index: 1;
+}
+</style>

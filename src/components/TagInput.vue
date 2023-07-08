@@ -89,12 +89,12 @@ export default defineComponent({
 
     existingTags: {
       type: Array as PropType<tag_t[]>,
-      default: () => [],
+      default: () => [] as tag_t[],
     },
 
     value: {
       type: Array,
-      default: () => [],
+      default: () => [] as string[],
     },
 
     typeahead: {

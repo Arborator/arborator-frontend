@@ -3,9 +3,9 @@
     <div v-show="!loading" class="row q-gutter-md">
       <q-virtual-scroll
         ref="virtualListRef"
-        :items="filteredTrees"
+        :items="freezedTrees"
         style="width: 100%;"
-        :virtual-scroll-slice-size="30"
+        :virtual-scroll-slice-size="10"
         :virtual-scroll-item-size="200"
         v-slot="{item, index}: {item: unknown, index: number}"
       >
@@ -26,7 +26,7 @@
     </div>
 
     <GrewSearch :user-ids="userIds" :sentence-count="numberOfTrees" :search-scope="samplename" />
-    
+
     <RelationTableMain :sampleName="samplename"/>
   </div>
 </template>
@@ -77,7 +77,7 @@ export default defineComponent({
     ...mapState(useProjectStore, ['isAdmin', 'exerciseMode', 'isTeacher']),
     ...mapState(useUserStore, ['isSuperAdmin']),
     ...mapState(useGrewSearchStore, ['pendingModifications']),
-    ...mapState(useTreesStore, ["filteredTrees", "trees", "loading", "numberOfTrees", "exerciseLevel"]),
+    ...mapState(useTreesStore, ["filteredTrees", "trees", "loading", "numberOfTrees", "exerciseLevel", "freezedTrees"]),
     userIds(){
       var userIds: string[] = [];
       for (const treeObj of Object.values(this.trees)){

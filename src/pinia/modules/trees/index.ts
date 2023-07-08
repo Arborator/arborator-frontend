@@ -28,6 +28,9 @@ export const useTreesStore = defineStore('trees', {
       console.log("KK filteredTrees", filteredTrees)
       return filteredTrees
     },
+    freezedTrees(state) {
+      return Object.freeze(Object.values(state.trees))
+    },
     numberOfTrees(state) {
       return Object.keys(state.trees).length;
     },

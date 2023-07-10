@@ -15,7 +15,7 @@ export default {
   feedback:'Any questions, feature requests or bug report ? See our github issues page',
   darkMode: 'Toggle dark mode',
   projectAdmin: 'You are admin of this project',
-  userInformation: 'User information',
+  userInformation: 'You are connected with ',
   settings: 'Settings',
   admin: 'Admin',
   fullscreen: 'Fullscreen',

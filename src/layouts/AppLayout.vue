@@ -84,14 +84,13 @@
               </q-item>
             </q-list>
           </q-btn-dropdown>
-          <q-btn v-show="isLoggedIn" round flat dense color="purple">
-            <q-tooltip> {{ $t('userInformation') }} </q-tooltip>
-            <q-avatar>
-              <q-icon v-if="getUserInfos.picture_url === ''" name="account_circle" />
-              <q-avatar v-else :key="getUserInfos.avatarKey" color="default" text-color="white" size="xs">
-                <img :src="getUserInfos.picture_url" />
-              </q-avatar>
-            </q-avatar>
+          <q-btn v-show="isLoggedIn" outline color="primary"  size="10px">
+            <q-icon :name="loggedWithGithub ? 'fab fa-github' : 'fab fa-google' " class="q-mr-md" />
+            <q-tooltip> {{ $t('userInformation')}}  {{loggedWithGithub ? ' Github':  'Gmail' }} </q-tooltip>
+            <q-icon v-if="getUserInfos.picture_url === ''" name="account_circle" />
+            <q-avatar v-else :key="getUserInfos.avatarKey" color="default" text-color="white" size="xs">
+              <img :src="getUserInfos.picture_url" />
+            </q-avatar>  
             <q-menu transition-show="jump-down" transition-hide="jump-up">
               <div class="row no-wrap q-pa-md">
                 <div class="column">
@@ -137,15 +136,6 @@
       </q-bar>
     </q-header>
     <q-page-container> <router-view /> </q-page-container>
-    <!-- <q-footer > -->
-    <!-- <q-item-label caption class="text-center text-grey-3">
-       {{$t('footer')[0]}} <q-icon name="favorite" style="font-size:22px;color: #dd137b;height:18px;vertical-align:text-bottom"/> {{$t('footer')[1]}}        <img aria-hidden="true" role="presentation" src="/svg/paris.svg" class="" style="color: #dd137b;height:18px;">
-        {{$t('footer')[2]}}
-      <a href="https://team.inria.fr/almanach" target="_blank">
-        <img aria-hidden="true" role="presentation" src="/svg/almanachInria.svg" class="" style="height:18px;">
-      </a>
-       v1.0 beta (20200515)</q-item-label> -->
-    <!-- </q-footer>     -->
     <q-drawer
       v-model="drawerLeft"
       :width="200"
@@ -249,7 +239,7 @@ export default defineComponent({
   },
   computed: {
     ...mapState(useMainStore, ['isProjectAdmin', 'source']),
-    ...mapState(useUserStore, ['getUserInfos', 'isLoggedIn']),
+    ...mapState(useUserStore, ['getUserInfos', 'isLoggedIn', 'loggedWithGithub']),
     notHome() {
       return this.$route.fullPath !== '/';
     },

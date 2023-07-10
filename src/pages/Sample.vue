@@ -153,11 +153,14 @@ export default defineComponent({
         !this.loading &&
         this.$refs &&
         this.$refs.virtualListRef &&
-        this.$route.params.nr !== undefined &&
-        parseInt(this.$route.params.nr as string, 10) <= this.numberOfTrees
+        this.$route.params.nr !== undefined
+        // parseInt(this.$route.params.nr as string, 10) <= this.numberOfTrees
       ) {
-        const id = parseInt(this.$route.params.nr as string, 10) - 1;
-        (this.$refs.virtualListRef as QVirtualScroll).scrollTo(id as number, 'start-force');
+        const sendId = this.$route.params.nr as string;
+        const nrAsInt = parseInt(this.$route.params.nr as string, 10) - 1;
+        const indexInValues = Object.values(this.trees).findIndex((tree) => tree.sent_id === sendId);
+        const indexForScroll = indexInValues !== -1 ? indexInValues : nrAsInt;
+        (this.$refs.virtualListRef as QVirtualScroll).scrollTo(indexForScroll, 'start-force');
       }
     },
     calculateHeight(): void {

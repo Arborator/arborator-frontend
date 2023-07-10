@@ -133,7 +133,7 @@
         v-model="openTabUser"
         :class="($q.dark.isActive ? 'text-grey-5' : 'text-grey-8')"
         dense
-        :active-color="$q.dark.isActive ? 'info' : 'accent'"
+        :active-color="$q.dark.isActive ? 'primary' : 'purple-7'"
         :active-bg-color="$q.dark.isActive ? '' : 'grey-2'"
       >
         <!-- v-for="(tree, user) in filteredConlls" -->
@@ -168,7 +168,8 @@
         @transition="transitioned"
         class="custom-frame1"
       >
-        <q-tab-panel v-for="(tree, user) in filteredConlls" :key="user" :props="tree" :name="user">
+        <q-tab-panel v-for="(tree, user) in filteredConlls" :key="user" :props="tree" :name="user"
+                     style="padding-bottom: 0; padding-top: 0;">
           <q-card flat>
             <q-card-section :class="($q.dark.isActive ? '' : '') + ' scrollable'">
               <VueDepTree
@@ -195,7 +196,7 @@
       </q-tab-panels>
       <q-list v-if="openTabUser" style="padding-bottom: 20px" dense class="custom-frame1">
         <q-item v-for="meta in shownMeta" :key="meta" style="min-height: unset">
-          <q-chip dense size="xs">{{ meta }}
+          <q-chip dense size="xs" style="margin-left: 0">{{ meta }}
           </q-chip
           >
           {{ reactiveSentencesObj[openTabUser].state.metaJson[meta] }}

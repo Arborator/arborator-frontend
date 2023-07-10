@@ -193,7 +193,7 @@
           </q-card>
         </q-tab-panel>
       </q-tab-panels>
-      <q-list v-if="openTabUser" style="padding-bottom: 20px" dense>
+      <q-list v-if="openTabUser" style="padding-bottom: 20px" dense class="custom-frame1">
         <q-item v-for="meta in shownMeta" :key="meta" style="min-height: unset">
           <q-chip dense size="xs">{{ meta }}
           </q-chip

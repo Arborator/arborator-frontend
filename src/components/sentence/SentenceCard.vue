@@ -15,7 +15,7 @@
           borderless
           @select="editTokens"
         >
-          <q-tooltip anchor="bottom middle" self="center middle" :offset="[10, 10]">
+          <q-tooltip v-if="openTabUser !== ''" anchor="bottom middle" self="center middle" :offset="[10, 10]">
             {{ $t('sentenceCard.selectTooltip') }}
           </q-tooltip>
         </q-input>
@@ -135,6 +135,7 @@
         dense
         :active-color="$q.dark.isActive ? 'primary' : 'purple-7'"
         :active-bg-color="$q.dark.isActive ? '' : 'grey-2'"
+        style="transition: unset;"
       >
         <!-- v-for="(tree, user) in filteredConlls" -->
         <q-tab

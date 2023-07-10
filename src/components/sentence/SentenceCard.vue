@@ -363,7 +363,7 @@ export default defineComponent({
      * @returns {Boolean}
      */
     filteredConlls() {
-      let filteredConlls = this.sentence.conlls;
+      let filteredConlls = this.sentenceData.conlls;
       if (this.exerciseLevel !== 1 && !this.isAdmin && this.exerciseMode) {
         return Object.fromEntries(Object.entries(filteredConlls).filter(([user]) => user !== 'teacher'));
         // const filteredConllsTemp = Object.entries(this.sentenceData.conlls).filter(([user, conll]) => user !== 'teacher');

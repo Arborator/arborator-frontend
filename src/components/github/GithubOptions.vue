@@ -57,7 +57,7 @@
     <q-dialog v-model="isShowCommitDialog">
         <GithubCommitDialog :projectName="projectName" :repositoryName="repositoryName" @committed="reloadAfterCommit" />
     </q-dialog>
-    <q-dialog v-model="isShowPullRequestDialog">
+    <q-dialog v-model="isShowPullRequestDialog" persistent>
         <GithubPullRequestDialog :projectName="projectName" :repositoryName="repositoryName"
             @created="isShowPullRequestDialog = false" />
     </q-dialog>

@@ -73,11 +73,8 @@
           </div>
           <div class="row">
             <div>
-              <q-btn :disable="!usersToApply.value" v-if="searchReplaceTab === 'SEARCH' || currentQueryType === 'SEARCH'" color="primary" :label="$t('grewSearch.search')" no-caps icon="search" @click="onSearch" />
-              <q-btn :disable="!usersToApply.value" v-else-if="searchReplaceTab === 'REWRITE' || currentQueryType === 'REWRITE'" color="primary" :label="$t('grewSearch.tryRules')" no-caps icon="autorenew" @click="tryRules" />
-              <q-tooltip v-if="!usersToApply.value" content-class="bg-primary" anchor="top middle" self="bottom middle" :offset="[10, 10]">
-                {{$t('grewSearch.grewBtnTooltip')}}
-              </q-tooltip>
+              <q-btn v-if="searchReplaceTab === 'SEARCH'" color="primary" :label="$t('grewSearch.search')" no-caps icon="search" @click="onSearch" />
+              <q-btn v-if="searchReplaceTab === 'REWRITE'" color="primary" :label="$t('grewSearch.tryRules')" no-caps icon="autorenew" @click="tryRules" />
             </div>
           </div>
         </div>

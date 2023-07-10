@@ -1,5 +1,9 @@
 <template>
     <q-card style="min-width: 50vw;">
+        <q-bar class="bg-primary text-white">
+            <q-space />
+            <q-btn v-close-popup flat dense icon="close" />
+        </q-bar>
         <q-card-section>
             <div class="text-h6 text-left">Pull Request</div>
         </q-card-section>

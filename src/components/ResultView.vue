@@ -228,5 +228,6 @@ export default defineComponent({
   position: sticky;
   bottom: 0;
   z-index: 1;
+  height: 40px;
 }
 </style>

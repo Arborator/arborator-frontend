@@ -7,7 +7,7 @@
         </q-chip
         >&nbsp;&nbsp;&nbsp;
         <q-input
-          v-model="sentence.sentence"
+          v-model="sentenceData.sentence"
           style="width: 65%"
           class="row items-center justify-center"
           v-bind="$attrs"

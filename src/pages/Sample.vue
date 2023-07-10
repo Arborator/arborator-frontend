@@ -3,11 +3,12 @@
     <div v-show="!loading" class="row q-gutter-md">
       <q-virtual-scroll
         ref="virtualListRef"
-        :items="freezedTrees"
-        style="width: 100%;"
-        virtual-scroll-item-size="70"
-        v-slot="{item, index}: {item: unknown, index: number}"
+        :items="Object.values(trees)"
+        style="max-height: 94.5vh; width: 100%"
+        :virtual-scroll-slice-size="50"
+        :virtual-scroll-item-size="70"
       >
+        <template #default="{ item, index }">
           <SentenceCard
             :key="index"
             :sentence="item"
@@ -16,6 +17,7 @@
             :exercise-level="exerciseLevel"
           >
           </SentenceCard>
+        </template>
       </q-virtual-scroll>
     </div>
     <div v-show="loading" class="q-pa-md row justify-center">
@@ -72,11 +74,6 @@ export default defineComponent({
       required: true,
     },
   },
-  data() {
-    return {
-      freezedTrees: [],
-    };
-  },
   computed: {
     ...mapState(useProjectStore, ['isAdmin', 'exerciseMode', 'isTeacher']),
     ...mapState(useUserStore, ['isSuperAdmin']),
@@ -96,8 +93,7 @@ export default defineComponent({
   },
   async mounted() {
     this.getSampleTrees({projectName: this.projectname, sampleName: this.samplename})
-      .then((freezedTrees) => {
-        this.freezedTrees = Object.freeze(freezedTrees) as any;
+      .then(() => {
         this.scrollToIndexFromURL();
       });
 

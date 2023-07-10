@@ -23,14 +23,6 @@ export const useTreesStore = defineStore('trees', {
       }
       return state.trees[state.selectedTreeId];
     },
-    filteredTrees(state) {
-      const filteredTrees = Object.values(state.trees);
-      console.log("KK filteredTrees", filteredTrees)
-      return filteredTrees
-    },
-    freezedTrees(state) {
-      return Object.freeze(Object.values(state.trees))
-    },
     numberOfTrees(state) {
       return Object.keys(state.trees).length;
     },
@@ -46,7 +38,7 @@ export const useTreesStore = defineStore('trees', {
             this.exerciseLevel = response.data.exercise_level;
             this.loading = false;
             notifyMessage({message: `Loaded ${Object.keys(this.trees).length} trees`});
-            resolve(response);
+            resolve(JSON.parse(JSON.stringify(Object.values(this.trees))));
           })
           .catch((error) => {
             notifyError({error});

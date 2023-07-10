@@ -166,6 +166,7 @@
         v-model="openTabUser"
         keep-alive
         @transition="transitioned"
+        class="custom-frame1"
       >
         <q-tab-panel v-for="(tree, user) in filteredConlls" :key="user" :props="tree" :name="user">
           <q-card flat>
@@ -192,8 +193,8 @@
           </q-card>
         </q-tab-panel>
       </q-tab-panels>
-      <q-list v-if="openTabUser" class="sentence__meta-features" dense>
-        <q-item v-for="meta in shownMeta" :key="meta">
+      <q-list v-if="openTabUser" style="padding-bottom: 20px" dense>
+        <q-item v-for="meta in shownMeta" :key="meta" style="min-height: unset">
           <q-chip dense size="xs">{{ meta }}
           </q-chip
           >

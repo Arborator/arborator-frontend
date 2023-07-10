@@ -5,8 +5,7 @@
         ref="virtualListRef"
         :items="freezedTrees"
         style="width: 100%;"
-        :virtual-scroll-slice-size="10"
-        :virtual-scroll-item-size="200"
+        virtual-scroll-item-size="70"
         v-slot="{item, index}: {item: unknown, index: number}"
       >
           <SentenceCard
@@ -73,11 +72,16 @@ export default defineComponent({
       required: true,
     },
   },
+  data() {
+    return {
+      freezedTrees: [],
+    };
+  },
   computed: {
     ...mapState(useProjectStore, ['isAdmin', 'exerciseMode', 'isTeacher']),
     ...mapState(useUserStore, ['isSuperAdmin']),
     ...mapState(useGrewSearchStore, ['pendingModifications']),
-    ...mapState(useTreesStore, ["filteredTrees", "trees", "loading", "numberOfTrees", "exerciseLevel", "freezedTrees"]),
+    ...mapState(useTreesStore, ["trees", "loading", "numberOfTrees", "exerciseLevel"]),
     userIds(){
       var userIds: string[] = [];
       for (const treeObj of Object.values(this.trees)){
@@ -92,7 +96,8 @@ export default defineComponent({
   },
   async mounted() {
     this.getSampleTrees({projectName: this.projectname, sampleName: this.samplename})
-      .then(() => {
+      .then((freezedTrees) => {
+        this.freezedTrees = Object.freeze(freezedTrees) as any;
         this.scrollToIndexFromURL();
       });
 

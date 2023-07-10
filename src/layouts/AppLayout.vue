@@ -332,15 +332,15 @@ export default defineComponent({
 }
 
 .body--light .custom-top-border {
-  border-top: 1px solid #e0e0e0;
+  border-top: 1px solid #d2d2d2;
 }
 
 .body--light .custom-bottom-border {
-  border-bottom: 1px solid #e0e0e0;
+  border-bottom: 1px solid #d2d2d2;
 }
 
 .body--light .custom-right-border {
-  border-right: 1px solid #e0e0e0;
+  border-right: 1px solid #d2d2d2;
 }
 
 .body--dark .custom-frame1 {

@@ -187,7 +187,6 @@ export default {
     return API.get<getConstructiconEntries_RV>(`constructicon/project/${projectname}`);
   },
   saveConstructiconEntry(projectname: string, data: ConstructiconEntry_t) {
-    console.log("KK data", data)
     return API.post<saveConstructiconEntry_RV>(`constructicon/project/${projectname}`, data);
   },
   deleteConstructiconEntry(projectname: string, entryId: string) {

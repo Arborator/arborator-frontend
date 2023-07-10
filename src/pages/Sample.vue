@@ -1,35 +1,65 @@
 <template>
-  <div class="custom-frame1">
-    <div v-show="!loading" class="row q-gutter-md">
-      <q-virtual-scroll
-        ref="virtualListRef"
-        :items="Object.values(trees)"
-        style="max-height: 94.5vh; width: 100%"
-        :virtual-scroll-slice-size="50"
-        :virtual-scroll-item-size="70"
-      >
-        <template #default="{ item, index }">
-          <SentenceCard
-            :key="index"
-            :sentence="item"
-            :index="index"
-            search-result=""
-            :exercise-level="exerciseLevel"
-          >
-          </SentenceCard>
-        </template>
-      </q-virtual-scroll>
-    </div>
-    <div v-show="loading" class="q-pa-md row justify-center">
-      <div class="absolute-center">
-        <q-circular-progress indeterminate size="70px" :thickness="0.22" color="primary" track-color="grey-3"/>
+  <q-splitter
+    v-model="splitterModel"
+    horizontal
+    :limits="[0, 100]"
+    :style="{height: `${splitterHeight}px`}"
+  >
+    <template v-slot:before>
+      <div>
+        <q-input v-model="textFilter" label="Text filter">
+        </q-input>
+        <q-select
+          multiple
+          v-model="usersToHaveTree"
+          label="Select user to be present"
+          :options="userIds"
+        />
+        <q-select
+          multiple
+          v-model="usersToNotHaveTree"
+          label="Select user to NOT be present"
+          :options="userIds"
+        />
+
       </div>
-    </div>
+    </template>
 
-    <GrewSearch :user-ids="userIds" :sentence-count="numberOfTrees" :search-scope="samplename" />
+    <template v-slot:after>
+      <div class="custom-frame1">
+        <div v-show="!loading" class="row q-gutter-md">
+          <q-virtual-scroll
+            :key="filteredTrees.length"
+            ref="virtualListRef"
+            :items="Object.values(filteredTrees)"
+            style="max-height: 94.5vh; width: 100%"
+            :virtual-scroll-slice-size="50"
+            :virtual-scroll-item-size="70"
+          >
+            <template #default="{ item, index }">
+              <SentenceCard
+                :key="index"
+                :sentence="item"
+                :index="index"
+                search-result=""
+                :exercise-level="exerciseLevel"
+              >
+              </SentenceCard>
+            </template>
+          </q-virtual-scroll>
+        </div>
+        <div v-show="loading" class="q-pa-md row justify-center">
+          <div class="absolute-center">
+            <q-circular-progress indeterminate size="70px" :thickness="0.22" color="primary" track-color="grey-3"/>
+          </div>
+        </div>
 
-    <RelationTableMain :sampleName="samplename"/>
-  </div>
+        <GrewSearch :user-ids="userIds" :sentence-count="numberOfTrees" :search-scope="samplename"/>
+
+        <RelationTableMain :sampleName="samplename"/>
+      </div>
+    </template>
+  </q-splitter>
 </template>
 
 <script lang="ts">
@@ -38,7 +68,7 @@ import {LocalStorage, QVirtualScroll} from 'quasar';
 import SentenceCard from '../components/sentence/SentenceCard.vue';
 import GrewSearch from '../components/grewSearch/GrewSearch.vue';
 import RelationTableMain from '../components/relationTable/RelationTableMain.vue';
-import {mapActions, mapState} from 'pinia';
+import {mapActions, mapState, mapWritableState} from 'pinia';
 import {useProjectStore} from 'src/pinia/modules/project';
 import {useUserStore} from 'src/pinia/modules/user';
 import {useGrewSearchStore} from 'src/pinia/modules/grewSearch';
@@ -74,16 +104,23 @@ export default defineComponent({
       required: true,
     },
   },
+  data(): { splitterModel: number; splitterHeight: number;} {
+    return {
+      splitterModel: 0,
+      splitterHeight: 0,
+    }
+  },
   computed: {
     ...mapState(useProjectStore, ['isAdmin', 'exerciseMode', 'isTeacher']),
     ...mapState(useUserStore, ['isSuperAdmin']),
     ...mapState(useGrewSearchStore, ['pendingModifications']),
-    ...mapState(useTreesStore, ["trees", "loading", "numberOfTrees", "exerciseLevel"]),
-    userIds(){
+    ...mapState(useTreesStore, ["trees", "filteredTrees", "loading", "numberOfTrees", "exerciseLevel"]),
+    ...mapWritableState(useTreesStore, ["textFilter", "usersToHaveTree", "usersToNotHaveTree"]),
+    userIds(): string[] {
       var userIds: string[] = [];
-      for (const treeObj of Object.values(this.trees)){
-        for(const userId in treeObj.conlls){
-          if (! userIds.includes(userId)){
+      for (const treeObj of Object.values(this.trees)) {
+        for (const userId in treeObj.conlls) {
+          if (!userIds.includes(userId)) {
             userIds.push(userId);
           }
         }
@@ -91,7 +128,10 @@ export default defineComponent({
       return userIds;
     }
   },
-  async mounted() {
+  created() {
+    window.addEventListener('resize', this.calculateHeight);
+  },
+  mounted() {
     this.getSampleTrees({projectName: this.projectname, sampleName: this.samplename})
       .then(() => {
         this.scrollToIndexFromURL();
@@ -99,6 +139,10 @@ export default defineComponent({
 
     document.title = `${this.projectname}/${this.samplename}`;
     LocalStorage.remove('save_status');
+    this.calculateHeight();
+  },
+  beforeUnmount() {
+    window.removeEventListener('resize', this.calculateHeight);
   },
 
   methods: {
@@ -116,6 +160,16 @@ export default defineComponent({
         (this.$refs.virtualListRef as QVirtualScroll).scrollTo(id as number, 'start-force');
       }
     },
+    calculateHeight(): void {
+      const header = document.getElementById('main-header');
+      if (header !== null) {
+        this.splitterHeight = window.innerHeight - header.offsetHeight;
+      } else {
+        console.log("We didn't find the header, we will consider a header size of 35")
+        this.splitterHeight = window.innerHeight - 35;
+      }
+    },
   },
+
 });
 </script>

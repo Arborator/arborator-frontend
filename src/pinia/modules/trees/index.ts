@@ -1,6 +1,6 @@
-import { defineStore } from 'pinia';
+import {defineStore} from 'pinia';
 
-import { notifyMessage, notifyError } from 'src/utils/notify';
+import {notifyMessage, notifyError} from 'src/utils/notify';
 import api from '../../../api/backend-api';
 import {
   grewSearchResultSentence_t,
@@ -14,6 +14,9 @@ export const useTreesStore = defineStore('trees', {
       selectedTreeId: null as string | null,
       loading: false as boolean,
       exerciseLevel: 0 as number,
+      textFilter: '' as string,
+      usersToHaveTree: [] as string[],
+      usersToNotHaveTree: [] as string[],
     };
   },
   getters: {
@@ -23,12 +26,37 @@ export const useTreesStore = defineStore('trees', {
       }
       return state.trees[state.selectedTreeId];
     },
+    filteredTrees: (state): grewSearchResultSentence_t[] => {
+      console.log("KK change in filteredTrees", state.textFilter)
+      let filteredTrees = Object.values(state.trees)
+      if (state.textFilter !== '') {
+        filteredTrees = Object.values(state.trees).filter((tree) => {
+          return tree.sentence.toLowerCase().includes(state.textFilter.toLowerCase());
+        }, []);
+      }
+
+      if (state.usersToHaveTree.length > 0) {
+        filteredTrees = filteredTrees.filter((tree) => {
+          const usersIds = Object.keys(tree.conlls);
+          return state.usersToHaveTree.every((user) => usersIds.includes(user));
+        });
+      }
+
+      if (state.usersToNotHaveTree.length > 0) {
+        filteredTrees = filteredTrees.filter((tree) => {
+          const usersIds = Object.keys(tree.conlls);
+          return state.usersToNotHaveTree.every((user) => !usersIds.includes(user));
+        });
+
+      }
+      return filteredTrees;
+    },
     numberOfTrees(state) {
       return Object.keys(state.trees).length;
     },
   },
   actions: {
-    getSampleTrees({ projectName, sampleName }: { projectName: string; sampleName:string }) {
+    getSampleTrees({projectName, sampleName}: { projectName: string; sampleName: string }) {
       return new Promise((resolve, reject) => {
         this.loading = true;
         api

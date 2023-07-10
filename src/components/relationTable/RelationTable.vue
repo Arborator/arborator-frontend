@@ -24,7 +24,7 @@
               <q-tree
                 ref="tree"
                 v-model:selected="currentEdge"
-                :nodes="relationtree"
+                :nodes="relationTree"
                 node-key="label"
                 :filter="filter"
                 default-expand-all
@@ -44,7 +44,7 @@
           <q-toolbar class="text-center">
             <q-toolbar-title>
               <span class="text-primary text-bold">{{
-                'Relation Table for "' + currentEdge + '" containing a total of ' + relationstotal[currentEdge] + ' occurrences'
+                'Relation Table for "' + currentEdge + '" containing a total of ' + relationsTotal[currentEdge] + ' occurrences'
               }}</span>
             </q-toolbar-title>
           </q-toolbar>
@@ -86,7 +86,7 @@
     <q-dialog v-model="visuTreeDial" maximized transition-show="fade" transition-hide="fade">
       <result-view
         :searchresults="resultSearch"
-        :totalsents="relationstotal[currentEdge]"
+        :totalsents="relationsTotal[currentEdge]"
         :searchscope="tablename"
         :parent-on-show-table="onShowTable"
       ></result-view>
@@ -105,6 +105,7 @@ import { notifyError } from 'src/utils/notify';
 
 import { defineComponent } from 'vue';
 import { grewSearchResult_t } from 'src/api/backend-types';
+import { cpuUsage } from 'process';
 
 export default defineComponent({
   components: { ResultView, QTree },
@@ -112,14 +113,15 @@ export default defineComponent({
 
   data() {
     const resultSearch: grewSearchResult_t = {};
+    const relationTree: {label: string, icon: string, children: string[],}[] =[] ;
     return {
       currentEdge: '',
       visuTreeDial: false,
       selectedResults: {},
-      relationstotal: {},
-      relationtree: [],
+      relationsTotal: {},
+      relationTree,
       filter: '',
-      tablename: '',
+      tableName: '',
       edgesList: Object.keys(this.edges).sort(),
       table: {
         rows: [],
@@ -134,32 +136,14 @@ export default defineComponent({
   },
   computed: {
     ...mapState(useProjectStore, ['getProjectConfig']),
-    // sentenceCount() {return 17}, // todo get the total number of sentences in the table
   },
   mounted() {
-    const splitters = this.getProjectConfig.annotationFeatures.DEPREL.map(({ join }) => join).join('');
-    const splitregex = new RegExp(`[${splitters}]`, 'g'); // = /[:@]/g
-
-    this.relationtree = [];
-    let lasta = this.relationtree;
-    let match;
-    let newo;
     for (const edge of this.edgesList) {
-      match = splitregex.exec(edge + splitters[0]);
-      if (match) {
-        const r = edge.substr(0, match.index);
-        const alr = lasta.filter((rr) => (rr as any).label === r);
-        if (alr.length === 0) {
-          newo = { label: r, children: [] };
-          (newo as any).selectable = r === edge; // some labels don't exist without children
-          (newo as any).icon = r === edge ? 'view_module' : null;
-          (lasta as any).push(newo as unknown as any);
-        } else [newo] = alr;
-        lasta = newo.children;
-      }
-      lasta = this.relationtree;
+        const relation = edge
+        let node = {label: relation, icon: 'view_module', children: []};
+        this.relationTree.push(node)
+    
     }
-    // this.$refs.tree.expandAll(); // doesn't seem to work without timeout
     setTimeout(() => {
       (this.$refs.tree as any).expandAll();
       (this.$refs.filter as HTMLElement).focus();
@@ -173,14 +157,13 @@ export default defineComponent({
      * @returns void
      */
     getTable() {
-      const keyset = new Set();
+      const keySet = new Set();
       for (const gov of Object.keys(this.edges[this.currentEdge] || {})) {
-        keyset.add(gov);
-        for (const dep of Object.keys((this.edges[this.currentEdge] || {})[gov])) keyset.add(dep);
+        keySet.add(gov);
+        for (const dep of Object.keys((this.edges[this.currentEdge] || {})[gov])) keySet.add(dep);
       }
-      // construct fields
       const fields: any[] = [];
-      for (const key of keyset) {
+      for (const key of keySet) {
         (fields as any).push({
           name: key,
           align: 'center',
@@ -191,31 +174,30 @@ export default defineComponent({
         });
       }
 
-      (this.relationstotal as any)[this.currentEdge] = 0;
+      (this.relationsTotal as any)[this.currentEdge] = 0;
       // construct rows
       const rows = [];
-      var colsum = {};
-      for (const gov of keyset) {
+      var colSum = {};
+      for (const gov of keySet) {
         const row = { gov } as any;
-        var rowsum = 0;
-        for (const dep of keyset) {
+        var rowSum = 0;
+        for (const dep of keySet) {
           var num = (this.edges[this.currentEdge][gov as string] || {})[dep as string] || 0;
           row[dep as string] = num;
-          rowsum += num;
-          (colsum as any)[dep as string] = (colsum as any)[dep as string] + num || num;
+          rowSum += num;
+          (colSum as any)[dep as string] = (colSum as any)[dep as string] + num || num;
         }
-        row['sum'] = rowsum;
-        rows.push(row);
-        (this.relationstotal as any)[this.currentEdge] += rowsum;
+        row['sum'] = rowSum;
+        if (rowSum > 0 )  rows.push(row);
+        (this.relationsTotal as any)[this.currentEdge] += rowSum;
       }
-      (colsum as any)['sum'] = Object.values(colsum).reduce((sum, value) => (sum as number) + (value as number), 0);
-      (colsum as any)['gov'] = '∑';
-
-      rows.unshift(colsum);
-      fields.sort((a, b) => ((colsum as any)[a.name as string] > (colsum as any)[b.name] ? -1 : 1));
+      (colSum as any)['sum'] = Object.values(colSum).reduce((sum, value) => (sum as number) + (value as number), 0);
+      (colSum as any)['gov'] = '∑';
+     
+      rows.unshift(colSum);
+      fields.sort((a, b) => ((colSum as any)[a.name as string] > (colSum as any)[b.name] ? -1 : 1));
       fields.unshift({ name: 'sum', label: '∑', field: (row: any) => row.sum, sortable: true, sum: 0 });
       fields.unshift({ name: 'gov', label: '↗', field: (row: any) => row.gov, sortable: true, sum: 0 });
-
       this.table.columns = fields as any;
       this.table.rows = rows as any;
       this.pagination = {
@@ -240,7 +222,7 @@ export default defineComponent({
      * @returns void
      */
     showTrees(props: any) {
-      this.tablename = `${this.currentEdge} relation table`;
+      this.tableName = `${this.currentEdge} relation table`;
 
       var searchPattern = `pattern { GOV -[${this.currentEdge}]-> DEP; `;
       if (props.col.name != 'sum') searchPattern += `DEP [ExtPos="${props.col.name}"/upos="${props.col.name}"]; `;
@@ -249,10 +231,7 @@ export default defineComponent({
       this.onSearch(searchPattern);
     },
     onShowTable(resultSearchDialog: any) {
-      // never called?
-      console.log(555555, resultSearchDialog);
-      // this.resultSearchDialog = resultSearchDialog;
-      // this.grewDialog = false;
+      console.log(resultSearchDialog);
     },
     onSearch(searchPattern: string) {
       const data = { pattern: searchPattern, userType: this.tableType };

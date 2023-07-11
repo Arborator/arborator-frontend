@@ -19,7 +19,7 @@ export const useProjectStore = defineStore('project', {
     },
     isAdmin: (state) => {
       return state.admins.includes(useUserStore().username) || useUserStore().super_admin;
-    }, 
+    },
     isGuest: (state) => state.guests.includes(useUserStore().username) && !useUserStore().super_admin,
     isTeacher(state): boolean {
       return this.isAdmin && state.exerciseMode;
@@ -69,7 +69,7 @@ export const useProjectStore = defineStore('project', {
     isAllowdedToSync(): boolean {
       return useUserStore().loggedWithGithub && useUserStore().isAllowedGitFeature &&
             this.isOwner && !this.exerciseMode && !this.isTeacher;
-    }, 
+    },
     getAnnofjson: (state) => JSON.stringify(state.annotationFeatures, null, 4),
     getUDAnnofJson: (state) => JSON.stringify(state.annotationFeaturesUD, null, 4),
     shownMetaChoices: (state) => state.annotationFeatures.META,
@@ -84,6 +84,12 @@ export const useProjectStore = defineStore('project', {
       if (state.image == null) return ifImageEmpty;
       if (state.image.length < 1) return ifImageEmpty;
       return state.image;
+    },
+    featuresSet(): string[] {
+      let featuresSet: string[] = [];
+      featuresSet = this.shownFeaturesChoices.filter((feat) => feat != 'FORM')
+      featuresSet.splice(2,0,'DEPREL', 'HEAD')
+      return featuresSet;
     },
   },
   actions: {

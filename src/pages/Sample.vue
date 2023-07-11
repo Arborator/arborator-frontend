@@ -17,7 +17,7 @@
           :options="userIds"
           use-chips
           stack-label
-          label="Select user to be present"
+          :label="$t('grewSearch.selectSetOfUserToHaveTree')"
         />
         <q-select
           v-model="usersToNotHaveTree"
@@ -26,20 +26,39 @@
           :options="userIds"
           use-chips
           stack-label
-          label="Select user to NOT be present"
+          :label="$t('grewSearch.selectSetOfUserToNotHaveTree')"
         />
         <q-select
-              v-model="showDiffUsers"
+              v-model="usersToHaveDiffs"
               filled
               multiple
               :options="userIds"
               use-chips
               stack-label
-              :label="$t('grewSearch.showDiffUsersSelect')"
+              :label="$t('grewSearch.selectSetOfUserToHaveDiffs')"
         >
             <q-tooltip>{{$t('grewSearch.showDiffUsersTooltip')}}</q-tooltip>
-
         </q-select>
+        <q-select
+              v-model="usersToNotHaveDiffs"
+              filled
+              multiple
+              :options="userIds"
+              use-chips
+              stack-label
+              :label="$t('grewSearch.selectSetOfUserToNotHaveDiffs')"
+        >
+            <q-tooltip>{{$t('grewSearch.showDiffUsersTooltip')}}</q-tooltip>
+        </q-select>
+        <q-select
+              v-model="featuresSetForDiffs"
+              filled
+              multiple
+              :options="featuresSet"
+              use-chips
+              stack-label
+              :label="$t('grewSearch.showDiffFaturesSelect')"
+            />
 
       </div>
     </template>
@@ -130,11 +149,11 @@ export default defineComponent({
     }
   },
   computed: {
-    ...mapState(useProjectStore, ['isAdmin', 'exerciseMode', 'isTeacher']),
+    ...mapState(useProjectStore, ['isAdmin', 'exerciseMode', 'isTeacher', 'featuresSet']),
     ...mapState(useUserStore, ['isSuperAdmin']),
     ...mapState(useGrewSearchStore, ['pendingModifications']),
     ...mapState(useTreesStore, ["trees", "filteredTrees", "loading", "numberOfTrees", "exerciseLevel"]),
-    ...mapWritableState(useTreesStore, ["textFilter", "usersToHaveTree", "usersToNotHaveTree", "showDiffUsers"]),
+    ...mapWritableState(useTreesStore, ["textFilter", "usersToHaveTree", "usersToNotHaveTree", "usersToHaveDiffs", "usersToNotHaveDiffs", "featuresSetForDiffs"]),
     userIds(): string[] {
       var userIds: string[] = [];
       for (const treeObj of Object.values(this.trees)) {

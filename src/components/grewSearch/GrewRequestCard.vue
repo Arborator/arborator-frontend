@@ -169,15 +169,9 @@ export default defineComponent({
   computed: {
     ...mapState(useGrewSearchStore, ['lastQuery']),
     ...mapState(useUserStore, ['isLoggedIn', 'avatar', 'username']),
-    ...mapState(useProjectStore, ['shownFeaturesChoices', 'annotationFeatures']),
+    ...mapState(useProjectStore, ['shownFeaturesChoices', 'annotationFeatures', 'featuresSet']),
     userOptions() {
       return this.searchReplaceTab === 'REWRITE' ? this.usersToApplyOptions.filter(option=> option.value !== "all") : this.usersToApplyOptions;
-    },
-    featuresSet() {
-      var featuresSet: string[] = [];
-      featuresSet = this.shownFeaturesChoices.filter((feat) => feat != 'FORM')
-      featuresSet.splice(2,0,'DEPREL', 'HEAD')
-      return featuresSet;
     },
   },
   watch: {
@@ -193,7 +187,7 @@ export default defineComponent({
       this.currentQuery = this.lastQuery.text;
     }
     this.searchReplaceTab = this.currentQueryType;
-   
+
   },
   methods: {
     ...mapActions(useGrewSearchStore, ['changeLastGrewQuery']),

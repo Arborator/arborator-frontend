@@ -50,6 +50,7 @@
               </div>
               <q-input outlined v-model="text" type="textarea" label="text" />
               <q-input outlined v-model="sampleName" label ="Sample Name" />
+              <q-input outlined v-model="customUserId" label="Select custom UserId By default it's your username"  />
               <div class="row q-pa-md">
                 <q-btn v-close-popup :disable="!disableTokenizeBtn" color="primary" @click="tokenizeSample">Tokenize</q-btn>
               </div>
@@ -242,6 +243,7 @@ export default defineComponent({
       langOptions,
       lang,
       sampleName: '',
+      customUserId: '',
     };
   },
 
@@ -251,10 +253,10 @@ export default defineComponent({
     ...mapState(useProjectStore, ['exerciseMode']),
     disableTokenizeBtn() {
       if (this.option.value == 'plainText'){
-        return this.text != '' && this.sampleName != '' && this.lang.value != '';
+        return this.text && this.sampleName  && this.lang.value && this.customUserId ;
       }
       else if (this.option.value){
-        return this.text != '' && this.sampleName != '';
+        return this.text  && this.sampleName && this.customUserId;
       }
       else {
         return false;
@@ -358,12 +360,11 @@ export default defineComponent({
     },
     tokenizeSample() {
       const data = {
-        username: this.username,
+        username: this.customUserId,
         text: this.text,
         option: this.option.value,
         lang: this.lang.value,
         sampleName: this.sampleName,
-
       };
       api
         .tokenizeSample(this.$route.params.projectname as string, data)

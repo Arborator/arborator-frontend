@@ -30,7 +30,7 @@
       <div class="custom-frame1">
         <div v-show="!loading">
           <q-virtual-scroll
-            :key="filteredTrees.length"
+            :key="filteredTrees.length.toString() + Object.keys(filteredTrees).join('')"
             ref="virtualListRef"
             :items="Object.values(filteredTrees)"
             :style="{maxHeight: `${splitterHeight * ((100 - splitterModel)/100) - 1}px`, width: '100%'}"
@@ -39,7 +39,7 @@
           >
             <template #default="{ item, index }">
               <SentenceCard
-                :key="index"
+                :key="samplename + item.sent_id"
                 :sentence="item"
                 :index="index"
                 search-result=""

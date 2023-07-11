@@ -41,8 +41,7 @@
                   :options="langOptions"
                  />
                 <div v-if="option.value === 'vertical'" class="text-body1">
-                  Each token on a separate line, with an empty line indicating the end of sentence; 
-                  only the first word is considered as a token, the rest of the line is ignored.
+                  Each token on a separate line, with an empty line indicating the end of sentence.
                 </div>
                 <div v-if="option.value === 'horizontal'" class="text-body1">
                  Each sentence on a separate line, the tokens are separated by spaces.
@@ -253,10 +252,10 @@ export default defineComponent({
     ...mapState(useProjectStore, ['exerciseMode']),
     disableTokenizeBtn() {
       if (this.option.value == 'plainText'){
-        return this.text && this.sampleName  && this.lang.value && this.customUserId ;
+        return this.text && this.sampleName  && this.lang.value ;
       }
       else if (this.option.value){
-        return this.text  && this.sampleName && this.customUserId;
+        return this.text  && this.sampleName ;
       }
       else {
         return false;
@@ -359,6 +358,7 @@ export default defineComponent({
         });
     },
     tokenizeSample() {
+      if (!this.customUserId) this.customUserId = this.username;
       const data = {
         username: this.customUserId,
         text: this.text,

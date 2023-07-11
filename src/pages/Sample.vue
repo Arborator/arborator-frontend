@@ -4,6 +4,7 @@
     horizontal
     :limits="[0, 100]"
     :style="{height: `${splitterHeight}px`}"
+    emit-immediately
   >
     <template v-slot:before>
       <div>
@@ -27,12 +28,12 @@
 
     <template v-slot:after>
       <div class="custom-frame1">
-        <div v-show="!loading" class="row q-gutter-md">
+        <div v-show="!loading">
           <q-virtual-scroll
             :key="filteredTrees.length"
             ref="virtualListRef"
             :items="Object.values(filteredTrees)"
-            style="max-height: 94.5vh; width: 100%"
+            :style="{maxHeight: `${splitterHeight * ((100 - splitterModel)/100) - 1}px`, width: '100%'}"
             :virtual-scroll-slice-size="50"
             :virtual-scroll-item-size="70"
           >

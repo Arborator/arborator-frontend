@@ -203,16 +203,19 @@ export default defineComponent({
               })
               .catch((error) => {
                 const errorMessage = error.response.data.message;
-                notifyError({error: `${errorMessage}`});
+                if (error.response.status == 413) {
+                    notifyError({error: `You can't synchronize with "${repoName}" because ${errorMessage}`});
+                }
+                else{
+                    notifyError({error:`${errorMessage}`});   
+                }
                 this.loading = false;
                 this.$emit('created');
+                clearTimeout(interval);
               }); 
-            
-
         },       
     },  
-    }     
-);
+});
 </script>
 <style>
 

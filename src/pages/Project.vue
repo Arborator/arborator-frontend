@@ -613,7 +613,7 @@ export default defineComponent({
       'isAllowdedToSync',
     ]),
     ...mapWritableState(useProjectStore, ['freezed']),
-    ...mapState(useUserStore, ['isLoggedIn', 'isSuperAdmin', 'loggedWithGithub', 'avatar', 'username','isAllowedGitFeature']),
+    ...mapState(useUserStore, ['isLoggedIn', 'isSuperAdmin', 'loggedWithGithub', 'avatar', 'username']),
     projectName(): string {
       return this.$route.params.projectname as string;
     },

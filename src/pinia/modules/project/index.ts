@@ -67,8 +67,7 @@ export const useProjectStore = defineStore('project', {
       return this.isAdmin || this.isGuest
     },
     isAllowdedToSync(): boolean {
-      return useUserStore().loggedWithGithub && useUserStore().isAllowedGitFeature &&
-            this.isOwner && !this.exerciseMode && !this.isTeacher;
+      return useUserStore().loggedWithGithub && this.isOwner && !this.exerciseMode && !this.isTeacher;
     },
     getAnnofjson: (state) => JSON.stringify(state.annotationFeatures, null, 4),
     getUDAnnofJson: (state) => JSON.stringify(state.annotationFeaturesUD, null, 4),

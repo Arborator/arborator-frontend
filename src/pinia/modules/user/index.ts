@@ -18,10 +18,6 @@ export const useUserStore = defineStore('user', {
     hasLoginErrored: (state) => state.loginError,
     getFailedAccess: (state) => state.failedAccess,
     loggedWithGithub: (state) => state.auth_provider === "4",
-    isAllowedGitFeature(state): Boolean{
-      const usernames = ["kirianguiller", "gguibon", "kimgerdes", "bguil", "khansadaoudi"]
-      return usernames.includes(state.username)
-    },
     avatar: (state) => {
       if (state.picture_url) return state.picture_url;
       return 'perm_identity';

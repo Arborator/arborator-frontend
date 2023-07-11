@@ -5,7 +5,7 @@
         <q-space />
         <q-btn  @click="closeDialog" flat dense icon="close" />
       </q-bar>
-      <div v-if="loggedWithGithub && isAllowedGitFeature">
+      <div v-if="loggedWithGithub">
         <q-linear-progress size="10px" :value="progress" color="primary" />
       </div>
       <q-card-section>
@@ -93,9 +93,9 @@ export default defineComponent({
     };
   },
   computed: {
-    ...mapState(useUserStore, ['username', 'loggedWithGithub', 'isSuperAdmin', 'isAllowedGitFeature']),
+    ...mapState(useUserStore, ['username', 'loggedWithGithub', 'isSuperAdmin']),
     canSyncWithGithub(){
-      return this.isAllowedGitFeature && this.loggedWithGithub && this.isShowSyncBtn && !this.isShowGithubSyncPanel; 
+      return  this.loggedWithGithub && this.isShowSyncBtn && !this.isShowGithubSyncPanel; 
     }
   },
   methods: {
@@ -118,7 +118,7 @@ export default defineComponent({
         .then(() => {
           this.parentGetProjects();
           this.submitting = false;
-          if (this.loggedWithGithub && !this.project.exerciseMode && this.isAllowedGitFeature) {
+          if (this.loggedWithGithub && !this.project.exerciseMode) {
             this.progress = 0.4;
             this.isShowSyncBtn = true;
           }

@@ -8,20 +8,38 @@
   >
     <template v-slot:before>
       <div>
-        <q-input v-model="textFilter" label="Text filter">
+        <q-input filled v-model="textFilter" label="Text filter">
         </q-input>
         <q-select
-          multiple
           v-model="usersToHaveTree"
-          label="Select user to be present"
+          filled
+          multiple
           :options="userIds"
+          use-chips
+          stack-label
+          label="Select user to be present"
         />
         <q-select
-          multiple
           v-model="usersToNotHaveTree"
-          label="Select user to NOT be present"
+          filled
+          multiple
           :options="userIds"
+          use-chips
+          stack-label
+          label="Select user to NOT be present"
         />
+        <q-select
+              v-model="showDiffUsers"
+              filled
+              multiple
+              :options="userIds"
+              use-chips
+              stack-label
+              :label="$t('grewSearch.showDiffUsersSelect')"
+        >
+            <q-tooltip>{{$t('grewSearch.showDiffUsersTooltip')}}</q-tooltip>
+
+        </q-select>
 
       </div>
     </template>
@@ -116,7 +134,7 @@ export default defineComponent({
     ...mapState(useUserStore, ['isSuperAdmin']),
     ...mapState(useGrewSearchStore, ['pendingModifications']),
     ...mapState(useTreesStore, ["trees", "filteredTrees", "loading", "numberOfTrees", "exerciseLevel"]),
-    ...mapWritableState(useTreesStore, ["textFilter", "usersToHaveTree", "usersToNotHaveTree"]),
+    ...mapWritableState(useTreesStore, ["textFilter", "usersToHaveTree", "usersToNotHaveTree", "showDiffUsers"]),
     userIds(): string[] {
       var userIds: string[] = [];
       for (const treeObj of Object.values(this.trees)) {

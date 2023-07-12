@@ -7,10 +7,15 @@
     emit-immediately
   >
     <template v-slot:before>
-      <div class="q-gutter-md">
-        <q-btn @click="applyFilterTrees" color="primary">Apply filter</q-btn>
-        <q-input filled v-model="textFilter" label="Text filter">
-        </q-input>
+      <div class="q-gutter-md cols" style="padding: 0 10px">
+
+        <div class="q-gutter-md row">
+          <q-btn @click="applyFilterTrees" color="primary">Apply filter</q-btn>
+          <span>{{ Object.keys(filteredTrees).length }} trees</span>
+        </div>
+
+          <q-input filled v-model="textFilter" label="Text filter" style="max-width: 800px">
+          </q-input>
         <div class="row q-gutter-md">
 
           <q-select
@@ -74,7 +79,9 @@
           use-chips
           stack-label
           :label="$t('grewSearch.showDiffFaturesSelect')"
-        />
+        >
+          <q-tooltip>{{ $t('grewSearch.showDiffFeaturesTooltip') }}</q-tooltip>
+        </q-select>
 
       </div>
     </template>

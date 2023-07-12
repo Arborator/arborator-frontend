@@ -249,6 +249,7 @@ export default {
     showDiffUsersSelect: 'Select the set of users',
     showDiffUsersTooltip: 'You have to select at least two users',
     showDiffFaturesSelect: 'Select the set of features',
+    showDiffFeaturesTooltip: 'if empty and at least two diff users are selected, all features will be taken into account for diff',
     showDiffBtn: 'Show differences',
     applyRule: 'Apply rule',
     applyRuleTooltip: 'Select at least one tree to which you wish to apply the rule',

@@ -151,6 +151,7 @@
           no-caps
           :ripple="false"
           @contextmenu="rightClickHandler($event, user)"
+          @click="leftClickHandler(user)"
         >
           <q-tooltip v-if="hasPendingChanges[user]">{{ $t('sentenceCard.saveModif') }}</q-tooltip>
           <q-tooltip v-else-if="lastModifiedTime[user]">
@@ -165,7 +166,6 @@
       </q-tabs>
       <q-tab-panels
         v-model="openTabUser"
-        keep-alive
         @transition="transitioned"
         class="custom-frame1"
       >
@@ -599,6 +599,11 @@ export default defineComponent({
         orderedConlls[userAndTimestamp.user] = filteredConlls[userAndTimestamp.user];
       }
       return orderedConlls;
+    },
+    leftClickHandler(user: string) {
+      if (this.openTabUser === user) {
+        this.openTabUser = '';
+      }
     },
     /**
      * When user right click on one of the tabs icon, if diffMode is on, it will change

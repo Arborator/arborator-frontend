@@ -7,58 +7,74 @@
     emit-immediately
   >
     <template v-slot:before>
-      <div>
+      <div class="q-gutter-md">
+        <q-btn @click="applyFilterTrees" color="primary">Apply filter</q-btn>
         <q-input filled v-model="textFilter" label="Text filter">
         </q-input>
+        <div class="row q-gutter-md">
+
+          <q-select
+            class="col"
+            style="max-width: 300px"
+            v-model="usersToHaveTree"
+            filled
+            multiple
+            :options="userIds"
+            use-chips
+            stack-label
+            :label="$t('grewSearch.selectSetOfUserToHaveTree')"
+          />
+          <q-select
+            class="col"
+            style="max-width: 300px"
+            v-model="usersToNotHaveTree"
+            filled
+            multiple
+            :options="userIds"
+            use-chips
+            stack-label
+            :label="$t('grewSearch.selectSetOfUserToNotHaveTree')"
+          />
+        </div>
+        <div class="row q-gutter-md">
+
+          <q-select
+            class="col"
+            style="max-width: 300px"
+            v-model="usersToHaveDiffs"
+            filled
+            multiple
+            :options="userIds"
+            use-chips
+            stack-label
+            :label="$t('grewSearch.selectSetOfUserToHaveDiffs')"
+          >
+            <q-tooltip>{{ $t('grewSearch.showDiffUsersTooltip') }}</q-tooltip>
+          </q-select>
+          <q-select
+            class="col"
+            style="max-width: 300px"
+            v-model="usersToNotHaveDiffs"
+            filled
+            multiple
+            :options="userIds"
+            use-chips
+            stack-label
+            :label="$t('grewSearch.selectSetOfUserToNotHaveDiffs')"
+          >
+            <q-tooltip>{{ $t('grewSearch.showDiffUsersTooltip') }}</q-tooltip>
+          </q-select>
+        </div>
+
         <q-select
-          v-model="usersToHaveTree"
+          v-model="featuresSetForDiffs"
           filled
           multiple
-          :options="userIds"
+          :options="featuresSet"
           use-chips
           stack-label
-          :label="$t('grewSearch.selectSetOfUserToHaveTree')"
+          :label="$t('grewSearch.showDiffFaturesSelect')"
         />
-        <q-select
-          v-model="usersToNotHaveTree"
-          filled
-          multiple
-          :options="userIds"
-          use-chips
-          stack-label
-          :label="$t('grewSearch.selectSetOfUserToNotHaveTree')"
-        />
-        <q-select
-              v-model="usersToHaveDiffs"
-              filled
-              multiple
-              :options="userIds"
-              use-chips
-              stack-label
-              :label="$t('grewSearch.selectSetOfUserToHaveDiffs')"
-        >
-            <q-tooltip>{{$t('grewSearch.showDiffUsersTooltip')}}</q-tooltip>
-        </q-select>
-        <q-select
-              v-model="usersToNotHaveDiffs"
-              filled
-              multiple
-              :options="userIds"
-              use-chips
-              stack-label
-              :label="$t('grewSearch.selectSetOfUserToNotHaveDiffs')"
-        >
-            <q-tooltip>{{$t('grewSearch.showDiffUsersTooltip')}}</q-tooltip>
-        </q-select>
-        <q-select
-              v-model="featuresSetForDiffs"
-              filled
-              multiple
-              :options="featuresSet"
-              use-chips
-              stack-label
-              :label="$t('grewSearch.showDiffFaturesSelect')"
-            />
 
       </div>
     </template>
@@ -142,7 +158,7 @@ export default defineComponent({
       required: true,
     },
   },
-  data(): { splitterModel: number; splitterHeight: number;} {
+  data(): { splitterModel: number; splitterHeight: number; } {
     return {
       splitterModel: 0,
       splitterHeight: 0,
@@ -185,7 +201,7 @@ export default defineComponent({
 
   methods: {
     ...mapActions(useGrewSearchStore, ['emptyPendingModification']),
-    ...mapActions(useTreesStore, ['getSampleTrees']),
+    ...mapActions(useTreesStore, ['getSampleTrees', 'applyFilterTrees']),
     scrollToIndexFromURL() {
       if (
         !this.loading &&

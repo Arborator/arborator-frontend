@@ -12,7 +12,7 @@ export const useTreesStore = defineStore('trees', {
   state: () => {
     return {
       trees: {} as { [key: string]: grewSearchResultSentence_t },
-      selectedTreeId: null as string | null,
+      filteredTrees: [] as grewSearchResultSentence_t[],
       loading: false as boolean,
       exerciseLevel: 0 as number,
       textFilter: '' as string,
@@ -24,60 +24,6 @@ export const useTreesStore = defineStore('trees', {
     };
   },
   getters: {
-    selectedTree: (state): grewSearchResultSentence_t | null => {
-      if (!state.selectedTreeId || !state.trees[state.selectedTreeId]) {
-        return null;
-      }
-      return state.trees[state.selectedTreeId];
-    },
-    filteredTrees: (state): grewSearchResultSentence_t[] => {
-      let filteredTrees = Object.values(state.trees)
-      if (state.textFilter !== '') {
-        filteredTrees = Object.values(state.trees).filter((tree) => {
-          return tree.sentence.toLowerCase().includes(state.textFilter.toLowerCase());
-        }, []);
-      }
-
-      if (state.usersToHaveTree.length > 0) {
-        filteredTrees = filteredTrees.filter((tree) => {
-          const usersIds = Object.keys(tree.conlls);
-          return state.usersToHaveTree.every((user) => usersIds.includes(user));
-        });
-      }
-
-      if (state.usersToNotHaveTree.length > 0) {
-        filteredTrees = filteredTrees.filter((tree) => {
-          const usersIds = Object.keys(tree.conlls);
-          return state.usersToNotHaveTree.every((user) => !usersIds.includes(user));
-        });
-      }
-
-      if (state.usersToHaveDiffs.length > 0) {
-        filteredTrees = filteredTrees.filter((tree) => {
-          const usersToHaveDiffsThatHaveTrees = state.usersToHaveDiffs.filter((user) => {
-            const usersIds = Object.keys(tree.conlls);
-            return usersIds.includes(user);
-          });
-          if (usersToHaveDiffsThatHaveTrees.length <= 1) {
-            return false;
-          }
-          return sentencesHaveDiffs(usersToHaveDiffsThatHaveTrees.map((user) => tree.conlls[user]), state.featuresSetForDiffs)
-        });
-      }
-      if (state.usersToNotHaveDiffs.length > 0) {
-        filteredTrees = filteredTrees.filter((tree) => {
-          const usersToNotHaveDiffsThatHaveTrees = state.usersToNotHaveDiffs.filter((user) => {
-            const usersIds = Object.keys(tree.conlls);
-            return usersIds.includes(user);
-          });
-          if (usersToNotHaveDiffsThatHaveTrees.length <= 1) {
-            return false;
-          }
-          return !sentencesHaveDiffs(usersToNotHaveDiffsThatHaveTrees.map((user) => tree.conlls[user]), state.featuresSetForDiffs)
-        });
-      }
-      return filteredTrees;
-    },
     numberOfTrees(state) {
       return Object.keys(state.trees).length;
     },
@@ -91,6 +37,7 @@ export const useTreesStore = defineStore('trees', {
           .then((response) => {
             this.trees = response.data.sample_trees;
             this.exerciseLevel = response.data.exercise_level;
+            this.applyFilterTrees();
             this.loading = false;
             notifyMessage({message: `Loaded ${Object.keys(this.trees).length} trees`});
             resolve(JSON.parse(JSON.stringify(Object.values(this.trees))));
@@ -101,6 +48,53 @@ export const useTreesStore = defineStore('trees', {
             reject(error);
           });
       });
+    },
+    applyFilterTrees() {
+      this.filteredTrees = Object.values(this.trees)
+      if (this.textFilter !== '') {
+        this.filteredTrees = Object.values(this.trees).filter((tree) => {
+          return tree.sentence.toLowerCase().includes(this.textFilter.toLowerCase());
+        }, []);
+      }
+
+      if (this.usersToHaveTree.length > 0) {
+        this.filteredTrees = this.filteredTrees.filter((tree) => {
+          const usersIds = Object.keys(tree.conlls);
+          return this.usersToHaveTree.every((user) => usersIds.includes(user));
+        });
+      }
+
+      if (this.usersToNotHaveTree.length > 0) {
+        this.filteredTrees = this.filteredTrees.filter((tree) => {
+          const usersIds = Object.keys(tree.conlls);
+          return this.usersToNotHaveTree.every((user) => !usersIds.includes(user));
+        });
+      }
+
+      if (this.usersToHaveDiffs.length > 0) {
+        this.filteredTrees = this.filteredTrees.filter((tree) => {
+          const usersToHaveDiffsThatHaveTrees = this.usersToHaveDiffs.filter((user) => {
+            const usersIds = Object.keys(tree.conlls);
+            return usersIds.includes(user);
+          });
+          if (usersToHaveDiffsThatHaveTrees.length <= 1) {
+            return false;
+          }
+          return sentencesHaveDiffs(usersToHaveDiffsThatHaveTrees.map((user) => tree.conlls[user]), this.featuresSetForDiffs)
+        });
+      }
+      if (this.usersToNotHaveDiffs.length > 0) {
+        this.filteredTrees = this.filteredTrees.filter((tree) => {
+          const usersToNotHaveDiffsThatHaveTrees = this.usersToNotHaveDiffs.filter((user) => {
+            const usersIds = Object.keys(tree.conlls);
+            return usersIds.includes(user);
+          });
+          if (usersToNotHaveDiffsThatHaveTrees.length <= 1) {
+            return false;
+          }
+          return !sentencesHaveDiffs(usersToNotHaveDiffsThatHaveTrees.map((user) => tree.conlls[user]), this.featuresSetForDiffs)
+        });
+      }
     },
   },
 });

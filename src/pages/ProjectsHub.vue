@@ -323,7 +323,7 @@ export default defineComponent({
       return project.admins[0] === this.username;
     },
     isSharedWithMe(project: project_extended_t) {
-      return project.admins.includes(this.username) || project.guests.includes(this.username);
+      return project.admins.includes(this.username) || project.annotators.includes(this.username);
     },
     isOld(project: project_extended_t) {
       // either not used since more than a year or empty and older than an hour or the project has no admins

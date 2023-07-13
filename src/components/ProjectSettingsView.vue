@@ -272,7 +272,7 @@
         :parent-callback="updateAdminsOrGuests"
         :general="true"
         selectiontype="Project Guest"
-        target-role="guest"
+        target-role="annotator"
         singlemultiple="multiple"
         :preselected="guests"
       ></UserSelectTable>

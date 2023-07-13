@@ -40,6 +40,8 @@ export interface project_extended_t {
   freezed: boolean;
 
   admins: string[];
+  validators: string[];
+  annotators: string[];
   guests: string[];
   numberSentences: number;
   numberSamples: number;
@@ -65,6 +67,8 @@ export interface annotationFeatures_t {
 
 export interface project_access_t {
   admins: string[];
+  validators: string[];
+  annotators: string[];
   guests: string[];
 }
 

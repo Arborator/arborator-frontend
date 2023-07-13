@@ -1,14 +1,13 @@
 <template>
   <q-card
     bordered
-    v-show="visible"
     :class="hover ? 'shadow-12' : ''"
     class="my-card grid-style-transition shadow-2"
     :style="hover ? 'transform: scale(0.95);' : ''"
     @mouseover="hover = true"
     @mouseleave="hover = false"
   >
-    <q-popup-proxy v-if="canSeeSettings" transition-show="flip-up" transition-hide="flip-down" context-menu>
+    <q-popup-proxy v-if="isProjectAdmin" transition-show="flip-up" transition-hide="flip-down" context-menu>
       <q-card>
         <q-card-section>
           <q-list>
@@ -60,7 +59,7 @@
         </q-chip>
       </q-card-actions>
       <q-card-actions>
-        <q-btn v-if="canSeeSettings" round color="negative" glossy icon="delete_forever" @click="triggerConfirm(deleteProject)">
+        <q-btn v-if="isProjectAdmin" round color="negative" glossy icon="delete_forever" @click="triggerConfirm(deleteProject)">
           <q-tooltip class="bg-purple text-body2" anchor="top middle" :offset="[10, 10]" :delay="100">
             <!-- {{ $t('projectHub.tooltipRightClickDelete') }} -->
             {{ $t('projectHub.rightClickDelete') }}
@@ -83,7 +82,6 @@ import { timeAgo } from 'src/utils/timeAgoUtils';
 import { defineComponent, PropType } from 'vue';
 import { project_extended_t } from 'src/api/backend-types';
 import ProjectIcon from 'components/shared/ProjectIcon.vue';
-import { useProjectStore } from 'src/pinia/modules/project';
 
 export default defineComponent({
   components: { ProjectIcon, ConfirmAction },
@@ -112,49 +110,17 @@ export default defineComponent({
   },
   computed: {
     ...mapState(useUserStore, ['isLoggedIn', 'username', 'isSuperAdmin']),
-    canSeeSettings() {
-      // FIXME : can be refactored a lot (we have isProjectAdmin in useMainStore that cover all of this)
-      if (!this.isLoggedIn) {
-        return false;
-      }
-      if (this.project.admins.includes(this.username)) {
-        return true;
-      }
-      if (this.isSuperAdmin) {
-        return true;
-      }
-      return false;
+    isProjectAdmin() {
+      return this.project.admins.includes(this.username) || this.isSuperAdmin;
     },
-
     imageCleaned() {
       return this.project.image;
-    },
-    visible() {
-      // show all projects regardless of their visibility status
-      return true;
-
-      // only show non-private projects
-      // if(!this.project.visibility === 0){ return true; }
-      // else{
-      //     if(this.project.admins.includes(this.$store.getters['user/getUserInfos'].id)){ return true; }
-      //     else if(this.project.guests.includes(this.$store.getters['user/getUserInfos'].id)){ return true; }
-      //     else if(this.$store.getters['user/getUserInfos'].super_admin) { return true; }
-      //     else { return false; }
-      // }
-    },
-    locale() {
-      return this.$i18n.locale.substring(0, 2); // TODO: strange bug: this.$i18n.locale is a Promise and on switching locals this.$i18n.locale becomes a string, its value. The value is fr-fra, not accepted by Intl.RelativeTimeFormat -> take the substring
     },
   },
   methods: {
     timeAgo(secsAgo: number) {
       return timeAgo(secsAgo);
     },
-    /**
-     * Use the router to push (i.e. got to) a new route
-     *
-     * @returns void
-     */
     goTo() {
       this.$router.push({
         name: 'project',
@@ -164,44 +130,18 @@ export default defineComponent({
         },
       });
     },
-    /**
-     * Use the parent project settings function
-     *
-     * @returns void
-     */
     projectSettings() {
-      this.$props.parentProjectSettings(this.project.projectName);
+      this.parentProjectSettings(this.project.projectName);
     },
-    /**
-     * Delete a project using the parent function
-     *
-     * @returns void
-     */
     deleteProject() {
-      this.$props.parentDeleteProject(this.project.projectName);
+      this.parentDeleteProject(this.project.projectName);
     },
-    /**
-     * Wrapper to display the confirm dialog prior to executing the method
-     *
-     * @param {method} method
-     * @param {*} arg
-     * @returns void
-     */
     triggerConfirm(method: CallableFunction) {
       this.confirmActionDial = true;
       this.confirmActionCallback = method;
     },
     imageEmpty() {
-      if (this.project.image === null || this.project.image === '') {
-        this.project.image = "b''";
-      }
-      if (this.project.image === "b''") {
-        return true;
-      }
-      if (this.project.image.length < 1) {
-        return true;
-      }
-      return false;
+       return this.project.image === null || this.project.image === '';
     },
   },
 });

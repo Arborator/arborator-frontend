@@ -172,7 +172,7 @@
     <CreaProjectCard v-if="creaProjectDial" :parent-get-projects="getProjects" @created="creaProjectDial = false"></CreaProjectCard>
 
     <q-dialog v-model="projectSettingsDial" transition-show="slide-up" transition-hide="slide-down">
-      <ProjectSettingsView :projectname="projectnameTarget" style="width: 90vw"></ProjectSettingsView>
+      <ProjectSettingsView :projectname="projectNameTarget" style="width: 90vw"></ProjectSettingsView>
     </q-dialog>
 
     <q-dialog v-model="confirmActionDial">
@@ -211,7 +211,6 @@ export default defineComponent({
     const visibleProjects: project_extended_t[] = [];
     const storage: StorageInterface = useStorage();
     return {
-      lorem: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.',
       projects,
       visibleProjects,
       projectDifference: false,
@@ -228,7 +227,7 @@ export default defineComponent({
       listMode: true,
       creaProjectDial: false,
       projectSettingsDial: false,
-      projectnameTarget: '',
+      projectNameTarget: '',
       initLoading: false,
       loadingProjects: true,
       skelNumber: [...Array(5).keys()],
@@ -244,7 +243,6 @@ export default defineComponent({
   },
   computed: {
     ...mapState(useUserStore, ['isLoggedIn', 'username']),
-
     myOldProjects(): project_extended_t[] {
       return this.visibleProjects.filter((project) => {
         return (this.isCreatedByMe(project) || this.isSharedWithMe(project)) && this.isOld(project);
@@ -323,7 +321,10 @@ export default defineComponent({
       return project.admins[0] === this.username;
     },
     isSharedWithMe(project: project_extended_t) {
-      return project.admins.includes(this.username) || project.annotators.includes(this.username);
+      return project.admins.includes(this.username) || 
+        project.annotators.includes(this.username) ||
+        project.validators.includes(this.username) ||
+        project.guests.includes(this.username);
     },
     isOld(project: project_extended_t) {
       // either not used since more than a year or empty and older than an hour or the project has no admins
@@ -336,7 +337,7 @@ export default defineComponent({
       }
     },
     showProjectSettings(projectName: string) {
-      this.projectnameTarget = projectName;
+      this.projectNameTarget = projectName;
       this.projectSettingsDial = true;
     },
     deleteProject(projectName: string) {

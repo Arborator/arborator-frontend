@@ -70,7 +70,7 @@ export const useProjectStore = defineStore('project', {
       return false;
     },
     isProjectMember(): boolean {
-      return this.isAdmin || this.isAnnotator
+      return this.isAdmin || this.isValidator || this.isAnnotator || this.isGuest; 
     },
     isAllowdedToSync(): boolean {
       return useUserStore().loggedWithGithub && this.isOwner && !this.exerciseMode && !this.isTeacher;

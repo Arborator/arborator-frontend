@@ -124,7 +124,6 @@ import GrewSearch from '../components/grewSearch/GrewSearch.vue';
 import RelationTableMain from '../components/relationTable/RelationTableMain.vue';
 import {mapActions, mapState, mapWritableState} from 'pinia';
 import {useProjectStore} from 'src/pinia/modules/project';
-import {useUserStore} from 'src/pinia/modules/user';
 import {useGrewSearchStore} from 'src/pinia/modules/grewSearch';
 import {PropType, defineComponent} from 'vue';
 import {useTreesStore} from "src/pinia/modules/trees";
@@ -165,8 +164,7 @@ export default defineComponent({
     }
   },
   computed: {
-    ...mapState(useProjectStore, ['isAdmin', 'exerciseMode', 'isTeacher', 'featuresSet']),
-    ...mapState(useUserStore, ['isSuperAdmin']),
+    ...mapState(useProjectStore, ['exerciseMode', 'isTeacher', 'featuresSet']),
     ...mapState(useGrewSearchStore, ['pendingModifications']),
     ...mapState(useTreesStore, ["trees", "filteredTrees", "loading", "numberOfTrees", "exerciseLevel"]),
     ...mapWritableState(useTreesStore, ["textFilter", "usersToHaveTree", "usersToNotHaveTree", "usersToHaveDiffs", "usersToNotHaveDiffs", "featuresSetForDiffs"]),

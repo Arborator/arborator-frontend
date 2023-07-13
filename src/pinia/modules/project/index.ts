@@ -33,6 +33,12 @@ export const useProjectStore = defineStore('project', {
     isStudent(state): boolean {
       return !this.isAdmin && state.exerciseMode;
     },
+    isProjectMember(): boolean {
+      return this.isAdmin || this.isValidator || this.isAnnotator || this.isGuest; 
+    },
+    isAllowdedToSync(): boolean {
+      return useUserStore().loggedWithGithub && this.isOwner && !this.exerciseMode && !this.isTeacher;
+    },
     canSaveTreeInProject(state): boolean {
       if (!useUserStore().isLoggedIn) {
         // people not logged in can't save in any case
@@ -46,8 +52,8 @@ export const useProjectStore = defineStore('project', {
         // anyone (logged in) can save in public project (visibility === 2)
         return true
       }
-      // in other projects, only members, admin or superadmin can save
-      return (this.isAdmin || this.isGuest)
+      // in other projects all members can save tree except the guest in the private project
+      return (this.isAdmin || this.isValidator || this.isAnnotator)
     },
     canSeeOtherUsersTrees(state): boolean {
       if (this.isAdmin) {
@@ -65,15 +71,9 @@ export const useProjectStore = defineStore('project', {
       }
       if (state.visibility == 0) {
         // only guests (and admins, but it was already returned True earlier=
-        return this.isAdmin || this.isValidator || this.isAnnotator || this.isGuest;
+        return this.isProjectMember;
       }
       return false;
-    },
-    isProjectMember(): boolean {
-      return this.isAdmin || this.isValidator || this.isAnnotator || this.isGuest; 
-    },
-    isAllowdedToSync(): boolean {
-      return useUserStore().loggedWithGithub && this.isOwner && !this.exerciseMode && !this.isTeacher;
     },
     getAnnofjson: (state) => JSON.stringify(state.annotationFeatures, null, 4),
     getUDAnnofJson: (state) => JSON.stringify(state.annotationFeaturesUD, null, 4),

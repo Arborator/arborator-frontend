@@ -3,9 +3,9 @@
     <div>
       <q-bar class="row items-center custom-frame1">
         <span class="text-grey" style="padding-left: 10px">{{ index + 1 }}</span>
-        <q-chip class="text-center" :color="$q.dark.isActive ? 'grey' : ''" dense> {{ sentence.sent_id }}
-        </q-chip
-        >&nbsp;&nbsp;&nbsp;
+        <q-chip class="text-center" :color="$q.dark.isActive ? 'grey' : ''" dense> 
+          {{ sentence.sent_id }}
+        </q-chip>&nbsp;&nbsp;&nbsp;
         <q-input
           v-model="sentenceData.sentence"
           style="width: 65%"
@@ -37,8 +37,8 @@
             <q-tooltip>{{ $t('sentenceCard.saveTeacher') }}</q-tooltip>
           </q-btn>
 
-          <q-btn v-if="isTeacher" flat round dense icon="linear_scale" :disable="openTabUser === ''"
-                 @click="save('base_tree')">
+          <q-btn v-if="isTeacher" flat round dense icon="linear_scale" :disable="openTabUser === ''" 
+            @click="save('base_tree')">
             <q-tooltip>{{ $t('sentenceCard.saveBaseTree') }}</q-tooltip>
           </q-btn>
 
@@ -48,27 +48,23 @@
 
           <q-btn v-if="canSaveTreeInProject" flat round dense icon="save"
                  :disable="openTabUser === '' || !canSave" @click="save('')">
-            <q-tooltip
-            >{{ $t('sentenceCard.saveTree[0]') }} {{ openTabUser }} {{ $t('sentenceCard.saveTree[1]') }} <b>{{
-                userId
-              }}</b></q-tooltip
-            >
+            <q-tooltip> 
+              {{ $t('sentenceCard.saveTree[0]') }} {{ openTabUser }} {{ $t('sentenceCard.saveTree[1]') }} 
+              <b> {{ username }} </b>
+            </q-tooltip>
           </q-btn>
 
-
-          <!-- TODO : still display the metadata when the user is not logged in, but hide all the buttons for deleting and saving them -->
-          <q-btn v-if="isLoggedIn" flat round dense icon="post_add" :disable="openTabUser === ''"
+          <q-btn v-if="canSaveTreeInProject" flat round dense icon="post_add" :disable="openTabUser === ''"
                  @click="openMetaDialog()">
             <q-tooltip>{{ $t('sentenceCard.editMetadata') }}</q-tooltip>
           </q-btn>
 
-          <q-btn v-if="isLoggedIn && isTeacher" flat round dense icon="filter_9_plus" :disable="openTabUser === ''"
+          <q-btn v-if="isTeacher" flat round dense icon="filter_9_plus" :disable="openTabUser === ''"
                  @click="openMultiEditDialog">
             <q-tooltip>{{ $t('sentenceCard.multiEditDial') }}</q-tooltip>
           </q-btn>
 
           <q-btn-dropdown :disable="openTabUser === ''" icon="more_vert" flat dense>
-            <!-- <q-tooltip>More</q-tooltip> -->
             <q-list>
               <q-item v-if="!exerciseMode" v-close-popup clickable @click="toggleDiffMode()">
                 <q-item-section avatar>
@@ -78,15 +74,6 @@
                   <q-item-label>{{ diffMode ? $t('sentenceCard.diffMode[1]') : $t('sentenceCard.diffMode[0]') }}
                     {{ $t('sentenceCard.diffMode[2]') }}
                   </q-item-label>
-                </q-item-section>
-              </q-item>
-
-              <q-item v-close-popup clickable @click="getlink()">
-                <q-item-section avatar>
-                  <q-avatar icon="ion-md-link" color="primary" text-color="white"/>
-                </q-item-section>
-                <q-item-section>
-                  <q-item-label>{{ $t('sentenceCard.treeLink') }}</q-item-label>
                 </q-item-section>
               </q-item>
 
@@ -105,15 +92,6 @@
                 </q-item-section>
                 <q-item-section>
                   <q-item-label>{{ $t('sentenceCard.treeSVG') }}</q-item-label>
-                </q-item-section>
-              </q-item>
-
-              <q-item clickable @click="addEmptyToken()">
-                <q-item-section avatar>
-                  <q-avatar icon="add" color="primary" text-color="white"/>
-                </q-item-section>
-                <q-item-section>
-                  <q-item-label> {{ $t('sentenceCard.addToken') }}</q-item-label>
                 </q-item-section>
               </q-item>
 
@@ -294,7 +272,7 @@ export default defineComponent({
   data() {
     const hasPendingChanges: { [key: string]: boolean } = {};
     const reactiveSentencesObj: reactive_sentences_obj_t = {};
-    const shownMetanames: string[] = [];
+    const shownMetaNames: string[] = [];
     return {
       sentenceBus: sentenceBusFactory(),
       exportedConll: '',
@@ -308,11 +286,10 @@ export default defineComponent({
         redo: false,
         user: '',
       },
-      shownMetanames,
+      shownMetaNames,
       conllSavedCounter: 0,
       shownMetas: {},
       view: null,
-      sentenceLink: '',
       canUndo: false,
       canRedo: false,
       canSave: true,
@@ -323,8 +300,8 @@ export default defineComponent({
 
   computed: {
     ...mapWritableState(useProjectStore, ['diffMode', 'diffUserId']),
-    ...mapState(useProjectStore, ['isAdmin', 'isGuest', 'isTeacher', 'guests', 'exerciseMode', 'shownMeta', 'getProjectConfig', 'canSaveTreeInProject']),
-    ...mapState(useUserStore, ['isLoggedIn', 'getUserInfos']),
+    ...mapState(useProjectStore, ['isAdmin', 'isTeacher', 'exerciseMode', 'shownMeta', 'getProjectConfig', 'canSaveTreeInProject']),
+    ...mapState(useUserStore, ['isLoggedIn', 'username']),
     lastModifiedTime() {
       // this.forceRerender; it was like this when i found it. Should it have = 0 ?
       const lastModifiedTime: { [key: string]: string } = {};
@@ -350,40 +327,19 @@ export default defineComponent({
     showDiffTeacher() {
       return this.exerciseMode && this.exerciseLevel <= 2;
     },
-    /**
-     * Never used ?!
-     * Check if the graph is dirty (I.E. modified but not saved) or open to see if it's supposed to be possible to save
-     * @returns {Boolean}
-     */
-    cannotSave() {
-      const {dirty} = this.graphInfo;
-      return !dirty;
-    },
-    /**
-     * Check the store to see if a user is logged in or not
-     * @returns {Boolean}
-     */
     filteredConlls() {
       let filteredConlls = this.sentenceData.conlls;
       if (this.exerciseLevel !== 1 && !this.isAdmin && this.exerciseMode) {
         return Object.fromEntries(Object.entries(filteredConlls).filter(([user]) => user !== 'teacher'));
-        // const filteredConllsTemp = Object.entries(this.sentenceData.conlls).filter(([user, conll]) => user !== 'teacher');
-        // filteredConlls = {};
-        // for (const [user, conll] of filteredConllsTemp) {
-        //   filteredConlls[user] = conll;
-        // }
       }
       return this.orderConlls(filteredConlls);
     },
-    userId() {
-      return this.getUserInfos.username;
-    },
     isBernardCaron() {
-      return this.getUserInfos.username === 'bernard.l.caron' || this.getUserInfos.username === 'kirianguiller';
+      return this.username === 'bernard.l.caron' || this.username === 'kirianguiller';
     },
   },
   created() {
-    this.shownMetanames = this.getProjectConfig.shownMeta;
+    this.shownMetaNames = this.getProjectConfig.shownMeta;
     for (const [userId, conll] of Object.entries(this.sentence.conlls)) {
       const reactiveSentence = new ReactiveSentence();
       reactiveSentence.fromSentenceConll(conll as string);
@@ -399,30 +355,11 @@ export default defineComponent({
   },
   methods: {
     ...mapActions(useGrewSearchStore, ['removePendingModification']),
-    /**
-     * Set the sentence link and copy it after 500 ms
-     *
-     * @returns void
-     */
-    getlink() {
-      this.sentenceLink = `${window.location.href.split(`/projects/${this.$route.params.projectname}`)[0]}/projects/${
-        this.$route.params.projectname
-      }/${this.sentence.sample_name}/${this.index + 1}/${this.graphInfo.user}`;
-      setTimeout(() => {
-        (this.$refs.linkinput as HTMLInputElement).select();
-        document.execCommand('copy');
-      }, 500);
-    },
     openStatisticsDialog() {
       this.sentenceBus.emit('open:statisticsDialog', {
         userId: this.openTabUser,
       });
     },
-    /**
-     * Show the conll graph
-     *
-     * @returns void
-     */
     openConllDialog() {
       this.sentenceBus.emit('open:conlluDialog', {userId: this.openTabUser});
     },
@@ -431,25 +368,13 @@ export default defineComponent({
         userId: this.openTabUser,
       });
     },
-    /**
-     * Get the SVG by creating it using snap arborator plugin and then replacing the placeholder in the current DOM
-     * @todo instead of this long string, read the actual css file and put it there.
-     *
-     * @returns void
-     */
     exportSVG() {
       // todo: instead of this long string, read the actual css file and put it there.
       this.sentenceBus.emit('export:SVG', {userId: this.openTabUser});
     },
-    /**
-     * Handle token click event to display the related dialog
-     *
-     * @param {Event} event
-     * @returns void
-     */
     editTokens(event: Event) {
       // only if a tab is open
-      if (this.openTabUser !== '') {
+      if (this.openTabUser !== '' && this.isAdmin) {
         this.sentenceBus.emit('open:tokensReplaceDialog', {
           userId: this.openTabUser,
           event,
@@ -470,13 +395,6 @@ export default defineComponent({
         });
       }
     },
-    addEmptyToken() {
-      if (this.openTabUser !== '') {
-        this.sentenceBus.emit('action:addEmptyToken', {
-          userId: this.openTabUser,
-        });
-      }
-    },
     /**
      * Receive canUndo, canRedo status from VueDepTree child component and
      * decide whether to disable undo, redo buttons or not
@@ -484,7 +402,6 @@ export default defineComponent({
     handleStatusChange(event: { canUndo: boolean; canRedo: boolean }) {
       this.canUndo = event.canUndo;
       this.canRedo = event.canRedo;
-      // this.canSave = event.canSave;
     },
     /**
      * Save the graph to backend after modifying its metadata and changing it into an object
@@ -493,12 +410,9 @@ export default defineComponent({
      */
     save(mode: string) {
       const openedTreeUser = this.openTabUser;
-
-      let changedConllUser = this.getUserInfos.username;
-      if (mode) {
-        changedConllUser = mode;
-      }
-
+      let changedConllUser = this.username;
+      if (mode)  changedConllUser = mode;
+  
       const metaToReplace = {
         user_id: changedConllUser,
         timestamp: Math.round(Date.now()),
@@ -529,7 +443,6 @@ export default defineComponent({
             } else {
               // user still don't have a tree for this sentence, creating it.
               this.sentenceData.conlls[changedConllUser] = exportedConll;
-
               this.reactiveSentencesObj[changedConllUser] = new ReactiveSentence();
             }
 
@@ -571,7 +484,6 @@ export default defineComponent({
       else this.removePendingModification(this.sentence.sent_id);
     },
     openMetaDialog() {
-      // "this.openTabUser" contains the user name
       this.sentenceBus.emit('open:metaDialog', {userId: this.openTabUser});
     },
     changeMetaText(newMetaText: string) {

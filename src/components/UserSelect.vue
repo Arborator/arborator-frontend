@@ -178,7 +178,6 @@ export default defineComponent({
     },
     computed: {
         ...mapWritableState(useProjectStore, ['admins', 'validators', 'annotators', 'guests']),
-        ...mapState(useProjectStore, ['admins', 'validators', 'annotators', 'guests']),
         excludedUserOptions() {
             return [...this.admins, ...this.validators, ...this.annotators, ...this.guests];
         },
@@ -234,6 +233,7 @@ export default defineComponent({
               .updateManyProjectUserAccess(this.projectName, data)
               .then((response) => {
                 notifyMessage({ message: 'New members saved on the server', icon: 'save' });
+                this.selectedUsers = [];
                 this.admins = response.data.admins;
                 this.guests = response.data.guests;
                 this.annotators = response.data.annotators;
@@ -256,7 +256,6 @@ export default defineComponent({
               .catch((error) => {
                 notifyError({ error });
               });
-
         },
     }
 

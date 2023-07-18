@@ -10,7 +10,7 @@
                     target="_blank">
                     <q-tooltip content-class="text-white bg-primary"> Assistence </q-tooltip>
                 </q-btn>
-            </div>     
+            </div>
         </q-card-section>
         <q-card-section>
             <div class="row q-gutter-md">
@@ -52,7 +52,7 @@
                 <div class="col-1">
                     <q-btn-dropdown outline color="primary" no-caps :label="targetRole">
                         <q-list v-for="role in roles">
-                            <q-item clickable v-close-popup @click="targetRole =role">
+                            <q-item clickable v-close-popup @click="targetRole = role">
                                 <q-item-section>
                                     <q-item-label>{{ role }}</q-item-label>
                                 </q-item-section>
@@ -82,9 +82,9 @@
                             </q-item-label>
                         </q-item-section>
                         <q-item-section side>
-                            <q-btn-dropdown flat outline color="primary" no-caps label="Role">
+                            <q-btn-dropdown flat outline color="primary" no-caps label="Modify role">
                                 <q-list>
-                                    <q-item clickable v-close-popup>
+                                    <q-item clickable v-close-popup @click="updateExistingUserAccess(member, 'admin')">
                                         <q-item-section avatar>
                                             <q-icon v-if="admins.includes(member.username)" name="done" />
                                         </q-item-section>
@@ -92,7 +92,7 @@
                                             <q-item-label>Admin</q-item-label>
                                         </q-item-section>
                                     </q-item>
-                                    <q-item clickable v-close-popup>
+                                    <q-item clickable v-close-popup @click="updateExistingUserAccess(member, 'validator')">
                                         <q-item-section avatar>
                                             <q-icon v-if="validators.includes(member.username)" name="done" />
                                         </q-item-section>
@@ -100,7 +100,7 @@
                                             <q-item-label>Validator</q-item-label>
                                         </q-item-section>
                                     </q-item>
-                                    <q-item clickable v-close-popup>
+                                    <q-item clickable v-close-popup @click="updateExistingUserAccess(member, 'annotator')">
                                         <q-item-section avatar>
                                             <q-icon v-if="annotators.includes(member.username)" name="done" />
                                         </q-item-section>
@@ -108,7 +108,7 @@
                                             <q-item-label>Annotator</q-item-label>
                                         </q-item-section>
                                     </q-item>
-                                    <q-item clickable v-close-popup>
+                                    <q-item clickable v-close-popup @click="updateExistingUserAccess(member, 'guest')">
                                         <q-item-section avatar>
                                             <q-icon v-if="guests.includes(member.username)" name="done" />
                                         </q-item-section>
@@ -117,7 +117,7 @@
                                         </q-item-section>
                                     </q-item>
                                     <q-separator />
-                                    <q-item clickable v-close-popup @click="revokeUserAccess(member.username)">
+                                    <q-item clickable v-close-popup @click="triggerConfirm(revokeUserAccess(member.username))">
                                         <q-item-section>
                                             <q-item-label>Revoke access</q-item-label>
                                         </q-item-section>
@@ -135,14 +135,14 @@
             </div>
             <div class="row justify-between">
                 <q-btn outline icon="link" color="primary" label="Copy link" @click="copyLink()" />
-                <q-btn color="primary" label="Share" @click="updateUserAccess"/>
+                <q-btn :disable="targetRole === 'Role'" color="primary" label="Share" @click="updateUserAccess" />
             </div>
         </q-card-section>
     </q-card>
 </template>
 <script lang="ts">
 import api from '../api/backend-api';
-import { mapState, mapWritableState, } from 'pinia';
+import {  mapWritableState, } from 'pinia';
 import { useProjectStore } from 'src/pinia/modules/project';
 import { notifyError, notifyMessage } from 'src/utils/notify';
 import { user_t } from '../api/backend-types';
@@ -216,47 +216,53 @@ export default defineComponent({
     methods: {
         getUsers() {
             api
-              .getUsers()
-              .then((response) => {
+                .getUsers()
+                .then((response) => {
                     this.users = response.data;
-               })
-              .catch((error) => {
+                })
+                .catch((error) => {
                     notifyError({ error });
-            });
+                });
         },
         updateUserAccess() {
             const data = {
-                targetRole: this.targetRole.toLowerCase(), 
+                targetRole: this.targetRole.toLowerCase(),
                 selectedUsers: this.selectedUsers.map((user) => user.username)
             };
             api
-              .updateManyProjectUserAccess(this.projectName, data)
-              .then((response) => {
-                notifyMessage({ message: 'New members saved on the server', icon: 'save' });
-                this.selectedUsers = [];
-                this.admins = response.data.admins;
-                this.guests = response.data.guests;
-                this.annotators = response.data.annotators;
-                this.validators = response.data.validators
-              })
-              .catch((error) => { 
-                notifyError({ error }); 
-            });
+                .updateManyProjectUserAccess(this.projectName, data)
+                .then((response) => {
+                    notifyMessage({ message: 'New members saved on the server', icon: 'save' });
+                    this.selectedUsers = [];
+                    this.admins = response.data.admins;
+                    this.guests = response.data.guests;
+                    this.annotators = response.data.annotators;
+                    this.validators = response.data.validators
+                })
+                .catch((error) => {
+                    notifyError({ error });
+                });
         },
         revokeUserAccess(username: string) {
             api
-              .deleteProjectUserAccess(this.projectName, username)
-              .then((response) => {
-                notifyMessage({ message: 'Guest removal saved on the server', icon: 'save' });
-                this.admins = response.data.admins;
-                this.guests = response.data.guests;
-                this.annotators = response.data.annotators;
-                this.validators = response.data.validators
-              })
-              .catch((error) => {
-                notifyError({ error });
-              });
+                .deleteProjectUserAccess(this.projectName, username)
+                .then((response) => {
+                    notifyMessage({ message: 'Guest removal saved on the server', icon: 'save' });
+                    this.admins = response.data.admins;
+                    this.guests = response.data.guests;
+                    this.annotators = response.data.annotators;
+                    this.validators = response.data.validators;
+                })
+                .catch((error) => {
+                    notifyError({ error });
+                });
+               
         },
+        updateExistingUserAccess(member: userOption_t, targetRole: string) {
+            this.targetRole = targetRole;
+            this.selectedUsers.push(member);
+            this.updateUserAccess();
+        }
     }
 
 

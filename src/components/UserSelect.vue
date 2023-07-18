@@ -8,7 +8,7 @@
                 <q-btn outline round size="sm" color="primary" icon="question_mark"
                     href="https://arborator.github.io/arborator-documentation/#/?id=collaborating-in-projects"
                     target="_blank">
-                    <q-tooltip content-class="text-white bg-primary"> Assistence </q-tooltip>
+                    <q-tooltip content-class="text-white bg-primary"> Assistance </q-tooltip>
                 </q-btn>
             </div>
         </q-card-section>
@@ -28,7 +28,7 @@
                             <q-badge v-else>*none*</q-badge>
                         </template>
                         <template v-slot:option="scope">
-                            <q-item v-bind="scope.itemProps">
+                            <q-item v-close-popup v-bind="scope.itemProps">
                                 <q-item-section avatar>
                                     <q-avatar size="1.2rem">
                                         <img :src="scope.opt.avatar" />
@@ -117,7 +117,7 @@
                                         </q-item-section>
                                     </q-item>
                                     <q-separator />
-                                    <q-item clickable v-close-popup @click="triggerConfirm(revokeUserAccess(member.username))">
+                                    <q-item clickable v-close-popup @click="revokeUserAccess(member.username)">
                                         <q-item-section>
                                             <q-item-label>Revoke access</q-item-label>
                                         </q-item-section>
@@ -134,7 +134,9 @@
                 <q-checkbox v-model="sendNotif" label="Send notification" />
             </div>
             <div class="row justify-between">
-                <q-btn outline icon="link" color="primary" label="Copy link" @click="copyLink()" />
+                <q-btn outline icon="link" color="primary" label="Copy link" @click="copyLink()">
+                    <q-tooltip content-class="bg-white text-primary">Copy the link</q-tooltip>
+                </q-btn>
                 <q-btn :disable="targetRole === 'Role'" color="primary" label="Share" @click="updateUserAccess" />
             </div>
         </q-card-section>
@@ -142,6 +144,7 @@
 </template>
 <script lang="ts">
 import api from '../api/backend-api';
+import { copyToClipboard } from 'quasar';
 import {  mapWritableState, } from 'pinia';
 import { useProjectStore } from 'src/pinia/modules/project';
 import { notifyError, notifyMessage } from 'src/utils/notify';
@@ -262,6 +265,17 @@ export default defineComponent({
             this.targetRole = targetRole;
             this.selectedUsers.push(member);
             this.updateUserAccess();
+        },
+        copyLink() {
+            const projectLink = window.location.href;
+            copyToClipboard(projectLink)
+            .then(() => {
+                notifyMessage({ message: 'Project link is copied to clipboard!' });
+            })
+            .catch(() => {
+                notifyError({error: `Failed to copy`})
+            });
+           
         }
     }
 

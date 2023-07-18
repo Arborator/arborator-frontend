@@ -58,10 +58,6 @@ export interface updateProjectConlluSchema_ED {
 
 export type getProjectUsersAccess_RV = project_access_t;
 
-export interface updateManyProjectUserAccess_ED {
-  user_ids: string[];
-  targetrole: string;
-}
 
 export type updateManyProjectUserAccess_RV = project_access_t;
 

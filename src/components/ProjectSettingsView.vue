@@ -107,8 +107,9 @@
       </q-card>
     </q-card-section>
     <q-card-section class="full row justify-between q-gutter-md">
+      <UserSelect :project-name="$props.projectname" />
       <!-- admin panel -->
-      <q-card bordered class="col">
+     <!-- <q-card bordered class="col">
         <q-scroll-area style="height: 500px">
           <q-card-section>
             <div class="text-h6 text-center">
@@ -141,9 +142,9 @@
             </tbody>
           </q-markup-table>
         </q-scroll-area>
-      </q-card>
+      </q-card>-->
       <!-- guest panel: -->
-      <q-card bordered class="col">
+     <!-- <q-card bordered class="col">
         <q-scroll-area style="height: 500px">
           <q-card-section>
             <div class="text-h6 text-center">
@@ -177,7 +178,7 @@
             </tbody>
           </q-markup-table>
         </q-scroll-area>
-      </q-card>
+      </q-card>-->
       <!-- shown features: -->
       <q-card bordered class="col">
         <q-card-section>
@@ -257,7 +258,7 @@
       </q-card>
     </q-card-section>
 
-    <q-dialog v-model="addAdminDial" transition-show="fade" transition-hide="fade">
+   <!-- <q-dialog v-model="addAdminDial" transition-show="fade" transition-hide="fade">
       <UserSelectTable
         :parent-callback="updateAdminsOrGuests"
         :general="true"
@@ -276,7 +277,7 @@
         singlemultiple="multiple"
         :preselected="guests"
       ></UserSelectTable>
-    </q-dialog>
+    </q-dialog>-->
     <q-dialog v-model="confirmActionDial">
       <confirm-action :parent-action="confirmActionCallback" :arg1="confirmActionArg1" :target-name="$props.projectname"></confirm-action>
     </q-dialog>
@@ -292,13 +293,12 @@ import 'codemirror/mode/python/python.js';
 import 'codemirror/lib/codemirror.css';
 import 'codemirror/theme/material-darker.css';
 
-import api from '../api/backend-api';
 import UserSelectTable from './UserSelectTable.vue';
 import ConfirmAction from './ConfirmAction.vue';
+import UserSelect from './UserSelect.vue';
 import {mapActions, mapState, mapWritableState,} from 'pinia';
 import {useProjectStore} from 'src/pinia/modules/project';
 import {notifyError, notifyMessage} from 'src/utils/notify';
-import {sample_role_targetrole_t, user_t} from 'src/api/backend-types';
 
 import {defineComponent, PropType} from 'vue';
 import ProjectIcon from 'components/shared/ProjectIcon.vue';
@@ -308,8 +308,9 @@ export default defineComponent({
   components: { 
     ProjectIcon, 
     Codemirror, 
+    UserSelect,
     UserSelectTable, 
-    ConfirmAction 
+    ConfirmAction,
     },
   props: {
     projectname: {
@@ -461,7 +462,6 @@ export default defineComponent({
         this.annotationFeaturesComment = e as string; // This is dangerous
       }
     },
-
     saveAnnotationSettings() {
       this.updateProjectConlluSchema(this.projectname, JSON.parse(this.annotationFeaturesJson))
         .then(() => {
@@ -482,48 +482,7 @@ export default defineComponent({
       this.annotationFeaturesJson = this.getUDAnnofJson;
     },
 
-    updateAdminsOrGuests(usersArray: user_t[], targetRole: sample_role_targetrole_t) {
-      const newRolesArrayId = [];
-      for (const user of usersArray) {
-        newRolesArrayId.push(user.id);
-      }
-      api
-        .updateManyProjectUserAccess(this.$props.projectname, targetRole, newRolesArrayId)
-        .then((response) => {
-          notifyMessage({ message: 'New admins/guests saved on the server', icon: 'save' });
-          this.admins = response.data.admins;
-          this.guests = response.data.guests;
-        })
-        .catch((error) => {
-          notifyError({ error });
-        });
-    },
-
-    removeAdmin(userid: string) {
-      api
-        .deleteProjectUserAccess(this.$props.projectname, userid)
-        .then((response) => {
-          notifyMessage({ message: 'Admin removal saved on the server', icon: 'save' });
-          this.admins = response.data.admins;
-          this.guests = response.data.guests;
-        })
-        .catch((error) => {
-          notifyError({ error });
-        });
-    },
-
-    removeGuest(userid: string) {
-      api
-        .deleteProjectUserAccess(this.$props.projectname, userid)
-        .then((response) => {
-          notifyMessage({ message: 'Guest removal saved on the server', icon: 'save' });
-          this.admins = response.data.admins;
-          this.guests = response.data.guests;
-        })
-        .catch((error) => {
-          notifyError({ error });
-        });
-    },
+   
 
     saveDescription() {
       this.updateProjectSettings({ description: this.description });

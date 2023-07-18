@@ -13,7 +13,6 @@ import {
   logout_RV,
   modifySampleRole_RV,
   grewSearch_RV,
-  updateManyProjectUserAccess_ED,
   updateManyProjectUserAccess_RV,
   updateProjectConlluSchema_ED,
   updateProjectFeatures_ED,
@@ -98,12 +97,11 @@ export default {
   getProjectUsersAccess(projectname: string) {
     return API.get<getProjectUsersAccess_RV>(`projects/${projectname}/access`);
   },
-  updateManyProjectUserAccess(projectname: string, targetrole: string, userIds: string[]) {
-    const data: updateManyProjectUserAccess_ED = { user_ids: userIds, targetrole };
+  updateManyProjectUserAccess(projectname: string, data: any) {
     return API.put<updateManyProjectUserAccess_RV>(`projects/${projectname}/access/many`, data);
   },
-  deleteProjectUserAccess(projectname: string, userId: string) {
-    return API.delete(`projects/${projectname}/access/${userId}`);
+  deleteProjectUserAccess(projectname: string, username: string) {
+    return API.delete(`projects/${projectname}/access/${username}`);
   },
 
   // ---------------------------------------------------- //

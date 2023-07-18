@@ -449,7 +449,6 @@
 <script lang="ts">
 import api from '../api/backend-api';
 
-import UserTable from '../components/UserTable.vue';
 import TagInput from '../components/TagInput.vue';
 import ProjectSettingsView from '../components/ProjectSettingsView.vue';
 import ConfirmAction from '../components/ConfirmAction.vue';
@@ -475,7 +474,6 @@ import {table_t} from 'src/types/main_types';
 export default defineComponent({
   components: {
     ConstructiconDialog,
-    UserTable,
     TagInput,
     ProjectSettingsView,
     ConfirmAction,

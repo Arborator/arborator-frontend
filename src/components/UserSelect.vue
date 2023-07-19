@@ -15,17 +15,28 @@
         <q-card-section>
             <div class="row q-gutter-md">
                 <div class="col-9">
-                    <q-select outlined v-model="selectedUsers" :options="filteredUserOptions" dense stack-label multiple
-                        use-input hide-dropdown-icon label="Add new users">
+                    <q-select
+                        outlined 
+                        dense
+                        v-model="selectedUsers"
+                        use-input
+                        multiple
+                        hide-dropdown-icon 
+                        option-value="username"
+                        option-label="email"
+                        input-debounce="0"
+                        label="Add new users"
+                        :options="filteredUsers"
+                        @filter="filterOption"
+                    >
                         <template v-slot:selected-item="scope">
-                            <q-chip v-if="scope.opt.email" removable @remove="scope.removeAtIndex(scope.index)"
+                            <q-chip v-if="scope.opt.username" removable @remove="scope.removeAtIndex(scope.index)"
                                 :tabindex="scope.tabindex" dense text-color="primary">
                                 <q-avatar color="primary" text-color="white">
                                     <img :src="scope.opt.avatar" />
                                 </q-avatar>
                                 {{ scope.opt.username }}
                             </q-chip>
-                            <q-badge v-else>*none*</q-badge>
                         </template>
                         <template v-slot:option="scope">
                             <q-item v-close-popup v-bind="scope.itemProps">
@@ -84,7 +95,7 @@
                         <q-item-section side>
                             <q-btn-dropdown flat outline color="primary" no-caps label="Modify role">
                                 <q-list>
-                                    <q-item clickable v-close-popup @click="updateExistingUserAccess(member, 'admin')">
+                                    <q-item clickable v-close-popup @click="updateExistingUserAccess(member.username, 'admin')">
                                         <q-item-section avatar>
                                             <q-icon v-if="admins.includes(member.username)" name="done" />
                                         </q-item-section>
@@ -92,7 +103,7 @@
                                             <q-item-label>Admin</q-item-label>
                                         </q-item-section>
                                     </q-item>
-                                    <q-item clickable v-close-popup @click="updateExistingUserAccess(member, 'validator')">
+                                    <q-item clickable v-close-popup @click="updateExistingUserAccess(member.username, 'validator')">
                                         <q-item-section avatar>
                                             <q-icon v-if="validators.includes(member.username)" name="done" />
                                         </q-item-section>
@@ -100,7 +111,7 @@
                                             <q-item-label>Validator</q-item-label>
                                         </q-item-section>
                                     </q-item>
-                                    <q-item clickable v-close-popup @click="updateExistingUserAccess(member, 'annotator')">
+                                    <q-item clickable v-close-popup @click="updateExistingUserAccess(member.username, 'annotator')">
                                         <q-item-section avatar>
                                             <q-icon v-if="annotators.includes(member.username)" name="done" />
                                         </q-item-section>
@@ -108,7 +119,7 @@
                                             <q-item-label>Annotator</q-item-label>
                                         </q-item-section>
                                     </q-item>
-                                    <q-item clickable v-close-popup @click="updateExistingUserAccess(member, 'guest')">
+                                    <q-item clickable v-close-popup @click="updateExistingUserAccess(member.username, 'guest')">
                                         <q-item-section avatar>
                                             <q-icon v-if="guests.includes(member.username)" name="done" />
                                         </q-item-section>
@@ -168,13 +179,15 @@ export default defineComponent({
     data() {
         const users: user_t[] = [];
         const userOptions: userOption_t[] = [];
-        const selectedUsers: userOption_t[] = [];
+        const filteredUsers: userOption_t[] = [];
+        const selectedUsers : userOption_t[] = []
         const roles: string[] = ['Admin', 'Validator', 'Annotator', 'Guest'];
         return {
             users,
             userOptions,
             selectedUsers,
             roles,
+            filteredUsers,
             targetRole: 'Role',
             sendNotif: false,
         };
@@ -183,19 +196,6 @@ export default defineComponent({
         ...mapWritableState(useProjectStore, ['admins', 'validators', 'annotators', 'guests']),
         excludedUserOptions() {
             return [...this.admins, ...this.validators, ...this.annotators, ...this.guests];
-        },
-        filteredUserOptions() {
-            this.userOptions = this.users.reduce((options: userOption_t[], user) => {
-                if (!this.excludedUserOptions.includes(user.username)) {
-                    options.push({
-                        username: user.username,
-                        email: user.email,
-                        avatar: user.picture_url
-                    })
-                }
-                return options;
-            }, []);
-            return this.userOptions;
         },
         projectMembers() {
             let projectMembers = [];
@@ -221,7 +221,17 @@ export default defineComponent({
             api
                 .getUsers()
                 .then((response) => {
-                    this.users = response.data;
+                    this.users = response.data
+                    this.userOptions = this.users.reduce((options: userOption_t[], user) => {
+                        if (!this.excludedUserOptions.includes(user.username)) {
+                            options.push({
+                                username: user.username,
+                                email: user.email,
+                                avatar: user.picture_url
+                            })
+                        }
+                         return options;
+                    }, []);   
                 })
                 .catch((error) => {
                     notifyError({ error });
@@ -276,11 +286,24 @@ export default defineComponent({
                 notifyError({error: `Failed to copy`})
             });
            
-        }
+        },
+
+        filterOption(val: string, update: (callback: () => void) => void) {
+            if (val === '') {
+                update(() => {
+                    this.filteredUsers = this.userOptions;
+                });
+                return;
+            }
+            update(() => {
+                const needle = val.toLowerCase();
+                this.filteredUsers = this.userOptions.filter(v => v.username.toLowerCase().indexOf(needle) > -1);
+            });
+         }
+}
     }
 
-
-});
+);
 </script>
 <style scoped lang="stylus">
 

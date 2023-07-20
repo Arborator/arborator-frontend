@@ -244,7 +244,7 @@ export default defineComponent({
                     this.admins = response.data.admins;
                     this.guests = response.data.guests;
                     this.annotators = response.data.annotators;
-                    this.validators = response.data.validators
+                    this.validators = response.data.validators;
                 })
                 .catch((error) => {
                     notifyError({ error });
@@ -259,6 +259,7 @@ export default defineComponent({
                     this.guests = response.data.guests;
                     this.annotators = response.data.annotators;
                     this.validators = response.data.validators;
+                    this.getUsers();
                 })
                 .catch((error) => {
                     notifyError({ error });

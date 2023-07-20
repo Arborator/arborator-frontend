@@ -97,10 +97,10 @@
 
             </q-list>
           </q-btn-dropdown>
-          <q-btn v-if="isLoggedIn" flat round dense icon="undo" :disable="openTabUser === '' || !canUndo"
+          <q-btn v-if="canSaveTreeInProject" flat round dense icon="undo" :disable="openTabUser === '' || !canUndo"
                  :class="'undo-button'" @click="undo()">
           </q-btn>
-          <q-btn v-if="isLoggedIn" flat round dense icon="ion-redo" :disable="openTabUser === '' || !canRedo"
+          <q-btn v-if="canSaveTreeInProject" flat round dense icon="ion-redo" :disable="openTabUser === '' || !canRedo"
                  :class="'redo-button'" @click="redo()">
           </q-btn>
         </template>

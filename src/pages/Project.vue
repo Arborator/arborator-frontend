@@ -25,6 +25,19 @@
           <div class="text-primary">{{ description }}</div>
         </q-card-section>
 
+        <q-card-section class="shadow-4" v-if="isShowLexiconPanel">
+          <q-bar class="bg-primary text-white">
+            <q-space />
+            <q-btn @click="isShowLexiconPanel = false" dense flat icon="close">
+            </q-btn>
+          </q-bar>
+          <LexiconMain :sample-id="table.selected"></LexiconMain>
+        </q-card-section>
+
+        <!-- Parsing Panel -->
+        <q-card-section v-if="isShowParsingPanel">
+          <ParsingPanel :samples="samples" :parentGetProjectSamples="getProjectSamples"></ParsingPanel>
+        </q-card-section>
 
         <q-card-section>
           <q-table
@@ -118,7 +131,7 @@
                 </q-btn>
 
                 <!-- single and main button for lexicon -->
-                <div v-if="isProjectMember">
+                <div v-if="canSaveTreeInProject">
                   <q-btn
                     flat
                     color="default"
@@ -153,7 +166,7 @@
                 <!-- Single and main button for Constructicon -->
                 <div>
                   <q-btn
-                    v-if="isProjectMember"
+                    v-if="canSaveTreeInProject"
                     flat
                     icon="account_tree"
                     @click="isShowConstructiconDialogCop = true"
@@ -402,19 +415,7 @@
       </q-dialog>
 
       <!-- Lexicon Panel -->
-      <q-card-section class="shadow-4" v-if="isShowLexiconPanel">
-        <q-bar class="bg-primary text-white">
-          <q-space />
-          <q-btn @click="isShowLexiconPanel = false" dense flat icon="close">
-          </q-btn>
-        </q-bar>
-        <LexiconMain :sample-id="table.selected"></LexiconMain>
-      </q-card-section>
-
-      <!-- Parsing Panel -->
-      <q-card-section v-if="isShowParsingPanel">
-        <ParsingPanel :samples="samples" :parentGetProjectSamples="getProjectSamples"></ParsingPanel>
-      </q-card-section>
+     
 
       <!-- Constructicon Dialog -->
       <q-dialog v-model="isShowConstructiconDialogCop" seamless full-width>

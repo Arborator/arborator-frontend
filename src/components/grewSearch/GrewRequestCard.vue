@@ -41,7 +41,7 @@
                     {{$t('grewSearch.grewSearchTooltip')}}
                   </q-tooltip>
                 </q-tab>
-                <q-tab name="REWRITE" icon="autorenew" :label="$t('grewSearch.rewrite')">
+                <q-tab v-if="canSaveTreeInProject" name="REWRITE" icon="autorenew" :label="$t('grewSearch.rewrite')">
                   <q-tooltip content-class="bg-primary" anchor="top middle" self="bottom middle" :offset="[10, 10]">
                     {{$t('grewSearch.grewRewriteTooltip')}}
                   </q-tooltip>
@@ -130,7 +130,7 @@
 import { defineComponent } from 'vue';
 
 import grewTemplates from '../../assets/grew-templates.json';
-import {mapActions, mapState, mapWritableState} from 'pinia';
+import {mapActions, mapState} from 'pinia';
 import {useGrewSearchStore} from 'src/pinia/modules/grewSearch';
 import {useUserStore} from 'src/pinia/modules/user';
 import {useProjectStore} from 'src/pinia/modules/project';
@@ -169,9 +169,15 @@ export default defineComponent({
   computed: {
     ...mapState(useGrewSearchStore, ['lastQuery']),
     ...mapState(useUserStore, ['isLoggedIn', 'avatar', 'username']),
-    ...mapState(useProjectStore, ['shownFeaturesChoices', 'annotationFeatures', 'featuresSet']),
+    ...mapState(useProjectStore, ['shownFeaturesChoices', 'annotationFeatures', 'featuresSet', 'isGuest', 'canSaveTreeInProject']),
     userOptions() {
-      return this.searchReplaceTab === 'REWRITE' ? this.usersToApplyOptions.filter(option=> option.value !== "all") : this.usersToApplyOptions;
+      if (!this.isLoggedIn || this.isGuest){
+        return this.usersToApplyOptions.slice(2)
+      }
+      else {
+        return this.searchReplaceTab === 'REWRITE' ? this.usersToApplyOptions.filter(option=> option.value !== "all") : this.usersToApplyOptions;
+      }
+     
     },
   },
   watch: {

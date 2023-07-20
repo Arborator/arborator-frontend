@@ -171,7 +171,7 @@ export default defineComponent({
     ...mapState(useUserStore, ['isLoggedIn', 'avatar', 'username']),
     ...mapState(useProjectStore, ['shownFeaturesChoices', 'annotationFeatures', 'featuresSet', 'isGuest', 'canSaveTreeInProject']),
     userOptions() {
-      if (!this.isLoggedIn || this.isGuest){
+      if (!this.canSaveTreeInProject || this.isGuest){
         return this.usersToApplyOptions.slice(2)
       }
       else {

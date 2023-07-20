@@ -194,10 +194,10 @@
                 </div>
 
                 <!-- Button for more options -->
-                <div v-if="isOwner">
+                <div v-if="isAdmin">
                   <q-btn-dropdown flat icon="more_vert">
                      <q-list>
-                      <q-item clickable v-close-popup @click="freezeProject">
+                      <q-item v-if="isOwner" clickable v-close-popup @click="freezeProject">
                         <q-item-section avatar>
                           <q-avatar icon="block" />
                         </q-item-section>

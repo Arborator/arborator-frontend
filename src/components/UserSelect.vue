@@ -15,20 +15,9 @@
         <q-card-section>
             <div class="row q-gutter-md">
                 <div class="col-9">
-                    <q-select
-                        outlined 
-                        dense
-                        v-model="selectedUsers"
-                        use-input
-                        multiple
-                        hide-dropdown-icon 
-                        option-value="username"
-                        option-label="email"
-                        input-debounce="0"
-                        label="Add new users"
-                        :options="filteredUsers"
-                        @filter="filterOption"
-                    >
+                    <q-select outlined dense v-model="selectedUsers" use-input multiple hide-dropdown-icon
+                        option-value="username" option-label="email" input-debounce="0" label="Add new users"
+                        :options="filteredUsers" @filter="filterOption">
                         <template v-slot:selected-item="scope">
                             <q-chip v-if="scope.opt.username" removable @remove="scope.removeAtIndex(scope.index)"
                                 :tabindex="scope.tabindex" dense text-color="primary">
@@ -62,7 +51,7 @@
                 </div>
                 <div class="col-1">
                     <q-btn-dropdown outline color="primary" no-caps :label="targetRole">
-                        <q-list v-for="role in roles">
+                        <q-list v-for="role in filteredRoles">
                             <q-item clickable v-close-popup @click="targetRole = role">
                                 <q-item-section>
                                     <q-item-label>{{ role }}</q-item-label>
@@ -93,9 +82,9 @@
                             </q-item-label>
                         </q-item-section>
                         <q-item-section side>
-                            <q-btn-dropdown flat outline color="primary" no-caps label="Modify role">
+                            <q-btn-dropdown flat outline color="primary" no-caps :label="userRole(member.username)">
                                 <q-list>
-                                    <q-item clickable v-close-popup @click="updateExistingUserAccess(member.username, 'admin')">
+                                    <q-item clickable v-close-popup @click="updateExistingUserAccess(member, 'admin')">
                                         <q-item-section avatar>
                                             <q-icon v-if="admins.includes(member.username)" name="done" />
                                         </q-item-section>
@@ -103,7 +92,7 @@
                                             <q-item-label>Admin</q-item-label>
                                         </q-item-section>
                                     </q-item>
-                                    <q-item clickable v-close-popup @click="updateExistingUserAccess(member.username, 'validator')">
+                                    <q-item clickable v-close-popup @click="updateExistingUserAccess(member, 'validator')">
                                         <q-item-section avatar>
                                             <q-icon v-if="validators.includes(member.username)" name="done" />
                                         </q-item-section>
@@ -111,7 +100,7 @@
                                             <q-item-label>Validator</q-item-label>
                                         </q-item-section>
                                     </q-item>
-                                    <q-item clickable v-close-popup @click="updateExistingUserAccess(member.username, 'annotator')">
+                                    <q-item clickable v-close-popup @click="updateExistingUserAccess(member, 'annotator')">
                                         <q-item-section avatar>
                                             <q-icon v-if="annotators.includes(member.username)" name="done" />
                                         </q-item-section>
@@ -119,7 +108,7 @@
                                             <q-item-label>Annotator</q-item-label>
                                         </q-item-section>
                                     </q-item>
-                                    <q-item clickable v-close-popup @click="updateExistingUserAccess(member.username, 'guest')">
+                                    <q-item v-if="visibility == 0" clickable v-close-popup @click="updateExistingUserAccess(member, 'guest')">
                                         <q-item-section avatar>
                                             <q-icon v-if="guests.includes(member.username)" name="done" />
                                         </q-item-section>
@@ -156,7 +145,7 @@
 <script lang="ts">
 import api from '../api/backend-api';
 import { copyToClipboard } from 'quasar';
-import {  mapWritableState, } from 'pinia';
+import { mapState, mapWritableState, } from 'pinia';
 import { useProjectStore } from 'src/pinia/modules/project';
 import { notifyError, notifyMessage } from 'src/utils/notify';
 import { user_t } from '../api/backend-types';
@@ -180,7 +169,7 @@ export default defineComponent({
         const users: user_t[] = [];
         const userOptions: userOption_t[] = [];
         const filteredUsers: userOption_t[] = [];
-        const selectedUsers : userOption_t[] = []
+        const selectedUsers: userOption_t[] = []
         const roles: string[] = ['Admin', 'Validator', 'Annotator', 'Guest'];
         return {
             users,
@@ -194,6 +183,7 @@ export default defineComponent({
     },
     computed: {
         ...mapWritableState(useProjectStore, ['admins', 'validators', 'annotators', 'guests']),
+        ...mapState(useProjectStore, ['visibility']),
         excludedUserOptions() {
             return [...this.admins, ...this.validators, ...this.annotators, ...this.guests];
         },
@@ -211,6 +201,10 @@ export default defineComponent({
             }, []);
             return projectMembers;
         },
+        filteredRoles(){
+            if(this.visibility > 0) return this.roles.slice(0,-1);
+            else return this.roles;
+        }
 
     },
     mounted() {
@@ -230,8 +224,8 @@ export default defineComponent({
                                 avatar: user.picture_url
                             })
                         }
-                         return options;
-                    }, []);   
+                        return options;
+                    }, []);
                 })
                 .catch((error) => {
                     notifyError({ error });
@@ -269,7 +263,7 @@ export default defineComponent({
                 .catch((error) => {
                     notifyError({ error });
                 });
-               
+
         },
         updateExistingUserAccess(member: userOption_t, targetRole: string) {
             this.targetRole = targetRole;
@@ -279,13 +273,13 @@ export default defineComponent({
         copyLink() {
             const projectLink = window.location.href;
             copyToClipboard(projectLink)
-            .then(() => {
-                notifyMessage({ message: 'Project link is copied to clipboard!' });
-            })
-            .catch(() => {
-                notifyError({error: `Failed to copy`})
-            });
-           
+                .then(() => {
+                    notifyMessage({ message: 'Project link is copied to clipboard!' });
+                })
+                .catch(() => {
+                    notifyError({ error: `Failed to copy` })
+                });
+
         },
 
         filterOption(val: string, update: (callback: () => void) => void) {
@@ -299,9 +293,15 @@ export default defineComponent({
                 const needle = val.toLowerCase();
                 this.filteredUsers = this.userOptions.filter(v => v.username.toLowerCase().indexOf(needle) > -1);
             });
-         }
-}
+        },
+        userRole(username: string) {
+            if (this.admins.includes(username)) return this.roles[0];
+            else if (this.validators.includes(username)) return this.roles[1];
+            else if (this.annotators.includes(username)) return this.roles[2];
+            else if (this.guests.includes(username)) return this.roles[3];
+        }
     }
+}
 
 );
 </script>

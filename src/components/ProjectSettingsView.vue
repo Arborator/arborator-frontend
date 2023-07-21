@@ -1,6 +1,6 @@
 <template>
   <q-card :class="$q.dark.isActive ? '' : 'bg-blue-grey-1 text-black'" class="full">
-    <q-bar class="bg-primary text-white">
+    <q-bar class="bg-primary text-white sticky-bar" >
       <q-space />
       <div class="text-weight-bold">{{ $t('projectSettings.title') }}</div>
       <q-space />
@@ -36,12 +36,12 @@
     </q-card-section>
     <!-- project description: -->
     <q-card-section>
-      <q-input v-model="description" style="height: 100px" label="Description" filled type="textarea" />
+      <q-input v-model="description" style="height: 100px" label="Description" outlined type="textarea" />
       <q-btn color="primary" :label="$t('projectSettings.descriptionSave')" icon="save" dense flat @click="saveDescription"></q-btn>
     </q-card-section>
     <!-- project options: -->
     <q-card-section class="q-pa-sm row items-start q-gutter-md">
-      <q-card class="col col-sm-12">
+      <q-card bordered flat class="col col-sm-12">
         <q-list>
           <q-item tag="label">
             <q-item-section>
@@ -53,7 +53,6 @@
                 <q-btn-toggle
                   v-model="visibilityLocal"
                   label="Visibility"
-                  glossy
                   toggle-color="primary"
                   :options="[
                     { label: 'Private', value: 0 },
@@ -109,7 +108,7 @@
     <q-card-section class="full row justify-between q-gutter-md">
       <UserSelect :project-name="$props.projectname" />
       <!-- shown features: -->
-      <q-card bordered class="col">
+      <q-card flat bordered class="col">
         <q-card-section>
           <div class="text-h6 text-center">
             {{ $t('projectSettings.shownFeaturesPanel') }}
@@ -140,7 +139,7 @@
       </q-card>
     </q-card-section>
     <q-card-section class="q-pa-sm row items-start q-gutter-md">
-      <q-card class="col col-sm-12">
+      <q-card bordered flat class="col col-sm-12">
         <q-card-section>
           <div class="text-h6 text-center">
             {{ $t('projectSettings.annotationSettingsInput') }}
@@ -435,5 +434,10 @@ export default defineComponent({
 }
 .cm-height {
   height: 50px;
+}
+.sticky-bar {
+  position: sticky;
+  top: 0;
+  z-index: 1;
 }
 </style>

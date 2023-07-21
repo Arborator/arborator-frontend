@@ -1,5 +1,5 @@
 <template>
-    <q-card bordered class="col">
+    <q-card flat bordered class="col">
         <q-card-section class="row">
             <div class="col-md-7 text-h6">
                 Share "{{ projectName }}"

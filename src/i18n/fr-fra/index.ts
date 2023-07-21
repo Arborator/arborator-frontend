@@ -159,7 +159,7 @@ export default {
       "Aucun n'échantillon n'est présent. Ce projet est vide, veuillez téléverser des fichiers conll.",
       "Demandez à l'administrateur du projet d'ajouter des fichiers",
     ],
-    tooltipAddSample: 'Ajouter un échantillon (fichier CoNLL)',
+    tooltipAddSample: 'Ajouter un nouvel échantillon',
     tooltipExportSample: ['Sélectionnez les échantillons à exporter', 'Exporter les échantillons sélectionnés'],
     tooltipDeleteSample: ['Sélectionnez les échantillons à supprimer', 'Supprimer les échantillons sélectionnés'],
     tooltipCreateLexicon: ['Sélectionnez les échantillons pour créer le lexique', "Créer le lexique à partir d'échantillons sélectionnés"],

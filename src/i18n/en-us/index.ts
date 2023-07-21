@@ -161,7 +161,7 @@ export default {
       'No sample yet. This project is empty, please upload some conll files.',
       'Ask an administrator to add files',
     ],
-    tooltipAddSample: 'Add CoNLL files as new samples',
+    tooltipAddSample: 'Add new samples',
     tooltipExportSample: ['Select the samples you want to export', 'Export selected samples'],
     tooltipDeleteSample: ['Select the samples you want to delete', 'Delete selected samples'],
     tooltipCreateLexicon: ['Select the samples to create a lexicon', 'Create lexicon from selected samples'],

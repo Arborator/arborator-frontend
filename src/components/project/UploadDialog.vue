@@ -49,7 +49,7 @@
               </div>
               <q-input outlined v-model="text" type="textarea" label="text" />
               <q-input outlined v-model="sampleName" label ="Sample Name" />
-              <q-input outlined v-model="customUserId" label="Select custom UserId By default it's your username"  />
+              <q-input outlined v-model="customUserId" label="Custom UserId By default it's your username"  />
               <div class="row q-pa-md">
                 <q-btn v-close-popup :disable="!disableTokenizeBtn" color="primary" @click="tokenizeSample">Tokenize</q-btn>
               </div>
@@ -262,7 +262,9 @@ export default defineComponent({
       }
     }
   },
-
+  mounted(){
+    this.customUserId = this.username;
+  },
   methods: {
     async preprocess() {
       this.userIds = [{old: 'default', new: this.username}];
@@ -358,7 +360,6 @@ export default defineComponent({
         });
     },
     tokenizeSample() {
-      if (!this.customUserId) this.customUserId = this.username;
       const data = {
         username: this.customUserId,
         text: this.text,

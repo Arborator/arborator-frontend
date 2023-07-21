@@ -74,9 +74,6 @@
                   <!-- </span> -->
                 </span>
                 <span v-else-if="!Number.isInteger(props.value)">{{ props.value }} </span>
-
-                <!--  -->
-                <!-- <q-btn v-else color="primary" :label="Object.keys(props.value).length" @click="showTrees(props.value)" /> -->
               </q-td>
             </template>
           </q-table>
@@ -87,7 +84,7 @@
       <result-view
         :searchresults="resultSearch"
         :totalsents="relationsTotal[currentEdge]"
-        :searchscope="tablename"
+        :searchscope="tableName"
         :parent-on-show-table="onShowTable"
       ></result-view>
     </q-dialog>
@@ -223,10 +220,9 @@ export default defineComponent({
      */
     showTrees(props: any) {
       this.tableName = `${this.currentEdge} relation table`;
-
       var searchPattern = `pattern { GOV -[${this.currentEdge}]-> DEP; `;
       if (props.col.name != 'sum') searchPattern += `DEP [ExtPos="${props.col.name}"/upos="${props.col.name}"]; `;
-      if (props.key != '∑') searchPattern += ` GOV [upos="${props.key}"]; `;
+      if (props.key != '∑' && props.key != '_') searchPattern += ` GOV [upos="${props.key}"]; `;
       searchPattern += '}';
       this.onSearch(searchPattern);
     },

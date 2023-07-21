@@ -3,6 +3,8 @@ import { annotationFeatures_t } from 'src/api/backend-types';
 interface configState {
   name: string;
   admins: string[];
+  validators: string[];
+  annotators: string[];
   guests: string[];
   visibility: number;
   description: string;
@@ -24,6 +26,8 @@ export default function defaultState(): configState {
   return {
     name: '',
     admins: [],
+    validators: [],
+    annotators: [],
     guests: [],
     visibility: 2,
     description: '',

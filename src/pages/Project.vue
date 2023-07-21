@@ -2,6 +2,7 @@
   <q-page id="container" :class="$q.dark.isActive ? 'bg-dark' : 'bg-grey-1'">
     <div>
       <q-card flat style="max-width: 100%">
+
         <q-card-section class="project-header">
           <q-img class="project-image" :src="cleanedImage" basic>
             <div class="absolute-bottom text-h6" style="padding: 6px">
@@ -24,7 +25,6 @@
           <div class="text-primary">{{ description }}</div>
         </q-card-section>
 
-        <!-- Lexicon Panel -->
         <q-card-section class="shadow-4" v-if="isShowLexiconPanel">
           <q-bar class="bg-primary text-white">
             <q-space />
@@ -38,11 +38,6 @@
         <q-card-section v-if="isShowParsingPanel">
           <ParsingPanel :samples="samples" :parentGetProjectSamples="getProjectSamples"></ParsingPanel>
         </q-card-section>
-
-        <!-- Constructicon Dialog -->
-        <q-dialog v-model="isShowConstructiconDialogCop" seamless full-width>
-          <ConstructiconDialog/>
-        </q-dialog>
 
         <q-card-section>
           <q-table
@@ -69,28 +64,35 @@
             table-style="max-height:80vh"
             :rows-per-page-options="[30]"
           >
+         
             <template #top="props">
+              <!-- begining of Options bar -->
               <q-btn-group flat>
+
+                <!-- single and main button for upload -->
                 <q-btn v-if="isAdmin" :disable="isFreezed" flat color="default" icon="cloud_upload" @click="uploadDial = true">
-                  <q-tooltip v-if="isAdmin" :delay="300" content-class="text-white bg-primary">{{
-                    $t('projectView.tooltipAddSample')
-                  }}</q-tooltip>
+                  <q-tooltip v-if="isAdmin" :delay="300" content-class="text-white bg-primary">
+                    {{ $t('projectView.tooltipAddSample') }}
+                  </q-tooltip>
                 </q-btn>
+
+                <!-- single and main button for export -->
                 <div>
                   <q-btn
                     flat
                     color="default"
                     icon="cloud_download"
                     :loading="table.exporting"
-                    :disable="(visibility === 0 && !isGuest && !isAdmin) || table.selected.length < 1"
-                    @click="chooseExportedTrees = true"
-                  ></q-btn>
-                  <q-tooltip v-if="table.selected.length < 1" :delay="300" content-class="text-white bg-primary">{{
-                    $t('projectView.tooltipExportSample[0]')
-                  }}</q-tooltip>
+                    :disable="(visibility === 0 && isGuest) || table.selected.length < 1"
+                    @click="isShowExportDialo = true"
+                   />
+                  <q-tooltip v-if="table.selected.length < 1" :delay="300" content-class="text-white bg-primary">
+                    {{ $t('projectView.tooltipExportSample[0]') }}
+                  </q-tooltip>
                   <q-tooltip v-else :delay="300" content-class="text-white bg-primary">{{ $t('projectView.tooltipExportSample[1]') }}</q-tooltip>
                 </div>
-
+                
+                <!-- single and main button for export evaluation -->
                 <div>
                   <q-btn
                     v-if="isTeacher"
@@ -98,36 +100,38 @@
                     color="default"
                     icon="analytics"
                     :loading="table.exporting"
-                    :disable="(visibility === 0 && !isGuest && !isAdmin && !isSuperAdmin) || table.selected.length !== 1"
+                    :disable="(visibility === 0 && isGuest) || table.selected.length !== 1"
                     @click="exportEvaluation()"
                   ></q-btn>
-                  <q-tooltip content-class="text-white bg-primary"
-                    >export evaluations of the students (only works if only one sample is selected)
+                  <q-tooltip content-class="text-white bg-primary">
+                    export evaluations of the students (only works if only one sample is selected)
                   </q-tooltip>
                 </div>
 
-                <q-btn v-if="isAdmin" v-show="table.selected.length < 1" flat color="default" icon="delete_forever" disable>
-                  <q-tooltip v-if="table.selected.length < 1" :delay="300" content-class="text-white bg-primary">{{
-                    $t('projectView.tooltipDeleteSample[0]')
-                  }}</q-tooltip>
-                  <q-tooltip v-else :delay="300" content-class="text-white bg-primary">{{ $t('projectView.tooltipDeleteSample[1]') }}</q-tooltip>
+                <!-- single and main button for deletion -->
+                <q-btn 
+                  v-if="isAdmin" 
+                  flat 
+                  color="default" 
+                  icon="delete_forever"
+                  :text-color="table.selected.length !== 0 ? 'red' : 'default'"
+                  :disable="table.selected.length < 1" 
+                  :loading="table.loadingDelete"
+                  @click="triggerConfirm(deleteSamples)" 
+                >
+                  <q-tooltip v-if="table.selected.length < 1" :delay="300" content-class="text-white bg-primary">
+                    {{ $t('projectView.tooltipDeleteSample[0]') }}
+                  </q-tooltip>
+                  <q-tooltip v-else-if="githubSynchronizedRepo" :delay="300" content-class="text-white bg-primary">
+                    {{ $t('github.deletionWarning') }}
+                  </q-tooltip>
+                  <q-tooltip v-else>
+                    {{ $t('projectView.tooltipDeleteSample[1]') }}
+                  </q-tooltip>
                 </q-btn>
 
-                <q-btn
-                  v-if="isAdmin"
-                  v-show="table.selected.length !== 0"
-                  :loading="table.loadingDelete"
-                  flat
-                  color="default"
-                  text-color="red"
-                  icon="delete_forever"
-                  :disable="!isAdmin"
-                  @click="triggerConfirm(deleteSamples)"
-                >
-                  <q-tooltip v-if="githubSynchronizedRepo" content-class="text-white bg-primary">{{ $t('github.deletionWarning') }}</q-tooltip>
-                  <q-tooltip v-else :delay="300" content-class="text-white bg-primary">{{ $t('projectView.tooltipDeleteSample[1]') }}</q-tooltip>
-                </q-btn>
-                <div v-if="isProjectMember">
+                <!-- single and main button for lexicon -->
+                <div v-if="canSaveTreeInProject">
                   <q-btn
                     flat
                     color="default"
@@ -137,12 +141,15 @@
                     @click="isShowLexiconPanel = true"
                   ></q-btn>
                   <q-tooltip v-if="table.selected.length < 1" :delay="300" content-class="text-white bg-primary">
-                    {{ $t('projectView.tooltipCreateLexicon[0]') }}</q-tooltip
-                  >
-                  <q-tooltip v-else :delay="300" class-content="text-white bg-primary">{{ $t('projectView.tooltipCreateLexicon[1]') }}</q-tooltip>
+                    {{ $t('projectView.tooltipCreateLexicon[0]') }}
+                  </q-tooltip>
+                  <q-tooltip v-else :delay="300" class-content="text-white bg-primary">
+                    {{ $t('projectView.tooltipCreateLexicon[1]') }}
+                  </q-tooltip>
                 </div>
+
                 <!-- single and main button for parsing -->
-                <div v-if="canSaveTreeInProject">
+                <div v-if="isAdmin">
                   <q-btn
                     :disable="isFreezed"
                     flat
@@ -150,27 +157,27 @@
                     @click="bootParserPanelToggle()"
                     :color="isShowParsingPanel ? 'primary' : 'default'"
                   >
-                    <q-tooltip content-class="text-body2 bg-primary"
-                      >{{ isShowParsingPanel ? $t('projectView.tooltipParsingPanel[1]') : $t('projectView.tooltipParsingPanel[0]') }}Parsing
-                      Panel</q-tooltip
-                    >
+                    <q-tooltip content-class="text-body2 bg-primary">
+                      {{ isShowParsingPanel ? $t('projectView.tooltipParsingPanel[1]') : $t('projectView.tooltipParsingPanel[0]') }} Parsing Panel
+                    </q-tooltip>
                   </q-btn>
                 </div>
 
                 <!-- Single and main button for Constructicon -->
                 <div>
                   <q-btn
+                    v-if="canSaveTreeInProject"
                     flat
                     icon="account_tree"
                     @click="isShowConstructiconDialogCop = true"
                   >
-                    <q-tooltip content-class="text-body2 bg-primary"
-                      >See Constructicon</q-tooltip
-                    >
+                    <q-tooltip content-class="text-body2 bg-primary">
+                      See Constructicon
+                    </q-tooltip>
                   </q-btn>
                 </div>
 
-                <!-- Button for github synchronization -->
+                <!-- Single and main button for synchronization -->
                 <div>
                   <q-btn
                     v-if="isAllowdedToSync && !githubSynchronizedRepo"
@@ -186,11 +193,11 @@
 
                 </div>
 
-                <!-- Buttons for more options -->
-                <div v-if="isOwner">
+                <!-- Button for more options -->
+                <div v-if="isAdmin">
                   <q-btn-dropdown flat icon="more_vert">
                      <q-list>
-                      <q-item clickable v-close-popup @click="freezeProject">
+                      <q-item v-if="isOwner" clickable v-close-popup @click="freezeProject">
                         <q-item-section avatar>
                           <q-avatar icon="block" />
                         </q-item-section>
@@ -223,6 +230,7 @@
                   <q-tooltip content-class="text-white bg-primary"> {{$t('projectView.tooltipSynchronizedProject')}} {{githubSynchronizedRepo}}</q-tooltip>
                 </div>
               </q-btn-group>
+              <!-- End of Options bar -->
 
               <q-space />
 
@@ -359,26 +367,13 @@
         <GrewSearch :user-ids="getProjectTreesFrom" :sentence-count="sentenceCount" :search-scope="projectName" @reload="loadProjectData" />
         <RelationTableMain />
       </template>
-      <q-dialog v-model="chooseExportedTrees">
-        <ExportDialog :samples="table.selected" />
-      </q-dialog>
 
-      <!-- upload dialog start -->
-      <q-dialog v-model="assignDial" persistent transition-show="slide-up" transition-hide="slide-down">
-        <user-table :samples="table.selected"></user-table>
-      </q-dialog>
-      <UploadDialog v-model:uploadDial="uploadDial" :samples="samples" @uploaded:sample="loadProjectData()" />
-
+      <!-- Settings dialog -->
       <q-dialog v-model="projectSettingsDial" transition-show="slide-up" transition-hide="slide-down">
         <ProjectSettingsView :project-trees-from="getProjectTreesFrom" :projectname="projectName" style="width: 90vw"></ProjectSettingsView>
       </q-dialog>
 
-      <q-dialog v-model="isShowSyncDialog">
-        <q-card style="min-width: 50vw;">
-          <GithubSyncDialog :project-name="projectName" @created="reloadAfterSync"></GithubSyncDialog>
-        </q-card>
-      </q-dialog>
-
+      <!--Project information dialog-->
       <q-dialog v-model="simpleProjectInfoDialog">
         <q-card style="width: 300px">
           <q-card-section>
@@ -406,6 +401,35 @@
         </q-card>
       </q-dialog>
 
+      <!-- Upload dialog-->
+      <UploadDialog v-model:uploadDial="uploadDial" :samples="samples" @uploaded:sample="loadProjectData()" />
+     
+      <!--Export dialog-->
+      <q-dialog v-model="isShowExportDialo">
+        <ExportDialog :samples="table.selected" />
+      </q-dialog>
+
+      <!--Delete confirm dialog-->
+      <q-dialog v-model="confirmActionDial">
+        <confirm-action :parent-action="confirmActionCallback" :arg1="confirmActionArg1" :target-name="projectName"></confirm-action>
+      </q-dialog>
+
+      <!-- Lexicon Panel -->
+     
+
+      <!-- Constructicon Dialog -->
+      <q-dialog v-model="isShowConstructiconDialogCop" seamless full-width>
+        <ConstructiconDialog/>
+      </q-dialog>
+
+      <!--Synchronization dialog-->
+      <q-dialog v-model="isShowSyncDialog">
+        <q-card style="min-width: 50vw;">
+          <GithubSyncDialog :project-name="projectName" @created="reloadAfterSync"></GithubSyncDialog>
+        </q-card>
+      </q-dialog>
+        
+      <!--Remove Trees-->
       <q-dialog v-model="removeUserTreesDial">
         <q-card style="width: 300vh">
           <q-card-section>
@@ -419,10 +443,6 @@
           </q-card-section>
         </q-card>
       </q-dialog>
-
-      <q-dialog v-model="confirmActionDial">
-        <confirm-action :parent-action="confirmActionCallback" :arg1="confirmActionArg1" :target-name="projectName"></confirm-action>
-      </q-dialog>
     </div>
   </q-page>
 </template>
@@ -430,7 +450,6 @@
 <script lang="ts">
 import api from '../api/backend-api';
 
-import UserTable from '../components/UserTable.vue';
 import TagInput from '../components/TagInput.vue';
 import ProjectSettingsView from '../components/ProjectSettingsView.vue';
 import ConfirmAction from '../components/ConfirmAction.vue';
@@ -456,7 +475,6 @@ import {table_t} from 'src/types/main_types';
 export default defineComponent({
   components: {
     ConstructiconDialog,
-    UserTable,
     TagInput,
     ProjectSettingsView,
     ConfirmAction,
@@ -587,7 +605,7 @@ export default defineComponent({
       tableKey: 0,
       initLoad: false,
       isShowSyncDialog : false,
-      chooseExportedTrees: false,
+      isShowExportDialo: false,
       githubSynchronizedRepo:'',
       reload: 0,
       isShowConstructiconDialogCop: false,

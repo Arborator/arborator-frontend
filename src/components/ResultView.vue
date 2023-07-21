@@ -20,7 +20,6 @@
           :virtual-scroll-slice-size="30"
           v-slot="{ item, index }"
         >
-
           <div :key="index" style="display: flex;">
             <template v-if="queryType === 'REWRITE'">
               <q-checkbox class="custom-frame2 custom-right-border"
@@ -36,12 +35,13 @@
               ></SentenceCard>
             </div>
           </div>
-
         </q-virtual-scroll>
       </template>
     </div>
-    <q-bar class="absolute-bottom row custom-frame2" style="padding-left: 0"
-           v-if="queryType === 'REWRITE' && samplesFrozen.list.length > 0 && canSaveTreeInProject"
+    <q-bar 
+      class="absolute-bottom row custom-frame2" 
+      style="padding-left: 0"
+      v-if="queryType === 'REWRITE' && samplesFrozen.list.length > 0 && canSaveTreeInProject"
     >
       <div>
         <q-checkbox v-if="queryType === 'REWRITE'" v-model="all" @click="selectAllSentences()">
@@ -53,9 +53,7 @@
         <q-tooltip v-if="!atLeastOneSelected">{{ $t('grewSearch.applyRuleTooltip') }}</q-tooltip>
         </q-btn>
       </div>
-
     </q-bar>
-
   </div>
 </template>
 
@@ -117,8 +115,8 @@ export default defineComponent({
     };
   },
   computed: {
-    ...mapState(useProjectStore, ['isGuest', 'isAdmin', 'canSaveTreeInProject']),
-    ...mapState(useUserStore, ['isSuperAdmin', 'username']),
+    ...mapState(useProjectStore, ['canSaveTreeInProject']),
+    ...mapState(useUserStore, ['username']),
     sentenceCount() {
       return Object.keys(this.searchresults)
         .map((sa) => Object.keys(this.searchresults[sa]))

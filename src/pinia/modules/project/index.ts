@@ -14,11 +14,17 @@ export const useProjectStore = defineStore('project', {
   },
   getters: {
     getProjectConfig: (state) => state,
-    isOwner: (state) =>{
+    isOwner(state): boolean {
       return state.admins[0] === useUserStore().username;
     },
-    isAdmin: (state) => {
+    isAdmin(state): boolean {
       return state.admins.includes(useUserStore().username) || useUserStore().super_admin;
+    },
+    isValidator(state): boolean {
+      return state.validators.includes(useUserStore().username) || this.isAdmin;
+    },
+    isAnnotator(state): boolean {
+      return state.annotators.includes(useUserStore().username)&& !useUserStore().super_admin;
     },
     isGuest: (state) => state.guests.includes(useUserStore().username) && !useUserStore().super_admin,
     isTeacher(state): boolean {
@@ -26,6 +32,12 @@ export const useProjectStore = defineStore('project', {
     },
     isStudent(state): boolean {
       return !this.isAdmin && state.exerciseMode;
+    },
+    isProjectMember(): boolean {
+      return this.isAdmin || this.isValidator || this.isAnnotator || this.isGuest; 
+    },
+    isAllowdedToSync(): boolean {
+      return useUserStore().loggedWithGithub && this.isOwner && !this.exerciseMode && !this.isTeacher;
     },
     canSaveTreeInProject(state): boolean {
       if (!useUserStore().isLoggedIn) {
@@ -40,34 +52,28 @@ export const useProjectStore = defineStore('project', {
         // anyone (logged in) can save in public project (visibility === 2)
         return true
       }
-      // in other projects, only members, admin or superadmin can save
-      return (this.isAdmin || this.isGuest)
+      // in other projects all members can save tree except the guest in the private project
+      return (this.isAdmin || this.isValidator || this.isAnnotator)
     },
     canSeeOtherUsersTrees(state): boolean {
       if (this.isAdmin) {
         // isAdmin (admins and superadmins) can see everything in this project
-        return true
+        return true;
       }
       if (state.exerciseMode) {
         // if project in exercice mode, only isAdmin can see trees of others on project scale
         // (students still can see trees of teacher in difficulty 1 and 2, but this is addressed elsewhere)
-        return this.isAdmin
+        return this.isAdmin;
       }
       if (state.visibility >= 1) {
         // everyone can see trees from other in "visible" and "public" projects
-        return true
+        return true;
       }
       if (state.visibility == 0) {
         // only guests (and admins, but it was already returned True earlier=
-        return this.isAdmin || this.isGuest
+        return this.isProjectMember;
       }
-      return false
-    },
-    isProjectMember(): boolean {
-      return this.isAdmin || this.isGuest
-    },
-    isAllowdedToSync(): boolean {
-      return useUserStore().loggedWithGithub && this.isOwner && !this.exerciseMode && !this.isTeacher;
+      return false;
     },
     getAnnofjson: (state) => JSON.stringify(state.annotationFeatures, null, 4),
     getUDAnnofJson: (state) => JSON.stringify(state.annotationFeaturesUD, null, 4),
@@ -115,6 +121,8 @@ export const useProjectStore = defineStore('project', {
         .then(() => {
           api.getProjectUsersAccess(projectname).then((response) => {
             this.admins = response.data.admins;
+            this.validators = response.data.validators;
+            this.annotators = response.data.annotators;
             this.guests = response.data.guests;
           });
           api.getProjectFeatures(projectname).then((response) => {

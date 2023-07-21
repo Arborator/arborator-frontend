@@ -2,7 +2,7 @@
   <div :class="$q.dark.isActive ? 'bg-dark' : 'bg-grey-1'">
     <q-bar class="bg-primary text-white">
       <q-toolbar-title>Constructicon</q-toolbar-title>
-      <q-btn v-if="isAdmin" flat dense icon="file_upload" @click="uploadConstructiconDialog = true">
+      <q-btn v-if="canSaveTreeInProject" flat dense icon="file_upload" @click="uploadConstructiconDialog = true">
         <q-tooltip>upload existing constructicon</q-tooltip>
       </q-btn>
       <q-dialog v-model="uploadConstructiconDialog">
@@ -45,7 +45,7 @@
 
           <!-- Add new item -->
           <q-btn
-            v-if="isAdmin"
+            v-if="canSaveTreeInProject"
             :disable="editMode"
             class="q-mt-md"
             color="primary"
@@ -93,10 +93,10 @@
           <div style="position: absolute; bottom: 0; left: 0; right: 0;">
             <q-toolbar class="q-pa-md" style="display: flex; justify-content: space-between;">
               <div style="display: flex; justify-content: space-between;">
-                <q-btn v-if="isAdmin" color="primary" @click="changeEditMode">
+                <q-btn v-if="canSaveTreeInProject" color="primary" @click="changeEditMode">
                   {{ editMode ? 'Save' : 'Edit' }}
                 </q-btn>
-                <q-btn v-if="isAdmin" color="primary" @click="deleteItem">
+                <q-btn v-if="canSaveTreeInProject" color="primary" @click="deleteItem">
                   Delete
                 </q-btn>
               </div>
@@ -159,7 +159,7 @@ export default defineComponent({
     backendApi() {
       return backendApi
     },
-    ...mapState(useProjectStore, ['name', 'isAdmin']),
+    ...mapState(useProjectStore, ['name', 'canSaveTreeInProject']),
     // filter the items based on the search term
     filteredEntries(): ConstructiconEntry_t[] {
       return this.constructiconEntries.filter(entry =>

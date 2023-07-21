@@ -1,5 +1,4 @@
 <template>
-  <!-- removed: v-show="visible"  -->
   <q-item clickable @click.native.prevent="goTo()">
     <q-tooltip v-if="isProjectAdmin || isSuperAdmin" class="bg-purple text-body2" anchor="top middle" :offset="[10, 10]" :delay="100">
       {{ $t('projectHub.tooltipRightClickDelete') }}
@@ -128,7 +127,7 @@ export default defineComponent({
       return this.project.image;
     },
     isProjectAdmin() {
-      return this.project.admins.includes(this.username);
+      return this.project.admins.includes(this.username) || this.isSuperAdmin;
     },
     displayedAdmins() {
       return this.project.admins.slice(0, 2)
@@ -139,25 +138,11 @@ export default defineComponent({
   },
   methods: {
     imageEmpty() {
-      if (this.project.image === null || this.project.image === '') {
-        this.project.image = "b''";
-      }
-      if (this.project.image === "b''") {
-        return true;
-      }
-      if (this.project.image.length < 1) {
-        return true;
-      }
-      return false;
+      return this.project.image === null || this.project.image === '';
     },
     timeAgo(secsAgo: number) {
       return timeAgo(secsAgo);
     },
-    /**
-     * Use the router to push (i.e. got to) a new route
-     *
-     * @returns void
-     */
     goTo() {
       this.$router.push({
         name: 'project',
@@ -167,29 +152,12 @@ export default defineComponent({
         },
       });
     },
-    /**
-     * Use the parent project settings function
-     *
-     * @returns void
-     */
     projectSettings() {
-      this.$props.parentProjectSettings(this.project.projectName);
+      this.parentProjectSettings(this.project.projectName);
     },
-    /**
-     * Delete a project using the parent function
-     *
-     * @returns void
-     */
     deleteProject() {
-      this.$props.parentDeleteProject(this.project.projectName);
+      this.parentDeleteProject(this.project.projectName);
     },
-    /**
-     * Wrapper to display the confirm dialog prior to executing the method
-     *
-     * @param {method} method
-     * @param {*} arg
-     * @returns void
-     */
     triggerConfirm(method: CallableFunction) {
       this.confirmActionDial = true;
       this.confirmActionCallback = method;

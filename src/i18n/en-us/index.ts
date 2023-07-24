@@ -178,6 +178,7 @@ export default {
     tooltipSelectVisible: 'Select visible columns',
     tooltipFullscreen: 'Fullscreen table',
     tooltipFabGrew: 'Search with Grew',
+    tooltipFabGrewValidated: 'View validated trees',
     tooltipFabGrewUser: 'View only my trees',
     tooltipFabGrewUserRecent: 'View my trees, filled up with the most recent trees',
     tooltipFabGrewRecent: 'View most recent trees',

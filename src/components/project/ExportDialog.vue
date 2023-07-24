@@ -11,7 +11,7 @@
         </q-card-section>
         <q-card-section class="q-gutter-md">
             <q-list bordered>
-                <q-item v-if="isAdmin || isValidator" tag="label" v-ripple>
+                <q-item v-if="canValidateUsersTrees" tag="label" v-ripple>
                     <q-item-section side top>
                         <q-checkbox v-model="validated" />
                     </q-item-section>
@@ -87,7 +87,7 @@ export default defineComponent({
         }
     },
     computed: {
-        ...mapState(useProjectStore, ['isAdmin', 'isValidator']),
+        ...mapState(useProjectStore, ['canValidateUsersTrees']),
         ...mapState(useUserStore, ['username']),
         otherUsers() {
             let otherUsers: String[] = [];

@@ -176,6 +176,7 @@ export default {
     tooltipSelectVisible: 'Sélectionner les colonnes visibles',
     tooltipFullscreen: 'tableau plein écran',
     tooltipFabGrew: "Recherche avec Grew",
+    tooltipFabGrewValidated: 'Voir les arbres validés',
     tooltipFabGrewUser: 'Voir uniquement mes arbres',
     tooltipFabGrewUserRecent: 'Voir mes arbres, avec les arbres les plus récents',
     tooltipFabGrewRecent: 'Voir les arbres les plus récents',

@@ -115,7 +115,7 @@ export default defineComponent({
     };
   },
   computed: {
-    ...mapState(useProjectStore, ['canSaveTreeInProject']),
+    ...mapState(useProjectStore, ['canSaveTreeInProject', 'canValidateUsersTrees']),
     ...mapState(useUserStore, ['username']),
     sentenceCount() {
       return Object.keys(this.searchresults)

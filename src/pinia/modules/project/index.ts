@@ -75,6 +75,9 @@ export const useProjectStore = defineStore('project', {
       }
       return false;
     },
+    canValidateUsersTrees(): boolean {
+      return this.isAdmin || this.isValidator;
+    },
     getAnnofjson: (state) => JSON.stringify(state.annotationFeatures, null, 4),
     getUDAnnofJson: (state) => JSON.stringify(state.annotationFeaturesUD, null, 4),
     shownMetaChoices: (state) => state.annotationFeatures.META,

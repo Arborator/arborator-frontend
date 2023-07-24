@@ -33,7 +33,7 @@
             <q-tooltip>{{ $t('sentenceCard.annotationErrors') }}</q-tooltip>
           </q-btn>
 
-          <q-btn v-if="isValidator || isAdmin" flat round dense icon="verified" :disable="openTabUser === ''" @click="save('Validated')">
+          <q-btn v-if="canValidateUsersTrees" flat round dense icon="verified" :disable="openTabUser === ''" @click="save('Validated')">
             <q-tooltip>{{ $t('sentenceCard.validateTree') }}</q-tooltip>
           </q-btn>
 
@@ -304,7 +304,7 @@ export default defineComponent({
 
   computed: {
     ...mapWritableState(useProjectStore, ['diffMode', 'diffUserId']),
-    ...mapState(useProjectStore, ['isAdmin', 'isTeacher', 'exerciseMode', 'shownMeta', 'getProjectConfig', 'canSaveTreeInProject', 'isValidator']),
+    ...mapState(useProjectStore, ['isAdmin', 'isTeacher', 'exerciseMode', 'shownMeta', 'getProjectConfig', 'canSaveTreeInProject', 'canValidateUsersTrees']),
     ...mapState(useUserStore, ['isLoggedIn', 'username']),
     lastModifiedTime() {
       // this.forceRerender; it was like this when i found it. Should it have = 0 ?

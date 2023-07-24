@@ -143,6 +143,7 @@ export default defineComponent({
   data() {
     const currentQueryType: 'SEARCH' | 'REWRITE' = grewTemplates.searchQueries[0].type as 'SEARCH' | 'REWRITE';
     const usersToApplyOptions = [
+        { value: 'validated', label: this.$t('projectView.tooltipFabGrewValidated'), icon:'verified'},
         { value: 'user', label: this.$t('projectView.tooltipFabGrewUser')},
         { value: 'user_recent', label: this.$t('projectView.tooltipFabGrewUserRecent')},
         { value: 'recent', label: this.$t('projectView.tooltipFabGrewRecent'), icon: 'schedule' },
@@ -169,15 +170,17 @@ export default defineComponent({
   computed: {
     ...mapState(useGrewSearchStore, ['lastQuery']),
     ...mapState(useUserStore, ['isLoggedIn', 'avatar', 'username']),
-    ...mapState(useProjectStore, ['shownFeaturesChoices', 'annotationFeatures', 'featuresSet', 'isGuest', 'canSaveTreeInProject']),
+    ...mapState(useProjectStore, ['shownFeaturesChoices', 'annotationFeatures', 'featuresSet', 'isGuest', 'canSaveTreeInProject', 'canValidateUsersTrees']),
     userOptions() {
       if (!this.canSaveTreeInProject || this.isGuest){
         return this.usersToApplyOptions.slice(2)
       }
-      else {
-        return this.searchReplaceTab === 'REWRITE' ? this.usersToApplyOptions.filter(option=> option.value !== "all") : this.usersToApplyOptions;
+      if(!this.canValidateUsersTrees){
+        return this.searchReplaceTab === 'REWRITE' ? this.usersToApplyOptions.slice(1,4) : this.usersToApplyOptions.slice(1);
       }
-     
+      else {
+        return this.searchReplaceTab === 'REWRITE' ? this.usersToApplyOptions.slice(0,4) : this.usersToApplyOptions;
+      }
     },
   },
   watch: {

@@ -33,6 +33,10 @@
             <q-tooltip>{{ $t('sentenceCard.annotationErrors') }}</q-tooltip>
           </q-btn>
 
+          <q-btn v-if="isValidator || isAdmin" flat round dense icon="verified" :disable="openTabUser === ''" @click="save('Validated')">
+            <q-tooltip> Validate this tree </q-tooltip>
+          </q-btn>
+
           <q-btn v-if="isTeacher" flat round dense icon="school" :disable="openTabUser === ''" @click="save('teacher')">
             <q-tooltip>{{ $t('sentenceCard.saveTeacher') }}</q-tooltip>
           </q-btn>
@@ -300,7 +304,7 @@ export default defineComponent({
 
   computed: {
     ...mapWritableState(useProjectStore, ['diffMode', 'diffUserId']),
-    ...mapState(useProjectStore, ['isAdmin', 'isTeacher', 'exerciseMode', 'shownMeta', 'getProjectConfig', 'canSaveTreeInProject']),
+    ...mapState(useProjectStore, ['isAdmin', 'isTeacher', 'exerciseMode', 'shownMeta', 'getProjectConfig', 'canSaveTreeInProject', 'isValidator']),
     ...mapState(useUserStore, ['isLoggedIn', 'username']),
     lastModifiedTime() {
       // this.forceRerender; it was like this when i found it. Should it have = 0 ?
@@ -503,9 +507,12 @@ export default defineComponent({
           timestamp: parseInt(reactiveSentence.state.metaJson.timestamp as string, 10),
         });
       }
-      // sort from newest to oldest
+      // sort from newest to oldest but put the validated tree in the beginning
       const orderedUserAndTimestamps = userAndTimestamps.sort((a, b) => b.timestamp - a.timestamp);
-
+      const validatedTreeIndex = orderedUserAndTimestamps.findIndex((val) => val.user == "Validated");
+      if (validatedTreeIndex != -1 ){
+        orderedUserAndTimestamps.unshift(orderedUserAndTimestamps.splice(validatedTreeIndex,1)[0])
+      }
       const orderedConlls: { [key: string]: string } = {};
       for (const userAndTimestamp of orderedUserAndTimestamps) {
         orderedConlls[userAndTimestamp.user] = filteredConlls[userAndTimestamp.user];

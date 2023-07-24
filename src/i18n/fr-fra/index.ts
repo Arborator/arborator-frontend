@@ -224,6 +224,7 @@ export default {
   exportSamples: {
     title: 'Sélectionnez les arbres que vous souhaitez exporter',
     exportMyTrees: 'Exporter mes arbres',
+    exportValidatedTrees: 'Exporter les arbres validés',
     exportRecentTrees: 'Exporter les arbres les plus récents',
     exportTreesOfUsers: "Exporter des arbres d'autres utilisateurs",
     selectOtherUsers: 'Sélectionnez les utilisateurs dont vous souhaitez exporter leurs arbres',
@@ -309,6 +310,7 @@ export default {
   sentenceCard: {
     selectTooltip: 'Sélectionnez la phrase pour diviser les tokens',
     annotationErrors: "Voir vos erreurs d'annotation",
+    validateTree: 'Valider cet arbre',
     saveTeacher: 'Sauvegarder comme enseignant',
     saveBaseTree: 'Sauvegarder comme arbre de base',
     saveTree: ["Sauvegarder l'arbre", "comme"],

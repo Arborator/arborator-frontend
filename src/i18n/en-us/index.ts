@@ -231,6 +231,7 @@ export default {
   exportSamples: {
     title: 'Select the trees you want to export',
     exportMyTrees: 'Export my trees',
+    exportValidatedTrees: 'Export validated trees',
     exportRecentTrees: 'Export the most recent trees',
     exportTreesOfUsers: 'Export trees from other users',
     selectOtherUsers: 'Select the users whose trees you want to export',
@@ -325,6 +326,7 @@ export default {
     saveTeacher: 'Save as teacher',
     saveBaseTree: 'Save as base_tree',
     saveTree: ["Save tree", "as"],
+    validateTree: 'Validate this tree',
     editMetadata: "Edit this trees's metadata",
     multiEditDial: 'Multi edit dialog',
     diffMode: ['Enter', 'Leave', 'Diff mode'],

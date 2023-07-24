@@ -34,7 +34,7 @@
           </q-btn>
 
           <q-btn v-if="isValidator || isAdmin" flat round dense icon="verified" :disable="openTabUser === ''" @click="save('Validated')">
-            <q-tooltip> Validate this tree </q-tooltip>
+            <q-tooltip>{{ $t('sentenceCard.validateTree') }}</q-tooltip>
           </q-btn>
 
           <q-btn v-if="isTeacher" flat round dense icon="school" :disable="openTabUser === ''" @click="save('teacher')">

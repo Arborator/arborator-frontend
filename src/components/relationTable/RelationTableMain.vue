@@ -19,6 +19,9 @@
         <q-btn v-if="canSeeOtherUsersTrees" push icon="ion-md-globe" color="primary" no-caps @click="getRelationTable('all')">
           <q-tooltip content-class="bg-primary" content-style="font-size: 16px"> {{$t('projectView.tooltipFabGrewAll')}} </q-tooltip>
         </q-btn>
+        <q-btn v-if="canValidateUsersTrees" push icon="verified" color="primary" no-caps @click="getRelationTable('validated')">
+          <q-tooltip content-class="bg-primary" content-style="font-size: 16px"> {{$t('projectView.tooltipFabGrewValidated')}} </q-tooltip>
+        </q-btn>
       </q-btn-group>
       <q-btn size="20px" round color="primary text-green" icon="ion-md-grid" @click="reltablebuttons = !reltablebuttons">
         <q-tooltip content-class="bg-primary" content-style="font-size: 16px"> {{$t('projectView.tooltipRelationTable')}} </q-tooltip>
@@ -63,7 +66,7 @@ export default defineComponent({
   },
 
   computed: {
-    ...mapState(useProjectStore, ['canSeeOtherUsersTrees', 'isGuest', 'canSaveTreeInProject']),
+    ...mapState(useProjectStore, ['canSeeOtherUsersTrees', 'isGuest', 'canSaveTreeInProject', 'canValidateUsersTrees']),
     ...mapState(useUserStore, ['isLoggedIn', 'isSuperAdmin', 'avatar', 'getUserInfos']),
     breakpoint(): boolean {
       return this.window.width <= 400;

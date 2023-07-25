@@ -197,6 +197,7 @@ export default {
       'Get the lexicon of my recent trees',
       'Get the lexicon of all the trees',
       'Get the lexicon of the recent trees',
+      'Get the lexicon of validated trees',
       'Select the user type',
     ],
     projectInfoDial: {

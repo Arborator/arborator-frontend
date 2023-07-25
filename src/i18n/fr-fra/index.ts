@@ -195,7 +195,8 @@ export default {
       'Obtenir le lexique de mes arbres récents',
       'Obtenir le lexique de tous les arbres',
       'Obtenir le lexique des arbres récents',
-      "Sélectionnez le type de lexique",
+      'Obtenir le lexique des arbres validés',
+      'Sélectionnez le type de lexique',
     ],
     projectInfoDial: {
       title: 'Information sur le projet',

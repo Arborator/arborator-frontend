@@ -20,6 +20,7 @@
       :searchscope="searchScope"
       :parentOnShowTable="onShowTable"
       :query-type="queryType"
+      :userType="userType"
     ></ResultView>
   </q-dialog>
 </template>
@@ -60,11 +61,13 @@ export default defineComponent({
       resultSearchDialog: boolean,
       resultSearch: grewSearchResult_t,
       queryType: string,
+      userType: string,
       window: { width: number; height: number },
     } = {
       resultSearchDialog: false,
       resultSearch: {},
       queryType: "",
+      userType: "",
       window: {width: 0, height: 0},
     };
     return result
@@ -85,6 +88,7 @@ export default defineComponent({
     onSearch(searchPattern: string, userType: string) {
       const data = {pattern: searchPattern, userType: userType};
       this.queryType = 'SEARCH';
+      this.userType =userType;
       if (this.$route.params.samplename) {
         api
           .searchSample(this.$route.params.projectname as string, this.$route.params.samplename as string, data)
@@ -111,6 +115,7 @@ export default defineComponent({
     onTryRules(query: string, userType: string) {
       const sampleId = (this.$route.params.samplename as string) || null;
       this.queryType = 'REWRITE';
+      this.userType = userType;
       api
         .tryPackage(this.$route.params.projectname as string, sampleId, query, userType)
         .then((response) => {

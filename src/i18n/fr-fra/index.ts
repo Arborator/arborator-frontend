@@ -305,7 +305,7 @@ export default {
       title: 'Commit les changements',
       commitInput: 'Le message du commit',
       commitTreeSelect: 'Sélectionner le type des arbres',
-      commitTreeOptions: ['Mes arbres', 'Mes arbres remplis par les plus récents'],
+      commitTreeOptions: ['Mes arbres', 'Mes arbres remplis par les plus récents', 'Les arbres validés'],
       commitMessage: 'Nouveau commit dans',
     }
   },

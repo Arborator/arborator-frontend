@@ -9,14 +9,14 @@
                 <div class="row q-gutter-md">
                     <div class="col-8">
                         <q-input
-                            filled
+                            outlined
                             v-model="message"
                             :label="$t('github.commitDialog.commitInput')"
                         />
                     </div>
                     <div class="col">
                         <q-select
-                            filled
+                            outlined
                             v-model="trees"
                             :options="options"
                             :label="$t('github.commitDialog.commitTreeSelect')"
@@ -24,12 +24,13 @@
                             options-selected-class="primary"
                         >
                             <template v-slot:option="scope">
-                                <q-item v-bind="scope.itemProps" v-on="scope.itemEvents">
+                                <q-item v-bind="scope.itemProps">
                                     <q-item-section avatar>
-                                        <q-avatar size="1.2rem" >
+                                        <q-avatar v-if="scope.opt.value == 'user' || scope.opt.value == 'last'" size="1.2rem" >
                                             <img :src="avatar" />
-                                             <q-badge v-if="scope.opt.label != 'My trees'" floating transparent color="principal">+</q-badge>
-                                        </q-avatar>  
+                                            <q-badge v-if="scope.opt.value == 'last'" floating transparent color="principal">+</q-badge>
+                                        </q-avatar>
+                                        <q-icon v-else name="verified" />
                                     </q-item-section>
                                     <q-item-section>
                                         <q-item-label>{{scope.opt.label}}</q-item-label>
@@ -40,7 +41,7 @@
                     </div>
                 </div>
                 <div class="row q-gutter-md justify-center">
-                    <q-btn :disable="trees.user == ''" label="commit" color="primary" @click="commitChanges(trees.user)"/>
+                    <q-btn :disable="trees.value == ''" label="commit" color="primary" @click="commitChanges(trees.value)"/>
                 </div>
             </q-form>
         </q-card-section>
@@ -69,11 +70,11 @@ export default defineComponent({
     },
     data() {
         const options = [
-                { label: this.$t('github.commitDialog.commitTreeOptions[0]'), user: 'username' },
-                { label: this.$t('github.commitDialog.commitTreeOptions[1]'), user: 'last' }, 
+                { value: 'user', label: this.$t('github.commitDialog.commitTreeOptions[0]') },
+                { value: 'last', label: this.$t('github.commitDialog.commitTreeOptions[1]') }, 
+                { value: 'Validated', label: this.$t('github.commitDialog.commitTreeOptions[2]') },
             ];
-        const trees: {label: string, user: string} = options[0];
-        
+        const trees: { value: string, label: string } = options[0];
         return {
             message: '',
             trees,
@@ -86,12 +87,12 @@ export default defineComponent({
     methods: {
         commitChanges(userType: string){
             const githubMessage =  this.message + ': committed by ArboratorGrew';
-            if (userType == 'username' ) userType = this.username 
+            if (userType == 'user' ) userType = this.username; 
             const data = {message: githubMessage, repositoryName: this.repositoryName, userType: userType};
             api
               .commitChanges(this.projectName, this.username, data)
               .then((response) => {
-                notifyMessage({message:  this.$t('github.commitDialog.commitMessage') + `"${ this.repositoryName}"`});
+                notifyMessage({ message: this.$t('github.commitDialog.commitMessage') + `"${ this.repositoryName}"` });
                 this.$emit('committed')
               })
               .catch((error) => {

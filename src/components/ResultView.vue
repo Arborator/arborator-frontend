@@ -1,6 +1,6 @@
 <template>
   <div style="min-width: 99vw; min-height: 50vh" class="custom-frame2">
-    <q-bar class="bg-primary text-white">
+    <q-bar class="bg-primary text-white sticky-bar">
       <q-icon name="img:/svg/grew.svg" size="7rem"/>
       <q-space/>
       <div class="text-weight-bold">

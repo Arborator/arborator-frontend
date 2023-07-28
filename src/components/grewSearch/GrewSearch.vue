@@ -13,7 +13,7 @@
       :users="userIds"
     ></GrewRequestCard>
   </q-dialog>
-  <q-dialog v-model="resultSearchDialog" transition-show="fade" transition-hide="fade">
+  <q-dialog v-model="resultSearchDialog" maximized transition-show="fade" transition-hide="fade">
     <ResultView
       :searchresults="resultSearch"
       :totalsents="sentenceCount"

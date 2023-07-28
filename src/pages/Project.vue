@@ -468,6 +468,7 @@ import {notifyError, notifyMessage} from 'src/utils/notify';
 import {mapActions, mapState, mapWritableState} from 'pinia';
 import {useProjectStore} from 'src/pinia/modules/project';
 import {useUserStore} from 'src/pinia/modules/user';
+import {useGithubStore} from 'src/pinia/modules/github';
 import {sample_roles_t, sample_t, user_sample_roles_t, sample_role_targetrole_t, sample_role_action_t} from 'src/api/backend-types';
 import {defineComponent} from 'vue';
 import {table_t} from 'src/types/main_types';
@@ -632,6 +633,7 @@ export default defineComponent({
     ]),
     ...mapWritableState(useProjectStore, ['freezed']),
     ...mapState(useUserStore, ['isLoggedIn', 'isSuperAdmin', 'loggedWithGithub', 'avatar', 'username']),
+    ...mapState(useGithubStore, ['reloadCommits']),
     projectName(): string {
       return this.$route.params.projectname as string;
     },
@@ -658,6 +660,11 @@ export default defineComponent({
       return !this.isOwner && this.freezed;
     }
   },
+  watch: {
+    reloadCommits(newVal){
+      if (newVal > 0) this.loadProjectData();
+    }
+  }, 
   created() {
     window.addEventListener('resize', this.handleResize);
     this.handleResize();

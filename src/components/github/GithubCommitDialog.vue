@@ -48,8 +48,9 @@
 </template>
 <script lang="ts">
 import api from '../../api/backend-api';
-import {mapState} from 'pinia';
+import {mapState, mapWritableState} from 'pinia';
 import {useUserStore} from 'src/pinia/modules/user';
+import {useGithubStore} from 'src/pinia/modules/github';
 import {notifyError, notifyMessage} from 'src/utils/notify';
 
 
@@ -82,6 +83,7 @@ export default defineComponent({
     },
     computed:{
         ...mapState(useUserStore, ['username', 'avatar']),
+        ...mapWritableState(useGithubStore, ['reloadCommits'])
     },
     methods: {
         commitChanges(userType: string){
@@ -93,6 +95,7 @@ export default defineComponent({
               .then((response) => {
                 notifyMessage({message:  this.$t('github.commitDialog.commitMessage') + `"${ this.repositoryName}"`});
                 this.$emit('committed')
+                this.reloadCommits = 0;
               })
               .catch((error) => {
                 const errorMessage = error.response.data.message

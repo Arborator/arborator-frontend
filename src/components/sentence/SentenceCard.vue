@@ -225,6 +225,7 @@ import {useProjectStore} from 'src/pinia/modules/project';
 import {notifyError, notifyMessage} from 'src/utils/notify';
 import {useUserStore} from 'src/pinia/modules/user';
 import {useGrewSearchStore} from 'src/pinia/modules/grewSearch';
+import {useGithubStore} from 'src/pinia/modules/github';
 import {PropType} from 'vue';
 
 function sentenceBusFactory(): sentence_bus_t {
@@ -300,6 +301,7 @@ export default defineComponent({
 
   computed: {
     ...mapWritableState(useProjectStore, ['diffMode', 'diffUserId']),
+    ...mapWritableState(useGithubStore, ['reloadCommits']),
     ...mapState(useProjectStore, ['isAdmin', 'isTeacher', 'exerciseMode', 'shownMeta', 'getProjectConfig', 'canSaveTreeInProject']),
     ...mapState(useUserStore, ['isLoggedIn', 'username']),
     lastModifiedTime() {
@@ -435,6 +437,7 @@ export default defineComponent({
             this.sentenceBus.emit('action:saved', {
               userId: this.openTabUser,
             });
+            this.reloadCommits += 1;
             if (this.sentenceData.conlls[changedConllUser]) {
               // the user already had a tree
               this.hasPendingChanges[changedConllUser] = false;

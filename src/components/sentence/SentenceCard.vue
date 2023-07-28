@@ -8,7 +8,7 @@
         </q-chip>&nbsp;&nbsp;&nbsp;
         <q-input
           v-model="sentenceData.sentence"
-          style="width: 65%"
+          :style="openTabUser === '' ? 'width: 100%' : 'width: 65%'"
           class="row items-center justify-center"
           v-bind="$attrs"
           readonly

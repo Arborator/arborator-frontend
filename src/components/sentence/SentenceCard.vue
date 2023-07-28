@@ -469,9 +469,11 @@ export default defineComponent({
       this.sentenceBus.emit('action:tabSelected', {
         userId: this.openTabUser,
       });
-
-      const newMetaText = this.reactiveSentencesObj[this.openTabUser].getSentenceText();
-      this.sentenceBus.emit('changed:metaText', {newMetaText});
+      if (this.openTabUser !== '') {
+        const newMetaText = this.reactiveSentencesObj[this.openTabUser].getSentenceText();
+        this.sentenceBus.emit('changed:metaText', {newMetaText});
+      }
+      
     },
     /**
      * Set the graph infos according to the event payload. This event shoudl be trigerred from the ConllGraph

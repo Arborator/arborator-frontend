@@ -1,9 +1,20 @@
 <template>
   <div class="table">
-    <q-table separator="vertical" hide-header :title="title" :rows="featdata" :columns="columns" row-key="name" :pagination="pagination">
+    <q-table
+      flat bordered
+      separator="vertical"
+      hide-header
+      :title="title"
+      :rows="featdata"
+      :columns="columns"
+      row-key="name"
+      :pagination="pagination"
+      hide-no-data
+      :hide-bottom="title === 'Form' || title === 'Lemma'"
+    >
       <template v-if="modifiable === 'true'" #top-right>
         <q-btn color="primary" round size="s" dense icon="add" @click="addNewFeature()">
-          <q-tooltip :delay="300" content-class="text-white bg-primary">{{$t('attributeTable.addFeature')}}</q-tooltip>
+          <q-tooltip :delay="300" content-class="text-white bg-primary">{{ $t('attributeTable.addFeature') }}</q-tooltip>
         </q-btn>
       </template>
       <template #body="props">
@@ -83,7 +94,7 @@
           </q-td>
           <q-td v-if="modifiable === 'true' && !metadata.includes(props.row.a)" key="actions" :props="props">
             <q-btn dense round flat color="grey" icon="delete" @click="deleteRow(props.row)">
-              <q-tooltip :delay="300"> {{$t('attributeTable.eraseAttribute')}} {{ props.row.a }}</q-tooltip>
+              <q-tooltip :delay="300"> {{ $t('attributeTable.eraseAttribute') }} {{ props.row.a }}</q-tooltip>
             </q-btn>
           </q-td>
         </q-tr>

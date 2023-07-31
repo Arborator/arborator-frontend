@@ -24,8 +24,8 @@
             align="justify"
             narrow-indicator
           >
-            <q-tab name="inputText" icon="title" label="Input text" />
             <q-tab name="inputFile" icon="description" label="Input file" /> 
+            <q-tab name="inputText" icon="title" label="Input text" />
           </q-tabs>
           <q-tab-panels v-model="tab" animated>
             <q-tab-panel class="q-gutter-md" name="inputText">
@@ -235,7 +235,7 @@ export default defineComponent({
       proceed: false,
       columns,
       userIntersPerSample,
-      tab: 'inputText',
+      tab: 'inputFile',
       tokenizeOptions,
       option,
       text: '',

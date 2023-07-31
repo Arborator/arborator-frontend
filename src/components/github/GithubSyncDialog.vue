@@ -185,7 +185,12 @@ export default defineComponent({
         }, 
         async synchronizeWithGitRepo(repoName: string, branch: string, branchSyn: string) {
             if (branchSyn == 'default') branchSyn = branch;
-            const data = {repositoryName: repoName, branchImport: branch, branchSyn: branchSyn};
+            const data = {
+                repositoryName: repoName, 
+                branchImport: branch, 
+                branchSyn: branchSyn, 
+                username: this.username,
+            };
             this.loading = true;
             var interval = setTimeout(() => {this.$q.notify({
                 message: this.$t('github.syncWarningMessage'),
@@ -194,7 +199,7 @@ export default defineComponent({
                 timeout: 5000
             })}, 10000); 
             api
-              .synchronizeWithGithubRepo(this.projectName as string, this.username as string,  data)
+              .synchronizeWithGithubRepo(this.projectName as string,  data)
               .then((response) => {
                 notifyMessage({message: `"${this.projectName}" ${this.$t('github.synchronizeMessage')} "${repoName}"`});
                 this.loading = false;

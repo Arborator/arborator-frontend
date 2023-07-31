@@ -74,7 +74,7 @@ export default defineComponent({
     methods: {
         getSynchronizedGithubRepo() {
             api
-                .getSynchronizedGithubRepository(this.projectName, this.username)
+                .getSynchronizedGithubRepository(this.projectName)
                 .then((response) => {
                     this.synchronizedBranch = response.data.branch;
                 })

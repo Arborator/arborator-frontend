@@ -305,11 +305,11 @@ export default {
   getGithubRepoBranches(projectName: string, username: string, repoName: string) {
     return API.get(`/projects/${projectName}/${username}/github/branch?full_name=${repoName}`);
   },
-  synchronizeWithGithubRepo(projectName: string, username: string, data: any) {
-    return API.post(`/projects/${projectName}/${username}/synchronize-github`, data, { timeout: 4000000 });
+  synchronizeWithGithubRepo(projectName: string, data: any) {
+    return API.post(`/projects/${projectName}/synchronize-github`, data, { timeout: 4000000 });
   },
-  getSynchronizedGithubRepository(projectName: string, username: string) {
-    return API.get<getGithubSynchronizedRepository_RV>(`/projects/${projectName}/${username}/synchronize-github`);
+  getSynchronizedGithubRepository(projectName: string) {
+    return API.get<getGithubSynchronizedRepository_RV>(`/projects/${projectName}/synchronize-github`);
   },
   deleteSynchronization(projectName: string, username: string) {
     return API.delete(`/projects/${projectName}/${username}/synchronize-github`);

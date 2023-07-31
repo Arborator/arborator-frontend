@@ -673,7 +673,7 @@ export default defineComponent({
     this.loadProjectData();
     this.notifyFreezedProject();
     document.title = `ArboratorGrew: ${this.projectName}`;
-    if (this.isLoggedIn) this.getSynchronizedGithubRepo();
+    this.getSynchronizedGithubRepo();
   },
   unmounted() {
     window.removeEventListener('resize', this.handleResize);
@@ -833,7 +833,7 @@ export default defineComponent({
 
     getSynchronizedGithubRepo() {
       api
-        .getSynchronizedGithubRepository(this.projectName, this.username)
+        .getSynchronizedGithubRepository(this.projectName)
         .then((response) => {
           this.githubSynchronizedRepo = response.data.repositoryName;
         })

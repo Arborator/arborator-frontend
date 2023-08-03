@@ -143,10 +143,10 @@ export default defineComponent({
   data() {
     const currentQueryType: 'SEARCH' | 'REWRITE' = grewTemplates.searchQueries[0].type as 'SEARCH' | 'REWRITE';
     const usersToApplyOptions = [
-        { value: 'validated', label: this.$t('projectView.tooltipFabGrewValidated'), icon:'verified'},
         { value: 'user', label: this.$t('projectView.tooltipFabGrewUser')},
         { value: 'user_recent', label: this.$t('projectView.tooltipFabGrewUserRecent')},
         { value: 'recent', label: this.$t('projectView.tooltipFabGrewRecent'), icon: 'schedule' },
+        { value: 'validated', label: this.$t('projectView.tooltipFabGrewValidated'), icon:'verified'},
         { value: 'all', label: this.$t('projectView.tooltipFabGrewAll'), icon: 'groups' },
       ];
     const usersToApply = usersToApplyOptions[0];
@@ -170,17 +170,15 @@ export default defineComponent({
   computed: {
     ...mapState(useGrewSearchStore, ['lastQuery']),
     ...mapState(useUserStore, ['isLoggedIn', 'avatar', 'username']),
-    ...mapState(useProjectStore, ['shownFeaturesChoices', 'annotationFeatures', 'featuresSet', 'isGuest', 'canSaveTreeInProject', 'canValidateUsersTrees']),
+    ...mapState(useProjectStore, ['shownFeaturesChoices', 'annotationFeatures', 'featuresSet', 'isGuest', 'canSaveTreeInProject']),
     userOptions() {
-      if (!this.canSaveTreeInProject || this.isGuest){
-        return this.usersToApplyOptions.slice(2)
+      if(this.isGuest){
+        return this.usersToApplyOptions.slice(2);
       }
-      if(!this.canValidateUsersTrees){
-        return this.searchReplaceTab === 'REWRITE' ? this.usersToApplyOptions.slice(1,4) : this.usersToApplyOptions.slice(1);
+      if(this.canSaveTreeInProject && this.searchReplaceTab === 'REWRITE'){
+        return this.usersToApplyOptions.slice(0, 4);
       }
-      else {
-        return this.searchReplaceTab === 'REWRITE' ? this.usersToApplyOptions.slice(0,4) : this.usersToApplyOptions;
-      }
+      return this.usersToApplyOptions; 
     },
   },
   watch: {

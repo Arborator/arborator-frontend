@@ -11,7 +11,7 @@
         </q-card-section>
         <q-card-section class="q-gutter-md">
             <q-list bordered>
-                <q-item v-if="canValidateUsersTrees" tag="label" v-ripple>
+                <q-item tag="label" v-ripple>
                     <q-item-section side top>
                         <q-checkbox v-model="validated" />
                     </q-item-section>
@@ -64,7 +64,6 @@ import { defineComponent, PropType } from 'vue';
 import { sample_t } from 'src/api/backend-types';
 import { mapState } from 'pinia';
 import { useUserStore } from 'src/pinia/modules/user';
-import { useProjectStore } from 'src/pinia/modules/project';
 
 
 export default defineComponent({
@@ -87,7 +86,6 @@ export default defineComponent({
         }
     },
     computed: {
-        ...mapState(useProjectStore, ['canValidateUsersTrees']),
         ...mapState(useUserStore, ['username']),
         otherUsers() {
             let otherUsers: String[] = [];

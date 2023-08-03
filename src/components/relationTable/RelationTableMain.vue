@@ -19,7 +19,7 @@
         <q-btn v-if="canSeeOtherUsersTrees" push icon="ion-md-globe" color="primary" no-caps @click="getRelationTable('all')">
           <q-tooltip content-class="bg-primary" content-style="font-size: 16px"> {{$t('projectView.tooltipFabGrewAll')}} </q-tooltip>
         </q-btn>
-        <q-btn v-if="canValidateUsersTrees" push icon="verified" color="primary" no-caps @click="getRelationTable('validated')">
+        <q-btn v-if="canSeeOtherUsersTrees" push icon="verified" color="primary" no-caps @click="getRelationTable('validated')">
           <q-tooltip content-class="bg-primary" content-style="font-size: 16px"> {{$t('projectView.tooltipFabGrewValidated')}} </q-tooltip>
         </q-btn>
       </q-btn-group>

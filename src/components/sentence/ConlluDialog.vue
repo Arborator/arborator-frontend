@@ -100,7 +100,7 @@ export default defineComponent({
       cmOption: {
         tabSize: 8,
         styleActiveLine: true,
-        // lineNumbers: true,
+        lineNumbers: false,
         lineWrapping: true,
         line: true,
         mode: 'tsv',

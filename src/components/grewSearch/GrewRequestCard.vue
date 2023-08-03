@@ -147,6 +147,7 @@ export default defineComponent({
         { value: 'user_recent', label: this.$t('projectView.tooltipFabGrewUserRecent')},
         { value: 'recent', label: this.$t('projectView.tooltipFabGrewRecent'), icon: 'schedule' },
         { value: 'validated', label: this.$t('projectView.tooltipFabGrewValidated'), icon:'verified'},
+        { value: 'pending', label: this.$t('projectView.tooltipFabGrewPending'), icon:'pending' },
         { value: 'all', label: this.$t('projectView.tooltipFabGrewAll'), icon: 'groups' },
       ];
     const usersToApply = usersToApplyOptions[0];
@@ -170,15 +171,16 @@ export default defineComponent({
   computed: {
     ...mapState(useGrewSearchStore, ['lastQuery']),
     ...mapState(useUserStore, ['isLoggedIn', 'avatar', 'username']),
-    ...mapState(useProjectStore, ['shownFeaturesChoices', 'annotationFeatures', 'featuresSet', 'isGuest', 'canSaveTreeInProject']),
+    ...mapState(useProjectStore, ['shownFeaturesChoices', 'annotationFeatures', 'featuresSet', 'isGuest', 'canSaveTreeInProject', 'canValidateUsersTrees']),
     userOptions() {
-      if(this.isGuest){
-        return this.usersToApplyOptions.slice(2);
-      }
+      if(this.isGuest || !this.canSaveTreeInProject) {
+        return this.usersToApplyOptions.slice(2).filter((option) => option.value !== 'pending');
+      } 
       if(this.canSaveTreeInProject && this.searchReplaceTab === 'REWRITE'){
-        return this.usersToApplyOptions.slice(0, 4);
+        return this.usersToApplyOptions.slice(0,4);
       }
-      return this.usersToApplyOptions; 
+      return this.usersToApplyOptions;
+      
     },
   },
   watch: {

@@ -177,6 +177,7 @@ export default {
     tooltipFullscreen: 'tableau plein écran',
     tooltipFabGrew: "Recherche avec Grew",
     tooltipFabGrewValidated: 'Voir les arbres validés',
+    tooltipFabGrewPending: 'Voir les arbres en attente',
     tooltipFabGrewUser: 'Voir uniquement mes arbres',
     tooltipFabGrewUserRecent: 'Voir mes arbres, avec les arbres les plus récents',
     tooltipFabGrewRecent: 'Voir les arbres les plus récents',

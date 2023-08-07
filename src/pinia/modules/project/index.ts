@@ -78,7 +78,15 @@ export const useProjectStore = defineStore('project', {
     canValidateUsersTrees(): boolean {
       return this.isAdmin || this.isValidator;
     },
-    getAnnofjson: (state) => JSON.stringify(state.annotationFeatures, null, 4),
+    getAnnotationSetting(state): string{
+      if(this.config === 'ud') {
+        return JSON.stringify(state.annotationFeaturesUD, null, 4)
+      }
+      else{
+        return JSON.stringify(state.annotationFeatures, null, 4)
+      }
+    },
+    getSUDAnnofJson: (state) => JSON.stringify(state.annotationFeatures, null, 4),
     getUDAnnofJson: (state) => JSON.stringify(state.annotationFeaturesUD, null, 4),
     shownMetaChoices: (state) => state.annotationFeatures.META,
     shownFeaturesChoices: (state) =>
@@ -120,6 +128,7 @@ export const useProjectStore = defineStore('project', {
           this.image = response.data.image;
           this.description = response.data.description;
           this.freezed = response.data.freezed;
+          this.config = response.data.config;
         })
         .then(() => {
           api.getProjectUsersAccess(projectname).then((response) => {

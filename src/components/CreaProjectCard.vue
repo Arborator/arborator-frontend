@@ -1,9 +1,9 @@
 <template>
   <q-dialog v-model="creatDialog" transition-show="fade" transition-hide="fade" persistent>
-    <q-card :class="$q.dark.isActive ? 'bg-dark' : 'bg-grey-1'" style="min-width: 50vw;">
+    <q-card style="min-width: 50vw;">
       <q-bar class="bg-primary text-white">
         <q-space />
-        <q-btn  @click="closeDialog" flat dense icon="close" />
+        <q-btn @click="closeDialog" flat dense icon="close" />
       </q-bar>
       <div v-if="loggedWithGithub">
         <q-linear-progress size="10px" :value="progress" color="primary" />
@@ -19,22 +19,81 @@
             filled
             :label="$t('createProjectCard.projectName')"
             lazy-rules
-            :rules="[(val) => (val && val.length > 0) || 'Please type something']"
+            :rules="[(val) => (val && val.length > 0) || $t('createProjectCard.inputWarning')]"
           />
           <q-input id="descriptioninput" v-model="project.description" filled label="Description" />
-          <div>
-            <q-btn-toggle
-              v-model="project.visibility"
-              label="Visibility"
-              glossy
-              toggle-color="primary"
-              :options="[
-                { label: $t('createProjectCard.visibilityMode[0]'), value: 0 },
-                { label: $t('createProjectCard.visibilityMode[1]'), value: 1 },
-                { label: $t('createProjectCard.visibilityMode[2]'), value: 2 },
-              ]"
-            />
+          <q-separator />
+          <q-list>
+            <q-item tag="label" v-ripple>
+              <q-item-section side top>
+                <q-radio v-model="project.visibility" :val="2"/>
+              </q-item-section>
+              <q-item-section side avatar>
+               <q-icon size="md" name="o_groups" />
+              </q-item-section>
+              <q-item-section>
+                <q-item-label>{{$t('createProjectCard.visibilityMode[2]')}}</q-item-label>
+                <q-item-label caption>
+                  {{ $t('projectSettings.togglePrivateCaption[2]') }}
+                </q-item-label>
+              </q-item-section>
+            </q-item>
+            <q-item tag="label" v-ripple>
+              <q-item-section side top>
+                <q-radio v-model="project.visibility" :val="1"/>
+              </q-item-section>
+              <q-item-section side avatar>
+               <q-icon size="md" name="o_visibility" />
+              </q-item-section>
+              <q-item-section>
+                <q-item-label>{{$t('createProjectCard.visibilityMode[1]')}}</q-item-label>
+                <q-item-label caption>
+                  {{ $t('projectSettings.togglePrivateCaption[1]') }}
+                </q-item-label>
+              </q-item-section>
+            </q-item>
+            <q-item tag="label" v-ripple>
+              <q-item-section side top>
+                <q-radio v-model="project.visibility" :val="0"/>
+              </q-item-section>
+              <q-item-section side avatar>
+               <q-icon size="md" name="o_lock" />
+              </q-item-section>
+              <q-item-section>
+                <q-item-label>{{ $t('createProjectCard.visibilityMode[0]') }}</q-item-label>
+                <q-item-label caption>
+                  {{ $t('projectSettings.togglePrivateCaption[0]') }}
+                </q-item-label>
+              </q-item-section>
+            </q-item>
+          </q-list>
+          <q-separator />
+          <div class="text-h6 text-left">
+            Corpus configuration
           </div>
+          <div class="row q-gutter-md">
+            <div class="col">
+              <q-select
+                style="text-transform: capitalize"
+                v-model="project.language"
+                filled
+                :options="[]"
+                stack-label
+                label="Language"
+              />
+            </div>
+            <div class="col">
+              <q-select
+                v-model="project.config"
+                filled
+                :options="annotationConfigOptions"
+                stack-label
+                emit-value
+                label="Annotation settings"
+              />
+            </div>
+          </div>
+          <q-separator />
           <q-toggle v-model="project.showAllTrees" :label="$t('createProjectCard.showAllTrees')"  />
           <q-toggle v-model="project.exerciseMode" :label="$t('createProjectCard.exerciseMode')" />
           <div class="row q-gutter-md justify-center">
@@ -75,13 +134,19 @@ export default defineComponent({
     },
   },
   data() {
+    const annotationConfigOptions = [
+      { value: 'sud', label: 'SUD'}, 
+      { value: 'ud', label: 'UD'},
+      { value: 'other', label:'Other'}
+    ];
     return {
       submitting: false,
       project: {
         projectName: '',
         description: '',
         visibility: 2,
-        // isOpen: true,
+        language: '', 
+        config: '',
         showAllTrees: true,
         exerciseMode: false,
       },
@@ -90,6 +155,7 @@ export default defineComponent({
       isShowSyncBtn: false,
       isShowGithubSyncPanel: false,
       synchronized:'',
+      annotationConfigOptions,
     };
   },
   computed: {
@@ -100,15 +166,9 @@ export default defineComponent({
   },
   methods: {
     ...mapActions(useProjectStore, ['resetAnnotationFeatures']),
-    /**
-     * Handle project submission by creating form data and sending to backend
-     *
-     * @returns void
-     */
     onSubmit() {
       this.submitting = true;
       this.resetAnnotationFeatures();
-      // this.$store.dispatch('config/resetAnnotationFeatures'); // reset annotationFeature object
       const data = {
         ...this.project,
         username: this.username,

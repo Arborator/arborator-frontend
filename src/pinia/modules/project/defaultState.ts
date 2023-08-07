@@ -12,6 +12,7 @@ interface configState {
   showAllTrees: boolean;
   exerciseMode: boolean;
   freezed: boolean;
+  config: string;
   diffMode: boolean;
   diffUserId: string;
   shownFeatures: string[];
@@ -35,6 +36,7 @@ export default function defaultState(): configState {
     showAllTrees: true,
     exerciseMode: false,
     freezed: false,
+    config: '',
     diffMode: false,
     diffUserId: '',
     shownFeatures: ['FORM', 'UPOS', 'LEMMA', 'MISC.Gloss'],

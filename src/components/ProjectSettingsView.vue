@@ -270,8 +270,10 @@ export default defineComponent({
       'cleanedImage',
       'shownFeaturesChoices',
       'shownMetaChoices',
-      'getAnnofjson',
+      'getSUDAnnofJson',
       'getUDAnnofJson',
+      'getAnnotationSetting',
+      'config',
     ]),
     showAllTreesLocal: {
       get() {
@@ -337,7 +339,7 @@ export default defineComponent({
     },
   },
   mounted() {
-    this.annotationFeaturesJson = this.getAnnofjson;
+    this.annotationFeaturesJson = this.getAnnotationSetting;
   },
 
   methods: {
@@ -376,7 +378,7 @@ export default defineComponent({
 
     resetAnnotationFeaturesWrapper() {
       this.resetAnnotationFeatures();
-      this.annotationFeaturesJson = this.getAnnofjson;
+      this.annotationFeaturesJson = this.getSUDAnnofJson;
     },
 
     resetAnnotationFeaturesUDWrapper() {

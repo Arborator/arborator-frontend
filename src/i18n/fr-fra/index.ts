@@ -225,6 +225,7 @@ export default {
     showAllTrees: 'Afficher tous les arbres',
     create: 'Créer',
     createMessage: 'est créé',
+    inputWarning: 'Veuillez taper quelque chose',
   },
 
   exportSamples: {
@@ -261,7 +262,7 @@ export default {
     descriptionSave: 'Sauvegarder la description',
     togglePrivate: 'Visibilité',
     togglePrivateCaption:
-      "Les projets privés limitent l'accès et l'annotation, les projets visibles limitent uniquement l'annotation et les projets ouverts permettent à quiconque de voir et de contribuer à leur annotation.",
+      ["Les projets privés limitent l'accès et l'annotation.", "Les projets visibles limitent uniquement l'annotation.", "Les projets ouverts permettent à quiconque de voir et de contribuer à leur annotation."],
     toggleAllVisible: 'Tous les arbres sont visibles',
     toggleAllVisibleCaption: "Si oui, les annotateurs pourront voir les arbres des autres.",
     toggleExerciseMode: 'Mode Exercice',

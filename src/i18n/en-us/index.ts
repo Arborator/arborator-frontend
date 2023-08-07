@@ -232,6 +232,7 @@ export default {
     showAllTrees: 'Show All Trees',
     create: 'Create',
     createMessage: 'is created',
+    inputWarning: 'Please type something',
   },
 
   exportSamples: {
@@ -273,7 +274,7 @@ export default {
     descriptionSave: 'Save description',
     togglePrivate: 'Visibility',
     togglePrivateCaption:
-      'Private projects restrain access and annotation, Visible projects restrain only annotation and Open projects allow anyone to view and contribute their annotation',
+      ['Private projects restrain access and annotation.', 'Visible projects restrain only annotation.', 'Open projects allow anyone to view and contribute their annotation.'],
     toggleAllVisible: 'All trees visible',
     toggleAllVisibleCaption: "If true, annotators will be able to see others' trees",
     toggleExerciseMode: 'Exercise mode',

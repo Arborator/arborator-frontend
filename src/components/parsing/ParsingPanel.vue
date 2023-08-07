@@ -1,5 +1,5 @@
 <template>
-  <QCard>
+  <QCard flat>
     <div class="row q-pa-md">
       <div class="col">
         <p><b>General Settings</b></p>

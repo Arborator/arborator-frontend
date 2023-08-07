@@ -11,7 +11,6 @@ import {
   getProject_RV,
   getUsers_RV,
   logout_RV,
-  modifySampleRole_RV,
   grewSearch_RV,
   updateManyProjectUserAccess_RV,
   updateProjectConlluSchema_ED,
@@ -26,8 +25,6 @@ import {
  getGithubSynchronizedRepository_RV, getConstructiconEntries_RV, saveConstructiconEntry_RV,
 } from './endpoints';
 import {
-  sample_role_action_t,
-  sample_role_targetrole_t,
   transcription_t,
   ModelInfo_t,
   ParsingSettings_t, ConstructiconEntry_t
@@ -132,13 +129,6 @@ export default {
   },
   deleteSample(projectname: string, samplename: string) {
     return API.delete(`/projects/${projectname}/samples/${samplename}`);
-  },
-  modifySampleRole(projectname: string, samplename: string, username: string, targetrole: sample_role_targetrole_t, action: sample_role_action_t) {
-    return API.post<modifySampleRole_RV>(`/projects/${projectname}/samples/${samplename}/role`, {
-      username,
-      targetrole,
-      action,
-    });
   },
   updateSampleExerciseLevel(projectname: string, samplename: string, exerciseLevel: number) {
     return API.post(`/projects/${projectname}/samples/${samplename}/exercise-level`, { exerciseLevel });

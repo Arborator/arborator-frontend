@@ -197,7 +197,6 @@ import 'codemirror/mode/python/python.js';
 import 'codemirror/lib/codemirror.css';
 import 'codemirror/theme/material-darker.css';
 
-import UserSelectTable from './UserSelectTable.vue';
 import ConfirmAction from './ConfirmAction.vue';
 import UserSelect from './UserSelect.vue';
 import {mapActions, mapState, mapWritableState,} from 'pinia';
@@ -213,7 +212,6 @@ export default defineComponent({
     ProjectIcon, 
     Codemirror, 
     UserSelect,
-    UserSelectTable, 
     ConfirmAction,
     },
   props: {

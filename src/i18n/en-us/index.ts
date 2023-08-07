@@ -164,6 +164,7 @@ export default {
     tooltipAddSample: 'Add new samples',
     tooltipExportSample: ['Select the samples you want to export', 'Export selected samples'],
     tooltipDeleteSample: ['Select the samples you want to delete', 'Delete selected samples'],
+    tooltipExportEvaluation: 'Export evaluations of the students (only works if only one sample is selected)',
     tooltipCreateLexicon: ['Select the samples to create a lexicon', 'Create lexicon from selected samples'],
     tooltipParsingPanel: ['Open parsing panel', 'Close parsing panel'],
     tooltipParser: [
@@ -172,6 +173,8 @@ export default {
       'Click to set the parameters for parser',
       'Click to interrupt parsing',
     ],
+    tootlipConstructiconPanel: 'See the constructicon',
+    tooltipSynchronize:'Synchronize with github',
     tooltipMore: 'More options',
     tooltipSynchronizedProject: 'This project is synchronized with',
     tooltipSearch: 'Search a sample',

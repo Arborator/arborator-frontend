@@ -73,16 +73,6 @@ export interface project_access_t {
 }
 
 //// SAMPLES
-// this user_sample_roles_t interface is messy , it comes from backend, it should prob change
-export interface user_sample_roles_t {
-  key: string;
-  value: string;
-}
-
-export interface sample_roles_t {
-  annotator: user_sample_roles_t[];
-  validator: user_sample_roles_t[];
-}
 export interface sample_t {
   sample_name: string;
   treesFrom: string[];
@@ -90,12 +80,8 @@ export interface sample_t {
   number_trees: number;
   tokens: number;
   exerciseLevel: number;
-  roles: sample_roles_t;
   treeByUser: { [key: string]: number };
 }
-
-export type sample_role_targetrole_t = 'annotator' | 'validator';
-export type sample_role_action_t = 'add' | 'remove';
 
 //// GREW
 export interface matche_t {

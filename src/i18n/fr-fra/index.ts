@@ -162,6 +162,7 @@ export default {
     tooltipAddSample: 'Ajouter un nouvel échantillon',
     tooltipExportSample: ['Sélectionnez les échantillons à exporter', 'Exporter les échantillons sélectionnés'],
     tooltipDeleteSample: ['Sélectionnez les échantillons à supprimer', 'Supprimer les échantillons sélectionnés'],
+    tooltipExportEvaluation: 'Exporter les évaluations des étudiants (ne fonctionne que si un seul échantillon est sélectionné)',
     tooltipCreateLexicon: ['Sélectionnez les échantillons pour créer le lexique', "Créer le lexique à partir d'échantillons sélectionnés"],
     tooltipParsingPanel: ['Ouvrir le parseur', 'Fermer le parseur'],
     tooltipParser: [
@@ -170,6 +171,8 @@ export default {
       'Cliquer et choisir les paramètres pour le parseur',
       'Cliquer pour arrêter le parseur',
     ],
+    tootlipConstructiconPanel: 'Voir le constructicon',
+    tooltipSynchronize:'Synchroniser ce projet avec github',
     tooltipMore: "Plus d'options",
     tooltipSynchronizedProject: 'Ce projet est synchronisé avec',
     tooltipSearch: 'Rechercher un échantillon',

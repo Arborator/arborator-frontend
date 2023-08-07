@@ -274,10 +274,6 @@ export default defineComponent({
     tologin(url: string) {
       window.location.assign(url);
       return this.storage;
-      // console.log(this.source + '/login/google'); openURL(this.source + '/login/google');
-      // window.location.href = 'https://arboratorgrew.elizia.net/login/google';
-      // window.location.assign("https://arboratorgrew.elizia.net/login/google");
-      // window.location.assign("https://profiterole-almanach-ui.paris.inria.fr:8888/");
     },
     logout_() {
       this.logout()

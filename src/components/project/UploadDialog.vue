@@ -58,7 +58,7 @@
                   </template>
                   <template #after>
                     <q-btn color="primary" dense icon="cloud_upload" round :loading="uploadSample.submitting"
-                      :disable="disableUploadBtn" @click="uploadSamples()" />
+                      :disable="disableUploadBtn || customUserId === ''" @click="uploadSamples()" />
                     <q-tooltip v-if="uploadSample.attachment.file.length == 0" content-class="text-white bg-primary">
                       Select file to upload
                     </q-tooltip>
@@ -66,7 +66,12 @@
                 </q-file>
               </div>
               <div>
-                <q-input outlined v-model="customUserId" label="Custom UserId By default it's your username" />
+                <q-input 
+                  outlined 
+                  v-model="customUserId" 
+                  label="Custom UserId By default it's your username"
+                  :rules="[(val) => (val && val.length > 0) || 'You can not upload file without userId please type something']"
+                  />
               </div>
             </q-tab-panel>
           </q-tab-panels>

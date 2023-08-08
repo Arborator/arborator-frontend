@@ -176,10 +176,10 @@ export default {
     tooltipSelectVisible: 'Sélectionner les colonnes visibles',
     tooltipFullscreen: 'tableau plein écran',
     tooltipFabGrew: "Recherche avec Grew",
-    tooltipFabGrewUser: 'Voir uniquement mes arbres',
-    tooltipFabGrewUserRecent: 'Voir mes arbres, avec les arbres les plus récents',
-    tooltipFabGrewRecent: 'Voir les arbres les plus récents',
-    tooltipFabGrewAll: 'Voir tous les arbres',
+    tooltipFabGrewUser: 'Rechercher dans mes arbres',
+    tooltipFabGrewUserRecent: 'Rechercher dans mes arbres, avec les arbres les plus récents',
+    tooltipFabGrewRecent: 'Rechercher dans les arbres les plus récents',
+    tooltipFabGrewAll: 'Rechercher dans tous les arbres',
     tooltipRelationTable: 'Obtenir la table des relations',
     tooltipWindows: ['Minimize', 'Maximize', 'Close'],
     search: 'Rechercher',
@@ -231,7 +231,7 @@ export default {
   },
 
   grewSearch: {
-    treesType: "Sélectionner le type d'arbres",
+    treesType: "Rechercher sur",
     search: 'Rechercher',
     rewrite: 'Réécrire',
     tryRules: 'Essayer les règles',

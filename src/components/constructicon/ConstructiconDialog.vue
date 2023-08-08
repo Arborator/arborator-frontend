@@ -225,7 +225,7 @@ export default defineComponent({
     grewSearch(query: string) {
       console.log(query);
       this.switchGrewDialog(true);
-      this.changeLastGrewQuery({text: query, type: 'SEARCH'});
+      this.changeLastGrewQuery({text: query, type: 'SEARCH', userType: 'user'});
     },
     changeEditMode() {
       if (!this.activeEntry) {

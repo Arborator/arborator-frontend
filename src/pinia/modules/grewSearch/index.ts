@@ -4,15 +4,16 @@ export const useGrewSearchStore = defineStore('grewSearch', {
   state: () => {
     return {
       grewDialog: false,
-      lastQuery: null as null | { text: string; type: 'REWRITE' | 'SEARCH' },
+      lastQuery: null as null | { text: string; type: 'REWRITE' | 'SEARCH', userType: string },
       pendingModifications: new Set(), // set of sentence ids
+      lastTreeType: 'user',
     };
   },
   actions: {
     switchGrewDialog(newDialogState: boolean) {
       this.grewDialog = newDialogState;
     },
-    changeLastGrewQuery(query: null | { text: string; type: 'REWRITE' | 'SEARCH' }) {
+    changeLastGrewQuery(query: null | { text: string; type: 'REWRITE' | 'SEARCH', userType: string }) {
       this.lastQuery = query;
     },
     addPendingModification(pendingModification: any) {

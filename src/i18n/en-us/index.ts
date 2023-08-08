@@ -178,10 +178,10 @@ export default {
     tooltipSelectVisible: 'Select visible columns',
     tooltipFullscreen: 'Fullscreen table',
     tooltipFabGrew: 'Search with Grew',
-    tooltipFabGrewUser: 'View only my trees',
-    tooltipFabGrewUserRecent: 'View my trees, filled up with the most recent trees',
-    tooltipFabGrewRecent: 'View most recent trees',
-    tooltipFabGrewAll: 'View all trees',
+    tooltipFabGrewUser: 'Search in my trees',
+    tooltipFabGrewUserRecent: 'Search in my trees, filled up with the most recent trees',
+    tooltipFabGrewRecent: 'Search in the most recent trees',
+    tooltipFabGrewAll: 'Search in all trees',
     tooltipRelationTable: 'Get Relation Tables',
     tooltipWindows: ['Minimize', 'Maximize', 'Close'],
     search: 'Search',
@@ -238,7 +238,7 @@ export default {
   },
 
   grewSearch: {
-    treesType: 'Select trees type',
+    treesType: 'Search in',
     search: 'Search',
     rewrite: 'Rewrite',
     tryRules: 'Try rules',

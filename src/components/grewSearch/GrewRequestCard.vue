@@ -10,7 +10,36 @@
         <div class="q-pa-xs">
           <div class="row">
             <div class="col-10">
-              <q-select dense outlined v-model="usersToApply" :options="userOptions" :label="$t('grewSearch.treesType')" color="primary">
+              <q-select outlined v-model="usersToApply" :options="userOptions" :label="$t('grewSearch.treesType')" color="primary">
+                <template v-slot:selected-item="scope">
+                  <q-chip
+                    class=" q-col-gutter-md"
+                    v-if="scope.opt.value == 'user' || scope.opt.value == 'user_recent'"
+                    dense
+                    square
+                    color="white"
+                    text-color="primary"
+                    size="md"
+                  >
+                    <q-avatar>
+                      <img :src="avatar" />
+                      <q-badge v-if="scope.opt.value == 'user_recent'" floating transparent>+</q-badge>
+                    </q-avatar>
+                    {{ scope.opt.label }}
+                  </q-chip>
+                  <q-chip
+                    v-else
+                    dense
+                    square
+                    color="white"
+                    text-color="primary"
+                    size="md"
+                    :label="scope.opt.label"
+                    :icon="scope.opt.icon"
+                  />
+              
+                </template>
+                
                 <template v-slot:option="scope">
                   <q-item v-bind="scope.itemProps">
                     <q-item-section avatar>
@@ -191,6 +220,7 @@ export default defineComponent({
     if (this.lastQuery !== null) {
       this.currentQueryType = this.lastQuery.type;
       this.currentQuery = this.lastQuery.text;
+      this.usersToApply = this.usersToApplyOptions.filter((option) => option.value === this.lastQuery?.userType)[0]
     }
     this.searchReplaceTab = this.currentQueryType;
 
@@ -204,7 +234,7 @@ export default defineComponent({
      */
     onSearch() {
       this.parentOnSearch(this.currentQuery, this.usersToApply.value);
-      this.changeLastGrewQuery({ text: this.currentQuery, type: this.currentQueryType });
+      this.changeLastGrewQuery({ text: this.currentQuery, type: this.currentQueryType, userType: this.usersToApply.value  });
     },
     /**
      * Call parent onsearch function and update store and history
@@ -213,7 +243,7 @@ export default defineComponent({
      */
     tryRules() {
       this.parentOnTryRules(this.currentQuery, this.usersToApply.value);
-      this.changeLastGrewQuery({ text: this.currentQuery, type: this.currentQueryType });
+      this.changeLastGrewQuery({ text: this.currentQuery, type: this.currentQueryType, userType: this.usersToApply.value });
     },
     /**
      * Modify the search pattern (search string)

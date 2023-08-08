@@ -229,7 +229,7 @@ export default defineComponent({
         grewRuleConcatenated += `rule r${counter} {\n${thisRule}\n}\n`;
         counter = counter + 1;
       }
-      this.changeLastGrewQuery({ text: grewRuleConcatenated, type: 'REWRITE' });
+      this.changeLastGrewQuery({ text: grewRuleConcatenated, type: 'REWRITE', userType: this.lexiconType });
       this.switchGrewDialog(true);
     },
 

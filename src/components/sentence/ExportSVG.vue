@@ -40,7 +40,6 @@ export default defineComponent({
       // todo: instead of this long string, read the actual css file and put it there.
       // var svg = this.graphInfo.conllGraph.snap.treedata.s.toString();
       const sentenceSVG = this.sentenceBus.sentenceSVGs[this.userId];
-      console.log(sentenceSVG);
       let svg = sentenceSVG.snapSentence.toString();
       const style = `<style>
 <![CDATA[
@@ -129,29 +128,7 @@ export default defineComponent({
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
-      // this.table.exporting = false;
       notifyMessage({ message: 'Files downloaded' });
-    },
-    /**
-     * Handle token click event to display the related dialog
-     *
-     * @param {Event} event
-     * @returns void
-     */
-    ttselect(event: any) {
-      let cg;
-      // triggered if some letters of the sentence are selected
-      if ('conllGraph' in this.$refs) {
-        [cg] = (this.$refs.conllGraph as { user: unknown; openTokenDialog: CallableFunction }[]).filter((c) => c.user === this.tab);
-      }
-      if (cg) {
-        cg.openTokenDialog(
-          // if the user's conllGraph is open:
-          event.srcElement.selectionStart,
-          event.srcElement.selectionEnd,
-          event.srcElement.value.substring(event.srcElement.selectionStart, event.srcElement.selectionEnd)
-        );
-      }
     },
   },
 });

@@ -63,15 +63,6 @@
               </div>
             </q-item-section>
           </q-item>
-          <q-item tag="label">
-            <q-item-section>
-              <q-item-label>{{ $t('projectSettings.toggleAllVisible') }}</q-item-label>
-              <q-item-label caption>{{ $t('projectSettings.toggleAllVisibleCaption') }}</q-item-label>
-            </q-item-section>
-            <q-item-section avatar>
-              <q-toggle v-model="showAllTreesLocal" color="primary" checked-icon="check" unchecked-icon="clear" />
-            </q-item-section>
-          </q-item>
 
           <q-item tag="label">
             <q-item-section>
@@ -253,7 +244,6 @@ export default defineComponent({
   computed: {
     ...mapWritableState(useProjectStore, [
       'description',
-      'showAllTrees',
       'exerciseMode',
       'diffMode',
       'diffUserId',
@@ -275,14 +265,7 @@ export default defineComponent({
       'getAnnotationSetting',
       'config',
     ]),
-    showAllTreesLocal: {
-      get() {
-        return this.showAllTrees;
-      },
-      set(value: boolean) {
-        this.updateProjectSettings({ showAllTrees: value });
-      },
-    },
+  
     exerciseModeLocal: {
       get() {
         return this.exerciseMode || false;

@@ -94,8 +94,32 @@
             </div>
           </div>
           <q-separator />
-          <q-toggle v-model="project.showAllTrees" :label="$t('createProjectCard.showAllTrees')"  />
-          <q-toggle v-model="project.exerciseMode" :label="$t('createProjectCard.exerciseMode')" />
+          <div class="row">
+            <div class="col-md-7 text-h6">
+                Annotation mode
+            </div>
+            <div class="col-md-1 offset-md-4">
+                <q-btn outline round size="sm" color="primary" icon="question_mark"
+                    href="https://arborator.github.io/arborator-documentation/#/?id=exercise-mode"
+                    target="_blank">
+                    <q-tooltip content-class="text-white bg-primary"> Assistance </q-tooltip>
+                </q-btn>
+            </div>
+          </div>
+          <q-list>
+            <q-item>
+              <q-item-section side top>
+                <q-checkbox v-model="project.exerciseMode" />
+              </q-item-section>
+              <q-item-section>
+                <q-item-label>Blind Annotation</q-item-label>
+                <q-item-label caption>
+                 In this case the annotators will not be able to see others' trees
+                </q-item-label>
+              </q-item-section>
+            </q-item>
+            
+          </q-list>
           <div class="row q-gutter-md justify-center">
             <q-btn :disable="project.projectName == ''" id="submitproject" type="submit" :label="$t('createProjectCard.create')" color="primary" />
           </div>
@@ -147,7 +171,6 @@ export default defineComponent({
         visibility: 2,
         language: '', 
         config: '',
-        showAllTrees: true,
         exerciseMode: false,
       },
       creatDialog: true,

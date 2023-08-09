@@ -229,7 +229,6 @@ export default {
     projectName: 'Project name',
     visibilityMode: ['Private', 'Visible', 'Open'],
     exerciseMode: 'exercise mode',
-    showAllTrees: 'Show All Trees',
     create: 'Create',
     createMessage: 'is created',
     inputWarning: 'Please type something',

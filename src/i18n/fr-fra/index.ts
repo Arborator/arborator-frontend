@@ -222,7 +222,6 @@ export default {
     projectName: 'Nom du projet',
     visibilityMode: ['Privé', 'Visible', 'Ouvert'],
     exerciseMode: 'Mode exercice',
-    showAllTrees: 'Afficher tous les arbres',
     create: 'Créer',
     createMessage: 'est créé',
     inputWarning: 'Veuillez taper quelque chose',

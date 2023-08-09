@@ -22,7 +22,6 @@ export interface project_with_diff_t {
   description: string;
   image: string;
   visibility: number;
-  showAllTrees: boolean;
   exerciseMode: boolean;
   diffMode: boolean;
   diffUserId: string;
@@ -36,7 +35,6 @@ export interface project_extended_t {
   description: string;
   image: string;
   visibility: number;
-  showAllTrees: boolean;
   exerciseMode: boolean;
   freezed: boolean;
   config: string;

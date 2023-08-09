@@ -120,7 +120,6 @@ export const useProjectStore = defineStore('project', {
         .getProject(projectname)
         .then((response) => {
           this.name = response.data.projectName;
-          this.showAllTrees = response.data.showAllTrees;
           this.exerciseMode = response.data.exerciseMode;
           this.diffMode = response.data.diffMode;
           this.diffUserId = response.data.diffUserId;

@@ -13,7 +13,6 @@
               <q-select outlined v-model="usersToApply" :options="userOptions" :label="$t('grewSearch.treesType')" color="primary">
                 <template v-slot:selected-item="scope">
                   <q-chip
-                    class=" q-col-gutter-md"
                     v-if="scope.opt.value == 'user' || scope.opt.value == 'user_recent'"
                     dense
                     square

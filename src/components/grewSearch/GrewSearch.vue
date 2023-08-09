@@ -90,7 +90,6 @@ export default defineComponent({
           .searchSample(this.$route.params.projectname as string, this.$route.params.samplename as string, data)
           .then((response) => {
             this.resultSearch = response.data;
-            console.log(this.resultSearch)
             this.resultSearchDialog = true;
           })
           .catch((error) => {

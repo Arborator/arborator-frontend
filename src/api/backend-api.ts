@@ -325,6 +325,12 @@ export default {
   // -------------------------------------------------------- //
   // ---------------        To Refactor       --------------- //
   // -------------------------------------------------------- //
+  addNewTags(projectName: string, sampleName: string, data: any){
+    return API.post(`/projects/${projectName}/samples/${sampleName}/tags`, data)
+  },
+  // -------------------------------------------------------- //
+  // ---------------        To Refactor       --------------- //
+  // -------------------------------------------------------- //
 
   getUsersTreeFrom(projectname: string) {
     return API.get(`projects/${projectname}/treesfrom`);

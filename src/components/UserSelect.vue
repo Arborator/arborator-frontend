@@ -15,9 +15,20 @@
         <q-card-section>
             <div class="row q-gutter-md">
                 <div class="col-9">
-                    <q-select outlined dense v-model="selectedUsers" use-input multiple hide-dropdown-icon
-                        option-value="username" option-label="email" input-debounce="0" label="Add new users"
-                        :options="filteredUsers" @filter="filterOption">
+                    <q-select 
+                        outlined 
+                        dense 
+                        v-model="selectedUsers" 
+                        use-input 
+                        multiple 
+                        hide-dropdown-icon
+                        option-value="username" 
+                        option-label="email" 
+                        input-debounce="0" 
+                        label="Add new users"
+                        :options="filteredUsers" 
+                        @filter="filterOption"
+                    >
                         <template v-slot:selected-item="scope">
                             <q-chip v-if="scope.opt.username" removable @remove="scope.removeAtIndex(scope.index)"
                                 :tabindex="scope.tabindex" dense text-color="primary">

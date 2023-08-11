@@ -104,6 +104,7 @@
                 :index="index"
                 search-result=""
                 :exercise-level="exerciseLevel"
+                @reload="getSampleTrees"
               >
               </SentenceCard>
             </template>

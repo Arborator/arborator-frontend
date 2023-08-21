@@ -1,7 +1,6 @@
 import api from '../../../api/backend-api';
 import { notifyError, notifyMessage } from 'src/utils/notify';
 import { defineStore } from "pinia";
-import { error } from 'console';
 
 export interface tag_t {
     value: string, 
@@ -20,7 +19,7 @@ export const useTagsStore = defineStore('tags', {
           defaultTags,  
         }
     },
-    actions: {
+    actions: { 
         addTags(projectName: string, sampleName: string, tags: string[], conll: string){
             const data = { tags: tags, tree: conll}
             api
@@ -31,7 +30,6 @@ export const useTagsStore = defineStore('tags', {
               .catch((error) => {
                 notifyError({error: error});
               })
-
         }
 
     }

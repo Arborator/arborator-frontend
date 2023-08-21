@@ -59,50 +59,7 @@
           </q-btn>
 
           <q-btn v-if="canSaveTreeInProject" flat round dense icon="bookmark" :disable="openTabUser === ''">
-            <q-menu style="height: 300px;">
-              <div class="row q-pa-md">
-                Add tag to this tree
-              </div>
-            <q-separator/>
-              <div class="row q-pa-md">
-                <q-select
-                  outlined 
-                  dense 
-                  v-model="tags" 
-                  use-input 
-                  multiple
-                  option-value="value"
-                  hide-dropdown-icon 
-                  input-debounce="0" 
-                  label="Add tags"
-                  :options="defaultTags" 
-                  emit-value
-                >
-                  <template v-slot:selected-item="scope">
-                    <q-chip 
-                      removable 
-                      @remove="scope.removeAtIndex(scope.index)"
-                      :tabindex="scope.tabindex" 
-                      text-color="primary"
-                      size="sm"
-                    >
-                      {{ scope.opt}}
-                    </q-chip>
-                  </template>
-                  <template class="q-pa-md" v-slot:option="scope">
-                    <div class="row q-pa-xs">
-                      <q-chip v-bind="scope.itemProps" icon="add" :color="scope.opt.color" size="sm">
-                        {{ scope.opt.value }}
-                      </q-chip>
-                    </div>
-                    <q-separator/>
-                  </template>
-                </q-select>
-              </div>
-              <div class="row q-pa-md">
-                <q-btn @click="addNewTag()">Add new tag</q-btn>
-              </div>
-            </q-menu>
+            <TagsMenu :sampleName="sentenceData.sample_name" :reactive-sentences-obj="reactiveSentencesObj"></TagsMenu>
             <q-tooltip>Add tag to this tree</q-tooltip>
           </q-btn>
 
@@ -278,12 +235,12 @@ import ExportSVG from './ExportSVG.vue';
 import TokensReplaceDialog from './TokensReplaceDialog.vue';
 import StatisticsDialog from './StatisticsDialog.vue';
 import MultiEditDialog from './MultiEditDialog.vue';
+import TagsMenu from './TagsMenu.vue';
 import {reactive_sentences_obj_t, sentence_bus_events_t, sentence_bus_t} from 'src/types/main_types';
 import {mapActions, mapState, mapWritableState} from 'pinia';
 import {useProjectStore} from 'src/pinia/modules/project';
 import {notifyError, notifyMessage} from 'src/utils/notify';
 import {useUserStore} from 'src/pinia/modules/user';
-import {useTagsStore} from 'src/pinia/modules/tags';
 import {useGrewSearchStore} from 'src/pinia/modules/grewSearch';
 import {PropType} from 'vue';
 
@@ -310,6 +267,7 @@ export default defineComponent({
     TokensReplaceDialog,
     StatisticsDialog,
     MultiEditDialog,
+    TagsMenu,
   },
   props: {
     index: {
@@ -363,7 +321,6 @@ export default defineComponent({
     ...mapWritableState(useProjectStore, ['diffMode', 'diffUserId']),
     ...mapState(useProjectStore, ['isAdmin', 'isTeacher', 'exerciseMode', 'shownMeta', 'getProjectConfig', 'canSaveTreeInProject', 'canValidateUsersTrees']),
     ...mapState(useUserStore, ['isLoggedIn', 'username']),
-    ...mapState(useTagsStore, ['defaultTags']),
     lastModifiedTime() {
       // this.forceRerender; it was like this when i found it. Should it have = 0 ?
       const lastModifiedTime: { [key: string]: string } = {};
@@ -417,7 +374,6 @@ export default defineComponent({
   },
   methods: {
     ...mapActions(useGrewSearchStore, ['removePendingModification']),
-    ...mapActions(useTagsStore, ['addTags']),
     openStatisticsDialog() {
       this.sentenceBus.emit('open:statisticsDialog', {
         userId: this.openTabUser,
@@ -431,16 +387,6 @@ export default defineComponent({
         userId: this.openTabUser,
       });
     },
-    addNewTag() {
-      const projectName = this.$route.params.projectname as string; 
-      const sampleName = this.sentence.sample_name as string;
-      const metaToReplace = {
-        timestamp: Math.round(Date.now()),
-      };
-      const conll = this.reactiveSentencesObj[this.username].exportConllWithModifiedMeta(metaToReplace);
-      this.addTags(projectName, sampleName, this.tags, conll);
-      this.$emit('reload')
-    }, 
     exportSVG() {
       // todo: instead of this long string, read the actual css file and put it there.
       this.sentenceBus.emit('export:SVG', {userId: this.openTabUser});

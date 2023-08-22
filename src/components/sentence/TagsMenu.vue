@@ -18,6 +18,7 @@
                 :options="filteredTags" 
                 emit-value
                 @filter="filterTags"
+                @new-value="createUserTag"
             >
                 <template v-slot:selected-item="scope">
                     <q-chip removable @remove="scope.removeAtIndex(scope.index)" :tabindex="scope.tabindex" text-color="primary" size="sm">
@@ -32,6 +33,13 @@
                     </div>
                     <q-separator />
                 </template>
+                <template v-slot:no-option>
+                    <q-item>
+                        <q-item-section class="text-grey">
+                            Click enter to create this tag
+                        </q-item-section>
+                    </q-item>
+                </template>
             </q-select>
         </div>
         <div class="row q-pa-md">
@@ -40,8 +48,11 @@
     </q-menu>
 </template>
 <script lang="ts">
+import api from '../../api/backend-api';
+
+import { notifyError, notifyMessage } from 'src/utils/notify';
 import { reactive_sentences_obj_t } from 'src/types/main_types';
-import { mapActions, mapState } from 'pinia';
+import { mapState, mapActions } from 'pinia';
 import { useUserStore } from 'src/pinia/modules/user';
 import { useTagsStore, tag_t } from 'src/pinia/modules/tags';
 
@@ -69,16 +80,29 @@ export default defineComponent({
     computed: {
         ...mapState(useTagsStore, ['defaultTags']),
         ...mapState(useUserStore, ['username']),
+        projectName(){
+            return this.$route.params.projectname as string;
+        }
+    },
+    mounted(){
+        this.getUserTags();
     },
     methods: {
-        ...mapActions(useTagsStore, ['addTags']), 
+        ...mapActions(useTagsStore, ['getUserTags']),
         addNewTag() {
-            const projectName = this.$route.params.projectname as string; 
             const metaToReplace = {
                 timestamp: Math.round(Date.now()),
             };
             const conll = this.reactiveSentencesObj[this.username].exportConllWithModifiedMeta(metaToReplace);
-            this.addTags(projectName, this.sampleName, this.tags, conll);
+            const data = { tags: this.tags, tree: conll}
+            api
+              .addTags(this.projectName, this.sampleName, data)
+              .then(() => {
+                notifyMessage({message: 'Tags Saved'})
+              })
+              .catch((error) => {
+                notifyError({error: error});
+              })
         },
         filterTags(val: string, update: (callback: () => void) => void) {
             if (val === '') {
@@ -92,6 +116,20 @@ export default defineComponent({
                 this.filteredTags = this.defaultTags.filter(v => v.value.toLowerCase().indexOf(needle) > -1);
             });
         },
+        createUserTag (val: string, done: (value: string, mode: string) => void) {
+            if (val.length > 0) {
+                if (!this.defaultTags.map((tag) => tag.value).includes(val)) {
+                    this.defaultTags.push({value: val, color: 'grey-4'});
+                    const data = { tags: val }
+                    api.createUserTags(this.projectName, this.username, data)
+                       .catch((error) => {
+                            notifyError(error);
+                       });   
+                }
+                done(val, 'toggle');
+            }
+        },
+
 
     },
     

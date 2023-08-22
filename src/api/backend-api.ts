@@ -325,8 +325,14 @@ export default {
   // -------------------------------------------------------- //
   // ---------------        To Refactor       --------------- //
   // -------------------------------------------------------- //
-  addNewTags(projectName: string, sampleName: string, data: any){
+  addTags(projectName: string, sampleName: string, data: any){
     return API.post(`/projects/${projectName}/samples/${sampleName}/tags`, data)
+  },
+  createUserTags(projectName: string, username: string, data: any){
+    return API.post(`/projects/${projectName}/tags/${username}`, data)
+  },
+  getUserTags(projectName: string, username: string){
+    return API.get(`/projects/${projectName}/tags/${username}`);
   },
   // -------------------------------------------------------- //
   // ---------------        To Refactor       --------------- //

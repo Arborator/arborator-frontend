@@ -1,6 +1,8 @@
 import api from '../../../api/backend-api';
-import { notifyError, notifyMessage } from 'src/utils/notify';
+import { notifyError} from 'src/utils/notify';
 import { defineStore } from "pinia";
+import { useUserStore } from '../user';
+import { useProjectStore } from '../project';
 
 export interface tag_t {
     value: string, 
@@ -19,18 +21,21 @@ export const useTagsStore = defineStore('tags', {
           defaultTags,  
         }
     },
-    actions: { 
-        addTags(projectName: string, sampleName: string, tags: string[], conll: string){
-            const data = { tags: tags, tree: conll}
+    actions: {
+        getUserTags(){
             api
-              .addNewTags(projectName, sampleName, data)
+              .getUserTags(useProjectStore().name, useUserStore().username)
               .then((response) => {
-                notifyMessage({message: 'Tags Saved'})
+                for(const tag of response.data){
+                    if (!this.defaultTags.map((val) => val.value).includes(tag)){
+                        this.defaultTags.push({value: tag, color: 'gery-4'});
+                    }
+                }
               })
               .catch((error) => {
-                notifyError({error: error});
-              })
-        }
-
+                notifyError({error})
+              });
+        },
     }
+
 })

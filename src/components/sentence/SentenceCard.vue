@@ -59,7 +59,7 @@
           </q-btn>
 
           <q-btn v-if="canSaveTreeInProject" flat round dense icon="bookmark" :disable="openTabUser === ''">
-            <TagsMenu :sampleName="sentenceData.sample_name" :reactive-sentences-obj="reactiveSentencesObj"></TagsMenu>
+            <TagsMenu :sampleName="sentenceData.sample_name" :reactive-sentences-obj="reactiveSentencesObj" />
             <q-tooltip>Add tag to this tree</q-tooltip>
           </q-btn>
 
@@ -198,8 +198,7 @@
         </q-item>
       </q-list>
     </div>
-
-    <!--    ALL DIALOGS-->
+    
     <template>
       <RelationDialog :sentence-bus="sentenceBus"/>
       <UposDialog :sentence-bus="sentenceBus"/>
@@ -208,8 +207,11 @@
       <MetaDialog :sentence-bus="sentenceBus"/>
       <ConlluDialog :sentence-bus="sentenceBus"/>
       <ExportSVG :sentence-bus="sentenceBus"/>
-      <TokensReplaceDialog :sentence-bus="sentenceBus" :reactive-sentences-obj="reactiveSentencesObj"
-                           @changed:metaText="changeMetaText"/>
+      <TokensReplaceDialog 
+        :sentence-bus="sentenceBus" 
+        :reactive-sentences-obj="reactiveSentencesObj"
+        @changed:metaText="changeMetaText"
+        />
       <MultiEditDialog :sentence-bus="sentenceBus" :reactive-sentences-obj="reactiveSentencesObj"/>
       <StatisticsDialog :sentence-bus="sentenceBus" :conlls="sentenceData.conlls"/>
     </template>

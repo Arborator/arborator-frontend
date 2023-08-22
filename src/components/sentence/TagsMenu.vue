@@ -1,6 +1,6 @@
 <template>
-    <q-menu style="height: 300px;">
-        <div class="row q-pa-md">
+    <q-menu style="height: 200px;">
+        <div class="row q-pa-md text-bold">
             Add tag to this tree
         </div>
         <q-separator />
@@ -36,14 +36,14 @@
                 <template v-slot:no-option>
                     <q-item>
                         <q-item-section class="text-grey">
-                            Click enter to create this tag
+                            Press enter to create this tag
                         </q-item-section>
                     </q-item>
                 </template>
             </q-select>
         </div>
         <div class="row q-pa-md">
-            <q-btn @click="addNewTag()">Add new tag</q-btn>
+            <q-btn outline color="primary" @click="addNewTag()">Add new tag</q-btn>
         </div>
     </q-menu>
 </template>
@@ -105,15 +105,20 @@ export default defineComponent({
               })
         },
         filterTags(val: string, update: (callback: () => void) => void) {
+
+            const existingTagsString = this.reactiveSentencesObj[this.username].state.metaJson.tags as string;
+            const existingTagsArray = existingTagsString.split(",")
+            this.filteredTags = this.defaultTags.filter((tag) => !existingTagsArray.includes(tag.value));
+
             if (val === '') {
                 update(() => {
-                    this.filteredTags = this.defaultTags;
+                    this.filteredTags =  this.filteredTags
                 });
                 return;
             }
             update(() => {
                 const needle = val.toLowerCase();
-                this.filteredTags = this.defaultTags.filter(v => v.value.toLowerCase().indexOf(needle) > -1);
+                this.filteredTags = this.filteredTags.filter(v => v.value.toLowerCase().indexOf(needle) > -1);
             });
         },
         createUserTag (val: string, done: (value: string, mode: string) => void) {

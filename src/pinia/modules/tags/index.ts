@@ -26,9 +26,11 @@ export const useTagsStore = defineStore('tags', {
             api
               .getUserTags(useProjectStore().name, useUserStore().username)
               .then((response) => {
-                for(const tag of response.data){
-                    if (!this.defaultTags.map((val) => val.value).includes(tag)){
-                        this.defaultTags.push({value: tag, color: 'gery-4'});
+                if (response.data){
+                    for(const tag of response.data){
+                        if (!this.defaultTags.map((val) => val.value).includes(tag)){
+                            this.defaultTags.push({value: tag, color: 'gery-4'});
+                        }
                     }
                 }
               })

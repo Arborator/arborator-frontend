@@ -1,7 +1,6 @@
 import api from '../../../api/backend-api';
 import { notifyError, notifyMessage} from 'src/utils/notify';
 import { defineStore } from "pinia";
-import { useUserStore } from '../user';
 import { useProjectStore } from '../project';
 
 export interface tag_t {
@@ -22,9 +21,9 @@ export const useTagsStore = defineStore('tags', {
         }
     },
     actions: {
-        getUserTags(){
+        getUserTags(username: string){
             api
-              .getUserTags(useProjectStore().name, useUserStore().username)
+              .getUserTags(useProjectStore().name, username)
               .then((response) => {
                 if (response.data){
                     for(const tag of response.data){

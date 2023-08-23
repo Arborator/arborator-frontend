@@ -85,7 +85,7 @@ export default defineComponent({
         }
     },
     mounted(){
-        this.getUserTags();
+        this.getUserTags(this.username);
     },
     methods: {
         ...mapActions(useTagsStore, ['getUserTags']),

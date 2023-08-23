@@ -1,5 +1,5 @@
 import api from '../../../api/backend-api';
-import { notifyError} from 'src/utils/notify';
+import { notifyError, notifyMessage} from 'src/utils/notify';
 import { defineStore } from "pinia";
 import { useUserStore } from '../user';
 import { useProjectStore } from '../project';
@@ -38,6 +38,15 @@ export const useTagsStore = defineStore('tags', {
                 notifyError({error})
               });
         },
+        removeTag(sampleName: string, data: any){
+            api.removeTag(useProjectStore().name, sampleName, data) 
+               .then(() => {
+                    notifyMessage({ message: 'The tag is removed'})
+               })
+               .catch((error) => {
+                    notifyError({error})
+               });
+        }
     }
 
 })

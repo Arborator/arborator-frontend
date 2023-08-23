@@ -172,7 +172,7 @@
       </q-tab-panels>
       <div v-if="openTabUser" style="padding-bottom: 20px" dense class="row q-pa-md custom-frame1">
         <div v-for="tag in userTags">
-          <q-chip v-if="openTabUser === username" removable outline color="primary" size="sm"> 
+          <q-chip v-if="openTabUser === username" removable outline color="primary" size="sm" @remove="removeUserTag(tag)"> 
             {{ tag }}
           </q-chip>
           <q-chip v-else outline color="primary" size="sm">
@@ -332,7 +332,9 @@ export default defineComponent({
     },
     userTags() {
       const existingTagsString = this.reactiveSentencesObj[this.openTabUser].state.metaJson.tags as string;
-      return existingTagsString.split(",");
+      if (existingTagsString){
+        return existingTagsString.split(",");
+      }
     },
     filteredConlls() {
       let filteredConlls = this.sentenceData.conlls;
@@ -361,6 +363,7 @@ export default defineComponent({
   },
   methods: {
     ...mapActions(useGrewSearchStore, ['removePendingModification']),
+    ...mapActions(useTagsStore, ['removeTag']),
     openStatisticsDialog() {
       this.sentenceBus.emit('open:statisticsDialog', {
         userId: this.openTabUser,
@@ -400,6 +403,13 @@ export default defineComponent({
           userId: this.openTabUser,
         });
       }
+    },
+    removeUserTag(tag: string){
+      const data = {
+        tag: tag,
+        tree: this.sentenceBus.sentenceSVGs[this.username].exportConll()
+      }
+      this.removeTag(this.sentence.sample_name as string, data);
     },
     /**
      * Receive canUndo, canRedo status from VueDepTree child component and
@@ -475,9 +485,10 @@ export default defineComponent({
       this.sentenceBus.emit('action:tabSelected', {
         userId: this.openTabUser,
       });
-
-      const newMetaText = this.reactiveSentencesObj[this.openTabUser].getSentenceText();
-      this.sentenceBus.emit('changed:metaText', { newMetaText });
+      if (this.openTabUser !== ''){
+        const newMetaText = this.reactiveSentencesObj[this.openTabUser].getSentenceText();
+        this.sentenceBus.emit('changed:metaText', { newMetaText });
+      }
     },
     /**
      * Set the graph infos according to the event payload. This event shoudl be trigerred from the ConllGraph

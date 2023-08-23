@@ -105,11 +105,11 @@ export default defineComponent({
               })
         },
         filterTags(val: string, update: (callback: () => void) => void) {
-
-            const existingTagsString = this.reactiveSentencesObj[this.username].state.metaJson.tags as string;
+            const existingTagsString = this.reactiveSentencesObj[this.username]?.state.metaJson.tags as string || '';
             const existingTagsArray = existingTagsString.split(",")
-            this.filteredTags = this.defaultTags.filter((tag) => !existingTagsArray.includes(tag.value));
-
+            this.filteredTags = existingTagsArray.length > 0 
+                ? this.defaultTags.filter(tag => !existingTagsArray.includes(tag.value))
+                : this.defaultTags
             if (val === '') {
                 update(() => {
                     this.filteredTags =  this.filteredTags
@@ -134,8 +134,6 @@ export default defineComponent({
                 done(val, 'toggle');
             }
         },
-
-
     },
     
 

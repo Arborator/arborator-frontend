@@ -87,6 +87,41 @@
     </template>
 
     <template v-slot:after>
+      <div class="row q-pa-md custom-frame1">
+        <div class="col-10">
+          <q-input outlined dense color="primary" label="text"></q-input>
+        </div>
+        <div class="col">
+          <q-btn class="q-mx-md" outline color="primary" icon-right="expand_more" label="Users">
+            <q-menu>
+              <q-list v-for="user of userIds">
+                <q-item>
+                  <q-item-section side top>
+                    <q-checkbox v-model="check1" />
+                  </q-item-section>
+                  <q-item-section>
+                     {{ user }}
+                  </q-item-section>
+                </q-item>
+              </q-list>
+            </q-menu>
+          </q-btn>
+          <q-btn outline color="primary" label="Tags" icon-right="expand_more">
+            <q-menu>
+              <q-list v-for="tag of defaultTags">
+                <q-item>
+                  <q-item-section side top>
+                    <q-checkbox v-model="check1" />
+                  </q-item-section>
+                  <q-item-section>
+                     {{ tag.value }}
+                  </q-item-section>
+                </q-item>
+              </q-list>
+            </q-menu>
+          </q-btn>
+        </div>
+      </div>
       <div class="custom-frame1">
         <div v-show="!loading">
           <q-virtual-scroll
@@ -133,6 +168,7 @@ import RelationTableMain from '../components/relationTable/RelationTableMain.vue
 import {mapActions, mapState, mapWritableState} from 'pinia';
 import {useProjectStore} from 'src/pinia/modules/project';
 import {useGrewSearchStore} from 'src/pinia/modules/grewSearch';
+import {useTagsStore} from 'src/pinia/modules/tags';
 import {PropType, defineComponent} from 'vue';
 import {useTreesStore} from "src/pinia/modules/trees";
 
@@ -175,6 +211,7 @@ export default defineComponent({
     ...mapState(useProjectStore, ['exerciseMode', 'isTeacher', 'featuresSet']),
     ...mapState(useGrewSearchStore, ['pendingModifications']),
     ...mapState(useTreesStore, ["trees", "filteredTrees", "loading", "numberOfTrees", "exerciseLevel"]),
+    ...mapState(useTagsStore, ["defaultTags"]),
     ...mapWritableState(useTreesStore, ["textFilter", "usersToHaveTree", "usersToNotHaveTree", "usersToHaveDiffs", "usersToNotHaveDiffs", "featuresSetForDiffs"]),
     userIds(): string[] {
       var userIds: string[] = [];

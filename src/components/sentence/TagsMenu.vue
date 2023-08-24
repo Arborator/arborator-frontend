@@ -85,7 +85,7 @@ export default defineComponent({
         }
     },
     mounted(){
-        this.getUserTags(this.username);
+        this.getUserTags();
     },
     methods: {
         ...mapActions(useTagsStore, ['getUserTags']),
@@ -105,20 +105,17 @@ export default defineComponent({
               })
         },
         filterTags(val: string, update: (callback: () => void) => void) {
-            const existingTagsString = this.reactiveSentencesObj[this.username]?.state.metaJson.tags as string || '';
-            const existingTagsArray = existingTagsString.split(",")
-            this.filteredTags = existingTagsArray.length > 0 
-                ? this.defaultTags.filter(tag => !existingTagsArray.includes(tag.value))
-                : this.defaultTags
+            
+            const tagsListWithoutRedundants = [...new Set(this.defaultTags)]
             if (val === '') {
                 update(() => {
-                    this.filteredTags =  this.filteredTags
+                    this.filteredTags =  tagsListWithoutRedundants
                 });
                 return;
             }
             update(() => {
                 const needle = val.toLowerCase();
-                this.filteredTags = this.filteredTags.filter(v => v.value.toLowerCase().indexOf(needle) > -1);
+                this.filteredTags = tagsListWithoutRedundants.filter(v => v.value.toLowerCase().indexOf(needle) > -1);
             });
         },
         createUserTag (val: string, done: (value: string, mode: string) => void) {

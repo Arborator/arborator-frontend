@@ -17,14 +17,14 @@ export const useTagsStore = defineStore('tags', {
             { value: 'NEW', color: 'yellow-4' },
             { value: 'ASAP', color: 'deep-orange-4'}
         ]; 
-        return {
-          defaultTags,  
-        }
+                return {
+          defaultTags, 
+                  }
     },
     actions: {
-        getUserTags(){
+        getUserTags(username: string){
             api
-              .getUserTags(useProjectStore().name, useUserStore().username)
+              .getUserTags(useProjectStore().name, username)
               .then((response) => {
                 if (response.data){
                     for(const tag of response.data){

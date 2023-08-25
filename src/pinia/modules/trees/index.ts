@@ -6,7 +6,7 @@ import {
   grewSearchResultSentence_t,
 } from 'src/api/backend-types';
 import {sentenceConllToJson, SentenceJson} from "conllup/lib/conll";
-
+import { useTagsStore } from '../tags';
 
 export const useTreesStore = defineStore('trees', {
   state: () => {
@@ -27,6 +27,15 @@ export const useTreesStore = defineStore('trees', {
     numberOfTrees(state) {
       return Object.keys(state.trees).length;
     },
+    userIds() {
+      const userIds = new Set();
+      for (const treeObj of Object.values(this.trees)) {
+          for (const userId in treeObj.conlls) {
+              userIds.add(userId);
+          }
+      }
+      return [...userIds];
+    }
   },
   actions: {
     getSampleTrees({projectName, sampleName}: { projectName: string; sampleName: string }) {
@@ -49,6 +58,17 @@ export const useTreesStore = defineStore('trees', {
           });
       });
     },
+    getUsersTags(){
+      const userIds = new Set();
+      for (const treeObj of Object.values(this.trees)) {
+          for (const userId in treeObj.conlls) {
+              userIds.add(userId);
+          }
+      }
+      for (const username of userIds) {
+          useTagsStore().getUserTags(username as string);
+      }
+    }, 
     applyFilterTrees() {
       this.filteredTrees = Object.values(this.trees)
       if (this.textFilter !== '') {

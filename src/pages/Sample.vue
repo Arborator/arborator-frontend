@@ -7,15 +7,51 @@
     emit-immediately
   >
     <template v-slot:before>
-      <div class="q-gutter-md cols" style="padding: 0 10px">
+      <div class="row q-pa-md">
+        <div class="col-9">
+          <q-input v-model="textFilter" label="Text filter" outlined dense color="primary"></q-input>
+        </div>
+        <div class="col q-px-md q-gutter-md">
+          <q-btn outline color="primary" icon-right="expand_more" label="Users">
+            <q-menu>
+              <q-list v-for="user of userIds">
+                <q-item>
+                  <q-item-section side top>
+                    <q-checkbox v-model="check1" />
+                  </q-item-section>
+                  <q-item-section>
+                     {{ user }}
+                  </q-item-section>
+                </q-item>
+              </q-list>
+            </q-menu>
+          </q-btn>
+          <q-btn outline color="primary" label="Tags" icon-right="expand_more" @click="getUsersTags">
+            <q-menu>
+              <q-list v-for="tag of defaultTags">
+                <q-item>
+                  <q-item-section side top>
+                    <q-checkbox  />
+                  </q-item-section>
+                  <q-item-section>
+                     {{ tag.value }}
+                  </q-item-section>
+                </q-item>
+              </q-list>
+            </q-menu>
+          </q-btn>
+          <q-btn @click="applyFilterTrees" color="primary">Apply filter</q-btn>
+        </div>
+      </div>
+      <div class="q-gutter-md" style="padding: 0 10px">
 
         <div class="q-gutter-md row">
-          <q-btn @click="applyFilterTrees" color="primary">Apply filter</q-btn>
           <span>{{ Object.keys(filteredTrees).length }} trees</span>
         </div>
 
-          <q-input filled v-model="textFilter" label="Text filter" style="max-width: 800px">
-          </q-input>
+        <div class="row q-pa-md text-h6">
+          More filters
+        </div>
         <div class="row q-gutter-md">
 
           <q-select
@@ -87,41 +123,6 @@
     </template>
 
     <template v-slot:after>
-      <div class="row q-pa-md custom-frame1">
-        <div class="col-10">
-          <q-input outlined dense color="primary" label="text"></q-input>
-        </div>
-        <div class="col">
-          <q-btn class="q-mx-md" outline color="primary" icon-right="expand_more" label="Users">
-            <q-menu>
-              <q-list v-for="user of userIds">
-                <q-item>
-                  <q-item-section side top>
-                    <q-checkbox v-model="check1" />
-                  </q-item-section>
-                  <q-item-section>
-                     {{ user }}
-                  </q-item-section>
-                </q-item>
-              </q-list>
-            </q-menu>
-          </q-btn>
-          <q-btn outline color="primary" label="Tags" icon-right="expand_more">
-            <q-menu>
-              <q-list v-for="tag of defaultTags">
-                <q-item>
-                  <q-item-section side top>
-                    <q-checkbox v-model="check1" />
-                  </q-item-section>
-                  <q-item-section>
-                     {{ tag.value }}
-                  </q-item-section>
-                </q-item>
-              </q-list>
-            </q-menu>
-          </q-btn>
-        </div>
-      </div>
       <div class="custom-frame1">
         <div v-show="!loading">
           <q-virtual-scroll
@@ -203,27 +204,16 @@ export default defineComponent({
   },
   data(): { splitterModel: number; splitterHeight: number; } {
     return {
-      splitterModel: 0,
+      splitterModel: 10,
       splitterHeight: 0,
     }
   },
   computed: {
     ...mapState(useProjectStore, ['exerciseMode', 'isTeacher', 'featuresSet']),
     ...mapState(useGrewSearchStore, ['pendingModifications']),
-    ...mapState(useTreesStore, ["trees", "filteredTrees", "loading", "numberOfTrees", "exerciseLevel"]),
+    ...mapState(useTreesStore, ["trees", "filteredTrees", "loading", "numberOfTrees", "userIds", "exerciseLevel"]),
     ...mapState(useTagsStore, ["defaultTags"]),
     ...mapWritableState(useTreesStore, ["textFilter", "usersToHaveTree", "usersToNotHaveTree", "usersToHaveDiffs", "usersToNotHaveDiffs", "featuresSetForDiffs"]),
-    userIds(): string[] {
-      var userIds: string[] = [];
-      for (const treeObj of Object.values(this.trees)) {
-        for (const userId in treeObj.conlls) {
-          if (!userIds.includes(userId)) {
-            userIds.push(userId);
-          }
-        }
-      }
-      return userIds;
-    }
   },
   created() {
     window.addEventListener('resize', this.calculateHeight);
@@ -237,14 +227,14 @@ export default defineComponent({
     document.title = `${this.projectname}/${this.samplename}`;
     LocalStorage.remove('save_status');
     this.calculateHeight();
+    this.getUsersTags()
   },
   beforeUnmount() {
     window.removeEventListener('resize', this.calculateHeight);
   },
-
   methods: {
     ...mapActions(useGrewSearchStore, ['emptyPendingModification']),
-    ...mapActions(useTreesStore, ['getSampleTrees', 'applyFilterTrees']),
+    ...mapActions(useTreesStore, ['getSampleTrees', 'applyFilterTrees', 'getUsersTags']),
     scrollToIndexFromURL() {
       if (
         !this.loading &&

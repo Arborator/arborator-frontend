@@ -49,6 +49,7 @@ export type sentence_bus_events_t = {
   'open:xposDialog': { userId: string; token: TokenJson };
   'action:saved': { userId: string };
   'export:SVG': { userId: string };
+  'export:PNG': { userId: string };
   'open:tokensReplaceDialog': { userId: string; event: Event };
   'changed:metaText': { newMetaText: string };
   'tree-update:token': { userId: string; token: TokenJson };

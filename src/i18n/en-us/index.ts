@@ -331,6 +331,7 @@ export default {
     treeLink: 'Get direct link to this tree',
     treeConll: 'Get CoNLL-U of this tree',
     treeSVG: 'Get SVG of this tree',
+    treePNG: 'Get PNG of this tree',
     addToken: 'Add new token',
     editToken: 'Edit tokens',
     saveModif: 'The tree has some pendings modifications not saved',

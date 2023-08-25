@@ -3,7 +3,7 @@
     <div>
       <q-bar class="row items-center custom-frame1">
         <span class="text-grey" style="padding-left: 10px">{{ index + 1 }}</span>
-        <q-chip class="text-center" :color="$q.dark.isActive ? 'grey' : ''" dense> 
+        <q-chip class="text-center" :color="$q.dark.isActive ? 'grey' : ''" dense>
           {{ sentence.sent_id }}
         </q-chip>&nbsp;&nbsp;&nbsp;
         <q-input
@@ -37,7 +37,7 @@
             <q-tooltip>{{ $t('sentenceCard.saveTeacher') }}</q-tooltip>
           </q-btn>
 
-          <q-btn v-if="isTeacher" flat round dense icon="linear_scale" :disable="openTabUser === ''" 
+          <q-btn v-if="isTeacher" flat round dense icon="linear_scale" :disable="openTabUser === ''"
             @click="save('base_tree')">
             <q-tooltip>{{ $t('sentenceCard.saveBaseTree') }}</q-tooltip>
           </q-btn>
@@ -48,8 +48,8 @@
 
           <q-btn v-if="canSaveTreeInProject" flat round dense icon="save"
                  :disable="openTabUser === '' || !canSave" @click="save('')">
-            <q-tooltip> 
-              {{ $t('sentenceCard.saveTree[0]') }} {{ openTabUser }} {{ $t('sentenceCard.saveTree[1]') }} 
+            <q-tooltip>
+              {{ $t('sentenceCard.saveTree[0]') }} {{ openTabUser }} {{ $t('sentenceCard.saveTree[1]') }}
               <b> {{ username }} </b>
             </q-tooltip>
           </q-btn>
@@ -92,6 +92,15 @@
                 </q-item-section>
                 <q-item-section>
                   <q-item-label>{{ $t('sentenceCard.treeSVG') }}</q-item-label>
+                </q-item-section>
+              </q-item>
+
+              <q-item v-close-popup clickable @click="exportPNG()">
+                <q-item-section avatar>
+                  <q-avatar icon="ion-md-color-palette" color="primary" text-color="white"/>
+                </q-item-section>
+                <q-item-section>
+                  <q-item-label>{{ $t('sentenceCard.treePNG') }}</q-item-label>
                 </q-item-section>
               </q-item>
 
@@ -191,7 +200,7 @@
       <FeaturesDialog :sentence-bus="sentenceBus"/>
       <MetaDialog :sentence-bus="sentenceBus"/>
       <ConlluDialog :sentence-bus="sentenceBus"/>
-      <ExportSVG :sentence-bus="sentenceBus"/>
+      <ExportSVG :sentence-bus="sentenceBus" :reactive-sentences-obj="reactiveSentencesObj"/>
       <TokensReplaceDialog :sentence-bus="sentenceBus" :reactive-sentences-obj="reactiveSentencesObj"
                            @changed:metaText="changeMetaText"/>
       <MultiEditDialog :sentence-bus="sentenceBus" :reactive-sentences-obj="reactiveSentencesObj"/>
@@ -371,8 +380,10 @@ export default defineComponent({
       });
     },
     exportSVG() {
-      // todo: instead of this long string, read the actual css file and put it there.
       this.sentenceBus.emit('export:SVG', {userId: this.openTabUser});
+    },
+    exportPNG() {
+      this.sentenceBus.emit('export:PNG', {userId: this.openTabUser});
     },
     editTokens(event: Event) {
       // only if a tab is open
@@ -414,7 +425,7 @@ export default defineComponent({
       const openedTreeUser = this.openTabUser;
       let changedConllUser = this.username;
       if (mode)  changedConllUser = mode;
-  
+
       const metaToReplace = {
         user_id: changedConllUser,
         timestamp: Math.round(Date.now()),
@@ -476,7 +487,7 @@ export default defineComponent({
         const newMetaText = this.reactiveSentencesObj[this.openTabUser].getSentenceText();
         this.sentenceBus.emit('changed:metaText', {newMetaText});
       }
-      
+
     },
     /**
      * Set the graph infos according to the event payload. This event shoudl be trigerred from the ConllGraph

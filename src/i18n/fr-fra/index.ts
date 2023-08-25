@@ -318,6 +318,7 @@ export default {
     treeLink: 'Obtenir un lien direct vers cet arbre',
     treeConll: 'Obtenir CoNLL-U de cet arbre',
     treeSVG: 'Obtenir le SVG de cet arbre',
+    treePNG: 'Obtenir le PNG de cet arbre',
     addToken: 'Ajouter un nouveau token',
     editToken: 'Editer les tokens',
     saveModif: "L'arbre a quelques modifications qui n'ont pas été encore sauvegardées.",

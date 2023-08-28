@@ -168,6 +168,12 @@ export default defineComponent({
         this.statusChangeHadler();
       }
     });
+    this.sentenceBus.on('tree-update:tags', ({sentenceJson, userId}) => {
+      if(userId === this.treeUserId){
+        this.reactiveSentence.updateSentence(sentenceJson);
+        this.sentenceCaretaker.backup();
+      }
+    });
     this.sentenceBus.on('action:undo', ({ userId }) => {
       if (userId === this.treeUserId) {
         this.sentenceCaretaker.undo();

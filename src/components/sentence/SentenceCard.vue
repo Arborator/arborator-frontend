@@ -13,6 +13,7 @@
           </q-tooltip>
         </q-input>
         <q-space />
+
         <template v-if="openTabUser !== ''">
           <q-btn v-if="isLoggedIn && exerciseLevel <= 3 && !isTeacher" flat round dense icon="assessment"
             :disable="openTabUser === ''" @click="openStatisticsDialog">
@@ -45,8 +46,10 @@
             </q-tooltip>
           </q-btn>
 
-          <q-btn v-if="canSaveTreeInProject && openTabUser === username" flat round dense icon="bookmark" :disable="openTabUser === ''">
-            <TagsMenu :sampleName="sentenceData.sample_name" :reactive-sentences-obj="reactiveSentencesObj" />
+          <q-btn v-if="canSaveTreeInProject && openTabUser === username" flat round dense icon="bookmark"
+            :disable="openTabUser === ''">
+            <TagsMenu :sampleName="sentenceData.sample_name" :reactive-sentences-obj="reactiveSentencesObj"
+              :sentence-bus="sentenceBus" />
             <q-tooltip>Add tag to this tree</q-tooltip>
           </q-btn>
 
@@ -112,22 +115,12 @@
       <q-tabs class="custom-frame1" v-model="openTabUser" :class="($q.dark.isActive ? 'text-grey-5' : 'text-grey-8')"
         dense :active-color="$q.dark.isActive ? 'primary' : 'purple-7'"
         :active-bg-color="$q.dark.isActive ? '' : 'grey-2'" style="transition: unset;">
-        <!-- v-for="(tree, user) in filteredConlls" -->
-        <q-tab 
-          class="small-tab" 
-          v-for="(tree, user) in filteredConlls"
-          :key="`${reactiveSentencesObj[user].state.metaJson.timestamp}-${user}`" 
-          :props="user" 
-          :name="user"
-          :label="`${user}`" 
-          :alert="hasPendingChanges[user] ? 'orange' : ''"
-          :alert-icon="hasPendingChanges[user] ? 'save' : ''"
-          :icon="diffMode && user === diffUserId ? 'school' 
-          : 'person'" no-caps 
-          :ripple="false"
-          @contextmenu="rightClickHandler($event, user)" 
-          @click="leftClickHandler(user)"
-        >
+        <q-tab class="small-tab" v-for="(tree, user) in filteredConlls"
+          :key="`${reactiveSentencesObj[user].state.metaJson.timestamp}-${user}`" :props="user" :name="user"
+          :label="`${user}`" :alert="hasPendingChanges[user] ? 'orange' : ''"
+          :alert-icon="hasPendingChanges[user] ? 'save' : ''" :icon="diffMode && user === diffUserId ? 'school'
+            : 'person'" no-caps :ripple="false" @contextmenu="rightClickHandler($event, user)"
+          @click="leftClickHandler(user)">
           <q-tooltip v-if="hasPendingChanges[user]">{{ $t('sentenceCard.saveModif') }}</q-tooltip>
           <q-tooltip v-else-if="lastModifiedTime[user]">
             <q-icon color="primary" name="schedule" size="14px" class="q-ml-xs" />
@@ -140,31 +133,18 @@
         </q-tab>
       </q-tabs>
       <q-tab-panels v-model="openTabUser" @transition="transitioned" class="custom-frame1">
-        <q-tab-panel 
-          v-for="(tree, user) in filteredConlls" 
-          :key="user" 
-          :props="tree" 
-          :name="user"
-          style="padding-bottom: 0; padding-top: 0;"
-        >
+        <q-tab-panel v-for="(tree, user) in filteredConlls" :key="user" :props="tree" :name="user"
+          style="padding-bottom: 0; padding-top: 0;">
           <q-card flat>
             <q-card-section :class="($q.dark.isActive ? '' : '') + ' scrollable'">
-              <VueDepTree 
-                v-if="reactiveSentencesObj" 
-                :card-id="index" 
-                :conll="tree"
-                :reactive-sentence="reactiveSentencesObj[user]" 
-                :reactive-sentences-obj="reactiveSentencesObj"
+              <VueDepTree v-if="reactiveSentencesObj" :card-id="index" :conll="tree"
+                :reactive-sentence="reactiveSentencesObj[user]" :reactive-sentences-obj="reactiveSentencesObj"
                 :diff-mode="showDiffTeacher ? 'DIFF_TEACHER' : diffMode ? 'DIFF_USER' : 'NO_DIFF'"
-                :sentence-id="sentence.sent_id" 
-                :sentence-bus="sentenceBus" 
-                :tree-user-id="user"
-                :conll-saved-counter="conllSavedCounter" 
-                :has-pending-changes="hasPendingChanges" 
-                :matches="sentence.matches ? (sentence.matches[user] ? sentence.matches[user].map((match) => Object.values(match.nodes)).flat() : []) : []" 
+                :sentence-id="sentence.sent_id" :sentence-bus="sentenceBus" :tree-user-id="user"
+                :conll-saved-counter="conllSavedCounter" :has-pending-changes="hasPendingChanges"
+                :matches="sentence.matches ? (sentence.matches[user] ? sentence.matches[user].map((match) => Object.values(match.nodes)).flat() : []) : []"
                 :packages="sentence.packages ? (sentence.packages[user] ? sentence.packages[user] : {}) : {}"
-                @statusChanged="handleStatusChange"
-              >
+                @statusChanged="handleStatusChange">
               </VueDepTree>
             </q-card-section>
           </q-card>
@@ -172,13 +152,15 @@
       </q-tab-panels>
       <div v-if="openTabUser" style="padding-bottom: 20px" dense class="row q-pa-md custom-frame1">
         <div v-for="tag in userTags">
-          <q-chip v-if="openTabUser === username" removable outline color="primary" size="sm" @remove="removeUserTag(tag)"> 
+          <q-chip v-if="openTabUser === username" removable outline color="primary" size="sm"
+            @remove="removeUserTag(tag)">
             {{ tag }}
           </q-chip>
           <q-chip v-else outline color="primary" size="sm">
             {{ tag }}
           </q-chip>
         </div>
+
       </div>
     </div>
 
@@ -190,11 +172,8 @@
       <MetaDialog :sentence-bus="sentenceBus" />
       <ConlluDialog :sentence-bus="sentenceBus" />
       <ExportSVG :sentence-bus="sentenceBus" />
-      <TokensReplaceDialog 
-        :sentence-bus="sentenceBus" 
-        :reactive-sentences-obj="reactiveSentencesObj"
-        @changed:metaText="changeMetaText" 
-      />
+      <TokensReplaceDialog :sentence-bus="sentenceBus" :reactive-sentences-obj="reactiveSentencesObj"
+        @changed:metaText="changeMetaText" />
       <MultiEditDialog :sentence-bus="sentenceBus" :reactive-sentences-obj="reactiveSentencesObj" />
       <StatisticsDialog :sentence-bus="sentenceBus" :conlls="sentenceData.conlls" />
     </template>
@@ -302,7 +281,7 @@ export default defineComponent({
 
   computed: {
     ...mapWritableState(useProjectStore, ['diffMode', 'diffUserId']),
-    ...mapState(useProjectStore, ['isAdmin', 'isTeacher', 'exerciseMode', 'getProjectConfig', 'canSaveTreeInProject', 'canValidateUsersTrees']),
+    ...mapState(useProjectStore, ['isAdmin', 'isTeacher', 'exerciseMode', 'getProjectConfig', 'canSaveTreeInProject', 'canValidateUsersTrees', 'shownMeta']),
     ...mapState(useUserStore, ['isLoggedIn', 'username']),
     ...mapState(useTagsStore, ['defaultTags']),
     lastModifiedTime() {
@@ -332,7 +311,7 @@ export default defineComponent({
     },
     userTags() {
       const existingTagsString = this.reactiveSentencesObj[this.openTabUser].state.metaJson.tags as string;
-      if (existingTagsString){
+      if (existingTagsString) {
         return existingTagsString.split(",");
       }
     },
@@ -404,12 +383,8 @@ export default defineComponent({
         });
       }
     },
-    removeUserTag(tag: string){
-      const data = {
-        tag: tag,
-        tree: this.sentenceBus.sentenceSVGs[this.username].exportConll()
-      }
-      this.removeTag(this.sentence.sample_name as string, data);
+    removeUserTag(tag: string) {
+      this.removeTag(this.sentence.sample_name as string, tag, this.sentenceBus, this.username );
     },
     /**
      * Receive canUndo, canRedo status from VueDepTree child component and
@@ -485,7 +460,7 @@ export default defineComponent({
       this.sentenceBus.emit('action:tabSelected', {
         userId: this.openTabUser,
       });
-      if (this.openTabUser !== ''){
+      if (this.openTabUser !== '') {
         const newMetaText = this.reactiveSentencesObj[this.openTabUser].getSentenceText();
         this.sentenceBus.emit('changed:metaText', { newMetaText });
       }

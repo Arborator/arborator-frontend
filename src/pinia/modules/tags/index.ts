@@ -2,7 +2,7 @@ import api from '../../../api/backend-api';
 import { notifyError, notifyMessage} from 'src/utils/notify';
 import { defineStore } from "pinia";
 import { useProjectStore } from '../project';
-import { useUserStore } from '../user';
+import { sentence_bus_t } from 'src/types/main_types';
 
 export interface tag_t {
     value: string, 
@@ -38,10 +38,21 @@ export const useTagsStore = defineStore('tags', {
                 notifyError({error})
               });
         },
-        removeTag(sampleName: string, data: any){
+        removeTag(sampleName: string, tag: string, sentenceBus: sentence_bus_t, username: string ){
+            const data = {
+                tag: tag, 
+                tree: sentenceBus.sentenceSVGs[username].exportConll(),
+            };
             api.removeTag(useProjectStore().name, sampleName, data) 
-               .then(() => {
-                    notifyMessage({ message: 'The tag is removed'})
+               .then((response) => {
+                    notifyMessage({ message: 'The tag is removed'});
+                    sentenceBus.emit('tree-update:tags', {
+                        sentenceJson: {
+                            metaJson: response.data,
+                            treeJson: sentenceBus.sentenceSVGs[username].treeJson,
+                        },
+                        userId: username,
+                    });
                })
                .catch((error) => {
                     notifyError({error})

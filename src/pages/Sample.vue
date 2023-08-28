@@ -8,24 +8,10 @@
   >
     <template v-slot:before>
       <div class="row q-pa-md">
-        <div class="col-9">
+        <div class="col-10">
           <q-input v-model="textFilter" label="Text filter" outlined dense color="primary"></q-input>
         </div>
         <div class="col q-px-md q-gutter-md">
-          <q-btn outline color="primary" icon-right="expand_more" label="Users">
-            <q-menu>
-              <q-list v-for="user of userIds">
-                <q-item>
-                  <q-item-section side top>
-                    <q-checkbox v-model="check1" />
-                  </q-item-section>
-                  <q-item-section>
-                     {{ user }}
-                  </q-item-section>
-                </q-item>
-              </q-list>
-            </q-menu>
-          </q-btn>
           <q-btn outline color="primary" label="Tags" icon-right="expand_more" @click="getUsersTags">
             <q-menu>
               <q-list v-for="tag of defaultTags">
@@ -40,76 +26,48 @@
               </q-list>
             </q-menu>
           </q-btn>
-          <q-btn @click="applyFilterTrees" color="primary">Apply filter</q-btn>
+          <q-btn @click="applyFilter" color="primary">Apply filter</q-btn>
         </div>
-      </div>
-      <div class="q-gutter-md" style="padding: 0 10px">
-
-        <div class="q-gutter-md row">
-          <span>{{ Object.keys(filteredTrees).length }} trees</span>
-        </div>
-
-        <div class="row q-pa-md text-h6">
+      </div>      
+      <div class="q-pa-md">
+        <div class="row text-h6">
           More filters
+          <q-space/>
+          <q-btn flat color="primary" @click="clearAll()">clear all</q-btn>
         </div>
         <div class="row q-gutter-md">
-
-          <q-select
-            class="col"
-            style="max-width: 300px"
-            v-model="usersToHaveTree"
-            filled
+          <div class="col-8">
+            <q-select
+            outlined
+            dense
+            v-model="selectedUsers"
             multiple
             :options="userIds"
             use-chips
             stack-label
-            :label="$t('grewSearch.selectSetOfUserToHaveTree')"
-          />
-          <q-select
-            class="col"
-            style="max-width: 300px"
-            v-model="usersToNotHaveTree"
-            filled
-            multiple
-            :options="userIds"
-            use-chips
-            stack-label
-            :label="$t('grewSearch.selectSetOfUserToNotHaveTree')"
-          />
+            label="Select set of users"
+             />
+          </div>
+          <q-btn-dropdown class="col" outline split color="primary" :label="filterOperator">
+            <q-list v-for="value of filterOperators">
+              <q-item clickable @click="filterOperator = value">
+                <q-item-section>{{ value }}</q-item-section>
+              </q-item>
+            </q-list>
+          </q-btn-dropdown>
+          <q-btn-dropdown class="col" outline split color="primary" :label="filterChoice">
+            <q-list v-for="value of filterChoices">
+              <q-item clickable @click="filterChoice = value">
+                <q-item-section>{{ value }}</q-item-section>
+              </q-item>
+            </q-list>
+          </q-btn-dropdown>
         </div>
-        <div class="row q-gutter-md">
-
-          <q-select
-            class="col"
-            style="max-width: 300px"
-            v-model="usersToHaveDiffs"
-            filled
-            multiple
-            :options="userIds"
-            use-chips
-            stack-label
-            :label="$t('grewSearch.selectSetOfUserToHaveDiffs')"
-          >
-            <q-tooltip>{{ $t('grewSearch.showDiffUsersTooltip') }}</q-tooltip>
-          </q-select>
-          <q-select
-            class="col"
-            style="max-width: 300px"
-            v-model="usersToNotHaveDiffs"
-            filled
-            multiple
-            :options="userIds"
-            use-chips
-            stack-label
-            :label="$t('grewSearch.selectSetOfUserToNotHaveDiffs')"
-          >
-            <q-tooltip>{{ $t('grewSearch.showDiffUsersTooltip') }}</q-tooltip>
-          </q-select>
-        </div>
-
         <q-select
+          dense
+          outlined
+          class="q-pt-md"
           v-model="featuresSetForDiffs"
-          filled
           multiple
           :options="featuresSet"
           use-chips
@@ -117,11 +75,9 @@
           :label="$t('grewSearch.showDiffFaturesSelect')"
         >
           <q-tooltip>{{ $t('grewSearch.showDiffFeaturesTooltip') }}</q-tooltip>
-        </q-select>
-
+        </q-select> 
       </div>
     </template>
-
     <template v-slot:after>
       <div class="custom-frame1">
         <div v-show="!loading">
@@ -202,10 +158,19 @@ export default defineComponent({
       required: true,
     },
   },
-  data(): { splitterModel: number; splitterHeight: number; } {
+  data() { 
+    const splitterModel: number = 10; 
+    const splitterHeight: number = 0; 
+    const filterOperators: string[] = ['Have', 'Not Have'];
+    const filterChoices: string[] = ['Trees', 'Differences'];
     return {
-      splitterModel: 10,
-      splitterHeight: 0,
+      selectedUsers: [],
+      filterChoices,
+      filterOperators,
+      filterChoice: filterChoices[0],
+      filterOperator: filterOperators[0],
+      splitterModel,
+      splitterHeight,
     }
   },
   computed: {
@@ -259,6 +224,41 @@ export default defineComponent({
         this.splitterHeight = window.innerHeight - 35;
       }
     },
+    applyFilter(){
+      if(this.filterChoice === 'Trees'){
+        if(this.filterOperator === 'Have'){
+          this.usersToHaveTree = this.selectedUsers;
+          this.usersToNotHaveTree = [];
+        }
+        else {
+          this.usersToNotHaveTree = this.selectedUsers;
+          this.usersToHaveTree = [];
+        } 
+      }
+      else {
+        if(this.filterOperator === 'Have'){
+          this.usersToHaveDiffs = this.selectedUsers;
+          this.usersToNotHaveDiffs = [];
+        }
+        else {
+          this.usersToNotHaveDiffs = this.selectedUsers;
+          this.usersToHaveDiffs = [];
+        }
+      }
+      this.applyFilterTrees();
+      
+    },
+    clearAll() {
+      this.textFilter = '';
+      this.usersToHaveTree = [];
+      this.usersToNotHaveDiffs = [];
+      this.usersToHaveDiffs = [];
+      this.usersToNotHaveDiffs = [];
+      this.selectedUsers = [];
+      this.filterChoice = this.filterChoices[0];
+      this.filterOperator = this.filterOperators[0];
+      this.applyFilterTrees();
+    }
   },
 
 });

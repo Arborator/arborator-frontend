@@ -261,10 +261,6 @@ export default {
     applyRule: 'Apply rule',
     applyRuleTooltip: 'Select at least one tree to which you wish to apply the rule',
     selectAllTooltip: 'Select All',
-    selectSetOfUserToHaveTree: 'Select the set of users to have tree',
-    selectSetOfUserToNotHaveTree: 'Select the set of users to NOT have tree',
-    selectSetOfUserToHaveDiffs: 'Select the set of users to have diffs',
-    selectSetOfUserToNotHaveDiffs: 'Select the set of users to NOT have diffs',
   },
   // window which displays project settings
   projectSettings: {

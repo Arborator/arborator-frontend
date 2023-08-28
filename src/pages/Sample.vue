@@ -8,25 +8,30 @@
   >
     <template v-slot:before>
       <div class="row q-pa-md">
-        <div class="col-10">
+        <div class="col-8">
           <q-input v-model="textFilter" label="Text filter" outlined dense color="primary"></q-input>
         </div>
         <div class="col q-px-md q-gutter-md">
-          <q-btn outline color="primary" label="Tags" icon-right="expand_more" @click="getUsersTags">
-            <q-menu>
-              <q-list v-for="tag of defaultTags">
-                <q-item>
-                  <q-item-section side top>
-                    <q-checkbox  />
-                  </q-item-section>
-                  <q-item-section>
-                     {{ tag.value }}
-                  </q-item-section>
-                </q-item>
-              </q-list>
-            </q-menu>
-          </q-btn>
-          <q-btn @click="applyFilter" color="primary">Apply filter</q-btn>
+          <q-select 
+            outlined 
+            dense 
+            v-model="selectedTags" 
+            use-chips
+            multiple 
+            option-value="value" 
+            label="Tags" 
+            :options="defaultTags" 
+            emit-value
+            @focus="getUsersTags()"
+          >
+            <template class="q-pa-md" v-slot:option="scope">
+              <div class="row q-pa-xs">
+                  <q-chip v-bind="scope.itemProps" size="sm" :label="scope.opt.value" />
+              </div>
+              <q-separator />
+            </template>
+          </q-select>
+          <q-btn  class="col" @click="applyFilter" color="primary">Apply filter</q-btn>
         </div>
       </div>      
       <div class="q-pa-md">
@@ -38,14 +43,14 @@
         <div class="row q-gutter-md">
           <div class="col-8">
             <q-select
-            outlined
-            dense
-            v-model="selectedUsers"
-            multiple
-            :options="userIds"
-            use-chips
-            stack-label
-            label="Select set of users"
+              outlined
+              dense
+              v-model="selectedUsers"
+              multiple
+              :options="userIds"
+              use-chips
+              stack-label
+              label="Select set of users"
              />
           </div>
           <q-btn-dropdown class="col" outline split color="primary" :label="filterOperator">
@@ -109,7 +114,6 @@
         </div>
 
         <GrewSearch :user-ids="userIds" :sentence-count="numberOfTrees" :search-scope="samplename"/>
-
         <RelationTableMain :sampleName="samplename"/>
       </div>
     </template>
@@ -178,7 +182,7 @@ export default defineComponent({
     ...mapState(useGrewSearchStore, ['pendingModifications']),
     ...mapState(useTreesStore, ["trees", "filteredTrees", "loading", "numberOfTrees", "userIds", "exerciseLevel"]),
     ...mapState(useTagsStore, ["defaultTags"]),
-    ...mapWritableState(useTreesStore, ["textFilter", "usersToHaveTree", "usersToNotHaveTree", "usersToHaveDiffs", "usersToNotHaveDiffs", "featuresSetForDiffs"]),
+    ...mapWritableState(useTreesStore, ["textFilter", "usersToHaveTree", "usersToNotHaveTree", "usersToHaveDiffs", "usersToNotHaveDiffs", "featuresSetForDiffs", "selectedTags"]),
   },
   created() {
     window.addEventListener('resize', this.calculateHeight);
@@ -192,7 +196,6 @@ export default defineComponent({
     document.title = `${this.projectname}/${this.samplename}`;
     LocalStorage.remove('save_status');
     this.calculateHeight();
-    this.getUsersTags()
   },
   beforeUnmount() {
     window.removeEventListener('resize', this.calculateHeight);
@@ -258,7 +261,7 @@ export default defineComponent({
       this.filterChoice = this.filterChoices[0];
       this.filterOperator = this.filterOperators[0];
       this.applyFilterTrees();
-    }
+    },
   },
 
 });

@@ -21,6 +21,7 @@ export const useTreesStore = defineStore('trees', {
       usersToHaveDiffs: [] as string[],
       usersToNotHaveDiffs: [] as string[],
       featuresSetForDiffs: [] as string[],
+      selectedTags: [] as string[],
     };
   },
   getters: {
@@ -114,6 +115,17 @@ export const useTreesStore = defineStore('trees', {
           }
           return !sentencesHaveDiffs(usersToNotHaveDiffsThatHaveTrees.map((user) => tree.conlls[user]), this.featuresSetForDiffs)
         });
+      }
+      if(this.selectedTags.length > 0) {
+        this.filteredTrees = this.filteredTrees.filter((tree) => {
+          const userIds = Object.keys(tree.conlls);
+          for(const userId of userIds){
+            const treeTags = sentenceConllToJson(tree.conlls[userId]).metaJson.tags as string;
+            if (this.selectedTags.some((tag) => treeTags.includes(tag))){
+              return tree;
+            }
+          }
+        })
       }
     },
   },

@@ -15,7 +15,7 @@
         <q-space />
 
         <template v-if="openTabUser !== ''">
-          <q-btn v-if="isLoggedIn && exerciseLevel <= 3 && !isValidator" flat round dense icon="assessment"
+          <q-btn v-if="isLoggedIn && blindAnnotationLevel <= 3 && !isValidator" flat round dense icon="assessment"
             :disable="openTabUser === ''" @click="openStatisticsDialog">
             <q-tooltip>{{ $t('sentenceCard.annotationErrors') }}</q-tooltip>
           </q-btn>
@@ -235,7 +235,7 @@ export default defineComponent({
       type: Number as PropType<number>,
       required: true,
     },
-    exerciseLevel: {
+    blindAnnotationLevel: {
       type: Number as PropType<number>,
       required: true,
     },
@@ -303,7 +303,7 @@ export default defineComponent({
       return lastModifiedTime;
     },
     showDiffValidator() {
-      return this.blindAnnotationMode && this.exerciseLevel <= 2;
+      return this.blindAnnotationMode && this.blindAnnotationLevel <= 2;
     },
     userTags() {
       const existingTagsString = this.reactiveSentencesObj[this.openTabUser].state.metaJson.tags as string;
@@ -313,7 +313,7 @@ export default defineComponent({
     },
     filteredConlls() {
       let filteredConlls = this.sentenceData.conlls;
-      if (this.exerciseLevel !== 1 && !this.isAdmin && this.blindAnnotationMode) {
+      if (this.blindAnnotationLevel !== 1 && !this.isAdmin && this.blindAnnotationMode) {
         return Object.fromEntries(Object.entries(filteredConlls).filter(([user]) => user !== 'teacher'));
       }
       return this.orderConlls(filteredConlls);

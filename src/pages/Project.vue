@@ -93,7 +93,7 @@
               <!-- single and main button for export evaluation -->
               <div>
                 <q-btn 
-                  v-if="isTeacher" 
+                  v-if="isValidator" 
                   flat 
                   color="default" 
                   icon="analytics" 
@@ -284,7 +284,7 @@
         </q-table>
       </q-card-section>
     </q-card>
-    <template v-if="!blindAnnotationMode && !isTeacher && !isFreezed">
+    <template v-if="!blindAnnotationMode && !isValidator && !isFreezed">
       <GrewSearch :user-ids="getProjectTreesFrom" :sentence-count="sentenceCount" :search-scope="projectName"
         @reload="loadProjectData" />
       <RelationTableMain />
@@ -534,7 +534,7 @@ export default defineComponent({
       'blindAnnotationMode',
       'cleanedImage',
       'description',
-      'isTeacher',
+      'isValidator',
       'isProjectMember',
       'canSaveTreeInProject',
       'isOwner',

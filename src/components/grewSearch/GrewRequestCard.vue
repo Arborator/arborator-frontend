@@ -171,7 +171,7 @@ export default defineComponent({
   computed: {
     ...mapState(useGrewSearchStore, ['lastQuery']),
     ...mapState(useUserStore, ['isLoggedIn', 'avatar', 'username']),
-    ...mapState(useProjectStore, ['shownFeaturesChoices', 'annotationFeatures', 'featuresSet', 'isGuest', 'canSaveTreeInProject', 'canValidateUsersTrees']),
+    ...mapState(useProjectStore, ['shownFeaturesChoices', 'annotationFeatures', 'featuresSet', 'isGuest', 'canSaveTreeInProject', 'isValidator']),
     userOptions() {
       if(this.isGuest || !this.canSaveTreeInProject) {
         return this.usersToApplyOptions.slice(2).filter((option) => option.value !== 'pending');

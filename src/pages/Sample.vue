@@ -180,7 +180,7 @@ export default defineComponent({
     }
   },
   computed: {
-    ...mapState(useProjectStore, ['blindAnnotationMode', 'isTeacher', 'featuresSet']),
+    ...mapState(useProjectStore, ['blindAnnotationMode', 'isValidator', 'featuresSet']),
     ...mapState(useGrewSearchStore, ['pendingModifications']),
     ...mapState(useTreesStore, ["trees", "filteredTrees", "loading", "numberOfTrees", "userIds", "blindAnnotationLevel"]),
     ...mapState(useTagsStore, ["defaultTags"]),

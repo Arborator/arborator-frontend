@@ -58,7 +58,7 @@
                 </q-item-section>
               </q-item>
 
-              <q-item v-if="canValidateUsersTrees" v-close-popup clickable @click="fetchLexicon_('recent')">
+              <q-item v-if="isValidator" v-close-popup clickable @click="fetchLexicon_('recent')">
                 <q-item-section avatar>
                   <q-icon name="schedule" />
                 </q-item-section>
@@ -67,7 +67,7 @@
                 </q-item-section>
               </q-item>
 
-              <q-item v-if="canValidateUsersTrees" v-close-popup clickable @click="fetchLexicon_('validated')">
+              <q-item v-if="isValidator" v-close-popup clickable @click="fetchLexicon_('validated')">
                 <q-item-section avatar>
                   <q-icon name="verified" />
                 </q-item-section>
@@ -147,7 +147,7 @@ export default defineComponent({
     };
   },
   computed: {
-    ...mapState(useProjectStore, ['annotationFeatures', 'canValidateUsersTrees']),
+    ...mapState(useProjectStore, ['annotationFeatures', 'isValidator']),
     ...mapState(useUserStore, ['isLoggedIn', 'isSuperAdmin', 'avatar']),
     ...mapState(useLexiconStore, ['lexiconItems', 'lexiconLoading', 'lexiconItemsModified']),
     projectName() {

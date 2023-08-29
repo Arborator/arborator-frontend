@@ -66,7 +66,7 @@ export default defineComponent({
   },
 
   computed: {
-    ...mapState(useProjectStore, ['canSeeOtherUsersTrees', 'isGuest', 'canSaveTreeInProject', 'canValidateUsersTrees']),
+    ...mapState(useProjectStore, ['canSeeOtherUsersTrees', 'isGuest', 'canSaveTreeInProject', 'isValidator']),
     ...mapState(useUserStore, ['isLoggedIn', 'isSuperAdmin', 'avatar', 'getUserInfos']),
     breakpoint(): boolean {
       return this.window.width <= 400;

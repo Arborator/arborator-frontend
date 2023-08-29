@@ -27,25 +27,22 @@ export const useProjectStore = defineStore('project', {
       return state.annotators.includes(useUserStore().username)&& !useUserStore().super_admin;
     },
     isGuest: (state) => state.guests.includes(useUserStore().username) && !useUserStore().super_admin,
-    isTeacher(state): boolean {
-      return this.isAdmin && state.blindAnnotationMode;
-    },
     isStudent(state): boolean {
-      return !this.isAdmin && state.blindAnnotationMode;
+      return !this.isValidator && state.blindAnnotationMode;
     },
     isProjectMember(): boolean {
       return this.isAdmin || this.isValidator || this.isAnnotator || this.isGuest; 
     },
     isAllowdedToSync(): boolean {
-      return useUserStore().loggedWithGithub && this.isOwner && !this.blindAnnotationMode && !this.isTeacher;
+      return useUserStore().loggedWithGithub && this.isOwner && !this.blindAnnotationMode;
     },
     canSaveTreeInProject(state): boolean {
       if (!useUserStore().isLoggedIn) {
         // people not logged in can't save in any case
         return false
       }
-      if (this.isTeacher) {
-        // teacher can't save a tree. They can only save special tree : base_tree and teacher
+      if (this.isValidator && this.blindAnnotationMode) {
+        // In the blind annotation Validator can't save a tree. They can only save special tree : base_tree and Validated
         return false
       }
       if (state.visibility === 2) {
@@ -61,9 +58,9 @@ export const useProjectStore = defineStore('project', {
         return true;
       }
       if (state.blindAnnotationMode) {
-        // if project in blind annotation mode, only isAdmin can see trees of others on project scale
-        // (students still can see trees of teacher in difficulty 1 and 2, but this is addressed elsewhere)
-        return this.isAdmin;
+        // if project in blind annotation mode, only isValidator can see trees of others on project scale
+        // (students still can see Validated trees in difficulty 1 and 2, but this is addressed elsewhere)
+        return this.isValidator;
       }
       if (state.visibility >= 1) {
         // everyone can see trees from other in "visible" and "public" projects
@@ -74,9 +71,6 @@ export const useProjectStore = defineStore('project', {
         return this.isProjectMember;
       }
       return false;
-    },
-    canValidateUsersTrees(): boolean {
-      return this.isAdmin || this.isValidator;
     },
     getAnnotationSetting(state): string{
       if(this.config === 'ud') {
@@ -168,9 +162,6 @@ export const useProjectStore = defineStore('project', {
         })
         .catch((error) => {
           notifyError({ error });
-          // message: `${error}`,
-          // color: 'negative',
-          // position: 'bottom',
         });
     },
 
@@ -187,9 +178,6 @@ export const useProjectStore = defineStore('project', {
             notifyError({
               error: error,
             });
-            // message: `${error}`,
-            // color: 'negative',
-            // position: 'bottom',
             reject(error);
           });
       });
@@ -247,20 +235,5 @@ export const useProjectStore = defineStore('project', {
     resetAnnotationFeaturesUD(): void {
       this.annotationFeatures = defaultState().annotationFeaturesUD;
     },
-    // KK IS IT IN KLANG STORE NOW ?
-    // // method for fetching klang project's settings, currently only admins
-    // fetchKlangProjectSettings({ projectname }: { projectname: string }) {
-    //   api
-    //     .getKlangProjectAdmins(projectname)
-    //     .then((response) => {
-    //       const admins = response.data;
-    //       commit('set_klang_project_settings', {
-    //         admins,
-    //       });
-    //     })
-    //     .catch((error) => {
-    //       notifyError({ error });
-    //     });
-    // },
   },
 });

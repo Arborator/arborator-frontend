@@ -121,7 +121,7 @@ export default defineComponent({
     };
   },
   computed: {
-    ...mapState(useProjectStore, ['canSaveTreeInProject', 'canValidateUsersTrees']),
+    ...mapState(useProjectStore, ['canSaveTreeInProject', 'isValidator']),
     ...mapState(useUserStore, ['username']),
     sentenceCount() {
       return Object.keys(this.searchresults)
@@ -191,7 +191,7 @@ export default defineComponent({
       this.searchresultsCopy = selectedResults;
       for (const sample in selectedResults) {
         for (const sentId in selectedResults[sample]) {
-          if (!this.canValidateUsersTrees || this.userType !== "validated") {
+          if (!this.isValidator || this.userType !== "validated") {
             let toSaveConll = ""
             if (selectedResults[sample][sentId].conlls[this.username]) {
               toSaveConll = selectedResults[sample][sentId].conlls[this.username]
@@ -204,7 +204,7 @@ export default defineComponent({
             this.searchresultsCopy[sample][sentId].conlls[this.username] = sentenceJsonToConll(sentenceJson)
           }
           for (const userId in this.searchresultsCopy[sample][sentId].conlls) {
-            if (!this.canValidateUsersTrees || this.userType !== "validated") {
+            if (!this.isValidator || this.userType !== "validated") {
               if (userId !== this.username) delete this.searchresultsCopy[sample][sentId].conlls[userId]
             }
             toSaveCounter += 1;

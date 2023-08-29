@@ -317,7 +317,6 @@ export default {
     selectTooltip: 'Sélectionnez la phrase pour diviser les tokens',
     annotationErrors: "Voir vos erreurs d'annotation",
     validateTree: 'Valider cet arbre',
-    saveTeacher: 'Sauvegarder comme enseignant',
     saveBaseTree: 'Sauvegarder comme arbre de base',
     saveTree: ["Sauvegarder l'arbre", "comme"],
     editMetadata: 'Editer les métadonnées de cet arbre',

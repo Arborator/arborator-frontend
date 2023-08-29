@@ -16,7 +16,6 @@ interface configState {
   diffUserId: string;
   shownFeatures: string[];
   shownMeta: string[];
-  TEACHER: string;
   annotationFeatures: annotationFeatures_t;
   annotationFeaturesUD: annotationFeatures_t;
 }
@@ -39,7 +38,6 @@ export default function defaultState(): configState {
     diffUserId: '',
     shownFeatures: ['FORM', 'UPOS', 'LEMMA', 'MISC.Gloss'],
     shownMeta: ['text_en'],
-    TEACHER: 'teacher',
 
     annotationFeatures: {
       META: ['sent_id', 'text', 'text_en', 'text_ortho', 'speaker_id', 'sound_url'],

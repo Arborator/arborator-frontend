@@ -48,7 +48,7 @@ export default defineComponent({
       required: true,
     },
     diffMode: {
-      type: String as PropType<'DIFF_TEACHER' | 'DIFF_USER' | 'NO_DIFF'>,
+      type: String as PropType<'DIFF_VALIDATED' | 'DIFF_USER' | 'NO_DIFF'>,
       required: true,
     },
     sentenceId: {
@@ -95,7 +95,7 @@ export default defineComponent({
     };
   },
   computed: {
-    ...mapState(useProjectStore, ['diffUserId', 'shownFeatures', 'TEACHER', 'isTeacher', 'isStudent']),
+    ...mapState(useProjectStore, ['diffUserId', 'shownFeatures', 'isStudent']),
     ...mapState(useUserStore, ['username']),
   },
   watch: {
@@ -117,7 +117,7 @@ export default defineComponent({
     const sentenceSVGOptions = defaultSentenceSVGOptions();
     sentenceSVGOptions.shownFeatures = this.shownFeatures;
 
-    sentenceSVGOptions.interactive = !(this.isStudent && this.treeUserId === this.TEACHER);
+    sentenceSVGOptions.interactive = !(this.isStudent && this.treeUserId === 'Validated');
     sentenceSVGOptions.arcHeight = 40;
     sentenceSVGOptions.tokenSpacing = 25;
 
@@ -314,9 +314,9 @@ export default defineComponent({
       this.sentenceBus.emit('changed:metaText', { newMetaText });
     },
     handleDiffPlugging() {
-      if (this.diffMode === 'DIFF_TEACHER') {
-        if (this.treeUserId !== this.TEACHER) {
-          this.sentenceSVG.plugDiffTree(this.reactiveSentencesObj[this.TEACHER]);
+      if (this.diffMode === 'DIFF_VALIDATED') {
+        if (this.treeUserId !== 'Validated') {
+          this.sentenceSVG.plugDiffTree(this.reactiveSentencesObj['Validated']);
         } else {
           this.sentenceSVG.unplugDiffTree();
         }

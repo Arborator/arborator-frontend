@@ -15,21 +15,17 @@
         <q-space />
 
         <template v-if="openTabUser !== ''">
-          <q-btn v-if="isLoggedIn && blindAnnotationLevel <= 3 && !isTeacher" flat round dense icon="assessment"
+          <q-btn v-if="isLoggedIn && exerciseLevel <= 3 && !isValidator" flat round dense icon="assessment"
             :disable="openTabUser === ''" @click="openStatisticsDialog">
             <q-tooltip>{{ $t('sentenceCard.annotationErrors') }}</q-tooltip>
           </q-btn>
 
-          <q-btn v-if="canValidateUsersTrees" flat round dense icon="verified" :disable="openTabUser === ''"
+          <q-btn v-if="isValidator" flat round dense icon="verified" :disable="openTabUser === ''"
             @click="save('Validated')">
             <q-tooltip>{{ $t('sentenceCard.validateTree') }}</q-tooltip>
           </q-btn>
 
-          <q-btn v-if="isTeacher" flat round dense icon="school" :disable="openTabUser === ''" @click="save('teacher')">
-            <q-tooltip>{{ $t('sentenceCard.saveTeacher') }}</q-tooltip>
-          </q-btn>
-
-          <q-btn v-if="isTeacher" flat round dense icon="linear_scale" :disable="openTabUser === ''"
+          <q-btn v-if="isValidator" flat round dense icon="linear_scale" :disable="openTabUser === ''"
             @click="save('base_tree')">
             <q-tooltip>{{ $t('sentenceCard.saveBaseTree') }}</q-tooltip>
           </q-btn>
@@ -53,7 +49,7 @@
             <q-tooltip>Add tag to this tree</q-tooltip>
           </q-btn>
 
-          <q-btn v-if="isTeacher" flat round dense icon="filter_9_plus" :disable="openTabUser === ''"
+          <q-btn v-if="isValidator" flat round dense icon="filter_9_plus" :disable="openTabUser === ''"
             @click="openMultiEditDialog">
             <q-tooltip>{{ $t('sentenceCard.multiEditDial') }}</q-tooltip>
           </q-btn>
@@ -139,7 +135,7 @@
             <q-card-section :class="($q.dark.isActive ? '' : '') + ' scrollable'">
               <VueDepTree v-if="reactiveSentencesObj" :card-id="index" :conll="tree"
                 :reactive-sentence="reactiveSentencesObj[user]" :reactive-sentences-obj="reactiveSentencesObj"
-                :diff-mode="showDiffTeacher ? 'DIFF_TEACHER' : diffMode ? 'DIFF_USER' : 'NO_DIFF'"
+                :diff-mode="showDiffValidator ? 'DIFF_VALIDATED' : diffMode ? 'DIFF_USER' : 'NO_DIFF'"
                 :sentence-id="sentence.sent_id" :sentence-bus="sentenceBus" :tree-user-id="user"
                 :conll-saved-counter="conllSavedCounter" :has-pending-changes="hasPendingChanges"
                 :matches="sentence.matches ? (sentence.matches[user] ? sentence.matches[user].map((match) => Object.values(match.nodes)).flat() : []) : []"
@@ -239,7 +235,7 @@ export default defineComponent({
       type: Number as PropType<number>,
       required: true,
     },
-    blindAnnotationLevel: {
+    exerciseLevel: {
       type: Number as PropType<number>,
       required: true,
     },
@@ -281,7 +277,7 @@ export default defineComponent({
 
   computed: {
     ...mapWritableState(useProjectStore, ['diffMode', 'diffUserId']),
-    ...mapState(useProjectStore, ['isAdmin', 'isTeacher', 'blindAnnotationMode', 'getProjectConfig', 'canSaveTreeInProject', 'canValidateUsersTrees', 'shownMeta']),
+    ...mapState(useProjectStore, ['isAdmin', 'isValidator', 'blindAnnotationMode', 'getProjectConfig', 'canSaveTreeInProject', 'isValidator', 'shownMeta']),
     ...mapState(useUserStore, ['isLoggedIn', 'username']),
     ...mapState(useTagsStore, ['defaultTags']),
     lastModifiedTime() {
@@ -306,8 +302,8 @@ export default defineComponent({
       }
       return lastModifiedTime;
     },
-    showDiffTeacher() {
-      return this.blindAnnotationMode && this.blindAnnotationLevel <= 2;
+    showDiffValidator() {
+      return this.blindAnnotationMode && this.exerciseLevel <= 2;
     },
     userTags() {
       const existingTagsString = this.reactiveSentencesObj[this.openTabUser].state.metaJson.tags as string;
@@ -317,7 +313,7 @@ export default defineComponent({
     },
     filteredConlls() {
       let filteredConlls = this.sentenceData.conlls;
-      if (this.blindAnnotationLevel !== 1 && !this.isAdmin && this.blindAnnotationMode) {
+      if (this.exerciseLevel !== 1 && !this.isAdmin && this.blindAnnotationMode) {
         return Object.fromEntries(Object.entries(filteredConlls).filter(([user]) => user !== 'teacher'));
       }
       return this.orderConlls(filteredConlls);

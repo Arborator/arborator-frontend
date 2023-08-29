@@ -4,7 +4,7 @@
       <q-card-section no-shadow	class="project-header">
         <q-img class="project-image" :src="cleanedImage" basic>
           <div class="absolute-bottom text-h6" style="padding: 6px">
-            <ProjectIcon :visibility="visibility" :exercise-mode="exerciseMode" />
+            <ProjectIcon :visibility="visibility" :blind-annotation-mode="blindAnnotationMode" />
             {{ $t('projectView.project') }} {{ projectName }}
             <q-btn v-if="isAdmin" flat round icon="settings" @click="projectSettingsDial = true">
               <q-tooltip :delay="300" content-class="text-white bg-primary">
@@ -53,7 +53,7 @@
           :filter="table.filter" 
           :filter-method="searchSamples" 
           binary-state-sort
-          :visible-columns="exerciseMode ? table.visibleColumnsExerciseMode : table.visibleColumns" 
+          :visible-columns="blindAnnotationMode ? table.visibleColumnsBlindAnnotationMode : table.visibleColumns" 
           selection="multiple"
           :table-header-class="$q.dark.isActive ? 'text-white' : 'text-primary'" 
           virtual-scroll
@@ -274,17 +274,17 @@
                   </div>
                 </div>
               </q-td>
-              <q-td key="exerciseLevel" :props="props">
-                <q-select v-model="props.row.exerciseLevel" outlined :options="exerciceModeOptions" map-options emit-value
-                  label="exercise level" :dense="false" :disable="!isAdmin"
-                  @update:model-value="updateExerciseLevel(props.row)" />
+              <q-td key="blindAnnotationLevel" :props="props">
+                <q-select v-model="props.row.blindAnnotationLevel" outlined :options="blindAnnotationModeOptions" map-options emit-value
+                  label="Blind annotation model" :dense="false" :disable="!isAdmin"
+                  @update:model-value="updateBlindAnnotationLevel(props.row)" />
               </q-td>
             </q-tr>
           </template>
         </q-table>
       </q-card-section>
     </q-card>
-    <template v-if="!exerciseMode && !isTeacher && !isFreezed">
+    <template v-if="!blindAnnotationMode && !isTeacher && !isFreezed">
       <GrewSearch :user-ids="getProjectTreesFrom" :sentence-count="sentenceCount" :search-scope="projectName"
         @reload="loadProjectData" />
       <RelationTableMain />
@@ -454,15 +454,15 @@ export default defineComponent({
           field: 'treesFrom',
         },
         {
-          name: 'exerciseLevel',
+          name: 'blindAnnotationLevel',
           label: this.$t('projectView.tableFields[7]'),
           sortable: true,
-          field: 'exerciseLevel',
+          field: 'blindAnnotationLevel',
         },
       ],
       selected,
       visibleColumns: ['samplename', 'treesFrom', 'tokens', 'sentences'],
-      visibleColumnsExerciseMode: ['samplename', 'exerciseLevel', 'treesFrom', 'tokens', 'sentences'],
+      visibleColumnsBlindAnnotationMode: ['samplename', 'blindAnnotationLevel', 'treesFrom', 'tokens', 'sentences'],
       filter: '',
       loading: false,
       pagination: {
@@ -493,9 +493,9 @@ export default defineComponent({
       confirmActionArg1: '',
       samples,
       projectTreesFrom,
-      exerciceModeOptions: [
+      blindAnnotationModeOptions: [
         {
-          label: '1: teacher_visible',
+          label: '1: validated_visible',
           value: 1,
         },
         {
@@ -531,7 +531,7 @@ export default defineComponent({
       'isGuest',
       'admins',
       'image',
-      'exerciseMode',
+      'blindAnnotationMode',
       'cleanedImage',
       'description',
       'isTeacher',
@@ -661,14 +661,14 @@ export default defineComponent({
     bootParserPanelToggle() {
       this.isShowParsingPanel = !this.isShowParsingPanel;
     },
-    updateExerciseLevel(sample: sample_t) {
+    updateBlindAnnotationLevel(sample: sample_t) {
       setTimeout(() => {
         // IMPORTANT : Since quasar v2 (vue v3), the update method (in q-select) occurs BEFORE the value is updated
-        // So we need to use this hack of setTimeout if we want to access to the updated sample.exerciseLevel
+        // So we need to use this hack of setTimeout if we want to access to the updated sample.blindAnnotationLevel
         api
-          .updateSampleExerciseLevel(this.projectName as string, sample.sample_name, sample.exerciseLevel)
+          .updateSampleBlindAnnotationLevel(this.projectName as string, sample.sample_name, sample.blindAnnotationLevel)
           .then((response) => {
-            notifyMessage({ message: 'The new exercise level was correctly saved in the server' });
+            notifyMessage({ message: 'The new blind annotation level was correctly saved in the server' });
           })
           .catch((error) => {
             notifyError({ error });

@@ -31,7 +31,7 @@
                 :sentence="searchresults[item[0]][item[1]]"
                 :index="index"
                 :matches="searchresults[item[0]][item[1]]"
-                :exercise-level="4"
+                :blind-annotation-level="4"
               ></SentenceCard>
             </div>
           </div>

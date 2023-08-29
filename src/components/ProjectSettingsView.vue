@@ -12,7 +12,7 @@
       <q-banner rounded class="col-md-4 offset-md-4 col-xs-12 col-sm-12">
         <q-img :ratio="16 / 9" :src="cleanedImage" basic>
           <div class="absolute-bottom text-h6">
-            <ProjectIcon :visibility="visibilityLocal" :exercise-mode="exerciseModeLocal" />
+            <ProjectIcon :visibility="visibilityLocal" :blind-annotation-mode="blindAnnotationModeLocal" />
             {{ projectname }}
           </div>
         </q-img>
@@ -66,11 +66,11 @@
 
           <q-item tag="label">
             <q-item-section>
-              <q-item-label>{{ $t('projectSettings.toggleExerciseMode') }}</q-item-label>
-              <q-item-label caption>{{ $t('projectSettings.toggleExerciseModeCaption') }}</q-item-label>
+              <q-item-label>{{ $t('projectSettings.toggleBlindAnnotationMode') }}</q-item-label>
+              <q-item-label caption>{{ $t('projectSettings.toggleBlindAnnotationModeCaption') }}</q-item-label>
             </q-item-section>
             <q-item-section avatar>
-              <q-toggle v-model="exerciseModeLocal" color="primary" checked-icon="check" unchecked-icon="clear" />
+              <q-toggle v-model="blindAnnotationModeLocal" color="primary" checked-icon="check" unchecked-icon="clear" />
             </q-item-section>
           </q-item>
 
@@ -244,7 +244,7 @@ export default defineComponent({
   computed: {
     ...mapWritableState(useProjectStore, [
       'description',
-      'exerciseMode',
+      'blindAnnotationMode',
       'diffMode',
       'diffUserId',
       'visibility',
@@ -266,12 +266,12 @@ export default defineComponent({
       'config',
     ]),
   
-    exerciseModeLocal: {
+    blindAnnotationModeLocal: {
       get() {
-        return this.exerciseMode || false;
+        return this.blindAnnotationMode || false;
       },
       set(value: boolean) {
-        this.updateProjectSettings({ exerciseMode: value });
+        this.updateProjectSettings({ blindAnnotationMode: value });
       },
     },
     diffModeLocal: {

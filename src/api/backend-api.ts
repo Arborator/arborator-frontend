@@ -130,8 +130,8 @@ export default {
   deleteSample(projectname: string, samplename: string) {
     return API.delete(`/projects/${projectname}/samples/${samplename}`);
   },
-  updateSampleExerciseLevel(projectname: string, samplename: string, exerciseLevel: number) {
-    return API.post(`/projects/${projectname}/samples/${samplename}/exercise-level`, { exerciseLevel });
+  updateSampleBlindAnnotationLevel(projectname: string, samplename: string, blindAnnotationLevel: number) {
+    return API.post(`/projects/${projectname}/samples/${samplename}/blind-annotation-level`, { blindAnnotationLevel });
   },
 
   // ---------------------------------------------------- //

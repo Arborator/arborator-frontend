@@ -91,7 +91,7 @@ export default {
       subtitle: 'Arborator-Grew combines the features of two preexisting tools: Arborator and Grew.',
       content: [
         'Arborator is a widely used collaborative graphical online dependency treebank annotation tool. Grew is a tool for graph querying and rewriting specialized in structures needed in NLP, i.e. syntactic and semantic dependency trees and graphs. Grew also has an online version,',
-        ", where all Universal Dependencies treebanks in their classical, deep and surface-syntactic flavors can be queried. Arborator-Grew is a complete redevelopment and modernization of Arborator, replacing its own internal database storage by a new Grew API, which adds a powerful query tool to Arborator's existing treebank creation and correction features. This includes complex access control for parallel expert and crowd-sourced annotation, tree comparison visualization, and various exercise modes for teaching and training of annotators. Arborator-Grew opens up new paths of collectively creating, updating, maintaining, and curating syntactic treebanks and semantic graph banks.",
+        ", where all Universal Dependencies treebanks in their classical, deep and surface-syntactic flavors can be queried. Arborator-Grew is a complete redevelopment and modernization of Arborator, replacing its own internal database storage by a new Grew API, which adds a powerful query tool to Arborator's existing treebank creation and correction features. This includes complex access control for parallel expert and crowd-sourced annotation, tree comparison visualization, and various blind annotation modes for teaching and training of annotators. Arborator-Grew opens up new paths of collectively creating, updating, maintaining, and curating syntactic treebanks and semantic graph banks.",
       ],
     },
     citeCard: {
@@ -191,7 +191,7 @@ export default {
     tooltipWindows: ['Minimize', 'Maximize', 'Close'],
     search: 'Search',
     uploadSelectDial: 'Select one or multiple conll files',
-    tableFields: ['Name', 'Nb Sentences', 'Nb Tokens', 'Annotators', 'Validators', 'Prof', 'Trees From', 'Exercise Level'],
+    tableFields: ['Name', 'Nb Sentences', 'Nb Tokens', 'Annotators', 'Validators', 'Prof', 'Trees From', 'Blind annotation level'],
     addUser: 'Add user',
     lexicon: [
       'Select one or multiple features for the Lexicon',
@@ -228,7 +228,7 @@ export default {
     title: 'Create New Project',
     projectName: 'Project name',
     visibilityMode: ['Private', 'Visible', 'Open'],
-    exerciseMode: 'exercise mode',
+    blindAnnotationMode: 'blind annotation mode',
     create: 'Create',
     createMessage: 'is created',
     inputWarning: 'Please type something',
@@ -272,8 +272,8 @@ export default {
       ['Private projects restrain access and annotation.', 'Visible projects restrain only annotation.', 'Open projects allow anyone to view and contribute their annotation.'],
     toggleAllVisible: 'All trees visible',
     toggleAllVisibleCaption: "If true, annotators will be able to see others' trees",
-    toggleExerciseMode: 'Exercise mode',
-    toggleExerciseModeCaption: 'if true, the project has exercise mode properties',
+    toggleBlindAnnotationMode: 'Blind annotation mode',
+    toggleBlindAnnotationModeCaption: 'if true, the project has blind annotation mode properties',
     toggleDiffMode: 'Diff mode',
     toggleDiffModeCaption: 'if true, the project has diff mode properties',
     chooseUserDiff: 'Diff user',

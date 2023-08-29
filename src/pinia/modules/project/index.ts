@@ -28,16 +28,16 @@ export const useProjectStore = defineStore('project', {
     },
     isGuest: (state) => state.guests.includes(useUserStore().username) && !useUserStore().super_admin,
     isTeacher(state): boolean {
-      return this.isAdmin && state.exerciseMode;
+      return this.isAdmin && state.blindAnnotationMode;
     },
     isStudent(state): boolean {
-      return !this.isAdmin && state.exerciseMode;
+      return !this.isAdmin && state.blindAnnotationMode;
     },
     isProjectMember(): boolean {
       return this.isAdmin || this.isValidator || this.isAnnotator || this.isGuest; 
     },
     isAllowdedToSync(): boolean {
-      return useUserStore().loggedWithGithub && this.isOwner && !this.exerciseMode && !this.isTeacher;
+      return useUserStore().loggedWithGithub && this.isOwner && !this.blindAnnotationMode && !this.isTeacher;
     },
     canSaveTreeInProject(state): boolean {
       if (!useUserStore().isLoggedIn) {
@@ -60,8 +60,8 @@ export const useProjectStore = defineStore('project', {
         // isAdmin (admins and superadmins) can see everything in this project
         return true;
       }
-      if (state.exerciseMode) {
-        // if project in exercice mode, only isAdmin can see trees of others on project scale
+      if (state.blindAnnotationMode) {
+        // if project in blind annotation mode, only isAdmin can see trees of others on project scale
         // (students still can see trees of teacher in difficulty 1 and 2, but this is addressed elsewhere)
         return this.isAdmin;
       }
@@ -120,7 +120,7 @@ export const useProjectStore = defineStore('project', {
         .getProject(projectname)
         .then((response) => {
           this.name = response.data.projectName;
-          this.exerciseMode = response.data.exerciseMode;
+          this.blindAnnotationMode = response.data.blindAnnotationMode;
           this.diffMode = response.data.diffMode;
           this.diffUserId = response.data.diffUserId;
           this.visibility = response.data.visibility;

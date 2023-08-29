@@ -74,7 +74,7 @@
     </q-item-section>
     <q-item-section side>
       <div class="absolute-bottom text-h6">
-        <ProjectIcon :visibility="project.visibility" :exercise-mode="project.exerciseMode" />
+        <ProjectIcon :visibility="project.visibility" :blind-annotation-mode="project.blindAnnotationMode" />
       </div>
     </q-item-section>
 

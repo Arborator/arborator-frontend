@@ -35,7 +35,7 @@
       @click="goTo()"
     >
       <div class="absolute-bottom text-h6">
-        <ProjectIcon :visibility="project.visibility" :exercise-mode="project.exerciseMode" />
+        <ProjectIcon :visibility="project.visibility" :blind-annotation-mode="project.blindAnnotationMode" />
         {{ project.projectName }}
       </div>
     </q-img>

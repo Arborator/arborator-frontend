@@ -15,7 +15,7 @@
         <q-space />
 
         <template v-if="openTabUser !== ''">
-          <q-btn v-if="isLoggedIn && exerciseLevel <= 3 && !isTeacher" flat round dense icon="assessment"
+          <q-btn v-if="isLoggedIn && blindAnnotationLevel <= 3 && !isTeacher" flat round dense icon="assessment"
             :disable="openTabUser === ''" @click="openStatisticsDialog">
             <q-tooltip>{{ $t('sentenceCard.annotationErrors') }}</q-tooltip>
           </q-btn>
@@ -72,7 +72,7 @@
               </q-item>
 
 
-              <q-item v-if="!exerciseMode" v-close-popup clickable @click="toggleDiffMode()">
+              <q-item v-if="!blindAnnotationMode" v-close-popup clickable @click="toggleDiffMode()">
                 <q-item-section avatar>
                   <q-avatar icon="ion-git-network" color="primary" text-color="white" />
                 </q-item-section>
@@ -239,7 +239,7 @@ export default defineComponent({
       type: Number as PropType<number>,
       required: true,
     },
-    exerciseLevel: {
+    blindAnnotationLevel: {
       type: Number as PropType<number>,
       required: true,
     },
@@ -281,7 +281,7 @@ export default defineComponent({
 
   computed: {
     ...mapWritableState(useProjectStore, ['diffMode', 'diffUserId']),
-    ...mapState(useProjectStore, ['isAdmin', 'isTeacher', 'exerciseMode', 'getProjectConfig', 'canSaveTreeInProject', 'canValidateUsersTrees', 'shownMeta']),
+    ...mapState(useProjectStore, ['isAdmin', 'isTeacher', 'blindAnnotationMode', 'getProjectConfig', 'canSaveTreeInProject', 'canValidateUsersTrees', 'shownMeta']),
     ...mapState(useUserStore, ['isLoggedIn', 'username']),
     ...mapState(useTagsStore, ['defaultTags']),
     lastModifiedTime() {
@@ -307,7 +307,7 @@ export default defineComponent({
       return lastModifiedTime;
     },
     showDiffTeacher() {
-      return this.exerciseMode && this.exerciseLevel <= 2;
+      return this.blindAnnotationMode && this.blindAnnotationLevel <= 2;
     },
     userTags() {
       const existingTagsString = this.reactiveSentencesObj[this.openTabUser].state.metaJson.tags as string;
@@ -317,7 +317,7 @@ export default defineComponent({
     },
     filteredConlls() {
       let filteredConlls = this.sentenceData.conlls;
-      if (this.exerciseLevel !== 1 && !this.isAdmin && this.exerciseMode) {
+      if (this.blindAnnotationLevel !== 1 && !this.isAdmin && this.blindAnnotationMode) {
         return Object.fromEntries(Object.entries(filteredConlls).filter(([user]) => user !== 'teacher'));
       }
       return this.orderConlls(filteredConlls);
@@ -520,7 +520,7 @@ export default defineComponent({
      */
     rightClickHandler(e: MouseEvent, user: string) {
       e.preventDefault();
-      if (this.exerciseMode) return;
+      if (this.blindAnnotationMode) return;
       if (!this.diffMode) {
         // if user right click on one of the tab icon while diffMode was
         // disabled, it enable it and set to this tab user the diffUser

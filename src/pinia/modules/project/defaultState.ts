@@ -9,7 +9,7 @@ interface configState {
   visibility: number;
   description: string;
   image: string;
-  exerciseMode: boolean;
+  blindAnnotationMode: boolean;
   freezed: boolean;
   config: string;
   diffMode: boolean;
@@ -32,7 +32,7 @@ export default function defaultState(): configState {
     visibility: 2,
     description: '',
     image: '',
-    exerciseMode: false,
+    blindAnnotationMode: false,
     freezed: false,
     config: '',
     diffMode: false,

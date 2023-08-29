@@ -100,7 +100,7 @@
             </div>
             <div class="col-md-1 offset-md-4">
                 <q-btn outline round size="sm" color="primary" icon="question_mark"
-                    href="https://arborator.github.io/arborator-documentation/#/?id=exercise-mode"
+                    href="https://arborator.github.io/arborator-documentation/#/?id=blind-annotation-mode"
                     target="_blank">
                     <q-tooltip content-class="text-white bg-primary"> Assistance </q-tooltip>
                 </q-btn>
@@ -109,7 +109,7 @@
           <q-list>
             <q-item>
               <q-item-section side top>
-                <q-checkbox v-model="project.exerciseMode" />
+                <q-checkbox v-model="project.blindAnnotationMode" />
               </q-item-section>
               <q-item-section>
                 <q-item-label>Blind Annotation</q-item-label>
@@ -171,7 +171,7 @@ export default defineComponent({
         visibility: 2,
         language: '', 
         config: '',
-        exerciseMode: false,
+        blindAnnotationMode: false,
       },
       creatDialog: true,
       progress: 0,
@@ -201,7 +201,7 @@ export default defineComponent({
         .then(() => {
           this.parentGetProjects();
           this.submitting = false;
-          if (this.loggedWithGithub && !this.project.exerciseMode) {
+          if (this.loggedWithGithub && !this.project.blindAnnotationMode) {
             this.progress = 0.4;
             this.isShowSyncBtn = true;
           }

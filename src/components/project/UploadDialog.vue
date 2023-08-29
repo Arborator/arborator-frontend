@@ -229,7 +229,7 @@ export default defineComponent({
     return {
       files: null,
       maximizedUploadToggle,
-      robot: { active: false, name: 'parser', exerciseModeName: 'teacher' },
+      robot: { active: false, name: 'parser', blindAnnotationName: 'Validated' },
       uploadSample,
       userIds,
       userIdsPreprocessed: false,
@@ -250,7 +250,7 @@ export default defineComponent({
   computed: {
     ...mapState(useUserStore, { userid: 'id' }),
     ...mapState(useUserStore, ['username']),
-    ...mapState(useProjectStore, ['exerciseMode']),
+    ...mapState(useProjectStore, ['blindAnnotationMode']),
     disableTokenizeBtn() {
       if (this.option.value == 'plainText'){
         return this.text && this.sampleName  && this.lang.value ;
@@ -326,8 +326,8 @@ export default defineComponent({
     },
     uploadSamples() {
       const form = new FormData();
-      if (this.exerciseMode) {
-        this.robot.name = 'teacher';
+      if (this.blindAnnotationMode) {
+        this.robot.name = 'Validated';
         this.robot.active = true;
       }
       form.append('robotname', this.robot.name);

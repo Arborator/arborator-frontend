@@ -14,7 +14,7 @@ export const useTreesStore = defineStore('trees', {
       trees: {} as { [key: string]: grewSearchResultSentence_t },
       filteredTrees: [] as grewSearchResultSentence_t[],
       loading: false as boolean,
-      exerciseLevel: 0 as number,
+      blindAnnotationLevel: 0 as number,
       textFilter: '' as string,
       usersToHaveTree: [] as string[],
       usersToNotHaveTree: [] as string[],
@@ -46,7 +46,7 @@ export const useTreesStore = defineStore('trees', {
           .getSampleTrees(projectName, sampleName)
           .then((response) => {
             this.trees = response.data.sample_trees;
-            this.exerciseLevel = response.data.exercise_level;
+            this.blindAnnotationLevel = response.data.blind_annotation_level;
             this.applyFilterTrees();
             this.loading = false;
             notifyMessage({message: `Loaded ${Object.keys(this.trees).length} trees`});

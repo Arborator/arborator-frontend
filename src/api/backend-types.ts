@@ -22,7 +22,7 @@ export interface project_with_diff_t {
   description: string;
   image: string;
   visibility: number;
-  exerciseMode: boolean;
+  blindAnnotationMode: boolean;
   diffMode: boolean;
   diffUserId: string;
   freezed: boolean;
@@ -35,7 +35,7 @@ export interface project_extended_t {
   description: string;
   image: string;
   visibility: number;
-  exerciseMode: boolean;
+  blindAnnotationMode: boolean;
   freezed: boolean;
   config: string;
   admins: string[];
@@ -78,7 +78,7 @@ export interface sample_t {
   sentences: number;
   number_trees: number;
   tokens: number;
-  exerciseLevel: number;
+  blindAnnotationLevel: number;
   treeByUser: { [key: string]: number };
 }
 

@@ -102,7 +102,7 @@
                 :sentence="item"
                 :index="index"
                 search-result=""
-                :exercise-level="exerciseLevel"
+                :blind-annotation-level="blindAnnotationLevel"
                 @reload="getSampleTrees"
               >
               </SentenceCard>
@@ -180,9 +180,9 @@ export default defineComponent({
     }
   },
   computed: {
-    ...mapState(useProjectStore, ['exerciseMode', 'isTeacher', 'featuresSet']),
+    ...mapState(useProjectStore, ['blindAnnotationMode', 'isTeacher', 'featuresSet']),
     ...mapState(useGrewSearchStore, ['pendingModifications']),
-    ...mapState(useTreesStore, ["trees", "filteredTrees", "loading", "numberOfTrees", "userIds", "exerciseLevel"]),
+    ...mapState(useTreesStore, ["trees", "filteredTrees", "loading", "numberOfTrees", "userIds", "blindAnnotationLevel"]),
     ...mapState(useTagsStore, ["defaultTags"]),
     ...mapWritableState(useTreesStore, ["textFilter", "usersToHaveTree", "usersToNotHaveTree", "usersToHaveDiffs", "usersToNotHaveDiffs", "featuresSetForDiffs", "selectedTags"]),
   },

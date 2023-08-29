@@ -25,7 +25,7 @@ export interface table_t<T> {
   fields: field_t[];
   selected: T[];
   visibleColumns: string[];
-  visibleColumnsExerciseMode?: string[];
+  visibleColumnsBlindAnnotationMode?: string[];
   filter: string;
   loading: boolean;
   pagination: pagination_t;

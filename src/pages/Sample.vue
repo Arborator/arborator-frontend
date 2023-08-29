@@ -11,7 +11,7 @@
         <div class="col-8">
           <q-input v-model="textFilter" label="Text filter" outlined dense color="primary"></q-input>
         </div>
-        <div class="col q-px-md q-gutter-md">
+        <div class="col-3 q-px-md q-gutter-md">
           <q-select 
             outlined 
             dense 
@@ -31,12 +31,14 @@
               <q-separator />
             </template>
           </q-select>
-          <q-btn  class="col" @click="applyFilter" color="primary">Apply filter</q-btn>
+        </div>
+        <div>
+          <q-btn @click="applyFilter" color="primary">Apply filter</q-btn>
         </div>
       </div>      
       <div class="q-pa-md">
         <div class="row text-h6">
-          More filters
+         Advanced filters
           <q-space/>
           <q-btn flat color="primary" @click="clearAll()">clear all</q-btn>
         </div>

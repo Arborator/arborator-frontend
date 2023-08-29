@@ -63,7 +63,7 @@ export const useTreesStore = defineStore('trees', {
       const userIds = new Set();
       for (const treeObj of Object.values(this.trees)) {
           for (const userId in treeObj.conlls) {
-              userIds.add(userId);
+            if(userId !== 'Validated') userIds.add(userId);
           }
       }
       for (const username of userIds) {

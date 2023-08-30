@@ -363,5 +363,11 @@ export default defineComponent({
   font-size: 10px;
 }
 
+.sticky-bar {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+}
+
 
 </style>

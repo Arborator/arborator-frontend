@@ -1,7 +1,7 @@
 <template>
   <q-dialog v-model="creatDialog" transition-show="fade" transition-hide="fade" persistent>
     <q-card style="min-width: 50vw;">
-      <q-bar class="bg-primary text-white">
+      <q-bar class="bg-primary text-white sticky-bar">
         <q-space />
         <q-btn @click="closeDialog" flat dense icon="close" />
       </q-bar>

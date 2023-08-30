@@ -229,7 +229,7 @@ export default defineComponent({
     return {
       files: null,
       maximizedUploadToggle,
-      robot: { active: false, name: 'parser', blindAnnotationName: 'Validated' },
+      robot: { active: false, name: 'parser', blindAnnotationName: 'validated' },
       uploadSample,
       userIds,
       userIdsPreprocessed: false,
@@ -327,7 +327,7 @@ export default defineComponent({
     uploadSamples() {
       const form = new FormData();
       if (this.blindAnnotationMode) {
-        this.robot.name = 'Validated';
+        this.robot.name = 'validated';
         this.robot.active = true;
       }
       form.append('robotname', this.robot.name);

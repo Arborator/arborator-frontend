@@ -93,7 +93,7 @@
               <!-- single and main button for export evaluation -->
               <div>
                 <q-btn 
-                  v-if="isValidator" 
+                  v-if="isValidator && blindAnnotationMode" 
                   flat 
                   color="default" 
                   icon="analytics" 

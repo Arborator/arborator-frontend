@@ -21,11 +21,11 @@
           </q-btn>
 
           <q-btn v-if="isValidator" flat round dense icon="verified" :disable="openTabUser === ''"
-            @click="save('Validated')">
+            @click="save('validated')">
             <q-tooltip>{{ $t('sentenceCard.validateTree') }}</q-tooltip>
           </q-btn>
 
-          <q-btn v-if="isValidator" flat round dense icon="linear_scale" :disable="openTabUser === ''"
+          <q-btn v-if="isValidator && blindAnnotationMode" flat round dense icon="linear_scale" :disable="openTabUser === ''"
             @click="save('base_tree')">
             <q-tooltip>{{ $t('sentenceCard.saveBaseTree') }}</q-tooltip>
           </q-btn>
@@ -49,7 +49,7 @@
             <q-tooltip>Add tag to this tree</q-tooltip>
           </q-btn>
 
-          <q-btn v-if="isValidator" flat round dense icon="filter_9_plus" :disable="openTabUser === ''"
+          <q-btn v-if="isValidator && blindAnnotationMode" flat round dense icon="filter_9_plus" :disable="openTabUser === ''"
             @click="openMultiEditDialog">
             <q-tooltip>{{ $t('sentenceCard.multiEditDial') }}</q-tooltip>
           </q-btn>
@@ -108,15 +108,30 @@
         </template>
       </q-bar>
 
-      <q-tabs class="custom-frame1" v-model="openTabUser" :class="($q.dark.isActive ? 'text-grey-5' : 'text-grey-8')"
-        dense :active-color="$q.dark.isActive ? 'primary' : 'purple-7'"
-        :active-bg-color="$q.dark.isActive ? '' : 'grey-2'" style="transition: unset;">
-        <q-tab class="small-tab" v-for="(tree, user) in filteredConlls"
-          :key="`${reactiveSentencesObj[user].state.metaJson.timestamp}-${user}`" :props="user" :name="user"
-          :label="`${user}`" :alert="hasPendingChanges[user] ? 'orange' : ''"
-          :alert-icon="hasPendingChanges[user] ? 'save' : ''" :icon="diffMode && user === diffUserId ? 'school'
-            : 'person'" no-caps :ripple="false" @contextmenu="rightClickHandler($event, user)"
-          @click="leftClickHandler(user)">
+      <q-tabs 
+        class="custom-frame1" 
+        v-model="openTabUser" 
+        :class="($q.dark.isActive ? 'text-grey-5' : 'text-grey-8')"
+        dense 
+        :active-color="$q.dark.isActive ? 'primary' : 'purple-7'"
+        :active-bg-color="$q.dark.isActive ? '' : 'grey-2'" 
+        style="transition: unset;"
+      >
+        <q-tab 
+          class="small-tab" 
+          v-for="(tree, user) in filteredConlls"
+          :key="`${reactiveSentencesObj[user].state.metaJson.timestamp}-${user}`" 
+          :props="user" 
+          :name="user"
+          :label="`${user}`" 
+          :alert="hasPendingChanges[user] ? 'orange' : ''"
+          :alert-icon="hasPendingChanges[user] ? 'save' : ''" 
+          :icon="diffMode && user === diffUserId ? 'school': 'person'" 
+          no-caps 
+          :ripple="false" 
+          @contextmenu="rightClickHandler($event, user)"
+          @click="leftClickHandler(user)"
+        >
           <q-tooltip v-if="hasPendingChanges[user]">{{ $t('sentenceCard.saveModif') }}</q-tooltip>
           <q-tooltip v-else-if="lastModifiedTime[user]">
             <q-icon color="primary" name="schedule" size="14px" class="q-ml-xs" />
@@ -133,14 +148,22 @@
           style="padding-bottom: 0; padding-top: 0;">
           <q-card flat>
             <q-card-section :class="($q.dark.isActive ? '' : '') + ' scrollable'">
-              <VueDepTree v-if="reactiveSentencesObj" :card-id="index" :conll="tree"
-                :reactive-sentence="reactiveSentencesObj[user]" :reactive-sentences-obj="reactiveSentencesObj"
+              <VueDepTree 
+                v-if="reactiveSentencesObj" 
+                :card-id="index" 
+                :conll="tree"
+                :reactive-sentence="reactiveSentencesObj[user]" 
+                :reactive-sentences-obj="reactiveSentencesObj"
                 :diff-mode="showDiffValidator ? 'DIFF_VALIDATED' : diffMode ? 'DIFF_USER' : 'NO_DIFF'"
-                :sentence-id="sentence.sent_id" :sentence-bus="sentenceBus" :tree-user-id="user"
-                :conll-saved-counter="conllSavedCounter" :has-pending-changes="hasPendingChanges"
+                :sentence-id="sentence.sent_id" 
+                :sentence-bus="sentenceBus" 
+                :tree-user-id="user"
+                :conll-saved-counter="conllSavedCounter" 
+                :has-pending-changes="hasPendingChanges"
                 :matches="sentence.matches ? (sentence.matches[user] ? sentence.matches[user].map((match) => Object.values(match.nodes)).flat() : []) : []"
                 :packages="sentence.packages ? (sentence.packages[user] ? sentence.packages[user] : {}) : {}"
-                @statusChanged="handleStatusChange">
+                @statusChanged="handleStatusChange"
+              >
               </VueDepTree>
             </q-card-section>
           </q-card>
@@ -314,7 +337,7 @@ export default defineComponent({
     filteredConlls() {
       let filteredConlls = this.sentenceData.conlls;
       if (this.blindAnnotationLevel !== 1 && !this.isAdmin && this.blindAnnotationMode) {
-        return Object.fromEntries(Object.entries(filteredConlls).filter(([user]) => user !== 'teacher'));
+        return Object.fromEntries(Object.entries(filteredConlls).filter(([user]) => user !== 'validated'));
       }
       return this.orderConlls(filteredConlls);
     },
@@ -493,7 +516,7 @@ export default defineComponent({
       }
       // sort from newest to oldest but put the validated tree in the beginning
       const orderedUserAndTimestamps = userAndTimestamps.sort((a, b) => b.timestamp - a.timestamp);
-      const validatedTreeIndex = orderedUserAndTimestamps.findIndex((val) => val.user == "Validated");
+      const validatedTreeIndex = orderedUserAndTimestamps.findIndex((val) => val.user == "validated");
       if (validatedTreeIndex != -1) {
         orderedUserAndTimestamps.unshift(orderedUserAndTimestamps.splice(validatedTreeIndex, 1)[0])
       }

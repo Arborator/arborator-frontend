@@ -72,7 +72,7 @@ export default defineComponent({
         const options = [
                 { value: 'user', label: this.$t('github.commitDialog.commitTreeOptions[0]') },
                 { value: 'last', label: this.$t('github.commitDialog.commitTreeOptions[1]') }, 
-                { value: 'Validated', label: this.$t('github.commitDialog.commitTreeOptions[2]') },
+                { value: 'validated', label: this.$t('github.commitDialog.commitTreeOptions[2]') },
             ];
         const trees: { value: string, label: string } = options[0];
         return {

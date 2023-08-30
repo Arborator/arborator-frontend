@@ -92,7 +92,7 @@ export default defineComponent({
             for (const sample of this.samples) {
                 const sampleTreesFrom = sample.treesFrom;
                 for (const userId of sampleTreesFrom) {
-                    if (!otherUsers.includes(userId) && userId !== 'Validated') {
+                    if (!otherUsers.includes(userId) && userId !== 'validated') {
                         otherUsers.push(userId);
                     }
                 }
@@ -120,7 +120,7 @@ export default defineComponent({
                 usersToExport = usersToExport.concat(this.users);
             }
             if (this.validated) {
-                usersToExport.push("Validated");
+                usersToExport.push("validated");
             }
 
             for (const sample of this.samples) {

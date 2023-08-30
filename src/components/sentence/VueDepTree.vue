@@ -117,7 +117,7 @@ export default defineComponent({
     const sentenceSVGOptions = defaultSentenceSVGOptions();
     sentenceSVGOptions.shownFeatures = this.shownFeatures;
 
-    sentenceSVGOptions.interactive = !(this.isStudent && this.treeUserId === 'Validated');
+    sentenceSVGOptions.interactive = !(this.isStudent && this.treeUserId === 'validated');
     sentenceSVGOptions.arcHeight = 40;
     sentenceSVGOptions.tokenSpacing = 25;
 
@@ -315,8 +315,8 @@ export default defineComponent({
     },
     handleDiffPlugging() {
       if (this.diffMode === 'DIFF_VALIDATED') {
-        if (this.treeUserId !== 'Validated') {
-          this.sentenceSVG.plugDiffTree(this.reactiveSentencesObj['Validated']);
+        if (this.treeUserId !== 'validated') {
+          this.sentenceSVG.plugDiffTree(this.reactiveSentencesObj['validated']);
         } else {
           this.sentenceSVG.unplugDiffTree();
         }

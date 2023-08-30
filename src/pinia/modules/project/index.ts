@@ -41,6 +41,9 @@ export const useProjectStore = defineStore('project', {
         // people not logged in can't save in any case
         return false
       }
+      if(this.isGuest){
+        return false
+      }
       if (this.isValidator && this.blindAnnotationMode) {
         // In the blind annotation Validator can't save a tree. They can only save special tree : base_tree and Validated
         return false

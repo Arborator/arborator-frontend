@@ -41,7 +41,7 @@
                     {{$t('grewSearch.grewSearchTooltip')}}
                   </q-tooltip>
                 </q-tab>
-                <q-tab v-if="canSaveTreeInProject" name="REWRITE" icon="autorenew" :label="$t('grewSearch.rewrite')">
+                <q-tab v-if="canSaveTreeInProject || isValidator" name="REWRITE" icon="autorenew" :label="$t('grewSearch.rewrite')">
                   <q-tooltip content-class="bg-primary" anchor="top middle" self="bottom middle" :offset="[10, 10]">
                     {{$t('grewSearch.grewRewriteTooltip')}}
                   </q-tooltip>
@@ -171,16 +171,18 @@ export default defineComponent({
   computed: {
     ...mapState(useGrewSearchStore, ['lastQuery']),
     ...mapState(useUserStore, ['isLoggedIn', 'avatar', 'username']),
-    ...mapState(useProjectStore, ['shownFeaturesChoices', 'annotationFeatures', 'featuresSet', 'isGuest', 'canSaveTreeInProject', 'isValidator']),
+    ...mapState(useProjectStore, ['shownFeaturesChoices', 'annotationFeatures', 'featuresSet', 'canSaveTreeInProject', 'canSeeOtherUsersTrees', 'isValidator']),
     userOptions() {
-      if(this.isGuest || !this.canSaveTreeInProject) {
+      if(!this.canSaveTreeInProject) {
         return this.usersToApplyOptions.slice(2).filter((option) => option.value !== 'pending');
       } 
-      if(this.canSaveTreeInProject && this.searchReplaceTab === 'REWRITE'){
-        return this.usersToApplyOptions.slice(0,4);
+      if(!this.canSeeOtherUsersTrees) {
+        return this.usersToApplyOptions.slice(0, 1);
       }
-      return this.usersToApplyOptions;
-      
+      if(this.searchReplaceTab === 'REWRITE'){
+        return this.usersToApplyOptions.filter(option => option.value !== 'all')
+      }
+      return this.usersToApplyOptions; 
     },
   },
   watch: {

@@ -73,7 +73,7 @@
               </q-btn>
 
               <!-- single and main button for export -->
-              <div>
+              <div v-if="canExportTrees">
                 <q-btn 
                   flat 
                   color="default" 
@@ -540,6 +540,7 @@ export default defineComponent({
       'isOwner',
       'freezed',
       'isAllowdedToSync',
+      'canExportTrees'
     ]),
     ...mapWritableState(useProjectStore, ['freezed']),
     ...mapState(useUserStore, ['isLoggedIn', 'isSuperAdmin', 'loggedWithGithub', 'avatar', 'username']),

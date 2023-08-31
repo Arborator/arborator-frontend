@@ -11,7 +11,7 @@
         </q-card-section>
         <q-card-section class="q-gutter-md">
             <q-list bordered>
-                <q-item tag="label" v-ripple>
+                <q-item v-if="canSeeOtherUsersTrees" tag="label" v-ripple>
                     <q-item-section side top>
                         <q-checkbox v-model="validated" />
                     </q-item-section>
@@ -19,7 +19,7 @@
                         <q-item-label>{{ $t('exportSamples.exportValidatedTrees') }}</q-item-label>
                     </q-item-section>
                 </q-item>
-                <q-item tag="label" v-ripple>
+                <q-item v-if="canSaveTreeInProject" tag="label" v-ripple>
                     <q-item-section side top>
                         <q-checkbox v-model="user" />
                     </q-item-section>
@@ -27,7 +27,7 @@
                         <q-item-label>{{ $t('exportSamples.exportMyTrees') }}</q-item-label>
                     </q-item-section>
                 </q-item>
-                <q-item tag="label" v-ripple>
+                <q-item v-if="canSeeOtherUsersTrees" tag="label" v-ripple>
                     <q-item-section side top>
                         <q-checkbox v-model="last" />
                     </q-item-section>
@@ -35,7 +35,7 @@
                         <q-item-label>{{ $t('exportSamples.exportRecentTrees') }}</q-item-label>
                     </q-item-section>
                 </q-item>
-                <q-item v-if="otherUsers.length > 0" tag="label" v-ripple>
+                <q-item v-if="otherUsers.length > 0 && canSeeOtherUsersTrees" tag="label" v-ripple>
                     <q-item-section side top>
                         <q-checkbox v-model="other" />
                     </q-item-section>
@@ -64,6 +64,7 @@ import { defineComponent, PropType } from 'vue';
 import { sample_t } from 'src/api/backend-types';
 import { mapState } from 'pinia';
 import { useUserStore } from 'src/pinia/modules/user';
+import { useProjectStore } from 'src/pinia/modules/project';
 
 
 export default defineComponent({
@@ -87,6 +88,7 @@ export default defineComponent({
     },
     computed: {
         ...mapState(useUserStore, ['username']),
+        ...mapState(useProjectStore, ['canSaveTreeInProject', 'canSeeOtherUsersTrees']),
         otherUsers() {
             let otherUsers: String[] = [];
             for (const sample of this.samples) {

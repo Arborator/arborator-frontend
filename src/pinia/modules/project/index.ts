@@ -75,6 +75,12 @@ export const useProjectStore = defineStore('project', {
       }
       return false;
     },
+    canExportTrees(state): boolean {
+      if(state.blindAnnotationMode && (!useUserStore().isLoggedIn || this.isGuest)){
+        return false
+      } 
+      return true;
+    },
     getAnnotationSetting(state): string{
       if(this.config === 'ud') {
         return JSON.stringify(state.annotationFeaturesUD, null, 4)

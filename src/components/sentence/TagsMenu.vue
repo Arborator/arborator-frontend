@@ -5,7 +5,8 @@
         </div>
         <q-separator />
         <div class="row q-pa-md">
-            <q-select outlined dense v-model="tags" use-input multiple option-value="value" hide-dropdown-icon
+            <q-select 
+                outlined dense v-model="tags" use-input multiple option-value="value" hide-dropdown-icon
                 input-debounce="0" label="Add tags" :options="filteredTags" emit-value @filter="filterTags"
                 @new-value="createUserTag">
                 <template v-slot:selected-item="scope">

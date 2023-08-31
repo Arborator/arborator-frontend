@@ -14,14 +14,15 @@
       <q-card-section v-if="!isShowSyncBtn && !isShowGithubSyncPanel" style="min-height: 20vw;">
         <q-form id="createprojectform" class="q-gutter-md" @submit="onSubmit">
           <q-input
+            dense
+            outlined
             id="projectnameinput"
             v-model="project.projectName"
-            filled
             :label="$t('createProjectCard.projectName')"
             lazy-rules
             :rules="[(val) => (val && val.length > 0) || $t('createProjectCard.inputWarning')]"
           />
-          <q-input id="descriptioninput" v-model="project.description" filled label="Description" />
+          <q-input outlined dense id="descriptioninput" v-model="project.description" label="Description" />
           <q-separator />
           <q-list>
             <q-item tag="label" v-ripple>
@@ -74,18 +75,44 @@
           <div class="row q-gutter-md">
             <div class="col">
               <q-select
-                style="text-transform: capitalize"
                 v-model="project.language"
-                filled
-                :options="[]"
+                outlined
+                dense
+                use-input
+                hide-dropdown-icon
+                option-value="name"
+                :options="filteredLanguagesList"
                 stack-label
+                emit-value
                 label="Language"
-              />
+                @filter="filterLanguages"
+              >
+                <template v-slot:selected-item="scope">
+                  <q-chip 
+                    v-if="scope.opt" 
+                    removable 
+                    @remove="scope.removeAtIndex(scope.index)"
+                    :tabindex="scope.tabindex" 
+                    dense 
+                    text-color="primary"
+                  >          
+                    {{ scope.opt }}
+                  </q-chip>
+                </template>
+                <template v-slot:option="scope">
+                  <q-item v-close-popup v-bind="scope.itemProps">
+                    <q-item-section>
+                      <q-item-label>{{ scope.opt.name }}</q-item-label>
+                    </q-item-section>
+                  </q-item>
+                </template>
+              </q-select>
             </div>
             <div class="col">
               <q-select
+                dense
+                outlined
                 v-model="project.config"
-                filled
                 :options="annotationConfigOptions"
                 stack-label
                 emit-value
@@ -121,7 +148,7 @@
             
           </q-list>
           <div class="row q-gutter-md justify-center">
-            <q-btn :disable="project.projectName == ''" id="submitproject" type="submit" :label="$t('createProjectCard.create')" color="primary" />
+            <q-btn :disable="disableSubmitBtn" id="submitproject" type="submit" :label="$t('createProjectCard.create')" color="primary" />
           </div>
         </q-form>
       </q-card-section>
@@ -137,12 +164,14 @@
 </template>
 
 <script lang="ts">
+import languages from '../assets/languoid.json';
 import GithubSyncDialog from '../components/github/GithubSyncDialog.vue';
-import { useProjectStore } from 'src/pinia/modules/project';
+
 import api from '../api/backend-api';
 import { notifyError, notifyMessage } from 'src/utils/notify';
 import { mapActions, mapState } from 'pinia';
 import { useUserStore } from 'src/pinia/modules/user';
+import { useProjectStore } from 'src/pinia/modules/project';
 import { defineComponent, PropType } from 'vue';
 
 export default defineComponent({
@@ -163,6 +192,8 @@ export default defineComponent({
       { value: 'ud', label: 'UD'},
       { value: 'other', label:'Other'}
     ];
+    const languagesList = languages;
+    const filteredLanguagesList: { index: number, name: string}[] = [];
     return {
       submitting: false,
       project: {
@@ -179,12 +210,17 @@ export default defineComponent({
       isShowGithubSyncPanel: false,
       synchronized:'',
       annotationConfigOptions,
+      languagesList,
+      filteredLanguagesList,
     };
   },
   computed: {
     ...mapState(useUserStore, ['username', 'loggedWithGithub', 'isSuperAdmin']),
     canSyncWithGithub(){
       return  this.loggedWithGithub && this.isShowSyncBtn && !this.isShowGithubSyncPanel; 
+    },
+    disableSubmitBtn() {
+      return this.project.projectName === '' || this.project.language === '' || this.project.config === '';
     }
   },
   methods: {
@@ -227,8 +263,21 @@ export default defineComponent({
     closeDialog() {
        this.creatDialog = false;
        this.$emit('created');
-    }
+    },
 
+    filterLanguages(val: string, update: (callback: () => void) => void) {
+      console.log(val)
+      if (val === '') {
+        update(() => {
+            this.filteredLanguagesList = this.languagesList;
+        });
+        return;
+      }
+      update(() => {
+          const needle = val.toLowerCase();
+          this.filteredLanguagesList = this.languagesList.filter(v => v.name.toLowerCase().indexOf(needle) > -1);
+      });
+    },
   },
 });
 </script>

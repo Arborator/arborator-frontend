@@ -149,7 +149,7 @@ export default defineComponent({
         { value: 'validated', label: this.$t('projectView.tooltipFabGrewValidated'), icon:'verified'},
         { value: 'pending', label: this.$t('projectView.tooltipFabGrewPending'), icon:'pending' },
         { value: 'all', label: this.$t('projectView.tooltipFabGrewAll'), icon: 'groups' },
-      ];
+    ];
     const usersToApply = usersToApplyOptions[0];
     const otherUsers : string[] = [];
     const features : string[] = [];

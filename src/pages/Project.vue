@@ -284,7 +284,7 @@
         </q-table>
       </q-card-section>
     </q-card>
-    <template v-if="!isFreezed">
+    <template v-if="!isFreezed && canExportTrees">
       <GrewSearch :user-ids="getProjectTreesFrom" :sentence-count="sentenceCount" :search-scope="projectName"
         @reload="loadProjectData" />
       <RelationTableMain />

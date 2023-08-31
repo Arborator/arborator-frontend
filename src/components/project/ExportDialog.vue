@@ -52,7 +52,8 @@
         </q-card-section>
         <q-card-actions align="around">
             <q-btn :disable="disableExportBtn" v-close-popup color="primary" :label="$t('exportSamples.export')"
-                @click="exportSamplesZip()"></q-btn>
+                @click="exportSamplesZip()">
+            </q-btn>
         </q-card-actions>
     </q-card>
 </template>

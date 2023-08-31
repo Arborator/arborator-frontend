@@ -171,26 +171,31 @@ export default defineComponent({
   computed: {
     ...mapState(useGrewSearchStore, ['lastQuery']),
     ...mapState(useUserStore, ['isLoggedIn', 'avatar', 'username']),
-    ...mapState(useProjectStore, ['shownFeaturesChoices', 'annotationFeatures', 'featuresSet', 'canSaveTreeInProject', 'canSeeOtherUsersTrees', 'isValidator']),
+    ...mapState(useProjectStore, ['blindAnnotationMode','shownFeaturesChoices', 'annotationFeatures', 'featuresSet', 'canSaveTreeInProject', 'canSeeOtherUsersTrees', 'isValidator']),
     userOptions() {
-      if(!this.canSaveTreeInProject) {
-        return this.usersToApplyOptions.slice(2).filter((option) => option.value !== 'pending');
-      } 
       if(!this.canSeeOtherUsersTrees) {
         return this.usersToApplyOptions.slice(0, 1);
       }
-      if(this.searchReplaceTab === 'REWRITE'){
+      if(this.blindAnnotationMode){
+        if (this.searchReplaceTab === 'REWRITE'){
+          return this.usersToApplyOptions.slice(2).filter((option) => option.value !== 'all');
+        } else {
+          return this.usersToApplyOptions.slice(2);
+        } 
+      }
+      if(!this.blindAnnotationMode && this.searchReplaceTab === 'REWRITE') {
         return this.usersToApplyOptions.filter(option => option.value !== 'all')
       }
-      return this.usersToApplyOptions; 
+      return this.usersToApplyOptions;     
     },
   },
   watch: {
-    searchReplaceTab(newVal, oldVal){
+    searchReplaceTab(newVal){
       if (newVal === 'REWRITE' && this.usersToApply.value === 'all'){
         this.usersToApply = this.usersToApplyOptions[0];
       }
     }
+
   },
   mounted() {
     if (this.lastQuery !== null) {

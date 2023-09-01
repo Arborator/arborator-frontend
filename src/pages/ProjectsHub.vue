@@ -20,10 +20,9 @@
           </q-toolbar>
           <q-toolbar class="text-center">
             <q-toolbar-title>
-              <!-- <span :class="($q.dark.isActive?'':'text-primary') + ' text-bold'">Projects</span> -->
               <q-input
+                outlined
                 v-model="search"
-                filled
                 bottom-slots
                 :label="$t('projectHub.emptySearch')"
                 type="text"
@@ -31,7 +30,17 @@
                 @keyup.enter="searchProject(search)"
               >
                 <template #append>
-                  <q-icon name="search" />
+                  <q-btn flat icon="language" color="primary">
+                    <q-menu>
+                      <div class="row q-pa-md text-bold">
+                        Filter by language
+                      </div>
+                      <q-separator />
+                      <div class="row q-pa-md">
+                        <LanguageSelect :multiple="true" />
+                      </div>
+                    </q-menu>
+                  </q-btn>
                 </template>
               </q-input>
             </q-toolbar-title>
@@ -190,6 +199,7 @@ import ProjectItem from '../components/ProjectItem.vue';
 import CreaProjectCard from '../components/CreaProjectCard.vue';
 import ProjectSettingsView from '../components/ProjectSettingsView.vue';
 import ConfirmAction from '../components/ConfirmAction.vue';
+import LanguageSelect from 'src/components/shared/LanguageSelect.vue';
 import { mapState } from 'pinia';
 import { useUserStore } from 'src/pinia/modules/user';
 import { defineComponent } from 'vue';
@@ -205,6 +215,7 @@ export default defineComponent({
     CreaProjectCard,
     ProjectSettingsView,
     ConfirmAction,
+    LanguageSelect,
   },
   data() {
     const projects: project_extended_t[] = [];

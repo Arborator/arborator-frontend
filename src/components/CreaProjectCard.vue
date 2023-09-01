@@ -74,39 +74,7 @@
           </div>
           <div class="row q-gutter-md">
             <div class="col">
-              <q-select
-                v-model="project.language"
-                outlined
-                dense
-                use-input
-                hide-dropdown-icon
-                option-value="name"
-                :options="filteredLanguagesList"
-                stack-label
-                emit-value
-                label="Language"
-                @filter="filterLanguages"
-              >
-                <template v-slot:selected-item="scope">
-                  <q-chip 
-                    v-if="scope.opt" 
-                    removable 
-                    @remove="scope.removeAtIndex(scope.index)"
-                    :tabindex="scope.tabindex" 
-                    dense 
-                    text-color="primary"
-                  >          
-                    {{ scope.opt }}
-                  </q-chip>
-                </template>
-                <template v-slot:option="scope">
-                  <q-item v-close-popup v-bind="scope.itemProps">
-                    <q-item-section>
-                      <q-item-label>{{ scope.opt.name }}</q-item-label>
-                    </q-item-section>
-                  </q-item>
-                </template>
-              </q-select>
+              <LanguageSelect  :multiple="false" @selected-value="getSelectedLanguage" />
             </div>
             <div class="col">
               <q-select
@@ -164,8 +132,8 @@
 </template>
 
 <script lang="ts">
-import languages from '../assets/languoid.json';
 import GithubSyncDialog from '../components/github/GithubSyncDialog.vue';
+import LanguageSelect from './shared/LanguageSelect.vue';
 
 import api from '../api/backend-api';
 import { notifyError, notifyMessage } from 'src/utils/notify';
@@ -177,7 +145,8 @@ import { defineComponent, PropType } from 'vue';
 export default defineComponent({
   components: {
     GithubSyncDialog,
-  },
+    LanguageSelect
+},
   name:'CreaProjectCard',
   emits: ['created'],
   props: {
@@ -192,8 +161,6 @@ export default defineComponent({
       { value: 'ud', label: 'UD'},
       { value: 'other', label:'Other'}
     ];
-    const languagesList = languages;
-    const filteredLanguagesList: { index: number, name: string}[] = [];
     return {
       submitting: false,
       project: {
@@ -210,8 +177,7 @@ export default defineComponent({
       isShowGithubSyncPanel: false,
       synchronized:'',
       annotationConfigOptions,
-      languagesList,
-      filteredLanguagesList,
+      selectedLanguage: [],
     };
   },
   computed: {
@@ -225,6 +191,11 @@ export default defineComponent({
   },
   methods: {
     ...mapActions(useProjectStore, ['resetAnnotationFeatures']),
+    getSelectedLanguage(value: any){
+      if(value) {
+        this.project.language = value[0];
+      }
+    },
     onSubmit() {
       this.submitting = true;
       this.resetAnnotationFeatures();
@@ -263,20 +234,6 @@ export default defineComponent({
     closeDialog() {
        this.creatDialog = false;
        this.$emit('created');
-    },
-
-    filterLanguages(val: string, update: (callback: () => void) => void) {
-      console.log(val)
-      if (val === '') {
-        update(() => {
-            this.filteredLanguagesList = this.languagesList;
-        });
-        return;
-      }
-      update(() => {
-          const needle = val.toLowerCase();
-          this.filteredLanguagesList = this.languagesList.filter(v => v.name.toLowerCase().indexOf(needle) > -1);
-      });
     },
   },
 });

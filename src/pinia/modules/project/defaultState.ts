@@ -18,9 +18,11 @@ interface configState {
   shownMeta: string[];
   annotationFeatures: annotationFeatures_t;
   annotationFeaturesUD: annotationFeatures_t;
+  languagesList: { index: number, name: string}[];
 }
 
 // default config state
+import languages from '../../../assets/languoid.json';
 export default function defaultState(): configState {
   return {
     name: '',
@@ -38,7 +40,7 @@ export default function defaultState(): configState {
     diffUserId: '',
     shownFeatures: ['FORM', 'UPOS', 'LEMMA', 'MISC.Gloss'],
     shownMeta: ['text_en'],
-
+    languagesList: languages,
     annotationFeatures: {
       META: ['sent_id', 'text', 'text_en', 'text_ortho', 'speaker_id', 'sound_url'],
       UPOS: ['ADJ', 'ADP', 'ADV', 'AUX', 'CCONJ', 'DET', 'INTJ', 'NOUN', 'NUM', 'PART', 'PRON', 'PROPN', 'PUNCT', 'SCONJ', 'VERB', 'X'],

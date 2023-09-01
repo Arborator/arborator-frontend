@@ -27,6 +27,7 @@ export interface project_with_diff_t {
   diffUserId: string;
   freezed: boolean;
   config: string;
+  language: string;
 }
 
 export interface project_extended_t {
@@ -38,6 +39,7 @@ export interface project_extended_t {
   blindAnnotationMode: boolean;
   freezed: boolean;
   config: string;
+  language: string;
   admins: string[];
   validators: string[];
   annotators: string[];

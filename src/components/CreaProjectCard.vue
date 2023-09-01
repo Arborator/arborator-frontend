@@ -193,7 +193,7 @@ export default defineComponent({
     ...mapActions(useProjectStore, ['resetAnnotationFeatures']),
     getSelectedLanguage(value: any){
       if(value) {
-        this.project.language = value[0];
+        this.project.language = value;
       }
     },
     onSubmit() {

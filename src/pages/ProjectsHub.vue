@@ -30,6 +30,9 @@
                 @keyup.enter="searchProject(search)"
               >
                 <template #append>
+                  <div v-for="val in selectedLanguagesForFilter">
+                    <q-chip removable size="sm" @remove="removeFilter(val)">{{ val }}</q-chip> 
+                  </div>
                   <q-btn flat icon="language" color="primary">
                     <q-menu>
                       <div class="row q-pa-md text-bold">
@@ -37,7 +40,7 @@
                       </div>
                       <q-separator />
                       <div class="row q-pa-md">
-                        <LanguageSelect :multiple="true" />
+                        <LanguageSelect :multiple="true" @selected-value="getSelectedLanguages"  />
                       </div>
                     </q-menu>
                   </q-btn>
@@ -122,8 +125,8 @@
               :parent-project-settings="showProjectSettings"
             ></ProjectCard>
             <div v-if="isLoggedIn && otherOldProjects.length" class="text-h6 col-12">
-              <q-chip color="primary" class="category" text-color="white">{{ $t('projectHub.otherOldProjects') }}</q-chip
-              ><br />
+              <q-chip color="primary" class="category" text-color="white">{{ $t('projectHub.otherOldProjects') }}</q-chip>
+              <br />
               <q-chip outline color="negative" class="bg-white text-negative">{{ $t('projectHub.otherOldProjectInfo') }}</q-chip>
             </div>
             <ProjectCard
@@ -250,6 +253,7 @@ export default defineComponent({
       currentPage: 1,
       pageIndex: 1,
       totalItemPerPage: 10,
+      selectedLanguagesForFilter: [],
     };
   },
   computed: {
@@ -320,12 +324,23 @@ export default defineComponent({
         });
     },
     searchProject(pattern: string) {
+
+      const lowercasePattern = pattern.toLowerCase();
       this.visibleProjects = this.projects.filter((project) => {
-        return project.projectName.toLowerCase().includes(pattern.toLowerCase());
+
+        const projectNameIncludesPattern = project.projectName.toLowerCase().includes(lowercasePattern);       
+        const projectMatchesLangFilter = this.selectedLanguagesForFilter.length === 0 || 
+          this.selectedLanguagesForFilter.map((lang) => lang as string).includes(project.language);
+        return projectNameIncludesPattern && projectMatchesLangFilter;
       });
     },
+    getSelectedLanguages(value: any){
+      this.selectedLanguagesForFilter = value;
+    },
+    removeFilter(val: string){
+      this.selectedLanguagesForFilter.splice(this.selectedLanguagesForFilter.map(val => val as string).indexOf(val),1)
+    },
     sortProjects() {
-      // if (!this.isLoggedIn) return;
       this.visibleProjects.sort((a, b) => b.lastAccess - a.lastAccess);
     },
     isCreatedByMe(project: project_extended_t) {

@@ -47,7 +47,7 @@ export default defineComponent({
   
   name:'LanguageSelect',
   props: {
-    multiple: {
+        multiple: {
         type: Boolean as PropType<boolean>,
         required: true, 
     }
@@ -64,7 +64,7 @@ export default defineComponent({
   },
   methods: {
     emitSelectedVal() {
-        this.$emit('selected-value', this.selectedLanguages)
+        this.$emit('selected-value', this.selectedLanguages);
     }, 
     filterLanguages(val: string, update: (callback: () => void) => void) {
             

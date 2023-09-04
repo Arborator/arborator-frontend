@@ -12,6 +12,7 @@ interface configState {
   blindAnnotationMode: boolean;
   freezed: boolean;
   config: string;
+  language: string;
   diffMode: boolean;
   diffUserId: string;
   shownFeatures: string[];
@@ -36,6 +37,7 @@ export default function defaultState(): configState {
     blindAnnotationMode: false,
     freezed: false,
     config: '',
+    language: '',
     diffMode: false,
     diffUserId: '',
     shownFeatures: ['FORM', 'UPOS', 'LEMMA', 'MISC.Gloss'],

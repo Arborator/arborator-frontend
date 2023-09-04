@@ -131,6 +131,7 @@ export const useProjectStore = defineStore('project', {
           this.description = response.data.description;
           this.freezed = response.data.freezed;
           this.config = response.data.config;
+          this.language = response.data.language;
         })
         .then(() => {
           api.getProjectUsersAccess(projectname).then((response) => {

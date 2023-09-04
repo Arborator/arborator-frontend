@@ -327,6 +327,9 @@
     <!-- Upload dialog-->
     <UploadDialog v-model:uploadDial="uploadDial" :samples="samples" @uploaded:sample="loadProjectData()" />
 
+    <!--Add project language dialog-->
+    <ProjectLangNotif v-if="showAddLangDialog" />
+    
     <!--Export dialog-->
     <q-dialog v-model="isShowExportDialo">
       <ExportDialog :samples="table.selected" />
@@ -387,6 +390,7 @@ import ProjectIcon from '../components/shared/ProjectIcon.vue';
 import GithubOptions from '../components/github/GithubOptions.vue';
 import GithubSyncDialog from 'src/components/github/GithubSyncDialog.vue';
 import ConstructiconDialog from "src/components/constructicon/ConstructiconDialog.vue";
+import ProjectLangNotif from 'src/components/ProjectLangNotif.vue';
 
 import { notifyError, notifyMessage } from 'src/utils/notify';
 import { mapActions, mapState, mapWritableState } from 'pinia';
@@ -411,6 +415,7 @@ export default defineComponent({
     ProjectIcon,
     GithubOptions,
     GithubSyncDialog,
+    ProjectLangNotif,
   },
   data() {
     const samples: sample_t[] = [];
@@ -521,6 +526,7 @@ export default defineComponent({
       githubSynchronizedRepo: '',
       reload: 0,
       isShowConstructiconDialogCop: false,
+      isShowAddLangDialog: true,
     };
   },
   computed: {
@@ -540,7 +546,8 @@ export default defineComponent({
       'isOwner',
       'freezed',
       'isAllowdedToSync',
-      'canExportTrees'
+      'canExportTrees',
+      'language',
     ]),
     ...mapWritableState(useProjectStore, ['freezed']),
     ...mapState(useUserStore, ['isLoggedIn', 'isSuperAdmin', 'loggedWithGithub', 'avatar', 'username']),
@@ -558,6 +565,9 @@ export default defineComponent({
     },
     isFreezed(): boolean {
       return !this.isOwner && this.freezed;
+    },
+    showAddLangDialog(): boolean {
+      return this.isAdmin && this.language === null;
     }
   },
   created() {

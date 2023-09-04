@@ -11,7 +11,7 @@
         :multiple="multiple"
         stack-label
         emit-value
-        label="Language"
+        label="Enter language"
         @filter="filterLanguages"
     >
         <template v-slot:selected-item="scope">

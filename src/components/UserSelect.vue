@@ -81,7 +81,10 @@
                                 {{ member.email }}
                             </q-item-label>
                         </q-item-section>
-                        <q-item-section side>
+                        <q-item v-if="isOwner" side>
+                            <q-btn outline flat :disable="true" color="primary" label="Owner"/>
+                        </q-item>
+                        <q-item-section v-else >
                             <q-btn-dropdown flat outline color="primary" no-caps :label="userRole(member.username)">
                                 <q-list>
                                     <q-item clickable v-close-popup @click="updateExistingUserAccess(member, 'admin')">
@@ -183,7 +186,7 @@ export default defineComponent({
     },
     computed: {
         ...mapWritableState(useProjectStore, ['admins', 'validators', 'annotators', 'guests']),
-        ...mapState(useProjectStore, ['visibility']),
+        ...mapState(useProjectStore, ['visibility', 'isOwner']),
         excludedUserOptions() {
             return [...this.admins, ...this.validators, ...this.annotators, ...this.guests];
         },

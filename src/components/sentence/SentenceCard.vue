@@ -42,10 +42,14 @@
             </q-tooltip>
           </q-btn>
 
-          <q-btn v-if="canSaveTreeInProject && openTabUser === username" flat round dense icon="bookmark"
+          <q-btn v-if="canSaveTreeInProject && (openTabUser === username || isValidator)" flat round dense icon="bookmark"
             :disable="openTabUser === ''">
-            <TagsMenu :sampleName="sentenceData.sample_name" :reactive-sentences-obj="reactiveSentencesObj"
-              :sentence-bus="sentenceBus" />
+            <TagsMenu 
+              :sampleName="sentenceData.sample_name" 
+              :reactive-sentences-obj="reactiveSentencesObj"
+              :sentence-bus="sentenceBus" 
+              :open-tab-user="openTabUser"
+            />
             <q-tooltip>Add tag to this tree</q-tooltip>
           </q-btn>
 

@@ -6,9 +6,20 @@
         <q-separator />
         <div class="row q-pa-md">
             <q-select 
-                outlined dense v-model="tags" use-input multiple option-value="value" hide-dropdown-icon
-                input-debounce="0" label="Add tags" :options="filteredTags" emit-value @filter="filterTags"
-                @new-value="createUserTag">
+                outlined 
+                dense 
+                v-model="tags" 
+                use-input 
+                multiple 
+                option-value="value" 
+                hide-dropdown-icon
+                input-debounce="0" 
+                label="Add tags" 
+                :options="filteredTags" 
+                emit-value 
+                @filter="filterTags"
+                @new-value="createUserTag"
+            >
                 <template v-slot:selected-item="scope">
                     <q-chip removable @remove="scope.removeAtIndex(scope.index)" :tabindex="scope.tabindex"
                         text-color="primary" size="sm">
@@ -63,6 +74,10 @@ export default defineComponent({
             type: Object as PropType<sentence_bus_t>,
             required: true,
         },
+        openTabUser: {
+            type: String as PropType<string>,
+            required: true,
+        }
     },
     data() {
         const filteredTags: tag_t[] = [];
@@ -87,7 +102,7 @@ export default defineComponent({
             const metaToReplace = {
                 timestamp: Math.round(Date.now()),
             };
-            const conll = this.reactiveSentencesObj[this.username].exportConllWithModifiedMeta(metaToReplace);
+            const conll = this.reactiveSentencesObj[this.openTabUser].exportConllWithModifiedMeta(metaToReplace);
             const data = { tags: this.tags, tree: conll }
             api
                 .addTags(this.projectName, this.sampleName, data)
@@ -95,9 +110,9 @@ export default defineComponent({
                     this.sentenceBus.emit('tree-update:tags', {
                         sentenceJson: {
                             metaJson: response.data,
-                            treeJson: this.sentenceBus.sentenceSVGs[this.username].treeJson,
+                            treeJson: this.sentenceBus.sentenceSVGs[this.openTabUser].treeJson,
                         },
-                        userId: this.username,
+                        userId: this.openTabUser,
                     });
                     this.tags = [];
                     notifyMessage({ message: 'Tags Saved' });

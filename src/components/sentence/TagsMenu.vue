@@ -1,5 +1,5 @@
 <template>
-    <q-menu style="height: 200px;">
+    <q-menu style="height: 250px; width: 300px;">
         <div class="row q-pa-md text-bold">
             Add tag to this tree
         </div>
@@ -19,6 +19,8 @@
                 emit-value 
                 @filter="filterTags"
                 @new-value="createUserTag"
+                :error="tagsFormatError"
+                error-message="You can't add an empty tag or tag contains ',' "
             >
                 <template v-slot:selected-item="scope">
                     <q-chip removable @remove="scope.removeAtIndex(scope.index)" :tabindex="scope.tabindex"
@@ -44,7 +46,7 @@
             </q-select>
         </div>
         <div class="row q-pa-md">
-            <q-btn outline color="primary" @click="addNewTag()">Add new tag</q-btn>
+            <q-btn :disable="tags.length === 0" outline color="primary" @click="addNewTag()">Add new tag</q-btn>
         </div>
     </q-menu>
 </template>
@@ -83,7 +85,8 @@ export default defineComponent({
         const filteredTags: tag_t[] = [];
         return {
             filteredTags,
-            tags: []
+            tags: [],
+            tagsFormatError: false,
         }
     },
     computed: {
@@ -91,6 +94,11 @@ export default defineComponent({
         ...mapState(useUserStore, ['username']),
         projectName() {
             return this.$route.params.projectname as string;
+        }
+    },
+    watch: {
+        tags(){
+            this.tagsFormatError = false;
         }
     },
     mounted() {
@@ -143,18 +151,21 @@ export default defineComponent({
             });
         },
         createUserTag(val: string, done: (value: string, mode: string) => void) {
-            if (val.length > 0) {
+           
+            if(this.CheckTagsFormatError(val)) {
+                this.tagsFormatError = true;
+            } else {
                 if (!this.defaultTags.map((tag) => tag.value).includes(val)) {
                     this.defaultTags.push({ value: val, color: 'grey-4' });
                     const data = { tags: val }
-                    api.createUserTags(this.projectName, this.username, data)
-                        .catch((error) => {
-                            notifyError(error);
-                        });
+                    api.createUserTags(this.projectName, this.username, data).catch((error) => { notifyError(error);});
                 }
                 done(val, 'toggle');
-            }
+            }   
         },
+        CheckTagsFormatError (val : string) {
+            return val.trim().length > 0 || val.includes(",");
+        }
     },
 
 

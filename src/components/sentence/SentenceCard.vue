@@ -45,7 +45,7 @@
           <q-btn v-if="canSaveTreeInProject && (openTabUser === username || isValidator)" flat round dense icon="bookmark"
             :disable="openTabUser === ''">
             <TagsMenu 
-              :sampleName="sentenceData.sample_name" 
+              :sampleName="(sentenceData.sample_name as string)" 
               :reactive-sentences-obj="reactiveSentencesObj"
               :sentence-bus="sentenceBus" 
               :open-tab-user="openTabUser"

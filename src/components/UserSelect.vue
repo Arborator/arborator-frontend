@@ -81,10 +81,10 @@
                                 {{ member.email }}
                             </q-item-label>
                         </q-item-section>
-                        <q-item v-if="isOwner" side>
+                        <q-item-section v-if="admins[0] === member.username" side>
                             <q-btn outline flat :disable="true" color="primary" label="Owner"/>
-                        </q-item>
-                        <q-item-section v-else >
+                        </q-item-section>
+                        <q-item-section v-else  side>
                             <q-btn-dropdown flat outline color="primary" no-caps :label="userRole(member.username)">
                                 <q-list>
                                     <q-item clickable v-close-popup @click="updateExistingUserAccess(member, 'admin')">

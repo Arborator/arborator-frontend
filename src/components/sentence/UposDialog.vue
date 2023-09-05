@@ -1,24 +1,27 @@
 <template>
   <!-------------------- Start uposDialog -------------------->
   <q-dialog v-model="uposDialogOpened" @keyup.enter="onChangeUpos()">
-    <!-- @hide="ondialoghide()" -->
-    <!-- :maximized="maximizedToggle" -->
-    <q-card style="height: 300px">
+    <q-card style="min-width: 700px">
       <q-bar class="bg-primary text-white">
         <div class="text-weight-bold">UPOS : {{$t('attributeTable.category[0]')}} "{{ token.FORM }}"</div>
         <q-space />
         <q-btn v-close-popup flat dense icon="close" />
       </q-bar>
-      <q-card-section style="height: 200px">
-        <q-select id="catselect" v-model="token.UPOS" filled :options="annotationFeatures.UPOS" :label="$t('attributeTable.category[1]')" style="width: 250px" />
+      <q-card-section>
+        <div class="q-gutter-sm" >
+          <q-chip 
+            outline
+            v-for="(upos, index) in annotationFeatures.UPOS" 
+            v-model:selected="selectedUpos[index]" 
+            :label="upos" 
+            color="primary" 
+            @update:selected="unselectOtherUpos(index)"
+          />
+        </div>
       </q-card-section>
       <q-separator />
       <q-card-actions>
-        <q-btn v-close-popup flat :label="$t('cancel')" style="width: 25%; margin-left: auto; margin-right: auto" />
-        <q-space />
-
-        <!-- @click="ondialoghide()" -->
-        <q-btn v-close-popup color="negative" :label="$t('delete')" style="width: 25%; margin-left: auto; margin-right: auto" @click="onDeleteUpos()" />
+        <q-btn v-close-popup outline color="primary" :label="$t('delete')" style="width: 25%; margin-left: auto; margin-right: auto" @click="onDeleteUpos()" />
         <q-space />
         <q-btn
           id="catselectvalidate"
@@ -28,7 +31,7 @@
           style="width: 25%; margin-left: auto; margin-right: auto"
           @click="onChangeUpos()"
         />
-        <!-- :disabled="snap.currentcategory === snap.category" -->
+    
       </q-card-actions>
     </q-card>
   </q-dialog>
@@ -54,7 +57,9 @@ export default defineComponent({
   },
   data() {
     const token = emptyTokenJson();
+    const selectedUpos: boolean[] = [];
     return {
+      selectedUpos,
       uposDialogOpened: false,
       token,
       userId: '',
@@ -69,12 +74,23 @@ export default defineComponent({
       this.userId = userId;
       this.uposDialogOpened = true;
     });
+    this.selectedUpos = Array(this.annotationFeatures.UPOS.length).fill(false);
   },
   beforeUnmount() {
     this.sentenceBus.off('open:uposDialog');
   },
   methods: {
+    unselectOtherUpos(index: any){
+      this.selectedUpos.forEach((upos, i) => {
+        if (upos && i != index) {
+          this.selectedUpos[i] = false;
+        }
+      });
+    },
     onChangeUpos() {
+      if (this.selectedUpos.some((val) => val == true)) {
+        this.token.UPOS = this.annotationFeatures.UPOS[this.selectedUpos.indexOf(true)];
+      }
       this.uposDialogOpened = false;
       this.sentenceBus.emit('tree-update:token', {
         token: this.token,

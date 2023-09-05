@@ -69,7 +69,6 @@
                   <q-icon name="fab fa-google" />
                 </q-item-section>
                 <q-item-section>
-                  <!-- <q-item-label caption>{{$t('loginselector')}}</q-item-label> -->
                   <q-item-label>Google</q-item-label>
                 </q-item-section>
               </q-item>
@@ -78,7 +77,6 @@
                   <q-icon name="fab fa-github" />
                 </q-item-section>
                 <q-item-section>
-                  <!-- <q-item-label caption>{{$t('loginselector')}}</q-item-label> -->
                   <q-item-label>GitHub</q-item-label>
                 </q-item-section>
               </q-item>
@@ -172,7 +170,6 @@ import { useStorage } from 'vue3-storage';
 import { defineComponent } from 'vue';
 
 import '../assets/css/tags-style.css';
-// import '../assets/css/arborator-draft.css';
 import { notifyError } from 'src/utils/notify';
 import { mapActions, mapState } from 'pinia';
 import { useUserStore } from 'src/pinia/modules/user';
@@ -184,7 +181,7 @@ export default defineComponent({
   data() {
     return {
       storage: useStorage(),
-      drawerLeft: false, // this.$q.platform.is.mobile?false:true,
+      drawerLeft: false, 
       miniState: true,
       isAdmin: false,
       search: '',
@@ -221,14 +218,6 @@ export default defineComponent({
           to: '/klang',
           bottom: false,
         },
-        // {
-        //   icon: 'vpn_key',
-        //   label: 'Admin',
-        //   separator: false,
-        //   public: false,
-        //   to: '/adminpanel',
-        //   bottom: false
-        // }
       ],
       lang: this.$i18n.locale,
       langOptions: [
@@ -274,10 +263,6 @@ export default defineComponent({
     tologin(url: string) {
       window.location.assign(url);
       return this.storage;
-      // console.log(this.source + '/login/google'); openURL(this.source + '/login/google');
-      // window.location.href = 'https://arboratorgrew.elizia.net/login/google';
-      // window.location.assign("https://arboratorgrew.elizia.net/login/google");
-      // window.location.assign("https://profiterole-almanach-ui.paris.inria.fr:8888/");
     },
     logout_() {
       this.logout()
@@ -299,10 +284,8 @@ export default defineComponent({
       if (langStorage == null) {
         if (defaultLang.includes('fr')) {
           this.lang = 'fr';
-          // this.lang = { value: 'fr-fra', label: 'FR', img: '/images/frenchflag.svg' };
         } else {
           this.lang = 'en';
-          // this.lang = { value: 'en-us', label: 'EN', img: '/images/usflag.svg' };
         }
       } else {
         this.lang = langStorage;

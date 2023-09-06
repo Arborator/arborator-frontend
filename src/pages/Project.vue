@@ -36,6 +36,11 @@
 
         <!-- Parsing Panel -->
         <q-card-section v-if="isShowParsingPanel">
+          <q-bar class="bg-primary text-white">
+            <q-space />
+            <q-btn @click="isShowParsingPanel = false" dense flat icon="close">
+            </q-btn>
+          </q-bar>
           <ParsingPanel :samples="samples" :parentGetProjectSamples="getProjectSamples"></ParsingPanel>
         </q-card-section>
 

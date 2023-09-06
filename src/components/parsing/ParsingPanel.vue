@@ -1,9 +1,12 @@
 <template>
-  <QCard>
-    <div class="row q-pa-md">
+  <q-card flat bordered>
+    <div class="row q-pa-md q-gutter-md">
       <div class="col">
-        <p><b>General Settings</b></p>
-        <div style="display: flex; flex-direction: column">
+        <div class="text-h6 q-py-md">
+          General Settings
+        </div>
+        <q-separator />
+        <div class="q-py-md">
           <q-option-group
             :disable="disableUI"
             :options="param.pipelineOptions"
@@ -11,97 +14,133 @@
             v-model="param.pipelineChoice"
           />
         </div>
-        <q-separator inset class="q-mx-lg"/>
-        <q-select
-          :disable="disableUI"
-          v-model="param.baseModel"
-          filled
-          :options="param.baseModelsOptions"
-          :label="`Pretrain Model`"
-          style="max-width: 200px; min-width: 150px"
-          hint="Optional; We will use this model as a pretrain model for your task"
-          clearable
-        />
+        <q-separator />
+        <div class="q-pa-md">
+          <q-select
+            outlined
+            dense
+            :disable="disableUI"
+            v-model="param.baseModel"
+            :options="param.baseModelsOptions"
+            :label="`Pretrain Model`"
+            hint="Optional; We will use this model as a pretrain model for your task"
+            clearable
+          />
+        </div> 
       </div>
       <q-separator vertical inset class="q-mx-lg"/>
       <div v-show="param.pipelineChoice !== 'PARSE_ONLY'" class="col">
-        <p><b>Train Settings</b></p>
-        <q-toggle :disable="disableUI" v-model="param.trainAll" label="Train on all files"/>
-        <q-select
-          :disable="disableUI"
-          :class="{ invisible: param.trainAll }"
-          v-model="param.trainSamplesNames"
-          filled
-          :options="allSamplesNames"
-          multiple
-          label="Files to parse"
-          stack-label
-          style="max-width: 200px; min-width: 150px"
-        />
-        <q-toggle :disable="disableUI" v-model="param.isCustomTrainingUser" label="Custom Training user"/>
-        <q-select
-          :disable="disableUI"
-          :class="{ invisible: !param.isCustomTrainingUser }"
-          v-model="param.trainingUser"
-          filled
-          :options="trainingTreesFrom"
-          label="Training user"
-          stack-label
-          style="max-width: 200px; min-width: 150px"
-        />
-        <q-input
-          :disable="disableUI"
-          v-model.number="param.maxEpoch"
-          type="number"
-          label="epochs"
-          min="3"
-          max="300"
-          filled
-          style="max-width: 100px"
-          :rules="[(val) => (val >= 3 && val <= 300) || 'Please use 3 to 300 epochs']"
-        />
+        <div class="text-h6 q-py-md">
+          Train Settings
+        </div>
+        <q-separator />
+        <div class="q-pa-sm">
+          <q-toggle :disable="disableUI" v-model="param.trainAll" label="Train on all files"/>
+          <q-select
+            dense
+            outlined
+            :disable="disableUI"
+            :class="{ invisible: param.trainAll }"
+            v-model="param.trainSamplesNames"
+            :options="allSamplesNames"
+            multiple
+            label="Files to parse"
+            stack-label
+          />
+          <q-toggle :disable="disableUI" v-model="param.isCustomTrainingUser" label="Custom Training user"/>
+          <q-select
+            dense
+            outlined
+            :disable="disableUI"
+            :class="{ invisible: !param.isCustomTrainingUser }"
+            v-model="param.trainingUser"
+            :options="trainingTreesFrom"
+            label="Training user"
+            stack-label
+          />
+        </div>
+        <q-separator />
+        <div class="q-pa-sm">
+          <q-input
+            outlined
+            dense
+            :disable="disableUI"
+            v-model.number="param.maxEpoch"
+            type="number"
+            label="epochs"
+            min="3"
+            max="300"
+            style="max-width: 100px"
+            :rules="[(val) => (val >= 3 && val <= 300) || 'Please use 3 to 300 epochs']"
+          />
+        </div> 
       </div>
       <q-separator v-show="param.pipelineChoice !== 'PARSE_ONLY'" vertical inset class="q-mx-lg"/>
       <div v-show="param.pipelineChoice !== 'TRAIN_ONLY'" class="col">
-        <p><b>Parse Settings</b></p>
-        <q-toggle :disable="disableUI" v-model="param.parseAll" label="Parse all files"/>
-        <q-select
-          :disable="disableUI"
-          :class="{ invisible: param.parseAll }"
-          v-model="param.parseSamplesNames"
-          filled
-          :options="allSamplesNames"
-          multiple
-          label="Files to parse"
-          stack-label
-          style="max-width: 200px; min-width: 150px"
-        />
-        <q-input :disable="disableUI" :dense="true" filled v-model="param.parserSuffix"
-                 label="Parser suffix (for parsed sentences)"
-                 :hint="'Parsing will go under the name `parser' + param.parserSuffix + '`'"/>
-        <q-toggle :disable="disableUI" v-model="param.isCustomParsingUser" label="Custom Parsing user"/>
-        <q-select
-          :disable="disableUI"
-          :class="{ invisible: !param.isCustomParsingUser }"
-          v-model="param.parsingUser"
-          filled
-          :options="parsingTreesFrom"
-          label="Parsing user"
-          stack-label
-          style="max-width: 200px; min-width: 150px"
-        />
-        <q-toggle :disable="disableUI" v-model="param.keepHeads" label="keep existing heads"/>
+        <div class="text-h6 q-py-md">
+          Parse Settings
+        </div>
+        <q-separator />
+        <div class="q-pa-md q-gutter-md">
+          <q-toggle :disable="disableUI" v-model="param.parseAll" label="Parse all files"/>
+          <q-select
+            dense
+            outlined
+            :disable="disableUI"
+            :class="{ invisible: param.parseAll }"
+            v-model="param.parseSamplesNames"
+            :options="allSamplesNames"
+            multiple
+            label="Files to parse"
+            stack-label
+          />
+          <q-input 
+            :disable="disableUI" 
+            dense 
+            outlined
+            v-model="param.parserSuffix"
+            label="Parser suffix (for parsed sentences)"
+            :hint="'Parsing will go under the name `parser' + param.parserSuffix + '`'"
+            />
+        </div>
+        <q-separator />
+        <div class="q-pa-md">
+          <q-toggle :disable="disableUI" v-model="param.isCustomParsingUser" label="Custom Parsing user"/>
+          <q-select
+            :disable="disableUI"
+            :class="{ invisible: !param.isCustomParsingUser }"
+            v-model="param.parsingUser"
+            dense
+            outlined
+            :options="parsingTreesFrom"
+            label="Parsing user"
+            stack-label
+          />
+          <q-toggle :disable="disableUI" v-model="param.keepHeads" label="keep existing heads"/>
+        </div>
 
       </div>
       <q-separator v-show="param.pipelineChoice !== 'TRAIN_ONLY'" vertical inset class="q-mx-lg"/>
       <div class="col">
-        <p><b>Pipeline Summary</b></p>
-        <div v-if="param.pipelineChoice !== `PARSE_ONLY`" class="text-subtitle5 q-mb-xs">training sentences : {{ trainingSentencesCount }}</div>
-        <div v-if="param.pipelineChoice !== `TRAIN_ONLY`" class="text-subtitle5 q-mb-xs">parsing sentences : {{ parsingSentencesCount }}</div>
-        <div class="text-subtitle5 q-mb-xs">estimated time = {{ estimatedTime }}mn</div>
-        <q-btn v-close-popup color="primary" :disable="paramError || isHealthy===false" label="START" :loading="taskStatus !== null" push
-               size="sm"
-               @click="parserPipelineStart()"/>
+        <div class="text-h6 q-py-md">
+          Pipeline Summary
+        </div>
+        <q-separator />
+        <div class="q-pa-md">
+          <div v-if="param.pipelineChoice !== `PARSE_ONLY`" class="text-subtitle5 q-mb-xs">training sentences : {{ trainingSentencesCount }}</div>
+          <div v-if="param.pipelineChoice !== `TRAIN_ONLY`" class="text-subtitle5 q-mb-xs">parsing sentences : {{ parsingSentencesCount }}</div>
+          <div class="text-subtitle5 q-mb-xs">estimated time = {{ estimatedTime }}mn</div>
+        </div>
+        
+        <q-btn 
+          v-close-popup 
+          color="primary" 
+          :disable="paramError || isHealthy===false" 
+          label="START" 
+          :loading="taskStatus !== null" 
+          push
+          @click="parserPipelineStart()"
+        />
         <div v-if="taskStatus !== null">
           <div class="text-subtitle5 q-mb-xs">Current task : {{ taskStatus.taskType }}</div>
           <div v-if="taskStatus.taskAdditionalMessage" class="text-subtitle5 q-mb-xs">
@@ -113,7 +152,7 @@
         </div>
       </div>
     </div>
-  </QCard>
+  </q-card>
 </template>
 
 <script lang="ts">

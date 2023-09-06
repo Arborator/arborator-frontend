@@ -86,6 +86,7 @@ export const useProjectStore = defineStore('project', {
       ),
     cleanedImage: (state) => {
       const ifImageEmpty = '/images/niko-photos-tGTVxeOr_Rs-unsplash.jpg';
+      return ifImageEmpty;
       if (state.image == null) return ifImageEmpty;
       if (state.image.length < 1) return ifImageEmpty;
       return state.image;

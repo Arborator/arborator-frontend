@@ -47,7 +47,7 @@
 <script lang="ts">
 import { PropType } from 'vue';
 import { reactive_sentences_obj_t, sentence_bus_t } from 'src/types/main_types';
-import { TokenJson } from 'conllup/lib/conll';
+import { tokenJson_T } from 'conllup/lib/conll';
 import { emptyTreeJson } from 'conllup/lib/conll';
 
 type metaLabel_t = 'UPOS' | 'DEPREL' | 'HEAD' | 'LEMMA';
@@ -101,7 +101,7 @@ export default defineComponent({
         for (const metaLabel of this.metaLabels) {
           const toDeleteBool = this.checkBoxes[token][metaLabel];
           if (toDeleteBool) {
-            this.treeJson.nodesJson[token][metaLabel as keyof TokenJson] = '_';
+            this.treeJson.nodesJson[token][metaLabel as keyof tokenJson_T] = '_';
             if (metaLabel === 'HEAD') {
               this.treeJson.nodesJson[token].DEPREL = '_';
             }

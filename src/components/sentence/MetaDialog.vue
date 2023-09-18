@@ -41,7 +41,7 @@ import AttributeTable from './AttributeTable.vue';
 import { useProjectStore } from 'src/pinia/modules/project';
 import { sentence_bus_t } from 'src/types/main_types';
 import { PropType } from 'vue';
-import { MetaJson } from 'conllup/lib/conll';
+import { metaJson_T } from 'conllup/lib/conll';
 import { notifyError, notifyMessage } from 'src/utils/notify';
 
 import { defineComponent } from 'vue';
@@ -56,7 +56,7 @@ export default defineComponent({
   },
   data() {
     const metaList: { a: string; v: string | number }[] = [];
-    const metaJson: MetaJson = {};
+    const metaJson: metaJson_T = {};
     return {
       metaDialogOpened: false,
       token: {},
@@ -122,7 +122,7 @@ export default defineComponent({
   },
   methods: {
     onMetaDialogOk() {
-      const newMetaJson: MetaJson = {};
+      const newMetaJson: metaJson_T = {};
       if (this.metaList.some((meta) => meta.a === '' || meta.v === '')) {
         notifyError({ error: 'You can not save empty Meta !' });
         return;

@@ -1,7 +1,7 @@
 import { Emitter } from 'mitt';
 import { ReactiveSentence } from 'dependencytreejs/src/ReactiveSentence';
 import { SentenceSVG } from 'dependencytreejs/src/SentenceSVG';
-import { SentenceJson, TokenJson, TreeJson } from 'conllup/lib/conll';
+import { sentenceJson_T, tokenJson_T, treeJson_T } from 'conllup/lib/conll';
 
 //////// UI /////
 
@@ -43,22 +43,22 @@ export type sentence_bus_events_t = {
   'open:conlluDialog': { userId: string };
   'open:statisticsDialog': { userId: string };
   'open:openMultiEditDialog': { userId: string };
-  'open:relationDialog': { userId: string; dep: TokenJson; gov: TokenJson };
-  'open:featuresDialog': { userId: string; token: TokenJson };
-  'open:uposDialog': { userId: string; token: TokenJson };
-  'open:xposDialog': { userId: string; token: TokenJson };
+  'open:relationDialog': { userId: string; dep: tokenJson_T; gov: tokenJson_T };
+  'open:featuresDialog': { userId: string; token: tokenJson_T };
+  'open:uposDialog': { userId: string; token: tokenJson_T };
+  'open:xposDialog': { userId: string; token: tokenJson_T };
   'action:saved': { userId: string };
   'export:SVG': { userId: string };
   'export:PNG': { userId: string };
   'open:tokensReplaceDialog': { userId: string; event: Event };
   'changed:metaText': { newMetaText: string };
-  'tree-update:token': { userId: string; token: TokenJson };
-  'tree-update:sentence': { sentenceJson: SentenceJson; userId: string };
+  'tree-update:token': { userId: string; token: tokenJson_T };
+  'tree-update:sentence': { sentenceJson: sentenceJson_T; userId: string };
   'action:undo': { userId: string };
   'action:redo': { userId: string };
   'action:addEmptyToken': { userId: string };
   'action:tabSelected': { userId: string };
-  'tree-update:tree': { userId: string; tree: TreeJson };
+  'tree-update:tree': { userId: string; tree: treeJson_T };
 };
 export interface sentence_bus_t extends Emitter<sentence_bus_events_t> {
   sentenceSVGs: { [key: string]: SentenceSVG };

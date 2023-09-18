@@ -5,7 +5,7 @@ import api from '../../../api/backend-api';
 import {
   grewSearchResultSentence_t,
 } from 'src/api/backend-types';
-import {sentenceConllToJson, SentenceJson} from "conllup/lib/conll";
+import {sentenceConllToJson, sentenceJson_T} from "conllup/lib/conll";
 
 
 export const useTreesStore = defineStore('trees', {
@@ -100,7 +100,7 @@ export const useTreesStore = defineStore('trees', {
 });
 
 const sentencesHaveDiffs = (sentenceConlls: string[], featuresSetForDiffs: string[] = []): boolean => {
-  const sentenceJsons: SentenceJson[] = sentenceConlls.map((conll) => sentenceConllToJson(conll));
+  const sentenceJsons: sentenceJson_T[] = sentenceConlls.map((conll) => sentenceConllToJson(conll));
 
   if (haveDifferentNumberOfTokens(sentenceJsons)) {
     return true;
@@ -144,13 +144,13 @@ const doNeedCheckFor = (feature: string, featuresSetForDiffs: string[]): boolean
   }
   return featuresSetForDiffs.includes(feature);
 }
-const haveDifferentNumberOfTokens = (sentenceJsons: SentenceJson[]): boolean => {
+const haveDifferentNumberOfTokens = (sentenceJsons: sentenceJson_T[]): boolean => {
   const numberOfTokensArray = sentenceJsons.map((sentenceJson) => Object.keys(sentenceJson.treeJson.nodesJson).length);
   const setOfNumberOfTokens = new Set(numberOfTokensArray);
   return setOfNumberOfTokens.size !== 1;
 }
 
-const haveDifferentTokensFORM = (sentenceJsons: SentenceJson[]): boolean => {
+const haveDifferentTokensFORM = (sentenceJsons: sentenceJson_T[]): boolean => {
   const tokensArrays: string[][] = sentenceJsons.map((sentenceJson) => Object.values(sentenceJson.treeJson.nodesJson).map((nodeJson) => nodeJson.FORM));
   for (const index of Array.from(Array(tokensArrays.length).keys())) {
     if (new Set(tokensArrays.map((tokensArray: string[]) => tokensArray[index])).size !== 1) {
@@ -160,7 +160,7 @@ const haveDifferentTokensFORM = (sentenceJsons: SentenceJson[]): boolean => {
   return false
 }
 
-const haveDifferentTokensUPOS = (sentenceJsons: SentenceJson[]): boolean => {
+const haveDifferentTokensUPOS = (sentenceJsons: sentenceJson_T[]): boolean => {
   const tokensArrays: string[][] = sentenceJsons.map((sentenceJson) => Object.values(sentenceJson.treeJson.nodesJson).map((nodeJson) => nodeJson.UPOS));
   for (const index of Array.from(Array(tokensArrays.length).keys())) {
     if (new Set(tokensArrays.map((tokensArray: string[]) => tokensArray[index])).size !== 1) {
@@ -170,7 +170,7 @@ const haveDifferentTokensUPOS = (sentenceJsons: SentenceJson[]): boolean => {
   return false
 }
 
-const haveDifferentTokensXPOS = (sentenceJsons: SentenceJson[]): boolean => {
+const haveDifferentTokensXPOS = (sentenceJsons: sentenceJson_T[]): boolean => {
   const tokensArrays: string[][] = sentenceJsons.map((sentenceJson) => Object.values(sentenceJson.treeJson.nodesJson).map((nodeJson) => nodeJson.XPOS));
   for (const index of Array.from(Array(tokensArrays.length).keys())) {
     if (new Set(tokensArrays.map((tokensArray: string[]) => tokensArray[index])).size !== 1) {
@@ -180,7 +180,7 @@ const haveDifferentTokensXPOS = (sentenceJsons: SentenceJson[]): boolean => {
   return false
 }
 
-const haveDifferentTokensDEPREL = (sentenceJsons: SentenceJson[]): boolean => {
+const haveDifferentTokensDEPREL = (sentenceJsons: sentenceJson_T[]): boolean => {
   const tokensArrays: string[][] = sentenceJsons.map((sentenceJson) => Object.values(sentenceJson.treeJson.nodesJson).map((nodeJson) => nodeJson.DEPREL));
   for (const index of Array.from(Array(tokensArrays[0].length).keys())) {
     if (new Set(tokensArrays.map((tokensArray: string[]) => tokensArray[index])).size !== 1) {
@@ -190,7 +190,7 @@ const haveDifferentTokensDEPREL = (sentenceJsons: SentenceJson[]): boolean => {
   return false
 }
 
-const haveDifferentTokensHEAD = (sentenceJsons: SentenceJson[]): boolean => {
+const haveDifferentTokensHEAD = (sentenceJsons: sentenceJson_T[]): boolean => {
   const tokensArrays: number[][] = sentenceJsons.map((sentenceJson) => Object.values(sentenceJson.treeJson.nodesJson).map((nodeJson) => nodeJson.HEAD));
   for (const index of Array.from(Array(tokensArrays.length).keys())) {
     if (new Set(tokensArrays.map((tokensArray: number[]) => tokensArray[index])).size !== 1) {
@@ -200,7 +200,7 @@ const haveDifferentTokensHEAD = (sentenceJsons: SentenceJson[]): boolean => {
   return false
 }
 
-const haveDifferentTokensFEAT = (sentenceJsons: SentenceJson[], feature: string): boolean => {
+const haveDifferentTokensFEAT = (sentenceJsons: sentenceJson_T[], feature: string): boolean => {
   const tokensArrays: string[][] = sentenceJsons.map((sentenceJson) => Object.values(sentenceJson.treeJson.nodesJson).map((nodeJson) => nodeJson.FEATS[feature]));
   for (const index of Array.from(Array(tokensArrays.length).keys())) {
     if (new Set(tokensArrays.map((tokensArray: string[]) => tokensArray[index])).size !== 1) {
@@ -210,7 +210,7 @@ const haveDifferentTokensFEAT = (sentenceJsons: SentenceJson[], feature: string)
   return false
 }
 
-const haveDifferentTokensMISC = (sentenceJsons: SentenceJson[], feature: string): boolean => {
+const haveDifferentTokensMISC = (sentenceJsons: sentenceJson_T[], feature: string): boolean => {
   const tokensArrays: string[][] = sentenceJsons.map((sentenceJson) => Object.values(sentenceJson.treeJson.nodesJson).map((nodeJson) => nodeJson.MISC[feature]));
   for (const index of Array.from(Array(tokensArrays.length).keys())) {
     if (new Set(tokensArrays.map((tokensArray: string[]) => tokensArray[index])).size !== 1) {

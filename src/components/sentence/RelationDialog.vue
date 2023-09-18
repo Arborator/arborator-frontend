@@ -38,7 +38,7 @@ import { sentence_bus_t } from 'src/types/main_types';
 import { mapState } from 'pinia';
 import { useProjectStore } from 'src/pinia/modules/project';
 import { annotationFeatures_t } from 'src/api/backend-types';
-import { TokenJson } from 'conllup/lib/conll';
+import { tokenJson_T } from 'conllup/lib/conll';
 import conllup from 'conllup';
 const emptyTokenJson = conllup.emptyTokenJson;
 
@@ -64,8 +64,8 @@ export default defineComponent({
     };
     const shownFeatures: string[] = [];
     const shownMeta: string[] = [];
-    const dep: TokenJson = emptyTokenJson();
-    const gov: TokenJson = emptyTokenJson();
+    const dep: tokenJson_T = emptyTokenJson();
+    const gov: tokenJson_T = emptyTokenJson();
     const depDeprel = '';
     const depDeprelSplitted: string[] = [];
 

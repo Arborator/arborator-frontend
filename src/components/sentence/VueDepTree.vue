@@ -15,7 +15,7 @@ import { reactive_sentences_obj_t, sentence_bus_events_t, sentence_bus_t } from 
 import { ReactiveSentence } from 'dependencytreejs/src/ReactiveSentence';
 import { mapState } from 'pinia';
 import { useProjectStore } from 'src/pinia/modules/project';
-import {emptyTokenJson, TokenJson} from 'conllup/lib/conll';
+import {emptyTokenJson, tokenJson_T} from 'conllup/lib/conll';
 
 interface svgClickEvent_t extends Event {
   detail: { clicked: string; targetLabel: 'FORM' | 'FEATS' | 'LEMMA' | 'DEPREL' };
@@ -116,7 +116,7 @@ export default defineComponent({
     this.reactiveSentence.fromSentenceConll(this.conll);
     const sentenceSVGOptions = defaultSentenceSVGOptions();
     sentenceSVGOptions.shownFeatures = this.shownFeatures;
-
+    sentenceSVGOptions.drawEnhancedTokens = true;
     sentenceSVGOptions.interactive = !(this.isStudent && this.treeUserId === this.TEACHER);
     sentenceSVGOptions.arcHeight = 40;
     sentenceSVGOptions.tokenSpacing = 25;
@@ -214,7 +214,7 @@ export default defineComponent({
         const gov = { ...this.sentenceSVG.treeJson.nodesJson[dep.HEAD] } || {
           FORM: 'ROOT',
           ID: 0,
-        } as any as TokenJson;// handle if head is root , nasty type casting
+        } as any as tokenJson_T;// handle if head is root , nasty type casting
         this.sentenceBus.emit('open:relationDialog', {
           gov,
           dep,

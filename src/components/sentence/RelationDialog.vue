@@ -2,7 +2,9 @@
   <q-dialog v-model="relationDialogOpened">
     <q-card>
       <q-bar v-if="gov && dep" class="bg-primary text-white">
-        <div class="text-weight-bold">{{$t('attributeTable.relation[0]')}} "{{ gov.FORM }}" {{$t('attributeTable.relation[1]')}} "{{ dep.FORM }}"</div>
+        <div class="text-weight-bold">
+          {{ $t('attributeTable.relation[0]') }} "{{ gov.FORM }}" {{ $t('attributeTable.relation[1]') }} "{{ dep.FORM }}"
+        </div>
         <q-space />
         <q-btn v-close-popup flat dense icon="close" />
       </q-bar>

@@ -1,8 +1,7 @@
 <template>
   <q-page-sticky :position="breakpoint ? 'bottom-right' : 'bottom-right'" :offset="breakpoint ? [18, 18] : [30, 80]" style="z-index: 999">
     <q-btn size="20px" round color="primary" icon="img:/svg/g.svg" @click="grewDialog = !grewDialog">
-      <q-tooltip content-class="bg-primary" content-style="font-size: 16px"> {{ $t('projectView.tooltipFabGrew') }}
-      </q-tooltip>
+      <q-tooltip content-class="bg-primary" content-style="font-size: 16px"> {{ $t('projectView.tooltipFabGrew') }} </q-tooltip>
     </q-btn>
   </q-page-sticky>
   <q-dialog v-model="grewDialog" seamless position="right" full-width>
@@ -28,12 +27,12 @@
 import GrewRequestCard from './GrewRequestCard.vue';
 import ResultView from '../ResultView.vue';
 import api from '../../api/backend-api';
-import {useGrewSearchStore} from 'src/pinia/modules/grewSearch';
-import {mapWritableState, mapState} from 'pinia';
-import {useUserStore} from 'src/pinia/modules/user';
-import {notifyError} from 'src/utils/notify';
-import {defineComponent, PropType} from 'vue';
-import {grewSearchResult_t} from 'src/api/backend-types';
+import { useGrewSearchStore } from 'src/pinia/modules/grewSearch';
+import { mapWritableState, mapState } from 'pinia';
+import { useUserStore } from 'src/pinia/modules/user';
+import { notifyError } from 'src/utils/notify';
+import { defineComponent, PropType } from 'vue';
+import { grewSearchResult_t } from 'src/api/backend-types';
 
 export default defineComponent({
   components: {
@@ -53,21 +52,21 @@ export default defineComponent({
     userIds: {
       type: Object as PropType<string[]>,
       required: true,
-    }
+    },
   },
   data() {
     const result: {
-      resultSearchDialog: boolean,
-      resultSearch: grewSearchResult_t,
-      queryType: string,
-      window: { width: number; height: number },
+      resultSearchDialog: boolean;
+      resultSearch: grewSearchResult_t;
+      queryType: string;
+      window: { width: number; height: number };
     } = {
       resultSearchDialog: false,
       resultSearch: {},
-      queryType: "",
-      window: {width: 0, height: 0},
+      queryType: '',
+      window: { width: 0, height: 0 },
     };
-    return result
+    return result;
   },
   computed: {
     breakpoint() {
@@ -83,7 +82,7 @@ export default defineComponent({
       if (this.queryType == 'REWRITE') this.$emit('reload');
     },
     onSearch(searchPattern: string, userType: string) {
-      const data = {pattern: searchPattern, userType: userType};
+      const data = { pattern: searchPattern, userType: userType };
       this.queryType = 'SEARCH';
       if (this.$route.params.samplename) {
         api
@@ -93,7 +92,7 @@ export default defineComponent({
             this.resultSearchDialog = true;
           })
           .catch((error) => {
-            notifyError({error});
+            notifyError({ error });
           });
       } else {
         api
@@ -103,7 +102,7 @@ export default defineComponent({
             this.resultSearchDialog = true;
           })
           .catch((error) => {
-            notifyError({error});
+            notifyError({ error });
           });
       }
     },
@@ -124,10 +123,10 @@ export default defineComponent({
     },
     onShowDiffsProject(otherUsers: string[], features: string[]) {
       let sampleName: string | string[] = '';
-      if (this.$route.params.samplename){
+      if (this.$route.params.samplename) {
         sampleName = this.$route.params.samplename;
       }
-      const data = {otherUsers: otherUsers, features: features, sampleName: sampleName}
+      const data = { otherUsers: otherUsers, features: features, sampleName: sampleName };
       api
         .showDiffsInProject(this.$route.params.projectname as string, data)
         .then((response) => {
@@ -135,10 +134,9 @@ export default defineComponent({
           this.resultSearchDialog = true;
         })
         .catch((error) => {
-          notifyError(error)
-        })
+          notifyError(error);
+        });
     },
-
   },
 });
 </script>

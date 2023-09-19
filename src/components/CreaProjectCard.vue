@@ -1,17 +1,17 @@
 <template>
   <q-dialog v-model="creatDialog" transition-show="fade" transition-hide="fade" persistent>
-    <q-card :class="$q.dark.isActive ? 'bg-dark' : 'bg-grey-1'" style="min-width: 50vw;">
+    <q-card :class="$q.dark.isActive ? 'bg-dark' : 'bg-grey-1'" style="min-width: 50vw">
       <q-bar class="bg-primary text-white">
         <q-space />
-        <q-btn  @click="closeDialog" flat dense icon="close" />
+        <q-btn @click="closeDialog" flat dense icon="close" />
       </q-bar>
       <div v-if="loggedWithGithub">
         <q-linear-progress size="10px" :value="progress" color="primary" />
       </div>
       <q-card-section>
-        <div class="text-h6 text-left">{{$t('createProjectCard.title')}}</div>
+        <div class="text-h6 text-left">{{ $t('createProjectCard.title') }}</div>
       </q-card-section>
-      <q-card-section v-if="!isShowSyncBtn && !isShowGithubSyncPanel" style="min-height: 20vw;">
+      <q-card-section v-if="!isShowSyncBtn && !isShowGithubSyncPanel" style="min-height: 20vw">
         <q-form id="createprojectform" class="q-gutter-md" @submit="onSubmit">
           <q-input
             id="projectnameinput"
@@ -35,7 +35,7 @@
               ]"
             />
           </div>
-          <q-toggle v-model="project.showAllTrees" :label="$t('createProjectCard.showAllTrees')"  />
+          <q-toggle v-model="project.showAllTrees" :label="$t('createProjectCard.showAllTrees')" />
           <q-toggle v-model="project.exerciseMode" :label="$t('createProjectCard.exerciseMode')" />
           <div class="row q-gutter-md justify-center">
             <q-btn :disable="project.projectName == ''" id="submitproject" type="submit" :label="$t('createProjectCard.create')" color="primary" />
@@ -43,12 +43,12 @@
         </q-form>
       </q-card-section>
       <q-card-section v-if="canSyncWithGithub" class="row justify-center q-gutter-md">
-        <q-btn @click="isShowGithubSyncPanel = true, progress= 0.8" :label="$t('github.synchronizeBtn')" color="primary" class="items-center"/> 
+        <q-btn @click="(isShowGithubSyncPanel = true), (progress = 0.8)" :label="$t('github.synchronizeBtn')" color="primary" class="items-center" />
       </q-card-section>
       <q-card-section v-if="canSyncWithGithub">
-        <div class="row justify-center q-gutter-md clickable" v-close-popup>{{$t('github.skipSync')}}</div>
+        <div class="row justify-center q-gutter-md clickable" v-close-popup>{{ $t('github.skipSync') }}</div>
       </q-card-section>
-      <GithubSyncDialog v-if="isShowGithubSyncPanel" :projectName="project.projectName"  @created="reloadAfterSync"/>
+      <GithubSyncDialog v-if="isShowGithubSyncPanel" :projectName="project.projectName" @created="reloadAfterSync" />
     </q-card>
   </q-dialog>
 </template>
@@ -66,7 +66,7 @@ export default defineComponent({
   components: {
     GithubSyncDialog,
   },
-  name:'CreaProjectCard',
+  name: 'CreaProjectCard',
   emits: ['created'],
   props: {
     parentGetProjects: {
@@ -89,14 +89,14 @@ export default defineComponent({
       progress: 0,
       isShowSyncBtn: false,
       isShowGithubSyncPanel: false,
-      synchronized:'',
+      synchronized: '',
     };
   },
   computed: {
     ...mapState(useUserStore, ['username', 'loggedWithGithub', 'isSuperAdmin']),
-    canSyncWithGithub(){
-      return  this.loggedWithGithub && this.isShowSyncBtn && !this.isShowGithubSyncPanel; 
-    }
+    canSyncWithGithub() {
+      return this.loggedWithGithub && this.isShowSyncBtn && !this.isShowGithubSyncPanel;
+    },
   },
   methods: {
     ...mapActions(useProjectStore, ['resetAnnotationFeatures']),
@@ -121,12 +121,11 @@ export default defineComponent({
           if (this.loggedWithGithub && !this.project.exerciseMode) {
             this.progress = 0.4;
             this.isShowSyncBtn = true;
-          }
-          else {
-           this.closeDialog();
+          } else {
+            this.closeDialog();
           }
           notifyMessage({
-           message: `${this.project.projectName} ${this.$t('createProjectCard.createMessage')}`,
+            message: `${this.project.projectName} ${this.$t('createProjectCard.createMessage')}`,
           });
         })
         .catch((error) => {
@@ -142,10 +141,9 @@ export default defineComponent({
     },
 
     closeDialog() {
-       this.creatDialog = false;
-       this.$emit('created');
-    }
-
+      this.creatDialog = false;
+      this.$emit('created');
+    },
   },
 });
 </script>

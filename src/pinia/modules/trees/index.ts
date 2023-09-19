@@ -1,12 +1,9 @@
-import {defineStore} from 'pinia';
+import { defineStore } from 'pinia';
 
-import {notifyMessage, notifyError} from 'src/utils/notify';
+import { notifyMessage, notifyError } from 'src/utils/notify';
 import api from '../../../api/backend-api';
-import {
-  grewSearchResultSentence_t,
-} from 'src/api/backend-types';
-import {sentenceConllToJson, sentenceJson_T} from "conllup/lib/conll";
-
+import { grewSearchResultSentence_t } from 'src/api/backend-types';
+import { sentenceConllToJson, sentenceJson_T } from 'conllup/lib/conll';
 
 export const useTreesStore = defineStore('trees', {
   state: () => {
@@ -29,7 +26,7 @@ export const useTreesStore = defineStore('trees', {
     },
   },
   actions: {
-    getSampleTrees({projectName, sampleName}: { projectName: string; sampleName: string }) {
+    getSampleTrees({ projectName, sampleName }: { projectName: string; sampleName: string }) {
       return new Promise((resolve, reject) => {
         this.loading = true;
         api
@@ -39,18 +36,18 @@ export const useTreesStore = defineStore('trees', {
             this.exerciseLevel = response.data.exercise_level;
             this.applyFilterTrees();
             this.loading = false;
-            notifyMessage({message: `Loaded ${Object.keys(this.trees).length} trees`});
+            notifyMessage({ message: `Loaded ${Object.keys(this.trees).length} trees` });
             resolve(JSON.parse(JSON.stringify(Object.values(this.trees))));
           })
           .catch((error) => {
-            notifyError({error});
+            notifyError({ error });
             this.loading = false;
             reject(error);
           });
       });
     },
     applyFilterTrees() {
-      this.filteredTrees = Object.values(this.trees)
+      this.filteredTrees = Object.values(this.trees);
       if (this.textFilter !== '') {
         this.filteredTrees = Object.values(this.trees).filter((tree) => {
           return tree.sentence.toLowerCase().includes(this.textFilter.toLowerCase());
@@ -80,7 +77,10 @@ export const useTreesStore = defineStore('trees', {
           if (usersToHaveDiffsThatHaveTrees.length <= 1) {
             return false;
           }
-          return sentencesHaveDiffs(usersToHaveDiffsThatHaveTrees.map((user) => tree.conlls[user]), this.featuresSetForDiffs)
+          return sentencesHaveDiffs(
+            usersToHaveDiffsThatHaveTrees.map((user) => tree.conlls[user]),
+            this.featuresSetForDiffs
+          );
         });
       }
       if (this.usersToNotHaveDiffs.length > 0) {
@@ -92,7 +92,10 @@ export const useTreesStore = defineStore('trees', {
           if (usersToNotHaveDiffsThatHaveTrees.length <= 1) {
             return false;
           }
-          return !sentencesHaveDiffs(usersToNotHaveDiffsThatHaveTrees.map((user) => tree.conlls[user]), this.featuresSetForDiffs)
+          return !sentencesHaveDiffs(
+            usersToNotHaveDiffsThatHaveTrees.map((user) => tree.conlls[user]),
+            this.featuresSetForDiffs
+          );
         });
       }
     },
@@ -127,95 +130,109 @@ const sentencesHaveDiffs = (sentenceConlls: string[], featuresSetForDiffs: strin
   }
 
   for (const feature of featuresSetForDiffs) {
-    if (feature.startsWith('FEATS.') && haveDifferentTokensFEAT(sentenceJsons, feature.slice("FEATS.".length))) {
+    if (feature.startsWith('FEATS.') && haveDifferentTokensFEAT(sentenceJsons, feature.slice('FEATS.'.length))) {
       return true;
     }
-    if (feature.startsWith('MISC.') && haveDifferentTokensMISC(sentenceJsons, feature.slice("MISC.".length))) {
+    if (feature.startsWith('MISC.') && haveDifferentTokensMISC(sentenceJsons, feature.slice('MISC.'.length))) {
       return true;
     }
   }
 
   return false;
-}
+};
 
 const doNeedCheckFor = (feature: string, featuresSetForDiffs: string[]): boolean => {
   if (featuresSetForDiffs.length === 0) {
     return true;
   }
   return featuresSetForDiffs.includes(feature);
-}
+};
 const haveDifferentNumberOfTokens = (sentenceJsons: sentenceJson_T[]): boolean => {
   const numberOfTokensArray = sentenceJsons.map((sentenceJson) => Object.keys(sentenceJson.treeJson.nodesJson).length);
   const setOfNumberOfTokens = new Set(numberOfTokensArray);
   return setOfNumberOfTokens.size !== 1;
-}
+};
 
 const haveDifferentTokensFORM = (sentenceJsons: sentenceJson_T[]): boolean => {
-  const tokensArrays: string[][] = sentenceJsons.map((sentenceJson) => Object.values(sentenceJson.treeJson.nodesJson).map((nodeJson) => nodeJson.FORM));
+  const tokensArrays: string[][] = sentenceJsons.map((sentenceJson) =>
+    Object.values(sentenceJson.treeJson.nodesJson).map((nodeJson) => nodeJson.FORM)
+  );
   for (const index of Array.from(Array(tokensArrays.length).keys())) {
     if (new Set(tokensArrays.map((tokensArray: string[]) => tokensArray[index])).size !== 1) {
       return true;
     }
   }
-  return false
-}
+  return false;
+};
 
 const haveDifferentTokensUPOS = (sentenceJsons: sentenceJson_T[]): boolean => {
-  const tokensArrays: string[][] = sentenceJsons.map((sentenceJson) => Object.values(sentenceJson.treeJson.nodesJson).map((nodeJson) => nodeJson.UPOS));
+  const tokensArrays: string[][] = sentenceJsons.map((sentenceJson) =>
+    Object.values(sentenceJson.treeJson.nodesJson).map((nodeJson) => nodeJson.UPOS)
+  );
   for (const index of Array.from(Array(tokensArrays.length).keys())) {
     if (new Set(tokensArrays.map((tokensArray: string[]) => tokensArray[index])).size !== 1) {
       return true;
     }
   }
-  return false
-}
+  return false;
+};
 
 const haveDifferentTokensXPOS = (sentenceJsons: sentenceJson_T[]): boolean => {
-  const tokensArrays: string[][] = sentenceJsons.map((sentenceJson) => Object.values(sentenceJson.treeJson.nodesJson).map((nodeJson) => nodeJson.XPOS));
+  const tokensArrays: string[][] = sentenceJsons.map((sentenceJson) =>
+    Object.values(sentenceJson.treeJson.nodesJson).map((nodeJson) => nodeJson.XPOS)
+  );
   for (const index of Array.from(Array(tokensArrays.length).keys())) {
     if (new Set(tokensArrays.map((tokensArray: string[]) => tokensArray[index])).size !== 1) {
       return true;
     }
   }
-  return false
-}
+  return false;
+};
 
 const haveDifferentTokensDEPREL = (sentenceJsons: sentenceJson_T[]): boolean => {
-  const tokensArrays: string[][] = sentenceJsons.map((sentenceJson) => Object.values(sentenceJson.treeJson.nodesJson).map((nodeJson) => nodeJson.DEPREL));
+  const tokensArrays: string[][] = sentenceJsons.map((sentenceJson) =>
+    Object.values(sentenceJson.treeJson.nodesJson).map((nodeJson) => nodeJson.DEPREL)
+  );
   for (const index of Array.from(Array(tokensArrays[0].length).keys())) {
     if (new Set(tokensArrays.map((tokensArray: string[]) => tokensArray[index])).size !== 1) {
       return true;
     }
   }
-  return false
-}
+  return false;
+};
 
 const haveDifferentTokensHEAD = (sentenceJsons: sentenceJson_T[]): boolean => {
-  const tokensArrays: number[][] = sentenceJsons.map((sentenceJson) => Object.values(sentenceJson.treeJson.nodesJson).map((nodeJson) => nodeJson.HEAD));
+  const tokensArrays: number[][] = sentenceJsons.map((sentenceJson) =>
+    Object.values(sentenceJson.treeJson.nodesJson).map((nodeJson) => nodeJson.HEAD)
+  );
   for (const index of Array.from(Array(tokensArrays.length).keys())) {
     if (new Set(tokensArrays.map((tokensArray: number[]) => tokensArray[index])).size !== 1) {
       return true;
     }
   }
-  return false
-}
+  return false;
+};
 
 const haveDifferentTokensFEAT = (sentenceJsons: sentenceJson_T[], feature: string): boolean => {
-  const tokensArrays: string[][] = sentenceJsons.map((sentenceJson) => Object.values(sentenceJson.treeJson.nodesJson).map((nodeJson) => nodeJson.FEATS[feature]));
+  const tokensArrays: string[][] = sentenceJsons.map((sentenceJson) =>
+    Object.values(sentenceJson.treeJson.nodesJson).map((nodeJson) => nodeJson.FEATS[feature])
+  );
   for (const index of Array.from(Array(tokensArrays.length).keys())) {
     if (new Set(tokensArrays.map((tokensArray: string[]) => tokensArray[index])).size !== 1) {
       return true;
     }
   }
-  return false
-}
+  return false;
+};
 
 const haveDifferentTokensMISC = (sentenceJsons: sentenceJson_T[], feature: string): boolean => {
-  const tokensArrays: string[][] = sentenceJsons.map((sentenceJson) => Object.values(sentenceJson.treeJson.nodesJson).map((nodeJson) => nodeJson.MISC[feature]));
+  const tokensArrays: string[][] = sentenceJsons.map((sentenceJson) =>
+    Object.values(sentenceJson.treeJson.nodesJson).map((nodeJson) => nodeJson.MISC[feature])
+  );
   for (const index of Array.from(Array(tokensArrays.length).keys())) {
     if (new Set(tokensArrays.map((tokensArray: string[]) => tokensArray[index])).size !== 1) {
       return true;
     }
   }
-  return false
-}
+  return false;
+};

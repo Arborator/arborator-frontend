@@ -18,10 +18,10 @@
           </q-item-section>
           <q-menu anchor="top end" self="top start">
             <q-list>
-              <q-item  clickable v-close-popup @click="tokenReplaceOptions('merge_right')">
+              <q-item clickable v-close-popup @click="tokenReplaceOptions('merge_right')">
                 <q-item-section>Merge right</q-item-section>
               </q-item>
-              <q-item  clickable v-close-popup @click="tokenReplaceOptions('merge_left')">
+              <q-item clickable v-close-popup @click="tokenReplaceOptions('merge_left')">
                 <q-item-section>Merge left</q-item-section>
               </q-item>
             </q-list>
@@ -39,10 +39,10 @@
           </q-item-section>
           <q-menu anchor="top end" self="top start">
             <q-list>
-              <q-item  clickable v-close-popup @click="tokenReplaceOptions('insert_before')">
+              <q-item clickable v-close-popup @click="tokenReplaceOptions('insert_before')">
                 <q-item-section>Insert before</q-item-section>
               </q-item>
-              <q-item  clickable v-close-popup @click="tokenReplaceOptions('insert_after')">
+              <q-item clickable v-close-popup @click="tokenReplaceOptions('insert_after')">
                 <q-item-section>Insert after</q-item-section>
               </q-item>
             </q-list>
@@ -76,40 +76,28 @@
         <q-btn v-close-popup flat dense icon="close" />
       </q-bar>
       <q-card-section>
-        <div class="q-gutter-md" >
-          <q-input
-            v-model="selection"
-            filled
-            label="Multiword"
-          />
+        <div class="q-gutter-md">
+          <q-input v-model="selection" filled label="Multiword" />
           <q-input v-model="firstToken" filled label="First token"></q-input>
           <q-input v-model="secondToken" filled label="Second token" />
           <q-checkbox v-model="multiword" label="Add multiword token"></q-checkbox>
           <div class="row q-gutter-md justify-center">
-            <q-btn 
-              :disable="!firstToken && !secondToken"
-              v-close-popup 
-              label="Split" 
-              color="primary" 
-              @click="tokenReplaceOptions('split')" 
-               />
+            <q-btn :disable="!firstToken && !secondToken" v-close-popup label="Split" color="primary" @click="tokenReplaceOptions('split')" />
           </div>
         </div>
-        </q-card-section>
+      </q-card-section>
     </q-card>
   </q-dialog>
 </template>
 
 <script lang="ts">
-
 import { reactive_sentences_obj_t, sentence_bus_t } from 'src/types/main_types';
 import { replaceArrayOfTokens } from 'conllup/lib/conll';
-import { defineComponent, PropType} from 'vue';
-
+import { defineComponent, PropType } from 'vue';
 
 export default defineComponent({
-  name:'TokensReplaceDialog',
-  emits:['changed:metaText'],
+  name: 'TokensReplaceDialog',
+  emits: ['changed:metaText'],
   props: {
     sentenceBus: {
       type: Object as PropType<sentence_bus_t>,
@@ -128,15 +116,14 @@ export default defineComponent({
       tokensReplaceDialogOpened: false,
       tokensForms,
       tokensIndexes,
-      startIndex: 0, 
+      startIndex: 0,
       endIndex: 0,
       selection: '',
       isShowFusion: false,
       userId: '',
-      secondToken:'',
-      firstToken:'',
+      secondToken: '',
+      firstToken: '',
       multiword: false,
-      
     };
   },
   mounted() {
@@ -145,11 +132,10 @@ export default defineComponent({
       if (event.target !== null) {
         this.startIndex = (event.target as HTMLInputElement).selectionStart || 0;
         this.endIndex = (event.target as HTMLInputElement).selectionEnd || 0;
-        const sentence = (event.target as HTMLInputElement).value
-        if ((sentence[this.startIndex-1] == ' ' || this.startIndex == 0) && sentence[this.endIndex] == ' ')
-        {
+        const sentence = (event.target as HTMLInputElement).value;
+        if ((sentence[this.startIndex - 1] == ' ' || this.startIndex == 0) && sentence[this.endIndex] == ' ') {
           this.selection = (event.target as HTMLInputElement).value.substring(this.startIndex, this.endIndex);
-          this.selection.includes(' ') ? this.tokensReplaceDialogOpened = false : this.tokensReplaceDialogOpened = true;
+          this.selection.includes(' ') ? (this.tokensReplaceDialogOpened = false) : (this.tokensReplaceDialogOpened = true);
         }
       }
     });
@@ -173,59 +159,53 @@ export default defineComponent({
         });
         cumulativeLength += sentenceTokens[i].length + spaceAfters[i];
       }
-      const token = tokens.filter((token) => token.begin == this.startIndex && token.end == this.endIndex)[0]
-      if (option == 'merge_right'){
-        this.tokensForms = [token.form+tokens[token.i].form];
-        this.tokensIndexes = [token.i, token.i+1];
-      }
-      else if (option == 'merge_left'){
-        this.tokensForms = [tokens[token.i-2].form+token.form];
-        this.tokensIndexes = [token.i-1, token.i];
-      }
-      else if (option == 'insert_before'){
-        this.tokensForms = ["_", token.form];
+      const token = tokens.filter((token) => token.begin == this.startIndex && token.end == this.endIndex)[0];
+      if (option == 'merge_right') {
+        this.tokensForms = [token.form + tokens[token.i].form];
+        this.tokensIndexes = [token.i, token.i + 1];
+      } else if (option == 'merge_left') {
+        this.tokensForms = [tokens[token.i - 2].form + token.form];
+        this.tokensIndexes = [token.i - 1, token.i];
+      } else if (option == 'insert_before') {
+        this.tokensForms = ['_', token.form];
         this.tokensIndexes = [token.i];
-      }
-      else if (option == 'insert_after'){
-        this.tokensForms = [token.form, "_"];
+      } else if (option == 'insert_after') {
+        this.tokensForms = [token.form, '_'];
         this.tokensIndexes = [token.i];
-      }
-      else if (option == 'delete'){
+      } else if (option == 'delete') {
         this.tokensIndexes = [token.i];
         this.tokensForms = [];
-      }
-      else { 
+      } else {
         this.tokensIndexes = [token.i];
         this.tokensForms = [this.firstToken, this.secondToken];
         this.secondToken = '';
-
       }
-     this.tokensReplace();
+      this.tokensReplace();
     },
     tokensReplace() {
       const oldTree = this.reactiveSentencesObj[this.userId].state.treeJson;
       const tokensIndexes = this.tokensIndexes;
       const newTokensForm = this.tokensForms;
       const newTree = replaceArrayOfTokens(oldTree, tokensIndexes, newTokensForm, true);
-      if (this.multiword){
+      if (this.multiword) {
         const newGroupJson = {
-          DEPREL: "_",
-          DEPS: {}, 
+          DEPREL: '_',
+          DEPS: {},
           FEATS: {},
           FORM: this.selection,
           HEAD: -1,
-          ID: String(tokensIndexes[0])+"-"+String(tokensIndexes[0]+1),
-          LEMMA: "_",
+          ID: String(tokensIndexes[0]) + '-' + String(tokensIndexes[0] + 1),
+          LEMMA: '_',
           MISC: {},
-          UPOS: "_",
-          XPOS: "_",
+          UPOS: '_',
+          XPOS: '_',
         };
-        newTree["groupsJson"][newGroupJson.ID] = newGroupJson;
+        newTree['groupsJson'][newGroupJson.ID] = newGroupJson;
       }
       const newMetaText = Object.values(newTree.nodesJson)
         .map(({ FORM }) => FORM)
-        .join(' ');  
-      console.log(newTree)                                                           
+        .join(' ');
+      console.log(newTree);
       this.sentenceBus.emit('tree-update:tree', {
         tree: newTree,
         userId: this.userId,

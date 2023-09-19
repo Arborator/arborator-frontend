@@ -4,7 +4,7 @@
   <q-dialog v-model="metaDialogOpened">
     <q-card style="width: 110vh">
       <q-bar class="bg-primary text-white">
-        <div class="text-weight-bold">{{$t('attributeTable.metadata')}}</div>
+        <div class="text-weight-bold">{{ $t('attributeTable.metadata') }}</div>
         <q-space />
         <q-btn v-close-popup flat dense icon="close" />
       </q-bar>
@@ -96,14 +96,14 @@ export default defineComponent({
       return true;
     },
     metaOptions() {
-     let metaOptions: {name: string, values: string}[] =  [];
-     for (const metaOption of this.shownMetaChoices){
-      if (!Object.keys(this.metaJson).includes(metaOption)){
-      metaOptions.push({name: metaOption, values: 'string' });
+      let metaOptions: { name: string; values: string }[] = [];
+      for (const metaOption of this.shownMetaChoices) {
+        if (!Object.keys(this.metaJson).includes(metaOption)) {
+          metaOptions.push({ name: metaOption, values: 'string' });
+        }
       }
-     }
-     return metaOptions;
-    }
+      return metaOptions;
+    },
   },
   mounted() {
     this.sentenceBus.on('open:metaDialog', ({ userId }: { userId: string }) => {

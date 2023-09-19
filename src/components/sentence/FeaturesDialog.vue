@@ -6,7 +6,7 @@
     <!-- @hide="ondialoghide()" @keyup.enter="onFeatureDialogOk()" @keyup.enter="ononefeaturemodified()"-->
     <q-card>
       <q-bar class="bg-primary text-white">
-        <div class="text-weight-bold"> {{$t('attributeTable.features')}} "{{ token['FORM'] }}"</div>
+        <div class="text-weight-bold">{{ $t('attributeTable.features') }} "{{ token['FORM'] }}"</div>
         <q-space />
         <q-btn v-close-popup flat dense icon="close" />
       </q-bar>

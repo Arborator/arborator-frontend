@@ -6,34 +6,26 @@
         <q-tooltip>upload existing constructicon</q-tooltip>
       </q-btn>
       <q-dialog v-model="uploadConstructiconDialog">
-          <q-uploader
-            :url="backendApi.generateURLforConstructiconUpload(name)"
-            label="Choose a File"
-            @uploaded="loadConstructiconEntries"
-          />
+        <q-uploader :url="backendApi.generateURLforConstructiconUpload(name)" label="Choose a File" @uploaded="loadConstructiconEntries" />
       </q-dialog>
       <q-btn flat dense icon="file_download" @click="downloadConstructicon">
         <q-tooltip>download this constructicon</q-tooltip>
       </q-btn>
-      <q-btn v-close-popup flat dense icon="close"/>
+      <q-btn v-close-popup flat dense icon="close" />
     </q-bar>
 
-    <q-splitter
-      v-model="splitterModel"
-      style="height: 400px"
-      :limits="[30, 50]"
-    >
+    <q-splitter v-model="splitterModel" style="height: 400px" :limits="[30, 50]">
       <template v-slot:before>
-        <div style="height: 100%; width: 100%; display: flex; flex-direction: column;">
+        <div style="height: 100%; width: 100%; display: flex; flex-direction: column">
           <!-- Search bar -->
           <q-input v-model="search" outlined dense debounce="300" placeholder="Search items...">
             <template v-slot:append>
-              <q-icon name="search"/>
+              <q-icon name="search" />
             </template>
           </q-input>
 
           <!-- Items -->
-          <q-scroll-area style="height: 100%; width: 100%;">
+          <q-scroll-area style="height: 100%; width: 100%">
             <q-list bordered>
               <q-item v-for="(entry, index) in filteredEntries" :key="index" clickable @click="setActiveItem(entry)">
                 <q-item-section>
@@ -51,17 +43,18 @@
             color="primary"
             label="Add new item"
             icon="add"
-            @click="addNewItem"/>
+            @click="addNewItem"
+          />
         </div>
       </template>
 
       <template v-slot:after>
-        <div v-if="activeEntry" style="height: 100%; position: relative;">
+        <div v-if="activeEntry" style="height: 100%; position: relative">
           <!-- Entry content -->
           <div style="overflow-y: auto; max-height: calc(100% - 68px); padding: 10px">
             <div v-if="editMode">
-              <q-input outlined v-model="activeEntry.title" label="Title" class="q-mb-md"/>
-              <q-input outlined v-model="activeEntry.description" label="Description" class="q-mb-md"/>
+              <q-input outlined v-model="activeEntry.title" label="Title" class="q-mb-md" />
+              <q-input outlined v-model="activeEntry.description" label="Description" class="q-mb-md" />
             </div>
             <div v-else>
               <h6 class="q-my-sm">{{ activeEntry.title }}</h6>
@@ -77,94 +70,83 @@
             <!-- QChip for tags -->
             <div class="q-mt-md">
               <div class="text-h6 q-mb-xs">Tags</div>
-              <q-chip
-                v-for="(tag, index) in activeEntry.tags"
-                :key="index"
-                :removable="editMode"
-                @remove="removeTag(index)"
-              >
+              <q-chip v-for="(tag, index) in activeEntry.tags" :key="index" :removable="editMode" @remove="removeTag(index)">
                 {{ tag }}
               </q-chip>
-              <q-input v-if="editMode" v-model="newTag" outlined dense placeholder="Add tag" @keyup.enter="addTag"/>
+              <q-input v-if="editMode" v-model="newTag" outlined dense placeholder="Add tag" @keyup.enter="addTag" />
             </div>
           </div>
 
           <!-- bottom toolbar -->
-          <div style="position: absolute; bottom: 0; left: 0; right: 0;">
-            <q-toolbar class="q-pa-md" style="display: flex; justify-content: space-between;">
-              <div style="display: flex; justify-content: space-between;">
+          <div style="position: absolute; bottom: 0; left: 0; right: 0">
+            <q-toolbar class="q-pa-md" style="display: flex; justify-content: space-between">
+              <div style="display: flex; justify-content: space-between">
                 <q-btn v-if="canSaveTreeInProject" color="primary" @click="changeEditMode">
                   {{ editMode ? 'Save' : 'Edit' }}
                 </q-btn>
-                <q-btn v-if="canSaveTreeInProject" color="primary" @click="deleteItem">
-                  Delete
-                </q-btn>
+                <q-btn v-if="canSaveTreeInProject" color="primary" @click="deleteItem"> Delete </q-btn>
               </div>
 
-              <q-btn :disabled="editMode" color="secondary" @click="grewSearch(activeEntry.grew_query)">
-                Search
-              </q-btn>
+              <q-btn :disabled="editMode" color="secondary" @click="grewSearch(activeEntry.grew_query)"> Search </q-btn>
             </q-toolbar>
           </div>
         </div>
       </template>
-
     </q-splitter>
   </div>
 </template>
 
 <script lang="ts">
-import {v4 as uuidv4} from 'uuid';
+import { v4 as uuidv4 } from 'uuid';
 
-import {defineComponent} from "vue";
-import GrewCodeMirror from "components/codemirrors/GrewCodeMirror.vue";
-import {mapActions, mapState, mapWritableState} from "pinia";
-import {useGrewSearchStore} from "src/pinia/modules/grewSearch";
-import {ConstructiconEntry_t} from "src/api/backend-types";
-import {api} from "boot/axios";
-import {useProjectStore} from "src/pinia/modules/project";
-import {notifyError, notifyMessage} from "src/utils/notify";
-import backendApi from "src/api/backend-api";
-
+import { defineComponent } from 'vue';
+import GrewCodeMirror from 'components/codemirrors/GrewCodeMirror.vue';
+import { mapActions, mapState, mapWritableState } from 'pinia';
+import { useGrewSearchStore } from 'src/pinia/modules/grewSearch';
+import { ConstructiconEntry_t } from 'src/api/backend-types';
+import { api } from 'boot/axios';
+import { useProjectStore } from 'src/pinia/modules/project';
+import { notifyError, notifyMessage } from 'src/utils/notify';
+import backendApi from 'src/api/backend-api';
 
 interface data_t {
-  splitterModel: number
-  constructiconEntries: ConstructiconEntry_t[]
-  activeEntry: ConstructiconEntry_t | null
-  search: string,
-  newTag: string,
-  newMeta: string,
-  editMode: boolean,
-  uploadConstructiconDialog: boolean,
-  file: File | null,
+  splitterModel: number;
+  constructiconEntries: ConstructiconEntry_t[];
+  activeEntry: ConstructiconEntry_t | null;
+  search: string;
+  newTag: string;
+  newMeta: string;
+  editMode: boolean;
+  uploadConstructiconDialog: boolean;
+  file: File | null;
 }
 
 export default defineComponent({
-  name: "ConstructiconDialog",
-  components: {GrewCodeMirror},
+  name: 'ConstructiconDialog',
+  components: { GrewCodeMirror },
   data(): data_t {
     return {
       splitterModel: 30,
       constructiconEntries: [],
       activeEntry: null,
-      search: "",
+      search: '',
       newTag: '',
       newMeta: '',
       editMode: false,
       uploadConstructiconDialog: false,
       file: null,
-    }
+    };
   },
   computed: {
     backendApi() {
-      return backendApi
+      return backendApi;
     },
     ...mapState(useProjectStore, ['name', 'canSaveTreeInProject']),
     // filter the items based on the search term
     filteredEntries(): ConstructiconEntry_t[] {
-      return this.constructiconEntries.filter(entry =>
-        entry.title.toLowerCase().includes(this.search.toLowerCase()) ||
-        entry.description.toLowerCase().includes(this.search.toLowerCase())
+      return this.constructiconEntries.filter(
+        (entry) =>
+          entry.title.toLowerCase().includes(this.search.toLowerCase()) || entry.description.toLowerCase().includes(this.search.toLowerCase())
       );
     },
   },
@@ -174,32 +156,35 @@ export default defineComponent({
   methods: {
     ...mapActions(useGrewSearchStore, ['switchGrewDialog', 'changeLastGrewQuery']),
     setActiveItem(entry: ConstructiconEntry_t) {
-      this.activeEntry = entry
+      this.activeEntry = entry;
     },
     addNewItem() {
       this.editMode = true;
       const newEntry: ConstructiconEntry_t = {
         id: uuidv4(),
-        title: "",
-        grew_query: "",
-        description: "",
+        title: '',
+        grew_query: '',
+        description: '',
         tags: [],
-      }
+      };
       this.constructiconEntries.push(newEntry);
       this.activeEntry = newEntry;
     },
     deleteItem() {
       if (this.activeEntry) {
-        const toDeleteEntry = this.activeEntry
-        api.deleteConstructiconEntry(this.name, this.activeEntry.id).then(() => {
-          this.editMode = false;
-          this.loadConstructiconEntries();
-          this.activeEntry = null;
-          notifyMessage({message: `Entry '${toDeleteEntry.title}' deleted`})
-        }).catch((err) => {
-          console.log(err);
-          notifyError({error: 'Error while deleting constructicon entry'})
-        });
+        const toDeleteEntry = this.activeEntry;
+        api
+          .deleteConstructiconEntry(this.name, this.activeEntry.id)
+          .then(() => {
+            this.editMode = false;
+            this.loadConstructiconEntries();
+            this.activeEntry = null;
+            notifyMessage({ message: `Entry '${toDeleteEntry.title}' deleted` });
+          })
+          .catch((err) => {
+            console.log(err);
+            notifyError({ error: 'Error while deleting constructicon entry' });
+          });
       }
     },
     addTag() {
@@ -214,18 +199,21 @@ export default defineComponent({
       }
     },
     loadConstructiconEntries() {
-      api.getConstructiconEntries(this.name).then((response) => {
-        this.activeEntry = null;
-        this.constructiconEntries = response.data;
-      }).catch((err) => {
-        console.log(err);
-        notifyError({error: 'Error while loading constructicon entries'})
-      });
+      api
+        .getConstructiconEntries(this.name)
+        .then((response) => {
+          this.activeEntry = null;
+          this.constructiconEntries = response.data;
+        })
+        .catch((err) => {
+          console.log(err);
+          notifyError({ error: 'Error while loading constructicon entries' });
+        });
     },
     grewSearch(query: string) {
       console.log(query);
       this.switchGrewDialog(true);
-      this.changeLastGrewQuery({text: query, type: 'SEARCH', userType: 'user'});
+      this.changeLastGrewQuery({ text: query, type: 'SEARCH', userType: 'user' });
     },
     changeEditMode() {
       if (!this.activeEntry) {
@@ -233,13 +221,16 @@ export default defineComponent({
         return;
       }
       if (this.editMode) {
-        api.saveConstructiconEntry(this.name, this.activeEntry).then(() => {
-          this.editMode = false;
-          notifyMessage({message: 'Changes saved'})
-        }).catch((err) => {
-          console.log(err);
-          notifyError({error: 'Error while saving changes'})
-        });
+        api
+          .saveConstructiconEntry(this.name, this.activeEntry)
+          .then(() => {
+            this.editMode = false;
+            notifyMessage({ message: 'Changes saved' });
+          })
+          .catch((err) => {
+            console.log(err);
+            notifyError({ error: 'Error while saving changes' });
+          });
       } else {
         // enter edit mode
         this.editMode = true;
@@ -250,10 +241,10 @@ export default defineComponent({
     },
     downloadListAsJson(list: any[], filename: string) {
       // Convert list to JSON
-      var jsonString = JSON.stringify(list, null, 2);  // 'null' and '2' are for pretty formatting
+      var jsonString = JSON.stringify(list, null, 2); // 'null' and '2' are for pretty formatting
 
       // Create a Blob from the JSON string
-      var blob = new Blob([jsonString], {type: 'application/json'});
+      var blob = new Blob([jsonString], { type: 'application/json' });
 
       // Create a URL from the Blob
       var url = URL.createObjectURL(blob);
@@ -271,11 +262,9 @@ export default defineComponent({
 
       // Clean up: remove the link from the body
       document.body.removeChild(link);
-    }
+    },
   },
-})
+});
 </script>
 
-<style scoped>
-
-</style>
+<style scoped></style>

@@ -1,11 +1,11 @@
 import defaultState from './defaultState';
 
-import {cookies} from '../../../boot/vue-cookies';
-import {i18n} from 'src/boot/i18n';
+import { cookies } from '../../../boot/vue-cookies';
+import { i18n } from 'src/boot/i18n';
 import api from '../../../api/backend-api';
-import {defineStore} from 'pinia';
-import {notifyError, notifyMessage} from 'src/utils/notify';
-import {user_t} from 'src/api/backend-types';
+import { defineStore } from 'pinia';
+import { notifyError, notifyMessage } from 'src/utils/notify';
+import { user_t } from 'src/api/backend-types';
 
 export const useUserStore = defineStore('user', {
   state: () => {
@@ -17,15 +17,15 @@ export const useUserStore = defineStore('user', {
     isLoggedIn: (state) => state.loginSuccess,
     hasLoginErrored: (state) => state.loginError,
     getFailedAccess: (state) => state.failedAccess,
-    loggedWithGithub: (state) => state.auth_provider === "4",
+    loggedWithGithub: (state) => state.auth_provider === '4',
     avatar: (state) => {
       if (state.picture_url) return state.picture_url;
       return 'perm_identity';
     },
     shareEmail(state): boolean {
       return !state.not_share_email && this.loggedWithGithub && state.email == null;
-    }
-    
+    },
+
     /**
      * This defines if a user is admin for a Arborator or Klang page. It will check in order if :
      * - user is super admin
@@ -77,7 +77,7 @@ export const useUserStore = defineStore('user', {
         resolve({ status: 'disconnected' });
       });
     },
-    updateUserInformation(informationToUpdate: Partial<user_t>){
+    updateUserInformation(informationToUpdate: Partial<user_t>) {
       return new Promise((resolve, reject) => {
         api
           .updateUser(informationToUpdate)
@@ -91,6 +91,6 @@ export const useUserStore = defineStore('user', {
             reject(error);
           });
       });
-    }
+    },
   },
 });

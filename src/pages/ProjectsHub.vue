@@ -168,7 +168,7 @@
         </q-card-section>
       </q-card>
     </div>
-    
+
     <CreaProjectCard v-if="creaProjectDial" :parent-get-projects="getProjects" @created="creaProjectDial = false"></CreaProjectCard>
 
     <q-dialog v-model="projectSettingsDial" transition-show="slide-up" transition-hide="slide-down">
@@ -321,7 +321,7 @@ export default defineComponent({
       return project.admins[0] === this.username;
     },
     isSharedWithMe(project: project_extended_t) {
-      const projectMember = [...project.admins, ...project.annotators, ...project.validators, ...project.guests ]
+      const projectMember = [...project.admins, ...project.annotators, ...project.validators, ...project.guests];
       return projectMember.includes(this.username);
     },
     isOld(project: project_extended_t) {

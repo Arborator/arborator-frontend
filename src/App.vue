@@ -1,13 +1,13 @@
 <template>
-  <router-view/>
+  <router-view />
 </template>
 
 <script lang="ts">
-import {defineComponent} from 'vue';
+import { defineComponent } from 'vue';
 
-import {useStorage} from 'vue3-storage';
-import {useUserStore} from './pinia/modules/user/index';
-import {setThemeMode} from 'dependencytreejs/src/StylesheetHandler';
+import { useStorage } from 'vue3-storage';
+import { useUserStore } from './pinia/modules/user/index';
+import { setThemeMode } from 'dependencytreejs/src/StylesheetHandler';
 
 export default defineComponent({
   name: 'App',
@@ -39,7 +39,8 @@ export default defineComponent({
 </script>
 
 <style>
-svg[xmlns="http://www.w3.org/2000/svg"] {
+svg[xmlns="http://www.w3.org/2000/svg"]
+{
   display: none;
 }
 </style>

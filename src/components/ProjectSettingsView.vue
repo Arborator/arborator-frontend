@@ -1,6 +1,6 @@
 <template>
   <q-card :class="$q.dark.isActive ? '' : 'bg-blue-grey-1 text-black'" class="full">
-    <q-bar class="bg-primary text-white sticky-bar" >
+    <q-bar class="bg-primary text-white sticky-bar">
       <q-space />
       <div class="text-weight-bold">{{ $t('projectSettings.title') }}</div>
       <q-space />
@@ -182,7 +182,9 @@
           @click="resetAnnotationFeaturesUDWrapper()"
         >
         </q-btn>
-        <q-chip text-color="primary" :icon="annotationFeaturesOk ? 'sentiment_satisfied_alt' : 'sentiment_very_dissatisfied'">{{ annotationFeaturesComment }}</q-chip>
+        <q-chip text-color="primary" :icon="annotationFeaturesOk ? 'sentiment_satisfied_alt' : 'sentiment_very_dissatisfied'">{{
+          annotationFeaturesComment
+        }}</q-chip>
       </q-card>
     </q-card-section>
   </q-card>
@@ -200,22 +202,22 @@ import 'codemirror/theme/material-darker.css';
 import UserSelectTable from './UserSelectTable.vue';
 import ConfirmAction from './ConfirmAction.vue';
 import UserSelect from './UserSelect.vue';
-import {mapActions, mapState, mapWritableState,} from 'pinia';
-import {useProjectStore} from 'src/pinia/modules/project';
-import {notifyError, notifyMessage} from 'src/utils/notify';
+import { mapActions, mapState, mapWritableState } from 'pinia';
+import { useProjectStore } from 'src/pinia/modules/project';
+import { notifyError, notifyMessage } from 'src/utils/notify';
 
-import {defineComponent, PropType} from 'vue';
+import { defineComponent, PropType } from 'vue';
 import ProjectIcon from 'components/shared/ProjectIcon.vue';
 
 export default defineComponent({
   name: 'ProjectSettingsView',
-  components: { 
-    ProjectIcon, 
-    Codemirror, 
+  components: {
+    ProjectIcon,
+    Codemirror,
     UserSelect,
-    UserSelectTable, 
+    UserSelectTable,
     ConfirmAction,
-    },
+  },
   props: {
     projectname: {
       type: String as PropType<string>,
@@ -386,8 +388,6 @@ export default defineComponent({
       this.annotationFeaturesJson = this.getUDAnnofJson;
     },
 
-   
-
     saveDescription() {
       this.updateProjectSettings({ description: this.description });
     },
@@ -435,5 +435,4 @@ export default defineComponent({
 .cm-height {
   height: 50px;
 }
-
 </style>

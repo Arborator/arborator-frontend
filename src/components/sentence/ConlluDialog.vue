@@ -4,7 +4,7 @@
     <q-layout view="Lhh lpR fff" container class="bg-white">
       <q-header class="bg-primary">
         <q-toolbar>
-          <q-toolbar-title>{{$t('sentenceCard.conllText')}}</q-toolbar-title>
+          <q-toolbar-title>{{ $t('sentenceCard.conllText') }}</q-toolbar-title>
           <q-btn v-close-popup flat round dense icon="close" />
         </q-toolbar>
       </q-header>

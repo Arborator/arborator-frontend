@@ -3,25 +3,32 @@
   <q-dialog v-model="uposDialogOpened" @keyup.enter="onChangeUpos()">
     <q-card style="min-width: 700px">
       <q-bar class="bg-primary text-white">
-        <div class="text-weight-bold">UPOS : {{$t('attributeTable.category[0]')}} "{{ token.FORM }}"</div>
+        <div class="text-weight-bold">UPOS : {{ $t('attributeTable.category[0]') }} "{{ token.FORM }}"</div>
         <q-space />
         <q-btn v-close-popup flat dense icon="close" />
       </q-bar>
       <q-card-section>
-        <div class="q-gutter-sm" >
-          <q-chip 
+        <div class="q-gutter-sm">
+          <q-chip
             outline
-            v-for="(upos, index) in annotationFeatures.UPOS" 
-            v-model:selected="selectedUpos[index]" 
-            :label="upos" 
-            color="primary" 
+            v-for="(upos, index) in annotationFeatures.UPOS"
+            v-model:selected="selectedUpos[index]"
+            :label="upos"
+            color="primary"
             @update:selected="unselectOtherUpos(index)"
           />
         </div>
       </q-card-section>
       <q-separator />
       <q-card-actions>
-        <q-btn v-close-popup outline color="primary" :label="$t('delete')" style="width: 25%; margin-left: auto; margin-right: auto" @click="onDeleteUpos()" />
+        <q-btn
+          v-close-popup
+          outline
+          color="primary"
+          :label="$t('delete')"
+          style="width: 25%; margin-left: auto; margin-right: auto"
+          @click="onDeleteUpos()"
+        />
         <q-space />
         <q-btn
           id="catselectvalidate"
@@ -31,7 +38,6 @@
           style="width: 25%; margin-left: auto; margin-right: auto"
           @click="onChangeUpos()"
         />
-    
       </q-card-actions>
     </q-card>
   </q-dialog>
@@ -80,7 +86,7 @@ export default defineComponent({
     this.sentenceBus.off('open:uposDialog');
   },
   methods: {
-    unselectOtherUpos(index: any){
+    unselectOtherUpos(index: any) {
       this.selectedUpos.forEach((upos, i) => {
         if (upos && i != index) {
           this.selectedUpos[i] = false;

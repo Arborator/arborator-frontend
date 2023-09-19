@@ -1,10 +1,9 @@
-import { defineStore } from "pinia";
+import { defineStore } from 'pinia';
 
 export const useGithubStore = defineStore('GithubStore', {
-    state: () =>{
-        return{
-            reloadCommits: 0,
-        }
-    }
-
+  state: () => {
+    return {
+      reloadCommits: 0,
+    };
+  },
 });

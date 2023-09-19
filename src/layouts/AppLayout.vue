@@ -1,5 +1,5 @@
 <template>
-  <q-layout view="hHh Lpr fFf" >
+  <q-layout view="hHh Lpr fFf">
     <q-header :class="`${$q.dark.isActive ? 'bg-dark' : 'bg-white'} custom-bottom-border`" id="main-header">
       <q-bar :class="$q.dark.isActive ? 'bg-dark' : 'bg-white text-black'">
         <!-- class="bg-white text-black" -->
@@ -14,7 +14,9 @@
         <q-space />
         <q-breadcrumbs
           :active-color="$q.dark.isActive ? 'white' : 'primary'"
-          :class="($q.dark.isActive ? 'text-grey' : 'text-black') + ' mobile-hide native-mobile-hide within-iframe-hide gt-xs overflow-auto text-no-wrap'"
+          :class="
+            ($q.dark.isActive ? 'text-grey' : 'text-black') + ' mobile-hide native-mobile-hide within-iframe-hide gt-xs overflow-auto text-no-wrap'
+          "
           style="max-height: 25px; max-width: 70vh; overflow: y"
         >
           <q-breadcrumbs-el v-if="notHome" icon="home" to="/" />
@@ -82,13 +84,13 @@
               </q-item>
             </q-list>
           </q-btn-dropdown>
-          <q-btn v-show="isLoggedIn" outline color="primary"  size="10px">
-            <q-icon :name="loggedWithGithub ? 'fab fa-github' : 'fab fa-google' " class="q-mr-md" />
-            <q-tooltip> {{ $t('userInformation')}}  {{loggedWithGithub ? ' Github':  'Gmail' }} </q-tooltip>
+          <q-btn v-show="isLoggedIn" outline color="primary" size="10px">
+            <q-icon :name="loggedWithGithub ? 'fab fa-github' : 'fab fa-google'" class="q-mr-md" />
+            <q-tooltip> {{ $t('userInformation') }} {{ loggedWithGithub ? ' Github' : 'Gmail' }} </q-tooltip>
             <q-icon v-if="getUserInfos.picture_url === ''" name="account_circle" />
             <q-avatar v-else :key="getUserInfos.avatarKey" color="default" text-color="white" size="xs">
               <img :src="getUserInfos.picture_url" />
-            </q-avatar>  
+            </q-avatar>
             <q-menu transition-show="jump-down" transition-hide="jump-up">
               <div class="row no-wrap q-pa-md">
                 <div class="column">
@@ -174,14 +176,14 @@ import { notifyError } from 'src/utils/notify';
 import { mapActions, mapState } from 'pinia';
 import { useUserStore } from 'src/pinia/modules/user';
 import { useMainStore } from 'src/pinia';
-import {setThemeMode as setThemeModeForDepTrees} from "dependencytreejs/src/StylesheetHandler";
+import { setThemeMode as setThemeModeForDepTrees } from 'dependencytreejs/src/StylesheetHandler';
 
 export default defineComponent({
   name: 'TempLayout',
   data() {
     return {
       storage: useStorage(),
-      drawerLeft: false, 
+      drawerLeft: false,
       miniState: true,
       isAdmin: false,
       search: '',
@@ -295,7 +297,6 @@ export default defineComponent({
 });
 </script>
 <style>
-
 .body--light .custom-frame1 {
   background-color: #f1f1f1;
 }
@@ -354,6 +355,4 @@ export default defineComponent({
   top: 0;
   z-index: 1;
 }
-
-
 </style>

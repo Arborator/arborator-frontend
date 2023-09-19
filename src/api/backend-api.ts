@@ -21,16 +21,23 @@ import {
   updateTree_ED,
   whoIAm_RV,
   updateUser_ED,
-  getLexicon_RV, parserList_RV_success, parserList_RV, parserTrainStatus_RV, parserParseStatus_RV,
+  getLexicon_RV,
+  parserList_RV_success,
+  parserList_RV,
+  parserTrainStatus_RV,
+  parserParseStatus_RV,
   getGithubRepositories_RV,
- getGithubSynchronizedRepository_RV, getConstructiconEntries_RV, saveConstructiconEntry_RV,
+  getGithubSynchronizedRepository_RV,
+  getConstructiconEntries_RV,
+  saveConstructiconEntry_RV,
 } from './endpoints';
 import {
   sample_role_action_t,
   sample_role_targetrole_t,
   transcription_t,
   ModelInfo_t,
-  ParsingSettings_t, ConstructiconEntry_t
+  ParsingSettings_t,
+  ConstructiconEntry_t,
 } from './backend-types';
 
 export const API = axios.create({
@@ -61,7 +68,7 @@ export default {
     return API.get<whoIAm_RV>('users/me');
   },
   updateUser(data: updateUser_ED) {
-    return API.put<whoIAm_RV>('users/me', data)
+    return API.put<whoIAm_RV>('users/me', data);
   },
 
   // ---------------------------------------------------- //
@@ -154,7 +161,7 @@ export default {
     return API.post(`/projects/${projectname}/samples/${samplename}/trees`, data);
   },
   deleteUserTrees(projectName: string, sampleName: string, username: string) {
-    return API.delete(`/projects/${projectName}/samples/${sampleName}/trees/${username}`)
+    return API.delete(`/projects/${projectName}/samples/${sampleName}/trees/${username}`);
   },
 
   // ----------------------------------------------------- //
@@ -169,14 +176,14 @@ export default {
   tryPackage(projectname: string, sampleId: string | null, query: any, userType: string) {
     return API.post<grewSearch_RV>(`projects/${projectname}/try-package`, { package: query, userType, sampleId });
   },
-  applyRule(projectname: string, data: any){
+  applyRule(projectname: string, data: any) {
     return API.post(`/projects/${projectname}/apply-rule`, data);
   },
   getRelationTable(projectname: string, data: any) {
     return API.post(`projects/${projectname}/relation-table`, data);
   },
   showDiffsInProject(projectName: string, data: any) {
-    return API.post<grewSearch_RV>(`projects/${projectName}/show-diff`, data)
+    return API.post<grewSearch_RV>(`projects/${projectName}/show-diff`, data);
   },
   // -------------------------------------------------------- //
   // ---------------       Constructicon      --------------- //
@@ -191,7 +198,7 @@ export default {
     return API.delete(`constructicon/project/${projectname}/${entryId}`);
   },
   generateURLforConstructiconUpload(projectname: string) {
-    return `${API.defaults.baseURL}/constructicon/project/${projectname}/upload-entire-constructicon`
+    return `${API.defaults.baseURL}/constructicon/project/${projectname}/upload-entire-constructicon`;
   },
   // -------------------------------------------------------- //
   // ---------------          Lexicon         --------------- //
@@ -264,25 +271,31 @@ export default {
       train_user: trainUser,
       max_epoch: maxEpoch,
       base_model: baseModel,
-    }
+    };
     return API.post(`/parser/train/start`, data);
   },
   parserTrainStatus(modelInfo: ModelInfo_t, trainTaskId: string) {
     const data = {
       model_info: modelInfo,
       train_task_id: trainTaskId,
-    }
-    return API.post<parserTrainStatus_RV>(`/parser/train/status`, data)
+    };
+    return API.post<parserTrainStatus_RV>(`/parser/train/status`, data);
   },
-  parserParseStart(projectName: string, modelInfo: ModelInfo_t, toParseSamplesNames: string[], parsingUser: string, parsingSettings: ParsingSettings_t) {
+  parserParseStart(
+    projectName: string,
+    modelInfo: ModelInfo_t,
+    toParseSamplesNames: string[],
+    parsingUser: string,
+    parsingSettings: ParsingSettings_t
+  ) {
     const data = {
       project_name: projectName,
       model_info: modelInfo,
       to_parse_samples_names: toParseSamplesNames,
       parsing_settings: parsingSettings,
       parsing_user: parsingUser,
-    }
-    return API.post(`/parser/parse/start`, data)
+    };
+    return API.post(`/parser/parse/start`, data);
   },
   parserParseStatus(projectName: string, modelInfo: ModelInfo_t, parseTaskId: string, parserSuffix: string) {
     const data = {
@@ -290,10 +303,10 @@ export default {
       model_info: modelInfo,
       parse_task_id: parseTaskId,
       parser_suffix: parserSuffix,
-    }
-    return API.post<parserParseStatus_RV>(`/parser/parse/status`, data)
+    };
+    return API.post<parserParseStatus_RV>(`/parser/parse/status`, data);
   },
- // -------------------------------------------------------- //
+  // -------------------------------------------------------- //
   // ---------------          Github         --------------- //
   // -------------------------------------------------------- //
   getGithubRepositories(projectName: string, username: string) {
@@ -315,21 +328,21 @@ export default {
     return API.delete(`/projects/${projectName}/${username}/synchronize-github`);
   },
   getChanges(projectName: string, username: string) {
-    return API.get(`/projects/${projectName}/${username}/synchronize-github/commit`)
+    return API.get(`/projects/${projectName}/${username}/synchronize-github/commit`);
   },
-  commitChanges(projectName: string, username: string, data:any) {
+  commitChanges(projectName: string, username: string, data: any) {
     return API.post(`/projects/${projectName}/${username}/synchronize-github/commit`, data);
   },
-  checkPull(projectName: string, username: string){
+  checkPull(projectName: string, username: string) {
     return API.get(`/projects/${projectName}/${username}/synchronize-github/pull`);
   },
-  pullChanges(projectName: string, username: string, data: any){
+  pullChanges(projectName: string, username: string, data: any) {
     return API.post(`/projects/${projectName}/${username}/synchronize-github/pull`, data);
   },
-  deleteFileFromGithub(projectName: string, username: string, fileName: string){
+  deleteFileFromGithub(projectName: string, username: string, fileName: string) {
     return API.delete(`/projects/${projectName}/${username}/synchronize-github/${fileName}`);
   },
-  openPullRequest(projectName: string, username: string, data: any){
+  openPullRequest(projectName: string, username: string, data: any) {
     return API.post(`/projects/${projectName}/${username}/synchronize-github/pull-request`, data);
   },
   // -------------------------------------------------------- //

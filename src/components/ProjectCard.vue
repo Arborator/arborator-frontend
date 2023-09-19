@@ -141,7 +141,7 @@ export default defineComponent({
       this.confirmActionCallback = method;
     },
     imageEmpty() {
-       return this.project.image === null || this.project.image === '';
+      return this.project.image === null || this.project.image === '';
     },
   },
 });

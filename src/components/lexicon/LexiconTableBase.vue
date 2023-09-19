@@ -255,7 +255,7 @@ export default defineComponent({
             withouts += `\nwithout { N.${feat} = \"${after[feat]}\" }`;
             commands += `N.${feat} = \"${after[feat]}\"; `;
           } else {
-            commands += `del_feat N.${feat}; `
+            commands += `del_feat N.${feat}; `;
           }
         }
       }

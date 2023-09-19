@@ -12,7 +12,7 @@ export default {
   loginselector: 'Connect via',
   switchLanguage: 'Switch the language of the user interface',
   documentation: 'See the documantation',
-  feedback:'Any questions, feature requests or bug report ? See our github issues page',
+  feedback: 'Any questions, feature requests or bug report ? See our github issues page',
   darkMode: 'Toggle dark mode',
   projectAdmin: 'You are admin of this project',
   userInformation: 'You are connected with ',
@@ -120,7 +120,7 @@ export default {
       'I refuse to share my email.',
       'I subscribe to the newsletter that will be sent to keep me informed of new features or incidents on the platform (no more than a few emails per month).',
     ],
-    submitMessage: "Your choices are updated",
+    submitMessage: 'Your choices are updated',
     inputErrorText: ['Please type something', 'Please type valid email'],
     tootltipBtnSumbitUserEmail: 'Please check the box if you would like to receive Emails',
     submitEmailBtn: 'Soumettre',
@@ -208,14 +208,9 @@ export default {
     tooltipUnstageModifiedItem: 'Unstage selected lexicon changes',
     tooltipValidatorLexicon: 'Import validator to compare',
     tooltipSelectValidator: 'Select a file in tsv format',
-    tootltipUserType: [
-      'View only my trees',
-      'View my trees, filled up with the most recent trees',
-      'View most recent trees'
-    ],
+    tootltipUserType: ['View only my trees', 'View my trees, filled up with the most recent trees', 'View most recent trees'],
     freezeProject: ['Freeze this project', 'Unfreeze this project', 'This project is freezed'],
-    removeUserTrees: ["Remove user's trees", "Select samples"],
-
+    removeUserTrees: ["Remove user's trees", 'Select samples'],
   },
   // dialog window which displays create project card
   createProjectCard: {
@@ -234,7 +229,7 @@ export default {
     exportRecentTrees: 'Export the most recent trees',
     exportTreesOfUsers: 'Export trees from other users',
     selectOtherUsers: 'Select the users whose trees you want to export',
-    export: 'Export'
+    export: 'Export',
   },
 
   grewSearch: {
@@ -286,13 +281,13 @@ export default {
     annotationSettingsSave: 'Save annotation settings',
     checkAnnotation: 'This looks like reasonable Json',
   },
-  settingsPage:{
+  settingsPage: {
     saveModifications: 'Save Modification',
     firstName: 'First Name',
     familyName: 'Last Name',
     saveModificationMessage: 'Your personal information is updated',
   },
-  github:{
+  github: {
     synchronizeBtn: 'Synchronize with github',
     skipSync: 'Skip synchronization',
     chooseRepoOwner: 'Repository Owner',
@@ -300,7 +295,7 @@ export default {
     select: 'Select',
     noGithubRepos: 'You need to create your first Github Repository',
     selectBranch: 'Select a branch to clone',
-    arboratorgrewBranch:['Use ','branch for your commits and pulls made using ArboratorGrew.'],
+    arboratorgrewBranch: ['Use ', 'branch for your commits and pulls made using ArboratorGrew.'],
     defaultBranch: ' Use the selected branch (Be careful if you work with a repository that has many collaborators).',
     synchronize: 'Synchronize',
     syncWarningMessage: 'The repository is large, the synchronization will take some time',
@@ -316,15 +311,14 @@ export default {
       commitTreeSelect: 'Select the trees to commit',
       commitTreeOptions: ['My trees', 'My trees filled up with the most recent ones'],
       commitMessage: 'New commit to',
-
-    }
+    },
   },
   sentenceCard: {
     selectTooltip: 'Select the sentence to split the tokens',
     annotationErrors: 'See your annotation errors',
     saveTeacher: 'Save as teacher',
     saveBaseTree: 'Save as base_tree',
-    saveTree: ["Save tree", "as"],
+    saveTree: ['Save tree', 'as'],
     editMetadata: "Edit this trees's metadata",
     multiEditDial: 'Multi edit dialog',
     diffMode: ['Enter', 'Leave', 'Diff mode'],
@@ -340,7 +334,6 @@ export default {
     automaticParsing: 'Automatic parsing',
     conllText: 'Text Conll',
     statisticDial: 'Stastistics of the current opened tree',
-
   },
   attributeTable: {
     addFeature: 'Add new feature',
@@ -349,14 +342,9 @@ export default {
     category: ['Select a category for', 'Category'],
     metadata: 'Metadata of this sentence',
     relation: ['Select a relation going from', 'to', 'Dependency relation'],
-    tokenReplaceDial: [
-      'Replacing',
-      'by',
-      'Changing tokens breaks the comparability of different annotations of the same sentence',
-      'Replacement',
-    ],
+    tokenReplaceDial: ['Replacing', 'by', 'Changing tokens breaks the comparability of different annotations of the same sentence', 'Replacement'],
   },
-  cancel:'Cancel',
+  cancel: 'Cancel',
   delete: 'Delete',
   confirm: 'Confirm',
   // Klang

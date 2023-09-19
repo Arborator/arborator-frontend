@@ -5,8 +5,8 @@
 <script lang="ts">
 import { notifyMessage } from 'src/utils/notify';
 import { defineComponent, PropType } from 'vue';
-import {reactive_sentences_obj_t, sentence_bus_t} from 'src/types/main_types';
-import { exportSVG, exportPNG } from "dependencytreejs/src/exportHandler";
+import { reactive_sentences_obj_t, sentence_bus_t } from 'src/types/main_types';
+import { exportSVG, exportPNG } from 'dependencytreejs/src/exportHandler';
 
 export default defineComponent({
   props: {
@@ -47,14 +47,14 @@ export default defineComponent({
      */
     getSVG() {
       const sentenceSVG = this.sentenceBus.sentenceSVGs[this.userId];
-      const title = `${this.reactiveSentencesObj[this.userId].getUndescoredText()}.${this.userId}.svg`
-      exportSVG(sentenceSVG, title)
+      const title = `${this.reactiveSentencesObj[this.userId].getUndescoredText()}.${this.userId}.svg`;
+      exportSVG(sentenceSVG, title);
       notifyMessage({ message: 'Files downloaded' });
     },
     getPNG() {
       const sentenceSVG = this.sentenceBus.sentenceSVGs[this.userId];
-      const title = `${this.reactiveSentencesObj[this.userId].getUndescoredText()}.${this.userId}.png`
-      exportPNG(sentenceSVG, title)
+      const title = `${this.reactiveSentencesObj[this.userId].getUndescoredText()}.${this.userId}.png`;
+      exportPNG(sentenceSVG, title);
       notifyMessage({ message: 'Files downloaded' });
     },
   },

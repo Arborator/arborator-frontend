@@ -311,12 +311,12 @@
 <script lang="ts">
 import EmailCollectDialog from '../components/Index/EmailCollectDialog.vue';
 
-import {notifyMessage} from 'src/utils/notify';
-import {mapActions, mapState} from 'pinia';
-import {useUserStore} from 'src/pinia/modules/user';
+import { notifyMessage } from 'src/utils/notify';
+import { mapActions, mapState } from 'pinia';
+import { useUserStore } from 'src/pinia/modules/user';
 
-import {openURL, copyToClipboard, LocalStorage} from 'quasar';
-import {defineComponent} from 'vue';
+import { openURL, copyToClipboard, LocalStorage } from 'quasar';
+import { defineComponent } from 'vue';
 
 export default defineComponent({
   name: 'PageIndex',
@@ -341,7 +341,7 @@ export default defineComponent({
     myColor(): string {
       return `hsl(${this.xcursor}, 50%, 50%)`;
     },
-    ...mapState(useUserStore, ['shareEmail'])
+    ...mapState(useUserStore, ['shareEmail']),
   },
   methods: {
     openURL,

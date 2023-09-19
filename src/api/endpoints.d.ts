@@ -13,9 +13,13 @@ import {
   user_t,
   timed_tokens_t,
   grewSearchResult_t as grewSearchResult_t,
-  lexiconItem_t, ModelInfo_t, ScoresHistory_t, ScoresBest_t,
+  lexiconItem_t,
+  ModelInfo_t,
+  ScoresHistory_t,
+  ScoresBest_t,
   githubRepository_t,
-  githubSynchronizedRepository_t, ConstructiconEntry_t,
+  githubSynchronizedRepository_t,
+  ConstructiconEntry_t,
 } from './backend-types';
 
 export interface logout_RV {
@@ -58,7 +62,6 @@ export interface updateProjectConlluSchema_ED {
 
 export type getProjectUsersAccess_RV = project_access_t;
 
-
 export type updateManyProjectUserAccess_RV = project_access_t;
 
 //// SAMPLES
@@ -88,7 +91,7 @@ export type getLexicon_RV = lexiconItem_t[];
 
 //// CONSTRUCTICON
 export type getConstructiconEntries_RV = ConstructiconEntry_t[];
-export type saveConstructiconEntry_RV = { success: boolean; message: string; };
+export type saveConstructiconEntry_RV = { success: boolean; message: string };
 
 /////////////// KLANG //////////:
 export interface getOriginalTranscription_RV {
@@ -96,55 +99,53 @@ export interface getOriginalTranscription_RV {
   speakers: string[];
 }
 
-
 ////////// PARSER /////////////
 interface parser_generic_RV_failure {
-  status: "failure";
+  status: 'failure';
   error: string;
 }
 
 interface parserList_RV_success {
-  status: "success";
+  status: 'success';
   data: {
     model_info: ModelInfo_t;
     scores_best: ScoresBest_t;
     scores_history: ScoresHistory_t;
-  }[]
+  }[];
 }
-export type parserList_RV = parser_generic_RV_failure | parserList_RV_success
-
+export type parserList_RV = parser_generic_RV_failure | parserList_RV_success;
 
 interface parserTrainStatus_RV_success {
-  status: "success";
-  data: {
-    ready: false;
-    scores_best: ScoresBest_t | null;
-    scores_history: ScoresHistory_t | null;
-  } |
-    {
-      ready: true;
-      model_info: ModelInfo_t;
-      scores_best: ScoresBest_t;
-      scores_history: ScoresHistory_t;
-    }
+  status: 'success';
+  data:
+    | {
+        ready: false;
+        scores_best: ScoresBest_t | null;
+        scores_history: ScoresHistory_t | null;
+      }
+    | {
+        ready: true;
+        model_info: ModelInfo_t;
+        scores_best: ScoresBest_t;
+        scores_history: ScoresHistory_t;
+      };
 }
 
-export type parserTrainStatus_RV = parser_generic_RV_failure | parserTrainStatus_RV_success
-
+export type parserTrainStatus_RV = parser_generic_RV_failure | parserTrainStatus_RV_success;
 
 interface parserParseStatus_RV_success {
-  status: "success";
-  data: {
-    ready: false;
-  } |
-    {
-      ready: true;
-      model_info: ModelInfo_t;
-    }
+  status: 'success';
+  data:
+    | {
+        ready: false;
+      }
+    | {
+        ready: true;
+        model_info: ModelInfo_t;
+      };
 }
 
-
-export type parserParseStatus_RV = parser_generic_RV_failure | parserParseStatus_RV_success
+export type parserParseStatus_RV = parser_generic_RV_failure | parserParseStatus_RV_success;
 
 //////////// Github //////////
 export type getGithubRepositories_RV = githubRepository_t[];

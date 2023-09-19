@@ -7,7 +7,6 @@ import { defineStore } from 'pinia';
 import { notifyMessage, notifyError } from 'src/utils/notify';
 import { annotationFeatures_t, project_extended_t, project_with_diff_t } from 'src/api/backend-types';
 
-
 export const useProjectStore = defineStore('project', {
   state: () => {
     return defaultState();
@@ -24,7 +23,7 @@ export const useProjectStore = defineStore('project', {
       return state.validators.includes(useUserStore().username) || this.isAdmin;
     },
     isAnnotator(state): boolean {
-      return state.annotators.includes(useUserStore().username)&& !useUserStore().super_admin;
+      return state.annotators.includes(useUserStore().username) && !useUserStore().super_admin;
     },
     isGuest: (state) => state.guests.includes(useUserStore().username) && !useUserStore().super_admin,
     isTeacher(state): boolean {
@@ -34,7 +33,7 @@ export const useProjectStore = defineStore('project', {
       return !this.isAdmin && state.exerciseMode;
     },
     isProjectMember(): boolean {
-      return this.isAdmin || this.isValidator || this.isAnnotator || this.isGuest; 
+      return this.isAdmin || this.isValidator || this.isAnnotator || this.isGuest;
     },
     isAllowdedToSync(): boolean {
       return useUserStore().loggedWithGithub && this.isOwner && !this.exerciseMode && !this.isTeacher;
@@ -42,18 +41,18 @@ export const useProjectStore = defineStore('project', {
     canSaveTreeInProject(state): boolean {
       if (!useUserStore().isLoggedIn) {
         // people not logged in can't save in any case
-        return false
+        return false;
       }
       if (this.isTeacher) {
         // teacher can't save a tree. They can only save special tree : base_tree and teacher
-        return false
+        return false;
       }
       if (state.visibility === 2) {
         // anyone (logged in) can save in public project (visibility === 2)
-        return true
+        return true;
       }
       // in other projects all members can save tree except the guest in the private project
-      return (this.isAdmin || this.isValidator || this.isAnnotator)
+      return this.isAdmin || this.isValidator || this.isAnnotator;
     },
     canSeeOtherUsersTrees(state): boolean {
       if (this.isAdmin) {
@@ -93,8 +92,8 @@ export const useProjectStore = defineStore('project', {
     },
     featuresSet(): string[] {
       let featuresSet: string[] = [];
-      featuresSet = this.shownFeaturesChoices.filter((feat) => feat != 'FORM')
-      featuresSet.splice(2,0,'DEPREL', 'HEAD')
+      featuresSet = this.shownFeaturesChoices.filter((feat) => feat != 'FORM');
+      featuresSet.splice(2, 0, 'DEPREL', 'HEAD');
       return featuresSet;
     },
   },

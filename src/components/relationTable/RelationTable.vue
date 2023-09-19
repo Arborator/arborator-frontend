@@ -110,7 +110,7 @@ export default defineComponent({
 
   data() {
     const resultSearch: grewSearchResult_t = {};
-    const relationTree: {label: string, icon: string, children: string[],}[] =[] ;
+    const relationTree: { label: string; icon: string; children: string[] }[] = [];
     return {
       currentEdge: '',
       visuTreeDial: false,
@@ -136,10 +136,9 @@ export default defineComponent({
   },
   mounted() {
     for (const edge of this.edgesList) {
-        const relation = edge
-        let node = {label: relation, icon: 'view_module', children: []};
-        this.relationTree.push(node)
-    
+      const relation = edge;
+      let node = { label: relation, icon: 'view_module', children: [] };
+      this.relationTree.push(node);
     }
     setTimeout(() => {
       (this.$refs.tree as any).expandAll();
@@ -185,12 +184,12 @@ export default defineComponent({
           (colSum as any)[dep as string] = (colSum as any)[dep as string] + num || num;
         }
         row['sum'] = rowSum;
-        if (rowSum > 0 )  rows.push(row);
+        if (rowSum > 0) rows.push(row);
         (this.relationsTotal as any)[this.currentEdge] += rowSum;
       }
       (colSum as any)['sum'] = Object.values(colSum).reduce((sum, value) => (sum as number) + (value as number), 0);
       (colSum as any)['gov'] = '∑';
-     
+
       rows.unshift(colSum);
       fields.sort((a, b) => ((colSum as any)[a.name as string] > (colSum as any)[b.name] ? -1 : 1));
       fields.unshift({ name: 'sum', label: '∑', field: (row: any) => row.sum, sortable: true, sum: 0 });
@@ -231,7 +230,7 @@ export default defineComponent({
     },
     onSearch(searchPattern: string) {
       const data = { pattern: searchPattern, userType: this.tableType };
-      console.log(this.tableType)
+      console.log(this.tableType);
       if (this.$route.params.samplename) {
         api
           .searchSample(this.$route.params.projectname as string, this.$route.params.samplename as string, data)

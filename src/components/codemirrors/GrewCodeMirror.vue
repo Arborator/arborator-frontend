@@ -8,7 +8,7 @@ import CodemirrorVueWrapper from 'codemirror-editor-vue3';
 
 import 'codemirror/lib/codemirror.css';
 
-import {defineComponent, PropType} from 'vue';
+import { defineComponent, PropType } from 'vue';
 
 CodeMirror.defineMode('grew', () => {
   const words = {
@@ -81,7 +81,7 @@ export default defineComponent({
       type: Boolean,
       required: false,
       default: false,
-    }
+    },
   },
   data() {
     return {
@@ -97,8 +97,8 @@ export default defineComponent({
   },
   computed: {
     cmOptionMerged() {
-      return {...this.cmOption, readOnly: this.disabled ? 'nocursor' : false};
-    }
-  }
+      return { ...this.cmOption, readOnly: this.disabled ? 'nocursor' : false };
+    },
+  },
 });
 </script>

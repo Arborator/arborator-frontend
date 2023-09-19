@@ -42,7 +42,7 @@
             </q-card-section>
             <q-card-actions align="right">
               <q-btn type="submit" icon="save" color="primary">
-                {{ $t('settingsPage.saveModifications')}}
+                {{ $t('settingsPage.saveModifications') }}
               </q-btn>
             </q-card-actions>
           </q-form>
@@ -56,10 +56,10 @@
 <script lang="ts">
 import api from '../api/backend-api';
 
-import {notifyError, notifyMessage} from 'src/utils/notify';
-import {mapState, mapWritableState, mapActions} from 'pinia';
-import {useUserStore} from 'src/pinia/modules/user';
-import {defineComponent} from 'vue';
+import { notifyError, notifyMessage } from 'src/utils/notify';
+import { mapState, mapWritableState, mapActions } from 'pinia';
+import { useUserStore } from 'src/pinia/modules/user';
+import { defineComponent } from 'vue';
 
 export default defineComponent({
   name: 'Settings',
@@ -69,14 +69,14 @@ export default defineComponent({
   },
   methods: {
     ...mapActions(useUserStore, ['updateUserInformation']),
-    onSubmitModifications(){
+    onSubmitModifications() {
       const data = {
-        email : this.email as string,
+        email: this.email as string,
         first_name: this.first_name as string,
-        family_name: this.family_name as string
+        family_name: this.family_name as string,
       };
       this.updateUserInformation(data);
-    }
+    },
   },
 });
 </script>

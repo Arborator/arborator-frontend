@@ -14,7 +14,7 @@ export default {
   feedback: 'Des questions, des propositions de fonctionnalités ou des rapports de bogues ? Consultez notre page Github issues',
   darkMode: 'Activer le mode sombre',
   projectAdmin: "Vous êtes l'administrateur de ce projet",
-  userInformation: "Vous êtes connecté avec ",
+  userInformation: 'Vous êtes connecté avec ',
   settings: 'Paramètres',
   admin: 'Admin',
   fullscreen: 'Plein écran',
@@ -114,10 +114,10 @@ export default {
     ],
     checkboxEmailDialog: [
       "J'ai compris que mon mail sera stocké sur le serveur d'ArboratorGrew situé en Europe.",
-      "Je refuse de communiquer mon email.",
-      "Je m'inscris à la newsletter qui sera envoyée pour me tenir au courant des nouvelles fonctionnalités ou des incidents sur la plateforme (newsletter, pas plus de quelques mails par mois)."
+      'Je refuse de communiquer mon email.',
+      "Je m'inscris à la newsletter qui sera envoyée pour me tenir au courant des nouvelles fonctionnalités ou des incidents sur la plateforme (newsletter, pas plus de quelques mails par mois).",
     ],
-    submitMessage: "Vos choix sont bien mis à jour",
+    submitMessage: 'Vos choix sont bien mis à jour',
     inputErrorText: ["S'il vous plaît, tapez quelque chose", "S'il vous plaît, tapez une adresse valide"],
     tootltipBtnSumbitUserEmail: 'Veuillez cocher la case si vous souhaitez recevoir des courriels.',
     submitEmailBtn: 'Soumettre',
@@ -175,7 +175,7 @@ export default {
     tooltipSearch: 'Rechercher un échantillon',
     tooltipSelectVisible: 'Sélectionner les colonnes visibles',
     tooltipFullscreen: 'tableau plein écran',
-    tooltipFabGrew: "Recherche avec Grew",
+    tooltipFabGrew: 'Recherche avec Grew',
     tooltipFabGrewUser: 'Rechercher dans mes arbres',
     tooltipFabGrewUserRecent: 'Rechercher dans mes arbres, avec les arbres les plus récents',
     tooltipFabGrewRecent: 'Rechercher dans les arbres les plus récents',
@@ -194,7 +194,7 @@ export default {
       'Obtenir le lexique de mes arbres récents',
       'Obtenir le lexique de tous les arbres',
       'Obtenir le lexique des arbres récents',
-      "Sélectionnez le type de lexique",
+      'Sélectionnez le type de lexique',
     ],
     projectInfoDial: {
       title: 'Information sur le projet',
@@ -207,7 +207,7 @@ export default {
     tooltipValidatorLexicon: 'Importer le validateur pour comparer',
     tooltipSelectValidator: 'Selectionner un fichier au format tsv',
     freezeProject: ['Désactiver ce projet', 'Réactiver ce projet', 'Ce projet est désactivé'],
-    removeUserTrees: ["Supprimer les arbres d'un utilisateur", "Sélectionnez des échantillons"]
+    removeUserTrees: ["Supprimer les arbres d'un utilisateur", 'Sélectionnez des échantillons'],
   },
 
   // dialog window which displays create project card
@@ -227,11 +227,11 @@ export default {
     exportRecentTrees: 'Exporter les arbres les plus récents',
     exportTreesOfUsers: "Exporter des arbres d'autres utilisateurs",
     selectOtherUsers: 'Sélectionnez les utilisateurs dont vous souhaitez exporter leurs arbres',
-    export: 'Exporter'
+    export: 'Exporter',
   },
 
   grewSearch: {
-    treesType: "Rechercher sur",
+    treesType: 'Rechercher sur',
     search: 'Rechercher',
     rewrite: 'Réécrire',
     tryRules: 'Essayer les règles',
@@ -256,7 +256,7 @@ export default {
     togglePrivateCaption:
       "Les projets privés limitent l'accès et l'annotation, les projets visibles limitent uniquement l'annotation et les projets ouverts permettent à quiconque de voir et de contribuer à leur annotation.",
     toggleAllVisible: 'Tous les arbres sont visibles',
-    toggleAllVisibleCaption: "Si oui, les annotateurs pourront voir les arbres des autres.",
+    toggleAllVisibleCaption: 'Si oui, les annotateurs pourront voir les arbres des autres.',
     toggleExerciseMode: 'Mode Exercice',
     toggleExerciseModeCaption: 'Si oui, le projet a les propriétés de mode exercice',
     toggleDiffMode: 'Mode Diff',
@@ -294,7 +294,7 @@ export default {
     syncWarningMessage: 'Le dépôt est volumineux, la synchronisarion prendra un certain temps',
     synchronizeMessage: 'est synchronisé avec',
     commitNotif: ['Vous avez ', 'changement', 'changements', "Vous n'avez pas aucun commit à effectuer"],
-    pullNotif: ['Vérifier le pull',"Rafraîchir pour voir s'il y a changements", "Pull disponible", "Récupérer les modifications"],
+    pullNotif: ['Vérifier le pull', "Rafraîchir pour voir s'il y a changements", 'Pull disponible', 'Récupérer les modifications'],
     pullRequest: 'Ouvrir une nouvelle Pull request à partir de vos changements',
     removeSync: ['Supprimer la synchronisation', 'Votre projet est synchronisé avec'],
     deletionWarning: 'Cette action supprimera également le fichier de votre dépôt github synchronisé.',
@@ -304,14 +304,14 @@ export default {
       commitTreeSelect: 'Sélectionner le type des arbres',
       commitTreeOptions: ['Mes arbres', 'Mes arbres remplis par les plus récents'],
       commitMessage: 'Nouveau commit dans',
-    }
+    },
   },
   sentenceCard: {
     selectTooltip: 'Sélectionnez la phrase pour diviser les tokens',
     annotationErrors: "Voir vos erreurs d'annotation",
     saveTeacher: 'Sauvegarder comme enseignant',
     saveBaseTree: 'Sauvegarder comme arbre de base',
-    saveTree: ["Sauvegarder l'arbre", "comme"],
+    saveTree: ["Sauvegarder l'arbre", 'comme'],
     editMetadata: 'Editer les métadonnées de cet arbre',
     multiEditDial: 'Dialogue de multi-édition',
     diffMode: ['Activer', 'Désactiver', 'le mode Diff'],
@@ -327,8 +327,6 @@ export default {
     automaticParsing: 'Parsing automatique',
     conllText: 'Texte Conll',
     statisticDial: "Statistiques de l'arbre ouvert",
-
-
   },
   attributeTable: {
     addFeature: 'Ajouter un nouveau feature',
@@ -342,7 +340,7 @@ export default {
       'par',
       "Le changement de tokens perturbe la comparabilité des différentes annotations d'une même phrase.",
       'Remplacement',
-    ]
+    ],
   },
   cancel: 'Annuler',
   delete: 'Supprimer',

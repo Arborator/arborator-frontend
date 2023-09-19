@@ -112,7 +112,7 @@ export default function defaultState(): configState {
         { name: 'AlignBegin', values: 'Number' },
         { name: 'AlignEnd', values: 'Number' },
         { name: 'Gloss', values: 'String' },
-        { name: 'Subject', values: ['Instanciated', 'Generic', 'NoRaising', 'ObjRaising', 'OblRaising', 'SubjRaising']},
+        { name: 'Subject', values: ['Instanciated', 'Generic', 'NoRaising', 'ObjRaising', 'OblRaising', 'SubjRaising'] },
       ],
       DEPREL: [
         {
@@ -241,7 +241,7 @@ export default function defaultState(): configState {
         { name: 'AlignEnd', values: 'Number' },
         { name: 'Gloss', values: 'String' },
         { name: 'MGloss', values: 'String' },
-        { name: 'Subject', values: ['Instanciated', 'Generic', 'NoRaising', 'ObjRaising', 'OblRaising', 'SubjRaising']},
+        { name: 'Subject', values: ['Instanciated', 'Generic', 'NoRaising', 'ObjRaising', 'OblRaising', 'SubjRaising'] },
       ],
       DEPREL: [
         {

@@ -4,8 +4,8 @@
       <q-bar class="row items-center custom-frame1">
         <span class="text-grey" style="padding-left: 10px">{{ index + 1 }}</span>
         <q-chip class="text-center" :color="$q.dark.isActive ? 'grey' : ''" dense>
-          {{ sentence.sent_id }}
-        </q-chip>&nbsp;&nbsp;&nbsp;
+          {{ sentence.sent_id }} </q-chip
+        >&nbsp;&nbsp;&nbsp;
         <q-input
           v-model="sentenceData.sentence"
           :style="openTabUser === '' ? 'width: 100%' : 'width: 65%'"
@@ -19,7 +19,7 @@
             {{ $t('sentenceCard.selectTooltip') }}
           </q-tooltip>
         </q-input>
-        <q-space/>
+        <q-space />
         <template v-if="openTabUser !== ''">
           <q-btn
             v-if="isLoggedIn && exerciseLevel <= 3 && !isTeacher"
@@ -37,8 +37,7 @@
             <q-tooltip>{{ $t('sentenceCard.saveTeacher') }}</q-tooltip>
           </q-btn>
 
-          <q-btn v-if="isTeacher" flat round dense icon="linear_scale" :disable="openTabUser === ''"
-            @click="save('base_tree')">
+          <q-btn v-if="isTeacher" flat round dense icon="linear_scale" :disable="openTabUser === ''" @click="save('base_tree')">
             <q-tooltip>{{ $t('sentenceCard.saveBaseTree') }}</q-tooltip>
           </q-btn>
 
@@ -46,21 +45,18 @@
             <q-tooltip>Save as Emmett</q-tooltip>
           </q-btn>
 
-          <q-btn v-if="canSaveTreeInProject" flat round dense icon="save"
-                 :disable="openTabUser === '' || !canSave" @click="save('')">
+          <q-btn v-if="canSaveTreeInProject" flat round dense icon="save" :disable="openTabUser === '' || !canSave" @click="save('')">
             <q-tooltip>
               {{ $t('sentenceCard.saveTree[0]') }} {{ openTabUser }} {{ $t('sentenceCard.saveTree[1]') }}
               <b> {{ username }} </b>
             </q-tooltip>
           </q-btn>
 
-          <q-btn v-if="canSaveTreeInProject" flat round dense icon="post_add" :disable="openTabUser === ''"
-                 @click="openMetaDialog()">
+          <q-btn v-if="canSaveTreeInProject" flat round dense icon="post_add" :disable="openTabUser === ''" @click="openMetaDialog()">
             <q-tooltip>{{ $t('sentenceCard.editMetadata') }}</q-tooltip>
           </q-btn>
 
-          <q-btn v-if="isTeacher" flat round dense icon="filter_9_plus" :disable="openTabUser === ''"
-                 @click="openMultiEditDialog">
+          <q-btn v-if="isTeacher" flat round dense icon="filter_9_plus" :disable="openTabUser === ''" @click="openMultiEditDialog">
             <q-tooltip>{{ $t('sentenceCard.multiEditDial') }}</q-tooltip>
           </q-btn>
 
@@ -68,10 +64,11 @@
             <q-list>
               <q-item v-if="!exerciseMode" v-close-popup clickable @click="toggleDiffMode()">
                 <q-item-section avatar>
-                  <q-avatar icon="ion-git-network" color="primary" text-color="white"/>
+                  <q-avatar icon="ion-git-network" color="primary" text-color="white" />
                 </q-item-section>
                 <q-item-section>
-                  <q-item-label>{{ diffMode ? $t('sentenceCard.diffMode[1]') : $t('sentenceCard.diffMode[0]') }}
+                  <q-item-label
+                    >{{ diffMode ? $t('sentenceCard.diffMode[1]') : $t('sentenceCard.diffMode[0]') }}
                     {{ $t('sentenceCard.diffMode[2]') }}
                   </q-item-label>
                 </q-item-section>
@@ -79,7 +76,7 @@
 
               <q-item v-close-popup clickable @click="openConllDialog()">
                 <q-item-section avatar>
-                  <q-avatar icon="format_list_numbered" color="primary" text-color="white"/>
+                  <q-avatar icon="format_list_numbered" color="primary" text-color="white" />
                 </q-item-section>
                 <q-item-section>
                   <q-item-label>{{ $t('sentenceCard.treeConll') }}</q-item-label>
@@ -88,7 +85,7 @@
 
               <q-item v-close-popup clickable @click="exportSVG()">
                 <q-item-section avatar>
-                  <q-avatar icon="ion-md-color-palette" color="primary" text-color="white"/>
+                  <q-avatar icon="ion-md-color-palette" color="primary" text-color="white" />
                 </q-item-section>
                 <q-item-section>
                   <q-item-label>{{ $t('sentenceCard.treeSVG') }}</q-item-label>
@@ -97,20 +94,35 @@
 
               <q-item v-close-popup clickable @click="exportPNG()">
                 <q-item-section avatar>
-                  <q-avatar icon="ion-md-color-palette" color="primary" text-color="white"/>
+                  <q-avatar icon="ion-md-color-palette" color="primary" text-color="white" />
                 </q-item-section>
                 <q-item-section>
                   <q-item-label>{{ $t('sentenceCard.treePNG') }}</q-item-label>
                 </q-item-section>
               </q-item>
-
             </q-list>
           </q-btn-dropdown>
-          <q-btn v-if="canSaveTreeInProject" flat round dense icon="undo" :disable="openTabUser === '' || !canUndo"
-                 :class="'undo-button'" @click="undo()">
+          <q-btn
+            v-if="canSaveTreeInProject"
+            flat
+            round
+            dense
+            icon="undo"
+            :disable="openTabUser === '' || !canUndo"
+            :class="'undo-button'"
+            @click="undo()"
+          >
           </q-btn>
-          <q-btn v-if="canSaveTreeInProject" flat round dense icon="ion-redo" :disable="openTabUser === '' || !canRedo"
-                 :class="'redo-button'" @click="redo()">
+          <q-btn
+            v-if="canSaveTreeInProject"
+            flat
+            round
+            dense
+            icon="ion-redo"
+            :disable="openTabUser === '' || !canRedo"
+            :class="'redo-button'"
+            @click="redo()"
+          >
           </q-btn>
         </template>
       </q-bar>
@@ -118,11 +130,11 @@
       <q-tabs
         class="custom-frame1"
         v-model="openTabUser"
-        :class="($q.dark.isActive ? 'text-grey-5' : 'text-grey-8')"
+        :class="$q.dark.isActive ? 'text-grey-5' : 'text-grey-8'"
         dense
         :active-color="$q.dark.isActive ? 'primary' : 'purple-7'"
         :active-bg-color="$q.dark.isActive ? '' : 'grey-2'"
-        style="transition: unset;"
+        style="transition: unset"
       >
         <!-- v-for="(tree, user) in filteredConlls" -->
         <q-tab
@@ -142,7 +154,7 @@
         >
           <q-tooltip v-if="hasPendingChanges[user]">{{ $t('sentenceCard.saveModif') }}</q-tooltip>
           <q-tooltip v-else-if="lastModifiedTime[user]">
-            <q-icon color="primary" name="schedule" size="14px" class="q-ml-xs"/>
+            <q-icon color="primary" name="schedule" size="14px" class="q-ml-xs" />
             {{ $t('sentenceCard.modified[0]') }} {{ lastModifiedTime[user] }}
             {{ $i18n.locale == 'en' ? $t('sentenceCard.modified[1]') : '' }}
           </q-tooltip>
@@ -151,13 +163,8 @@
           </q-tooltip>
         </q-tab>
       </q-tabs>
-      <q-tab-panels
-        v-model="openTabUser"
-        @transition="transitioned"
-        class="custom-frame1"
-      >
-        <q-tab-panel v-for="(tree, user) in filteredConlls" :key="user" :props="tree" :name="user"
-                     style="padding-bottom: 0; padding-top: 0;">
+      <q-tab-panels v-model="openTabUser" @transition="transitioned" class="custom-frame1">
+        <q-tab-panel v-for="(tree, user) in filteredConlls" :key="user" :props="tree" :name="user" style="padding-bottom: 0; padding-top: 0">
           <q-card flat>
             <q-card-section :class="($q.dark.isActive ? '' : '') + ' scrollable'">
               <VueDepTree
@@ -184,9 +191,7 @@
       </q-tab-panels>
       <q-list v-if="openTabUser" style="padding-bottom: 20px" dense class="custom-frame1">
         <q-item v-for="meta in shownMeta" :key="meta" style="min-height: unset">
-          <q-chip dense size="xs" style="margin-left: 0">{{ meta }}
-          </q-chip
-          >
+          <q-chip dense size="xs" style="margin-left: 0">{{ meta }} </q-chip>
           {{ reactiveSentencesObj[openTabUser].state.metaJson[meta] }}
         </q-item>
       </q-list>
@@ -194,27 +199,25 @@
 
     <!--    ALL DIALOGS-->
     <template>
-      <RelationDialog :sentence-bus="sentenceBus"/>
-      <UposDialog :sentence-bus="sentenceBus"/>
-      <XposDialog :sentence-bus="sentenceBus"/>
-      <FeaturesDialog :sentence-bus="sentenceBus"/>
-      <MetaDialog :sentence-bus="sentenceBus"/>
-      <ConlluDialog :sentence-bus="sentenceBus"/>
-      <ExportSVG :sentence-bus="sentenceBus" :reactive-sentences-obj="reactiveSentencesObj"/>
-      <TokensReplaceDialog :sentence-bus="sentenceBus" :reactive-sentences-obj="reactiveSentencesObj"
-                           @changed:metaText="changeMetaText"/>
-      <MultiEditDialog :sentence-bus="sentenceBus" :reactive-sentences-obj="reactiveSentencesObj"/>
-      <StatisticsDialog :sentence-bus="sentenceBus" :conlls="sentenceData.conlls"/>
+      <RelationDialog :sentence-bus="sentenceBus" />
+      <UposDialog :sentence-bus="sentenceBus" />
+      <XposDialog :sentence-bus="sentenceBus" />
+      <FeaturesDialog :sentence-bus="sentenceBus" />
+      <MetaDialog :sentence-bus="sentenceBus" />
+      <ConlluDialog :sentence-bus="sentenceBus" />
+      <ExportSVG :sentence-bus="sentenceBus" :reactive-sentences-obj="reactiveSentencesObj" />
+      <TokensReplaceDialog :sentence-bus="sentenceBus" :reactive-sentences-obj="reactiveSentencesObj" @changed:metaText="changeMetaText" />
+      <MultiEditDialog :sentence-bus="sentenceBus" :reactive-sentences-obj="reactiveSentencesObj" />
+      <StatisticsDialog :sentence-bus="sentenceBus" :conlls="sentenceData.conlls" />
     </template>
-
   </div>
 </template>
 
 <script lang="ts">
 // import Vue from "vue";
-import mitt, {Emitter} from 'mitt';
+import mitt, { Emitter } from 'mitt';
 
-import {ReactiveSentence} from 'dependencytreejs/src/ReactiveSentence';
+import { ReactiveSentence } from 'dependencytreejs/src/ReactiveSentence';
 import api from '../../api/backend-api';
 
 import VueDepTree from './VueDepTree.vue';
@@ -228,14 +231,14 @@ import ExportSVG from './ExportSVG.vue';
 import TokensReplaceDialog from './TokensReplaceDialog.vue';
 import StatisticsDialog from './StatisticsDialog.vue';
 import MultiEditDialog from './MultiEditDialog.vue';
-import {reactive_sentences_obj_t, sentence_bus_events_t, sentence_bus_t} from 'src/types/main_types';
-import {mapActions, mapState, mapWritableState} from 'pinia';
-import {useProjectStore} from 'src/pinia/modules/project';
-import {notifyError, notifyMessage} from 'src/utils/notify';
-import {useUserStore} from 'src/pinia/modules/user';
-import {useGrewSearchStore} from 'src/pinia/modules/grewSearch';
-import {useGithubStore} from 'src/pinia/modules/github';
-import {PropType} from 'vue';
+import { reactive_sentences_obj_t, sentence_bus_events_t, sentence_bus_t } from 'src/types/main_types';
+import { mapActions, mapState, mapWritableState } from 'pinia';
+import { useProjectStore } from 'src/pinia/modules/project';
+import { notifyError, notifyMessage } from 'src/utils/notify';
+import { useUserStore } from 'src/pinia/modules/user';
+import { useGrewSearchStore } from 'src/pinia/modules/grewSearch';
+import { useGithubStore } from 'src/pinia/modules/github';
+import { PropType } from 'vue';
 
 function sentenceBusFactory(): sentence_bus_t {
   let sentenceBus: Emitter<sentence_bus_events_t> = mitt<sentence_bus_events_t>();
@@ -243,8 +246,8 @@ function sentenceBusFactory(): sentence_bus_t {
   return sentenceBus as sentence_bus_t;
 }
 
-import {defineComponent} from 'vue';
-import {grewSearchResultSentence_t, matches_t} from 'src/api/backend-types';
+import { defineComponent } from 'vue';
+import { grewSearchResultSentence_t, matches_t } from 'src/api/backend-types';
 
 export default defineComponent({
   name: 'SentenceCard',
@@ -317,7 +320,7 @@ export default defineComponent({
       // this.forceRerender; it was like this when i found it. Should it have = 0 ?
       const lastModifiedTime: { [key: string]: string } = {};
       for (const user of Object.keys(this.reactiveSentencesObj)) {
-        const {timestamp} = this.reactiveSentencesObj[user].state.metaJson;
+        const { timestamp } = this.reactiveSentencesObj[user].state.metaJson;
         const timeDifferenceNumber = (Math.round(Date.now()) - parseInt(timestamp as string, 10)) / 1000;
         let timeDifferenceString = '';
         if (timeDifferenceNumber < 10) {
@@ -360,7 +363,7 @@ export default defineComponent({
 
     this.diffMode = !!this.diffMode;
 
-    this.sentenceBus.on('changed:metaText', ({newMetaText}) => {
+    this.sentenceBus.on('changed:metaText', ({ newMetaText }) => {
       this.changeMetaText(newMetaText);
     });
   },
@@ -372,7 +375,7 @@ export default defineComponent({
       });
     },
     openConllDialog() {
-      this.sentenceBus.emit('open:conlluDialog', {userId: this.openTabUser});
+      this.sentenceBus.emit('open:conlluDialog', { userId: this.openTabUser });
     },
     openMultiEditDialog() {
       this.sentenceBus.emit('open:openMultiEditDialog', {
@@ -380,10 +383,10 @@ export default defineComponent({
       });
     },
     exportSVG() {
-      this.sentenceBus.emit('export:SVG', {userId: this.openTabUser});
+      this.sentenceBus.emit('export:SVG', { userId: this.openTabUser });
     },
     exportPNG() {
-      this.sentenceBus.emit('export:PNG', {userId: this.openTabUser});
+      this.sentenceBus.emit('export:PNG', { userId: this.openTabUser });
     },
     editTokens(event: Event) {
       // only if a tab is open
@@ -424,7 +427,7 @@ export default defineComponent({
     save(mode: string) {
       const openedTreeUser = this.openTabUser;
       let changedConllUser = this.username;
-      if (mode)  changedConllUser = mode;
+      if (mode) changedConllUser = mode;
 
       const metaToReplace = {
         user_id: changedConllUser,
@@ -466,12 +469,12 @@ export default defineComponent({
               this.exportedConll = exportedConll;
             }
             this.graphInfo.dirty = false;
-            notifyMessage({position: 'top', message: 'Saved on the server', icon: 'save'});
+            notifyMessage({ position: 'top', message: 'Saved on the server', icon: 'save' });
             this.forceRerender += 1; // nasty trick to rerender the indication of last time
           }
         })
         .catch((error) => {
-          notifyError({error});
+          notifyError({ error });
         });
     },
     transitioned() {
@@ -485,9 +488,8 @@ export default defineComponent({
       });
       if (this.openTabUser !== '') {
         const newMetaText = this.reactiveSentencesObj[this.openTabUser].getSentenceText();
-        this.sentenceBus.emit('changed:metaText', {newMetaText});
+        this.sentenceBus.emit('changed:metaText', { newMetaText });
       }
-
     },
     /**
      * Set the graph infos according to the event payload. This event shoudl be trigerred from the ConllGraph
@@ -500,7 +502,7 @@ export default defineComponent({
       else this.removePendingModification(this.sentence.sent_id);
     },
     openMetaDialog() {
-      this.sentenceBus.emit('open:metaDialog', {userId: this.openTabUser});
+      this.sentenceBus.emit('open:metaDialog', { userId: this.openTabUser });
     },
     changeMetaText(newMetaText: string) {
       this.sentenceData.sentence = newMetaText;

@@ -115,7 +115,7 @@ module.exports = configure((ctx) => ({
     plugins: ['Notify', 'LoadingBar', 'Loading', 'AppVisibility', 'AppFullscreen', 'BottomSheet', 'LocalStorage'],
     config: {
       notify: { position: 'top-right', timeout: 2000, color: 'positive' },
-      dark:"auto"
+      dark: 'auto',
     },
   },
 

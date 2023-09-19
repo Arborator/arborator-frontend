@@ -23,7 +23,15 @@
       </q-card-section>
       <q-card-actions align="around">
         <q-btn v-close-popup flat :label="$t('cancel')"></q-btn>
-        <q-btn v-close-popup v-if="$props.targetName != null" :label="$t('confirm')" type="submit" color="primary" @keyup.enter="confirm()" @click="confirm()" />
+        <q-btn
+          v-close-popup
+          v-if="$props.targetName != null"
+          :label="$t('confirm')"
+          type="submit"
+          color="primary"
+          @keyup.enter="confirm()"
+          @click="confirm()"
+        />
         <q-btn v-else v-close-popup color="primary" :label="$t('confirm')" @keyup.enter="confirm()" @click="confirm()"></q-btn>
       </q-card-actions>
     </q-form>

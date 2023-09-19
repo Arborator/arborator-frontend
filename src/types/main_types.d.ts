@@ -70,4 +70,3 @@ export type grew_templates_t = {
   searchQueries: grew_query_t[];
   rewriteQueries: grew_query_t[];
 };
-

@@ -5,12 +5,19 @@
     <!-- :maximized="maximizedToggle" -->
     <q-card style="height: 300px">
       <q-bar class="bg-primary text-white">
-        <div class="text-weight-bold">XPOS : {{$t('attributeTable.category[0]')}} "{{ token.FORM }}"</div>
+        <div class="text-weight-bold">XPOS : {{ $t('attributeTable.category[0]') }} "{{ token.FORM }}"</div>
         <q-space />
         <q-btn v-close-popup flat dense icon="close" />
       </q-bar>
       <q-card-section style="height: 200px">
-        <q-select id="catselect" v-model="token.XPOS" filled :options="annotationFeatures.XPOS" :label="$t('attributeTable.category[1]')" style="width: 250px" />
+        <q-select
+          id="catselect"
+          v-model="token.XPOS"
+          filled
+          :options="annotationFeatures.XPOS"
+          :label="$t('attributeTable.category[1]')"
+          style="width: 250px"
+        />
       </q-card-section>
       <q-separator />
       <q-card-actions>
@@ -18,7 +25,13 @@
         <q-space />
 
         <!-- @click="ondialoghide()" -->
-        <q-btn v-close-popup color="negative" :label="$t('delete')" style="width: 25%; margin-left: auto; margin-right: auto" @click="onDeleteXpos()" />
+        <q-btn
+          v-close-popup
+          color="negative"
+          :label="$t('delete')"
+          style="width: 25%; margin-left: auto; margin-right: auto"
+          @click="onDeleteXpos()"
+        />
         <q-space />
         <q-btn
           id="catselectvalidate"

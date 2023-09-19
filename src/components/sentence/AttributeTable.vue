@@ -1,7 +1,8 @@
 <template>
   <div class="table">
     <q-table
-      flat bordered
+      flat
+      bordered
       separator="vertical"
       hide-header
       :title="title"

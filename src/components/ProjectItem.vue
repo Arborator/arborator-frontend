@@ -45,13 +45,13 @@
         {{ $t('projectHub.lastWriteAccess') }} {{ timeAgo(project.lastWriteAccess) }}
       </q-chip>
     </q-item-section>
-    <q-item-section v-if="project.admins.length > 2 && isLoggedIn" style="max-width:30px;"> 
+    <q-item-section v-if="project.admins.length > 2 && isLoggedIn" style="max-width: 30px">
       <q-btn size="sm" flat icon="expand_more" @click.native.stop>
         <q-menu>
           <q-list bordered separator>
             <q-item v-for="adm in moreAdmins" v-close-popup thumbnail>
               <q-item-section>
-                <q-item-label class="text-weight-light"> {{adm}}</q-item-label>
+                <q-item-label class="text-weight-light"> {{ adm }}</q-item-label>
               </q-item-section>
             </q-item>
           </q-list>
@@ -130,11 +130,11 @@ export default defineComponent({
       return this.project.admins.includes(this.username) || this.isSuperAdmin;
     },
     displayedAdmins() {
-      return this.project.admins.slice(0, 2)
+      return this.project.admins.slice(0, 2);
     },
     moreAdmins() {
-      return this.project.admins.filter(admin => !this.displayedAdmins.includes(admin));
-    }
+      return this.project.admins.filter((admin) => !this.displayedAdmins.includes(admin));
+    },
   },
   methods: {
     imageEmpty() {

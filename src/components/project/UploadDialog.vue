@@ -1,7 +1,6 @@
 <template>
-  <q-dialog :model-value="uploadDialModel" :maximized="maximizedUploadToggle" transition-show="fade"
-    transition-hide="fade" persistent>
-    <q-card style="min-width: 70vw;">
+  <q-dialog :model-value="uploadDialModel" :maximized="maximizedUploadToggle" transition-show="fade" transition-hide="fade" persistent>
+    <q-card style="min-width: 70vw">
       <q-bar class="bg-primary text-white">
         <q-space />
         <q-btn v-if="maximizedUploadToggle" dense flat icon="minimize" @click="maximizedUploadToggle = false">
@@ -10,14 +9,13 @@
         <q-btn v-if="!maximizedUploadToggle" dense flat icon="crop_square" @click="maximizedUploadToggle = true">
           <q-tooltip content-class="bg-white text-primary">{{ $t('projectView.tooltipWindows[1]') }}</q-tooltip>
         </q-btn>
-        <q-btn v-close-popup="10" dense flat icon="close" @click="uploadDialModel = false, uploadSample.attachment.file = []">
+        <q-btn v-close-popup="10" dense flat icon="close" @click="(uploadDialModel = false), (uploadSample.attachment.file = [])">
           <q-tooltip content-class="bg-white text-primary">{{ $t('projectView.tooltipWindows[2]') }}</q-tooltip>
         </q-btn>
       </q-bar>
       <q-card-section class="q-pa-md">
         <div class="q-gutter-y-md">
-          <q-tabs v-model="tab" dense class="text-grey" active-color="primary" indicator-color="primary" align="justify"
-            narrow-indicator>
+          <q-tabs v-model="tab" dense class="text-grey" active-color="primary" indicator-color="primary" align="justify" narrow-indicator>
             <q-tab name="inputFile" icon="description" label="Input file" />
             <q-tab name="inputText" icon="title" label="Input text" />
           </q-tabs>
@@ -27,8 +25,7 @@
                 <q-select outlined v-model="option" label="select Tokenize option" :options="tokenizeOptions" />
               </div>
               <div v-if="option">
-                <q-select v-if="option.value === 'plainText'" outlined label="Choose the language" v-model="lang"
-                  :options="langOptions" />
+                <q-select v-if="option.value === 'plainText'" outlined label="Choose the language" v-model="lang" :options="langOptions" />
                 <div v-if="option.value === 'vertical'" class="text-body1">
                   Each token on a separate line, with an empty line indicating the end of sentence.
                 </div>
@@ -40,8 +37,7 @@
               <q-input outlined v-model="sampleName" label="Sample Name" />
               <q-input outlined v-model="customUserId" label="Custom UserId By default it's your username" />
               <div class="row q-pa-md">
-                <q-btn v-close-popup :disable="!disableTokenizeBtn" color="primary"
-                  @click="tokenizeSample">Tokenize</q-btn>
+                <q-btn v-close-popup :disable="!disableTokenizeBtn" color="primary" @click="tokenizeSample">Tokenize</q-btn>
               </div>
             </q-tab-panel>
 
@@ -50,15 +46,29 @@
                 {{ $t('projectView.uploadSelectDial') }}
               </div>
               <div>
-                <q-file v-model="uploadSample.attachment.file" label="Pick or drop files" use-chips outlined
-                  :loading="uploadSample.submitting" multiple input-style="height:100px" @update:model-value="preprocess"
-                 >
+                <q-file
+                  v-model="uploadSample.attachment.file"
+                  label="Pick or drop files"
+                  use-chips
+                  outlined
+                  :loading="uploadSample.submitting"
+                  multiple
+                  input-style="height:100px"
+                  @update:model-value="preprocess"
+                >
                   <template #prepend>
                     <q-icon name="attach_file" />
                   </template>
                   <template #after>
-                    <q-btn color="primary" dense icon="cloud_upload" round :loading="uploadSample.submitting"
-                      :disable="disableUploadBtn || customUserId === ''" @click="uploadSamples()" />
+                    <q-btn
+                      color="primary"
+                      dense
+                      icon="cloud_upload"
+                      round
+                      :loading="uploadSample.submitting"
+                      :disable="disableUploadBtn || customUserId === ''"
+                      @click="uploadSamples()"
+                    />
                     <q-tooltip v-if="uploadSample.attachment.file.length == 0" content-class="text-white bg-primary">
                       Select file to upload
                     </q-tooltip>
@@ -66,12 +76,12 @@
                 </q-file>
               </div>
               <div>
-                <q-input 
-                  outlined 
-                  v-model="customUserId" 
+                <q-input
+                  outlined
+                  v-model="customUserId"
                   label="Custom UserId By default it's your username"
                   :rules="[(val) => (val && val.length > 0) || 'You can not upload file without userId please type something']"
-                  />
+                />
               </div>
             </q-tab-panel>
           </q-tab-panels>
@@ -90,7 +100,7 @@ import { defineComponent, PropType } from 'vue';
 import { mapState } from 'pinia';
 import { useUserStore } from 'src/pinia/modules/user';
 import { useProjectStore } from 'src/pinia/modules/project';
-import { sentenceConllToJson } from "conllup/lib/conll";
+import { sentenceConllToJson } from 'conllup/lib/conll';
 
 export default defineComponent({
   props: {
@@ -101,7 +111,7 @@ export default defineComponent({
     samples: {
       type: Object as PropType<sample_t[]>,
       required: true,
-    }
+    },
   },
   setup(props, { emit }) {
     return {
@@ -120,10 +130,10 @@ export default defineComponent({
     const tokenizeOptions = [
       { value: 'plainText', label: 'Tokenize plain text' },
       { value: 'horizontal', label: 'Horizontal' },
-      { value: 'vertical', label: 'Vertical' }
+      { value: 'vertical', label: 'Vertical' },
     ];
-    const option: { value: string, label: string } = { value: '', label: '' };
-    const lang: { value: string, label: string } = { value: '', label: '' };
+    const option: { value: string; label: string } = { value: '', label: '' };
+    const lang: { value: string; label: string } = { value: '', label: '' };
     const langOptions = [
       { value: 'en', label: 'English' },
       { value: 'fr', label: 'French' },
@@ -154,8 +164,7 @@ export default defineComponent({
     disableTokenizeBtn() {
       if (this.option.value == 'plainText') {
         return this.text && this.sampleName && this.lang.value;
-      }
-      else {
+      } else {
         return this.text && this.sampleName;
       }
     },
@@ -167,20 +176,19 @@ export default defineComponent({
         disable = false;
       }
       return disable;
-    }
+    },
   },
   mounted() {
     this.customUserId = this.username;
   },
   methods: {
     async preprocess() {
-
       this.warningMessage = '';
       this.samplesWithoutSentIds = [];
 
       for (const file of this.uploadSample.attachment.file) {
         const content = await this.readFileContent(file);
-        const sampleName = file.name.split(".conllu")[0];
+        const sampleName = file.name.split('.conllu')[0];
         this.checkSentIdsErrors(content as string, sampleName);
       }
       if (this.samplesWithoutSentIds.length > 0) {
@@ -198,15 +206,15 @@ export default defineComponent({
           reject();
         };
         reader.readAsText(file);
-      })
+      });
     },
     checkSentIdsErrors(fileContent: string, sampleName: string) {
       const sentIds: any[] = [];
       const sentences = fileContent.split(/\n\n/).filter((sentence) => sentence);
 
       for (const sentence of sentences) {
-        if (sentenceConllToJson(sentence)["metaJson"]["sent_id"]) {
-          const sentId = sentenceConllToJson(sentence)["metaJson"]["sent_id"];
+        if (sentenceConllToJson(sentence)['metaJson']['sent_id']) {
+          const sentId = sentenceConllToJson(sentence)['metaJson']['sent_id'];
           sentIds.push(sentId);
         }
       }
@@ -224,9 +232,19 @@ export default defineComponent({
         timeout: 5000,
         closeBtn: 'X',
         actions: [
-          { label: 'Continue', handler: () => { this.generateNewSentIds = true; } },
-          { label: 'Dismiss', handler: () => { this.uploadDialModel = false; } }
-        ]
+          {
+            label: 'Continue',
+            handler: () => {
+              this.generateNewSentIds = true;
+            },
+          },
+          {
+            label: 'Dismiss',
+            handler: () => {
+              this.uploadDialModel = false;
+            },
+          },
+        ],
       });
     },
     uploadSamples() {
@@ -251,7 +269,7 @@ export default defineComponent({
         .catch((error) => {
           if (error.response) {
             error.message = error.response.data.message;
-            notifyError({ error: error.message })
+            notifyError({ error: error.message });
           }
           this.$emit('uploaded:sample'); // tell to the parent that a new sample was uploaded and to fetch all samples
           this.uploadSample.submitting = false;
@@ -274,9 +292,9 @@ export default defineComponent({
           this.uploadDialModel = false;
         })
         .catch((error) => {
-          notifyError({ error: 'Invalid request' })
+          notifyError({ error: 'Invalid request' });
         });
-    }
+    },
   },
 });
 </script>

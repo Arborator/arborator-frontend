@@ -24,14 +24,7 @@
         @filter="filterSamples"
       >
         <template v-slot:selected-item="scope">
-          <q-chip
-            v-if="scope.opt !==''"
-            removable
-            @remove="scope.removeAtIndex(scope.index)"
-            :tabindex="scope.tabindex"
-            dense
-            text-color="primary"
-          >
+          <q-chip v-if="scope.opt !== ''" removable @remove="scope.removeAtIndex(scope.index)" :tabindex="scope.tabindex" dense text-color="primary">
             {{ scope.opt }}
           </q-chip>
         </template>
@@ -47,11 +40,11 @@
     </div>
     <div>
       <template v-if="samplesFrozen.list.length > 0">
-        <q-virtual-scroll 
+        <q-virtual-scroll
           :key="filteredResults.length"
-          :items="filteredResults" 
-          style="max-width: 99vw" 
-          :virtual-scroll-slice-size="30" 
+          :items="filteredResults"
+          style="max-width: 99vw"
+          :virtual-scroll-slice-size="30"
           v-slot="{ item, index }"
         >
           <div :key="index" style="display: flex">
@@ -161,15 +154,15 @@ export default defineComponent({
     showFilterResults() {
       return this.samplesFrozen.list.length > 0 && !this.$route.params.samplename;
     },
-    samplesNames() { 
-     return Object.keys(this.searchresults);
+    samplesNames() {
+      return Object.keys(this.searchresults);
     },
     filteredResults() {
-      if (!this.selectedSample){
+      if (!this.selectedSample) {
         return this.samplesFrozen.list;
       }
       return this.samplesFrozen.list.filter((value) => value[0] === this.selectedSample);
-    }
+    },
   },
   mounted() {
     this.freezeSamples();
@@ -204,22 +197,22 @@ export default defineComponent({
         samples: JSON.parse(JSON.stringify(this.samples)),
       };
     },
- 
+
     filterSamples(val: string, update: (callback: () => void) => void) {
       if (val === '') {
         update(() => {
-            this.filteredSamples = this.samplesNames;
+          this.filteredSamples = this.samplesNames;
         });
         return;
       }
       update(() => {
-          const needle = val.toLowerCase();
-          this.filteredSamples = this.samplesNames.filter(v => v.toLowerCase().indexOf(needle) > -1);
+        const needle = val.toLowerCase();
+        this.filteredSamples = this.samplesNames.filter((v) => v.toLowerCase().indexOf(needle) > -1);
       });
     },
 
     selectAllSentences() {
-      for (const item in this.filteredResults){
+      for (const item in this.filteredResults) {
         this.all ? (this.samplesFrozen.selected[item] = true) : (this.samplesFrozen.selected[item] = false);
       }
     },

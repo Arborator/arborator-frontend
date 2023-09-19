@@ -177,6 +177,21 @@ export interface ModelInfo_t {
   model_id: string;
 }
 
+interface DataDescription_T {
+  n_train_sents: number;
+  n_test_sents: number;
+  n_train_batches: number;
+  n_test_batches: number;
+}
+interface TrainingDiagnostics_t {
+    data_description: DataDescription_T;
+    epoch: number;
+    saved: boolean;
+    is_best_loss: boolean;
+    is_best_LAS: boolean;
+    epochs_without_improvement: number;
+    stopping_early: boolean;
+}
 interface ScoresOneEpoch_t {
 		LAS_epoch: number;
 		LAS_chuliu_epoch: number;
@@ -192,9 +207,8 @@ interface ScoresOneEpoch_t {
 		loss_feats_epoch: number;
 		loss_lemma_scripts_epoch: number;
 		loss_epoch: number;
-		n_sentences_train: number;
-		n_sentences_test: number;
-		epoch: number;
+		data_description: TrainingDiagnostics_t | null;
+    training_diagnostics: TrainingDiagnostics_t;
 }
 
 export type ScoresBest_t = ScoresOneEpoch_t

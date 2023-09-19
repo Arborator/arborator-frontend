@@ -26,7 +26,7 @@
             hint="Optional; We will use this model as a pretrain model for your task"
             clearable
           />
-        </div> 
+        </div>
       </div>
       <q-separator vertical inset class="q-mx-lg"/>
       <div v-show="param.pipelineChoice !== 'PARSE_ONLY'" class="col">
@@ -73,7 +73,7 @@
             style="max-width: 100px"
             :rules="[(val) => (val >= 3 && val <= 300) || 'Please use 3 to 300 epochs']"
           />
-        </div> 
+        </div>
       </div>
       <q-separator v-show="param.pipelineChoice !== 'PARSE_ONLY'" vertical inset class="q-mx-lg"/>
       <div v-show="param.pipelineChoice !== 'TRAIN_ONLY'" class="col">
@@ -94,9 +94,9 @@
             label="Files to parse"
             stack-label
           />
-          <q-input 
-            :disable="disableUI" 
-            dense 
+          <q-input
+            :disable="disableUI"
+            dense
             outlined
             v-model="param.parserSuffix"
             label="Parser suffix (for parsed sentences)"
@@ -131,13 +131,13 @@
           <div v-if="param.pipelineChoice !== `TRAIN_ONLY`" class="text-subtitle5 q-mb-xs">parsing sentences : {{ parsingSentencesCount }}</div>
           <div class="text-subtitle5 q-mb-xs">estimated time = {{ estimatedTime }}mn</div>
         </div>
-        
-        <q-btn 
-          v-close-popup 
-          color="primary" 
-          :disable="paramError || isHealthy===false" 
-          label="START" 
-          :loading="taskStatus !== null" 
+
+        <q-btn
+          v-close-popup
+          color="primary"
+          :disable="paramError || isHealthy===false"
+          label="START"
+          :loading="taskStatus !== null"
           push
           @click="parserPipelineStart()"
         />
@@ -344,7 +344,7 @@ export default defineComponent({
           } else {
             const options = response.data.data.map((baseModelMeta) => {
               return {
-                label: `${baseModelMeta.model_info.project_name} - ${baseModelMeta.model_info.model_id} (${baseModelMeta.scores_best.epoch} epochs ; ${baseModelMeta.scores_best.LAS_epoch} LAS ; ${baseModelMeta.scores_best.n_sentences_train + baseModelMeta.scores_best.n_sentences_test} sents)`,
+                label: `${baseModelMeta.model_info.project_name} - ${baseModelMeta.model_info.model_id} (${baseModelMeta.scores_best.training_diagnostics.epoch} epochs ; ${baseModelMeta.scores_best.LAS_epoch.toFixed(4)} LAS ; ${baseModelMeta.scores_best.training_diagnostics.data_description.n_train_sents + baseModelMeta.scores_best.training_diagnostics.data_description.n_test_sents} sents)`,
                 value: baseModelMeta.model_info
               }
             })
@@ -413,7 +413,7 @@ export default defineComponent({
             this.clearCurrentTask()
           } else if (response.data.data.ready) {
             const scores_best = response.data.data.scores_best
-            notifyMessage({message: `Model ${modelInfo.model_id}: training ended ; LAS=${scores_best.LAS_chuliu_epoch} ; best_epoch=${scores_best.epoch}`})
+            notifyMessage({message: `Model ${modelInfo.model_id}: training ended ; LAS=${scores_best.LAS_chuliu_epoch} ; best_epoch=${scores_best.training_diagnostics.epoch}`})
             this.clearCurrentTask()
             this.fetchBaseModelsAvailables()
             if (this.param.pipelineChoice === "TRAIN_AND_PARSE") {
@@ -427,7 +427,7 @@ export default defineComponent({
                 const last_epoch = response.data.data.scores_history[response.data.data.scores_history.length - 1]
                 const best_epoch = response.data.data.scores_best
                 if (best_epoch) {
-                  this.taskStatus.taskAdditionalMessage = `epoch ${last_epoch.epoch} ; LAS=${last_epoch.LAS_chuliu_epoch} (best: epoch ${best_epoch.epoch} ; LAS=${best_epoch.LAS_chuliu_epoch})`
+                  this.taskStatus.taskAdditionalMessage = `epoch ${last_epoch.training_diagnostics.epoch} ; LAS=${last_epoch.LAS_chuliu_epoch} (best: epoch ${best_epoch.training_diagnostics.epoch} ; LAS=${best_epoch.LAS_chuliu_epoch})`
                 }
               }
             }

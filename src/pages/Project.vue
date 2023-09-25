@@ -41,6 +41,7 @@
             ref="textsTable"
             :key="tableKey"
             v-model:pagination="table.pagination"
+            hide-pagination
             v-model:selected="table.selected"
             :class="($q.dark.isActive ? 'my-sticky-header-table-dark' : 'my-sticky-header-table') + ' rounded-borders'"
             title="Samples"
@@ -60,6 +61,13 @@
             table-style="max-height:80vh"
             :rows-per-page-options="[30]"
           >
+            <template #bottom>
+              <q-pagination 
+                v-model="table.pagination.page" 
+                :max="Math.ceil(samplesNumber / 10)" 
+                :input="true"
+              />
+            </template>
             <template #top="props">
               <!-- begining of Options bar -->
               <q-btn-group flat>
@@ -599,6 +607,7 @@ export default defineComponent({
       githubSynchronizedRepo: '',
       reload: 0,
       isShowConstructiconDialogCop: false,
+      samplesNumber: 0,
     };
   },
   computed: {
@@ -701,6 +710,7 @@ export default defineComponent({
     getProjectSamples() {
       api.getProjectSamples(this.projectName as string).then((response) => {
         this.samples = response.data;
+        this.samplesNumber = this.samples.length;
         this.sampleNames = [];
         for (const sample of this.samples) {
           this.sampleNames.push(sample.sample_name);
@@ -907,6 +917,11 @@ export default defineComponent({
     opacity: 1;
     z-index: 2;
   }
+}
+.q-table__bottom {
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .my-sticky-header-table-dark {

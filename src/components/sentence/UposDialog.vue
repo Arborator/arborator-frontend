@@ -78,9 +78,9 @@ export default defineComponent({
     this.sentenceBus.on('open:uposDialog', ({ token, userId }) => {
       this.token = token;
       this.userId = userId;
+      this.selectedUpos = this.annotationFeatures.UPOS.map((upos) => upos === this.token.UPOS)
       this.uposDialogOpened = true;
     });
-    this.selectedUpos = Array(this.annotationFeatures.UPOS.length).fill(false);
   },
   beforeUnmount() {
     this.sentenceBus.off('open:uposDialog');

@@ -36,7 +36,7 @@
     </q-card-section>
     <!-- project description: -->
     <q-card-section>
-      <q-input v-model="description" style="height: 100px" label="Description" outlined type="textarea" />
+      <q-input v-model="projectDescription" style="height: 100px" label="Description" outlined type="textarea" />
       <q-btn color="primary" :label="$t('projectSettings.descriptionSave')" icon="save" dense flat @click="saveDescription"></q-btn>
     </q-card-section>
     <!-- project options: -->
@@ -243,6 +243,7 @@ export default defineComponent({
       annotationFeaturesJson: '',
       annotationFeaturesOk: true,
       annotationFeaturesComment: '',
+      projectDescription:'',
       cmOption: {
         tabSize: 8,
         styleActiveLine: true,
@@ -389,7 +390,7 @@ export default defineComponent({
     },
 
     saveDescription() {
-      this.updateProjectSettings({ description: this.description });
+      this.updateProjectSettings({ description: this.projectDescription });
     },
 
     uploadProjectImage() {

@@ -1,9 +1,11 @@
 <template>
   <q-item clickable @click.native.prevent="goTo()">
-    <q-tooltip v-if="isProjectAdmin || isSuperAdmin" class="bg-purple text-body2" anchor="top middle" :offset="[10, 10]" :delay="100">
+    <q-tooltip v-if="isProjectAdmin || isSuperAdmin" class="bg-purple text-body2" anchor="top middle" :offset="[10, 10]"
+      :delay="100">
       {{ $t('projectHub.tooltipRightClickDelete') }}
     </q-tooltip>
-    <q-popup-proxy v-if="isProjectAdmin || isSuperAdmin" transition-show="flip-up" transition-hide="flip-down" context-menu>
+    <q-popup-proxy v-if="isProjectAdmin || isSuperAdmin" transition-show="flip-up" transition-hide="flip-down"
+      context-menu>
       <q-card>
         <q-card-section>
           <q-list>
@@ -24,15 +26,13 @@
       </q-card>
     </q-popup-proxy>
     <q-item-section avatar>
-      <q-avatar v-show="imageEmpty()" rounded color="primary" text-color="white" icon="fas fa-tree" />
-      <q-avatar v-show="!imageEmpty()" rounded color="primary" text-color="white">
-        <img :src="imageCleaned" />
+      <q-avatar v-show="imageSrc == ''" rounded color="primary" text-color="white" icon="fas fa-tree" />
+      <q-avatar v-show="imageSrc != ''" rounded color="primary" text-color="white">
+        <img :src="imageSrc" />
       </q-avatar>
     </q-item-section>
     <q-item-section>
-      <q-item-label lines="1"
-        ><span class="text-weight-bold">{{ project.projectName }}</span></q-item-label
-      >
+      <q-item-label lines="1"><span class="text-weight-bold">{{ project.projectName }}</span></q-item-label>
       <q-item-label caption lines="2">
         {{ project.description }}
       </q-item-label>
@@ -79,20 +79,25 @@
     </q-item-section>
 
     <q-dialog v-model="confirmActionDial">
-      <confirm-action :parent-action="confirmActionCallback" :arg1="confirmActionArg1" :target-name="project.projectName"></confirm-action>
+      <confirm-action :parent-action="confirmActionCallback" :arg1="confirmActionArg1"
+        :target-name="project.projectName"></confirm-action>
     </q-dialog>
   </q-item>
 </template>
 
 <script lang="ts">
-import { mapState } from 'pinia';
+import ProjectIcon from 'components/shared/ProjectIcon.vue';
 import ConfirmAction from '../components/ConfirmAction.vue';
+
+import api from 'src/api/backend-api';
+import { notifyError } from 'src/utils/notify';
+import { mapState, mapActions } from 'pinia';
 import { useUserStore } from 'src/pinia/modules/user';
+import { useProjectStore } from 'src/pinia/modules/project';
 import { timeAgo } from 'src/utils/timeAgoUtils';
 
 import { defineComponent, PropType } from 'vue';
 import { project_extended_t } from 'src/api/backend-types';
-import ProjectIcon from 'components/shared/ProjectIcon.vue';
 
 export default defineComponent({
   components: { ProjectIcon, ConfirmAction },
@@ -119,13 +124,11 @@ export default defineComponent({
       showListAdmins: false,
       confirmActionCallback,
       confirmActionArg1: '',
+      imageSrc: '',
     };
   },
   computed: {
     ...mapState(useUserStore, ['isLoggedIn', 'getUserInfos', 'isSuperAdmin', 'username']),
-    imageCleaned() {
-      return this.project.image;
-    },
     isProjectAdmin() {
       return this.project.admins.includes(this.username) || this.isSuperAdmin;
     },
@@ -137,9 +140,7 @@ export default defineComponent({
     },
   },
   methods: {
-    imageEmpty() {
-      return this.project.image === null || this.project.image === '';
-    },
+    ...mapActions(useProjectStore, ['getImage']),
     timeAgo(secsAgo: number) {
       return timeAgo(secsAgo);
     },
@@ -154,6 +155,22 @@ export default defineComponent({
     },
     projectSettings() {
       this.parentProjectSettings(this.project.projectName);
+    },
+    getProjectImage() {
+      api.getProjectImage(this.project.projectName)
+        .then((response) => {
+          if (Object.keys(response.data).length > 0) {
+            const imageData = response.data.image_data;
+            const imageExt = response.data.image_ext
+            this.imageSrc = `data:image/${imageExt};base64,${imageData}`;
+          }
+          else {
+            this.imageSrc = '';
+          }
+        })
+        .catch((error) => {
+          notifyError(error)
+        });
     },
     deleteProject() {
       this.parentDeleteProject(this.project.projectName);

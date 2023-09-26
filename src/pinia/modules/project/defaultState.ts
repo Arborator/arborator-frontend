@@ -9,6 +9,7 @@ interface configState {
   visibility: number;
   description: string;
   image: string;
+  imageSrc: string;
   showAllTrees: boolean;
   exerciseMode: boolean;
   freezed: boolean;
@@ -32,6 +33,7 @@ export default function defaultState(): configState {
     visibility: 2,
     description: '',
     image: '',
+    imageSrc: '',
     showAllTrees: true,
     exerciseMode: false,
     freezed: false,

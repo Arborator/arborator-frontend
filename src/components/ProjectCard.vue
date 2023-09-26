@@ -30,7 +30,7 @@
     <q-img
       class="clickable"
       :ratio="16 / 9"
-      :src="imageEmpty() ? '/images/small.niko-photos-tGTVxeOr_Rs-unsplash.jpg' : imageCleaned"
+      :src=" imageSrc == '' ? '/images/small.niko-photos-tGTVxeOr_Rs-unsplash.jpg' : imageSrc"
       basic
       @click="goTo()"
     >
@@ -75,13 +75,19 @@
 </template>
 
 <script lang="ts">
-import { mapState } from 'pinia';
 import ConfirmAction from '../components/ConfirmAction.vue';
+import ProjectIcon from 'components/shared/ProjectIcon.vue';
+
+import api from 'src/api/backend-api';
+import { notifyError } from 'src/utils/notify';
+import { mapState, mapActions } from 'pinia';
+import { useProjectStore } from 'src/pinia/modules/project';
 import { useUserStore } from 'src/pinia/modules/user';
 import { timeAgo } from 'src/utils/timeAgoUtils';
-import { defineComponent, PropType } from 'vue';
 import { project_extended_t } from 'src/api/backend-types';
-import ProjectIcon from 'components/shared/ProjectIcon.vue';
+import { defineComponent, PropType } from 'vue';
+
+
 
 export default defineComponent({
   components: { ProjectIcon, ConfirmAction },
@@ -106,6 +112,7 @@ export default defineComponent({
       confirmActionCallback,
       confirmActionDial: false,
       confirmActionArg1: '',
+      imageSrc: '',
     };
   },
   computed: {
@@ -113,11 +120,12 @@ export default defineComponent({
     isProjectAdmin() {
       return this.project.admins.includes(this.username) || this.isSuperAdmin;
     },
-    imageCleaned() {
-      return this.project.image;
-    },
+  },
+  mounted(){
+    this.getProjectImage();
   },
   methods: {
+    ...mapActions(useProjectStore, ['getImage']),
     timeAgo(secsAgo: number) {
       return timeAgo(secsAgo);
     },
@@ -133,15 +141,28 @@ export default defineComponent({
     projectSettings() {
       this.parentProjectSettings(this.project.projectName);
     },
+    getProjectImage() {
+      api.getProjectImage(this.project.projectName)
+        .then((response) => {
+          if (Object.keys(response.data).length > 0) {
+            const imageData = response.data.image_data;
+            const imageExt = response.data.image_ext
+            this.imageSrc = `data:image/${imageExt};base64,${imageData}`;
+          }
+          else {
+            this.imageSrc = '';
+          }
+        })
+        .catch((error) => {
+          notifyError(error)
+      });
+    },
     deleteProject() {
       this.parentDeleteProject(this.project.projectName);
     },
     triggerConfirm(method: CallableFunction) {
       this.confirmActionDial = true;
       this.confirmActionCallback = method;
-    },
-    imageEmpty() {
-      return this.project.image === null || this.project.image === '';
     },
   },
 });

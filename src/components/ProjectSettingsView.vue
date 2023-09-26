@@ -8,9 +8,10 @@
         <q-tooltip content-class="bg-white text-primary">{{ $t('projectSettings.windowClose') }}</q-tooltip>
       </q-btn>
     </q-bar>
+   
     <q-card-section class="q-pa-sm row q-gutter-md">
       <q-banner rounded class="col-md-4 offset-md-4 col-xs-12 col-sm-12">
-        <q-img :ratio="16 / 9" :src="cleanedImage" basic>
+        <q-img :ratio="16 / 9" :src="imageSrc" basic>
           <div class="absolute-bottom text-h6">
             <ProjectIcon :visibility="visibilityLocal" :exercise-mode="exerciseModeLocal" />
             {{ projectname }}
@@ -267,16 +268,17 @@ export default defineComponent({
       'shownMeta',
       'admins',
       'guests',
+      'imageSrc'
     ]),
     ...mapState(useProjectStore, [
       'isAdmin',
       'admins',
       'guests',
-      'cleanedImage',
       'shownFeaturesChoices',
       'shownMetaChoices',
       'getAnnofjson',
       'getUDAnnofJson',
+      'imageSrc'
     ]),
     showAllTreesLocal: {
       get() {
@@ -343,6 +345,7 @@ export default defineComponent({
   },
   mounted() {
     this.annotationFeaturesJson = this.getAnnofjson;
+    this.getProjectImage();
   },
 
   methods: {
@@ -352,6 +355,7 @@ export default defineComponent({
       'resetAnnotationFeaturesUD',
       'updateProjectSettings',
       'postImage',
+      'getImage',
       'updateProjectshownFeatures',
     ]),
     /**
@@ -399,6 +403,7 @@ export default defineComponent({
         this.postImage(this.uploadImage.image)
           .then(() => {
             this.uploadImage.submitting = false;
+            this.getProjectImage();
             notifyMessage({ message: 'Uploaded image saved!' });
           })
           .catch((error) => {
@@ -408,6 +413,10 @@ export default defineComponent({
       } else {
         notifyError({ error: 'No image was selected' });
       }
+    },
+    
+    getProjectImage() {
+      this.getImage(this.projectname);
     },
     /**
      * Wrapper to display the confirm dialog prior to executing the method

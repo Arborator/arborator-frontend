@@ -110,6 +110,12 @@ export default {
   deleteProjectUserAccess(projectname: string, username: string) {
     return API.delete(`projects/${projectname}/access/${username}`);
   },
+  uploadProjectImage(projectname: string, form: any) {
+    return API.post(`projects/${projectname}/image`, form, { headers: { 'Content-Type': 'multipart/form-data' } });
+  },
+  getProjectImage(projectName: string){
+    return API.get(`projects/${projectName}/image`);
+  },
 
   // ---------------------------------------------------- //
   // ---------------        Samples       --------------- //
@@ -351,8 +357,5 @@ export default {
 
   getUsersTreeFrom(projectname: string) {
     return API.get(`projects/${projectname}/treesfrom`);
-  },
-  uploadProjectImage(projectname: string, form: any) {
-    return API.post(`projects/${projectname}/image`, form, { headers: { 'Content-Type': 'multipart/form-data' } });
   },
 };

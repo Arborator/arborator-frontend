@@ -3,7 +3,7 @@
     <div>
       <q-card flat style="max-width: 100%">
         <q-card-section class="project-header">
-          <q-img class="project-image" :src="cleanedImage" basic>
+          <q-img class="project-image" :src="imageSrc" basic>
             <div class="absolute-bottom text-h6" style="padding: 6px">
               <ProjectIcon :visibility="visibility" :exercise-mode="exerciseMode" />
               {{ $t('projectView.project') }} {{ projectName }}
@@ -620,7 +620,7 @@ export default defineComponent({
       'admins',
       'image',
       'exerciseMode',
-      'cleanedImage',
+      'imageSrc',
       'description',
       'isTeacher',
       'isProjectMember',
@@ -669,6 +669,7 @@ export default defineComponent({
   },
   mounted() {
     this.loadProjectData();
+    this.getProjectImage();
     this.notifyFreezedProject();
     document.title = `ArboratorGrew: ${this.projectName}`;
     this.getSynchronizedGithubRepo();
@@ -677,7 +678,7 @@ export default defineComponent({
     window.removeEventListener('resize', this.handleResize);
   },
   methods: {
-    ...mapActions(useProjectStore, ['updateProjectSettings']),
+    ...mapActions(useProjectStore, ['updateProjectSettings', 'getImage']),
     handleResize() {
       this.window.width = window.innerWidth;
       this.window.height = window.innerHeight;
@@ -706,6 +707,9 @@ export default defineComponent({
     loadProjectData() {
       this.getProjectSamples();
       this.reload += 1;
+    },
+    getProjectImage() {
+      this.getImage(this.projectName); 
     },
     getProjectSamples() {
       api.getProjectSamples(this.projectName as string).then((response) => {

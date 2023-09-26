@@ -83,13 +83,6 @@ export const useProjectStore = defineStore('project', {
           state.annotationFeatures.MISC ? state.annotationFeatures.MISC.map(({ name }) => `MISC.${name}`) : []
         )
       ),
-    cleanedImage: (state) => {
-      const ifImageEmpty = '/images/niko-photos-tGTVxeOr_Rs-unsplash.jpg';
-      return ifImageEmpty;
-      if (state.image == null) return ifImageEmpty;
-      if (state.image.length < 1) return ifImageEmpty;
-      return state.image;
-    },
     featuresSet(): string[] {
       let featuresSet: string[] = [];
       featuresSet = this.shownFeaturesChoices.filter((feat) => feat != 'FORM');
@@ -135,7 +128,7 @@ export const useProjectStore = defineStore('project', {
               let fetchedAnnotationFeatures = response.data.annotationFeatures;
               // check if there is a json in proper format, otherwise use default ConfigConllu
               if (typeof fetchedAnnotationFeatures !== 'object' || fetchedAnnotationFeatures === null) {
-                // commit("reset_project_config");
+
                 fetchedAnnotationFeatures = this.annotationFeatures;
               }
               this.annotationFeatures = fetchedAnnotationFeatures;
@@ -149,20 +142,7 @@ export const useProjectStore = defineStore('project', {
     // there is still a mismatch between all name 'updateProjectSettings' and 'updateProjectSettings'
     // ... so we have to get a proper data structure of the whole setting for then having better
     // ... separation of conscerns for API calls
-    putProjectDescription() {
-      api
-        .updateProject(this.name, { description: this.description })
-        .then(() => {
-          notifyMessage({ message: 'New project description saved on the server', icon: 'save' });
-        })
-        .catch((error) => {
-          notifyError({ error });
-          // message: `${error}`,
-          // color: 'negative',
-          // position: 'bottom',
-        });
-    },
-
+   
     updateProjectSettings(toUpdateObject: Partial<project_extended_t | project_with_diff_t>) {
       return new Promise((resolve, reject) => {
         api
@@ -176,9 +156,6 @@ export const useProjectStore = defineStore('project', {
             notifyError({
               error: error,
             });
-            // message: `${error}`,
-            // color: 'negative',
-            // position: 'bottom',
             reject(error);
           });
       });
@@ -211,6 +188,23 @@ export const useProjectStore = defineStore('project', {
           .catch((error) => {
             reject(error);
           });
+      });
+    },
+    getImage(projectName: string) {
+      const treeImage = '/images/niko-photos-tGTVxeOr_Rs-unsplash.jpg';
+      api.getProjectImage(projectName)
+      .then((response) => {
+        if (Object.keys(response.data).length > 0){
+          const imageData = response.data.image_data;
+          const imageExt = response.data.image_ext
+          this.imageSrc = `data:image/${imageExt};base64,${imageData}`;
+        }
+        else {
+          this.imageSrc = treeImage;
+        }
+      })
+      .catch((error) => {
+        notifyError(error)
       });
     },
     updateProjectConlluSchema(projectname: string, annotationFeatures: annotationFeatures_t) {

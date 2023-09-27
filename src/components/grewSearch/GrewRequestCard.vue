@@ -66,7 +66,6 @@
                 </q-tab>
               </q-tabs>
               <q-separator />
-
               <q-tab-panels v-model="searchReplaceTab" animated class="shadow-2" @input="usersToApply == null">
                 <q-tab-panel name="SEARCH">
                   <q-tabs v-model="searchQueryTab" dense no-caps vertical switch-indicator class="primary" indicator-color="primary">
@@ -203,7 +202,7 @@ export default defineComponent({
     },
   },
   watch: {
-    searchReplaceTab(newVal, oldVal) {
+    searchReplaceTab(newVal) {
       if (newVal === 'REWRITE' && this.usersToApply.value === 'all') {
         this.usersToApply = this.usersToApplyOptions[0];
       }
@@ -215,7 +214,13 @@ export default defineComponent({
       this.currentQuery = this.lastQuery.text;
       this.usersToApply = this.usersToApplyOptions.filter((option) => option.value === this.lastQuery?.userType)[0];
     }
-    this.searchReplaceTab = this.currentQueryType;
+    if(this.canSaveTreeInProject) {
+      this.searchReplaceTab = this.currentQueryType;
+    }
+    else{
+      this.searchReplaceTab = 'SEARCH';
+      this.currentQuery = grewTemplates.searchQueries[0].pattern;
+    }
   },
   methods: {
     ...mapActions(useGrewSearchStore, ['changeLastGrewQuery']),

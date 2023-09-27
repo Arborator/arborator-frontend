@@ -20,6 +20,7 @@ interface configState {
   TEACHER: string;
   annotationFeatures: annotationFeatures_t;
   annotationFeaturesUD: annotationFeatures_t;
+  reloadProjects: boolean,
 }
 
 // default config state
@@ -39,6 +40,7 @@ export default function defaultState(): configState {
     freezed: false,
     diffMode: false,
     diffUserId: '',
+    reloadProjects: false, 
     shownFeatures: ['FORM', 'UPOS', 'LEMMA', 'MISC.Gloss'],
     shownMeta: ['text_en'],
     TEACHER: 'teacher',

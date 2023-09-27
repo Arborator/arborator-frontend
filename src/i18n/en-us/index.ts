@@ -136,6 +136,7 @@ export default {
     samples: 'samples',
     rightClickSettings: 'Settings',
     rightClickDelete: 'Delete',
+    rightClickRename: 'Rename',
     emptySearch: 'Search for project',
     projectCategory: 'Category',
     allProjects: 'All the projects',
@@ -149,6 +150,12 @@ export default {
     lastAccess: 'last access',
     lastWriteAccess: 'last modification',
     longtime: 'a long time ago',
+  },
+  renameProject: {
+    title: 'Rename the project',
+    inputLabel: 'Project name',
+    renameBtn: 'Rename',
+    inputError: "please type something",
   },
 
   // page when you enter a project ( samples info, etc)

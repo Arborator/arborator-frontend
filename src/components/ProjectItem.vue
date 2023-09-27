@@ -9,13 +9,19 @@
       <q-card>
         <q-card-section>
           <q-list>
-            <q-item clickable @click="projectSettings()">
+            <q-item v-close-popup clickable @click="projectSettings()">
               <q-item-section>{{ $t('projectHub.rightClickSettings') }}</q-item-section>
               <q-item-section side>
                 <q-icon name="settings" />
               </q-item-section>
             </q-item>
-            <q-item clickable @click="triggerConfirm(deleteProject)">
+            <q-item v-close-popup clickable @click="showRenameProjectDial = true">
+              <q-item-section>{{ $t('projectHub.rightClickRename') }}</q-item-section>
+              <q-item-section side>
+                <q-icon name="edit" />
+              </q-item-section>
+            </q-item>
+            <q-item v-close-popup clickable @click="triggerConfirm(deleteProject)">
               <q-item-section>{{ $t('projectHub.rightClickDelete') }}</q-item-section>
               <q-item-section side>
                 <q-icon name="delete_forever" color="negative" />
@@ -77,6 +83,9 @@
         <ProjectIcon :visibility="project.visibility" :exercise-mode="project.exerciseMode" />
       </div>
     </q-item-section>
+    <q-dialog v-model="showRenameProjectDial">
+      <RenameProjectDialog  :project-name="project.projectName" />
+    </q-dialog>
 
     <q-dialog v-model="confirmActionDial">
       <confirm-action :parent-action="confirmActionCallback" :arg1="confirmActionArg1"
@@ -88,6 +97,7 @@
 <script lang="ts">
 import ProjectIcon from 'components/shared/ProjectIcon.vue';
 import ConfirmAction from '../components/ConfirmAction.vue';
+import RenameProjectDialog from './RenameProjectDialog.vue';
 
 import api from 'src/api/backend-api';
 import { notifyError } from 'src/utils/notify';
@@ -100,7 +110,7 @@ import { defineComponent, PropType } from 'vue';
 import { project_extended_t } from 'src/api/backend-types';
 
 export default defineComponent({
-  components: { ProjectIcon, ConfirmAction },
+  components: { ProjectIcon, ConfirmAction, RenameProjectDialog },
   props: {
     project: {
       type: Object as PropType<project_extended_t>,
@@ -125,6 +135,7 @@ export default defineComponent({
       confirmActionCallback,
       confirmActionArg1: '',
       imageSrc: '',
+      showRenameProjectDial: false,
     };
   },
   computed: {

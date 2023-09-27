@@ -133,6 +133,7 @@ export default {
     samples: 'échantillons',
     rightClickSettings: 'Paramètres',
     rightClickDelete: 'Supprimer',
+    rightClickRename: 'Renommer',
     emptySearch: 'chercher un projet',
     projectCategory: 'Catégorie',
     allProjects: 'Tous les projets',
@@ -147,6 +148,12 @@ export default {
     lastAccess: 'dernier accès',
     lastWriteAccess: 'dernière modification',
     longtime: 'ça fait une éternité',
+  },
+  renameProject: {
+    title: 'Renommer le projet',
+    inputLabel: 'Nom du projet',
+    renameBtn: 'Renommer',
+    inputError: "S'il vous plaît, tapez quelque chose",
   },
 
   // page when you enter a project ( samples info, etc)

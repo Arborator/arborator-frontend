@@ -285,7 +285,7 @@ export default defineComponent({
         return this.showAllTrees;
       },
       set(value: boolean) {
-        this.updateProjectSettings({ showAllTrees: value });
+        this.updateProjectSettings(this.projectname, { showAllTrees: value });
       },
     },
     exerciseModeLocal: {
@@ -293,7 +293,7 @@ export default defineComponent({
         return this.exerciseMode || false;
       },
       set(value: boolean) {
-        this.updateProjectSettings({ exerciseMode: value });
+        this.updateProjectSettings(this.projectname, { exerciseMode: value });
       },
     },
     diffModeLocal: {
@@ -301,7 +301,7 @@ export default defineComponent({
         return this.diffMode || false;
       },
       set(value: boolean) {
-        this.updateProjectSettings({ diffMode: value });
+        this.updateProjectSettings(this.projectname, { diffMode: value });
       },
     },
     diffUserIdLocal: {
@@ -309,7 +309,7 @@ export default defineComponent({
         return this.diffUserId || '';
       },
       set(value: string) {
-        this.updateProjectSettings({ diffUserId: value });
+        this.updateProjectSettings(this.projectname, { diffUserId: value });
       },
     },
     visibilityLocal: {
@@ -317,7 +317,7 @@ export default defineComponent({
         return this.visibility;
       },
       set(value: number) {
-        this.updateProjectSettings({ visibility: value });
+        this.updateProjectSettings(this.projectname, { visibility: value });
       },
     },
     shownFeaturesLocal: {
@@ -394,7 +394,7 @@ export default defineComponent({
     },
 
     saveDescription() {
-      this.updateProjectSettings({ description: this.projectDescription });
+      this.updateProjectSettings(this.projectname, { description: this.projectDescription });
     },
 
     uploadProjectImage() {

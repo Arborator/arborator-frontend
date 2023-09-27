@@ -143,12 +143,13 @@ export const useProjectStore = defineStore('project', {
     // ... so we have to get a proper data structure of the whole setting for then having better
     // ... separation of conscerns for API calls
    
-    updateProjectSettings(toUpdateObject: Partial<project_extended_t | project_with_diff_t>) {
+    updateProjectSettings(projectName: string, toUpdateObject: Partial<project_extended_t | project_with_diff_t>) {
       return new Promise((resolve, reject) => {
         api
-          .updateProject(this.name, toUpdateObject)
+          .updateProject(projectName, toUpdateObject)
           .then((response) => {
             this.$patch(toUpdateObject);
+            this.reloadProjects = true;
             notifyMessage({ message: 'New project settings saved on the server', icon: 'save' });
             resolve(response);
           })

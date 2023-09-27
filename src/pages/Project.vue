@@ -744,7 +744,7 @@ export default defineComponent({
       notifyMessage({
         message: this.freezed ? `Your project is unfreezed` : `Your project is freezed the are other collaborators can't add new changes`,
       });
-      this.updateProjectSettings({ freezed: !this.freezed });
+      this.updateProjectSettings(this.projectName, { freezed: !this.freezed });
     },
 
     notifyFreezedProject() {

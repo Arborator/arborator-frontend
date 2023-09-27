@@ -190,8 +190,9 @@ import ProjectItem from '../components/ProjectItem.vue';
 import CreaProjectCard from '../components/CreaProjectCard.vue';
 import ProjectSettingsView from '../components/ProjectSettingsView.vue';
 import ConfirmAction from '../components/ConfirmAction.vue';
-import { mapState } from 'pinia';
+import { mapState, mapWritableState } from 'pinia';
 import { useUserStore } from 'src/pinia/modules/user';
+import { useProjectStore } from 'src/pinia/modules/project';
 import { defineComponent } from 'vue';
 import { notifyError, notifyMessage } from 'src/utils/notify';
 import { project_extended_t } from 'src/api/backend-types';
@@ -243,6 +244,7 @@ export default defineComponent({
   },
   computed: {
     ...mapState(useUserStore, ['isLoggedIn', 'username']),
+    ...mapWritableState(useProjectStore, ['reloadProjects']),
     myOldProjects(): project_extended_t[] {
       return this.visibleProjects.filter((project) => {
         return (this.isCreatedByMe(project) || this.isSharedWithMe(project)) && this.isOld(project);
@@ -277,6 +279,14 @@ export default defineComponent({
         (this.pageIndex - 1) * this.totalItemPerPage + this.totalItemPerPage
       );
     },
+  },
+  watch: {
+    reloadProjects(newVal){
+      if(newVal) {
+        this.getProjects();
+        this.reloadProjects = false;
+      }
+    }
   },
   mounted() {
     document.title = `ArboratorGrew: ${this.$t('projectHub.title')}`;

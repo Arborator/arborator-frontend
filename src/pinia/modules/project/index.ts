@@ -43,6 +43,9 @@ export const useProjectStore = defineStore('project', {
         // people not logged in can't save in any case
         return false;
       }
+      if (this.isGuest) {
+        return false;
+      }
       if (this.isTeacher) {
         // teacher can't save a tree. They can only save special tree : base_tree and teacher
         return false;

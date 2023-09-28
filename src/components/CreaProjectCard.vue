@@ -85,7 +85,11 @@
                 stack-label
                 emit-value
                 label="Annotation settings"
-              />
+              >
+                <template v-slot:selected-item="scope">
+                  {{ scope.opt.toUpperCase() }}
+                </template>
+              </q-select>
             </div>
           </div>
           <q-separator />
@@ -159,6 +163,7 @@ export default defineComponent({
     const annotationConfigOptions = [
       { value: 'sud', label: 'SUD'}, 
       { value: 'ud', label: 'UD'},
+      { value: 'eud', label: 'EUD'},
       { value: 'other', label:'Other'}
     ];
     return {

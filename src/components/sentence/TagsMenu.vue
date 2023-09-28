@@ -21,7 +21,7 @@
                 @new-value="createUserTag"
                 style="width: 270px;"
                 :error="tagsFormatError"
-                error-message="You can't add an empty tag or tag contains ',' "
+                :error-message="$t('tagsMenu.tagsFormatError')"
             >
                 <template v-slot:selected-item="scope">
                     <q-chip removable @remove="scope.removeAtIndex(scope.index)" :tabindex="scope.tabindex"
@@ -165,7 +165,7 @@ export default defineComponent({
             }   
         },
         CheckTagsFormatError (val : string) {
-            return val.trim().length > 0 || val.includes(",");
+            return val.trim().length === 0 || val.includes(",");
         }
     },
 

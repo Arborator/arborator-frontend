@@ -347,6 +347,7 @@ export default {
     enterTags: 'Saisir les tags',
     addTags: 'Ajouter',
     createNewTag: 'Cliquez sur "Entrée" pour créer ce tag',
+    tagsFormatError: 'Vous ne pouvez pas ajouter un tag vide ou un tag contenant ","'
   },
   attributeTable: {
     addFeature: 'Ajouter un nouveau feature',

@@ -355,6 +355,7 @@ export default {
     enterTags: 'Enter tags',
     addTags: 'Add',
     createNewTag: 'Press enter to create this tag',
+    tagsFormatError: 'You cannot add an empty tag or a tag containing ","'
   },
   attributeTable: {
     addFeature: 'Add new feature',

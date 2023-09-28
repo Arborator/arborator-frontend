@@ -132,7 +132,7 @@ export default defineComponent({
         filterTags(val: string, update: (callback: () => void) => void) {
 
             const tagsListWithoutRedundants = [...new Set(this.defaultTags)]
-            const existingTagsString = this.reactiveSentencesObj[this.username].state.metaJson["tags"] as string || '';
+            const existingTagsString = this.reactiveSentencesObj[this.openTabUser].state.metaJson["tags"] as string || '';
             const existingTagsArray = existingTagsString.split(",").map((tag) => tag.trim());
 
             this.filteredTags = existingTagsArray.length > 0

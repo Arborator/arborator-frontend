@@ -175,7 +175,7 @@
       </q-tab-panels>
       <div v-if="openTabUser" style="padding-bottom: 20px" dense class="row q-pa-md custom-frame1">
         <div v-for="tag in userTags">
-          <q-chip v-if="openTabUser === username" removable outline color="primary" size="sm"
+          <q-chip v-if="openTabUser === username || isValidator" removable outline color="primary" size="sm"
             @remove="removeUserTag(tag)">
             {{ tag }}
           </q-chip>
@@ -407,7 +407,7 @@ export default defineComponent({
       }
     },
     removeUserTag(tag: string) {
-      this.removeTag(this.sentence.sample_name as string, tag, this.sentenceBus, this.username );
+      this.removeTag(this.sentence.sample_name as string, tag, this.sentenceBus, this.openTabUser );
     },
     /**
      * Receive canUndo, canRedo status from VueDepTree child component and

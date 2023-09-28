@@ -377,7 +377,6 @@
 <script lang="ts">
 import api from '../api/backend-api';
 
-import TagInput from '../components/TagInput.vue';
 import ProjectSettingsView from '../components/ProjectSettingsView.vue';
 import ConfirmAction from '../components/ConfirmAction.vue';
 import UploadDialog from '../components/project/UploadDialog.vue';
@@ -403,7 +402,6 @@ import { table_t } from 'src/types/main_types';
 export default defineComponent({
   components: {
     ConstructiconDialog,
-    TagInput,
     ProjectSettingsView,
     ConfirmAction,
     UploadDialog,

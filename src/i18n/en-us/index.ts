@@ -232,6 +232,12 @@ export default {
     create: 'Create',
     createMessage: 'is created',
     inputWarning: 'Please type something',
+    corpusConfig: 'Corpus configuration',
+    enterLanguage: 'Enter language',
+    annotSettings: 'Annotation settings',
+    annotMode: 'Annotation mode',
+    blindAnnot: 'Blind annotation',
+    blindAnnotCaption: "In this case the annotators will not be able to see others' trees."
   },
 
   exportSamples: {

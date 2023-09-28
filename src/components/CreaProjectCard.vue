@@ -70,7 +70,7 @@
           </q-list>
           <q-separator />
           <div class="text-h6 text-left">
-            Corpus configuration
+            {{ $t('createProjectCard.corpusConfig') }}
           </div>
           <div class="row q-gutter-md">
             <div class="col">
@@ -84,7 +84,7 @@
                 :options="annotationConfigOptions"
                 stack-label
                 emit-value
-                label="Annotation settings"
+                :label="$t('createProjectCard.annotSettings')"
               >
                 <template v-slot:selected-item="scope">
                   {{ scope.opt.toUpperCase() }}
@@ -95,7 +95,7 @@
           <q-separator />
           <div class="row">
             <div class="col-md-7 text-h6">
-                Annotation mode
+                {{ $t('createProjectCard.annotSettings') }}
             </div>
             <div class="col-md-1 offset-md-4">
                 <q-btn outline round size="sm" color="primary" icon="question_mark"
@@ -111,9 +111,9 @@
                 <q-checkbox v-model="project.blindAnnotationMode" />
               </q-item-section>
               <q-item-section>
-                <q-item-label>Blind Annotation</q-item-label>
+                <q-item-label>{{ $t('createProjectCard.blindAnnot') }}</q-item-label>
                 <q-item-label caption>
-                 In this case the annotators will not be able to see others' trees
+                 {{ $t('createProjectCard.blindAnnotCaption') }}
                 </q-item-label>
               </q-item-section>
             </q-item>

@@ -225,6 +225,12 @@ export default {
     create: 'Créer',
     createMessage: 'est créé',
     inputWarning: 'Veuillez taper quelque chose',
+    corpusConfig: 'La configuration du corpus',
+    enterLanguage: 'Saisir la langue du projet',
+    annotSettings: "Les paramètres d'annotation",
+    annotMode: "Mode d'annotation",
+    blindAnnot: 'Annotation aveugle',
+    blindAnnotCaption: 'Dans ce cas, les annotateurs ne pourront pas voir les arbres des autres.',
   },
 
   exportSamples: {

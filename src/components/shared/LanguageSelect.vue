@@ -11,7 +11,7 @@
         :multiple="multiple"
         stack-label
         emit-value
-        label="Enter language"
+        :label="$t('createProjectCard.enterLanguage')"
         @filter="filterLanguages"
     >
         <template v-slot:selected-item="scope">

@@ -74,7 +74,7 @@
           </div>
           <div class="row q-gutter-md">
             <div class="col">
-              <LanguageSelect  :multiple="false" @selected-value="getSelectedLanguage" />
+              <LanguageSelect  :multiple="false" :languages-list="languagesList" @selected-value="getSelectedLanguage" />
             </div>
             <div class="col">
               <q-select
@@ -187,6 +187,7 @@ export default defineComponent({
   },
   computed: {
     ...mapState(useUserStore, ['username', 'loggedWithGithub', 'isSuperAdmin']),
+    ...mapState(useProjectStore, ['languagesList']),
     canSyncWithGithub(){
       return  this.loggedWithGithub && this.isShowSyncBtn && !this.isShowGithubSyncPanel; 
     },

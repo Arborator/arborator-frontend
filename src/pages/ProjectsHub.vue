@@ -1,5 +1,5 @@
 <template>
-  <q-page :class="$q.dark.isActive ? 'bg-dark' : 'bg-grey-1'">
+  <q-page>
     <div class="q-pa-md row items-start q-gutter-md flex flex-center">
       <q-card flat>
         <q-card-section class="q-pa-md row items-start q-gutter-md">
@@ -40,7 +40,7 @@
                       </div>
                       <q-separator />
                       <div class="row q-pa-md">
-                        <LanguageSelect :multiple="true" @selected-value="getSelectedLanguages"  />
+                        <LanguageSelect :multiple="true" :languages-list="projectsLanguages" @selected-value="getSelectedLanguages"  />
                       </div>
                     </q-menu>
                   </q-btn>
@@ -224,6 +224,7 @@ export default defineComponent({
     const projects: project_extended_t[] = [];
     const visibleProjects: project_extended_t[] = [];
     const storage: StorageInterface = useStorage();
+    const projectsLanguages: { index: number, name: string}[] = [];
     return {
       projects,
       visibleProjects,
@@ -254,6 +255,7 @@ export default defineComponent({
       pageIndex: 1,
       totalItemPerPage: 10,
       selectedLanguagesForFilter: [],
+      projectsLanguages,
     };
   },
   computed: {
@@ -314,6 +316,8 @@ export default defineComponent({
         .then((response) => {
           this.projects = response.data as project_extended_t[];
           this.visibleProjects = response.data as project_extended_t[];
+          this.projectsLanguages = this.projects.filter(project => project.language !== '')
+            .map((project, i) => ({index: i+1 , name: project.language}))
           this.sortProjects();
           this.loadingProjects = false;
           this.initLoading = false;

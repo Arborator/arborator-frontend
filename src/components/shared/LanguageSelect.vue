@@ -38,29 +38,32 @@
 
 <script lang="ts">
 
-import { mapState } from 'pinia';
-import { useProjectStore } from 'src/pinia/modules/project';
-
 import { defineComponent, PropType} from 'vue';
 
+interface language_t  {
+    index: number,
+    name: string,
+}
 export default defineComponent({
   
   name:'LanguageSelect',
   props: {
         multiple: {
-        type: Boolean as PropType<boolean>,
-        required: true, 
-    }
+            type: Boolean as PropType<boolean>,
+            required: true, 
+        },
+        languagesList: {
+            type: Object as PropType<language_t[]>,
+            required: true,
+        }
+
   },
   data() {
-    const filteredLanguagesList: { index: number, name: string}[] = [];
+    const filteredLanguagesList: language_t[] = [];
     return {
         filteredLanguagesList, 
         selectedLanguages: [],
     };
-  },
-  computed: {
-    ...mapState(useProjectStore, ['languagesList']),
   },
   methods: {
     emitSelectedVal() {

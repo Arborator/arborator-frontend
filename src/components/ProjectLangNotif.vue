@@ -10,7 +10,7 @@
             </q-card-section>
             <q-card-section class="row q-gutter-md">
                 <div class="col-10">
-                    <LanguageSelect :multiple="false" @selected-value="getSelectedLanguage" />   
+                    <LanguageSelect :multiple="false" :languages-list="languagesList" @selected-value="getSelectedLanguage" />   
                 </div>
                 <div class="col">
                     <q-btn color="primary" label="Add" @click="updateProjectLanguage"/>
@@ -40,7 +40,7 @@ export default defineComponent({
         }
     },
     computed: {
-        ...mapWritableState(useProjectStore, ['language']),
+        ...mapWritableState(useProjectStore, ['language', 'languagesList']),
     },
     methods: {
         ...mapActions(useProjectStore, ['updateProjectSettings']),

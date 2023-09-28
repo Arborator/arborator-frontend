@@ -50,7 +50,7 @@
               :sentence-bus="sentenceBus" 
               :open-tab-user="openTabUser"
             />
-            <q-tooltip>Add tag to this tree</q-tooltip>
+            <q-tooltip>{{ $t('sentenceCard.addTag') }}</q-tooltip>
           </q-btn>
 
           <q-btn v-if="isValidator && blindAnnotationMode" flat round dense icon="filter_9_plus" :disable="openTabUser === ''"

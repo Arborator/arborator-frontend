@@ -334,6 +334,7 @@ export default {
     saveBaseTree: 'Save as base_tree',
     saveTree: ["Save tree", "as"],
     validateTree: 'Validate this tree',
+    addTag: "Add tags to this tree",
     editMetadata: "Edit this trees's metadata",
     multiEditDial: 'Multi edit dialog',
     diffMode: ['Enter', 'Leave', 'Diff mode'],
@@ -349,6 +350,11 @@ export default {
     conllText: 'Text Conll',
     statisticDial: 'Stastistics of the current opened tree',
 
+  },
+  tagsMenu: {
+    enterTags: 'Enter tags',
+    addTags: 'Add',
+    createNewTag: 'Press enter to create this tag',
   },
   attributeTable: {
     addFeature: 'Add new feature',

@@ -1,10 +1,10 @@
 <template>
-    <q-menu style="height: 250px; width: 300px;">
-        <div class="row q-pa-md text-bold">
-            Add tag to this tree
+    <q-menu style="min-height: 200px;width: 300px;" class="q-gutter-sm">
+        <div class="row text-h6">
+            {{ $t('sentenceCard.addTag') }}
         </div>
         <q-separator />
-        <div class="row q-pa-md">
+        <div class="row flex flex-center">
             <q-select 
                 outlined 
                 dense 
@@ -14,11 +14,12 @@
                 option-value="value" 
                 hide-dropdown-icon
                 input-debounce="0" 
-                label="Add tags" 
+                :label="$t('tagsMenu.enterTags')"
                 :options="filteredTags" 
                 emit-value 
                 @filter="filterTags"
                 @new-value="createUserTag"
+                style="width: 270px;"
                 :error="tagsFormatError"
                 error-message="You can't add an empty tag or tag contains ',' "
             >
@@ -39,14 +40,14 @@
                 <template v-slot:no-option>
                     <q-item>
                         <q-item-section class="text-grey">
-                            Press enter to create this tag
+                            {{ $t('tagsMenu.createNewTag') }}
                         </q-item-section>
                     </q-item>
                 </template>
             </q-select>
         </div>
-        <div class="row q-pa-md">
-            <q-btn :disable="tags.length === 0" outline color="primary" @click="addNewTag()">Add new tag</q-btn>
+        <div class="row flex flex-center">
+            <q-btn :disable="tags.length === 0" color="primary" @click="addNewTag()" :label="$t('tagsMenu.addTags')"/>
         </div>
     </q-menu>
 </template>

@@ -121,8 +121,10 @@ export const useTreesStore = defineStore('trees', {
           const userIds = Object.keys(tree.conlls);
           for(const userId of userIds){
             const treeTags = sentenceConllToJson(tree.conlls[userId]).metaJson.tags as string;
-            if (this.selectedTags.some((tag) => treeTags.includes(tag))){
-              return tree;
+            if(treeTags){
+              if (this.selectedTags.some((tag) => treeTags.includes(tag))){
+                return tree;
+              }
             }
           }
         })

@@ -1,9 +1,7 @@
 <template>
   <q-layout view="hHh Lpr fFf">
-    <q-header :class="`${$q.dark.isActive ? 'bg-dark' : 'bg-white'} custom-bottom-border`" id="main-header">
+    <q-header  style="height: 2.3vw;" :class="`${$q.dark.isActive ? 'bg-dark' : 'bg-white'} custom-bottom-border`" id="main-header">
       <q-bar :class="$q.dark.isActive ? 'bg-dark' : 'bg-white text-black'">
-        <!-- class="bg-white text-black" -->
-        <!--   :class="$q.dark.isActive ? 'text-white' : 'text-primary'" -->
         <q-btn flat round icon="menu" @click="drawerLeft = !drawerLeft" />
         <q-btn flat to="/" :ripple="false" type="a">
           <div class="q-btn__content text-center col items-center q-anchor--skip row">
@@ -84,7 +82,7 @@
               </q-item>
             </q-list>
           </q-btn-dropdown>
-          <q-btn v-show="isLoggedIn" outline color="primary" size="10px">
+          <q-btn v-show="isLoggedIn" outline color="primary" >
             <q-icon :name="loggedWithGithub ? 'fab fa-github' : 'fab fa-google'" class="q-mr-md" />
             <q-tooltip> {{ $t('userInformation') }} {{ loggedWithGithub ? ' Github' : 'Gmail' }} </q-tooltip>
             <q-icon v-if="getUserInfos.picture_url === ''" name="account_circle" />

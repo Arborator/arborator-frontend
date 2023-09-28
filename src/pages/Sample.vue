@@ -42,33 +42,37 @@
           <q-space/>
           <q-btn flat color="primary" @click="clearAll()">clear all</q-btn>
         </div>
-        <div class="row q-gutter-md">
-          <div class="col-8">
-            <q-select
-              outlined
-              dense
-              v-model="selectedUsers"
-              multiple
-              :options="userIds"
-              use-chips
-              stack-label
-              label="Select set of users"
-             />
+        <div v-for="(filter, index) in listFilters">
+          <div class="row q-gutter-md q-pt-md">
+            <div class="col-6">
+              <q-select
+                outlined
+                dense
+                v-model="filter.setUsers"
+                multiple
+                :options="userIds"
+                use-chips
+                stack-label
+                label="Select set of users"
+              />
+            </div>
+            <q-btn-dropdown class="col-1" outline split color="primary" :label="filter.operator">
+              <q-list v-for="value of filterOperators">
+                <q-item clickable @click="filter.operator = value">
+                  <q-item-section>{{ value }}</q-item-section>
+                </q-item>
+              </q-list>
+            </q-btn-dropdown>
+            <q-btn-dropdown outline split color="primary" :label="filter.choice">
+              <q-list v-for="value of filterChoices">
+                <q-item clickable @click="filter.choice = value">
+                  <q-item-section>{{ value }}</q-item-section>
+                </q-item>
+              </q-list>
+            </q-btn-dropdown>
+            <q-btn v-if="index != 0" outline class="col-1" color="primary" icon="delete" @click="removeRow(index)" />
+            <q-btn v-if="index == listFilters.length-1 && index < 3 " outline class="col-1" color="primary" icon="add" @click="addRow()" />
           </div>
-          <q-btn-dropdown class="col" outline split color="primary" :label="filterOperator">
-            <q-list v-for="value of filterOperators">
-              <q-item clickable @click="filterOperator = value">
-                <q-item-section>{{ value }}</q-item-section>
-              </q-item>
-            </q-list>
-          </q-btn-dropdown>
-          <q-btn-dropdown class="col" outline split color="primary" :label="filterChoice">
-            <q-list v-for="value of filterChoices">
-              <q-item clickable @click="filterChoice = value">
-                <q-item-section>{{ value }}</q-item-section>
-              </q-item>
-            </q-list>
-          </q-btn-dropdown>
         </div>
         <q-select
           dense
@@ -169,14 +173,14 @@ export default defineComponent({
     const splitterHeight: number = 0; 
     const filterOperators: string[] = ['Have', 'Not Have'];
     const filterChoices: string[] = ['Trees', 'Differences'];
+    const listFilters: { setUsers: string[], operator: string, choice: string} [] = [];
     return {
       selectedUsers: [],
       filterChoices,
       filterOperators,
-      filterChoice: filterChoices[0],
-      filterOperator: filterOperators[0],
       splitterModel,
       splitterHeight,
+      listFilters,
     }
   },
   computed: {
@@ -198,6 +202,11 @@ export default defineComponent({
     document.title = `${this.projectname}/${this.samplename}`;
     LocalStorage.remove('save_status');
     this.calculateHeight();
+    this.listFilters.push(
+      { setUsers: [], 
+        operator: this.filterOperators[0], 
+        choice: this.filterChoices[0],
+    });
   },
   beforeUnmount() {
     window.removeEventListener('resize', this.calculateHeight);
@@ -230,28 +239,31 @@ export default defineComponent({
       }
     },
     applyFilter(){
-      if(this.filterChoice === 'Trees'){
-        if(this.filterOperator === 'Have'){
-          this.usersToHaveTree = this.selectedUsers;
-          this.usersToNotHaveTree = [];
+      for(const filter of this.listFilters){
+        if(filter.choice === 'Trees' && filter.operator === 'Have') {
+          this.usersToHaveTree = filter.setUsers;
         }
-        else {
-          this.usersToNotHaveTree = this.selectedUsers;
-          this.usersToHaveTree = [];
-        } 
-      }
-      else {
-        if(this.filterOperator === 'Have'){
-          this.usersToHaveDiffs = this.selectedUsers;
-          this.usersToNotHaveDiffs = [];
+        if(filter.choice === 'Trees' && filter.operator === 'Have not') {
+          this.usersToNotHaveTree = filter.setUsers;
         }
-        else {
-          this.usersToNotHaveDiffs = this.selectedUsers;
-          this.usersToHaveDiffs = [];
+        if(filter.choice === 'Differences' && filter.operator === 'Have') {
+          this.usersToHaveDiffs = filter.setUsers;
+        }
+        if(filter.choice === 'Differences' && filter.operator === 'Have not') {
+          this.usersToNotHaveDiffs = filter.setUsers;
         }
       }
       this.applyFilterTrees();
-      
+    },
+    addRow() {
+      this.listFilters.push({
+        setUsers: [],
+        operator: this.filterOperators[0],
+        choice: this.filterChoices[0],
+      })
+    },
+    removeRow(index: number){
+      this.listFilters.splice(index, 1);
     },
     clearAll() {
       this.textFilter = '';
@@ -260,9 +272,13 @@ export default defineComponent({
       this.usersToHaveDiffs = [];
       this.usersToNotHaveDiffs = [];
       this.selectedUsers = [];
-      this.filterChoice = this.filterChoices[0];
-      this.filterOperator = this.filterOperators[0];
       this.applyFilterTrees();
+      this.listFilters = [];
+      this.listFilters.push(
+        { setUsers: [], 
+          operator: this.filterOperators[0], 
+          choice: this.filterChoices[0],
+      });
     },
   },
 

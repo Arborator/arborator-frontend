@@ -1,0 +1,10 @@
+version: '3'
+services:
+  arborator-frontend:
+    container_name: arborator-frontend
+    build: .
+    image: reeflect-webapp
+    ports:
+      - '8080:8080'
+    volumes:
+      - '.:/app'

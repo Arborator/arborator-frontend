@@ -6,18 +6,44 @@ Don't hesitate to create an account to try it out
 
 ## Documentation
 
-Arborator-Grew's documentation is available here: 
+Arborator-Grew's documentation is available here:
 https://arborator.github.io/arborator-documentation/#/
 
 ## Important external docs
 - Grew server documentation : https://grew.fr/usage/grew_server
-- [DependencyTreeJS](https://github.com/kirianguiller/DependencyTreeJS) : For handling interactive dependency trees in the browser in JS  
+- [DependencyTreeJS](https://github.com/kirianguiller/DependencyTreeJS) : For handling interactive dependency trees in the browser in JS
 - [Conllup-js](https://github.com/kirianguiller/conllup-js) package : For handling conll format
 
-## Install NVM
-For either prod or dev, you need a working and compatible version of NPM ([link here](https://github.com/nvm-sh/nvm)). To do so, we highly recommend to install it through NVM.
+## Install
+We use docker to run the application. So you need to install docker on your machine. Here the install process on ubuntu
 
-Here the install process on ubuntu 
+### 1. Install Docker and Docker Compose
+
+```bash
+sudo apt-get update
+sudo apt-get install docker.io
+sudo systemctl start docker
+sudo systemctl enable docker
+sudo apt-get install docker-compose
+```
+
+### 2. run container with docker-compose (`--build` is useful the first time of running it, and each time after a change of config inside the `Dockerfile`)
+
+```
+docker-compose up --build
+```
+
+The configuration do the following important things :
+
+- builds the image from the `Dockerfile` defined in this repo
+- runs the container with the name `arborator-frontend`
+- exposes the port 8080 for local development
+- allows hot reloading (by binding volumes)
+
+
+## Auto Completion
+You will need to install the nodes_modules locally if you want your code editor to have insights of the codebase for auto completion. So you need a working and compatible version of NPM ([link here](https://github.com/nvm-sh/nvm)). To do so, we highly recommend to install it through NVM.
+Here the install process on ubuntu
 
 > For the Windows users, you have to use WSL1 [Windows Subsystem for Linux](https://learn.microsoft.com/en-us/windows/wsl/install)
 

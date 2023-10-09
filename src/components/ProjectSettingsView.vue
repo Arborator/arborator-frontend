@@ -139,53 +139,56 @@
         </q-card-section>
       </q-card>
     </q-card-section>
-    <q-card-section class="q-pa-sm row items-start q-gutter-md">
+    <q-card-section class="q-pa-sm row items-start">
       <q-card bordered flat class="col col-sm-12">
-        <q-card-section>
+        <q-toolbar class="bg-primary text-white q-ma-none shadow-2">
           <div class="text-h6 text-center">
             {{ $t('projectSettings.annotationSettingsInput') }}
           </div>
-        </q-card-section>
-        <q-card-section>
-          <Codemirror v-model:value="annotationFeaturesJson" :options="cmOption" @input="checkAnnotationFeatures"></Codemirror>
-        </q-card-section>
-        <q-btn
-          color="bg-primary"
-          text-color="primary"
-          :label="$t('projectSettings.annotationSettingsSave')"
-          icon="save"
-          dense
-          flat
-          :disabled="!annotationFeaturesOk"
-          no-caps
-          @click="saveAnnotationSettings()"
-        ></q-btn>
-        <q-btn
-          color="bg-primary"
-          text-color="primary"
-          label="Reset to SUD"
-          icon="replay"
-          dense
-          flat
-          :disabled="!annotationFeaturesOk"
-          no-caps
-          @click="resetAnnotationFeaturesWrapper()"
-        ></q-btn>
-        <q-btn
-          color="bg-primary"
-          text-color="primary"
-          label="Reset to UD"
-          icon="replay"
-          dense
-          flat
-          :disabled="!annotationFeaturesOk"
-          no-caps
-          @click="resetAnnotationFeaturesUDWrapper()"
-        >
-        </q-btn>
-        <q-chip text-color="primary" :icon="annotationFeaturesOk ? 'sentiment_satisfied_alt' : 'sentiment_very_dissatisfied'">{{
-          annotationFeaturesComment
-        }}</q-chip>
+          <q-space />
+          <q-btn
+            color="bg-primary"
+            :label="$t('projectSettings.annotationSettingsSave')"
+            icon="save"
+            dense
+            flat
+            :disabled="!annotationFeaturesOk"
+            no-caps
+            @click="saveAnnotationSettings()"
+          >
+          </q-btn>
+          <q-btn
+            color="bg-primary"
+            label="Reset to SUD"
+            icon="replay"
+            dense
+            flat
+            :disabled="!annotationFeaturesOk"
+            no-caps
+            @click="resetAnnotationFeaturesWrapper()"
+          >
+          </q-btn>
+          <q-btn
+            color="bg-primary"
+            label="Reset to UD"
+            icon="replay"
+            dense
+            flat
+            :disabled="!annotationFeaturesOk"
+            no-caps
+            @click="resetAnnotationFeaturesUDWrapper()"
+          >
+          </q-btn>
+          <q-chip :icon="annotationFeaturesOk ? 'sentiment_satisfied_alt' : 'sentiment_very_dissatisfied'">
+            {{ annotationFeaturesComment }}
+          </q-chip>
+        </q-toolbar>
+        <Codemirror 
+          v-model:value="annotationFeaturesJson" 
+          :options="cmOption" 
+          @input="checkAnnotationFeatures"
+          height="700"
+          ></Codemirror>
       </q-card>
     </q-card-section>
   </q-card>
@@ -196,9 +199,11 @@ import Codemirror from 'codemirror-editor-vue3';
 
 // plugin-style
 import 'codemirror-editor-vue3/dist/style.css';
-import 'codemirror/mode/python/python.js';
+import 'codemirror/mode/javascript/javascript.js';
 import 'codemirror/lib/codemirror.css';
-import 'codemirror/theme/material-darker.css';
+import 'codemirror/addon/fold/foldcode'; 
+import 'codemirror/addon/fold/foldgutter'; 
+import 'codemirror/addon/fold/foldgutter.css'; 
 
 import UserSelectTable from './UserSelectTable.vue';
 import ConfirmAction from './ConfirmAction.vue';
@@ -251,8 +256,10 @@ export default defineComponent({
         lineNumbers: true,
         lineWrapping: true,
         line: true,
-        mode: 'python',
+        mode: 'javascript',
         theme: 'default',
+        foldGutter: true,
+        gutters: ['CodeMirror-linenumbers', 'CodeMirror-foldgutter'],
       },
     };
   },
@@ -438,11 +445,5 @@ export default defineComponent({
 .full {
   width: 90vw;
   min-width: 90vw;
-}
-.list-size {
-  height: 150px;
-}
-.cm-height {
-  height: 50px;
 }
 </style>

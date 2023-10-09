@@ -1,7 +1,7 @@
 <template>
   <q-page-sticky :position="breakpoint ? 'bottom-right' : 'bottom-right'" :offset="breakpoint ? [18, 18] : [30, 80]" style="z-index: 999">
     <q-btn size="20px" round color="primary" icon="img:/svg/g.svg" @click="grewDialog = !grewDialog">
-      <q-tooltip content-class="bg-primary" content-style="font-size: 16px"> {{ $t('projectView.tooltipFabGrew') }} </q-tooltip>
+      <q-tooltip anchor="center left" content-class="bg-primary" content-style="font-size: 16px"> {{ $t('projectView.tooltipFabGrew') }} </q-tooltip>
     </q-btn>
   </q-page-sticky>
   <q-dialog v-model="grewDialog" seamless position="right" full-width>

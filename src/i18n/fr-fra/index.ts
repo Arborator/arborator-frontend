@@ -320,7 +320,7 @@ export default {
     saveBaseTree: 'Sauvegarder comme arbre de base',
     saveTree: ["Sauvegarder l'arbre", 'comme'],
     editMetadata: 'Editer les métadonnées de cet arbre',
-    multiEditDial: 'Dialogue de multi-édition',
+    multiEditDial: "Edition de l'arbre de base",
     diffMode: ['Activer', 'Désactiver', 'le mode Diff'],
     treeLink: 'Obtenir un lien direct vers cet arbre',
     treeConll: 'Obtenir CoNLL-U de cet arbre',

@@ -327,7 +327,7 @@ export default {
     saveBaseTree: 'Save as base_tree',
     saveTree: ['Save tree', 'as'],
     editMetadata: "Edit this trees's metadata",
-    multiEditDial: 'Multi edit dialog',
+    multiEditDial: 'Base_tree edition',
     diffMode: ['Enter', 'Leave', 'Diff mode'],
     treeLink: 'Get direct link to this tree',
     treeConll: 'Get CoNLL-U of this tree',

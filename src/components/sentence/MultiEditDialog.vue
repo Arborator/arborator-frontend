@@ -1,44 +1,47 @@
 <template>
   <q-dialog v-model="dialogOpened">
-    <q-card style="height: 90vh; width: 90vh">
+    <q-card style="width: 90vh">
       <q-bar class="bg-primary text-white">
-        <div class="text-weight-bold">Multi edit</div>
+        <div class="text-weight-bold">{{ $t('sentenceCard.multiEditDial') }}</div>
         <q-space />
         <q-btn v-close-popup flat dense icon="close" />
       </q-bar>
-      <table v-if="treeJson">
-        <tr>
-          <th>ID</th>
-          <th>TOKEN</th>
-          <th v-for="metaLabel in metaLabels" :key="metaLabel">
-            {{ metaLabel }}
-          </th>
-        </tr>
-        <tr>
-          <th>0</th>
-          <th>All :</th>
-          <td v-for="metaLabel in metaLabels" :key="metaLabel">
-            <input type="checkbox" :name="metaLabel" :checked="checkBoxesAll[metaLabel]" @input="toggleAll(metaLabel)" />
-          </td>
-        </tr>
-        <tr>
-          <td colspan="2" class="divider"><hr /></td>
-        </tr>
-        <tr v-for="token of treeJson.nodesJson" :key="token.ID">
-          <th>{{ token.ID }}</th>
-          <th>{{ token.FORM }}</th>
-          <td v-for="metaLabel in metaLabels" :key="metaLabel">
-            <input v-model="checkBoxes[token.ID][metaLabel]" type="checkbox" :name="metaLabel" :class="metaLabel" />
-          </td>
-        </tr>
-      </table>
+      <q-card-section class="text-h6">
+        Select what you want to remove
+      </q-card-section>
+      <q-card-section>
+        <table v-if="treeJson">
+          <tr>
+            <th>ID</th>
+            <th>TOKEN</th>
+            <th v-for="metaLabel in metaLabels" :key="metaLabel">
+              {{ metaLabel }}
+            </th>
+          </tr>
+          <tr>
+            <th>0</th>
+            <th>All :</th>
+            <td v-for="metaLabel in metaLabels" :key="metaLabel">
+              <q-checkbox v-model="checkBoxesAll[metaLabel]" @update:model-value="toggleAll(metaLabel)"></q-checkbox>
+            </td>
+          </tr>
+          <tr>
+            <td colspan="8" class="divider"><hr /></td>
+          </tr>
+          <tr v-for="token of treeJson.nodesJson" :key="token.ID">
+            <th>{{ token.ID }}</th>
+            <th>{{ token.FORM }}</th>
+            <td v-for="metaLabel in metaLabels" :key="metaLabel">
+              <q-checkbox v-model="checkBoxes[token.ID][metaLabel]"></q-checkbox>
+            </td>
+          </tr>
+        </table>
+      </q-card-section>
 
       <q-separator />
-      <q-card-actions align="around">
-        <!-- @click="ondialoghide()" -->
-        <q-btn v-close-popup flat label="Cancel" style="width: 45%; margin-left: auto; margin-right: auto" />
+      <q-card-actions>
+        <q-btn v-close-popup color="primary" outline label="Cancel" style="width: 45%; margin-left: auto; margin-right: auto" />
         <q-btn v-close-popup color="primary" label="Ok" style="width: 45%; margin-left: auto; margin-right: auto" @click="onDialogOk()" />
-        <!-- :disabled="!someFeatureChanged" -->
       </q-card-actions>
     </q-card>
   </q-dialog>
@@ -50,7 +53,7 @@ import { reactive_sentences_obj_t, sentence_bus_t } from 'src/types/main_types';
 import { tokenJson_T } from 'conllup/lib/conll';
 import { emptyTreeJson } from 'conllup/lib/conll';
 
-type metaLabel_t = 'UPOS' | 'DEPREL' | 'HEAD' | 'LEMMA';
+type metaLabel_t = 'UPOS' | 'DEPREL' | 'HEAD' | 'LEMMA' |'FEATS'| 'MISC';
 
 import { defineComponent } from 'vue';
 
@@ -67,7 +70,7 @@ export default defineComponent({
   },
   data() {
     const treeJson = emptyTreeJson();
-    const metaLabels: metaLabel_t[] = ['UPOS', 'DEPREL', 'HEAD', 'LEMMA'];
+    const metaLabels: metaLabel_t[] = ['UPOS', 'DEPREL', 'HEAD', 'LEMMA', 'FEATS', 'MISC'];
     const checkBoxes: { [key: string]: { [key in metaLabel_t]: boolean } } = {};
     return {
       dialogOpened: false,
@@ -75,7 +78,7 @@ export default defineComponent({
       treeJson,
       checkBoxes,
       metaLabels,
-      checkBoxesAll: { UPOS: false, DEPREL: false, HEAD: false, LEMMA: false },
+      checkBoxesAll: { UPOS: false, DEPREL: false, HEAD: false, LEMMA: false, FEATS: false, MISC: false },
     };
   },
   mounted() {
@@ -86,11 +89,12 @@ export default defineComponent({
         this.checkBoxesAll[metaLabel] = false;
       }
       for (const token in this.treeJson.nodesJson) {
-        const checkBoxesToken: { [key in metaLabel_t]: boolean } = { UPOS: false, DEPREL: false, HEAD: false, LEMMA: false };
+        const checkBoxesToken: { [key in metaLabel_t]: boolean } = { UPOS: false, DEPREL: false, HEAD: false, LEMMA: false, FEATS: false, MISC: false };
         this.checkBoxes[token] = checkBoxesToken;
       }
       this.dialogOpened = true;
     });
+   
   },
   beforeUnmount() {
     this.sentenceBus.off('open:openMultiEditDialog');
@@ -100,10 +104,14 @@ export default defineComponent({
       for (const token in this.treeJson.nodesJson) {
         for (const metaLabel of this.metaLabels) {
           const toDeleteBool = this.checkBoxes[token][metaLabel];
+          const node =  this.treeJson.nodesJson[token] as any;
           if (toDeleteBool) {
-            this.treeJson.nodesJson[token][metaLabel as keyof tokenJson_T] = '_';
+            node[metaLabel as keyof tokenJson_T] = '_';
             if (metaLabel === 'HEAD') {
-              this.treeJson.nodesJson[token].DEPREL = '_';
+              node.DEPREL = '_';
+            }
+            if (['FEATS', 'MISC'].includes(metaLabel)) {
+              node[metaLabel] = {}
             }
           }
         }
@@ -115,8 +123,7 @@ export default defineComponent({
       this.uncheckToggles();
     },
     toggleAll(metaLabel: metaLabel_t) {
-      this.checkBoxesAll[metaLabel] = !this.checkBoxesAll[metaLabel];
-      for (const token in this.treeJson) {
+      for (const token in this.checkBoxes) {
         this.checkBoxes[token][metaLabel] = this.checkBoxesAll[metaLabel];
       }
     },

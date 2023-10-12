@@ -1,7 +1,6 @@
 <template>
   <q-page :class="$q.dark.isActive ? 'bg-dark' : 'bg-white'">
     <div class="q-pa-md q-gutter-sm">
-      <EmailCollectDialog v-if="shareEmail" />
       <section class="sectionfscreen" @mousemove="xCoordinate">
         <q-card flat class="fixed-center">
           <q-card-section>
@@ -309,20 +308,14 @@
 </template>
 
 <script lang="ts">
-import EmailCollectDialog from '../components/Index/EmailCollectDialog.vue';
 
 import { notifyMessage } from 'src/utils/notify';
-import { mapActions, mapState } from 'pinia';
-import { useUserStore } from 'src/pinia/modules/user';
 
 import { openURL, copyToClipboard, LocalStorage } from 'quasar';
 import { defineComponent } from 'vue';
 
 export default defineComponent({
   name: 'PageIndex',
-  components: {
-    EmailCollectDialog,
-  },
   data() {
     return {
       presentation: `
@@ -341,7 +334,6 @@ export default defineComponent({
     myColor(): string {
       return `hsl(${this.xcursor}, 50%, 50%)`;
     },
-    ...mapState(useUserStore, ['shareEmail']),
   },
   methods: {
     openURL,

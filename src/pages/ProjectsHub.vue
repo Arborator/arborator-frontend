@@ -1,5 +1,6 @@
 <template>
   <q-page :class="$q.dark.isActive ? 'bg-dark' : 'bg-grey-1'">
+    <EmailCollectDialog v-if="shareEmail" />
     <div class="q-pa-md row items-start q-gutter-md flex flex-center">
       <q-card flat>
         <q-card-section class="q-pa-md row items-start q-gutter-md">
@@ -190,6 +191,7 @@ import ProjectItem from '../components/ProjectItem.vue';
 import CreaProjectCard from '../components/CreaProjectCard.vue';
 import ProjectSettingsView from '../components/ProjectSettingsView.vue';
 import ConfirmAction from '../components/ConfirmAction.vue';
+import EmailCollectDialog from 'src/components/Index/EmailCollectDialog.vue';
 import { mapState, mapWritableState } from 'pinia';
 import { useUserStore } from 'src/pinia/modules/user';
 import { useProjectStore } from 'src/pinia/modules/project';
@@ -206,6 +208,7 @@ export default defineComponent({
     CreaProjectCard,
     ProjectSettingsView,
     ConfirmAction,
+    EmailCollectDialog
   },
   data() {
     const projects: project_extended_t[] = [];
@@ -243,7 +246,7 @@ export default defineComponent({
     };
   },
   computed: {
-    ...mapState(useUserStore, ['isLoggedIn', 'username']),
+    ...mapState(useUserStore, ['isLoggedIn', 'username', 'shareEmail']),
     ...mapWritableState(useProjectStore, ['reloadProjects']),
     myOldProjects(): project_extended_t[] {
       return this.visibleProjects.filter((project) => {

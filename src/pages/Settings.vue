@@ -54,9 +54,7 @@
 </template>
 
 <script lang="ts">
-import api from '../api/backend-api';
 
-import { notifyError, notifyMessage } from 'src/utils/notify';
 import { mapState, mapWritableState, mapActions } from 'pinia';
 import { useUserStore } from 'src/pinia/modules/user';
 import { defineComponent } from 'vue';
@@ -72,8 +70,8 @@ export default defineComponent({
     onSubmitModifications() {
       const data = {
         email: this.email as string,
-        first_name: this.first_name as string,
-        family_name: this.family_name as string,
+        first_name: this.first_name as string || '',
+        family_name: this.family_name as string || '',
       };
       this.updateUserInformation(data);
     },

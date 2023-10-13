@@ -87,6 +87,11 @@
         >
           <q-tooltip>{{ $t('grewSearch.showDiffFeaturesTooltip') }}</q-tooltip>
         </q-select> 
+        <div class="q-pt-md text-body1">
+          <span>{{ Object.keys(filteredTrees).length }} trees  
+          <q-tooltip>{{numberOfTreesPerUser}}</q-tooltip> 
+          </span>     
+        </div>
       </div>
     </template>
     <template v-slot:after>
@@ -186,7 +191,7 @@ export default defineComponent({
   computed: {
     ...mapState(useProjectStore, ['blindAnnotationMode', 'isValidator', 'featuresSet']),
     ...mapState(useGrewSearchStore, ['pendingModifications']),
-    ...mapState(useTreesStore, ["trees", "filteredTrees", "loading", "numberOfTrees", "userIds", "blindAnnotationLevel"]),
+    ...mapState(useTreesStore, ["trees", "filteredTrees", "loading", "numberOfTreesPerUser","numberOfTrees", "userIds", "blindAnnotationLevel"]),
     ...mapState(useTagsStore, ["defaultTags"]),
     ...mapWritableState(useTreesStore, ["textFilter", "usersToHaveTree", "usersToNotHaveTree", "usersToHaveDiffs", "usersToNotHaveDiffs", "featuresSetForDiffs", "selectedTags"]),
   },
@@ -198,7 +203,6 @@ export default defineComponent({
       .then(() => {
         this.scrollToIndexFromURL();
       });
-
     document.title = `${this.projectname}/${this.samplename}`;
     LocalStorage.remove('save_status');
     this.calculateHeight();

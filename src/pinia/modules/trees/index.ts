@@ -7,6 +7,7 @@ import {
 } from 'src/api/backend-types';
 import {sentenceConllToJson, SentenceJson} from "conllup/lib/conll";
 import { useTagsStore } from '../tags';
+import { stat } from 'fs';
 
 export const useTreesStore = defineStore('trees', {
   state: () => {
@@ -27,6 +28,14 @@ export const useTreesStore = defineStore('trees', {
   getters: {
     numberOfTrees(state) {
       return Object.keys(state.trees).length;
+    },
+    numberOfTreesPerUser(state){
+      const counter: {[key: string]: number} = {}
+      const treesConlls = state.filteredTrees.map((sentence) => sentence.conlls)
+      for (const user of this.userIds){
+        counter[user as string] = treesConlls.filter(conll => user as string in conll).length
+      }
+      return counter
     },
     userIds() {
       const userIds = new Set();

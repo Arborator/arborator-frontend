@@ -56,7 +56,7 @@
                 label="Select set of users"
               />
             </div>
-            <q-btn-dropdown class="col-1" outline split color="primary" :label="filter.operator">
+            <q-btn-dropdown outline split color="primary" :label="filter.operator">
               <q-list v-for="value of filterOperators">
                 <q-item clickable @click="filter.operator = value">
                   <q-item-section>{{ value }}</q-item-section>

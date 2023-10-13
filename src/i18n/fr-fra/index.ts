@@ -225,6 +225,7 @@ export default {
     create: 'Créer',
     createMessage: 'est créé',
     inputWarning: 'Veuillez taper quelque chose',
+    selectWarning: 'Veuillez choisir quelque chose',
     corpusConfig: 'La configuration du corpus',
     enterLanguage: 'Saisir la langue du projet',
     annotSettings: "Les paramètres d'annotation",

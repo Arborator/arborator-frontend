@@ -232,6 +232,7 @@ export default {
     create: 'Create',
     createMessage: 'is created',
     inputWarning: 'Please type something',
+    selectWarning: 'Please select something',
     corpusConfig: 'Corpus configuration',
     enterLanguage: 'Enter language',
     annotSettings: 'Annotation settings',

@@ -18,7 +18,7 @@
             outlined
             id="projectnameinput"
             v-model="project.projectName"
-            :label="$t('createProjectCard.projectName')"
+            :label="$t('createProjectCard.projectName')+' *'"
             lazy-rules
             :rules="[(val) => (val && val.length > 0) || $t('createProjectCard.inputWarning')]"
           />
@@ -74,7 +74,13 @@
           </div>
           <div class="row q-gutter-md">
             <div class="col">
-              <LanguageSelect  :multiple="false" :languages-list="languagesList" @selected-value="getSelectedLanguage" />
+              <LanguageSelect  
+                :multiple="false" 
+                :languages-list="languagesList" 
+                :label="' *'"
+                :rules="[(val) => (val && val.length > 0) || $t('createProjectCard.inputWarning')]"
+                @selected-value="getSelectedLanguage" 
+              />
             </div>
             <div class="col">
               <q-select
@@ -84,7 +90,9 @@
                 :options="annotationConfigOptions"
                 stack-label
                 emit-value
-                :label="$t('createProjectCard.annotSettings')"
+                lazy-rules
+                :rules="[(val) => (val && val.length > 0) || $t('createProjectCard.selectWarning')]"
+                :label="$t('createProjectCard.annotSettings')+ ' *'"
               >
                 <template v-slot:selected-item="scope">
                   {{ scope.opt.toUpperCase() }}
@@ -95,7 +103,7 @@
           <q-separator />
           <div class="row">
             <div class="col-md-7 text-h6">
-                {{ $t('createProjectCard.annotSettings') }}
+                {{ $t('createProjectCard.annotMode') }}
             </div>
             <div class="col-md-1 offset-md-4">
                 <q-btn outline round size="sm" color="primary" icon="question_mark"

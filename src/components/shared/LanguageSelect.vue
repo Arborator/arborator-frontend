@@ -11,7 +11,8 @@
         :multiple="multiple"
         stack-label
         emit-value
-        :label="$t('createProjectCard.enterLanguage')"
+        :rules="rules"
+        :label="$t('createProjectCard.enterLanguage')+label"
         @filter="filterLanguages"
     >
         <template v-slot:selected-item="scope">
@@ -55,8 +56,15 @@ export default defineComponent({
         languagesList: {
             type: Object as PropType<language_t[]>,
             required: true,
+        },
+        label: {
+            type: String as PropType<string>,
+            default: '',
+        },
+        rules: {
+            type: Object as PropType<[]>,
+            default: []
         }
-
   },
   data() {
     const filteredLanguagesList: language_t[] = [];

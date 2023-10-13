@@ -243,13 +243,13 @@ export default defineComponent({
         if(filter.choice === 'Trees' && filter.operator === 'Have') {
           this.usersToHaveTree = filter.setUsers;
         }
-        if(filter.choice === 'Trees' && filter.operator === 'Have not') {
+        if(filter.choice === 'Trees' && filter.operator === 'Not Have') {
           this.usersToNotHaveTree = filter.setUsers;
         }
         if(filter.choice === 'Differences' && filter.operator === 'Have') {
           this.usersToHaveDiffs = filter.setUsers;
         }
-        if(filter.choice === 'Differences' && filter.operator === 'Have not') {
+        if(filter.choice === 'Differences' && filter.operator === 'Not Have') {
           this.usersToNotHaveDiffs = filter.setUsers;
         }
       }

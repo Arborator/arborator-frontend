@@ -70,23 +70,24 @@
                 </q-item>
               </q-list>
             </q-btn-dropdown>
+            <q-select
+              v-if="filter.choice == 'Differences'"
+              class="col-2"
+              dense
+              outlined
+              v-model="filter.diffSetFeatures"
+              multiple
+              :options="featuresSet"
+              use-chips
+              stack-label
+              :label="$t('grewSearch.showDiffFaturesSelect')"
+            >
+              <q-tooltip>{{ $t('grewSearch.showDiffFeaturesTooltip') }}</q-tooltip>
+            </q-select> 
             <q-btn v-if="index != 0" outline class="col-1" color="primary" icon="delete" @click="removeRow(index)" />
             <q-btn v-if="index == listFilters.length-1 && index < 3 " outline class="col-1" color="primary" icon="add" @click="addRow()" />
           </div>
         </div>
-        <q-select
-          dense
-          outlined
-          class="q-pt-md"
-          v-model="featuresSetForDiffs"
-          multiple
-          :options="featuresSet"
-          use-chips
-          stack-label
-          :label="$t('grewSearch.showDiffFaturesSelect')"
-        >
-          <q-tooltip>{{ $t('grewSearch.showDiffFeaturesTooltip') }}</q-tooltip>
-        </q-select> 
         <div class="q-pt-md text-body1">
           <span>{{ Object.keys(filteredTrees).length }} trees  
           <q-tooltip>{{numberOfTreesPerUser}}</q-tooltip> 
@@ -178,7 +179,7 @@ export default defineComponent({
     const splitterHeight: number = 0; 
     const filterOperators: string[] = ['Have', 'Not Have'];
     const filterChoices: string[] = ['Trees', 'Differences'];
-    const listFilters: { setUsers: string[], operator: string, choice: string} [] = [];
+    const listFilters: { setUsers: string[], operator: string, choice: string, diffSetFeatures: string[]} [] = [];
     return {
       selectedUsers: [],
       filterChoices,
@@ -193,7 +194,7 @@ export default defineComponent({
     ...mapState(useGrewSearchStore, ['pendingModifications']),
     ...mapState(useTreesStore, ["trees", "filteredTrees", "loading", "numberOfTreesPerUser","numberOfTrees", "userIds", "blindAnnotationLevel"]),
     ...mapState(useTagsStore, ["defaultTags"]),
-    ...mapWritableState(useTreesStore, ["textFilter", "usersToHaveTree", "usersToNotHaveTree", "usersToHaveDiffs", "usersToNotHaveDiffs", "featuresSetForDiffs", "selectedTags"]),
+    ...mapWritableState(useTreesStore, ["textFilter", "usersToHaveTree", "usersToNotHaveTree", "usersToHaveDiffs", "usersToNotHaveDiffs", "featuresSetForDiffs", "featuresSetForNotDiffs", "selectedTags"]),
   },
   created() {
     window.addEventListener('resize', this.calculateHeight);
@@ -210,6 +211,7 @@ export default defineComponent({
       { setUsers: [], 
         operator: this.filterOperators[0], 
         choice: this.filterChoices[0],
+        diffSetFeatures: [],
     });
   },
   beforeUnmount() {
@@ -247,6 +249,8 @@ export default defineComponent({
       this.usersToNotHaveDiffs = [];
       this.usersToHaveDiffs = [];
       this.usersToNotHaveDiffs = [];
+      this.featuresSetForDiffs = [];
+      this.featuresSetForNotDiffs = [];
       for(const filter of this.listFilters){
         if(filter.choice === 'Trees' && filter.operator === 'Have') {
           this.usersToHaveTree = filter.setUsers;
@@ -256,9 +260,11 @@ export default defineComponent({
         }
         if(filter.choice === 'Differences' && filter.operator === 'Have') {
           this.usersToHaveDiffs = filter.setUsers;
+          this.featuresSetForDiffs = filter.diffSetFeatures;
         }
         if(filter.choice === 'Differences' && filter.operator === 'Not Have') {
           this.usersToNotHaveDiffs = filter.setUsers;
+          this.featuresSetForNotDiffs = filter.diffSetFeatures;
         }
       }
       this.applyFilterTrees();
@@ -268,6 +274,7 @@ export default defineComponent({
         setUsers: [],
         operator: this.filterOperators[0],
         choice: this.filterChoices[0],
+        diffSetFeatures: [],
       })
     },
     removeRow(index: number){
@@ -286,6 +293,7 @@ export default defineComponent({
         { setUsers: [], 
           operator: this.filterOperators[0], 
           choice: this.filterChoices[0],
+          diffSetFeatures: [],
       });
     },
   },

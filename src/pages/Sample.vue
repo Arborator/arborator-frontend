@@ -243,6 +243,10 @@ export default defineComponent({
       }
     },
     applyFilter(){
+      this.usersToHaveTree = [];
+      this.usersToNotHaveDiffs = [];
+      this.usersToHaveDiffs = [];
+      this.usersToNotHaveDiffs = [];
       for(const filter of this.listFilters){
         if(filter.choice === 'Trees' && filter.operator === 'Have') {
           this.usersToHaveTree = filter.setUsers;

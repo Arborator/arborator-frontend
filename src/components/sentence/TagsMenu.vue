@@ -1,53 +1,54 @@
 <template>
-    <q-menu style="min-height: 200px;width: 300px;" class="q-gutter-sm">
+    <q-menu style="min-height: 200px; width:500px;" class="q-gutter-sm">
         <div class="row text-h6">
             {{ $t('sentenceCard.addTag') }}
         </div>
         <q-separator />
-        <div class="row flex flex-center">
-            <q-select 
-                outlined 
-                dense 
-                v-model="tags" 
-                use-input 
-                multiple 
-                option-value="value" 
-                hide-dropdown-icon
-                input-debounce="0" 
-                :label="$t('tagsMenu.enterTags')"
-                :options="filteredTags" 
-                emit-value 
-                @filter="filterTags"
-                @new-value="createUserTag"
-                style="width: 270px;"
-                :error="tagsFormatError"
-                :error-message="$t('tagsMenu.tagsFormatError')"
-            >
-                <template v-slot:selected-item="scope">
-                    <q-chip removable @remove="scope.removeAtIndex(scope.index)" :tabindex="scope.tabindex"
-                        text-color="primary" size="sm">
-                        {{ scope.opt }}
-                    </q-chip>
-                </template>
-                <template class="q-pa-md" v-slot:option="scope">
-                    <div class="row q-pa-xs">
-                        <q-chip v-bind="scope.itemProps" icon="add" :color="scope.opt.color" size="sm">
-                            {{ scope.opt.value }}
+        <div class="row q-pa-md q-gutter-md">
+            <div class="col-9">
+                <q-select 
+                    outlined 
+                    dense 
+                    v-model="tags" 
+                    use-input 
+                    multiple 
+                    option-value="value" 
+                    hide-dropdown-icon
+                    input-debounce="0" 
+                    :label="$t('tagsMenu.enterTags')"
+                    :options="filteredTags" 
+                    emit-value 
+                    @filter="filterTags"
+                    @new-value="createUserTag"
+                    :error="tagsFormatError"
+                    :error-message="$t('tagsMenu.tagsFormatError')"
+                >
+                    <template v-slot:selected-item="scope">
+                        <q-chip removable @remove="scope.removeAtIndex(scope.index)" :tabindex="scope.tabindex"
+                            text-color="primary" size="sm">
+                            {{ scope.opt }}
                         </q-chip>
-                    </div>
-                    <q-separator />
-                </template>
-                <template v-slot:no-option>
-                    <q-item>
-                        <q-item-section class="text-grey">
-                            {{ $t('tagsMenu.createNewTag') }}
-                        </q-item-section>
-                    </q-item>
-                </template>
-            </q-select>
-        </div>
-        <div class="row flex flex-center">
-            <q-btn :disable="tags.length === 0" color="primary" @click="addNewTag()" :label="$t('tagsMenu.addTags')"/>
+                    </template>
+                    <template class="q-pa-md" v-slot:option="scope">
+                        <div class="row q-pa-xs">
+                            <q-chip v-bind="scope.itemProps" icon="add" :color="scope.opt.color" size="sm">
+                                {{ scope.opt.value }}
+                            </q-chip>
+                        </div>
+                        <q-separator />
+                    </template>
+                    <template v-slot:no-option>
+                        <q-item>
+                            <q-item-section class="text-grey">
+                                {{ $t('tagsMenu.createNewTag') }}
+                            </q-item-section>
+                        </q-item>
+                    </template>
+                </q-select>
+            </div>
+            <div class="col-2">
+                <q-btn :disable="tags.length === 0" color="primary" @click="addNewTag()" :label="$t('tagsMenu.addTags')"/>
+            </div>
         </div>
     </q-menu>
 </template>

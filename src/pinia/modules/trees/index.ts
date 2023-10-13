@@ -7,7 +7,6 @@ import {
 } from 'src/api/backend-types';
 import {sentenceConllToJson, SentenceJson} from "conllup/lib/conll";
 import { useTagsStore } from '../tags';
-import { stat } from 'fs';
 
 export const useTreesStore = defineStore('trees', {
   state: () => {

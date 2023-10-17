@@ -49,6 +49,7 @@
               :reactive-sentences-obj="reactiveSentencesObj"
               :sentence-bus="sentenceBus" 
               :open-tab-user="openTabUser"
+              :sentence="sentenceData"
             />
             <q-tooltip>{{ $t('sentenceCard.addTag') }}</q-tooltip>
           </q-btn>
@@ -407,7 +408,7 @@ export default defineComponent({
       }
     },
     removeUserTag(tag: string) {
-      this.removeTag(this.sentence.sample_name as string, tag, this.sentenceBus, this.openTabUser );
+      this.removeTag(this.sentenceData, tag, this.sentenceBus, this.openTabUser );  
     },
     /**
      * Receive canUndo, canRedo status from VueDepTree child component and

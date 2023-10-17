@@ -57,6 +57,7 @@ import api from '../../api/backend-api';
 
 import { notifyError, notifyMessage } from 'src/utils/notify';
 import { reactive_sentences_obj_t, sentence_bus_t } from 'src/types/main_types';
+import { grewSearchResultSentence_t } from 'src/api/backend-types';
 import { mapState, mapActions } from 'pinia';
 import { useUserStore } from 'src/pinia/modules/user';
 import { useTagsStore, tag_t } from 'src/pinia/modules/tags';
@@ -81,7 +82,11 @@ export default defineComponent({
         openTabUser: {
             type: String as PropType<string>,
             required: true,
-        }
+        },
+        sentence: {
+            type: Object as PropType<grewSearchResultSentence_t>,
+            required: true,
+        },
     },
     data() {
         const filteredTags: tag_t[] = [];
@@ -125,6 +130,8 @@ export default defineComponent({
                         userId: this.openTabUser,
                     });
                     this.tags = [];
+                    const exportedConll = this.reactiveSentencesObj[this.openTabUser].exportConll();
+                    this.sentence.conlls[this.openTabUser] = exportedConll;
                     notifyMessage({ message: 'Tags Saved' });
                 })
                 .catch((error) => {

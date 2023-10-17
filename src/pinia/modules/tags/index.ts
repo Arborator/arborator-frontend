@@ -3,6 +3,7 @@ import { notifyError, notifyMessage} from 'src/utils/notify';
 import { defineStore } from "pinia";
 import { useProjectStore } from '../project';
 import { sentence_bus_t } from 'src/types/main_types';
+import { grewSearchResultSentence_t } from 'src/api/backend-types';
 
 export interface tag_t {
     value: string, 
@@ -17,9 +18,9 @@ export const useTagsStore = defineStore('tags', {
             { value: 'NEW', color: 'yellow-4' },
             { value: 'ASAP', color: 'deep-orange-4'}
         ]; 
-                return {
+        return {
           defaultTags, 
-                  }
+        }
     },
     actions: {
         getUserTags(username: string){
@@ -38,11 +39,12 @@ export const useTagsStore = defineStore('tags', {
                 notifyError({error})
               });
         },
-        removeTag(sampleName: string, tag: string, sentenceBus: sentence_bus_t, username: string ){
+        removeTag(sentence: grewSearchResultSentence_t, tag: string, sentenceBus: sentence_bus_t, username: string ){
             const data = {
                 tag: tag, 
                 tree: sentenceBus.sentenceSVGs[username].exportConll(),
             };
+            const sampleName = sentence.sample_name as string;
             api.removeTag(useProjectStore().name, sampleName, data) 
                .then((response) => {
                     notifyMessage({ message: 'The tag is removed'});
@@ -53,6 +55,8 @@ export const useTagsStore = defineStore('tags', {
                         },
                         userId: username,
                     });
+                    const exportedConll = sentenceBus.sentenceSVGs[username].exportConll();
+                    sentence.conlls[username] = exportedConll;
                })
                .catch((error) => {
                     notifyError({error})

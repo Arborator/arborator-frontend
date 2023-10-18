@@ -536,7 +536,6 @@ export default defineComponent({
      */
     rightClickHandler(e: MouseEvent, user: string) {
       e.preventDefault();
-      if (this.exerciseMode) return;
       if (!this.diffMode) {
         // if user right click on one of the tab icon while diffMode was
         // disabled, it enable it and set to this tab user the diffUser

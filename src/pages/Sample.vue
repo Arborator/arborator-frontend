@@ -87,7 +87,15 @@
             :virtual-scroll-item-size="70"
           >
             <template #default="{ item, index }">
-              <SentenceCard :key="samplename + item.sent_id" :sentence="item" :index="index" search-result="" :exercise-level="exerciseLevel">
+              <SentenceCard 
+                :key="samplename + item.sent_id" 
+                :sentence="item" 
+                :index="index" 
+                search-result="" 
+                :exercise-level="exerciseLevel"
+                :is-focused="focusedSentences[index]"
+                @focused-sent="loseFocus"
+              >
               </SentenceCard>
             </template>
           </q-virtual-scroll>
@@ -147,11 +155,15 @@ export default defineComponent({
       required: true,
     },
   },
-  data(): { splitterModel: number; splitterHeight: number } {
+  data() { 
+    const splitterModel: number = 0; 
+    const splitterHeight: number = 0;
+    const focusedSentences: boolean[] = [];
     return {
-      splitterModel: 0,
-      splitterHeight: 0,
-    };
+      splitterModel,
+      splitterHeight,
+      focusedSentences,
+    }
   },
   computed: {
     ...mapState(useProjectStore, ['exerciseMode', 'isTeacher', 'featuresSet']),
@@ -183,8 +195,8 @@ export default defineComponent({
   mounted() {
     this.getSampleTrees({ projectName: this.projectname, sampleName: this.samplename }).then(() => {
       this.scrollToIndexFromURL();
-    });
-
+      this.focusedSentences = Array(Object.keys(this.filteredTrees).length).fill(false);
+    }); 
     document.title = `${this.projectname}/${this.samplename}`;
     LocalStorage.remove('save_status');
     this.calculateHeight();
@@ -220,6 +232,12 @@ export default defineComponent({
         this.splitterHeight = window.innerHeight - 35;
       }
     },
+    loseFocus(value: any){
+      const index = this.filteredTrees.findIndex(tree => tree.sent_id == value);
+      for (const sentId in this.focusedSentences){
+        this.focusedSentences[sentId] = parseInt(sentId) == index;
+      }
+    }
   },
 });
 </script>

@@ -164,7 +164,7 @@
         </q-tab>
       </q-tabs>
       <q-tab-panels v-model="openTabUser" @transition="transitioned" class="custom-frame1">
-        <q-tab-panel v-for="(tree, user) in filteredConlls" :key="user" :props="tree" :name="user" style="padding-bottom: 0; padding-top: 0">
+        <q-tab-panel tabindex="0" v-for="(tree, user) in filteredConlls" :key="user" :props="tree" :name="user" style="padding-bottom: 0; padding-top: 0" @focus="activateFocus(sentence.sent_id)">
           <q-card flat>
             <q-card-section :class="($q.dark.isActive ? '' : '') + ' scrollable'">
               <VueDepTree
@@ -281,6 +281,9 @@ export default defineComponent({
       default: () => [] as matches_t[],
       type: Object as PropType<matches_t>,
     },
+    isFocused: {
+      type: Boolean as PropType<boolean>,
+    }
   },
   data() {
     const hasPendingChanges: { [key: string]: boolean } = {};
@@ -306,6 +309,7 @@ export default defineComponent({
       canUndo: false,
       canRedo: false,
       canSave: true,
+      focused: false,
       hasPendingChanges,
       forceRerender: 0,
     };
@@ -317,7 +321,6 @@ export default defineComponent({
     ...mapState(useProjectStore, ['isAdmin', 'isTeacher', 'exerciseMode', 'shownMeta', 'getProjectConfig', 'canSaveTreeInProject']),
     ...mapState(useUserStore, ['isLoggedIn', 'username']),
     lastModifiedTime() {
-      // this.forceRerender; it was like this when i found it. Should it have = 0 ?
       const lastModifiedTime: { [key: string]: string } = {};
       for (const user of Object.keys(this.reactiveSentencesObj)) {
         const { timestamp } = this.reactiveSentencesObj[user].state.metaJson;
@@ -367,6 +370,12 @@ export default defineComponent({
       this.changeMetaText(newMetaText);
     });
   },
+  mounted(){
+    this.focused = this.isFocused as boolean;
+    window.addEventListener('keydown', (event) => {
+      this.handleShortcut(event, '')
+    });
+  },
   methods: {
     ...mapActions(useGrewSearchStore, ['removePendingModification']),
     openStatisticsDialog() {
@@ -389,7 +398,6 @@ export default defineComponent({
       this.sentenceBus.emit('export:PNG', { userId: this.openTabUser });
     },
     editTokens(event: Event) {
-      // only if a tab is open
       if (this.openTabUser !== '' && this.isAdmin) {
         this.sentenceBus.emit('open:tokensReplaceDialog', {
           userId: this.openTabUser,
@@ -419,11 +427,6 @@ export default defineComponent({
       this.canUndo = event.canUndo;
       this.canRedo = event.canRedo;
     },
-    /**
-     * Save the graph to backend after modifying its metadata and changing it into an object
-     *
-     * @returns void
-     */
     save(mode: string) {
       const openedTreeUser = this.openTabUser;
       let changedConllUser = this.username;
@@ -491,16 +494,6 @@ export default defineComponent({
         this.sentenceBus.emit('changed:metaText', { newMetaText });
       }
     },
-    /**
-     * Set the graph infos according to the event payload. This event shoudl be trigerred from the ConllGraph
-     *
-     * @returns void
-     */
-    onConllGraphUpdate(payload: any) {
-      this.graphInfo = payload;
-      if (this.graphInfo.dirty) this.addPendingModification(this.sentence.sent_id);
-      else this.removePendingModification(this.sentence.sent_id);
-    },
     openMetaDialog() {
       this.sentenceBus.emit('open:metaDialog', { userId: this.openTabUser });
     },
@@ -560,6 +553,26 @@ export default defineComponent({
         }
       }
     },
+    activateFocus(sentId: string) {
+      this.focused = true;
+      this.$emit('focused-sent', sentId);
+    },
+    handleShortcut(event: any, user: string){
+      if (this.openTabUser === '') {
+        return;
+      }
+      if (this.focused){
+        if (event.key === 's'){
+          this.save(user);
+        }
+        if (event.key === 'z' && this.canUndo){
+          this.undo();
+        }
+        if (event.key === 'y' && this.canRedo){
+          this.redo();
+        }
+    }
+    }
   },
 });
 </script>

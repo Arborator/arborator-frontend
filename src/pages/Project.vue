@@ -61,6 +61,7 @@
             table-style="max-height:80vh"
             :rows-per-page-options="[30]"
           >
+         
             <template #bottom>
               <q-pagination 
                 v-model="table.pagination.page" 
@@ -370,7 +371,6 @@
       <q-dialog v-model="projectSettingsDial" transition-show="slide-up" transition-hide="slide-down">
         <ProjectSettingsView :project-trees-from="getProjectTreesFrom" :projectname="projectName" style="width: 90vw"></ProjectSettingsView>
       </q-dialog>
-
       <!--Project information dialog-->
       <q-dialog v-model="simpleProjectInfoDialog">
         <q-card style="width: 300px">
@@ -526,12 +526,6 @@ export default defineComponent({
           label: this.$t('projectView.tableFields[4]'),
           sortable: true,
           field: 'roles.validator',
-        },
-        {
-          name: 'profs',
-          label: this.$t('projectView.tableFields[5]'),
-          sortable: true,
-          field: 'roles.prof',
         },
         {
           name: 'treesFrom',

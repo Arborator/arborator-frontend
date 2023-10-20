@@ -1,6 +1,6 @@
 <template>
   <q-dialog v-model="relationDialogOpened">
-    <q-card>
+    <q-card style="min-width: 700px">
       <q-bar v-if="gov && dep" class="bg-primary text-white">
         <div class="text-weight-bold">
           {{ $t('attributeTable.relation[0]') }} "{{ gov.FORM }}" {{ $t('attributeTable.relation[1]') }} "{{ dep.FORM }}"
@@ -8,27 +8,44 @@
         <q-space />
         <q-btn v-close-popup flat dense icon="close" />
       </q-bar>
-      <AttributeTable
-        :featdata="options.relav"
-        :columns="featTable.columns"
-        :feat-options="options.currentoptions"
-        open-features="false"
-        modifiable="false"
-        :title="$t('attributeTable.relation[2]')"
-        prepend="true"
-      ></AttributeTable>
-      <!-- @feature-changed="informFeatureChanged()" -->
-      <q-space />
-
+      <q-card-section v-for="(deprel, i) in deprels" class="q-gutter-md">
+        <div class="text-h6">
+          {{ deprel.name }}
+        </div>
+        <div class="row">
+          <div v-for="(val, j) in deprel.values" >
+            <q-chip 
+              outline 
+              v-if="val != ''"
+              color="primary" 
+              v-model:selected="selectedDep[i].selected[j]"
+              @update:selected="unselectOtherDep(i, j)" 
+            >
+            {{ val }}
+            </q-chip>
+          </div>
+        </div>
+        <q-separator />
+      </q-card-section>
       <q-card-actions>
-        <q-btn v-close-popup flat :label="$t('cancel')" style="width: 25%; margin-left: auto; margin-right: auto" />
-        <!-- @click="ondialoghide()" -->
+        <q-btn
+          v-close-popup
+          outline
+          color="primary"
+          :label="$t('delete')"
+          style="width: 25%; margin-left: auto; margin-right: auto"
+          @click="onDeleteRelation()"
+        />
         <q-space />
-        <q-btn v-close-popup color="negative" :label="$t('delete')" style="width: 25%; margin-left: auto" @click="onDeleteRelation()" />
-        <q-space />
-        <q-btn v-close-popup color="primary" label="Ok" style="width: 25%; margin-left: auto; margin-right: auto" @click="onChangeRelation()" />
+        <q-btn
+          id="catselectvalidate"
+          v-close-popup
+          color="primary"
+          label="Ok"
+          style="width: 25%; margin-left: auto; margin-right: auto"
+          @click="onChangeRelation()"
+        />
       </q-card-actions>
-      <!-- :disabled="!someFeatureChanged" -->
     </q-card>
   </q-dialog>
 </template>
@@ -39,7 +56,6 @@ import { PropType } from 'vue';
 import { sentence_bus_t } from 'src/types/main_types';
 import { mapState } from 'pinia';
 import { useProjectStore } from 'src/pinia/modules/project';
-import { annotationFeatures_t } from 'src/api/backend-types';
 import { tokenJson_T } from 'conllup/lib/conll';
 import conllup from 'conllup';
 const emptyTokenJson = conllup.emptyTokenJson;
@@ -55,31 +71,16 @@ export default defineComponent({
     },
   },
   data() {
-    const annof: annotationFeatures_t = {
-      META: [],
-      UPOS: [],
-      XPOS: [],
-      FEATS: [],
-      MISC: [],
-      DEPREL: [],
-      DEPS: [],
-    };
-    const shownFeatures: string[] = [];
-    const shownMeta: string[] = [];
+    const selectedDep: {
+      name: string;
+      selected: boolean[];
+    }[] = [];
     const dep: tokenJson_T = emptyTokenJson();
     const gov: tokenJson_T = emptyTokenJson();
-    const depDeprel = '';
-    const depDeprelSplitted: string[] = [];
-
-    const currentoptions: {
+    const deprelSplitted: string[] = [];
+    const deprels: {
       name: string;
       values: string[];
-      join: string;
-    }[] = [];
-
-    const relav: {
-      a: string;
-      v: string;
       join: string;
     }[] = [];
     return {
@@ -87,114 +88,60 @@ export default defineComponent({
       dep,
       gov,
       userId: '',
-      depDeprel,
-      depDeprelSplitted,
-      options: {
-        // attribute table dialog specific stuff
-        annof, // = annotationFeatures from conf!!!
-        shownFeatures,
-        shownMeta,
-        annofFEATS: {}, // obj version (instead of list)
-        annofMISC: {}, // obj version (instead of list)
-        splitregex: new RegExp('', ''),
-        relav,
-        extendedrel: false,
-        lemmaoptions: [{ name: 'Lemma', values: 'String' }],
-        currentoptions,
-      },
-      featTable: {
-        featl: [],
-        miscl: [],
-        lemma: [],
-        columns: [
-          {
-            name: 'a',
-            align: 'center',
-            label: 'Attribute',
-            field: 'a',
-            sortable: true,
-            style: 'width: 33%',
-          },
-          {
-            name: 'v',
-            label: 'Value',
-            field: 'v',
-            sortable: true,
-          },
-          {
-            name: 'actions',
-            label: 'Actions',
-            field: '',
-            align: 'center',
-            style: 'width: 8%',
-          },
-        ],
-      },
+      deprelSplitted,
+      deprels,
+      splitRegex: new RegExp('', ''),
+      selectedDep,
     };
   },
   computed: {
-    ...mapState(useProjectStore, ['annotationFeatures', 'shownFeatures', 'shownMeta']),
+    ...mapState(useProjectStore, ['annotationFeatures']),
   },
   created() {
-    this.options.annof = this.annotationFeatures;
-    this.options.shownFeatures = this.shownFeatures;
-    this.options.shownMeta = this.shownMeta;
-    // precompute to check for changes quickly:
-    this.options.annofFEATS = this.options.annof.FEATS.reduce((obj, r) => {
-      if (r.values) (obj as { [key: string]: string[] })[r.name] = r.values;
-      return obj;
-    }, {});
-    this.options.annofMISC = this.options.annof.MISC.reduce((obj, r) => {
-      if (r.values) (obj as { [key: string]: string[] | string })[r.name] = r.values;
-      return obj;
-    }, {});
-    this.options.splitregex = new RegExp(`[${this.options.annof.DEPREL.map(({ join }) => join).join('')}]`, 'g'); // = /[:@]/g
+    this.deprels = this.annotationFeatures.DEPREL;
+    this.splitRegex = new RegExp(`[${this.deprels.map(({ join }) => join).join('')}]`, 'g');
   },
   mounted() {
     this.sentenceBus.on('open:relationDialog', ({ dep, gov, userId }) => {
       this.dep = dep;
       this.gov = gov;
       this.userId = userId;
-      this.depDeprel = dep.DEPREL;
-      this.depDeprelSplitted = dep.DEPREL.split(this.options.splitregex);
+      this.deprelSplitted = this.dep.DEPREL.split(this.splitRegex);
 
-      /// /// TODO TO REFACTOR //////
-      const depr = this.options.annof.DEPREL;
-      this.options.currentoptions = depr;
-
-      this.options.relav = depr.map((sr) => ({
-        a: sr.name,
-        v: '',
-        join: sr.join,
+      this.selectedDep = this.deprels.map((dep) => ({
+        name: dep.name,
+        selected: Array(dep.values.length).fill(false),
       }));
 
-      for (let i = 0; i < this.depDeprelSplitted.length; i += 1) {
-        for (let ii = i; ii < depr.length; ii += 1) {
-          if (this.depDeprel.includes(depr[ii].join + this.depDeprelSplitted[i])) {
-            this.options.relav[ii] = {
-              a: depr[ii].name,
-              v: this.depDeprelSplitted[i],
-              join: depr[ii].join,
-            };
-            break;
+      for (let i = 0; i < this.deprelSplitted.length; i += 1) {
+        for (let ii = i; ii < this.deprels.length; ii += 1) {
+          if (dep.DEPREL.includes(this.deprels[ii].join + this.deprelSplitted[i])) {
+            this.selectedDep[ii].selected[this.deprels[ii].values.indexOf(this.deprelSplitted[i])] = true;
           }
         }
       }
       this.relationDialogOpened = true;
-
-      /// //// END TODO //////
     });
   },
   beforeUnmount() {
     this.sentenceBus.off('open:relationDialog');
   },
   methods: {
+    unselectOtherDep(depName: number, depValue: number ){
+      this.selectedDep[depName].selected.forEach((dep, i) => {
+        if (dep && i != depValue) {
+          this.selectedDep[depName].selected[i] = false;
+        }
+      });
+    },
     onChangeRelation() {
       this.relationDialogOpened = false;
-      const newDeprel = this.options.relav.reduce((tot, cur, i) => {
-        tot += this.options.relav[i].v ? this.options.annof.DEPREL[i].join + cur.v : '';
-        return tot;
-      }, '');
+      let newDeprel = ''
+      for(const i in this.deprels){
+        if (this.selectedDep[i].selected.includes(true)){
+          newDeprel += this.deprels[i].join + this.deprels[i].values[this.selectedDep[i].selected.indexOf(true)]
+        }
+      }
       if (this.gov.ID === undefined || this.gov.ID === null) {
         this.dep.DEPREL = newDeprel || '_';
       } else {

@@ -66,7 +66,7 @@
                       icon="cloud_upload"
                       round
                       :loading="uploadSample.submitting"
-                      :disable="disableUploadBtn || customUserId === ''"
+                      :disable="disableUploadBtn || customUserId === '' || customUserId.toLowerCase() ==='validated' "
                       @click="uploadSamples()"
                     />
                     <q-tooltip v-if="uploadSample.attachment.file.length == 0" content-class="text-white bg-primary">
@@ -80,7 +80,10 @@
                   outlined
                   v-model="customUserId"
                   label="Custom UserId By default it's your username"
-                  :rules="[(val) => (val && val.length > 0) || 'You can not upload file without userId please type something']"
+                  :rules="[
+                    val => val.toLowerCase() != 'validated' ||'validated is reserved username for ArboratorGrew',
+                    val => val && val.length > 0 || 'You can not upload file without userId please type something']
+                  "
                 />
               </div>
             </q-tab-panel>

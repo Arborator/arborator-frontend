@@ -37,6 +37,7 @@
             multiple
             label="Files to parse"
             stack-label
+            use-chips
           />
           <q-toggle :disable="disableUI" v-model="param.isCustomTrainingUser" label="Custom Training user" />
           <q-select
@@ -82,6 +83,7 @@
             multiple
             label="Files to parse"
             stack-label
+            use-chips
           />
           <q-input
             :disable="disableUI"

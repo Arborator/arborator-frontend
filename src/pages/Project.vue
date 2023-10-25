@@ -59,6 +59,7 @@
             card-class="shadow-8"
             virtual-scroll
             table-style="max-height:80vh"
+            hide-no-data
             :rows-per-page-options="[30]"
           >
          

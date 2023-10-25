@@ -163,11 +163,6 @@ export default {
     project: 'Project',
     tooltipSettings: 'Modify project settings',
     tooltipViewAdmin: 'View administrator information',
-    nodata: [
-      'Oops! No data to display...',
-      'No sample yet. This project is empty, please upload some conll files.',
-      'Ask an administrator to add files',
-    ],
     tooltipAddSample: 'Add new samples',
     tooltipExportSample: ['Select the samples you want to export', 'Export selected samples'],
     tooltipDeleteSample: ['Select the samples you want to delete', 'Delete selected samples'],

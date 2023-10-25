@@ -161,11 +161,6 @@ export default {
     project: 'Projet',
     tooltipSettings: 'Modifier les paramètres du projet',
     tooltipViewAdmin: "Voir les informations de l'administrateur",
-    nodata: [
-      "Oups! Il n'y a rien à afficher...",
-      "Aucun n'échantillon n'est présent. Ce projet est vide, veuillez téléverser des fichiers conll.",
-      "Demandez à l'administrateur du projet d'ajouter des fichiers",
-    ],
     tooltipAddSample: 'Ajouter un nouvel échantillon',
     tooltipExportSample: ['Sélectionnez les échantillons à exporter', 'Exporter les échantillons sélectionnés'],
     tooltipDeleteSample: ['Sélectionnez les échantillons à supprimer', 'Supprimer les échantillons sélectionnés'],

@@ -173,18 +173,24 @@ export default defineComponent({
     ...mapState(useUserStore, ['isLoggedIn', 'avatar', 'username']),
     ...mapState(useProjectStore, ['blindAnnotationMode','shownFeaturesChoices', 'annotationFeatures', 'featuresSet', 'canSaveTreeInProject', 'canSeeOtherUsersTrees', 'isValidator']),
     userOptions() {
+      if(!this.canSaveTreeInProject && !this.isValidator) {
+        return this.usersToApplyOptions.slice(2);
+      }
       if(!this.canSeeOtherUsersTrees) {
         return this.usersToApplyOptions.slice(0, 1);
       }
-      if(this.blindAnnotationMode){
+      if(this.blindAnnotationMode) {
         if (this.searchReplaceTab === 'REWRITE'){
-          return this.usersToApplyOptions.slice(2).filter((option) => option.value !== 'all');
-        } else {
+          return this.usersToApplyOptions.filter((option) => option.value === 'validated');
+        }
+        else {
           return this.usersToApplyOptions.slice(2);
-        } 
+        }
       }
-      if(!this.blindAnnotationMode && this.searchReplaceTab === 'REWRITE') {
-        return this.usersToApplyOptions.filter(option => option.value !== 'all')
+      else {
+        if (this.searchReplaceTab === 'REWRITE'){
+          return this.isValidator ? this.usersToApplyOptions.slice(0,4): this.usersToApplyOptions.slice(0,3);
+        } 
       }
       return this.usersToApplyOptions;     
     },
@@ -203,7 +209,7 @@ export default defineComponent({
       this.currentQuery = this.lastQuery.text;
     }
     this.searchReplaceTab = this.currentQueryType;
-
+    this.usersToApply = this.userOptions[0];
   },
   methods: {
     ...mapActions(useGrewSearchStore, ['changeLastGrewQuery']),

@@ -336,7 +336,7 @@ export default {
     features: 'Caractéristiques de',
     category: ['Sélectionner une catégorie pour', 'Catégorie'],
     metadata: 'Les métadonnées de cette phrase',
-    relation: ['Sélectionner une relation qui va de', 'vers', 'Relation de dépendence'],
+    relation: ['Sélectionner une relation qui va de', 'vers', 'Actuelle'],
     tokenReplaceDial: [
       'Remplacer',
       'par',

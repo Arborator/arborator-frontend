@@ -4,19 +4,21 @@
       <q-bar v-if="gov && dep" class="bg-primary text-white">
         <div class="text-weight-bold">
           {{ $t('attributeTable.relation[0]') }} "{{ gov.FORM }}" {{ $t('attributeTable.relation[1]') }} "{{ dep.FORM }}"
+           ( {{ $t('attributeTable.relation[2]') }} : {{ activeRelation }})
         </div>
         <q-space />
         <q-btn v-close-popup flat dense icon="close" />
       </q-bar>
       <q-card-section v-for="(deprel, i) in deprels" class="q-gutter-md">
         <div class="text-h6">
-          {{ deprel.name }}
+          {{ deprel.name }} : {{ deprels[i].values[selectedDep[i].selected.indexOf(true)] }}
         </div>
         <div class="row">
           <div v-for="(val, j) in deprel.values" >
             <q-chip 
-              outline 
+              :outline="!selectedDep[i].selected[j]"
               v-if="val != ''"
+              text-color="white"
               color="primary" 
               v-model:selected="selectedDep[i].selected[j]"
               @update:selected="unselectOtherDep(i, j)" 
@@ -92,10 +94,20 @@ export default defineComponent({
       deprels,
       splitRegex: new RegExp('', ''),
       selectedDep,
+      newDeprel: '',
     };
   },
   computed: {
     ...mapState(useProjectStore, ['annotationFeatures']),
+    activeRelation(){
+      let newDeprel = '';
+      for(const i in this.deprels){
+        if (this.selectedDep[i].selected.includes(true)){
+          newDeprel += this.deprels[i].join + this.deprels[i].values[this.selectedDep[i].selected.indexOf(true)]
+        }
+      }
+      return newDeprel;
+    },
   },
   created() {
     this.deprels = this.annotationFeatures.DEPREL;
@@ -136,16 +148,11 @@ export default defineComponent({
     },
     onChangeRelation() {
       this.relationDialogOpened = false;
-      let newDeprel = ''
-      for(const i in this.deprels){
-        if (this.selectedDep[i].selected.includes(true)){
-          newDeprel += this.deprels[i].join + this.deprels[i].values[this.selectedDep[i].selected.indexOf(true)]
-        }
-      }
+      this.newDeprel = this.activeRelation;
       if (this.gov.ID === undefined || this.gov.ID === null) {
-        this.dep.DEPREL = newDeprel || '_';
+        this.dep.DEPREL = this.newDeprel || '_';
       } else {
-        this.dep.DEPREL = newDeprel || '_';
+        this.dep.DEPREL = this.newDeprel || '_';
         this.dep.HEAD = parseInt(this.gov.ID, 10);
       }
       this.sentenceBus.emit('tree-update:token', {

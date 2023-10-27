@@ -343,7 +343,7 @@ export default {
     features: 'Features of',
     category: ['Select a category for', 'Category'],
     metadata: 'Metadata of this sentence',
-    relation: ['Select a relation going from', 'to', 'Dependency relation'],
+    relation: ['Select a relation going from', 'to', 'current'],
     tokenReplaceDial: ['Replacing', 'by', 'Changing tokens breaks the comparability of different annotations of the same sentence', 'Replacement'],
   },
   cancel: 'Cancel',

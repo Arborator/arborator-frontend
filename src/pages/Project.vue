@@ -170,7 +170,7 @@
                 <!-- Single and main button for Constructicon -->
                 <div>
                   <q-btn v-if="canSaveTreeInProject" flat icon="account_tree" @click="isShowConstructiconDialogCop = true">
-                    <q-tooltip content-class="text-body2 bg-primary"> See Constructicon </q-tooltip>
+                    <q-tooltip content-class="text-body2 bg-primary"> {{ $t('projectView.tooltipConstructicon') }}  </q-tooltip>
                   </q-btn>
                 </div>
 
@@ -184,7 +184,7 @@
                     @click="isShowSyncDialog = true"
                   >
                   </q-btn>
-                  <q-tooltip> Synchronize with github </q-tooltip>
+                  <q-tooltip> {{ $t('projectView.tooltipSyncGit') }} </q-tooltip>
                 </div>
 
                 <!-- Button for more options -->

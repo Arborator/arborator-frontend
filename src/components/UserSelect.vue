@@ -1,7 +1,7 @@
 <template>
   <q-card flat bordered class="col">
     <q-card-section class="row">
-      <div class="col-md-7 text-h6">Share "{{ projectName }}"</div>
+      <div class="col-md-7 text-h6">{{ $t('userSelect.share') }} "{{ projectName }}"</div>
       <div class="col-md-1 offset-md-4">
         <q-btn
           outline
@@ -29,7 +29,7 @@
             option-value="username"
             option-label="email"
             input-debounce="0"
-            label="Add new users"
+            :label="$t('userSelect.addUser')"
             :options="filteredUsers"
             @filter="filterOption"
           >
@@ -63,7 +63,7 @@
             </template>
             <template v-slot:no-option>
               <q-item>
-                <q-item-section class="text-grey"> No results </q-item-section>
+                <q-item-section class="text-grey">{{ $t('userSelect.noResult') }}</q-item-section>
               </q-item>
             </template>
           </q-select>
@@ -82,7 +82,7 @@
       </div>
     </q-card-section>
     <q-card-section class="q-pa-none" v-if="!(selectedUsers.length > 0)">
-      <div class="text-h6 q-pa-md">Users with access</div>
+      <div class="text-h6 q-pa-md">{{ $t('userSelect.userAccess') }}</div>
       <div>
         <q-list v-for="member in projectMembers">
           <q-item class="item">
@@ -99,7 +99,7 @@
               </q-item-label>
             </q-item-section>
             <q-item-section v-if="admins[0] === member.username" side>
-              <q-btn outline flat :disable="true" color="primary" label="Owner" />
+              <q-btn outline flat :disable="true" color="primary" :label="$t('userSelect.owner')" />
             </q-item-section>
             <q-item-section v-else side>
               <q-btn-dropdown flat outline color="primary" no-caps :label="userRole(member.username)">
@@ -109,7 +109,7 @@
                       <q-icon v-if="admins.includes(member.username)" name="done" />
                     </q-item-section>
                     <q-item-section>
-                      <q-item-label>Admin</q-item-label>
+                      <q-item-label>{{ $t('userSelect.roles[0]') }}</q-item-label>
                     </q-item-section>
                   </q-item>
                   <q-item clickable v-close-popup @click="updateExistingUserAccess(member, 'validator')">
@@ -117,7 +117,7 @@
                       <q-icon v-if="validators.includes(member.username)" name="done" />
                     </q-item-section>
                     <q-item-section>
-                      <q-item-label>Validator</q-item-label>
+                      <q-item-label>{{ $t('userSelect.roles[1]') }}</q-item-label>
                     </q-item-section>
                   </q-item>
                   <q-item clickable v-close-popup @click="updateExistingUserAccess(member, 'annotator')">
@@ -125,7 +125,7 @@
                       <q-icon v-if="annotators.includes(member.username)" name="done" />
                     </q-item-section>
                     <q-item-section>
-                      <q-item-label>Annotator</q-item-label>
+                      <q-item-label>{{ $t('userSelect.roles[2]') }}</q-item-label>
                     </q-item-section>
                   </q-item>
                   <q-item v-if="visibility == 0" clickable v-close-popup @click="updateExistingUserAccess(member, 'guest')">
@@ -133,13 +133,13 @@
                       <q-icon v-if="guests.includes(member.username)" name="done" />
                     </q-item-section>
                     <q-item-section>
-                      <q-item-label>Guest</q-item-label>
+                      <q-item-label>{{ $t('userSelect.roles[3]') }}</q-item-label>
                     </q-item-section>
                   </q-item>
                   <q-separator />
                   <q-item clickable v-close-popup @click="revokeUserAccess(member.username)">
                     <q-item-section>
-                      <q-item-label>Revoke access</q-item-label>
+                      <q-item-label>{{ $t('userSelect.revokeAccess')}}</q-item-label>
                     </q-item-section>
                   </q-item>
                 </q-list>
@@ -151,13 +151,13 @@
     </q-card-section>
     <q-card-section class="q-gutter-md" v-else>
       <div class="text-weight-regular">
-        <q-checkbox v-model="sendNotif" label="Send notification" />
+        <q-checkbox v-model="sendNotif" :label="$t('userSelect.sendNotfi')" />
       </div>
       <div class="row justify-between">
-        <q-btn outline icon="link" color="primary" label="Copy link" @click="copyLink()">
-          <q-tooltip content-class="bg-white text-primary">Copy the link</q-tooltip>
+        <q-btn outline icon="link" color="primary" :label="$t('userSelect.copyLink')" @click="copyLink()">
+          <q-tooltip content-class="bg-white text-primary">{{ $t('userSelect.copyLink') }}</q-tooltip>
         </q-btn>
-        <q-btn :disable="targetRole === 'Role'" color="primary" label="Share" @click="updateUserAccess" />
+        <q-btn :disable="targetRole === 'Role'" color="primary" :label="$t('userSelect.share')" @click="updateUserAccess" />
       </div>
     </q-card-section>
   </q-card>

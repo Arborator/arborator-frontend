@@ -3,13 +3,13 @@
     <q-bar class="bg-primary text-white">
       <q-toolbar-title>Constructicon</q-toolbar-title>
       <q-btn v-if="canSaveTreeInProject" flat dense icon="file_upload" @click="uploadConstructiconDialog = true">
-        <q-tooltip>upload existing constructicon</q-tooltip>
+        <q-tooltip>{{ $t('constructicon.uploadTooltip') }}</q-tooltip>
       </q-btn>
       <q-dialog v-model="uploadConstructiconDialog">
         <q-uploader :url="backendApi.generateURLforConstructiconUpload(name)" label="Choose a File" @uploaded="loadConstructiconEntries" />
       </q-dialog>
       <q-btn flat dense icon="file_download" @click="downloadConstructicon">
-        <q-tooltip>download this constructicon</q-tooltip>
+        <q-tooltip>{{ $t('constructicon.downloadTooltip') }}</q-tooltip>
       </q-btn>
       <q-btn v-close-popup flat dense icon="close" />
     </q-bar>
@@ -18,7 +18,7 @@
       <template v-slot:before>
         <div style="height: 100%; width: 100%; display: flex; flex-direction: column">
           <!-- Search bar -->
-          <q-input v-model="search" outlined dense debounce="300" placeholder="Search items...">
+          <q-input v-model="search" outlined dense debounce="300" :placeholder="$t('constructicon.searchLabel')">
             <template v-slot:append>
               <q-icon name="search" />
             </template>
@@ -41,7 +41,7 @@
             :disable="editMode"
             class="q-mt-md"
             color="primary"
-            label="Add new item"
+            :label="$t('constructicon.addNewItem')"
             icon="add"
             @click="addNewItem"
           />
@@ -53,8 +53,8 @@
           <!-- Entry content -->
           <div style="overflow-y: auto; max-height: calc(100% - 68px); padding: 10px">
             <div v-if="editMode">
-              <q-input outlined v-model="activeEntry.title" label="Title" class="q-mb-md" />
-              <q-input outlined v-model="activeEntry.description" label="Description" class="q-mb-md" />
+              <q-input outlined v-model="activeEntry.title" :label="$t('constructicon.title')" class="q-mb-md" />
+              <q-input outlined v-model="activeEntry.description" :label="$t('constructicon.description')" class="q-mb-md" />
             </div>
             <div v-else>
               <h6 class="q-my-sm">{{ activeEntry.title }}</h6>
@@ -62,7 +62,7 @@
             </div>
 
             <div>
-              <div class="text-h6 q-mb-xs">Grew Query</div>
+              <div class="text-h6 q-mb-xs">{{ $t('constructicon.grewQuery') }}</div>
               <!-- Replace the following line with your CodeMirror component -->
               <GrewCodeMirror v-model:value="activeEntry.grew_query" :disabled="editMode === false"></GrewCodeMirror>
             </div>
@@ -82,12 +82,12 @@
             <q-toolbar class="q-pa-md" style="display: flex; justify-content: space-between">
               <div style="display: flex; justify-content: space-between">
                 <q-btn v-if="canSaveTreeInProject" color="primary" @click="changeEditMode">
-                  {{ editMode ? 'Save' : 'Edit' }}
+                  {{ editMode ? $t('constructicon.saveBtn') : $t('constructicon.editBtn') }}
                 </q-btn>
-                <q-btn v-if="canSaveTreeInProject" color="primary" @click="deleteItem"> Delete </q-btn>
+                <q-btn v-if="canSaveTreeInProject" color="primary" @click="deleteItem">{{ $t('constructicon.deleteBtn') }}</q-btn>
               </div>
 
-              <q-btn :disabled="editMode" color="secondary" @click="grewSearch(activeEntry.grew_query)"> Search </q-btn>
+              <q-btn :disabled="editMode" color="secondary" @click="grewSearch(activeEntry.grew_query)"> {{ $t('constructicon.search') }} </q-btn>
             </q-toolbar>
           </div>
         </div>

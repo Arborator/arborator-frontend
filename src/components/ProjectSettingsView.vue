@@ -159,7 +159,7 @@
           </q-btn>
           <q-btn
             color="bg-primary"
-            label="Reset to SUD"
+            :label="$t('projectSettings.resetUD')"
             icon="replay"
             dense
             flat
@@ -170,7 +170,7 @@
           </q-btn>
           <q-btn
             color="bg-primary"
-            label="Reset to UD"
+            :label="$t('projectSettings.resetSUD')"
             icon="replay"
             dense
             flat

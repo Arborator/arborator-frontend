@@ -2,7 +2,7 @@
   <q-card flat bordered>
     <div class="row q-pa-md q-gutter-md">
       <div class="col">
-        <div class="text-h6 q-py-md">General Settings</div>
+        <div class="text-h6 q-py-md">{{ $t('parser.settings') }}</div>
         <q-separator />
         <div class="q-py-md">
           <q-option-group :disable="disableUI" :options="param.pipelineOptions" type="radio" v-model="param.pipelineChoice" />
@@ -15,18 +15,18 @@
             :disable="disableUI"
             v-model="param.baseModel"
             :options="param.baseModelsOptions"
-            :label="`Pretrain Model`"
-            hint="Optional; We will use this model as a pretrain model for your task"
+            :label="$t('parser.pretrainModel')"
+            :hint="$t('parser.pretrainModelHint')"
             clearable
           />
         </div>
       </div>
       <q-separator vertical inset class="q-mx-lg" />
       <div v-show="param.pipelineChoice !== 'PARSE_ONLY'" class="col">
-        <div class="text-h6 q-py-md">Train Settings</div>
+        <div class="text-h6 q-py-md">{{ $t('parser.trainSettings') }}</div>
         <q-separator />
         <div class="q-pa-sm">
-          <q-toggle :disable="disableUI" v-model="param.trainAll" label="Train on all files" />
+          <q-toggle :disable="disableUI" v-model="param.trainAll" :label="$t('parser.trainOnAllfiles')" />
           <q-select
             dense
             outlined
@@ -35,11 +35,11 @@
             v-model="param.trainSamplesNames"
             :options="allSamplesNames"
             multiple
-            label="Files to parse"
+            :label="$t('parser.filesToParse')"
             stack-label
             use-chips
           />
-          <q-toggle :disable="disableUI" v-model="param.isCustomTrainingUser" label="Custom Training user" />
+          <q-toggle :disable="disableUI" v-model="param.isCustomTrainingUser" :label="$t('parser.customUser')" />
           <q-select
             dense
             outlined
@@ -47,7 +47,7 @@
             :class="{ invisible: !param.isCustomTrainingUser }"
             v-model="param.trainingUser"
             :options="trainingTreesFrom"
-            label="Training user"
+            :label="$t('parser.trainingUser')"
             stack-label
           />
         </div>
@@ -69,10 +69,10 @@
       </div>
       <q-separator v-show="param.pipelineChoice !== 'PARSE_ONLY'" vertical inset class="q-mx-lg" />
       <div v-show="param.pipelineChoice !== 'TRAIN_ONLY'" class="col">
-        <div class="text-h6 q-py-md">Parse Settings</div>
+        <div class="text-h6 q-py-md">{{ $t('parser.parseSettings') }}</div>
         <q-separator />
         <div class="q-pa-md q-gutter-md">
-          <q-toggle :disable="disableUI" v-model="param.parseAll" label="Parse all files" />
+          <q-toggle :disable="disableUI" v-model="param.parseAll" :label="$t('parser.parseAllFiles')" />
           <q-select
             dense
             outlined
@@ -81,7 +81,7 @@
             v-model="param.parseSamplesNames"
             :options="allSamplesNames"
             multiple
-            label="Files to parse"
+            :label="$t('parser.filesToParse')"
             stack-label
             use-chips
           />
@@ -90,13 +90,13 @@
             dense
             outlined
             v-model="param.parserSuffix"
-            label="Parser suffix (for parsed sentences)"
-            :hint="'Parsing will go under the name `parser' + param.parserSuffix + '`'"
+            :label="$t('parser.parseSuffix')"
+            :hint="$t('parser.parseHint') + param.parserSuffix + '`'"
           />
         </div>
         <q-separator />
         <div class="q-pa-md">
-          <q-toggle :disable="disableUI" v-model="param.isCustomParsingUser" label="Custom Parsing user" />
+          <q-toggle :disable="disableUI" v-model="param.isCustomParsingUser" :label="$t('parser.customParserUser')" />
           <q-select
             :disable="disableUI"
             :class="{ invisible: !param.isCustomParsingUser }"
@@ -104,20 +104,20 @@
             dense
             outlined
             :options="parsingTreesFrom"
-            label="Parsing user"
+            :label="$t('parser.parseUser')"
             stack-label
           />
-          <q-toggle :disable="disableUI" v-model="param.keepHeads" label="keep existing heads" />
+          <q-toggle :disable="disableUI" v-model="param.keepHeads" :label="$t('parser.keepHeads')" />
         </div>
       </div>
       <q-separator v-show="param.pipelineChoice !== 'TRAIN_ONLY'" vertical inset class="q-mx-lg" />
       <div class="col">
-        <div class="text-h6 q-py-md">Pipeline Summary</div>
+        <div class="text-h6 q-py-md">{{ $t('parser.pipelineSummary') }}</div>
         <q-separator />
         <div class="q-pa-md">
-          <div v-if="param.pipelineChoice !== `PARSE_ONLY`" class="text-subtitle5 q-mb-xs">training sentences : {{ trainingSentencesCount }}</div>
-          <div v-if="param.pipelineChoice !== `TRAIN_ONLY`" class="text-subtitle5 q-mb-xs">parsing sentences : {{ parsingSentencesCount }}</div>
-          <div class="text-subtitle5 q-mb-xs">estimated time = {{ estimatedTime }}mn</div>
+          <div v-if="param.pipelineChoice !== `PARSE_ONLY`" class="text-subtitle5 q-mb-xs">{{ $t('parser.trainingSents') }} : {{ trainingSentencesCount }}</div>
+          <div v-if="param.pipelineChoice !== `TRAIN_ONLY`" class="text-subtitle5 q-mb-xs">{{ $t('parser.parseSents') }} : {{ parsingSentencesCount }}</div>
+          <div class="text-subtitle5 q-mb-xs">{{ $t('parser.timeEstimated') }} = {{ estimatedTime }}mn</div>
         </div>
 
         <q-btn
@@ -130,7 +130,7 @@
           @click="parserPipelineStart()"
         />
         <div v-if="taskStatus !== null">
-          <div class="text-subtitle5 q-mb-xs">Current task : {{ taskStatus.taskType }}</div>
+          <div class="text-subtitle5 q-mb-xs">{{ $t('parser.currentTask') }}: {{ taskStatus.taskType }}</div>
           <div v-if="taskStatus.taskAdditionalMessage" class="text-subtitle5 q-mb-xs">
             {{ taskStatus.taskAdditionalMessage }}
           </div>
@@ -212,9 +212,9 @@ export default defineComponent({
       param: {
         pipelineChoice: 'TRAIN_AND_PARSE',
         pipelineOptions: [
-          { label: 'Train and Parse', value: 'TRAIN_AND_PARSE' },
-          { label: 'Train Only', value: 'TRAIN_ONLY' },
-          { label: 'Parse Only', value: 'PARSE_ONLY' },
+          { label: this.$t('parser.parserChoices[0]'), value: 'TRAIN_AND_PARSE' },
+          { label: this.$t('parser.parserChoices[1]'), value: 'TRAIN_ONLY' },
+          { label: this.$t('parser.parserChoices[2]'), value: 'PARSE_ONLY' },
         ],
         baseModel: null,
         baseModelsOptions: [],

@@ -139,7 +139,7 @@ export default defineComponent({
     deleteSynchronization() {
       api
         .deleteSynchronization(this.projectName, this.username)
-        .then((response) => {
+        .then(() => {
           this.$emit('remove');
         })
         .catch((error) => {
@@ -154,7 +154,7 @@ export default defineComponent({
       const data = { repositoryName: this.repositoryName };
       api
         .pullChanges(this.projectName, this.username, data)
-        .then((response) => {
+        .then(() => {
           notifyMessage({ message: `The changes from ${this.repositoryName} are pulled in ${this.projectName}` });
           this.$emit('pulled');
         })

@@ -331,7 +331,7 @@ export default {
     return API.get<getGithubSynchronizedRepository_RV>(`/projects/${projectName}/synchronize-github`);
   },
   deleteSynchronization(projectName: string, username: string) {
-    return API.delete(`/projects/${projectName}/${username}/synchronize-github`);
+    return API.delete(`/projects/${projectName}/synchronize-github`);
   },
   getChanges(projectName: string, username: string) {
     return API.get(`/projects/${projectName}/${username}/synchronize-github/commit`);

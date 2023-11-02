@@ -112,6 +112,11 @@ export default defineComponent({
   created() {
     this.deprels = this.annotationFeatures.DEPREL;
     this.splitRegex = new RegExp(`[${this.deprels.map(({ join }) => join).join('')}]`, 'g');
+    document.addEventListener("keydown", (e: KeyboardEvent) => {
+      if (e.key === 'Enter') {
+        this.onChangeRelation();
+      }
+    });
   },
   mounted() {
     this.sentenceBus.on('open:relationDialog', ({ dep, gov, userId }) => {

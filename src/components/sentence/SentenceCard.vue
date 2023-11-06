@@ -3,9 +3,7 @@
     <div>
       <q-bar class="row items-center custom-frame1">
         <span class="text-grey" style="padding-left: 10px">{{ index + 1 }}</span>
-        <q-chip class="text-center" :color="$q.dark.isActive ? 'grey' : ''" dense>
-          {{ sentence.sent_id }} </q-chip
-        >&nbsp;&nbsp;&nbsp;
+        <q-chip class="text-center" :color="$q.dark.isActive ? 'grey' : ''" dense> {{ sentence.sent_id }} </q-chip>&nbsp;&nbsp;&nbsp;
         <q-input
           v-model="sentenceData.sentence"
           :style="openTabUser === '' ? 'width: 100%' : 'width: 65%'"
@@ -128,8 +126,8 @@
       </q-bar>
 
       <q-tabs
-        class="custom-frame1"
         v-model="openTabUser"
+        class="custom-frame1"
         :class="$q.dark.isActive ? 'text-grey-5' : 'text-grey-8'"
         dense
         :active-color="$q.dark.isActive ? 'primary' : 'purple-7'"
@@ -138,9 +136,9 @@
       >
         <!-- v-for="(tree, user) in filteredConlls" -->
         <q-tab
-          class="small-tab"
           v-for="(tree, user) in filteredConlls"
           :key="`${reactiveSentencesObj[user].state.metaJson.timestamp}-${user}`"
+          class="small-tab"
           :props="user"
           :name="user"
           :label="`${user}`"
@@ -163,8 +161,16 @@
           </q-tooltip>
         </q-tab>
       </q-tabs>
-      <q-tab-panels v-model="openTabUser" @transition="transitioned" class="custom-frame1">
-        <q-tab-panel tabindex="0" v-for="(tree, user) in filteredConlls" :key="user" :props="tree" :name="user" style="padding-bottom: 0; padding-top: 0" @focus="activateFocus(sentence.sent_id)">
+      <q-tab-panels v-model="openTabUser" keep-alive class="custom-frame1" @transition="transitioned">
+        <q-tab-panel
+          v-for="(tree, user) in filteredConlls"
+          :key="user"
+          tabindex="0"
+          :props="tree"
+          :name="user"
+          style="padding-bottom: 0; padding-top: 0"
+          @focus="activateFocus(sentence.sent_id)"
+        >
           <q-card flat>
             <q-card-section :class="($q.dark.isActive ? '' : '') + ' scrollable'">
               <VueDepTree
@@ -283,7 +289,7 @@ export default defineComponent({
     },
     isFocused: {
       type: Boolean as PropType<boolean>,
-    }
+    },
   },
   data() {
     const hasPendingChanges: { [key: string]: boolean } = {};
@@ -370,10 +376,10 @@ export default defineComponent({
       this.changeMetaText(newMetaText);
     });
   },
-  mounted(){
+  mounted() {
     this.focused = this.isFocused as boolean;
     window.addEventListener('keydown', (event) => {
-      this.handleShortcut(event, '')
+      this.handleShortcut(event, '');
     });
   },
   methods: {
@@ -556,22 +562,22 @@ export default defineComponent({
       this.focused = true;
       this.$emit('focused-sent', sentId);
     },
-    handleShortcut(event: any, user: string){
+    handleShortcut(event: any, user: string) {
       if (this.openTabUser === '') {
         return;
       }
-      if (this.focused){
-        if (event.key === 's'){
+      if (this.focused) {
+        if (event.key === 's') {
           this.save(user);
         }
-        if (event.key === 'z' && this.canUndo){
+        if (event.key === 'z' && this.canUndo) {
           this.undo();
         }
-        if (event.key === 'y' && this.canRedo){
+        if (event.key === 'y' && this.canRedo) {
           this.redo();
         }
-    }
-    }
+      }
+    },
   },
 });
 </script>

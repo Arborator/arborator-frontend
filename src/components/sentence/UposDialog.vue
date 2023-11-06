@@ -97,6 +97,9 @@ export default defineComponent({
       if (this.selectedUpos.some((val) => val == true)) {
         this.token.UPOS = this.annotationFeatures.UPOS[this.selectedUpos.indexOf(true)];
       }
+      else {
+        this.token.UPOS = '_';
+      }
       this.uposDialogOpened = false;
       this.sentenceBus.emit('tree-update:token', {
         token: this.token,

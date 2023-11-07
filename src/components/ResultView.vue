@@ -164,6 +164,16 @@ export default defineComponent({
       return this.samplesFrozen.list.filter((value) => value[0] === this.selectedSample);
     },
   },
+  watch: {
+    'samplesFrozen.selected': {
+      handler: function (newVal) {
+        if (Object.values(newVal).some(element => element == false)) {
+          this.all = false;
+        }  
+      },
+      deep: true,
+    }
+  },
   mounted() {
     this.freezeSamples();
   },

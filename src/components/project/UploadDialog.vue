@@ -16,26 +16,26 @@
       <q-card-section class="q-pa-md">
         <div class="q-gutter-y-md">
           <q-tabs v-model="tab" dense class="text-grey" active-color="primary" indicator-color="primary" align="justify" narrow-indicator>
-            <q-tab name="inputFile" icon="description" label="Input file" />
-            <q-tab name="inputText" icon="title" label="Input text" />
+            <q-tab name="inputFile" icon="description" :label="$t('uploadSample.inputFile')" />
+            <q-tab name="inputText" icon="title" :label="$t('uploadSample.inputText')" />
           </q-tabs>
           <q-tab-panels v-model="tab" animated>
             <q-tab-panel class="q-gutter-md" name="inputText">
               <div>
-                <q-select outlined v-model="option" label="select Tokenize option" :options="tokenizeOptions" />
+                <q-select outlined v-model="option" :label="$t('uploadSample.tokenizeSelect')" :options="tokenizeOptions" />
               </div>
               <div v-if="option">
-                <q-select v-if="option.value === 'plainText'" outlined label="Choose the language" v-model="lang" :options="langOptions" />
+                <q-select v-if="option.value === 'plainText'" outlined :label="$t('uploadSample.languageSelect')" v-model="lang" :options="langOptions" />
                 <div v-if="option.value === 'vertical'" class="text-body1">
-                  Each token on a separate line, with an empty line indicating the end of sentence.
+                 {{  $t('uploadSample.verticalHint') }}
                 </div>
                 <div v-if="option.value === 'horizontal'" class="text-body1">
-                  Each sentence on a separate line, the tokens are separated by spaces.
+                  {{  $t('uploadSample.horizontalHint') }}
                 </div>
               </div>
-              <q-input outlined v-model="text" type="textarea" label="text" />
-              <q-input outlined v-model="sampleName" label="Sample Name" />
-              <q-input outlined v-model="customUserId" label="Custom UserId By default it's your username" />
+              <q-input outlined v-model="text" type="textarea" :label="$t('uploadSample.text')" />
+              <q-input outlined v-model="sampleName" :label="$t('uploadSample.sampleName')" />
+              <q-input outlined v-model="customUserId" :label="$t('uploadSample.customUsername')" />
               <div class="row q-pa-md">
                 <q-btn v-close-popup :disable="!disableTokenizeBtn" color="primary" @click="tokenizeSample">Tokenize</q-btn>
               </div>
@@ -43,12 +43,12 @@
 
             <q-tab-panel class="q-gutter-md" name="inputFile">
               <div class="text-h6 text-blue-grey-8">
-                {{ $t('projectView.uploadSelectDial') }}
+                {{ $t('uploadSample.selectFiles') }}
               </div>
               <div>
                 <q-file
                   v-model="uploadSample.attachment.file"
-                  label="Pick or drop files"
+                  :label="$t('uploadSample.uploadFileLabel')"
                   use-chips
                   outlined
                   :loading="uploadSample.submitting"
@@ -70,7 +70,7 @@
                       @click="uploadSamples()"
                     />
                     <q-tooltip v-if="uploadSample.attachment.file.length == 0" content-class="text-white bg-primary">
-                      Select file to upload
+                     {{ $t('uploadSample.uploadFileTooltip') }}
                     </q-tooltip>
                   </template>
                 </q-file>
@@ -79,10 +79,10 @@
                 <q-input
                   outlined
                   v-model="customUserId"
-                  label="Custom UserId By default it's your username"
+                  :label="$t('uploadSample.customUsername')"
                   :rules="[
-                    val => val.toLowerCase() != 'validated' ||'validated is reserved username for ArboratorGrew',
-                    val => val && val.length > 0 || 'You can not upload file without userId please type something']
+                    val => !reservedUserIds.includes(val.toLowerCase()) ||`${val} `+ $t('uploadSample.reservedUsernameError'),
+                    val => val && val.length > 0 || $t('uploadSample.emptyUsernameError')]
                   "
                 />
               </div>
@@ -131,15 +131,15 @@ export default defineComponent({
       attachment: { name: null, file: [] },
     };
     const tokenizeOptions = [
-      { value: 'plainText', label: 'Tokenize plain text' },
-      { value: 'horizontal', label: 'Horizontal' },
-      { value: 'vertical', label: 'Vertical' },
+      { value: 'plainText', label: this.$t('uploadSample.tokenizeOptions[0]') },
+      { value: 'horizontal', label: this.$t('uploadSample.tokenizeOptions[1]') },
+      { value: 'vertical', label: this.$t('uploadSample.tokenizeOptions[2]') },
     ];
     const option: { value: string; label: string } = { value: '', label: '' };
     const lang: { value: string; label: string } = { value: '', label: '' };
     const langOptions = [
-      { value: 'en', label: 'English' },
-      { value: 'fr', label: 'French' },
+      { value: 'en', label: this.$t('uploadSample.languageOptions[0]') },
+      { value: 'fr', label: this.$t('uploadSample.languageOptions[1]') },
     ];
     const samplesWithoutSentIds: string[] = [];
     return {
@@ -162,7 +162,7 @@ export default defineComponent({
 
   computed: {
     ...mapState(useUserStore, { userid: 'id' }),
-    ...mapState(useUserStore, ['username']),
+    ...mapState(useUserStore, ['username', 'reservedUserIds']),
     ...mapState(useProjectStore, ['exerciseMode']),
     disableTokenizeBtn() {
       if (this.option.value == 'plainText') {

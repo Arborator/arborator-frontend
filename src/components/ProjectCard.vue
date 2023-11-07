@@ -65,7 +65,7 @@
         </q-chip>
       </q-card-actions>
       <q-card-actions>
-        <q-btn v-if="isProjectAdmin" round color="negative" glossy icon="delete_forever" @click="triggerConfirm(deleteProject)">
+        <q-btn v-if="isProjectAdmin" round color="negative"  icon="delete_forever" @click="triggerConfirm(deleteProject)">
           <q-tooltip class="bg-purple text-body2" anchor="top middle" :offset="[10, 10]" :delay="100">
             <!-- {{ $t('projectHub.tooltipRightClickDelete') }} -->
             {{ $t('projectHub.rightClickDelete') }}

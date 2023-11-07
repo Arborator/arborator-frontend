@@ -41,7 +41,6 @@
             ref="textsTable"
             :key="tableKey"
             v-model:pagination="table.pagination"
-            hide-pagination
             v-model:selected="table.selected"
             :class="($q.dark.isActive ? 'my-sticky-header-table-dark' : 'my-sticky-header-table') + ' rounded-borders'"
             title="Samples"
@@ -62,11 +61,20 @@
             hide-no-data
             :rows-per-page-options="[30]"
           >
-         
-            <template #bottom>
+              
+            <template #bottom class="q-gutter-md">
+              <div class="q-pa-md">
+                Records per page
+              </div>
+              <q-select 
+                dense 
+                borderless 
+                v-model="table.pagination.rowsPerPage"
+                :options="recordsPerPage"
+               />
               <q-pagination 
                 v-model="table.pagination.page" 
-                :max="Math.ceil(samplesNumber / 10)" 
+                :max="Math.ceil(samplesNumber / table.pagination.rowsPerPage)" 
                 :input="true"
               />
             </template>
@@ -652,6 +660,15 @@ export default defineComponent({
     isFreezed(): boolean {
       return !this.isOwner && this.freezed;
     },
+    recordsPerPage(): number[] {
+      const listRecords = []
+      for (let i=1; i <this.sampleNames.length/10; i++) {
+        listRecords.push(i*10);
+      } 
+      listRecords.push(this.sampleNames.length);  
+      this.table.pagination.rowsPerPage = listRecords[0];
+      return listRecords;
+    }
   },
   watch: {
     reloadCommits(newVal) {

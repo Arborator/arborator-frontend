@@ -296,7 +296,7 @@ export default defineComponent({
       console.log(resultSearchDialog);
     },
     onSearch(searchPattern: string) {
-      const data = { pattern: searchPattern, userType: this.treeType };
+      const data = { pattern: searchPattern, userType: this.treeType.value };
       if (this.$route.params.samplename) {
         api
           .searchSample(this.$route.params.projectname as string, this.$route.params.samplename as string, data)

@@ -185,6 +185,7 @@ export default {
     tooltipFabGrewUserRecent: 'Voir mes arbres, avec les arbres les plus récents',
     tooltipFabGrewRecent: 'Voir les arbres les plus récents',
     tooltipFabGrewAll: 'Voir tous les arbres',
+    tooltipFabGrewBaseTree: 'Voir les arbres de base',
     tooltipRelationTable: 'Obtenir la table des relations',
     tooltipWindows: ['Minimize', 'Maximize', 'Close'],
     search: 'Rechercher',

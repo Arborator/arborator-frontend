@@ -1,6 +1,6 @@
 <template>
   <q-card style="width: 10%" :class="$q.dark.isActive ? 'bg-dark' : 'bg-grey-1'">
-    <q-bar class="bg-primary text-white">
+    <q-bar class="bg-primary text-white sticky-bar">
       <q-icon name="img:/svg/grew.svg" size="7rem" />
       <q-space />
       <q-btn v-close-popup flat dense icon="close" />
@@ -41,7 +41,7 @@
                     {{$t('grewSearch.grewSearchTooltip')}}
                   </q-tooltip>
                 </q-tab>
-                <q-tab v-if="canSaveTreeInProject || isValidator" name="REWRITE" icon="autorenew" :label="$t('grewSearch.rewrite')">
+                <q-tab v-if="canRewriteRule" name="REWRITE" icon="autorenew" :label="$t('grewSearch.rewrite')">
                   <q-tooltip content-class="bg-primary" anchor="top middle" self="bottom middle" :offset="[10, 10]">
                     {{$t('grewSearch.grewRewriteTooltip')}}
                   </q-tooltip>
@@ -149,7 +149,8 @@ export default defineComponent({
         { value: 'validated', label: this.$t('projectView.tooltipFabGrewValidated'), icon:'verified'},
         { value: 'pending', label: this.$t('projectView.tooltipFabGrewPending'), icon:'pending' },
         { value: 'all', label: this.$t('projectView.tooltipFabGrewAll'), icon: 'groups' },
-    ];
+        { value: 'base_tree', label: this.$t('projectView.tooltipFabGrewBaseTree'), icon: 'linear_scale'},
+      ];
     const usersToApply = usersToApplyOptions[0];
     const otherUsers : string[] = [];
     const features : string[] = [];
@@ -169,30 +170,16 @@ export default defineComponent({
     };
   },
   computed: {
-    ...mapState(useGrewSearchStore, ['lastQuery']),
+    ...mapState(useGrewSearchStore, ['lastQuery', 'treeTypesForSearch', 'canRewriteRule']),
     ...mapState(useUserStore, ['isLoggedIn', 'avatar', 'username']),
     ...mapState(useProjectStore, ['blindAnnotationMode','shownFeaturesChoices', 'annotationFeatures', 'featuresSet', 'canSaveTreeInProject', 'canSeeOtherUsersTrees', 'isValidator']),
     userOptions() {
-      if(!this.canSaveTreeInProject && !this.isValidator) {
-        return this.usersToApplyOptions.slice(2);
-      }
-      if(!this.canSeeOtherUsersTrees) {
-        return this.usersToApplyOptions.slice(0, 1);
-      }
-      if(this.blindAnnotationMode) {
-        if (this.searchReplaceTab === 'REWRITE'){
-          return this.usersToApplyOptions.filter((option) => option.value === 'validated');
-        }
-        else {
-          return this.usersToApplyOptions.slice(2);
-        }
+      if (this.searchReplaceTab == 'SEARCH') {
+        return this.usersToApplyOptions.filter((element) => this.treeTypesForSearch.includes(element.value));
       }
       else {
-        if (this.searchReplaceTab === 'REWRITE'){
-          return this.isValidator ? this.usersToApplyOptions.slice(0,4): this.usersToApplyOptions.slice(0,3);
-        } 
+        return this.usersToApplyOptions.filter((element) => this.treeTypesForSearch.includes(element.value) && !['all', 'pending'].includes(element.value));
       }
-      return this.usersToApplyOptions;     
     },
   },
   watch: {

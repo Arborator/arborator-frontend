@@ -1,4 +1,5 @@
 import { defineStore } from 'pinia';
+import { useProjectStore } from '../project';
 
 export const useGrewSearchStore = defineStore('grewSearch', {
   state: () => {
@@ -6,7 +7,36 @@ export const useGrewSearchStore = defineStore('grewSearch', {
       grewDialog: false,
       lastQuery: null as null | { text: string; type: 'REWRITE' | 'SEARCH' },
       pendingModifications: new Set(), // set of sentence ids
+      treeTypes: ['user', 'user_recent', 'recent', 'validated', 'pending', 'base_tree', 'all'],
     };
+  },
+  getters: {
+    treeTypesForSearch(): string[] {
+      if (useProjectStore().blindAnnotationMode) {
+        if (useProjectStore().canSaveTreeInProject) {
+          return this.treeTypes.filter((element) => element == 'user');
+        }
+        else {
+          return this.treeTypes.filter((element) => ['validated', 'base_tree', 'all'].includes(element));
+        }
+      }
+      else {
+        if (!useProjectStore().canSaveTreeInProject) {
+          return this.treeTypes.filter((element) => ['recent', 'validated', 'all'].includes(element));
+        }
+        else {
+          return this.treeTypes.filter((element) => element != 'base_tree');
+        }
+      }
+    },
+    canRewriteRule(): boolean {
+      if (useProjectStore().blindAnnotationMode) {
+        return useProjectStore().isValidator;
+      }
+      else {
+        return useProjectStore().canSaveTreeInProject;
+      }
+    }
   },
   actions: {
     switchGrewDialog(newDialogState: boolean) {

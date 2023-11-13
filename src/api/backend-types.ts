@@ -22,11 +22,12 @@ export interface project_with_diff_t {
   description: string;
   image: string;
   visibility: number;
-  showAllTrees: boolean;
-  exerciseMode: boolean;
+  blindAnnotationMode: boolean;
   diffMode: boolean;
   diffUserId: string;
   freezed: boolean;
+  config: string;
+  language: string;
 }
 
 export interface project_extended_t {
@@ -35,10 +36,10 @@ export interface project_extended_t {
   description: string;
   image: string;
   visibility: number;
-  showAllTrees: boolean;
-  exerciseMode: boolean;
+  blindAnnotationMode: boolean;
   freezed: boolean;
-
+  config: string;
+  language: string;
   admins: string[];
   validators: string[];
   annotators: string[];
@@ -73,29 +74,15 @@ export interface project_access_t {
 }
 
 //// SAMPLES
-// this user_sample_roles_t interface is messy , it comes from backend, it should prob change
-export interface user_sample_roles_t {
-  key: string;
-  value: string;
-}
-
-export interface sample_roles_t {
-  annotator: user_sample_roles_t[];
-  validator: user_sample_roles_t[];
-}
 export interface sample_t {
   sample_name: string;
   treesFrom: string[];
   sentences: number;
   number_trees: number;
   tokens: number;
-  exerciseLevel: number;
-  roles: sample_roles_t;
+  blindAnnotationLevel: number;
   treeByUser: { [key: string]: number };
 }
-
-export type sample_role_targetrole_t = 'annotator' | 'validator';
-export type sample_role_action_t = 'add' | 'remove';
 
 //// GREW
 export interface matche_t {

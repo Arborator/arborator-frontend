@@ -1,6 +1,6 @@
 <template>
   <q-card style="width: 10%" :class="$q.dark.isActive ? 'bg-dark' : 'bg-grey-1'">
-    <q-bar class="bg-primary text-white">
+    <q-bar class="bg-primary text-white sticky-bar">
       <q-icon name="img:/svg/grew.svg" size="7rem" />
       <q-space />
       <q-btn v-close-popup flat dense icon="close" />
@@ -59,7 +59,7 @@
                     {{ $t('grewSearch.grewSearchTooltip') }}
                   </q-tooltip>
                 </q-tab>
-                <q-tab v-if="canSaveTreeInProject" name="REWRITE" icon="autorenew" :label="$t('grewSearch.rewrite')">
+                <q-tab v-if="canRewriteRule" name="REWRITE" icon="autorenew" :label="$t('grewSearch.rewrite')">
                   <q-tooltip content-class="bg-primary" anchor="top middle" self="bottom middle" :offset="[10, 10]">
                     {{ $t('grewSearch.grewRewriteTooltip') }}
                   </q-tooltip>
@@ -95,17 +95,11 @@
               </q-tab-panels>
             </div>
           </div>
-          <div class="row">
+          <div class="row q-pa-md">
             <div>
               <q-btn v-if="searchReplaceTab === 'SEARCH'" color="primary" :label="$t('grewSearch.search')" no-caps icon="search" @click="onSearch" />
-              <q-btn
-                v-if="searchReplaceTab === 'REWRITE'"
-                color="primary"
-                :label="$t('grewSearch.tryRules')"
-                no-caps
-                icon="autorenew"
-                @click="tryRules"
-              />
+              <q-btn v-if="searchReplaceTab === 'REWRITE'" color="primary" :label="$t('grewSearch.tryRules')" no-caps icon="autorenew" @click="tryRules" />
+              {{ usersToApply.label }}
             </div>
           </div>
         </div>
@@ -166,11 +160,14 @@ export default defineComponent({
   data() {
     const currentQueryType: 'SEARCH' | 'REWRITE' = grewTemplates.searchQueries[0].type as 'SEARCH' | 'REWRITE';
     const usersToApplyOptions = [
-      { value: 'user', label: this.$t('projectView.tooltipFabGrewUser') },
-      { value: 'user_recent', label: this.$t('projectView.tooltipFabGrewUserRecent') },
-      { value: 'recent', label: this.$t('projectView.tooltipFabGrewRecent'), icon: 'schedule' },
-      { value: 'all', label: this.$t('projectView.tooltipFabGrewAll'), icon: 'groups' },
-    ];
+        { value: 'recent', label: this.$t('projectView.tooltipFabGrewRecent'), icon: 'schedule' },
+        { value: 'user', label: this.$t('projectView.tooltipFabGrewUser')},
+        { value: 'user_recent', label: this.$t('projectView.tooltipFabGrewUserRecent')},
+        { value: 'validated', label: this.$t('projectView.tooltipFabGrewValidated'), icon:'verified'},
+        { value: 'pending', label: this.$t('projectView.tooltipFabGrewPending'), icon:'pending' },
+        { value: 'all', label: this.$t('projectView.tooltipFabGrewAll'), icon: 'groups' },
+        { value: 'base_tree', label: this.$t('projectView.tooltipFabGrewBaseTree'), icon: 'linear_scale'},
+      ];
     const usersToApply = usersToApplyOptions[0];
     const otherUsers: string[] = [];
     const features: string[] = [];
@@ -190,23 +187,25 @@ export default defineComponent({
     };
   },
   computed: {
-    ...mapState(useGrewSearchStore, ['lastQuery']),
+    ...mapState(useGrewSearchStore, ['lastQuery', 'treeTypesForSearch', 'canRewriteRule']),
     ...mapState(useUserStore, ['isLoggedIn', 'avatar', 'username']),
-    ...mapState(useProjectStore, ['shownFeaturesChoices', 'annotationFeatures', 'featuresSet', 'isGuest', 'canSaveTreeInProject']),
+    ...mapState(useProjectStore, ['blindAnnotationMode','shownFeaturesChoices', 'annotationFeatures', 'featuresSet', 'canSaveTreeInProject', 'canSeeOtherUsersTrees', 'isValidator']),
     userOptions() {
-      if (!this.canSaveTreeInProject || this.isGuest) {
-        return this.usersToApplyOptions.slice(2);
-      } else {
-        return this.searchReplaceTab === 'REWRITE' ? this.usersToApplyOptions.filter((option) => option.value !== 'all') : this.usersToApplyOptions;
+      if (this.searchReplaceTab == 'SEARCH') {
+        return this.usersToApplyOptions.filter((element) => this.treeTypesForSearch.includes(element.value));
+      }
+      else {
+        return this.usersToApplyOptions.filter((element) => this.treeTypesForSearch.includes(element.value) && !['all', 'pending'].includes(element.value));
       }
     },
   },
   watch: {
-    searchReplaceTab(newVal) {
-      if (newVal === 'REWRITE' && this.usersToApply.value === 'all') {
+    searchReplaceTab(newVal){
+      if (newVal === 'REWRITE' && this.usersToApply.value === 'all'){
         this.usersToApply = this.usersToApplyOptions[0];
       }
-    },
+    }
+
   },
   mounted() {
     if (this.lastQuery !== null) {
@@ -214,13 +213,8 @@ export default defineComponent({
       this.currentQuery = this.lastQuery.text;
       this.usersToApply = this.usersToApplyOptions.filter((option) => option.value === this.lastQuery?.userType)[0];
     }
-    if(this.canSaveTreeInProject) {
-      this.searchReplaceTab = this.currentQueryType;
-    }
-    else{
-      this.searchReplaceTab = 'SEARCH';
-      this.currentQuery = grewTemplates.searchQueries[0].pattern;
-    }
+    this.searchReplaceTab = this.currentQueryType;
+    this.usersToApply = this.userOptions[0];
   },
   methods: {
     ...mapActions(useGrewSearchStore, ['changeLastGrewQuery']),

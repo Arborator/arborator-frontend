@@ -13,7 +13,7 @@
       <q-banner rounded class="col-md-4 offset-md-4 col-xs-12 col-sm-12">
         <q-img :ratio="16 / 9" :src="imageSrc" basic>
           <div class="absolute-bottom text-h6">
-            <ProjectIcon :visibility="visibilityLocal" :exercise-mode="exerciseModeLocal" />
+            <ProjectIcon :visibility="visibilityLocal" :blind-annotation-mode="blindAnnotationModeLocal" />
             {{ projectname }}
           </div>
         </q-img>
@@ -64,23 +64,14 @@
               </div>
             </q-item-section>
           </q-item>
-          <q-item tag="label">
-            <q-item-section>
-              <q-item-label>{{ $t('projectSettings.toggleAllVisible') }}</q-item-label>
-              <q-item-label caption>{{ $t('projectSettings.toggleAllVisibleCaption') }}</q-item-label>
-            </q-item-section>
-            <q-item-section avatar>
-              <q-toggle v-model="showAllTreesLocal" color="primary" checked-icon="check" unchecked-icon="clear" />
-            </q-item-section>
-          </q-item>
 
           <q-item tag="label">
             <q-item-section>
-              <q-item-label>{{ $t('projectSettings.toggleExerciseMode') }}</q-item-label>
-              <q-item-label caption>{{ $t('projectSettings.toggleExerciseModeCaption') }}</q-item-label>
+              <q-item-label>{{ $t('projectSettings.toggleBlindAnnotationMode') }}</q-item-label>
+              <q-item-label caption>{{ $t('projectSettings.toggleBlindAnnotationModeCaption') }}</q-item-label>
             </q-item-section>
             <q-item-section avatar>
-              <q-toggle v-model="exerciseModeLocal" color="primary" checked-icon="check" unchecked-icon="clear" />
+              <q-toggle v-model="blindAnnotationModeLocal" color="primary" checked-icon="check" unchecked-icon="clear" />
             </q-item-section>
           </q-item>
 
@@ -206,7 +197,6 @@ import 'codemirror/addon/fold/foldgutter';
 import 'codemirror/addon/fold/foldgutter.css';
 import 'codemirror/addon/fold/brace-fold'; 
 
-import UserSelectTable from './UserSelectTable.vue';
 import ConfirmAction from './ConfirmAction.vue';
 import UserSelect from './UserSelect.vue';
 import { mapActions, mapState, mapWritableState } from 'pinia';
@@ -222,7 +212,6 @@ export default defineComponent({
     ProjectIcon,
     Codemirror,
     UserSelect,
-    UserSelectTable,
     ConfirmAction,
   },
   props: {
@@ -267,8 +256,7 @@ export default defineComponent({
   computed: {
     ...mapWritableState(useProjectStore, [
       'description',
-      'showAllTrees',
-      'exerciseMode',
+      'blindAnnotationMode',
       'diffMode',
       'diffUserId',
       'visibility',
@@ -284,24 +272,19 @@ export default defineComponent({
       'guests',
       'shownFeaturesChoices',
       'shownMetaChoices',
-      'getAnnofjson',
+      'getSUDAnnofJson',
       'getUDAnnofJson',
+      'getAnnotationSetting',
+      'config',
       'imageSrc'
     ]),
-    showAllTreesLocal: {
+  
+    blindAnnotationModeLocal: {
       get() {
-        return this.showAllTrees;
+        return this.blindAnnotationMode || false;
       },
       set(value: boolean) {
-        this.updateProjectSettings(this.projectname, { showAllTrees: value });
-      },
-    },
-    exerciseModeLocal: {
-      get() {
-        return this.exerciseMode || false;
-      },
-      set(value: boolean) {
-        this.updateProjectSettings(this.projectname, { exerciseMode: value });
+        this.updateProjectSettings(this.projectname, { blindAnnotationMode: value });
       },
     },
     diffModeLocal: {
@@ -352,7 +335,7 @@ export default defineComponent({
     },
   },
   mounted() {
-    this.annotationFeaturesJson = this.getAnnofjson;
+    this.annotationFeaturesJson = this.getAnnotationSetting;
     this.getProjectImage();
   },
 
@@ -393,7 +376,7 @@ export default defineComponent({
 
     resetAnnotationFeaturesWrapper() {
       this.resetAnnotationFeatures();
-      this.annotationFeaturesJson = this.getAnnofjson;
+      this.annotationFeaturesJson = this.getSUDAnnofJson;
     },
 
     resetAnnotationFeaturesUDWrapper() {

@@ -4,9 +4,6 @@ import {
   project_t,
   project_with_diff_t,
   project_extended_t,
-  sample_roles_t,
-  sample_role_action_t,
-  sample_role_targetrole_t,
   sample_t,
   shownFeatures,
   shownMeta,
@@ -67,15 +64,6 @@ export type updateManyProjectUserAccess_RV = project_access_t;
 //// SAMPLES
 export type getProjectSamples_RV = sample_t[];
 
-export interface modifySampleRole_ED {
-  username: string;
-  targetrole: sample_role_targetrole_t;
-  action: sample_role_action_t;
-}
-
-export interface modifySampleRole_RV {
-  roles: sample_roles_t;
-}
 //// TREES
 export interface updateTree_ED {
   sent_id: string;

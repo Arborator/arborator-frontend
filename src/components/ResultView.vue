@@ -57,7 +57,7 @@
                 :sentence="searchresults[item[0]][item[1]]"
                 :index="index"
                 :matches="searchresults[item[0]][item[1]]"
-                :exercise-level="4"
+                :blind-annotation-level="4"
               ></SentenceCard>
             </div>
           </div>
@@ -67,7 +67,7 @@
     <q-bar
       class="absolute-bottom row custom-frame2"
       style="padding-left: 0"
-      v-if="queryType === 'REWRITE' && samplesFrozen.list.length > 0 && canSaveTreeInProject"
+      v-if="queryType === 'REWRITE' && samplesFrozen.list.length > 0 && canSaveTreeInProject && !isValidator"
     >
       <div>
         <q-checkbox v-if="queryType === 'REWRITE'" v-model="all" @click="selectAllSentences()">
@@ -102,15 +102,21 @@ export default defineComponent({
       required: true,
     },
     totalsents: {
-      type: Number,
+      type: Number as PropType<number>,
       required: true,
     },
     searchscope: {
-      type: String,
+      type: String as PropType<string>,
       required: true,
     },
     queryType: {
-      type: String,
+      type: String as PropType<string>,
+      required: false,
+    },
+    userType: {
+      type: String as PropType<string>,
+      required: false,
+
     },
     parentOnShowTable: {
       type: Function as PropType<CallableFunction>,
@@ -141,7 +147,7 @@ export default defineComponent({
     };
   },
   computed: {
-    ...mapState(useProjectStore, ['canSaveTreeInProject']),
+    ...mapState(useProjectStore, ['canSaveTreeInProject', 'isValidator']),
     ...mapState(useUserStore, ['username']),
     sentenceCount() {
       return Object.keys(this.searchresults)
@@ -245,18 +251,22 @@ export default defineComponent({
       this.searchresultsCopy = selectedResults;
       for (const sample in selectedResults) {
         for (const sentId in selectedResults[sample]) {
-          let toSaveConll = '';
-          if (selectedResults[sample][sentId].conlls[this.username]) {
-            toSaveConll = selectedResults[sample][sentId].conlls[this.username];
-          } else {
-            toSaveConll = Object.values(selectedResults[sample][sentId].conlls)[0];
+          if (!this.isValidator || this.userType !== "validated") {
+            let toSaveConll = ""
+            if (selectedResults[sample][sentId].conlls[this.username]) {
+              toSaveConll = selectedResults[sample][sentId].conlls[this.username]
+            } else {
+              toSaveConll = Object.values(selectedResults[sample][sentId].conlls)[0]
+            }
+            const sentenceJson = sentenceConllToJson(toSaveConll)
+            sentenceJson.metaJson.user_id = this.username
+            sentenceJson.metaJson.timestamp = Math.round(Date.now())
+            this.searchresultsCopy[sample][sentId].conlls[this.username] = sentenceJsonToConll(sentenceJson)
           }
-          const sentenceJson = sentenceConllToJson(toSaveConll);
-          sentenceJson.metaJson.user_id = this.username;
-          sentenceJson.metaJson.timestamp = Math.round(Date.now());
-          this.searchresultsCopy[sample][sentId].conlls[this.username] = sentenceJsonToConll(sentenceJson);
           for (const userId in this.searchresultsCopy[sample][sentId].conlls) {
-            if (userId !== this.username) delete this.searchresultsCopy[sample][sentId].conlls[userId];
+            if (!this.isValidator || this.userType !== "validated") {
+              if (userId !== this.username) delete this.searchresultsCopy[sample][sentId].conlls[userId]
+            }
             toSaveCounter += 1;
           }
         }

@@ -18,24 +18,20 @@
           </q-tooltip>
         </q-input>
         <q-space />
+
         <template v-if="openTabUser !== ''">
-          <q-btn
-            v-if="isLoggedIn && exerciseLevel <= 3 && !isTeacher"
-            flat
-            round
-            dense
-            icon="assessment"
-            :disable="openTabUser === ''"
-            @click="openStatisticsDialog"
-          >
+          <q-btn v-if="isLoggedIn && blindAnnotationLevel <= 3 && !isValidator" flat round dense icon="assessment"
+            :disable="openTabUser === ''" @click="openStatisticsDialog">
             <q-tooltip>{{ $t('sentenceCard.annotationErrors') }}</q-tooltip>
           </q-btn>
 
-          <q-btn v-if="isTeacher" flat round dense icon="school" :disable="openTabUser === ''" @click="save('teacher')">
-            <q-tooltip>{{ $t('sentenceCard.saveTeacher') }}</q-tooltip>
+          <q-btn v-if="isValidator" flat round dense icon="verified" :disable="openTabUser === ''"
+            @click="save('validated')">
+            <q-tooltip>{{ $t('sentenceCard.validateTree') }}</q-tooltip>
           </q-btn>
 
-          <q-btn v-if="isTeacher" flat round dense icon="linear_scale" :disable="openTabUser === ''" @click="save('base_tree')">
+          <q-btn v-if="isValidator && blindAnnotationMode" flat round dense icon="linear_scale" :disable="openTabUser === ''"
+            @click="save('base_tree')">
             <q-tooltip>{{ $t('sentenceCard.saveBaseTree') }}</q-tooltip>
           </q-btn>
 
@@ -43,24 +39,46 @@
             <q-tooltip>Save as Emmett</q-tooltip>
           </q-btn>
 
-          <q-btn v-if="canSaveTreeInProject" flat round dense icon="save" :disable="openTabUser === '' || !canSave" @click="save('')">
+          <q-btn v-if="canSaveTreeInProject" flat round dense icon="save" :disable="openTabUser === '' || !canSave"
+            @click="save('')">
             <q-tooltip>
               {{ $t('sentenceCard.saveTree[0]') }} {{ openTabUser }} {{ $t('sentenceCard.saveTree[1]') }}
               <b> {{ username }} </b>
             </q-tooltip>
           </q-btn>
 
-          <q-btn v-if="canSaveTreeInProject" flat round dense icon="post_add" :disable="openTabUser === ''" @click="openMetaDialog()">
-            <q-tooltip>{{ $t('sentenceCard.editMetadata') }}</q-tooltip>
+          <q-btn v-if="canSaveTreeInProject && (openTabUser === username || isValidator)" flat round dense icon="bookmark"
+            :disable="openTabUser === ''">
+            <TagsMenu 
+              :sampleName="(sentenceData.sample_name as string)" 
+              :reactive-sentences-obj="reactiveSentencesObj"
+              :sentence-bus="sentenceBus" 
+              :open-tab-user="openTabUser"
+              :sentence="sentenceData"
+            />
+            <q-tooltip>{{ $t('sentenceCard.addTag') }}</q-tooltip>
           </q-btn>
 
-          <q-btn v-if="isTeacher" flat round dense icon="filter_9_plus" :disable="openTabUser === ''" @click="openMultiEditDialog">
+          <q-btn v-if="isValidator && blindAnnotationMode" flat round dense icon="filter_9_plus" :disable="openTabUser === ''"
+            @click="openMultiEditDialog">
             <q-tooltip>{{ $t('sentenceCard.multiEditDial') }}</q-tooltip>
           </q-btn>
 
           <q-btn-dropdown :disable="openTabUser === ''" icon="more_vert" flat dense>
             <q-list>
-              <q-item v-if="!exerciseMode" v-close-popup clickable @click="toggleDiffMode()">
+              <q-item v-if="canSaveTreeInProject" v-close-popup clickable @click="openMetaDialog()">
+                <q-item-section avatar>
+                  <q-avatar icon="ion-git-network" color="primary" text-color="white" />
+                </q-item-section>
+                <q-item-section>
+                  <q-item-label>
+                    {{ $t('sentenceCard.editMetadata') }}
+                  </q-item-label>
+                </q-item-section>
+              </q-item>
+
+
+              <q-item v-if="!blindAnnotationMode" v-close-popup clickable @click="toggleDiffMode()">
                 <q-item-section avatar>
                   <q-avatar icon="ion-git-network" color="primary" text-color="white" />
                 </q-item-section>
@@ -141,12 +159,12 @@
           class="small-tab"
           :props="user"
           :name="user"
-          :label="`${user}`"
+          :label="`${user}`" 
           :alert="hasPendingChanges[user] ? 'orange' : ''"
-          :alert-icon="hasPendingChanges[user] ? 'save' : ''"
-          :icon="diffMode && user === diffUserId ? 'school' : 'person'"
-          no-caps
-          :ripple="false"
+          :alert-icon="hasPendingChanges[user] ? 'save' : ''" 
+          :icon="diffMode && user === diffUserId ? 'school': 'person'" 
+          no-caps 
+          :ripple="false" 
           @contextmenu="rightClickHandler($event, user)"
           @click="leftClickHandler(user)"
         >
@@ -173,37 +191,41 @@
         >
           <q-card flat>
             <q-card-section :class="($q.dark.isActive ? '' : '') + ' scrollable'">
-              <VueDepTree
-                v-if="reactiveSentencesObj"
-                :card-id="index"
+              <VueDepTree 
+                v-if="reactiveSentencesObj" 
+                :card-id="index" 
                 :conll="tree"
-                :reactive-sentence="reactiveSentencesObj[user]"
+                :reactive-sentence="reactiveSentencesObj[user]" 
                 :reactive-sentences-obj="reactiveSentencesObj"
-                :diff-mode="showDiffTeacher ? 'DIFF_TEACHER' : diffMode ? 'DIFF_USER' : 'NO_DIFF'"
-                :sentence-id="sentence.sent_id"
-                :sentence-bus="sentenceBus"
+                :diff-mode="showDiffValidator ? 'DIFF_VALIDATED' : diffMode ? 'DIFF_USER' : 'NO_DIFF'"
+                :sentence-id="sentence.sent_id" 
+                :sentence-bus="sentenceBus" 
                 :tree-user-id="user"
-                :conll-saved-counter="conllSavedCounter"
+                :conll-saved-counter="conllSavedCounter" 
                 :has-pending-changes="hasPendingChanges"
-                :matches="
-                  sentence.matches ? (sentence.matches[user] ? sentence.matches[user].map((match) => Object.values(match.nodes)).flat() : []) : []
-                "
+                :matches="sentence.matches ? (sentence.matches[user] ? sentence.matches[user].map((match) => Object.values(match.nodes)).flat() : []) : []"
                 :packages="sentence.packages ? (sentence.packages[user] ? sentence.packages[user] : {}) : {}"
                 @statusChanged="handleStatusChange"
-              ></VueDepTree>
+              >
+              </VueDepTree>
             </q-card-section>
           </q-card>
         </q-tab-panel>
       </q-tab-panels>
-      <q-list v-if="openTabUser" style="padding-bottom: 20px" dense class="custom-frame1">
-        <q-item v-for="meta in shownMeta" :key="meta" style="min-height: unset">
-          <q-chip dense size="xs" style="margin-left: 0">{{ meta }} </q-chip>
-          {{ reactiveSentencesObj[openTabUser].state.metaJson[meta] }}
-        </q-item>
-      </q-list>
+      <div v-if="openTabUser" style="padding-bottom: 20px" dense class="row q-pa-md custom-frame1">
+        <div v-for="tag in userTags">
+          <q-chip v-if="openTabUser === username || isValidator" removable outline color="primary" size="sm"
+            @remove="removeUserTag(tag)">
+            {{ tag }}
+          </q-chip>
+          <q-chip v-else outline color="primary" size="sm">
+            {{ tag }}
+          </q-chip>
+        </div>
+
+      </div>
     </div>
 
-    <!--    ALL DIALOGS-->
     <template>
       <RelationDialog :sentence-bus="sentenceBus" />
       <UposDialog :sentence-bus="sentenceBus" />
@@ -212,7 +234,8 @@
       <MetaDialog :sentence-bus="sentenceBus" />
       <ConlluDialog :sentence-bus="sentenceBus" />
       <ExportSVG :sentence-bus="sentenceBus" :reactive-sentences-obj="reactiveSentencesObj" />
-      <TokensReplaceDialog :sentence-bus="sentenceBus" :reactive-sentences-obj="reactiveSentencesObj" @changed:metaText="changeMetaText" />
+      <TokensReplaceDialog :sentence-bus="sentenceBus" :reactive-sentences-obj="reactiveSentencesObj"
+        @changed:metaText="changeMetaText" />
       <MultiEditDialog :sentence-bus="sentenceBus" :reactive-sentences-obj="reactiveSentencesObj" />
       <StatisticsDialog :sentence-bus="sentenceBus" :conlls="sentenceData.conlls" />
     </template>
@@ -237,13 +260,15 @@ import ExportSVG from './ExportSVG.vue';
 import TokensReplaceDialog from './TokensReplaceDialog.vue';
 import StatisticsDialog from './StatisticsDialog.vue';
 import MultiEditDialog from './MultiEditDialog.vue';
+import TagsMenu from './TagsMenu.vue';
 import { reactive_sentences_obj_t, sentence_bus_events_t, sentence_bus_t } from 'src/types/main_types';
 import { mapActions, mapState, mapWritableState } from 'pinia';
-import { useProjectStore } from 'src/pinia/modules/project';
 import { notifyError, notifyMessage } from 'src/utils/notify';
-import { useUserStore } from 'src/pinia/modules/user';
-import { useGrewSearchStore } from 'src/pinia/modules/grewSearch';
+import { useProjectStore } from 'src/pinia/modules/project';
 import { useGithubStore } from 'src/pinia/modules/github';
+import { useUserStore } from 'src/pinia/modules/user';
+import { useTagsStore } from 'src/pinia/modules/tags';
+import { useGrewSearchStore } from 'src/pinia/modules/grewSearch';
 import { PropType } from 'vue';
 
 function sentenceBusFactory(): sentence_bus_t {
@@ -251,6 +276,7 @@ function sentenceBusFactory(): sentence_bus_t {
   (sentenceBus as sentence_bus_t).sentenceSVGs = {};
   return sentenceBus as sentence_bus_t;
 }
+
 
 import { defineComponent } from 'vue';
 import { grewSearchResultSentence_t, matches_t } from 'src/api/backend-types';
@@ -269,13 +295,14 @@ export default defineComponent({
     TokensReplaceDialog,
     StatisticsDialog,
     MultiEditDialog,
+    TagsMenu,
   },
   props: {
     index: {
       type: Number as PropType<number>,
       required: true,
     },
-    exerciseLevel: {
+    blindAnnotationLevel: {
       type: Number as PropType<number>,
       required: true,
     },
@@ -294,7 +321,6 @@ export default defineComponent({
   data() {
     const hasPendingChanges: { [key: string]: boolean } = {};
     const reactiveSentencesObj: reactive_sentences_obj_t = {};
-    const shownMetaNames: string[] = [];
     return {
       sentenceBus: sentenceBusFactory(),
       exportedConll: '',
@@ -308,9 +334,7 @@ export default defineComponent({
         redo: false,
         user: '',
       },
-      shownMetaNames,
       conllSavedCounter: 0,
-      shownMetas: {},
       view: null,
       canUndo: false,
       canRedo: false,
@@ -318,14 +342,16 @@ export default defineComponent({
       focused: false,
       hasPendingChanges,
       forceRerender: 0,
+      tags: [],
     };
   },
 
   computed: {
     ...mapWritableState(useProjectStore, ['diffMode', 'diffUserId']),
     ...mapWritableState(useGithubStore, ['reloadCommits']),
-    ...mapState(useProjectStore, ['isAdmin', 'isTeacher', 'exerciseMode', 'shownMeta', 'getProjectConfig', 'canSaveTreeInProject']),
+    ...mapState(useProjectStore, ['isAdmin', 'isValidator', 'blindAnnotationMode', 'getProjectConfig', 'canSaveTreeInProject', 'shownMeta']),
     ...mapState(useUserStore, ['isLoggedIn', 'username']),
+    ...mapState(useTagsStore, ['defaultTags']),
     lastModifiedTime() {
       const lastModifiedTime: { [key: string]: string } = {};
       for (const user of Object.keys(this.reactiveSentencesObj)) {
@@ -347,13 +373,19 @@ export default defineComponent({
       }
       return lastModifiedTime;
     },
-    showDiffTeacher() {
-      return this.exerciseMode && this.exerciseLevel <= 2;
+    showDiffValidator() {
+      return this.blindAnnotationMode && this.blindAnnotationLevel <= 2;
+    },
+    userTags() {
+      const existingTagsString = this.reactiveSentencesObj[this.openTabUser].state.metaJson.tags as string;
+      if (existingTagsString) {
+        return existingTagsString.split(",");
+      }
     },
     filteredConlls() {
       let filteredConlls = this.sentenceData.conlls;
-      if (this.exerciseLevel !== 1 && !this.isAdmin && this.exerciseMode) {
-        return Object.fromEntries(Object.entries(filteredConlls).filter(([user]) => user !== 'teacher'));
+      if (this.blindAnnotationLevel !== 1 && !this.isAdmin && this.blindAnnotationMode) {
+        return Object.fromEntries(Object.entries(filteredConlls).filter(([user]) => user !== 'validated'));
       }
       return this.orderConlls(filteredConlls);
     },
@@ -362,7 +394,6 @@ export default defineComponent({
     },
   },
   created() {
-    this.shownMetaNames = this.getProjectConfig.shownMeta;
     for (const [userId, conll] of Object.entries(this.sentence.conlls)) {
       const reactiveSentence = new ReactiveSentence();
       reactiveSentence.fromSentenceConll(conll as string);
@@ -384,6 +415,7 @@ export default defineComponent({
   },
   methods: {
     ...mapActions(useGrewSearchStore, ['removePendingModification']),
+    ...mapActions(useTagsStore, ['removeTag']),
     openStatisticsDialog() {
       this.sentenceBus.emit('open:statisticsDialog', {
         userId: this.openTabUser,
@@ -424,6 +456,9 @@ export default defineComponent({
           userId: this.openTabUser,
         });
       }
+    },
+    removeUserTag(tag: string) {
+      this.removeTag(this.sentenceData, tag, this.sentenceBus, this.openTabUser );  
     },
     /**
      * Receive canUndo, canRedo status from VueDepTree child component and
@@ -479,10 +514,12 @@ export default defineComponent({
             }
             this.graphInfo.dirty = false;
             notifyMessage({ position: 'top', message: 'Saved on the server', icon: 'save' });
+            notifyMessage({ position: 'top', message: 'Saved on the server', icon: 'save' });
             this.forceRerender += 1; // nasty trick to rerender the indication of last time
           }
         })
         .catch((error) => {
+          notifyError({ error });
           notifyError({ error });
         });
     },
@@ -502,6 +539,7 @@ export default defineComponent({
     },
     openMetaDialog() {
       this.sentenceBus.emit('open:metaDialog', { userId: this.openTabUser });
+      this.sentenceBus.emit('open:metaDialog', { userId: this.openTabUser });
     },
     changeMetaText(newMetaText: string) {
       this.sentenceData.sentence = newMetaText;
@@ -520,9 +558,12 @@ export default defineComponent({
           timestamp: parseInt(reactiveSentence.state.metaJson.timestamp as string, 10),
         });
       }
-      // sort from newest to oldest
+      // sort from newest to oldest but put the validated tree in the beginning
       const orderedUserAndTimestamps = userAndTimestamps.sort((a, b) => b.timestamp - a.timestamp);
-
+      const validatedTreeIndex = orderedUserAndTimestamps.findIndex((val) => val.user == "validated");
+      if (validatedTreeIndex != -1) {
+        orderedUserAndTimestamps.unshift(orderedUserAndTimestamps.splice(validatedTreeIndex, 1)[0])
+      }
       const orderedConlls: { [key: string]: string } = {};
       for (const userAndTimestamp of orderedUserAndTimestamps) {
         orderedConlls[userAndTimestamp.user] = filteredConlls[userAndTimestamp.user];
@@ -542,6 +583,7 @@ export default defineComponent({
      */
     rightClickHandler(e: MouseEvent, user: string) {
       e.preventDefault();
+      if (this.blindAnnotationMode) return;
       if (!this.diffMode) {
         // if user right click on one of the tab icon while diffMode was
         // disabled, it enable it and set to this tab user the diffUser

@@ -10,20 +10,22 @@ interface configState {
   description: string;
   image: string;
   imageSrc: string;
-  showAllTrees: boolean;
-  exerciseMode: boolean;
+  blindAnnotationMode: boolean;
   freezed: boolean;
+  config: string;
+  language: string;
   diffMode: boolean;
   diffUserId: string;
+  reloadProjects: boolean,
   shownFeatures: string[];
   shownMeta: string[];
-  TEACHER: string;
   annotationFeatures: annotationFeatures_t;
   annotationFeaturesUD: annotationFeatures_t;
-  reloadProjects: boolean,
+  languagesList: { index: number, name: string}[];
 }
 
 // default config state
+import languages from '../../../assets/languoid.json';
 export default function defaultState(): configState {
   return {
     name: '',
@@ -35,16 +37,16 @@ export default function defaultState(): configState {
     description: '',
     image: '',
     imageSrc: '',
-    showAllTrees: true,
-    exerciseMode: false,
+    blindAnnotationMode: false,
     freezed: false,
+    config: '',
+    language: '',
     diffMode: false,
     diffUserId: '',
     reloadProjects: false, 
     shownFeatures: ['FORM', 'UPOS', 'LEMMA', 'MISC.Gloss'],
     shownMeta: ['text_en'],
-    TEACHER: 'teacher',
-
+    languagesList: languages,
     annotationFeatures: {
       META: ['sent_id', 'text', 'text_en', 'text_ortho', 'speaker_id', 'sound_url'],
       UPOS: ['ADJ', 'ADP', 'ADV', 'AUX', 'CCONJ', 'DET', 'INTJ', 'NOUN', 'NUM', 'PART', 'PRON', 'PROPN', 'PUNCT', 'SCONJ', 'VERB', 'X'],

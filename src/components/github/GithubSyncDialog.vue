@@ -197,7 +197,7 @@ export default defineComponent({
       }, 10000);
       api
         .synchronizeWithGithubRepo(this.projectName as string, data)
-        .then((response) => {
+        .then(() => {
           notifyMessage({ message: `"${this.projectName}" ${this.$t('github.synchronizeMessage')} "${repoName}"` });
           this.loading = false;
           this.$emit('created');

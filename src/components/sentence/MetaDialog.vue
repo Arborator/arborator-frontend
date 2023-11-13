@@ -114,7 +114,7 @@ export default defineComponent({
       for (const a in this.metaJson) {
         this.metaList.push({ a, v: this.metaJson[a] });
       }
-      this.$emit('meta-changed', this.metaJson); // so that the sentenceCard can show the meta feature such as text and text_en
+      // so that the sentenceCard can show the meta feature such as text and text_en
     });
   },
   beforeUnmount() {

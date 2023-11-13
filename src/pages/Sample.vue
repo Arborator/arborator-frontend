@@ -1,80 +1,94 @@
 <template>
   <q-splitter v-model="splitterModel" horizontal :limits="[0, 100]" :style="{ height: `${splitterHeight}px` }" emit-immediately>
     <template v-slot:before>
-      <div class="q-gutter-md cols" style="padding: 0 10px">
-        <div class="q-gutter-md row">
-          <q-btn @click="applyFilterTrees" color="primary">Apply filter</q-btn>
-          <span>{{ Object.keys(filteredTrees).length }} trees</span>
+      <div class="row q-pa-md">
+        <div class="col-8">
+          <q-input v-model="textFilter" label="Text filter" outlined dense color="primary"></q-input>
         </div>
-
-        <q-input filled v-model="textFilter" label="Text filter" style="max-width: 800px"> </q-input>
-        <div class="row q-gutter-md">
-          <q-select
-            class="col"
-            style="max-width: 300px"
-            v-model="usersToHaveTree"
-            filled
-            multiple
-            :options="userIds"
+        <div class="col-3 q-px-md q-gutter-md">
+          <q-select 
+            outlined 
+            dense 
+            v-model="selectedTags" 
             use-chips
-            stack-label
-            :label="$t('grewSearch.selectSetOfUserToHaveTree')"
-          />
-          <q-select
-            class="col"
-            style="max-width: 300px"
-            v-model="usersToNotHaveTree"
-            filled
-            multiple
-            :options="userIds"
-            use-chips
-            stack-label
-            :label="$t('grewSearch.selectSetOfUserToNotHaveTree')"
-          />
-        </div>
-        <div class="row q-gutter-md">
-          <q-select
-            class="col"
-            style="max-width: 300px"
-            v-model="usersToHaveDiffs"
-            filled
-            multiple
-            :options="userIds"
-            use-chips
-            stack-label
-            :label="$t('grewSearch.selectSetOfUserToHaveDiffs')"
+            multiple 
+            option-value="value" 
+            label="Tags" 
+            :options="defaultTags" 
+            emit-value
+            @focus="getUsersTags()"
           >
-            <q-tooltip>{{ $t('grewSearch.showDiffUsersTooltip') }}</q-tooltip>
-          </q-select>
-          <q-select
-            class="col"
-            style="max-width: 300px"
-            v-model="usersToNotHaveDiffs"
-            filled
-            multiple
-            :options="userIds"
-            use-chips
-            stack-label
-            :label="$t('grewSearch.selectSetOfUserToNotHaveDiffs')"
-          >
-            <q-tooltip>{{ $t('grewSearch.showDiffUsersTooltip') }}</q-tooltip>
+            <template class="q-pa-md" v-slot:option="scope">
+              <div class="row q-pa-xs">
+                  <q-chip v-bind="scope.itemProps" size="sm" :label="scope.opt.value" />
+              </div>
+              <q-separator />
+            </template>
           </q-select>
         </div>
-
-        <q-select
-          v-model="featuresSetForDiffs"
-          filled
-          multiple
-          :options="featuresSet"
-          use-chips
-          stack-label
-          :label="$t('grewSearch.showDiffFaturesSelect')"
-        >
-          <q-tooltip>{{ $t('grewSearch.showDiffFeaturesTooltip') }}</q-tooltip>
-        </q-select>
+        <div>
+          <q-btn @click="applyFilter" color="primary">Apply filter</q-btn>
+        </div>
+      </div>      
+      <div class="q-pa-md">
+        <div class="row text-h6">
+         Advanced filters
+          <q-space/>
+          <q-btn flat color="primary" @click="clearAll()">clear all</q-btn>
+        </div>
+        <div v-for="(filter, index) in listFilters">
+          <div class="row q-gutter-md q-pt-md">
+            <div class="col-6">
+              <q-select
+                outlined
+                dense
+                v-model="filter.setUsers"
+                multiple
+                :options="userIds"
+                use-chips
+                stack-label
+                label="Select set of users"
+              />
+            </div>
+            <q-btn-dropdown outline split color="primary" :label="filter.operator">
+              <q-list v-for="value of filterOperators">
+                <q-item clickable @click="filter.operator = value">
+                  <q-item-section>{{ value }}</q-item-section>
+                </q-item>
+              </q-list>
+            </q-btn-dropdown>
+            <q-btn-dropdown outline split color="primary" :label="filter.choice">
+              <q-list v-for="value of filterChoices">
+                <q-item clickable @click="filter.choice = value">
+                  <q-item-section>{{ value }}</q-item-section>
+                </q-item>
+              </q-list>
+            </q-btn-dropdown>
+            <q-select
+              v-if="filter.choice == 'Differences'"
+              class="col-2"
+              dense
+              outlined
+              v-model="filter.diffSetFeatures"
+              multiple
+              :options="featuresSet"
+              use-chips
+              stack-label
+              :label="$t('grewSearch.showDiffFaturesSelect')"
+            >
+              <q-tooltip>{{ $t('grewSearch.showDiffFeaturesTooltip') }}</q-tooltip>
+            </q-select> 
+            <q-btn v-if="index != 0" outline class="col-1" color="primary" icon="delete" @click="removeRow(index)" />
+            <q-btn v-if="index == listFilters.length-1 && index < 3 " outline class="col-1" color="primary" icon="add" @click="addRow()" />
+          </div>
+        </div>
+        <div class="q-pt-md text-body1">
+          <span>{{ Object.keys(filteredTrees).length }} trees  
+          <q-tooltip>{{numberOfTreesPerUser}}</q-tooltip> 
+          </span>     
+        </div>
       </div>
     </template>
-
     <template v-slot:after>
       <div class="custom-frame1">
         <div v-show="!loading">
@@ -92,7 +106,8 @@
                 :sentence="item" 
                 :index="index" 
                 search-result="" 
-                :exercise-level="exerciseLevel"
+                :blind-annotation-level="blindAnnotationLevel"
+                @reload="getSampleTrees"
                 :is-focused="focusedSentences[index]"
                 @focused-sent="loseFocus"
               >
@@ -123,6 +138,7 @@ import RelationTableMain from '../components/relationTable/RelationTableMain.vue
 import { mapActions, mapState, mapWritableState } from 'pinia';
 import { useProjectStore } from 'src/pinia/modules/project';
 import { useGrewSearchStore } from 'src/pinia/modules/grewSearch';
+import {useTagsStore} from 'src/pinia/modules/tags';
 import { PropType, defineComponent } from 'vue';
 import { useTreesStore } from 'src/pinia/modules/trees';
 
@@ -156,38 +172,28 @@ export default defineComponent({
     },
   },
   data() { 
-    const splitterModel: number = 0; 
-    const splitterHeight: number = 0;
+    const splitterModel: number = 10; 
+    const splitterHeight: number = 0; 
+    const filterOperators: string[] = ['Have', 'Not Have'];
+    const filterChoices: string[] = ['Trees', 'Differences'];
+    const listFilters: { setUsers: string[], operator: string, choice: string, diffSetFeatures: string[]} [] = [];
     const focusedSentences: boolean[] = [];
     return {
+      selectedUsers: [],
+      filterChoices,
+      filterOperators,
       splitterModel,
       splitterHeight,
+      listFilters,
       focusedSentences,
     }
   },
   computed: {
-    ...mapState(useProjectStore, ['exerciseMode', 'isTeacher', 'featuresSet']),
+    ...mapState(useProjectStore, ['blindAnnotationMode', 'isValidator', 'featuresSet']),
     ...mapState(useGrewSearchStore, ['pendingModifications']),
-    ...mapState(useTreesStore, ['trees', 'filteredTrees', 'loading', 'numberOfTrees', 'exerciseLevel']),
-    ...mapWritableState(useTreesStore, [
-      'textFilter',
-      'usersToHaveTree',
-      'usersToNotHaveTree',
-      'usersToHaveDiffs',
-      'usersToNotHaveDiffs',
-      'featuresSetForDiffs',
-    ]),
-    userIds(): string[] {
-      var userIds: string[] = [];
-      for (const treeObj of Object.values(this.trees)) {
-        for (const userId in treeObj.conlls) {
-          if (!userIds.includes(userId)) {
-            userIds.push(userId);
-          }
-        }
-      }
-      return userIds;
-    },
+    ...mapState(useTreesStore, ["trees", "filteredTrees", "loading", "numberOfTreesPerUser","numberOfTrees", "userIds", "blindAnnotationLevel"]),
+    ...mapState(useTagsStore, ["defaultTags"]),
+    ...mapWritableState(useTreesStore, ["textFilter", "usersToHaveTree", "usersToNotHaveTree", "usersToHaveDiffs", "usersToNotHaveDiffs", "featuresSetForDiffs", "featuresSetForNotDiffs", "selectedTags"]),
   },
   created() {
     window.addEventListener('resize', this.calculateHeight);
@@ -200,14 +206,19 @@ export default defineComponent({
     document.title = `${this.projectname}/${this.samplename}`;
     LocalStorage.remove('save_status');
     this.calculateHeight();
+    this.listFilters.push(
+      { setUsers: [], 
+        operator: this.filterOperators[0], 
+        choice: this.filterChoices[0],
+        diffSetFeatures: [],
+    });
   },
   beforeUnmount() {
     window.removeEventListener('resize', this.calculateHeight);
   },
-
   methods: {
     ...mapActions(useGrewSearchStore, ['emptyPendingModification']),
-    ...mapActions(useTreesStore, ['getSampleTrees', 'applyFilterTrees']),
+    ...mapActions(useTreesStore, ['getSampleTrees', 'applyFilterTrees', 'getUsersTags']),
     scrollToIndexFromURL() {
       if (
         !this.loading &&
@@ -237,7 +248,59 @@ export default defineComponent({
       for (const sentId in this.focusedSentences){
         this.focusedSentences[sentId] = parseInt(sentId) == index;
       }
-    }
+    },
+    applyFilter(){
+      this.usersToHaveTree = [];
+      this.usersToNotHaveDiffs = [];
+      this.usersToHaveDiffs = [];
+      this.usersToNotHaveDiffs = [];
+      this.featuresSetForDiffs = [];
+      this.featuresSetForNotDiffs = [];
+      for(const filter of this.listFilters){
+        if(filter.choice === 'Trees' && filter.operator === 'Have') {
+          this.usersToHaveTree = filter.setUsers;
+        }
+        if(filter.choice === 'Trees' && filter.operator === 'Not Have') {
+          this.usersToNotHaveTree = filter.setUsers;
+        }
+        if(filter.choice === 'Differences' && filter.operator === 'Have') {
+          this.usersToHaveDiffs = filter.setUsers;
+          this.featuresSetForDiffs = filter.diffSetFeatures;
+        }
+        if(filter.choice === 'Differences' && filter.operator === 'Not Have') {
+          this.usersToNotHaveDiffs = filter.setUsers;
+          this.featuresSetForNotDiffs = filter.diffSetFeatures;
+        }
+      }
+      this.applyFilterTrees();
+    },
+    addRow() {
+      this.listFilters.push({
+        setUsers: [],
+        operator: this.filterOperators[0],
+        choice: this.filterChoices[0],
+        diffSetFeatures: [],
+      })
+    },
+    removeRow(index: number){
+      this.listFilters.splice(index, 1);
+    },
+    clearAll() {
+      this.textFilter = '';
+      this.usersToHaveTree = [];
+      this.usersToNotHaveDiffs = [];
+      this.usersToHaveDiffs = [];
+      this.usersToNotHaveDiffs = [];
+      this.selectedUsers = [];
+      this.applyFilterTrees();
+      this.listFilters = [];
+      this.listFilters.push(
+        { setUsers: [], 
+          operator: this.filterOperators[0], 
+          choice: this.filterChoices[0],
+          diffSetFeatures: [],
+      });
+    },
   },
 });
 </script>

@@ -2,8 +2,11 @@ import { defineStore } from 'pinia';
 
 import { notifyMessage, notifyError } from 'src/utils/notify';
 import api from '../../../api/backend-api';
-import { grewSearchResultSentence_t } from 'src/api/backend-types';
-import { sentenceConllToJson, sentenceJson_T } from 'conllup/lib/conll';
+import {
+  grewSearchResultSentence_t,
+} from 'src/api/backend-types';
+import {sentenceConllToJson, sentenceJson_T} from "conllup/lib/conll";
+import { useTagsStore } from '../tags';
 
 export const useTreesStore = defineStore('trees', {
   state: () => {
@@ -11,19 +14,38 @@ export const useTreesStore = defineStore('trees', {
       trees: {} as { [key: string]: grewSearchResultSentence_t },
       filteredTrees: [] as grewSearchResultSentence_t[],
       loading: false as boolean,
-      exerciseLevel: 0 as number,
+      blindAnnotationLevel: 0 as number,
       textFilter: '' as string,
       usersToHaveTree: [] as string[],
       usersToNotHaveTree: [] as string[],
       usersToHaveDiffs: [] as string[],
       usersToNotHaveDiffs: [] as string[],
       featuresSetForDiffs: [] as string[],
+      featuresSetForNotDiffs: [] as string[],
+      selectedTags: [] as string[],
     };
   },
   getters: {
     numberOfTrees(state) {
       return Object.keys(state.trees).length;
     },
+    numberOfTreesPerUser(state){
+      const counter: {[key: string]: number} = {};
+      const treesConlls = state.filteredTrees.map((sentence) => sentence.conlls);
+      for (const user of this.userIds){
+        counter[user as string] = treesConlls.filter(conll => user as string in conll).length;
+      }
+      return counter;
+    },
+    userIds() {
+      const userIds = new Set();
+      for (const treeObj of Object.values(this.trees)) {
+          for (const userId in treeObj.conlls) {
+              userIds.add(userId);
+          }
+      }
+      return [...userIds];
+    }
   },
   actions: {
     getSampleTrees({ projectName, sampleName }: { projectName: string; sampleName: string }) {
@@ -33,7 +55,7 @@ export const useTreesStore = defineStore('trees', {
           .getSampleTrees(projectName, sampleName)
           .then((response) => {
             this.trees = response.data.sample_trees;
-            this.exerciseLevel = response.data.exercise_level;
+            this.blindAnnotationLevel = response.data.blind_annotation_level;
             this.applyFilterTrees();
             this.loading = false;
             notifyMessage({ message: `Loaded ${Object.keys(this.trees).length} trees` });
@@ -46,6 +68,17 @@ export const useTreesStore = defineStore('trees', {
           });
       });
     },
+    getUsersTags(){
+      const userIds = new Set();
+      for (const treeObj of Object.values(this.trees)) {
+          for (const userId in treeObj.conlls) {
+            if(userId !== 'validated') userIds.add(userId);
+          }
+      }
+      for (const username of userIds) {
+          useTagsStore().getUserTags(username as string);
+      }
+    }, 
     applyFilterTrees() {
       this.filteredTrees = Object.values(this.trees);
       if (this.textFilter !== '') {
@@ -92,11 +125,21 @@ export const useTreesStore = defineStore('trees', {
           if (usersToNotHaveDiffsThatHaveTrees.length <= 1) {
             return false;
           }
-          return !sentencesHaveDiffs(
-            usersToNotHaveDiffsThatHaveTrees.map((user) => tree.conlls[user]),
-            this.featuresSetForDiffs
-          );
+          return !sentencesHaveDiffs(usersToNotHaveDiffsThatHaveTrees.map((user) => tree.conlls[user]), this.featuresSetForNotDiffs)
         });
+      }
+      if(this.selectedTags.length > 0) {
+        this.filteredTrees = this.filteredTrees.filter((tree) => {
+          const userIds = Object.keys(tree.conlls);
+          for(const userId of userIds){
+            const treeTags = sentenceConllToJson(tree.conlls[userId]).metaJson.tags as string;
+            if(treeTags){
+              if (this.selectedTags.some((tag) => treeTags.includes(tag))){
+                return tree;
+              }
+            }
+          }
+        })
       }
     },
   },

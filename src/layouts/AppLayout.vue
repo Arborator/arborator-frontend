@@ -348,9 +348,12 @@ export default defineComponent({
 .small-tab .q-tab__label {
   font-size: 10px;
 }
+
 .sticky-bar {
   position: sticky;
   top: 0;
   z-index: 1;
 }
+
+
 </style>

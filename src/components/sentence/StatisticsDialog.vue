@@ -47,7 +47,7 @@ export default defineComponent({
       required: true,
     },
     conlls: {
-      type: Object as PropType<{ teacher: string }>,
+      type: Object as PropType<{ validated: string }>,
       required: true,
     },
   },
@@ -66,7 +66,7 @@ export default defineComponent({
   mounted() {
     this.sentenceBus.on('open:statisticsDialog', ({ userId }) => {
       this.userId = userId;
-      const stats = this.sentenceBus.sentenceSVGs[this.userId].getDiffStats(this.conlls.teacher) as stats_t;
+      const stats = this.sentenceBus.sentenceSVGs[this.userId].getDiffStats(this.conlls.validated) as stats_t;
 
       this.corrects = stats.corrects;
       this.totals = stats.totals;

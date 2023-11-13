@@ -48,7 +48,7 @@ export default defineComponent({
       required: true,
     },
     diffMode: {
-      type: String as PropType<'DIFF_TEACHER' | 'DIFF_USER' | 'NO_DIFF'>,
+      type: String as PropType<'DIFF_VALIDATED' | 'DIFF_USER' | 'NO_DIFF'>,
       required: true,
     },
     sentenceId: {
@@ -95,7 +95,7 @@ export default defineComponent({
     };
   },
   computed: {
-    ...mapState(useProjectStore, ['diffUserId', 'shownFeatures', 'TEACHER', 'isTeacher', 'isStudent']),
+    ...mapState(useProjectStore, ['diffUserId', 'shownFeatures', 'isStudent']),
     ...mapState(useUserStore, ['username']),
   },
   watch: {
@@ -117,7 +117,7 @@ export default defineComponent({
     const sentenceSVGOptions = defaultSentenceSVGOptions();
     sentenceSVGOptions.shownFeatures = this.shownFeatures;
     sentenceSVGOptions.drawEnhancedTokens = true;
-    sentenceSVGOptions.interactive = !(this.isStudent && this.treeUserId === this.TEACHER);
+    sentenceSVGOptions.interactive = !(this.isStudent && this.treeUserId === 'validated');
     sentenceSVGOptions.arcHeight = 40;
     sentenceSVGOptions.tokenSpacing = 25;
 
@@ -166,6 +166,12 @@ export default defineComponent({
         this.reactiveSentence.updateSentence(sentenceJson);
         this.sentenceCaretaker.backup();
         this.statusChangeHadler();
+      }
+    });
+    this.sentenceBus.on('tree-update:tags', ({sentenceJson, userId}) => {
+      if(userId === this.treeUserId){
+        this.reactiveSentence.updateSentence(sentenceJson);
+        this.sentenceCaretaker.backup();
       }
     });
     this.sentenceBus.on('action:undo', ({ userId }) => {
@@ -310,9 +316,9 @@ export default defineComponent({
       this.sentenceBus.emit('changed:metaText', { newMetaText });
     },
     handleDiffPlugging() {
-      if (this.diffMode === 'DIFF_TEACHER') {
-        if (this.treeUserId !== this.TEACHER) {
-          this.sentenceSVG.plugDiffTree(this.reactiveSentencesObj[this.TEACHER]);
+      if (this.diffMode === 'DIFF_VALIDATED') {
+        if (this.treeUserId !== 'validated') {
+          this.sentenceSVG.plugDiffTree(this.reactiveSentencesObj['validated']);
         } else {
           this.sentenceSVG.unplugDiffTree();
         }

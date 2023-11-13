@@ -1,7 +1,7 @@
 <template>
   <q-dialog v-model="creatDialog" transition-show="fade" transition-hide="fade" persistent>
-    <q-card :class="$q.dark.isActive ? 'bg-dark' : 'bg-grey-1'" style="min-width: 50vw">
-      <q-bar class="bg-primary text-white">
+    <q-card style="min-width: 50vw;">
+      <q-bar class="bg-primary text-white sticky-bar">
         <q-space />
         <q-btn @click="closeDialog" flat dense icon="close" />
       </q-bar>
@@ -14,31 +14,121 @@
       <q-card-section v-if="!isShowSyncBtn && !isShowGithubSyncPanel" style="min-height: 20vw">
         <q-form id="createprojectform" class="q-gutter-md" @submit="onSubmit">
           <q-input
+            dense
+            outlined
             id="projectnameinput"
             v-model="project.projectName"
-            filled
-            :label="$t('createProjectCard.projectName')"
+            :label="$t('createProjectCard.projectName')+' *'"
             lazy-rules
-            :rules="[(val) => (val && val.length > 0) || 'Please type something']"
+            :rules="[(val) => (val && val.length > 0) || $t('createProjectCard.inputWarning')]"
           />
-          <q-input id="descriptioninput" v-model="project.description" filled label="Description" />
-          <div>
-            <q-btn-toggle
-              v-model="project.visibility"
-              label="Visibility"
-              glossy
-              toggle-color="primary"
-              :options="[
-                { label: $t('createProjectCard.visibilityMode[0]'), value: 0 },
-                { label: $t('createProjectCard.visibilityMode[1]'), value: 1 },
-                { label: $t('createProjectCard.visibilityMode[2]'), value: 2 },
-              ]"
-            />
+          <q-input outlined dense id="descriptioninput" v-model="project.description" label="Description" />
+          <q-separator />
+          <q-list>
+            <q-item tag="label" v-ripple>
+              <q-item-section side top>
+                <q-radio v-model="project.visibility" :val="2"/>
+              </q-item-section>
+              <q-item-section side avatar>
+               <q-icon size="md" name="o_groups" />
+              </q-item-section>
+              <q-item-section>
+                <q-item-label>{{$t('createProjectCard.visibilityMode[2]')}}</q-item-label>
+                <q-item-label caption>
+                  {{ $t('projectSettings.togglePrivateCaption[2]') }}
+                </q-item-label>
+              </q-item-section>
+            </q-item>
+            <q-item tag="label" v-ripple>
+              <q-item-section side top>
+                <q-radio v-model="project.visibility" :val="1"/>
+              </q-item-section>
+              <q-item-section side avatar>
+               <q-icon size="md" name="o_visibility" />
+              </q-item-section>
+              <q-item-section>
+                <q-item-label>{{$t('createProjectCard.visibilityMode[1]')}}</q-item-label>
+                <q-item-label caption>
+                  {{ $t('projectSettings.togglePrivateCaption[1]') }}
+                </q-item-label>
+              </q-item-section>
+            </q-item>
+            <q-item tag="label" v-ripple>
+              <q-item-section side top>
+                <q-radio v-model="project.visibility" :val="0"/>
+              </q-item-section>
+              <q-item-section side avatar>
+               <q-icon size="md" name="o_lock" />
+              </q-item-section>
+              <q-item-section>
+                <q-item-label>{{ $t('createProjectCard.visibilityMode[0]') }}</q-item-label>
+                <q-item-label caption>
+                  {{ $t('projectSettings.togglePrivateCaption[0]') }}
+                </q-item-label>
+              </q-item-section>
+            </q-item>
+          </q-list>
+          <q-separator />
+          <div class="text-h6 text-left">
+            {{ $t('createProjectCard.corpusConfig') }}
           </div>
-          <q-toggle v-model="project.showAllTrees" :label="$t('createProjectCard.showAllTrees')" />
-          <q-toggle v-model="project.exerciseMode" :label="$t('createProjectCard.exerciseMode')" />
+          <div class="row q-gutter-md">
+            <div class="col">
+              <LanguageSelect  
+                :multiple="false" 
+                :languages-list="languagesList" 
+                :label="' *'"
+                :rules="[(val) => (val && val.length > 0) || $t('createProjectCard.inputWarning')]"
+                @selected-value="getSelectedLanguage" 
+              />
+            </div>
+            <div class="col">
+              <q-select
+                dense
+                outlined
+                v-model="project.config"
+                :options="annotationConfigOptions"
+                stack-label
+                emit-value
+                lazy-rules
+                :rules="[(val) => (val && val.length > 0) || $t('createProjectCard.selectWarning')]"
+                :label="$t('createProjectCard.annotSettings')+ ' *'"
+              >
+                <template v-slot:selected-item="scope">
+                  {{ scope.opt.toUpperCase() }}
+                </template>
+              </q-select>
+            </div>
+          </div>
+          <q-separator />
+          <div class="row">
+            <div class="col-md-7 text-h6">
+                {{ $t('createProjectCard.annotMode') }}
+            </div>
+            <div class="col-md-1 offset-md-4">
+                <q-btn outline round size="sm" color="primary" icon="question_mark"
+                    href="https://arborator.github.io/arborator-documentation/#/?id=blind-annotation-mode"
+                    target="_blank">
+                    <q-tooltip content-class="text-white bg-primary"> Assistance </q-tooltip>
+                </q-btn>
+            </div>
+          </div>
+          <q-list>
+            <q-item>
+              <q-item-section side top>
+                <q-checkbox v-model="project.blindAnnotationMode" />
+              </q-item-section>
+              <q-item-section>
+                <q-item-label>{{ $t('createProjectCard.blindAnnot') }}</q-item-label>
+                <q-item-label caption>
+                 {{ $t('createProjectCard.blindAnnotCaption') }}
+                </q-item-label>
+              </q-item-section>
+            </q-item>
+            
+          </q-list>
           <div class="row q-gutter-md justify-center">
-            <q-btn :disable="project.projectName == ''" id="submitproject" type="submit" :label="$t('createProjectCard.create')" color="primary" />
+            <q-btn :disable="disableSubmitBtn" id="submitproject" type="submit" :label="$t('createProjectCard.create')" color="primary" />
           </div>
         </q-form>
       </q-card-section>
@@ -55,18 +145,21 @@
 
 <script lang="ts">
 import GithubSyncDialog from '../components/github/GithubSyncDialog.vue';
-import { useProjectStore } from 'src/pinia/modules/project';
+import LanguageSelect from './shared/LanguageSelect.vue';
+
 import api from '../api/backend-api';
 import { notifyError, notifyMessage } from 'src/utils/notify';
 import { mapActions, mapState } from 'pinia';
 import { useUserStore } from 'src/pinia/modules/user';
+import { useProjectStore } from 'src/pinia/modules/project';
 import { defineComponent, PropType } from 'vue';
 
 export default defineComponent({
   components: {
     GithubSyncDialog,
-  },
-  name: 'CreaProjectCard',
+    LanguageSelect
+},
+  name:'CreaProjectCard',
   emits: ['created'],
   props: {
     parentGetProjects: {
@@ -75,40 +168,51 @@ export default defineComponent({
     },
   },
   data() {
+    const annotationConfigOptions = [
+      { value: 'sud', label: 'SUD'}, 
+      { value: 'ud', label: 'UD'},
+      { value: 'eud', label: 'EUD'},
+      { value: 'other', label:'Other'}
+    ];
     return {
       submitting: false,
       project: {
         projectName: '',
         description: '',
         visibility: 2,
-        // isOpen: true,
-        showAllTrees: true,
-        exerciseMode: false,
+        language: '', 
+        config: '',
+        blindAnnotationMode: false,
       },
       creatDialog: true,
       progress: 0,
       isShowSyncBtn: false,
       isShowGithubSyncPanel: false,
-      synchronized: '',
+      synchronized:'',
+      annotationConfigOptions,
+      selectedLanguage: [],
     };
   },
   computed: {
     ...mapState(useUserStore, ['username', 'loggedWithGithub', 'isSuperAdmin']),
-    canSyncWithGithub() {
-      return this.loggedWithGithub && this.isShowSyncBtn && !this.isShowGithubSyncPanel;
+    ...mapState(useProjectStore, ['languagesList']),
+    canSyncWithGithub(){
+      return  this.loggedWithGithub && this.isShowSyncBtn && !this.isShowGithubSyncPanel; 
     },
+    disableSubmitBtn() {
+      return this.project.projectName === '' || this.project.language === '' || this.project.config === '';
+    }
   },
   methods: {
     ...mapActions(useProjectStore, ['resetAnnotationFeatures']),
-    /**
-     * Handle project submission by creating form data and sending to backend
-     *
-     * @returns void
-     */
+    getSelectedLanguage(value: any){
+      if(value) {
+        this.project.language = value;
+      }
+    },
     onSubmit() {
       this.submitting = true;
       this.resetAnnotationFeatures();
-      // this.$store.dispatch('config/resetAnnotationFeatures'); // reset annotationFeature object
       const data = {
         ...this.project,
         username: this.username,
@@ -118,7 +222,7 @@ export default defineComponent({
         .then(() => {
           this.parentGetProjects();
           this.submitting = false;
-          if (this.loggedWithGithub && !this.project.exerciseMode) {
+          if (this.loggedWithGithub && !this.project.blindAnnotationMode) {
             this.progress = 0.4;
             this.isShowSyncBtn = true;
           } else {
@@ -141,8 +245,8 @@ export default defineComponent({
     },
 
     closeDialog() {
-      this.creatDialog = false;
-      this.$emit('created');
+       this.creatDialog = false;
+       this.$emit('created');
     },
   },
 });

@@ -11,7 +11,6 @@ import {
   getProject_RV,
   getUsers_RV,
   logout_RV,
-  modifySampleRole_RV,
   grewSearch_RV,
   updateManyProjectUserAccess_RV,
   updateProjectConlluSchema_ED,
@@ -32,8 +31,6 @@ import {
   saveConstructiconEntry_RV,
 } from './endpoints';
 import {
-  sample_role_action_t,
-  sample_role_targetrole_t,
   transcription_t,
   ModelInfo_t,
   ParsingSettings_t,
@@ -146,15 +143,8 @@ export default {
   deleteSample(projectname: string, samplename: string) {
     return API.delete(`/projects/${projectname}/samples/${samplename}`);
   },
-  modifySampleRole(projectname: string, samplename: string, username: string, targetrole: sample_role_targetrole_t, action: sample_role_action_t) {
-    return API.post<modifySampleRole_RV>(`/projects/${projectname}/samples/${samplename}/role`, {
-      username,
-      targetrole,
-      action,
-    });
-  },
-  updateSampleExerciseLevel(projectname: string, samplename: string, exerciseLevel: number) {
-    return API.post(`/projects/${projectname}/samples/${samplename}/exercise-level`, { exerciseLevel });
+  updateSampleBlindAnnotationLevel(projectname: string, samplename: string, blindAnnotationLevel: number) {
+    return API.post(`/projects/${projectname}/samples/${samplename}/blind-annotation-level`, { blindAnnotationLevel });
   },
 
   // ---------------------------------------------------- //
@@ -350,6 +340,21 @@ export default {
   },
   openPullRequest(projectName: string, username: string, data: any) {
     return API.post(`/projects/${projectName}/${username}/synchronize-github/pull-request`, data);
+  },
+  // -------------------------------------------------------- //
+  // ---------------        To Refactor       --------------- //
+  // -------------------------------------------------------- //
+  addTags(projectName: string, sampleName: string, data: any){
+    return API.post(`/projects/${projectName}/samples/${sampleName}/tags`, data);
+  },
+  removeTag(projectName: string, sampleName: string, data: any){
+    return API.put(`/projects/${projectName}/samples/${sampleName}/tags`, data);
+  },
+  createUserTags(projectName: string, username: string, data: any){
+    return API.post(`/projects/${projectName}/tags/${username}`, data);
+  },
+  getUserTags(projectName: string, username: string){
+    return API.get(`/projects/${projectName}/tags/${username}`);
   },
   // -------------------------------------------------------- //
   // ---------------        To Refactor       --------------- //

@@ -25,7 +25,7 @@ export interface table_t<T> {
   fields: field_t[];
   selected: T[];
   visibleColumns: string[];
-  visibleColumnsExerciseMode?: string[];
+  visibleColumnsBlindAnnotationMode?: string[];
   filter: string;
   loading: boolean;
   pagination: pagination_t;
@@ -58,7 +58,8 @@ export type sentence_bus_events_t = {
   'action:redo': { userId: string };
   'action:addEmptyToken': { userId: string };
   'action:tabSelected': { userId: string };
-  'tree-update:tree': { userId: string; tree: treeJson_T };
+  'tree-update:tree': { userId: string; tree: TreeJson };
+  'tree-update:tags': { sentenceJson: SentenceJson; userId: string};
 };
 export interface sentence_bus_t extends Emitter<sentence_bus_events_t> {
   sentenceSVGs: { [key: string]: SentenceSVG };

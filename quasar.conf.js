@@ -1,7 +1,7 @@
 // Configuration for your app
 // https://quasar.dev/quasar-cli/quasar-conf-js
 
-const source = 'https://arborator-backend:5000';
+const source = 'https://localhost:5000';
 
 /* eslint-env node */
 const ESLintPlugin = require('eslint-webpack-plugin');
@@ -28,6 +28,7 @@ module.exports = configure((ctx) => ({
 
     'roboto-font', // optional, you are not bound to it
     'material-icons', // optional, you are not bound to it
+    'material-icons-outlined'
   ],
 
   framework: {

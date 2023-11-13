@@ -30,10 +30,10 @@
           />
         </div>
         <div>
-          <q-tooltip content-class="bg-white text-primary">{{ $t('projectView.lexicon[7]') }}</q-tooltip>
+          <q-tooltip content-class="bg-white text-primary">{{ $t('projectView.lexicon[8]') }}</q-tooltip>
           <q-btn-dropdown class="float-right" size="md" outline color="primary" label=" get Lexicon">
             <q-list>
-              <q-item v-close-popup clickable @click="fetchLexicon_('user')">
+              <q-item v-if="canSaveTreeInProject" v-close-popup clickable @click="fetchLexicon_('user')">
                 <q-item-section avatar>
                   <q-avatar v-if="isLoggedIn" size="1.2rem">
                     <img :src="avatar" />
@@ -45,7 +45,7 @@
                 </q-item-section>
               </q-item>
 
-              <q-item v-close-popup clickable @click="fetchLexicon_('user_recent')">
+              <q-item v-close-popup v-if="canSeeOtherUsersTrees && canSaveTreeInProject" clickable @click="fetchLexicon_('user_recent')">
                 <q-item-section avatar>
                   <q-avatar v-if="isLoggedIn" size="1.2rem">
                     <img :src="avatar" />
@@ -58,7 +58,7 @@
                 </q-item-section>
               </q-item>
 
-              <q-item v-if="isAdmin || isSuperAdmin" v-close-popup clickable @click="fetchLexicon_('recent')">
+              <q-item v-if="canSeeOtherUsersTrees" v-close-popup clickable @click="fetchLexicon_('recent')">
                 <q-item-section avatar>
                   <q-icon name="schedule" />
                 </q-item-section>
@@ -66,6 +66,16 @@
                   <q-item-label>{{ $t('projectView.lexicon[5]') }}</q-item-label>
                 </q-item-section>
               </q-item>
+
+              <q-item v-if="canSeeOtherUsersTrees" v-close-popup clickable @click="fetchLexicon_('validated')">
+                <q-item-section avatar>
+                  <q-icon name="verified" />
+                </q-item-section>
+                <q-item-section>
+                  <q-item-label>{{ $t('projectView.lexicon[7]') }}</q-item-label>
+                </q-item-section>
+              </q-item>
+
             </q-list>
           </q-btn-dropdown>
         </div>
@@ -137,7 +147,7 @@ export default defineComponent({
     };
   },
   computed: {
-    ...mapState(useProjectStore, ['annotationFeatures', 'isAdmin']),
+    ...mapState(useProjectStore, ['annotationFeatures', 'canSeeOtherUsersTrees', 'canSaveTreeInProject']),
     ...mapState(useUserStore, ['isLoggedIn', 'isSuperAdmin', 'avatar']),
     ...mapState(useLexiconStore, ['lexiconItems', 'lexiconLoading', 'lexiconItemsModified']),
     projectName() {

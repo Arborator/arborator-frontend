@@ -163,7 +163,7 @@ export default defineComponent({
   computed: {
     ...mapState(useUserStore, { userid: 'id' }),
     ...mapState(useUserStore, ['username', 'reservedUserIds']),
-    ...mapState(useProjectStore, ['exerciseMode']),
+    ...mapState(useProjectStore, ['blindAnnotationMode']),
     disableTokenizeBtn() {
       if (this.option.value == 'plainText') {
         return this.text && this.sampleName && this.lang.value;

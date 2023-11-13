@@ -71,10 +71,11 @@
               </q-tab-panels>
             </div>
           </div>
-          <div class="row">
+          <div class="row q-pa-md">
             <div>
               <q-btn v-if="searchReplaceTab === 'SEARCH'" color="primary" :label="$t('grewSearch.search')" no-caps icon="search" @click="onSearch" />
               <q-btn v-if="searchReplaceTab === 'REWRITE'" color="primary" :label="$t('grewSearch.tryRules')" no-caps icon="autorenew" @click="tryRules" />
+              {{ usersToApply.label }}
             </div>
           </div>
         </div>
@@ -143,9 +144,9 @@ export default defineComponent({
   data() {
     const currentQueryType: 'SEARCH' | 'REWRITE' = grewTemplates.searchQueries[0].type as 'SEARCH' | 'REWRITE';
     const usersToApplyOptions = [
+        { value: 'recent', label: this.$t('projectView.tooltipFabGrewRecent'), icon: 'schedule' },
         { value: 'user', label: this.$t('projectView.tooltipFabGrewUser')},
         { value: 'user_recent', label: this.$t('projectView.tooltipFabGrewUserRecent')},
-        { value: 'recent', label: this.$t('projectView.tooltipFabGrewRecent'), icon: 'schedule' },
         { value: 'validated', label: this.$t('projectView.tooltipFabGrewValidated'), icon:'verified'},
         { value: 'pending', label: this.$t('projectView.tooltipFabGrewPending'), icon:'pending' },
         { value: 'all', label: this.$t('projectView.tooltipFabGrewAll'), icon: 'groups' },

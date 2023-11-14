@@ -329,8 +329,10 @@ export default defineComponent({
         .then((response) => {
           this.projects = response.data as project_extended_t[];
           this.visibleProjects = response.data as project_extended_t[];
-          this.projectsLanguages = this.projects.filter(project => project.language !== '' && project.language !== null)
-            .map((project, i) => ({index: i+1 , name: project.language}));
+          this.projectsLanguages = [... new Set(this.projects.map(project => project.language))]
+            .filter(language => language !== '' && language !== null)
+            .map((language, i) => ({index: i+1 , name: language})
+          );
           this.sortProjects();
           this.loadingProjects = false;
           this.initLoading = false;

@@ -103,6 +103,7 @@ export default {
         'Édition graphique rapide de fichiers CoNLL:',
         'Èditeur de fichiers CoNLL',
         "La version historique d'Arborator est toujours utilisable ici",
+        "La licence d'ArboratorGrew",
       ],
     },
     footertextmadewith: "Créé avec beaucoup d'",

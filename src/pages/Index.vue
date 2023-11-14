@@ -289,6 +289,18 @@
                     {{ $t('homepage.toolsCard.content[5]') }}
                   </q-card-section>
                 </q-card>
+                <q-card
+                  bordered
+                  flat
+                  :class="hoverLegacy ? 'bg-grey-2' : ''"
+                  class="clickable clickhl col-1 grid-style-transition shadow-7"
+                  @click="openURL('https://github.com/Arborator/arborator-frontend/blob/master/LICENSE')"
+                >
+                  <q-card-section>
+                    <q-icon name="verified" color="primary" size="md" />
+                    {{ $t('homepage.toolsCard.content[6]') }}
+                  </q-card-section>
+                </q-card>
               </q-card-section>
             </div>
           </q-card>

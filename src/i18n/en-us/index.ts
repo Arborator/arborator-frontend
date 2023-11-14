@@ -106,6 +106,7 @@ export default {
         'For quick graphical modification of a CoNLL file:',
         'CoNLL files graphical editor',
         'The legacy Arborator is still running here',
+        'ArboratorGrew LICENSE'
       ],
     },
     footertextmadewith: 'Made with',

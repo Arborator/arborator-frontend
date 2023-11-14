@@ -19,7 +19,7 @@
         </q-img>
 
         <template #action>
-          <q-file v-model="uploadImage.image" label="Change Image" borderless standout filled use-chips clearable :loading="uploadImage.submitting">
+          <q-file  dense outlined v-model="uploadImage.image" label="Change Image" borderless standout filled use-chips clearable :loading="uploadImage.submitting">
             <template #after>
               <q-btn
                 color="primary"
@@ -46,8 +46,8 @@
         <q-list>
           <q-item tag="label">
             <q-item-section>
-              <q-item-label>{{ $t('projectSettings.togglePrivate') }}</q-item-label>
-              <q-item-label caption>{{ $t('projectSettings.togglePrivateCaption') }}</q-item-label>
+              <q-item-label>{{ $t('projectSettings.toggleVisibility') }}</q-item-label>
+              <q-item-label caption>{{ $t('projectSettings.toggleVisibilityCaption') }}</q-item-label>
             </q-item-section>
             <q-item-section avatar>
               <div>
@@ -91,7 +91,24 @@
               <q-item-label caption>{{ $t('projectSettings.chooseUserDiffCaption') }}</q-item-label>
             </q-item-section>
             <q-item-section>
-              <q-select v-model="diffUserIdLocal" :disable="!diffModeLocal" label="Select user" color="primary" :options="projectTreesFrom" />
+              <q-select outlined dense v-model="diffUserIdLocal" :disable="!diffModeLocal" :label="$t('projectSettings.selectDiffUser')" color="primary" :options="projectTreesFrom" />
+            </q-item-section>
+          </q-item>
+          <q-item>
+
+            <q-item-section>
+              <q-item-label>{{ $t('projectSettings.projectLanguage') }}</q-item-label>
+              <q-item-label caption>{{ $t('projectSettings.projectLanguageCaption') }} {{ language }}</q-item-label>
+            </q-item-section>
+            <q-item-section>
+              <div class="row">
+                <div class="col-11 q-pr-md">
+                  <LanguageSelect :multiple="false" :languages-list="languagesList" @selected-value="getSelectedLanguage" />
+                </div>
+                <div class="col-1">
+                  <q-btn color="primary" flat round dense icon="save" @click="updateProjectLanguage()" />
+                </div>
+              </div> 
             </q-item-section>
           </q-item>
         </q-list>
@@ -199,6 +216,8 @@ import 'codemirror/addon/fold/brace-fold';
 
 import ConfirmAction from './ConfirmAction.vue';
 import UserSelect from './UserSelect.vue';
+import LanguageSelect from "../components/shared/LanguageSelect.vue";
+
 import { mapActions, mapState, mapWritableState } from 'pinia';
 import { useProjectStore } from 'src/pinia/modules/project';
 import { notifyError, notifyMessage } from 'src/utils/notify';
@@ -213,6 +232,7 @@ export default defineComponent({
     Codemirror,
     UserSelect,
     ConfirmAction,
+    LanguageSelect,
   },
   props: {
     projectname: {
@@ -240,6 +260,7 @@ export default defineComponent({
       annotationFeaturesOk: true,
       annotationFeaturesComment: '',
       projectDescription:'',
+      selectedLanguage: '',
       cmOption: {
         tabSize: 8,
         styleActiveLine: true,
@@ -264,7 +285,8 @@ export default defineComponent({
       'shownMeta',
       'admins',
       'guests',
-      'imageSrc'
+      'imageSrc',
+      'language',
     ]),
     ...mapState(useProjectStore, [
       'isAdmin',
@@ -276,7 +298,9 @@ export default defineComponent({
       'getUDAnnofJson',
       'getAnnotationSetting',
       'config',
-      'imageSrc'
+      'imageSrc',
+      'language',
+      'languagesList',
     ]),
   
     blindAnnotationModeLocal: {
@@ -317,7 +341,7 @@ export default defineComponent({
       },
       set(value: string[]) {
         this.updateProjectshownFeatures({
-          projectname: this.$props.projectname,
+          projectname: this.projectname,
           toUpdateObject: { shownFeatures: value },
         });
       },
@@ -409,18 +433,20 @@ export default defineComponent({
     getProjectImage() {
       this.getImage(this.projectname);
     },
-    /**
-     * Wrapper to display the confirm dialog prior to executing the method
-     *
-     * @param {method} method
-     * @param {*} arg
-     * @returns void
-     */
+  
     triggerConfirm(method: CallableFunction, arg: string) {
       this.confirmActionDial = true;
       this.confirmActionCallback = method;
       this.confirmActionArg1 = arg;
     },
+
+    getSelectedLanguage(value: any) {
+      this.selectedLanguage = value;
+    },
+
+    updateProjectLanguage() {
+      this.updateProjectSettings(this.projectname, { language: this.selectedLanguage as string });  
+    }
   },
 });
 </script>

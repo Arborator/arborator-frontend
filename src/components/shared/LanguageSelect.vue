@@ -34,7 +34,7 @@
                 </q-item-section>
             </q-item>
         </template>
-        </q-select>
+    </q-select>
 </template>
 
 <script lang="ts">

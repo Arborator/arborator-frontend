@@ -67,7 +67,7 @@
     <q-bar
       class="absolute-bottom row custom-frame2"
       style="padding-left: 0"
-      v-if="queryType === 'REWRITE' && samplesFrozen.list.length > 0 && canSaveTreeInProject && !isValidator"
+      v-if="queryType === 'REWRITE' && samplesFrozen.list.length > 0 && canSaveTreeInProject"
     >
       <div>
         <q-checkbox v-if="queryType === 'REWRITE'" v-model="all" @click="selectAllSentences()">

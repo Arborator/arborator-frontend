@@ -1,5 +1,5 @@
 <template>
-  <q-page id="container" :class="$q.dark.isActive ? 'bg-dark' : 'bg-grey-1'">
+  <q-page id="container">
       <q-card flat style="max-width: 100%">
         <q-card-section class="project-header">
           <q-img class="project-image" :src="imageSrc" basic>

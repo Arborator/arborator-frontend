@@ -8,8 +8,6 @@
     <GrewRequestCard
       :parentOnSearch="onSearch"
       :parentOnTryRules="onTryRules"
-      :parentOnShowDiffs="onShowDiffsProject"
-      :users="userIds"
     ></GrewRequestCard>
   </q-dialog>
   <q-dialog v-model="resultSearchDialog" maximized transition-show="fade" transition-hide="fade">
@@ -85,30 +83,23 @@ export default defineComponent({
       if (this.queryType == 'REWRITE') this.$emit('reload');
     },
     onSearch(searchPattern: string, userType: string) {
-      const data = { pattern: searchPattern, userType: userType };
+      
+      const sampleIds = [];
+      if (this.$route.params.samplename)  sampleIds.push(this.$route.params.samplename);
+
+      const data = { pattern: searchPattern, userType: userType, sampleIds: sampleIds };
       this.queryType = 'SEARCH';
       this.userType =userType;
-      if (this.$route.params.samplename) {
-        api
-          .searchSample(this.$route.params.projectname as string, this.$route.params.samplename as string, data)
-          .then((response) => {
-            this.resultSearch = response.data;
-            this.resultSearchDialog = true;
-          })
-          .catch((error) => {
-            notifyError({ error });
-          });
-      } else {
-        api
-          .searchProject(this.$route.params.projectname as string, data)
-          .then((response) => {
-            this.resultSearch = response.data;
-            this.resultSearchDialog = true;
-          })
-          .catch((error) => {
-            notifyError({ error });
-          });
-      }
+      api
+        .searchRequest(this.$route.params.projectname as string, data)
+        .then((response) => {
+          this.resultSearch = response.data;
+          this.resultSearchDialog = true;
+        })
+        .catch((error) => {
+          notifyError({ error });
+        });
+       
     },
     onTryRules(query: string, userType: string) {
       const sampleId = (this.$route.params.samplename as string) || null;
@@ -124,22 +115,6 @@ export default defineComponent({
           notifyError({
             error: error.response.data.message,
           });
-        });
-    },
-    onShowDiffsProject(otherUsers: string[], features: string[]) {
-      let sampleName: string | string[] = '';
-      if (this.$route.params.samplename) {
-        sampleName = this.$route.params.samplename;
-      }
-      const data = { otherUsers: otherUsers, features: features, sampleName: sampleName };
-      api
-        .showDiffsInProject(this.$route.params.projectname as string, data)
-        .then((response) => {
-          this.resultSearch = response.data;
-          this.resultSearchDialog = true;
-        })
-        .catch((error) => {
-          notifyError(error);
         });
     },
   },

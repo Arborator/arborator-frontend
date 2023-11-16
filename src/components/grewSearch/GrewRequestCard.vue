@@ -6,7 +6,7 @@
       <q-btn v-close-popup flat dense icon="close" />
     </q-bar>
     <q-card-section style="width: 80vw; height: 85vh">
-      <q-form class="q-gutter-md" @reset="onResetSearch">
+      <q-form class="q-gutter-md">
         <div class="q-pa-xs">
           <div class="row">
             <div class="col-10">
@@ -72,14 +72,6 @@
                     <template v-for="query in searchQueries" :key="query.name">
                       <q-tab v-ripple :name="query.name" :label="query.name" clickable @click="changeQuery(query.pattern, 'SEARCH')" />
                     </template>
-                    <q-tab
-                      v-ripple
-                      v-if="usersToApply.value === 'all'"
-                      name="showDiffs"
-                      label="Show divergences"
-                      clickable
-                      @click="isShowDiff = true"
-                    />
                     <q-tab><a href="https://grew.fr/doc/request/" target="_blank">Documentation</a></q-tab>
                   </q-tabs>
                 </q-tab-panel>
@@ -106,57 +98,32 @@
       </q-form>
     </q-card-section>
   </q-card>
-  <q-dialog v-model="isShowDiff">
-    <q-card style="width: 150vw">
-      <q-bar class="bg-primary text-white">
-        <q-space />
-        <q-btn v-close-popup flat dense icon="close" />
-      </q-bar>
-      <q-card-section>
-        <div class="text-h6">
-          {{ $t('grewSearch.showDiffTitle') }}
-        </div>
-      </q-card-section>
-      <q-card-section class="q-gutter-md">
-        <div class="row q-gutter-sm">
-          <div class="col">
-            <q-select
-              v-model="features"
-              filled
-              multiple
-              :options="featuresSet"
-              use-chips
-              stack-label
-              :label="$t('grewSearch.showDiffFaturesSelect')"
-            />
-          </div>
-          <div class="col">
-            <q-select v-model="otherUsers" filled multiple :options="users" use-chips stack-label :label="$t('grewSearch.showDiffUsersSelect')" />
-            <q-tooltip>{{ $t('grewSearch.showDiffUsersTooltip') }}</q-tooltip>
-          </div>
-        </div>
-        <div class="row">
-          <q-btn :disable="otherUsers.length < 2" v-close-popup :label="$t('grewSearch.showDiffBtn')" color="primary" @click="onShowDiffs" />
-        </div>
-      </q-card-section>
-    </q-card>
-  </q-dialog>
 </template>
 
 <script lang="ts">
-import { defineComponent } from 'vue';
 
+import GrewCodeMirror from 'components/codemirrors/GrewCodeMirror.vue';
 import grewTemplates from '../../assets/grew-templates.json';
 import { mapActions, mapState } from 'pinia';
 import { useGrewSearchStore } from 'src/pinia/modules/grewSearch';
 import { useUserStore } from 'src/pinia/modules/user';
 import { useProjectStore } from 'src/pinia/modules/project';
-import GrewCodeMirror from 'components/codemirrors/GrewCodeMirror.vue';
+
+import { defineComponent, PropType } from 'vue';
 
 export default defineComponent({
   name: 'GrewRequestCard',
   components: { GrewCodeMirror },
-  props: ['parentOnSearch', 'parentOnTryRules', 'parentOnShowDiffs', 'users'],
+  props: {
+    parentOnSearch: {
+      type: Function as PropType<CallableFunction>,
+      required: true,
+    },
+    parentOnTryRules: {
+      type: Function as PropType<CallableFunction>,
+      required: true,
+    }
+  },
   data() {
     const currentQueryType: 'SEARCH' | 'REWRITE' = grewTemplates.searchQueries[0].type as 'SEARCH' | 'REWRITE';
     const usersToApplyOptions = [
@@ -169,27 +136,21 @@ export default defineComponent({
         { value: 'base_tree', label: this.$t('projectView.tooltipFabGrewBaseTree'), icon: 'linear_scale'},
       ];
     const usersToApply = usersToApplyOptions[0];
-    const otherUsers: string[] = [];
-    const features: string[] = [];
     return {
       searchReplaceTab: grewTemplates.searchQueries[0].type,
       searchQueryTab: grewTemplates.searchQueries[0].type,
       currentQuery: grewTemplates.searchQueries[0].pattern,
       currentQueryType,
-      rewriteCommands: '',
       searchQueries: grewTemplates.searchQueries,
       rewriteQueries: grewTemplates.rewriteQueries,
       usersToApply,
       usersToApplyOptions,
-      isShowDiff: false,
-      otherUsers,
-      features,
     };
   },
   computed: {
     ...mapState(useGrewSearchStore, ['lastQuery', 'treeTypesForSearch', 'canRewriteRule']),
     ...mapState(useUserStore, ['isLoggedIn', 'avatar', 'username']),
-    ...mapState(useProjectStore, ['blindAnnotationMode','shownFeaturesChoices', 'annotationFeatures', 'featuresSet', 'canSaveTreeInProject', 'canSeeOtherUsersTrees', 'isValidator']),
+    ...mapState(useProjectStore, ['blindAnnotationMode','shownFeaturesChoices', 'annotationFeatures', 'canSaveTreeInProject', 'canSeeOtherUsersTrees', 'isValidator']),
     userOptions() {
       if (this.searchReplaceTab == 'SEARCH') {
         return this.usersToApplyOptions.filter((element) => this.treeTypesForSearch.includes(element.value));
@@ -248,20 +209,6 @@ export default defineComponent({
       if (type === 'REWRITE' && this.usersToApply.value === 'all') {
         this.usersToApply = this.usersToApplyOptions[0];
       }
-    },
-
-    /**
-     * Reset the search pattern to an empty string
-     *
-     * @returns void
-     */
-    onResetSearch() {
-      this.currentQuery = '';
-      this.rewriteCommands = '';
-    },
-
-    onShowDiffs() {
-      this.parentOnShowDiffs(this.otherUsers, this.features);
     },
   },
 });

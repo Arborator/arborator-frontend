@@ -321,9 +321,9 @@ export default defineComponent({
     },
 
     onSearch(searchPattern: string) {
-      const data = { pattern: searchPattern, userType: this.lexiconType };
+      const data = { pattern: searchPattern, userType: this.lexiconType, sampleIds: [] };
       api
-        .searchProject(this.projectName as string, data)
+        .searchRequest(this.projectName as string, data)
         .then((response) => {
           this.resultSearch = response.data;
           this.visuTreeDial = true;

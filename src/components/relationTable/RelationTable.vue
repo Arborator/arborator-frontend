@@ -296,10 +296,11 @@ export default defineComponent({
       console.log(resultSearchDialog);
     },
     onSearch(searchPattern: string) {
-      const data = { pattern: searchPattern, userType: this.treeType.value };
-      if (this.$route.params.samplename) {
+      const sampleIds = [];
+      if (this.$route.params.samplename) sampleIds.push(this.$route.params.samplename)
+      const data = { pattern: searchPattern, userType: this.treeType.value, sampleIds: sampleIds };
         api
-          .searchSample(this.$route.params.projectname as string, this.$route.params.samplename as string, data)
+          .searchRequest(this.$route.params.projectname as string, data)
           .then((response) => {
             this.resultSearch = response.data;
             this.visuTreeDial = true;
@@ -307,17 +308,7 @@ export default defineComponent({
           .catch((error) => {
             notifyError({ error });
           });
-      } else {
-        api
-          .searchProject(this.$route.params.projectname as string, data)
-          .then((response) => {
-            this.resultSearch = response.data;
-            this.visuTreeDial = true;
-          })
-          .catch((error) => {
-            notifyError({ error });
-          });
-      }
+      
     },
     
   },

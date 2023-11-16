@@ -163,11 +163,8 @@ export default {
   // ----------------------------------------------------- //
   // ---------------          Grew         --------------- //
   // ----------------------------------------------------- //
-  searchProject(projectname: string, data: any) {
+  searchRequest(projectname: string, data: any) {
     return API.post<grewSearch_RV>(`projects/${projectname}/search`, data);
-  },
-  searchSample(projectname: string, samplename: string, data: any) {
-    return API.post<grewSearch_RV>(`projects/${projectname}/sample/${samplename}/search`, data);
   },
   tryPackage(projectname: string, sampleId: string | null, query: any, userType: string) {
     return API.post<grewSearch_RV>(`projects/${projectname}/try-package`, { package: query, userType, sampleId });
@@ -177,9 +174,6 @@ export default {
   },
   getRelationTable(projectname: string, data: any) {
     return API.post(`projects/${projectname}/relation-table`, data);
-  },
-  showDiffsInProject(projectName: string, data: any) {
-    return API.post<grewSearch_RV>(`projects/${projectName}/show-diff`, data);
   },
   // -------------------------------------------------------- //
   // ---------------       Constructicon      --------------- //

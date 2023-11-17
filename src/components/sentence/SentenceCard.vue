@@ -639,17 +639,17 @@ export default defineComponent({
         return;
       }
       if (this.focused) {
-        if (event.key === 's') {
+        if (event.keyCode === 83 && event.shiftKey) {
           this.save(user);
         }
-        if (event.key === 'z' && this.canUndo) {
+        if (event.keyCode === 90 && this.canUndo && event.ctrlKey) {
           this.undo();
         }
-        if (event.key === 'y' && this.canRedo) {
+        if (event.keyCode === 89 && this.canRedo && event.ctrlKey) {
           this.redo();
         }
-      }
-    },
+      } 
+    }
   },
 });
 </script>

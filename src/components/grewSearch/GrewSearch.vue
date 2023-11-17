@@ -48,10 +48,6 @@ export default defineComponent({
       type: String as PropType<string>,
       required: true,
     },
-    userIds: {
-      type: Object as PropType<string[]>,
-      required: true,
-    },
   },
   data() {
     const result: {

@@ -121,7 +121,7 @@
           </div>
         </div>
 
-        <GrewSearch :user-ids="userIds" :sentence-count="numberOfTrees" :search-scope="samplename" />
+        <GrewSearch :sentence-count="numberOfTrees" :search-scope="samplename" />
 
         <RelationTableMain :sampleName="samplename" />
       </div>

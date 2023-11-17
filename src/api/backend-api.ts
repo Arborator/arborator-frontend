@@ -166,8 +166,8 @@ export default {
   searchRequest(projectname: string, data: any) {
     return API.post<grewSearch_RV>(`projects/${projectname}/search`, data);
   },
-  tryPackage(projectname: string, sampleId: string | null, query: any, userType: string) {
-    return API.post<grewSearch_RV>(`projects/${projectname}/try-package`, { package: query, userType, sampleId });
+  tryPackage(projectname: string, data: any) {
+    return API.post<grewSearch_RV>(`projects/${projectname}/try-package`, data);
   },
   applyRule(projectname: string, data: any) {
     return API.post(`/projects/${projectname}/apply-rule`, data);

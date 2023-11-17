@@ -153,9 +153,9 @@ import { grewSearchResult_t } from 'src/api/backend-types';
 export default defineComponent({
   components: { ResultView },
   props: {
-    sampleName: {
-      type: String as PropType<string>,
-      default: '',
+    sampleNames: {
+      type: Object as PropType<string[]>,
+      default: [],
     }
   },
   data() {
@@ -210,7 +210,7 @@ export default defineComponent({
     getRelationTable(){
       let edgesList = [];
       this.relationTree = [];
-      const data = { sample_id: this.sampleName, tableType: this.treeType.value };
+      const data = { sampleIds: this.sampleNames, tableType: this.treeType.value };
       api
         .getRelationTable(this.$route.params.projectname as string, data)
         .then((response) => {
@@ -296,21 +296,17 @@ export default defineComponent({
       console.log(resultSearchDialog);
     },
     onSearch(searchPattern: string) {
-      const sampleIds = [];
-      if (this.$route.params.samplename) sampleIds.push(this.$route.params.samplename)
-      const data = { pattern: searchPattern, userType: this.treeType.value, sampleIds: sampleIds };
-        api
-          .searchRequest(this.$route.params.projectname as string, data)
-          .then((response) => {
-            this.resultSearch = response.data;
-            this.visuTreeDial = true;
-          })
-          .catch((error) => {
-            notifyError({ error });
-          });
-      
-    },
-    
+      const data = { pattern: searchPattern, userType: this.treeType.value, sampleIds: this.sampleNames };
+      api
+        .searchRequest(this.$route.params.projectname as string, data)
+        .then((response) => {
+          this.resultSearch = response.data;
+          this.visuTreeDial = true;
+        })
+        .catch((error) => {
+          notifyError({ error });
+      });
+    }, 
   },
 });
 </script>

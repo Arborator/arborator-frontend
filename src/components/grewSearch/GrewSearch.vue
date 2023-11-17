@@ -44,6 +44,10 @@ export default defineComponent({
       type: Number as PropType<number>,
       required: true,
     },
+    sampleNames: {
+      type: Object as PropType<string[]>,
+      default: [],
+    },
     searchScope: {
       type: String as PropType<string>,
       required: true,
@@ -80,10 +84,7 @@ export default defineComponent({
     },
     onSearch(searchPattern: string, userType: string) {
       
-      const sampleIds = [];
-      if (this.$route.params.samplename)  sampleIds.push(this.$route.params.samplename);
-
-      const data = { pattern: searchPattern, userType: userType, sampleIds: sampleIds };
+      const data = { pattern: searchPattern, userType: userType, sampleIds: this.sampleNames };
       this.queryType = 'SEARCH';
       this.userType =userType;
       api
@@ -98,11 +99,11 @@ export default defineComponent({
        
     },
     onTryRules(query: string, userType: string) {
-      const sampleId = (this.$route.params.samplename as string) || null;
+      const data = { query: query, userType: userType, sampleIds: this.sampleNames}
       this.queryType = 'REWRITE';
       this.userType = userType;
       api
-        .tryPackage(this.$route.params.projectname as string, sampleId, query, userType)
+        .tryPackage(this.$route.params.projectname as string, data)
         .then((response) => {
           this.resultSearchDialog = true;
           this.resultSearch = response.data;

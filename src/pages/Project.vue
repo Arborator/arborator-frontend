@@ -22,7 +22,7 @@
             <q-space />
             <q-btn @click="isShowLexiconPanel = false" dense flat icon="close"> </q-btn>
           </q-bar>
-          <LexiconMain :sample-id="table.selected"></LexiconMain>
+          <LexiconMain :sample-ids="selectedSamplesNames"></LexiconMain>
         </q-card-section>
 
         <!-- Parsing Panel -->
@@ -306,9 +306,13 @@
       </q-card-section>
     </q-card>
     <template v-if="!isFreezed && canExportTrees">
-      <GrewSearch :sentence-count="sentenceCount" :search-scope="projectName"
-        @reload="loadProjectData" />
-      <RelationTableMain />
+      <GrewSearch 
+        :sentence-count="sentenceCount" 
+        :search-scope="projectName" 
+        :sample-names="selectedSamplesNames"
+        @reload="loadProjectData" 
+      />
+      <RelationTableMain :sample-names="selectedSamplesNames" />
     </template>
 
     <!-- Settings dialog -->
@@ -599,6 +603,9 @@ export default defineComponent({
       listRecords.push(this.sampleNames.length);  
       this.table.pagination.rowsPerPage = listRecords[0];
       return listRecords;
+    },
+    selectedSamplesNames(): string[] {
+      return this.table.selected.map((sample) => sample.sample_name);
     }
   },
   watch: {

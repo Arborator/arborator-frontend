@@ -95,6 +95,7 @@
         :features="features"
         :key="lexiconItemsModified.length"
         :lexicon-type="lexiconType"
+        :sample-ids="sampleIds"
       ></LexiconTableBase>
       <LexiconTableBase
         title="Lexicon"
@@ -104,6 +105,7 @@
         :features="features"
         :key="features.length"
         :lexicon-type="lexiconType"
+        :sample-ids="sampleIds"
       >
       </LexiconTableBase>
     </q-card-section>
@@ -118,14 +120,13 @@ import { mapState, mapActions } from 'pinia';
 import { useLexiconStore } from 'src/pinia/modules/lexicon';
 import { useProjectStore } from 'src/pinia/modules/project';
 import { useUserStore } from 'src/pinia/modules/user';
-import { sample_t } from 'src/api/backend-types';
 import { defineComponent, PropType } from 'vue';
 
 export default defineComponent({
   name: 'LexiconMain',
   props: {
-    sampleId: {
-      type: Object as PropType<sample_t[]>,
+    sampleIds: {
+      type: Object as PropType<string[]>,
       default: [],
     },
   },
@@ -164,12 +165,9 @@ export default defineComponent({
     ...mapActions(useLexiconStore, ['fetchLexicon']),
 
     fetchLexicon_(lexiconType: string) {
-      const samplenames = [];
+
       let prune: number;
 
-      for (const sample of this.sampleId) {
-        samplenames.push(sample.sample_name);
-      }
       this.features = this.principalFeatures.concat(this.secondaryFeatures);
       if (this.secondaryFeatures.length != 0) {
         prune = this.principalFeatures.length;
@@ -177,7 +175,7 @@ export default defineComponent({
       } else {
         prune = 0;
       }
-      const data = { samplenames: samplenames, lexiconType: lexiconType, features: this.features, prune: prune };
+      const data = { samplenames: this.sampleIds, lexiconType: lexiconType, features: this.features, prune: prune };
       this.fetchLexicon(this.projectName as string, data);
       this.lexiconType = lexiconType;
       this.isShowLexiconFeatures = false;

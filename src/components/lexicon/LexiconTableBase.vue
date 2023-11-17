@@ -121,6 +121,10 @@ export default defineComponent({
       type: String as PropType<string>,
       required: true,
     },
+    sampleIds: {
+      type: Object as PropType<string[]>,
+      required: true,
+    }
   },
   components: { ResultView },
   setup(props, ctx) {
@@ -321,7 +325,7 @@ export default defineComponent({
     },
 
     onSearch(searchPattern: string) {
-      const data = { pattern: searchPattern, userType: this.lexiconType, sampleIds: [] };
+      const data = { pattern: searchPattern, userType: this.lexiconType, sampleIds: this.sampleIds };
       api
         .searchRequest(this.projectName as string, data)
         .then((response) => {

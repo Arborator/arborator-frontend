@@ -7,7 +7,7 @@
     </q-page-sticky>
 
     <q-dialog v-model="relationTableDial" transition-show="fade" transition-hide="fade">
-      <RelationTable :sample-name="sampleName"></RelationTable>
+      <RelationTable :sample-names="sampleNames"></RelationTable>
     </q-dialog>
   </div>
 </template>
@@ -22,9 +22,9 @@ export default defineComponent({
     RelationTable,
   },
   props: {
-    sampleName: {
-      type: String as PropType<string>,
-      default: '',
+    sampleNames: {
+      type: Object as PropType<string[]>,
+      default: [],
     },
   },
   data() {

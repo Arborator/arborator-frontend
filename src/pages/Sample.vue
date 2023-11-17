@@ -121,9 +121,13 @@
           </div>
         </div>
 
-        <GrewSearch :sentence-count="numberOfTrees" :search-scope="samplename" />
+        <GrewSearch 
+          :sentence-count="numberOfTrees" 
+          :search-scope="samplename" 
+          :sample-names="[samplename]"
+        />
 
-        <RelationTableMain :sampleName="samplename" />
+        <RelationTableMain :sample-names="[samplename]" />
       </div>
     </template>
   </q-splitter>

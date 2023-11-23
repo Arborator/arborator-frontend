@@ -87,13 +87,11 @@
               </q-tab-panels>
             </div>
           </div>
-          <div class="row q-pa-md">
-            <div>
-              <q-btn v-if="searchReplaceTab === 'SEARCH'" color="primary" :label="$t('grewSearch.search')" no-caps icon="search" @click="onSearch" />
-              <q-btn v-if="searchReplaceTab === 'REWRITE'" color="primary" :label="$t('grewSearch.tryRules')" no-caps icon="autorenew" @click="tryRules" />
-              {{ usersToApply.label }}
-            </div>
-          </div>
+          <q-bar class="row q-pa-md absolute-bottom custom-frame2">
+            <q-btn v-if="searchReplaceTab === 'SEARCH'" color="primary" :label="$t('grewSearch.search')" no-caps icon="search" @click="onSearch" />
+            <q-btn v-if="searchReplaceTab === 'REWRITE'" color="primary" :label="$t('grewSearch.tryRules')" no-caps icon="autorenew" @click="tryRules" />
+            {{ usersToApply.label }}
+          </q-bar>
         </div>
       </q-form>
     </q-card-section>
@@ -213,3 +211,13 @@ export default defineComponent({
   },
 });
 </script>
+<style>
+.absolute-bottom {
+  position: sticky;
+  bottom: 0;
+  z-index: 1;
+  height: 40px;
+}
+
+
+</style>

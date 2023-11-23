@@ -1,16 +1,56 @@
 {
 	"searchQueries": [
-		{"type": "SEARCH", "name":"POS query", "pattern":"% Search for a token of a given upos\n% Available tags: ADJ, ADP, ADV, AUX, CONJ, DET, INTJ, NOUN, NUM, PART, PRON, PROPN, PUNCT, SCONJ, SYM, VERB, X\npattern { N [upos=\"NUM\"] }"},
-		{"type": "SEARCH", "name":"Form query", "pattern":"% Search for a given word form\npattern { N [form=\"Form_to_search\"] }"},
-		{"type": "SEARCH", "name":"Lemma query", "pattern":"% Search for a given lemma (lemmatization is not available for all languages)\n\npattern { N [lemma=\"Lemma_to_search\"] }"},
-		{"type": "SEARCH", "name":"Dependency relation query", "pattern":"% Search for a dependency relation\npattern { GOV -[advcl]-> DEP }"},
-		{"type": "SEARCH", "name":"Relation and tags query", "pattern":"% Search for a \"det\" dependency relation\n% such that the governor's tag is different from NOUN, PROPN and ADJ\n\npattern {\nGOV [upos <> NOUN|ADJ|PROPN];\nGOV -[det]-> DEP;\n}"},
-		{"type": "SEARCH", "name":"Complex Query", "pattern":"% Complex query, feel free to adjust as you wish\n\npattern { \n  N [\n    upos = VERB, \n    Mood = Ind|Imp, \n    Tense <> Fut, \n    Number, \n    !Person, \n    form = \"être\", \n    lemma = re\"s.*\" \n  ] \n}\n\n% EXPLANATION :\n% upos is a VERB\n% Mood is either Ind or Imp\n% Tense is not Fut\n% The feat Number has to exist\n% The feat Person has to not exist\n% The form has to be \"être\"\n% The lemma has to follow the regex \"s.*\" (start by \"s.\")"}
+		{
+			"type": "SEARCH",
+			"name": "POS query",
+			"pattern": "% Search for a token of a given upos\n% Available tags: ADJ, ADP, ADV, AUX, CONJ, DET, INTJ, NOUN, NUM, PART, PRON, PROPN, PUNCT, SCONJ, SYM, VERB, X\npattern { N [upos=\"NUM\"] }"
+		},
+		{
+			"type": "SEARCH",
+			"name": "Form query",
+			"pattern": "% Search for a given word form\npattern { N [form=\"Form_to_search\"] }"
+		},
+		{
+			"type": "SEARCH",
+			"name": "Lemma query",
+			"pattern": "% Search for a given lemma (lemmatization is not available for all languages)\n\npattern { N [lemma=\"Lemma_to_search\"] }"
+		},
+		{
+			"type": "SEARCH",
+			"name": "Dependency relation query",
+			"pattern": "% Search for a dependency relation\npattern { GOV -[advcl]-> DEP }"
+		},
+		{
+			"type": "SEARCH",
+			"name": "Relation and tags query",
+			"pattern": "% Search for a \"det\" dependency relation\n% such that the governor's tag is different from NOUN, PROPN and ADJ\n\npattern {\nGOV [upos <> NOUN|ADJ|PROPN];\nGOV -[det]-> DEP;\n}"
+		},
+		{
+			"type": "SEARCH",
+			"name": "Complex Query",
+			"pattern": "% Complex query, feel free to adjust as you wish\n\npattern { \n  N [\n    upos = VERB, \n    Mood = Ind|Imp, \n    Tense <> Fut, \n    Number, \n    !Person, \n    form = \"être\", \n    lemma = re\"s.*\" \n  ] \n}\n\n% EXPLANATION :\n% upos is a VERB\n% Mood is either Ind or Imp\n% Tense is not Fut\n% The feat Number has to exist\n% The feat Person has to not exist\n% The form has to be \"être\"\n% The lemma has to follow the regex \"s.*\" (start by \"s.\")"
+		}
 	],
 	"rewriteQueries": [
-		{"type": "REWRITE", "name":"Rewrite Pos", "pattern":"rule r1 { pattern { N [upos=VERB] } commands { N.upos = V } }"},
-		{"type": "REWRITE", "name":"Rewrite Deprel label", "pattern":"rule r1 {\n  pattern { e: GOV -[compound:vo]-> DEP }\n  commands { \n  \t% If you want to rename the label main:aux@deep in one time :\n    e.label = \"comp:obj@m\";\n    \n    % % Or if you want to rename feature by feature : \n    % e.1 = comp;\n    % e.2 = obj;\n\t% e.deep = m;\n\t}\n}"},
-    {"type": "REWRITE", "name":"Delete Dependency", "pattern":"rule r1 {\n  pattern { e: GOV -[det]-> DEP }\n  commands { \n  \t% If you want to delete the dependency\n    del_edge e;\n\t}\n}"},
-    {"type": "REWRITE", "name":"Shift Dependency", "pattern":"% in this template rule, we inverse the relation from NOUN -> ADJ to ADJ -> NOUN\nrule r1 {\n  pattern {\n    M1 [upos=NOUN] ; \n    M2 [upos=ADJ] ; \n    e: M1 -[mod]-> M2 ; \n  }\n  commands { \n    del_edge e; % delete the edge\n    add_edge M2 -[mod]-> M1; % add the inverse edge\n    \n    % and then shift the in-edges pointing to M1 and redirect to M2\n    shift_in M1 ==> M2;\n    \n    % facultative : if you also want to redirect all out-edges (starting from M1) to M2 (will start from M2), use the following line :\n    %shift_out M1 ==> M2;\n\t}\n}"}
-  ]
+		{
+			"type": "REWRITE",
+			"name": "Rewrite Pos",
+			"pattern": "rule r1 { pattern { N [upos=VERB] } commands { N.upos = V } }"
+		},
+		{
+			"type": "REWRITE",
+			"name": "Rewrite Deprel label",
+			"pattern": "rule r1 {\n  pattern { e: GOV -[compound:vo]-> DEP }\n  commands { \n  \t% If you want to rename the label main:aux@deep in one time :\n    e.label = \"comp:obj@agent\\m\";\n    \n    % % Or if you want to rename feature by feature : \n    % e.1 = comp;\n    % e.2 = obj;\n\t% e.deep = agent;\n\t% e.type = m;\n\t}\n}"
+		},
+		{
+			"type": "REWRITE",
+			"name": "Delete Dependency",
+			"pattern": "rule r1 {\n  pattern { e: GOV -[det]-> DEP }\n  commands { \n  \t% If you want to delete the dependency\n    del_edge e;\n\t}\n}"
+		},
+		{
+			"type": "REWRITE",
+			"name": "Shift Dependency",
+			"pattern": "% in this template rule, we inverse the relation from NOUN -> ADJ to ADJ -> NOUN\nrule r1 {\n  pattern {\n    M1 [upos=NOUN] ; \n    M2 [upos=ADJ] ; \n    e: M1 -[mod]-> M2 ; \n  }\n  commands { \n    del_edge e; % delete the edge\n    add_edge M2 -[mod]-> M1; % add the inverse edge\n    \n    % and then shift the in-edges pointing to M1 and redirect to M2\n    shift_in M1 ==> M2;\n    \n    % facultative : if you also want to redirect all out-edges (starting from M1) to M2 (will start from M2), use the following line :\n    %shift_out M1 ==> M2;\n\t}\n}"
+		}
+	]
 }

@@ -53,7 +53,7 @@
             </div>
 
             <div class="col-2 bg-primary">
-              <q-tabs v-model="searchReplaceTab" dense no-caps class="bg-grey-2 primary text-primary">
+              <q-tabs v-model="searchReplaceTab" dense no-caps active-color="primary" indicator-color="primary" class="bg-grey-2 primary text-grey">
                 <q-tab name="SEARCH" icon="search" :label="$t('grewSearch.search')">
                   <q-tooltip content-class="bg-primary" anchor="top middle" self="bottom middle" :offset="[10, 10]">
                     {{ $t('grewSearch.grewSearchTooltip') }}

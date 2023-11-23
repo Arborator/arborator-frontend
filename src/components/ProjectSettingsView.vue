@@ -195,7 +195,6 @@
           v-model:value="annotationFeaturesJson" 
           :options="cmOption" 
           @input="checkAnnotationFeatures"
-          height="700"
           ></Codemirror>
       </q-card>
     </q-card-section>

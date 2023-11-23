@@ -211,7 +211,7 @@ export default defineComponent({
   },
 });
 </script>
-<style>
+<style scoped>
 .absolute-bottom {
   position: sticky;
   bottom: 0;

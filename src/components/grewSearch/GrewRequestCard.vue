@@ -10,7 +10,7 @@
         <div class="q-pa-xs">
           <div class="row">
             <div class="col-10">
-              <q-select outlined v-model="usersToApply" :options="userOptions" :label="$t('grewSearch.treesType')" color="primary">
+              <q-select dense outlined v-model="usersToApply" :options="userOptions" :label="$t('grewSearch.treesType')" color="primary">
                 <template v-slot:selected-item="scope">
                   <q-chip
                     v-if="scope.opt.value == 'user' || scope.opt.value == 'user_recent'"
@@ -26,7 +26,7 @@
                     </q-avatar>
                     {{ scope.opt.label }}
                   </q-chip>
-                  <q-chip v-else dense square color="white" text-color="primary" size="md" :label="scope.opt.label" :icon="scope.opt.icon" />
+                  <q-chip v-else dense square text-color="primary" size="md" :label="scope.opt.label" :icon="scope.opt.icon" />
                 </template>
 
                 <template v-slot:option="scope">
@@ -52,8 +52,8 @@
               <q-separator />
             </div>
 
-            <div class="col-2 bg-primary">
-              <q-tabs v-model="searchReplaceTab" dense no-caps active-color="primary" indicator-color="primary" class="bg-grey-2 primary text-grey">
+            <div class="col-2">
+              <q-tabs outlined v-model="searchReplaceTab" dense no-caps active-color="primary" indicator-color="primary" class="primary text-grey">
                 <q-tab name="SEARCH" icon="search" :label="$t('grewSearch.search')">
                   <q-tooltip content-class="bg-primary" anchor="top middle" self="bottom middle" :offset="[10, 10]">
                     {{ $t('grewSearch.grewSearchTooltip') }}
@@ -99,7 +99,7 @@
 </template>
 
 <script lang="ts">
-
+import 'codemirror/theme/gruvbox-dark.css';
 import GrewCodeMirror from 'components/codemirrors/GrewCodeMirror.vue';
 import grewTemplates from '../../assets/grew-templates.json';
 import { mapActions, mapState } from 'pinia';

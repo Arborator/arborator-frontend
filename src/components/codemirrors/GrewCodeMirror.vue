@@ -3,12 +3,13 @@
 </template>
 
 <script lang="ts">
+import 'codemirror/theme/dracula.css';
 import CodeMirror from 'codemirror';
 import CodemirrorVueWrapper from 'codemirror-editor-vue3';
 
 import 'codemirror/lib/codemirror.css';
 
-import { defineComponent, PropType } from 'vue';
+import { defineComponent } from 'vue';
 
 CodeMirror.defineMode('grew', () => {
   const words = {
@@ -91,7 +92,7 @@ export default defineComponent({
         lineWrapping: true,
         line: true,
         mode: 'grew',
-        theme: this.$q.dark.isActive ? 'material-darker' : 'default',
+        theme: this.$q.dark.isActive ? 'dracula' : 'default',
       },
     };
   },

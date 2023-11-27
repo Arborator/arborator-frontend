@@ -191,6 +191,7 @@ export default {
     tooltipFabGrewUser: 'Only my trees',
     tooltipFabGrewUserRecent: 'My trees, filled up with the most recent trees',
     tooltipFabGrewRecent: 'Most recent trees',
+    tooltipFabGrewOther: 'Trees of specific user',
     tooltipFabGrewAll: 'All trees',
     tooltipFabGrewBaseTree: 'Base trees',
     tooltipRelationTable: 'Get Relation Tables',

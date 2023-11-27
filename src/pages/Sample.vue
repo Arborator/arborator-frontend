@@ -125,6 +125,7 @@
           :sentence-count="numberOfTrees" 
           :search-scope="samplename" 
           :sample-names="[samplename]"
+          :trees-from="userIds"
         />
 
         <RelationTableMain :sample-names="[samplename]" />

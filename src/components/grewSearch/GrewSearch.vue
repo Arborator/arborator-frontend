@@ -1,22 +1,25 @@
 <template>
-  <q-page-sticky :position="breakpoint ? 'bottom-right' : 'bottom-right'" :offset="breakpoint ? [18, 18] : [30, 80]" style="z-index: 999">
+  <q-page-sticky :position="breakpoint ? 'bottom-right' : 'bottom-right'" :offset="breakpoint ? [18, 18] : [30, 80]"
+    style="z-index: 999">
     <q-btn size="20px" round color="primary" icon="img:/svg/g.svg" @click="grewDialog = !grewDialog">
-      <q-tooltip anchor="center left" content-class="bg-primary" content-style="font-size: 16px"> {{ $t('projectView.tooltipFabGrew') }} </q-tooltip>
+      <q-tooltip anchor="center left" content-class="bg-primary" content-style="font-size: 16px"> {{
+        $t('projectView.tooltipFabGrew') }} </q-tooltip>
     </q-btn>
   </q-page-sticky>
   <q-dialog v-model="grewDialog" seamless position="right" full-width>
-    <GrewRequestCard
-      :parentOnSearch="onSearch"
-      :parentOnTryRules="onTryRules"
+    <GrewRequestCard 
+      :parentOnSearch="onSearch" 
+      :parentOnTryRules="onTryRules" 
+      :trees-from="treesFrom"
     ></GrewRequestCard>
   </q-dialog>
   <q-dialog v-model="resultSearchDialog" maximized transition-show="fade" transition-hide="fade">
-    <ResultView
-      :searchresults="resultSearch"
-      :totalsents="sentenceCount"
+    <ResultView 
+      :searchresults="resultSearch" 
+      :totalsents="sentenceCount" 
       :searchscope="searchScope"
-      :parentOnShowTable="onShowTable"
-      :query-type="queryType"
+      :parentOnShowTable="onShowTable" 
+      :query-type="queryType" 
       :userType="userType"
     ></ResultView>
   </q-dialog>
@@ -48,6 +51,10 @@ export default defineComponent({
       type: Object as PropType<string[]>,
       default: [],
     },
+    treesFrom: {
+      type: Object as PropType<string[]>,
+      required: true,
+    },
     searchScope: {
       type: String as PropType<string>,
       required: true,
@@ -65,7 +72,7 @@ export default defineComponent({
       resultSearch: {},
       queryType: "",
       userType: "",
-      window: {width: 0, height: 0},
+      window: { width: 0, height: 0 },
     };
     return result;
   },
@@ -82,11 +89,10 @@ export default defineComponent({
       this.grewDialog = false;
       if (this.queryType == 'REWRITE') this.$emit('reload');
     },
-    onSearch(searchPattern: string, userType: string) {
-      
-      const data = { pattern: searchPattern, userType: userType, sampleIds: this.sampleNames };
+    onSearch(searchPattern: string, userType: string, otherUser: string) {
+      const data = { pattern: searchPattern, userType: userType, sampleIds: this.sampleNames, otherUser: otherUser };
       this.queryType = 'SEARCH';
-      this.userType =userType;
+      this.userType = userType;
       api
         .searchRequest(this.$route.params.projectname as string, data)
         .then((response) => {
@@ -96,10 +102,10 @@ export default defineComponent({
         .catch((error) => {
           notifyError({ error });
         });
-       
+
     },
-    onTryRules(query: string, userType: string) {
-      const data = { query: query, userType: userType, sampleIds: this.sampleNames}
+    onTryRules(query: string, userType: string, otherUser: string) {
+      const data = { query: query, userType: userType, sampleIds: this.sampleNames, otherUser: otherUser };
       this.queryType = 'REWRITE';
       this.userType = userType;
       api

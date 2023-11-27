@@ -7,11 +7,11 @@ export const useGrewSearchStore = defineStore('grewSearch', {
       grewDialog: false,
       lastQuery: null as null | { text: string; type: 'REWRITE' | 'SEARCH'; userType: string },
       pendingModifications: new Set(), // set of sentence ids
-      treeTypes: ['user', 'user_recent', 'recent', 'validated', 'pending', 'base_tree', 'all'],
+      treeTypes: ['user', 'user_recent', 'recent', 'validated', 'pending', 'base_tree', 'all', 'others'],
     };
   },
   getters: {
-    treeTypesForSearch(): string[] {
+    grewTreeTypes(): string[] {
       if (useProjectStore().blindAnnotationMode) {
         if (useProjectStore().canSaveTreeInProject) {
           return this.treeTypes.filter((element) => element == 'user');

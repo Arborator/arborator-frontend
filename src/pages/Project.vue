@@ -310,6 +310,7 @@
         :sentence-count="sentenceCount" 
         :search-scope="projectName" 
         :sample-names="selectedSamplesNames"
+        :trees-from="getProjectTreesFrom"
         @reload="loadProjectData" 
       />
       <RelationTableMain :sample-names="selectedSamplesNames" />

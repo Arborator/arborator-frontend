@@ -5,7 +5,7 @@ import api from '../../../api/backend-api';
 import {
   grewSearchResultSentence_t,
 } from 'src/api/backend-types';
-import {sentenceConllToJson, sentenceJson_T} from "conllup/lib/conll";
+import { sentenceConllToJson, sentenceJson_T } from "conllup/lib/conll";
 import { useTagsStore } from '../tags';
 
 export const useTreesStore = defineStore('trees', {
@@ -29,20 +29,20 @@ export const useTreesStore = defineStore('trees', {
     numberOfTrees(state) {
       return Object.keys(state.trees).length;
     },
-    numberOfTreesPerUser(state){
-      const counter: {[key: string]: number} = {};
+    numberOfTreesPerUser(state) {
+      const counter: { [key: string]: number } = {};
       const treesConlls = state.filteredTrees.map((sentence) => sentence.conlls);
-      for (const user of this.userIds){
+      for (const user of this.userIds) {
         counter[user as string] = treesConlls.filter(conll => user as string in conll).length;
       }
       return counter;
     },
-    userIds() {
-      const userIds = new Set();
+    userIds(): string[] {
+      const userIds = new Set<string>();
       for (const treeObj of Object.values(this.trees)) {
-          for (const userId in treeObj.conlls) {
-              userIds.add(userId);
-          }
+        for (const userId in treeObj.conlls) {
+          userIds.add(userId);
+        }
       }
       return [...userIds];
     }
@@ -68,17 +68,17 @@ export const useTreesStore = defineStore('trees', {
           });
       });
     },
-    getUsersTags(){
+    getUsersTags() {
       const userIds = new Set();
       for (const treeObj of Object.values(this.trees)) {
-          for (const userId in treeObj.conlls) {
-            if(userId !== 'validated') userIds.add(userId);
-          }
+        for (const userId in treeObj.conlls) {
+          if (userId !== 'validated') userIds.add(userId);
+        }
       }
       for (const username of userIds) {
-          useTagsStore().getUserTags(username as string);
+        useTagsStore().getUserTags(username as string);
       }
-    }, 
+    },
     applyFilterTrees() {
       this.filteredTrees = Object.values(this.trees);
       if (this.textFilter !== '') {
@@ -128,13 +128,13 @@ export const useTreesStore = defineStore('trees', {
           return !sentencesHaveDiffs(usersToNotHaveDiffsThatHaveTrees.map((user) => tree.conlls[user]), this.featuresSetForNotDiffs)
         });
       }
-      if(this.selectedTags.length > 0) {
+      if (this.selectedTags.length > 0) {
         this.filteredTrees = this.filteredTrees.filter((tree) => {
           const userIds = Object.keys(tree.conlls);
-          for(const userId of userIds){
+          for (const userId of userIds) {
             const treeTags = sentenceConllToJson(tree.conlls[userId]).metaJson.tags as string;
-            if(treeTags){
-              if (this.selectedTags.some((tag) => treeTags.includes(tag))){
+            if (treeTags) {
+              if (this.selectedTags.some((tag) => treeTags.includes(tag))) {
                 return tree;
               }
             }

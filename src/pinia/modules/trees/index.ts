@@ -197,7 +197,7 @@ const haveDifferentTokensLEMMA = (sentenceJsons: sentenceJson_T[]): boolean => {
   const tokensArrays: string[][] = sentenceJsons.map((sentenceJson) =>
     Object.values(sentenceJson.treeJson.nodesJson).map((nodeJson) => nodeJson.LEMMA)
   );
-  for (const index of Array.from(Array(tokensArrays.length).keys())) {
+  for (const index of Array.from(Array(tokensArrays[0].length).keys())) {
     if (new Set(tokensArrays.map((tokensArray: string[]) => tokensArray[index])).size !== 1) {
       return true;
     }
@@ -209,7 +209,7 @@ const haveDifferentTokensUPOS = (sentenceJsons: sentenceJson_T[]): boolean => {
   const tokensArrays: string[][] = sentenceJsons.map((sentenceJson) =>
     Object.values(sentenceJson.treeJson.nodesJson).map((nodeJson) => nodeJson.UPOS)
   );
-  for (const index of Array.from(Array(tokensArrays.length).keys())) {
+  for (const index of Array.from(Array(tokensArrays[0].length).keys())) {
     if (new Set(tokensArrays.map((tokensArray: string[]) => tokensArray[index])).size !== 1) {
       return true;
     }
@@ -221,7 +221,7 @@ const haveDifferentTokensXPOS = (sentenceJsons: sentenceJson_T[]): boolean => {
   const tokensArrays: string[][] = sentenceJsons.map((sentenceJson) =>
     Object.values(sentenceJson.treeJson.nodesJson).map((nodeJson) => nodeJson.XPOS)
   );
-  for (const index of Array.from(Array(tokensArrays.length).keys())) {
+  for (const index of Array.from(Array(tokensArrays[0].length).keys())) {
     if (new Set(tokensArrays.map((tokensArray: string[]) => tokensArray[index])).size !== 1) {
       return true;
     }
@@ -245,7 +245,7 @@ const haveDifferentTokensHEAD = (sentenceJsons: sentenceJson_T[]): boolean => {
   const tokensArrays: number[][] = sentenceJsons.map((sentenceJson) =>
     Object.values(sentenceJson.treeJson.nodesJson).map((nodeJson) => nodeJson.HEAD)
   );
-  for (const index of Array.from(Array(tokensArrays.length).keys())) {
+  for (const index of Array.from(Array(tokensArrays[0].length).keys())) {
     if (new Set(tokensArrays.map((tokensArray: number[]) => tokensArray[index])).size !== 1) {
       return true;
     }
@@ -257,7 +257,7 @@ const haveDifferentTokensFEAT = (sentenceJsons: sentenceJson_T[], feature: strin
   const tokensArrays: string[][] = sentenceJsons.map((sentenceJson) =>
     Object.values(sentenceJson.treeJson.nodesJson).map((nodeJson) => nodeJson.FEATS[feature])
   );
-  for (const index of Array.from(Array(tokensArrays.length).keys())) {
+  for (const index of Array.from(Array(tokensArrays[0].length).keys())) {
     if (new Set(tokensArrays.map((tokensArray: string[]) => tokensArray[index])).size !== 1) {
       return true;
     }
@@ -269,7 +269,7 @@ const haveDifferentTokensMISC = (sentenceJsons: sentenceJson_T[], feature: strin
   const tokensArrays: string[][] = sentenceJsons.map((sentenceJson) =>
     Object.values(sentenceJson.treeJson.nodesJson).map((nodeJson) => nodeJson.MISC[feature])
   );
-  for (const index of Array.from(Array(tokensArrays.length).keys())) {
+  for (const index of Array.from(Array(tokensArrays[0].length).keys())) {
     if (new Set(tokensArrays.map((tokensArray: string[]) => tokensArray[index])).size !== 1) {
       return true;
     }

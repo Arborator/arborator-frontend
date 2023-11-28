@@ -438,6 +438,15 @@ export default {
     reservedUsernameError: 'est un nom réservé pour ArboratorGrew',
     emptyUsernameError: 'Vous ne pouvez pas télécharger de fichier sans userId, veuillez saisir quelque chose.'
   },
+  advancedFilter: {
+    textFilter: 'Filtre du texte',
+    applyFilter: 'Filtrer',
+    advancedFilter: 'Filtres avancés',
+    clearAll: 'Effacer tout',
+    usersSelect: 'Sélectionner la liste des utilisateurs',
+    filterOperators: ['Have', 'Not Have'],
+    filterChoices: ['Trees', 'Differences'],
+  },
   cancel: 'Annuler',
   delete: 'Supprimer',
   confirm: 'Confirmer',

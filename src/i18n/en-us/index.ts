@@ -441,6 +441,15 @@ export default {
     reservedUsernameError: 'is reserved username for ArboratorGrew',
     emptyUsernameError: 'You can not upload file without userId please type something'
   },
+  advancedFilter: {
+    textFilter: 'Text filter',
+    applyFilter: 'Apply filter',
+    advancedFilter: 'Advanced Filter',
+    clearAll: 'Clear All',
+    usersSelect: 'Select set of users',
+    filterOperators: ['Have', 'Not Have'],
+    filterChoices: ['Trees', 'Differences'],
+  },
   cancel: 'Cancel',
   delete: 'Delete',
   confirm: 'Confirm',

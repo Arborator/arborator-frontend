@@ -147,15 +147,12 @@ export const useTreesStore = defineStore('trees', {
 
 const sentencesHaveDiffs = (sentenceConlls: string[], featuresSetForDiffs: string[] = []): boolean => {
   const sentenceJsons: sentenceJson_T[] = sentenceConlls.map((conll) => sentenceConllToJson(conll));
-
   if (haveDifferentNumberOfTokens(sentenceJsons)) {
     return true;
   }
-
-  if (doNeedCheckFor('FORM', featuresSetForDiffs) && haveDifferentTokensFORM(sentenceJsons)) {
+  if (doNeedCheckFor('LEMMA', featuresSetForDiffs) && haveDifferentTokensLEMMA(sentenceJsons)) {
     return true;
   }
-
   if (doNeedCheckFor('UPOS', featuresSetForDiffs) && haveDifferentTokensUPOS(sentenceJsons)) {
     return true;
   }
@@ -196,9 +193,9 @@ const haveDifferentNumberOfTokens = (sentenceJsons: sentenceJson_T[]): boolean =
   return setOfNumberOfTokens.size !== 1;
 };
 
-const haveDifferentTokensFORM = (sentenceJsons: sentenceJson_T[]): boolean => {
+const haveDifferentTokensLEMMA = (sentenceJsons: sentenceJson_T[]): boolean => {
   const tokensArrays: string[][] = sentenceJsons.map((sentenceJson) =>
-    Object.values(sentenceJson.treeJson.nodesJson).map((nodeJson) => nodeJson.FORM)
+    Object.values(sentenceJson.treeJson.nodesJson).map((nodeJson) => nodeJson.LEMMA)
   );
   for (const index of Array.from(Array(tokensArrays.length).keys())) {
     if (new Set(tokensArrays.map((tokensArray: string[]) => tokensArray[index])).size !== 1) {

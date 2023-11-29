@@ -48,22 +48,22 @@
             :label="$t('advancedFilter.usersSelect')" 
           />
         </div>
-        <q-btn-dropdown outline split color="primary" :label="filter.operator">
-          <q-list v-for="value of filterOperators">
-            <q-item clickable @click="filter.operator = value">
-              <q-item-section>{{ value }}</q-item-section>
+        <q-btn-dropdown outline split color="primary" :label="filter.operator.label">
+          <q-list v-for="operator of filterOperators">
+            <q-item clickable @click="filter.operator = operator">
+              <q-item-section>{{ operator.label }}</q-item-section>
             </q-item>
           </q-list>
         </q-btn-dropdown>
-        <q-btn-dropdown outline split color="primary" :label="filter.choice">
-          <q-list v-for="value of filterChoices">
-            <q-item clickable @click="filter.choice = value">
-              <q-item-section>{{ value }}</q-item-section>
+        <q-btn-dropdown outline split color="primary" :label="filter.choice.label">
+          <q-list v-for="choice of filterChoices">
+            <q-item clickable @click="filter.choice = choice">
+              <q-item-section>{{ choice.label }}</q-item-section>
             </q-item>
           </q-list>
         </q-btn-dropdown>
         <q-select 
-          v-if="filter.choice == 'Differences'" 
+          v-if="filter.choice.val == 'diff'" 
           class="col-2" 
           dense 
           outlined 
@@ -113,20 +113,26 @@ import { defineComponent } from 'vue';
 
 interface filter_t {
   setUsers: string[], 
-  operator: string, 
-  choice: string, 
+  operator: element_t, 
+  choice: element_t, 
   diffSetFeatures: string[],
 }
 interface element_t {
-  value: string,
+  val: string,
   label: string
 }
 
 export default defineComponent({
   name: 'AdvancedFilter',
   data() {
-    const filterOperators: string[] = ['Have', 'Not Have'];
-    const filterChoices: string[] = ['Trees', 'Differences'];
+    const filterOperators: element_t[] = [
+      { val: 'have', label: this.$t('advancedFilter.filterOperators[0]') },
+      { val: 'not_have', label: this.$t('advancedFilter.filterOperators[1]') }
+    ];
+    const filterChoices: element_t[] = [
+      { val: 'tree', label: this.$t('advancedFilter.filterChoices[0]') },
+      { val: 'diff', label: this.$t('advancedFilter.filterChoices[1]') },
+    ];
     const listFilters: filter_t[] = [];
     return {
       selectedUsers: [],
@@ -149,17 +155,17 @@ export default defineComponent({
     applyAdvancedFilter() {
       this.initializeFilters();
       for (const filter of this.listFilters) {
-        if (filter.choice === 'Trees' && filter.operator === 'Have') {
+        if (filter.choice.val === 'tree' && filter.operator.val === 'have') {
           this.usersToHaveTree = filter.setUsers;
         }
-        if (filter.choice === 'Trees' && filter.operator === 'Not Have') {
+        if (filter.choice.val === 'tree' && filter.operator.val === 'not_have') {
           this.usersToNotHaveTree = filter.setUsers;
         }
-        if (filter.choice === 'Differences' && filter.operator === 'Have') {
+        if (filter.choice.val === 'diff' && filter.operator.val === 'have') {
           this.usersToHaveDiffs = filter.setUsers;
           this.featuresSetForDiffs = filter.diffSetFeatures;
         }
-        if (filter.choice === 'Differences' && filter.operator === 'Not Have') {
+        if (filter.choice.val === 'diff' && filter.operator.val === 'not_have') {
           this.usersToNotHaveDiffs = filter.setUsers;
           this.featuresSetForNotDiffs = filter.diffSetFeatures;
         }
@@ -186,9 +192,9 @@ export default defineComponent({
     },
     initializeFilters() {
       this.usersToHaveTree = [];
+      this.usersToNotHaveTree = [];
       this.usersToNotHaveDiffs = [];
       this.usersToHaveDiffs = [];
-      this.usersToNotHaveDiffs = [];
       this.featuresSetForDiffs = [];
       this.featuresSetForNotDiffs = [];
     },

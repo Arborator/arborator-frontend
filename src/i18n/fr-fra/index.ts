@@ -460,6 +460,10 @@ export default {
     multiWordToken: 'Ajouter multiword token',
     
   },
+  multiEditDialog: {
+    text: 'Séléctionnez ce que vous voulez supprimer',
+    all: 'Tous'
+  },
   cancel: 'Annuler',
   delete: 'Supprimer',
   confirm: 'Confirmer',

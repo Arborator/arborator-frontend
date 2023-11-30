@@ -7,7 +7,7 @@
         <q-btn v-close-popup flat dense icon="close" />
       </q-bar>
       <q-card-section class="text-h6">
-        Select what you want to remove
+        {{ $t('multiEditDialog.text') }}
       </q-card-section>
       <q-card-section>
         <table v-if="treeJson">
@@ -20,7 +20,7 @@
           </tr>
           <tr>
             <th>0</th>
-            <th>All :</th>
+            <th>{{ $t('multiEditDialog.all') }} :</th>
             <td v-for="metaLabel in metaLabels" :key="metaLabel">
               <q-checkbox v-model="checkBoxesAll[metaLabel]" @update:model-value="toggleAll(metaLabel)"></q-checkbox>
             </td>
@@ -40,8 +40,8 @@
 
       <q-separator />
       <q-card-actions>
-        <q-btn v-close-popup color="primary" outline label="Cancel" style="width: 45%; margin-left: auto; margin-right: auto" />
-        <q-btn v-close-popup color="primary" label="Ok" style="width: 45%; margin-left: auto; margin-right: auto" @click="onDialogOk()" />
+        <q-btn v-close-popup color="primary" outline :label="$t('cancel')" style="margin-left: auto; margin-right: auto" />
+        <q-btn v-close-popup color="primary" label="Ok" style="margin-left: auto; margin-right: auto" @click="onDialogOk()" />
       </q-card-actions>
     </q-card>
   </q-dialog>

@@ -466,6 +466,7 @@ export default {
   cancel: 'Cancel',
   delete: 'Delete',
   confirm: 'Confirm',
+  close: 'Close',
   // Klang
   Klang: {
     projects: 'Klang Projects',

@@ -1,30 +1,25 @@
 <template>
-  <!-------------------- Start uposDialog -------------------->
   <q-dialog v-model="statisticsDialogOpened">
-    <!-- @hide="ondialoghide()" -->
-    <!-- :maximized="maximizedToggle" -->
-    <q-card style="height: 300px">
+    <q-card>
       <q-bar class="bg-primary text-white">
         <div class="text-weight-bold">{{ $t('sentenceCard.statisticDial') }} "{{ userId }}"</div>
         <q-space />
         <q-btn v-close-popup flat dense icon="close" />
       </q-bar>
       <q-card-section style="height: 200px">
-        <div>
-          <p v-for="(tag, index) in tagSet" :key="index">
-            {{ tag }} correct : {{ corrects[tag] }}/{{ totals[tag] }} ({{ (100 * corrects[tag]) / totals[tag] }}%)
-          </p>
-        </div>
+        <q-list bordered separator v-for="tag in tagSet">
+          <q-item>
+            <q-item-section>{{ tag }} correct :</q-item-section>
+            <q-item-section>{{ corrects[tag] }}/{{ totals[tag] }} ({{ (100 * corrects[tag]) / totals[tag] }}%)</q-item-section>
+          </q-item>
+        </q-list>
       </q-card-section>
       <q-separator />
       <q-card-actions>
-        <q-btn id="catselectvalidate" v-close-popup color="primary" label="Close" style="width: 30%; margin-left: auto; margin-right: auto" />
-        <!-- :disabled="snap.currentcategory === snap.category" -->
+        <q-btn v-close-popup color="primary" :label="$t('close')" style="width: 30%; margin-left: auto; margin-right: auto" />
       </q-card-actions>
     </q-card>
   </q-dialog>
-
-  <!----------------- End uposDialog ------------------->
 </template>
 
 <script lang="ts">
@@ -67,10 +62,8 @@ export default defineComponent({
     this.sentenceBus.on('open:statisticsDialog', ({ userId }) => {
       this.userId = userId;
       const stats = this.sentenceBus.sentenceSVGs[this.userId].getDiffStats(this.conlls.validated) as stats_t;
-
       this.corrects = stats.corrects;
       this.totals = stats.totals;
-
       this.statisticsDialogOpened = true;
     });
   },

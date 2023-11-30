@@ -1,6 +1,4 @@
 <template>
-  <!----------------- Start MetaDialog ------------------->
-
   <q-dialog v-model="metaDialogOpened">
     <q-card style="width: 110vh">
       <q-bar class="bg-primary text-white">
@@ -16,35 +14,35 @@
         modifiable="true"
         :title="$t('attributeTable.metadata')"
       ></AttributeTable>
-      <!-- @feature-changed="informFeatureChanged()" -->
-      <q-separator />
-      <!-- todo: adapt informFeatureChanged also to metadata -->
       <q-card-actions align="around">
-        <q-btn v-close-popup flat :label="$t('cancel')" style="width: 45%; margin-left: auto; margin-right: auto" />
+        <q-btn 
+          v-close-popup 
+          outline
+          color="primary" 
+          :label="$t('cancel')" 
+          style="width: 45%; margin-left: auto; margin-right: auto" 
+        />
         <q-btn
           v-close-popup
           color="primary"
           label="Ok"
           style="width: 45%; margin-left: auto; margin-right: auto"
-          :disabled="!someFeatureChanged"
           @click="onMetaDialogOk()"
         />
       </q-card-actions>
     </q-card>
   </q-dialog>
-
-  <!----------------- End MetaDialog ------------------->
 </template>
 <script lang="ts">
+import { metaJson_T } from 'conllup/lib/conll';
 import { mapState } from 'pinia';
-import AttributeTable from './AttributeTable.vue';
 import { useProjectStore } from 'src/pinia/modules/project';
 import { sentence_bus_t } from 'src/types/main_types';
-import { PropType } from 'vue';
-import { metaJson_T } from 'conllup/lib/conll';
 import { notifyError, notifyMessage } from 'src/utils/notify';
 
-import { defineComponent } from 'vue';
+import { PropType, defineComponent } from 'vue';
+import AttributeTable from './AttributeTable.vue';
+
 
 export default defineComponent({
   components: { AttributeTable },
@@ -92,9 +90,6 @@ export default defineComponent({
   },
   computed: {
     ...mapState(useProjectStore, ['shownMetaChoices']),
-    someFeatureChanged() {
-      return true;
-    },
     metaOptions() {
       let metaOptions: { name: string; values: string }[] = [];
       for (const metaOption of this.shownMetaChoices) {
@@ -114,7 +109,6 @@ export default defineComponent({
       for (const a in this.metaJson) {
         this.metaList.push({ a, v: this.metaJson[a] });
       }
-      // so that the sentenceCard can show the meta feature such as text and text_en
     });
   },
   beforeUnmount() {

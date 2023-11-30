@@ -1,76 +1,66 @@
 <template>
-  <!----------------- Start FeaturesDialog ------------------->
-
   <q-dialog v-model="featuresDialogOpened">
-    <!-- :maximized="maximizedToggle" -->
-    <!-- @hide="ondialoghide()" @keyup.enter="onFeatureDialogOk()" @keyup.enter="ononefeaturemodified()"-->
     <q-card>
       <q-bar class="bg-primary text-white">
         <div class="text-weight-bold">{{ $t('attributeTable.features') }} "{{ token['FORM'] }}"</div>
         <q-space />
         <q-btn v-close-popup flat dense icon="close" />
       </q-bar>
-      <q-card-section style="max-height: 70vh" class="scroll">
+
+      <q-card-section class="q-gutter-md">
+        <q-input outlined v-model="form" label="FORM" />
+        <q-input outlined v-model="lemma" label="LABEL" />
+        <q-separator />
+      </q-card-section>
+
+      <q-card-section style="max-height: 70vh" class="scroll q-gutter-md">
         <AttributeTable
-          :featdata="featTable.featl"
+          :featdata="featTable.feat"
           :columns="featTable.columns"
           :feat-options="annotationFeatures.FEATS"
           open-features="false"
           modifiable="true"
           title="Universal Features"
-          @feature-changed="informFeatureChanged()"
         ></AttributeTable>
-        <q-separator />
+
         <AttributeTable
-          :featdata="featTable.miscl"
+          :featdata="featTable.misc"
           :columns="featTable.columns"
           :feat-options="annotationFeatures.MISC ? annotationFeatures.MISC : {}"
           open-features="true"
           modifiable="true"
           title="Miscellaneous Features"
-          @feature-changed="informFeatureChanged()"
-        ></AttributeTable
-        ><q-separator />
-        <AttributeTable
-          :featdata="featTable.form"
-          :columns="featTable.columns"
-          :feat-options="options.formoptions"
-          open-features="false"
-          modifiable="false"
-          title="Form"
-          @feature-changed="informFeatureChanged()"
         ></AttributeTable>
-        <q-separator />
-        <AttributeTable
-          :featdata="featTable.lemma"
-          :columns="featTable.columns"
-          :feat-options="options.lemmaoptions"
-          open-features="false"
-          modifiable="false"
-          title="Lemma"
-          @feature-changed="informFeatureChanged()"
-        ></AttributeTable>
-        <q-separator />
       </q-card-section>
+
       <q-card-actions align="around">
-        <q-btn v-close-popup flat :label="$t('cancel')" style="width: 45%; margin-left: auto; margin-right: auto" @click="ondialoghide()" />
-        <q-btn v-close-popup color="primary" label="Ok" style="width: 45%; margin-left: auto; margin-right: auto" @click="onFeatureDialogOk()" />
-        <!-- :disabled="!someFeatureChanged" -->
+        <q-btn 
+          v-close-popup 
+          outline
+          color="primary"
+          :label="$t('cancel')" 
+          style="width: 45%; margin-left: auto; margin-right: auto" 
+          />
+        <q-btn 
+          v-close-popup 
+          color="primary" 
+          label="Ok" 
+          style="width: 45%; margin-left: auto; margin-right: auto" 
+          @click="onFeatureDialogOk()" 
+          />
       </q-card-actions>
     </q-card>
   </q-dialog>
-  <!----------------- END FeaturesDialog ------------------->
 </template>
 <script lang="ts">
-import AttributeTable from './AttributeTable.vue';
-import { PropType } from 'vue';
-import { sentence_bus_t } from 'src/types/main_types';
+import conllup from 'conllup';
 import { mapState } from 'pinia';
 import { useProjectStore } from 'src/pinia/modules/project';
-import conllup from 'conllup';
-const emptyTokenJson = conllup.emptyTokenJson;
+import { sentence_bus_t } from 'src/types/main_types';
+import { PropType, defineComponent } from 'vue';
+import AttributeTable from './AttributeTable.vue';
 
-import { defineComponent } from 'vue';
+const emptyTokenJson = conllup.emptyTokenJson;
 
 export default defineComponent({
   components: {
@@ -83,24 +73,18 @@ export default defineComponent({
     },
   },
   data() {
-    const featl: { a: string; v: string }[] = [];
-    const miscl: { a: string; v: string }[] = [];
-    const lemma: { a: string; v: string }[] = [];
-    const form: { a: string; v: string }[] = [];
+    const feat: { a: string; v: string }[] = [];
+    const misc: { a: string; v: string }[] = [];
     const token = emptyTokenJson();
     return {
       featuresDialogOpened: false,
       token,
       userId: '',
-      options: {
-        lemmaoptions: [{ name: 'Lemma', values: 'String' }],
-        formoptions: [{ name: 'Form', values: 'String' }],
-      },
+      form: '',
+      lemma: '',
       featTable: {
-        featl,
-        miscl,
-        lemma,
-        form,
+        feat,
+        misc,
         columns: [
           {
             name: 'a',
@@ -136,51 +120,35 @@ export default defineComponent({
       this.userId = userId;
       this.featuresDialogOpened = true;
 
-      this.featTable.featl = [];
+      this.form = token.FORM;
+      this.lemma = token.LEMMA;
+
+      this.featTable.feat = [];
       for (const a in token.FEATS) {
-        this.featTable.featl.push({ a, v: token.FEATS[a] });
+        this.featTable.feat.push({ a, v: token.FEATS[a] });
       }
-      this.featTable.miscl = [];
+
+      this.featTable.misc = [];
       for (const a in token.MISC) {
-        this.featTable.miscl.push({ a, v: token.MISC[a] });
+        this.featTable.misc.push({ a, v: token.MISC[a] });
       }
-      this.featTable.lemma = [{ a: 'Lemma', v: token.LEMMA }];
-      this.featTable.form = [{ a: 'Form', v: token.FORM }];
     });
   },
   beforeUnmount() {
     this.sentenceBus.off('open:featuresDialog');
   },
   methods: {
-    informFeatureChanged() {
-      console.log('FIXME to implement');
-    },
-    ondialoghide() {
-      console.log('FIXME to implement');
-    },
     onFeatureDialogOk() {
-      this.token.LEMMA = this.featTable.lemma.reduce(
-        (obj, r) => {
-          if (r.v) (obj as { [key: string]: string })[r.a] = r.v;
-          return obj;
-        },
-        { Lemma: '' }
-      ).Lemma;
-      this.token.FORM = this.featTable.form.reduce(
-        (obj, r) => {
-          if (r.v) (obj as { [key: string]: string })[r.a] = r.v;
-          return obj;
-        },
-        { Form: '' }
-      ).Form;
-      this.token.FEATS = this.featTable.featl.reduce((obj, r) => {
+      this.token.FEATS = this.featTable.feat.reduce((obj, r) => {
         if (r.v) (obj as { [key: string]: string })[r.a] = r.v;
         return obj;
       }, {});
-      this.token.MISC = this.featTable.miscl.reduce((obj, r) => {
+      this.token.MISC = this.featTable.misc.reduce((obj, r) => {
         if (r.v) (obj as { [key: string]: string })[r.a] = r.v;
         return obj;
       }, {});
+      this.token.FORM = this.form;
+      this.token.LEMMA = this.lemma;
       this.sentenceBus.emit('tree-update:token', {
         token: this.token,
         userId: this.userId,

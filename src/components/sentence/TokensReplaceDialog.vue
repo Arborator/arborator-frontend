@@ -12,17 +12,17 @@
               <q-icon name="merge" />
             </q-avatar>
           </q-item-section>
-          <q-item-section>Merge</q-item-section>
+          <q-item-section>{{ $t('tokenReplaceDialog.merge') }}</q-item-section>
           <q-item-section side>
             <q-icon name="keyboard_arrow_right" />
           </q-item-section>
           <q-menu anchor="top end" self="top start">
             <q-list>
               <q-item clickable v-close-popup @click="tokenReplaceOptions('merge_right')">
-                <q-item-section>Merge right</q-item-section>
+                <q-item-section>{{ $t('tokenReplaceDialog.mergeOptions[0]') }}</q-item-section>
               </q-item>
               <q-item clickable v-close-popup @click="tokenReplaceOptions('merge_left')">
-                <q-item-section>Merge left</q-item-section>
+                <q-item-section>{{ $t('tokenReplaceDialog.mergeOptions[1]') }}</q-item-section>
               </q-item>
             </q-list>
           </q-menu>
@@ -33,17 +33,17 @@
               <q-icon name="add" />
             </q-avatar>
           </q-item-section>
-          <q-item-section>Insert</q-item-section>
+          <q-item-section>{{ $t('tokenReplaceDialog.insert') }}</q-item-section>
           <q-item-section side>
             <q-icon name="keyboard_arrow_right" />
           </q-item-section>
           <q-menu anchor="top end" self="top start">
             <q-list>
               <q-item clickable v-close-popup @click="tokenReplaceOptions('insert_before')">
-                <q-item-section>Insert before</q-item-section>
+                <q-item-section>{{ $t('tokenReplaceDialog.insertOptions[0]') }}</q-item-section>
               </q-item>
               <q-item clickable v-close-popup @click="tokenReplaceOptions('insert_after')">
-                <q-item-section>Insert after</q-item-section>
+                <q-item-section>{{ $t('tokenReplaceDialog.insertOptions[1]') }}</q-item-section>
               </q-item>
             </q-list>
           </q-menu>
@@ -54,7 +54,7 @@
               <q-icon name="content_cut" />
             </q-avatar>
           </q-item-section>
-          <q-item-section>Split token</q-item-section>
+          <q-item-section>{{ $t('tokenReplaceDialog.split') }}</q-item-section>
         </q-item>
         <q-item clickable v-close-popup @click="tokenReplaceOptions('delete')">
           <q-item-section avatar>
@@ -62,7 +62,7 @@
               <q-icon name="delete" />
             </q-avatar>
           </q-item-section>
-          <q-item-section>Delete token</q-item-section>
+          <q-item-section>{{ $t('tokenReplaceDialog.delete') }}</q-item-section>
         </q-item>
       </q-list>
     </q-card>
@@ -71,16 +71,16 @@
     <q-card style="max-width: 100vw; min-width: 40vw">
       <q-bar class="bg-primary text-white">
         <q-space />
-        <div class="text-weight-bold">Split token</div>
+        <div class="text-weight-bold">{{ $t('tokenReplaceDialog.split') }}</div>
         <q-space />
         <q-btn v-close-popup flat dense icon="close" />
       </q-bar>
       <q-card-section>
         <div class="q-gutter-md">
-          <q-input v-model="selection" filled label="Multiword" />
-          <q-input v-model="firstToken" filled label="First token"></q-input>
-          <q-input v-model="secondToken" filled label="Second token" />
-          <q-checkbox v-model="multiword" label="Add multiword token"></q-checkbox>
+          <q-input v-model="selection" filled :label="$t('tokenReplaceDialog.multiWord')" />
+          <q-input v-model="firstToken" filled :label="$t('tokenReplaceDialog.firstToken')" />
+          <q-input v-model="secondToken" filled :label="$t('tokenReplaceDialog.secondToken')" />
+          <q-checkbox v-model="multiword" :label="$t('tokenReplaceDialog.multiWordToken')"></q-checkbox>
           <div class="row q-gutter-md justify-center">
             <q-btn :disable="!firstToken && !secondToken" v-close-popup label="Split" color="primary" @click="tokenReplaceOptions('split')" />
           </div>

@@ -67,7 +67,7 @@ export default defineComponent({
 			required: true, 
 		},
 		eventName: {
-			type: Object as PropType<any>,
+			type: String as PropType<any>,
 			required: true,
 		}
 

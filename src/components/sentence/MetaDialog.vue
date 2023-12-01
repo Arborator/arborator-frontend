@@ -1,17 +1,17 @@
 <template>
   <q-dialog v-model="metaDialogOpened">
     <q-card style="width: 110vh">
-      <q-bar class="bg-primary text-white">
+      <q-bar class="bg-primary text-white sticky-bar">
         <div class="text-weight-bold">{{ $t('attributeTable.metadata') }}</div>
         <q-space />
         <q-btn v-close-popup flat dense icon="close" />
       </q-bar>
       <AttributeTable
-        :featdata="metaList"
+        :featActualData="metaList"
         :columns="featTable.columns"
-        :feat-options="metaOptions"
-        open-features="true"
-        modifiable="true"
+        :featPossibleOptions="metaOptions"
+        :isCustomizableFeatures="true"
+        :isModifiable="true"
         :title="$t('attributeTable.metadata')"
       ></AttributeTable>
       <q-card-actions align="around">

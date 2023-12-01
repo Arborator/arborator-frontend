@@ -8,45 +8,45 @@
       </q-bar>
       <q-card-section style="max-height: 70vh" class="scroll">
         <AttributeTable
-          :featdata="formattedItem.features"
+          :featActualData="formattedItem.features"
           :columns="featTable.columns"
-          open-features="false"
-          modifiable="false"
+          :isCustomizableFeatures="false"
+          :isModifiable="false"
           title="Universal Features"
-          :feat-options="options.annof.FEATS"
+          :featPossibleOptions="options.annof.FEATS"
         />
         <AttributeTable
-          :featdata="formattedItem.form"
+          :featActualData="formattedItem.form"
           :columns="featTable.columns"
-          open-features="false"
-          modifiable="false"
+          :isCustomizableFeatures="false"
+          :isModifiable="false"
           title="Form"
-          :feat-options="['String']"
+          :featPossibleOptions="['String']"
         />
         <q-separator />
         <AttributeTable
-          :featdata="formattedItem.lemma"
+          :featActualData="formattedItem.lemma"
           :columns="featTable.columns"
-          open-features="false"
-          modifiable="false"
+          :isCustomizableFeatures="false"
+          :isModifiable="false"
           title="Lemma"
-          :feat-options="options.lemmaoptions"
+          :featPossibleOptions="options.lemmaoptions"
         />
         <AttributeTable
-          :featdata="formattedItem.upos"
+          :featActualData="formattedItem.upos"
           :columns="featTable.columns"
-          open-features="false"
-          modifiable="false"
+          :isCustomizableFeatures="false"
+          :isModifiable="false"
           title="Category"
-          :feat-options="options.catoptions"
+          :featPossibleOptions="options.catoptions"
         />
         <AttributeTable
-          :featdata="formattedItem.gloss"
+          :featActualData="formattedItem.gloss"
           :columns="featTable.columns"
-          open-features="false"
-          modifiable="false"
+          :isCustomizableFeatures="false"
+          :isModifiable="false"
           title="Gloss"
-          :feat-options="['String']"
+          :featPossibleOptions="['String']"
         />
         <q-separator />
       </q-card-section>

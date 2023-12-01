@@ -15,20 +15,20 @@
 
       <q-card-section style="max-height: 70vh" class="scroll q-gutter-md">
         <AttributeTable
-          :featdata="featTable.feat"
+          :featActualData="featTable.feat"
           :columns="featTable.columns"
-          :feat-options="annotationFeatures.FEATS"
-          open-features="false"
-          modifiable="true"
+          :featPossibleOptions="annotationFeatures.FEATS"
+          :isCustomizableFeatures="false"
+          :isModifiable="true"
           title="Universal Features"
         ></AttributeTable>
 
         <AttributeTable
-          :featdata="featTable.misc"
+          :featActualData="featTable.misc"
           :columns="featTable.columns"
-          :feat-options="annotationFeatures.MISC ? annotationFeatures.MISC : {}"
-          open-features="true"
-          modifiable="true"
+          :featPossibleOptions="annotationFeatures.MISC ? annotationFeatures.MISC : {}"
+          :isCustomizableFeatures="true"
+          :isModifiable="true"
           title="Miscellaneous Features"
         ></AttributeTable>
       </q-card-section>

@@ -14,7 +14,7 @@
         :isModifiable="true"
         :title="$t('attributeTable.metadata')"
       ></AttributeTable>
-      <q-card-actions align="around">
+      <q-card-actions class="sticky-card-actions" align="around">
         <q-btn 
           v-close-popup 
           outline

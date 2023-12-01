@@ -1,7 +1,7 @@
 <template>
   <q-dialog v-model="dialogOpened">
     <q-card style="width: 90vh">
-      <q-bar class="bg-primary text-white">
+      <q-bar class="bg-primary text-white sticky-bar">
         <div class="text-weight-bold">{{ $t('sentenceCard.multiEditDial') }}</div>
         <q-space />
         <q-btn v-close-popup flat dense icon="close" />
@@ -39,7 +39,7 @@
       </q-card-section>
 
       <q-separator />
-      <q-card-actions>
+      <q-card-actions class="sticky-card-actions">
         <q-btn v-close-popup color="primary" outline :label="$t('cancel')" style="margin-left: auto; margin-right: auto" />
         <q-btn v-close-popup color="primary" label="Ok" style="margin-left: auto; margin-right: auto" @click="onDialogOk()" />
       </q-card-actions>

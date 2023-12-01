@@ -1,7 +1,7 @@
 <template>
   <q-dialog v-model="featuresDialogOpened">
     <q-card>
-      <q-bar class="bg-primary text-white">
+      <q-bar class="bg-primary text-white sticky-bar">
         <div class="text-weight-bold">{{ $t('attributeTable.features') }} "{{ token['FORM'] }}"</div>
         <q-space />
         <q-btn v-close-popup flat dense icon="close" />
@@ -13,7 +13,7 @@
         <q-separator />
       </q-card-section>
 
-      <q-card-section style="max-height: 70vh" class="scroll q-gutter-md">
+      <q-card-section class="scroll q-gutter-md">
         <AttributeTable
           :featActualData="featTable.feat"
           :columns="featTable.columns"
@@ -33,7 +33,7 @@
         ></AttributeTable>
       </q-card-section>
 
-      <q-card-actions align="around">
+      <q-card-actions class="sticky-card-actions" align="around">
         <q-btn 
           v-close-popup 
           outline

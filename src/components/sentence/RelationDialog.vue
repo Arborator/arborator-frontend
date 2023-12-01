@@ -1,7 +1,7 @@
 <template>
   <q-dialog v-model="relationDialogOpened">
     <q-card style="min-width: 700px">
-      <q-bar v-if="gov && dep" class="bg-primary text-white">
+      <q-bar v-if="gov && dep" class="bg-primary text-white sticky-bar">
         <div class="text-weight-bold">
           {{ $t('attributeTable.relation[0]') }} "{{ gov.FORM }}" {{ $t('attributeTable.relation[1]') }} "{{ dep.FORM }}"
            ( {{ $t('attributeTable.relation[2]') }} : {{ activeRelation }})
@@ -29,7 +29,7 @@
         </div>
         <q-separator />
       </q-card-section>
-      <q-card-actions>
+      <q-card-actions class="sticky-card-actions">
         <q-btn
           v-close-popup
           outline

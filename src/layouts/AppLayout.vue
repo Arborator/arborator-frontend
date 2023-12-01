@@ -298,7 +298,6 @@ export default defineComponent({
 .body--light .custom-frame1 {
   background-color: #f1f1f1;
 }
-
 .body--light .custom-frame2 {
   background-color: #f8f8f8;
 }
@@ -313,6 +312,13 @@ export default defineComponent({
 
 .body--light .custom-right-border {
   border-right: 1px solid #d2d2d2;
+}
+
+.body--light .sticky-card-actions {
+  position: sticky; 
+  bottom: 0; 
+  z-index: 1; 
+  background-color: white;
 }
 
 .body--dark .custom-frame1 {
@@ -333,6 +339,13 @@ export default defineComponent({
 
 .body--dark .custom-right-border {
   border-right: 1px solid #545454;
+}
+
+.body--dark .sticky-card-actions {
+  position: sticky; 
+  bottom: 0; 
+  z-index: 1; 
+  background-color: #1e1e1e;
 }
 
 .small-tab.q-tab {

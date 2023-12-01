@@ -1,7 +1,7 @@
 <template>
 	<q-dialog v-model="posDialogOpened" @keyup.enter="onChangePos()">
 		<q-card style="min-width: 700px">
-			<q-bar class="bg-primary text-white">
+			<q-bar class="bg-primary text-white sticky-bar">
 				<div class="text-weight-bold">
 					{{ title }} : {{ $t('attributeTable.category[0]') }} "{{ token.FORM }}"
 				</div>
@@ -21,7 +21,7 @@
 				</div>
 			</q-card-section>
 			<q-separator />
-			<q-card-actions>
+			<q-card-actions class="sticky-card-actions">
 				<q-btn 
 					v-close-popup 
 					outline 

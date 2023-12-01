@@ -138,7 +138,7 @@
 </template>
 
 <script lang="ts">
-import ResultView from '../ResultView.vue';
+import ResultView from '../grewSearch/ResultView.vue';
 import { mapState } from 'pinia';
 import { useProjectStore } from 'src/pinia/modules/project';
 import { useUserStore } from 'src/pinia/modules/user';

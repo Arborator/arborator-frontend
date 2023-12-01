@@ -90,7 +90,7 @@
 import api from '../../api/backend-api';
 import { computed } from 'vue';
 import { mapActions, mapState } from 'pinia';
-import ResultView from '../ResultView.vue';
+import ResultView from '../grewSearch/ResultView.vue';
 import { lexiconItem_FE_t, useLexiconStore } from 'src/pinia/modules/lexicon';
 import { useGrewSearchStore } from 'src/pinia/modules/grewSearch';
 import { table_t } from 'src/types/main_types';

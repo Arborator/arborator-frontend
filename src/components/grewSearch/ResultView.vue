@@ -84,8 +84,8 @@
 </template>
 
 <script lang="ts">
-import api from '../api/backend-api';
-import SentenceCard from './sentence/SentenceCard.vue';
+import api from '../../api/backend-api';
+import SentenceCard from '../sentence/SentenceCard.vue'
 import { useUserStore } from 'src/pinia/modules/user';
 import { useProjectStore } from 'src/pinia/modules/project';
 import { mapState } from 'pinia';

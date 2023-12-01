@@ -27,7 +27,7 @@
 
 <script lang="ts">
 import GrewRequestCard from './GrewRequestCard.vue';
-import ResultView from '../ResultView.vue';
+import ResultView from './ResultView.vue';
 import api from '../../api/backend-api';
 import { useGrewSearchStore } from 'src/pinia/modules/grewSearch';
 import { mapWritableState, mapState } from 'pinia';

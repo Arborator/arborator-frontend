@@ -9,7 +9,7 @@
 
       <q-card-section class="q-gutter-md">
         <q-input outlined v-model="form" label="FORM" />
-        <q-input outlined v-model="lemma" label="LABEL" />
+        <q-input outlined v-model="lemma" label="LEMMA" />
         <q-separator />
       </q-card-section>
 

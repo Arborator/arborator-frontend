@@ -1,5 +1,5 @@
 <template>
-  <q-dialog v-model="relationDialogOpened">
+  <q-dialog v-model="relationDialogOpened" @keydown.enter="onChangeRelation()">
     <q-card style="min-width: 700px">
       <q-bar v-if="gov && dep" class="bg-primary text-white sticky-bar">
         <div class="text-weight-bold">
@@ -112,11 +112,6 @@ export default defineComponent({
   created() {
     this.deprels = this.annotationFeatures.DEPREL;
     this.splitRegex = new RegExp(`[${this.deprels.map(({ join }) => join).join('')}]`, 'g');
-    document.addEventListener("keydown", (e: KeyboardEvent) => {
-      if (e.key === 'Enter') {
-        this.onChangeRelation();
-      }
-    });
   },
   mounted() {
     this.sentenceBus.on('open:relationDialog', ({ dep, gov, userId }) => {

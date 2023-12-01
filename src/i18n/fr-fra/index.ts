@@ -294,6 +294,7 @@ export default {
     resetSUD: 'Réinitialiser à SUD',
   },
   settingsPage: {
+    title: 'Information personelle',
     saveModifications: 'Enregistrer les modifications',
     firstName: 'Prénom',
     familyName: 'Nom',

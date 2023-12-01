@@ -6,18 +6,18 @@
         <q-banner rounded :class="$q.dark.isActive ? '' : 'bg-grey-3'">
           <template #avatar>
             <q-avatar :key="avatarKey" color="default" text-color="white" size="100px">
-              <img :src="getUserInfos.picture_url" />
+              <img :src="picture_url" />
             </q-avatar>
           </template>
           <div class="row">
             <div :class="'col text-center text-weight-bold text-h4 ' + ($q.dark.isActive ? '' : 'text-blue-grey-10')">
-              {{ getUserInfos.first_name }} {{ getUserInfos.family_name }}
+              {{ first_name }} {{ family_name }}
             </div>
           </div>
           <div class="row">
-            <div :class="'col text-center ' + +($q.dark.isActive ? '' : 'text-blue-grey-8')">@{{ getUserInfos.username }}</div>
+            <div :class="'col text-center ' + +($q.dark.isActive ? '' : 'text-blue-grey-8')">@{{ username }}</div>
           </div>
-          <div v-show="getUserInfos.super_admin" class="row">
+          <div v-show="super_admin" class="row">
             <div :class="'col text-center ' + ($q.dark.isActive ? '' : 'text-blue-grey-8')">Super Admin</div>
           </div>
         </q-banner>
@@ -31,7 +31,7 @@
         <q-card flat>
           <q-form @submit="onSubmitModifications">
             <q-card-section>
-              <div class="text-h6 text-blue-grey-8">Personal Informations</div>
+              <div class="text-h6 text-blue-grey-8">{{ $t('settingsPage.title') }}</div>
             </q-card-section>
             <q-card-section>
               <div class="q-gutter-lg">
@@ -55,7 +55,7 @@
 
 <script lang="ts">
 
-import { mapState, mapWritableState, mapActions } from 'pinia';
+import { mapActions, mapState, mapWritableState } from 'pinia';
 import { useUserStore } from 'src/pinia/modules/user';
 import { defineComponent } from 'vue';
 
@@ -63,7 +63,7 @@ export default defineComponent({
   name: 'Settings',
   computed: {
     ...mapWritableState(useUserStore, ['email', 'first_name', 'family_name']),
-    ...mapState(useUserStore, ['avatarKey', 'getUserInfos']),
+    ...mapState(useUserStore, ['avatarKey', 'picture_url', 'super_admin', 'username']),
   },
   methods: {
     ...mapActions(useUserStore, ['updateUserInformation']),

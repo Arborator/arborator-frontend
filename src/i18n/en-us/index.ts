@@ -303,6 +303,7 @@ export default {
     resetSUD: 'reset to SUD',
   },
   settingsPage: {
+    title: 'Personal information',
     saveModifications: 'Save Modification',
     firstName: 'First Name',
     familyName: 'Last Name',

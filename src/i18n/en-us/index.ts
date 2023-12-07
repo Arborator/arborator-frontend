@@ -331,7 +331,7 @@ export default {
       title: 'Commit the changes',
       commitInput: 'Commit message',
       commitTreeSelect: 'Select the trees to commit',
-      commitTreeOptions: ['My trees', 'My trees filled up with the most recent ones', 'Validated trees'],
+      commitTreeOptions: ['My trees', 'Most recent trees', 'Validated trees'],
       commitMessage: 'New commit to',
     },
   },

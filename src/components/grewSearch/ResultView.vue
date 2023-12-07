@@ -67,7 +67,7 @@
     <q-bar
       class="absolute-bottom row custom-frame2"
       style="padding-left: 0"
-      v-if="queryType === 'REWRITE' && samplesFrozen.list.length > 0 && canSaveTreeInProject"
+      v-if="queryType === 'REWRITE' && samplesFrozen.list.length > 0 && canRewriteRule"
     >
       <div>
         <q-checkbox v-if="queryType === 'REWRITE'" v-model="all" @click="selectAllSentences()">
@@ -86,9 +86,10 @@
 <script lang="ts">
 import api from '../../api/backend-api';
 import SentenceCard from '../sentence/SentenceCard.vue'
+import { mapState } from 'pinia';
 import { useUserStore } from 'src/pinia/modules/user';
 import { useProjectStore } from 'src/pinia/modules/project';
-import { mapState } from 'pinia';
+import { useGrewSearchStore } from 'src/pinia/modules/grewSearch';
 import { PropType, defineComponent } from 'vue';
 import { notifyMessage } from 'src/utils/notify';
 import { grewSearchResult_t, sample_t } from 'src/api/backend-types';
@@ -148,6 +149,7 @@ export default defineComponent({
   },
   computed: {
     ...mapState(useProjectStore, ['canSaveTreeInProject', 'isValidator']),
+    ...mapState(useGrewSearchStore, ['canRewriteRule']),
     ...mapState(useUserStore, ['username']),
     sentenceCount() {
       return Object.keys(this.searchresults)

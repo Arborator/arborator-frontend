@@ -51,7 +51,7 @@
       </div>
     </div>
   </q-card-section>
-  <q-card-section v-if="selectedRepository != ''">
+  <q-card-section v-if="selectedRepository != ''" class="q-gutter-md">
     <div class="row">
       <div class="col-lg-4 col-sm-4 col-xs-4 col-md-4 q-mb-sm">
         <q-btn flat icon="arrow_back" @click="selectedRepository = ''" />
@@ -69,9 +69,12 @@
         </q-item-section>
       </q-item>
     </q-list>
+    <q-input outlined dense v-model="customUsername" :label="$t('uploadSample.customUsername')" />
     <div :class="$q.dark.isActive ? 'text-white' : 'text-blue-grey-10'" class="q-pa-sm">
-      <q-radio dense size="md" v-model="branchSyn" val="arboratorgrew" />{{ $t('github.arboratorgrewBranch[0]')
-      }}<span style="background-color: #7f90c0"><code>arboratorgrew</code></span> {{ $t('github.arboratorgrewBranch[1]') }}
+      <q-radio dense size="md" v-model="branchSyn" val="arboratorgrew" />
+      {{ $t('github.arboratorgrewBranch[0]') }}
+      <span style="background-color: #7f90c0"><code>arboratorgrew</code></span> 
+      {{ $t('github.arboratorgrewBranch[1]') }}
     </div>
     <div :class="$q.dark.isActive ? 'text-white' : 'text-blue-grey-10'" class="q-pa-sm">
       <q-radio dense size="md" v-model="branchSyn" val="default" /> {{ $t('github.defaultBranch') }}
@@ -119,6 +122,7 @@ export default defineComponent({
       currentPage: 1,
       pageIndex: 1,
       totalItemPerPage: 8,
+      customUsername: '',
       loading: false,
     };
   },
@@ -127,7 +131,6 @@ export default defineComponent({
     githubOwners() {
       const githubUsers = [];
       for (const repo of this.repositories) {
-        const user = { a: repo.owner_name, v: repo.owner_avatar };
         githubUsers.push({ a: repo.owner_name, v: repo.owner_avatar });
       }
       return [...new Map(githubUsers.map((user) => [user['a'], user])).values()];
@@ -184,7 +187,7 @@ export default defineComponent({
         repositoryName: repoName,
         branchImport: branch,
         branchSyn: branchSyn,
-        username: this.username,
+        username: this.customUsername !== '' ? this.customUsername: this.username,
       };
       this.loading = true;
       var interval = setTimeout(() => {

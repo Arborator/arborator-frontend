@@ -468,6 +468,9 @@ export default {
     text: 'Select what you want to remove',
     all: 'All'
   },
+  lexicon: {
+    replaceEntry: "Replace entry",
+  },
   cancel: 'Cancel',
   delete: 'Delete',
   confirm: 'Confirm',

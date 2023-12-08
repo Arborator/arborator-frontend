@@ -465,6 +465,9 @@ export default {
     text: 'Séléctionnez ce que vous voulez supprimer',
     all: 'Tous'
   },
+  lexicon: {
+    replaceEntry: "Remplacer l'élement",
+  },
   cancel: 'Annuler',
   delete: 'Supprimer',
   confirm: 'Confirmer',

@@ -94,14 +94,14 @@ import { date } from 'quasar';
 import { field_t } from 'src/types/main_types';
 import { defineComponent, PropType } from 'vue';
 
-interface feat_t {
-    a: string,
-    v: string
-  }
-  interface feature_t  {
-    name: string,
-    values: string[],
-  }
+interface actual_feat_t {
+  a: string,
+  v: string | number,
+}
+interface feature_t  {
+  name: string,
+  values: string[] | string,
+}
 
 export default defineComponent({
   name: 'AttributeTable',
@@ -111,11 +111,11 @@ export default defineComponent({
       required: true,
     },
     featActualData: {
-      type: Object as PropType<feat_t[]>,
+      type: Object as PropType<actual_feat_t[]>,
       required: true,
     }, 
     columns: {
-      type: Object as PropType<field_t[]>,
+      type: Object as PropType<{}[]>,
       required: true,
     },
     featPossibleOptions: {

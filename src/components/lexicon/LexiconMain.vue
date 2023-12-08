@@ -82,7 +82,7 @@
       </div>
     </q-card-section>
     <q-card-section v-if="isShowLexiconTable" class="q-gutter-md">
-      <LexiconModificationDialog v-if="lexiconItems.length >= 1" />
+      <LexiconModificationDialog :features="features" v-if="lexiconItems.length >= 1" />
       <div v-if="lexiconItemsModified.length >= 1">
         <q-btn outline color="primary" icon="refresh" @click="fetchLexicon_(lexiconType)"> reload</q-btn>
       </div>

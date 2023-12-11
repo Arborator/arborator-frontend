@@ -184,6 +184,7 @@ export default defineComponent({
     },
     tokensReplace() {
       const oldTree = this.reactiveSentencesObj[this.userId].state.treeJson;
+      const newMetaJson = this.reactiveSentencesObj[this.userId].state.metaJson;
       const tokensIndexes = this.tokensIndexes;
       const newTokensForm = this.tokensForms;
       const newTree = replaceArrayOfTokens(oldTree, tokensIndexes, newTokensForm, true);
@@ -205,12 +206,19 @@ export default defineComponent({
       const newMetaText = Object.values(newTree.nodesJson)
         .map(({ FORM }) => FORM)
         .join(' ');
-      console.log(newTree);
+      newMetaJson.text = newMetaText
+      this.sentenceBus.emit('tree-update:sentence', {
+        sentenceJson: {
+          metaJson: newMetaJson,
+          treeJson: this.sentenceBus.sentenceSVGs[this.userId].treeJson,
+        },
+        userId: this.userId,
+      });
       this.sentenceBus.emit('tree-update:tree', {
         tree: newTree,
         userId: this.userId,
       });
-      this.sentenceBus.emit('changed:metaText', { newMetaText });
+      this.$emit('changed:metaText');
     },
   },
 });

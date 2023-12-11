@@ -263,11 +263,11 @@
       <RelationDialog :sentence-bus="sentenceBus" />
       <UposDialog :sentence-bus="sentenceBus" />
       <XposDialog :sentence-bus="sentenceBus" />
-      <FeaturesDialog :sentence-bus="sentenceBus" />
+      <FeaturesDialog :sentence-bus="sentenceBus" @changed:meta-text="changeText()"/>
       <MetaDialog :sentence-bus="sentenceBus" />
       <ConlluDialog :sentence-bus="sentenceBus" />
       <ExportSVG :sentence-bus="sentenceBus" :reactive-sentences-obj="reactiveSentencesObj" />
-      <TokensReplaceDialog :sentence-bus="sentenceBus" :reactive-sentences-obj="reactiveSentencesObj" @changed:metaText="changeMetaText" />
+      <TokensReplaceDialog :sentence-bus="sentenceBus" :reactive-sentences-obj="reactiveSentencesObj" @changed:meta-text="changeText()" />
       <MultiEditDialog :sentence-bus="sentenceBus" :reactive-sentences-obj="reactiveSentencesObj" />
       <StatisticsDialog :sentence-bus="sentenceBus" :conlls="sentenceData.conlls" />
     </template>
@@ -433,10 +433,6 @@ export default defineComponent({
     }
 
     this.diffMode = !!this.diffMode;
-
-    this.sentenceBus.on('changed:metaText', ({ newMetaText }) => {
-      this.changeMetaText(newMetaText);
-    });
   },
   mounted() {
     this.focused = this.isFocused as boolean;
@@ -545,12 +541,10 @@ export default defineComponent({
             }
             this.graphInfo.dirty = false;
             notifyMessage({ position: 'top', message: 'Saved on the server', icon: 'save' });
-            notifyMessage({ position: 'top', message: 'Saved on the server', icon: 'save' });
             this.forceRerender += 1; // nasty trick to rerender the indication of last time
           }
         })
         .catch((error) => {
-          notifyError({ error });
           notifyError({ error });
         });
     },
@@ -563,17 +557,12 @@ export default defineComponent({
       this.sentenceBus.emit('action:tabSelected', {
         userId: this.openTabUser,
       });
-      if (this.openTabUser !== '') {
-        const newMetaText = this.reactiveSentencesObj[this.openTabUser].getSentenceText();
-        this.sentenceBus.emit('changed:metaText', { newMetaText });
-      }
     },
     openMetaDialog() {
       this.sentenceBus.emit('open:metaDialog', { userId: this.openTabUser });
-      this.sentenceBus.emit('open:metaDialog', { userId: this.openTabUser });
     },
-    changeMetaText(newMetaText: string) {
-      this.sentenceData.sentence = newMetaText;
+    changeText() {
+      this.sentenceData.sentence = this.reactiveSentencesObj[this.openTabUser].getSentenceText();
     },
     toggleDiffMode() {
       this.diffMode = !this.diffMode;

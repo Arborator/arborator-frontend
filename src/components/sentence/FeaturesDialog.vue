@@ -153,6 +153,18 @@ export default defineComponent({
         token: this.token,
         userId: this.userId,
       });
+      const newNodeJson = this.sentenceBus.sentenceSVGs[this.userId].treeJson.nodesJson;
+      const newMetaJson = this.sentenceBus.sentenceSVGs[this.userId].metaJson;
+      const newText = Object.values(newNodeJson).map(({FORM}) => FORM).join(" ");
+      newMetaJson.text = newText;
+      this.sentenceBus.emit('tree-update:sentence', {
+        sentenceJson: {
+          metaJson: newMetaJson,
+          treeJson: this.sentenceBus.sentenceSVGs[this.userId].treeJson,
+        },
+        userId: this.userId,
+      });
+      this.$emit('changed:metaText')
     },
   },
 });

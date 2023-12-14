@@ -19,7 +19,8 @@
       :totalsents="sentenceCount" 
       :searchscope="searchScope"
       :parentOnShowTable="onShowTable" 
-      :query-type="queryType" 
+      :query-type="queryType"
+      :query="query" 
       :userType="userType"
     ></ResultView>
   </q-dialog>
@@ -65,12 +66,14 @@ export default defineComponent({
       resultSearchDialog: boolean,
       resultSearch: grewSearchResult_t,
       queryType: string,
+      query: string,
       userType: string,
       window: { width: number; height: number },
     } = {
       resultSearchDialog: false,
       resultSearch: {},
       queryType: "",
+      query: "",
       userType: "",
       window: { width: 0, height: 0 },
     };
@@ -107,6 +110,7 @@ export default defineComponent({
     onTryRules(query: string, userType: string, otherUser: string) {
       const data = { query: query, userType: userType, sampleIds: this.sampleNames, otherUser: otherUser };
       this.queryType = 'REWRITE';
+      this.query = query;
       this.userType = userType;
       api
         .tryPackage(this.$route.params.projectname as string, data)

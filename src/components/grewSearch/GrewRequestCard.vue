@@ -71,7 +71,15 @@
             </div>
 
             <div class="col-2">
-              <q-tabs outlined v-model="searchReplaceTab" dense no-caps active-color="primary" indicator-color="primary" class="primary text-grey">
+              <q-tabs 
+                outlined 
+                v-model="searchReplaceTab" 
+                dense 
+                no-caps 
+                active-color="primary" 
+                indicator-color="primary" 
+                class="primary text-grey"
+              >
                 <q-tab name="SEARCH" icon="search" :label="$t('grewSearch.search')">
                   <q-tooltip content-class="bg-primary" anchor="top middle" self="bottom middle" :offset="[10, 10]">
                     {{ $t('grewSearch.grewSearchTooltip') }}
@@ -86,7 +94,15 @@
               <q-separator />
               <q-tab-panels v-model="searchReplaceTab" animated class="shadow-2" @input="treeType == null">
                 <q-tab-panel name="SEARCH">
-                  <q-tabs v-model="searchQueryTab" dense no-caps vertical switch-indicator class="primary" indicator-color="primary">
+                  <q-tabs 
+                    v-model="searchQueryTab" 
+                    dense 
+                    no-caps 
+                    vertical 
+                    switch-indicator 
+                    class="primary" 
+                    indicator-color="primary"
+                  >
                     <template v-for="query in searchQueries" :key="query.name">
                       <q-tab v-ripple :name="query.name" :label="query.name" clickable @click="changeQuery(query.pattern, 'SEARCH')" />
                     </template>
@@ -95,7 +111,15 @@
                 </q-tab-panel>
 
                 <q-tab-panel name="REWRITE">
-                  <q-tabs v-model="searchQueryTab" dense no-caps vertical switch-indicator class="primary" indicator-color="primary">
+                  <q-tabs 
+                    v-model="searchQueryTab"
+                    dense 
+                    no-caps 
+                    vertical 
+                    switch-indicator 
+                    class="primary" 
+                    indicator-color="primary"
+                  >
                     <template v-for="query in rewriteQueries" :key="query.name">
                       <q-tab v-ripple :name="query.name" :label="query.name" clickable @click="changeQuery(query.pattern, 'REWRITE')" />
                     </template>
@@ -103,6 +127,9 @@
                   </q-tabs>
                 </q-tab-panel>
               </q-tab-panels>
+              <div v-if="searchReplaceTab === 'REWRITE'" class="q-pa-md">
+                <q-btn label="History" icon="history" color="primary" @click="isShowHistory = true" />
+              </div>
             </div>
           </div>
           <q-bar class="row q-pa-md absolute-bottom custom-frame2">
@@ -112,6 +139,7 @@
           </q-bar>
         </div>
       </q-form>
+      <AppliedRuleHistory v-if="isShowHistory"  @closed="isShowHistory = false"/>
     </q-card-section>
   </q-card>
 </template>
@@ -120,16 +148,16 @@
 import 'codemirror/theme/gruvbox-dark.css';
 import GrewCodeMirror from 'components/codemirrors/GrewCodeMirror.vue';
 import grewTemplates from '../../assets/grew-templates.json';
+import AppliedRuleHistory from './AppliedRuleHistory.vue';
 import { mapActions, mapState } from 'pinia';
 import { useGrewSearchStore } from 'src/pinia/modules/grewSearch';
 import { useUserStore } from 'src/pinia/modules/user';
 import { useProjectStore } from 'src/pinia/modules/project';
-
 import { defineComponent, PropType } from 'vue';
 
 export default defineComponent({
   name: 'GrewRequestCard',
-  components: { GrewCodeMirror },
+  components: { GrewCodeMirror, AppliedRuleHistory },
   props: {
     parentOnSearch: {
       type: Function as PropType<CallableFunction>,
@@ -167,6 +195,7 @@ export default defineComponent({
       treeType,
       treeTypes,
       otherUser: '',
+      isShowHistory: false,
     };
   },
   computed: {

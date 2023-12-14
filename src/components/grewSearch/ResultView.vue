@@ -84,16 +84,17 @@
 </template>
 
 <script lang="ts">
-import api from '../../api/backend-api';
-import SentenceCard from '../sentence/SentenceCard.vue'
-import { mapState } from 'pinia';
-import { useUserStore } from 'src/pinia/modules/user';
-import { useProjectStore } from 'src/pinia/modules/project';
-import { useGrewSearchStore } from 'src/pinia/modules/grewSearch';
-import { PropType, defineComponent } from 'vue';
-import { notifyMessage } from 'src/utils/notify';
-import { grewSearchResult_t, sample_t } from 'src/api/backend-types';
 import { sentenceConllToJson, sentenceJsonToConll } from 'conllup/lib/conll';
+import { mapState } from 'pinia';
+import { LocalStorage } from 'quasar';
+import { grewSearchResult_t, sample_t } from 'src/api/backend-types';
+import { useGrewSearchStore } from 'src/pinia/modules/grewSearch';
+import { useProjectStore } from 'src/pinia/modules/project';
+import { useUserStore } from 'src/pinia/modules/user';
+import { notifyMessage } from 'src/utils/notify';
+import { PropType, defineComponent } from 'vue';
+import api from '../../api/backend-api';
+import SentenceCard from '../sentence/SentenceCard.vue';
 
 export default defineComponent({
   components: { SentenceCard },
@@ -111,6 +112,10 @@ export default defineComponent({
       required: true,
     },
     queryType: {
+      type: String as PropType<string>,
+      required: false,
+    },
+    query: {
       type: String as PropType<string>,
       required: false,
     },
@@ -145,12 +150,16 @@ export default defineComponent({
       selectedSample: '',
       samples,
       all: false,
+      toSaveCounter: 0,
     };
   },
   computed: {
     ...mapState(useProjectStore, ['canSaveTreeInProject', 'isValidator']),
     ...mapState(useGrewSearchStore, ['canRewriteRule']),
     ...mapState(useUserStore, ['username']),
+    projectName(): string {
+      return this.$route.params.projectname as string;
+    },
     sentenceCount() {
       return Object.keys(this.searchresults)
         .map((sa) => Object.keys(this.searchresults[sa]))
@@ -235,20 +244,25 @@ export default defineComponent({
       }
     },
 
-    getSelectedResults() {
-      let selectedResults: grewSearchResult_t = {};
-      for (const item in this.samplesFrozen.selected) {
-        if (this.samplesFrozen.selected[item] === true) {
-          const sampleId = this.filteredResults[item][0];
-          const sentId = this.filteredResults[item][1];
-          if (!selectedResults[sampleId]) selectedResults[sampleId] = {};
-          selectedResults[sampleId][sentId] = this.searchresults[sampleId][sentId];
-        }
-      }
-      return selectedResults;
-    },
     applyRules() {
-      let toSaveCounter = 0;
+      this.preprocessResults();
+      if (this.toSaveCounter >= 1) {
+        const datasample = { data: this.searchresultsCopy };
+        api.applyRule(this.$route.params.projectname as string, datasample).then(() => {
+          this.resultSearchDialog = false;
+          this.parentOnShowTable(this.resultSearchDialog);
+          notifyMessage({ message: `Rule applied (user "${this.username}" rewrote and saved "${this.toSaveCounter}" at once)` });
+          this.storeAppliedRule();
+        });
+      } else {
+        notifyMessage({
+          message: `Nothing to save (user "${this.username}" has "zero" tree matching rewriting pattern)`,
+          type: 'warning',
+        });
+      }
+    },
+
+    preprocessResults() {
       let selectedResults = this.getSelectedResults();
       this.searchresultsCopy = selectedResults;
       for (const sample in selectedResults) {
@@ -269,24 +283,48 @@ export default defineComponent({
             if (!this.isValidator || this.userType !== "validated") {
               if (userId !== this.username) delete this.searchresultsCopy[sample][sentId].conlls[userId]
             }
-            toSaveCounter += 1;
+            this.toSaveCounter += 1;
           }
         }
       }
-      if (toSaveCounter >= 1) {
-        const datasample = { data: this.searchresultsCopy };
-        api.applyRule(this.$route.params.projectname as string, datasample).then(() => {
-          this.resultSearchDialog = false;
-          this.parentOnShowTable(this.resultSearchDialog);
-          notifyMessage({ message: `Rule applied (user "${this.username}" rewrote and saved "${toSaveCounter}" at once)` });
-        });
-      } else {
-        notifyMessage({
-          message: `Nothing to save (user "${this.username}" has "zero" tree matching rewriting pattern)`,
-          type: 'warning',
-        });
-      }
     },
+
+    getSelectedResults() {
+      let selectedResults: grewSearchResult_t = {};
+      for (const item in this.samplesFrozen.selected) {
+        if (this.samplesFrozen.selected[item] === true) {
+          const sampleId = this.filteredResults[item][0];
+          const sentId = this.filteredResults[item][1];
+          if (!selectedResults[sampleId]) selectedResults[sampleId] = {};
+          selectedResults[sampleId][sentId] = this.searchresults[sampleId][sentId];
+        }
+      }
+      return selectedResults;
+    },
+
+    storeAppliedRule() {
+      const savedRules = LocalStorage.getItem(this.projectName);
+      if (savedRules == null) {
+        const savedRule = {
+          name: 'r1',
+          query: this.query,
+          results: this.toSaveCounter,
+          date: new Date().toLocaleString('en-GB', { hour12: false }),
+        }
+        LocalStorage.set(this.projectName, [savedRule]);
+      }
+      else {
+        
+        const listRules = savedRules as any[];
+        listRules.push({
+          name: `r${listRules.length + 1}`,
+          query: this.query,
+          results: this.toSaveCounter,
+          date: new Date().toLocaleString('en-GB', { hour12: false }),
+        });
+        LocalStorage.set(this.projectName, listRules);
+      }
+    }
   },
 });
 </script>

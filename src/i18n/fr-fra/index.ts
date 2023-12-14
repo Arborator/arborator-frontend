@@ -468,6 +468,12 @@ export default {
   lexicon: {
     replaceEntry: "Remplacer l'élement",
   },
+  appliedRulesHist: {
+    title: 'Historique des règles appliquées.',
+    copyRuletooltip: 'Copier la règle',
+    modifiedSentences: 'phrases modifiées',
+    noHistory: 'Aucun historique disponible'
+  },
   cancel: 'Annuler',
   delete: 'Supprimer',
   confirm: 'Confirmer',

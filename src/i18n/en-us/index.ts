@@ -471,6 +471,12 @@ export default {
   lexicon: {
     replaceEntry: "Replace entry",
   },
+  appliedRulesHist: {
+    title: 'History of applied rules',
+    copyRuletooltip: 'Copy the rule',
+    modifiedSentences: 'Modified sentences',
+    noHistory: 'No available history'
+  },
   cancel: 'Cancel',
   delete: 'Delete',
   confirm: 'Confirm',

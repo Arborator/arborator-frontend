@@ -9,7 +9,7 @@
 				<q-btn v-close-popup flat dense icon="close" />
 			</q-bar>
 			<q-card-section>
-				<div class="q-gutter-sm">
+				<div class="q-gutter-sm" ^translate="no">
 					<q-chip 
 						outline 
 						v-for="(pos, index) in posOptions" 

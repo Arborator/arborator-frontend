@@ -15,6 +15,7 @@ export const useTreesStore = defineStore('trees', {
       filteredTrees: [] as grewSearchResultSentence_t[],
       loading: false as boolean,
       blindAnnotationLevel: 0 as number,
+      sortedSentIds: [] as number[],
       textFilter: '' as string,
       usersToHaveTree: [] as string[],
       usersToNotHaveTree: [] as string[],
@@ -56,6 +57,7 @@ export const useTreesStore = defineStore('trees', {
           .then((response) => {
             this.trees = response.data.sample_trees;
             this.blindAnnotationLevel = response.data.blind_annotation_level;
+            this.sortedSentIds = response.data.sent_ids;
             this.applyFilterTrees();
             this.loading = false;
             notifyMessage({ message: `Loaded ${Object.keys(this.trees).length} trees` });
@@ -80,7 +82,9 @@ export const useTreesStore = defineStore('trees', {
       }
     },
     applyFilterTrees() {
-      this.filteredTrees = Object.values(this.trees);
+      this.filteredTrees = this.sortedSentIds.map((sentId) => 
+        Object.values(this.trees).find((tree) => tree.sent_id == String(sentId)) as grewSearchResultSentence_t
+      );
       if (this.textFilter !== '') {
         this.filteredTrees = Object.values(this.trees).filter((tree) => {
           return tree.sentence.toLowerCase().includes(this.textFilter.toLowerCase());

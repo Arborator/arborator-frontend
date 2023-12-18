@@ -171,7 +171,6 @@ export default defineComponent({
     this.sentenceBus.on('tree-update:tags', ({sentenceJson, userId}) => {
       if(userId === this.treeUserId){
         this.reactiveSentence.updateSentence(sentenceJson);
-        this.sentenceCaretaker.backup();
       }
     });
     this.sentenceBus.on('action:undo', ({ userId }) => {

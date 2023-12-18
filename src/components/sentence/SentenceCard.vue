@@ -189,8 +189,8 @@
           :icon="diffMode && user === diffUserId ? 'school' : 'person'"
           no-caps
           :ripple="false"
-          @contextmenu="rightClickHandler($event, user)"
-          @click="leftClickHandler(user)"
+          @contextmenu="rightClickHandler($event, user as string)"
+          @click="leftClickHandler(user as string)"
         >
           <q-tooltip v-if="hasPendingChanges[user]">{{ $t('sentenceCard.saveModif') }}</q-tooltip>
           <q-tooltip v-else-if="lastModifiedTime[user]">
@@ -222,10 +222,8 @@
                 :reactive-sentence="reactiveSentencesObj[user]"
                 :reactive-sentences-obj="reactiveSentencesObj"
                 :diff-mode="showDiffValidator ? 'DIFF_VALIDATED' : diffMode ? 'DIFF_USER' : 'NO_DIFF'"
-                :sentence-id="sentence.sent_id"
                 :sentence-bus="sentenceBus"
-                :tree-user-id="user"
-                :conll-saved-counter="conllSavedCounter"
+                :tree-user-id="(user as string)"
                 :has-pending-changes="hasPendingChanges"
                 :matches="
                   sentence.matches ? (sentence.matches[user] ? sentence.matches[user].map((match) => Object.values(match.nodes)).flat() : []) : []

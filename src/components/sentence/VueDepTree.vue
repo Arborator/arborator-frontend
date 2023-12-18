@@ -51,16 +51,8 @@ export default defineComponent({
       type: String as PropType<'DIFF_VALIDATED' | 'DIFF_USER' | 'NO_DIFF'>,
       required: true,
     },
-    sentenceId: {
-      type: String as PropType<string>,
-      required: true,
-    },
     treeUserId: {
       type: String as PropType<string>,
-      required: true,
-    },
-    conllSavedCounter: {
-      type: Number as PropType<number>,
       required: true,
     },
     cardId: {
@@ -99,9 +91,6 @@ export default defineComponent({
     ...mapState(useUserStore, ['username']),
   },
   watch: {
-    conllSavedCounter() {
-      this.sentenceSVG.drawTree();
-    },
     diffMode() {
       this.handleDiffPlugging();
     },

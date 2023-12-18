@@ -19,9 +19,7 @@
                 :key="samplename + item.sent_id" 
                 :sentence="item" 
                 :index="index" 
-                search-result="" 
                 :blind-annotation-level="blindAnnotationLevel"
-                @reload="getSampleTrees"
                 :is-focused="focusedSentences[index]"
                 @focused-sent="loseFocus"
               >

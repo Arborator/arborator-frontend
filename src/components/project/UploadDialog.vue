@@ -156,6 +156,7 @@ export default defineComponent({
       customUserId: '',
       warningMessage: '',
       generateNewSentIds: false,
+      formatError: false,
       samplesWithoutSentIds,
     };
   },
@@ -175,7 +176,7 @@ export default defineComponent({
       let disable = true;
       if (this.samplesWithoutSentIds.length > 0) {
         disable = !this.generateNewSentIds;
-      } else if (this.uploadSample.attachment.file.length > 0) {
+      } else if (this.uploadSample.attachment.file.length > 0 && !this.formatError) {
         disable = false;
       }
       return disable;
@@ -213,15 +214,27 @@ export default defineComponent({
     },
     checkSentIdsErrors(fileContent: string, sampleName: string) {
       const sentIds: any[] = [];
+      this.formatError = false;
       const sentences = fileContent.split(/\n\n/).filter((sentence) => sentence);
-
       for (const sentence of sentences) {
+        this.checkSentFormatError(sentence, sampleName);
+        if (this.formatError) return;
         if (sentenceConllToJson(sentence)['metaJson']['sent_id']) {
           const sentId = sentenceConllToJson(sentence)['metaJson']['sent_id'];
           sentIds.push(sentId);
         }
       }
       if (sentences.length !== sentIds.length) this.samplesWithoutSentIds.push(sampleName);
+    },
+    checkSentFormatError(sentence: string, sampleName: string) {
+      if (/\n\s*\n\S/.test(sentence)) {
+        notifyError({ error: `${sampleName} contains empty line that doesn't start with a digit or # `});
+        this.formatError = true; 
+      }
+      if (Object.values(sentenceConllToJson(sentence)['metaJson']).some((metaVal) => metaVal == undefined)) {
+        notifyError({ error: `${sampleName} contains sentence with empty metadata value`});
+        this.formatError = true;
+      } 
     },
     triggerFormatErrors() {
       this.samplesWithoutSentIds.forEach((sampleName) => {

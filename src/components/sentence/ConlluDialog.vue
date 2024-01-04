@@ -127,12 +127,12 @@ export default defineComponent({
         });
       } else {
         notifyError({
-          error: 'Changing timestamp, user_id, sent_id or text is not allowed !',
+          error: 'Changing timestamp, user_id, sent_id is not allowed !',
         });
       }
     },
     isMetaChanged() {
-      const fixedMetadata = ['timestamp', 'user_id', 'sent_id', 'text'];
+      const fixedMetadata = ['timestamp', 'user_id', 'sent_id'];
       const oldMeta = this.sentenceBus.sentenceSVGs[this.userId].metaJson;
       const newMeta = sentenceConllToJson(this.conllContent).metaJson;
       let isMetaChanged = false;

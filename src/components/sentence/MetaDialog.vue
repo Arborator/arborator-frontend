@@ -57,7 +57,6 @@ export default defineComponent({
     const metaJson: metaJson_T = {};
     return {
       metaDialogOpened: false,
-      token: {},
       userId: '',
       metaList,
       metaJson,

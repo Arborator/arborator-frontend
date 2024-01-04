@@ -137,7 +137,7 @@ export default defineComponent({
         rowsPerPage: 0,
       },
       key: 0,
-      metadata: ['timestamp', 'user_id', 'sent_id', 'text'], // workaround...
+      metadata: ['timestamp', 'user_id', 'sent_id'], // workaround...
     };
   },
   methods: {

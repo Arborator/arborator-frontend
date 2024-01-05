@@ -203,10 +203,39 @@ export default defineComponent({
         };
         newTree['groupsJson'][newGroupJson.ID] = newGroupJson;
       }
-      const newMetaText = Object.values(newTree.nodesJson)
-        .map(({ FORM }) => FORM)
-        .join(' ');
-      newMetaJson.text = newMetaText
+      this.sentenceBus.emit('tree-update:tree', {
+        tree: newTree,
+        userId: this.userId,
+      });
+      this.replaceNewMetaText();
+      this.$emit('changed:metaText');
+    },
+    replaceNewMetaText() {
+      const newMetaJson = this.reactiveSentencesObj[this.userId].state.metaJson;
+      const newTree = this.reactiveSentencesObj[this.userId].state.treeJson;
+      const groupsJson = newTree.groupsJson;
+      const nodesJson = newTree.nodesJson;
+      const newForms = Object.values(nodesJson).map((node) =>
+       ( { form: node.FORM, spaceAfter: node.MISC.SpaceAfter? false: true } ));
+      let newMetaText = '';
+      let i = 0;
+      while (i < newForms.length) {
+        if (groupsJson[`${i+1}-${i+2}`]){
+          newMetaText += groupsJson[`${i+1}-${i+2}`].FORM;
+          if (newForms[i+2].spaceAfter) {
+            newMetaText += ' '
+          }
+          i +=2;
+        }
+        else {
+          newMetaText += newForms[i].form;
+          if (newForms[i].spaceAfter) {
+            newMetaText += ' '
+          }
+          i +=1;
+        }
+      }
+      newMetaJson.text = newMetaText;
       this.sentenceBus.emit('tree-update:sentence', {
         sentenceJson: {
           metaJson: newMetaJson,
@@ -214,12 +243,8 @@ export default defineComponent({
         },
         userId: this.userId,
       });
-      this.sentenceBus.emit('tree-update:tree', {
-        tree: newTree,
-        userId: this.userId,
-      });
-      this.$emit('changed:metaText');
-    },
+
+    }
   },
 });
 </script>

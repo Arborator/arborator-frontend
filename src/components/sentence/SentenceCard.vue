@@ -32,6 +32,10 @@
             <q-tooltip>{{ $t('sentenceCard.annotationErrors') }}</q-tooltip>
           </q-btn>
 
+          <q-btn v-if="isValidator" flat round dense icon="content_cut" :disable="openTabUser === ''" @click="showSentSegmentationDial = true">
+            <q-tooltip>Sentence segmentation</q-tooltip>
+          </q-btn>
+
           <q-btn v-if="isValidator" flat round dense icon="verified" :disable="openTabUser === ''" @click="save('validated')">
             <q-tooltip>{{ $t('sentenceCard.validateTree') }}</q-tooltip>
           </q-btn>
@@ -93,7 +97,7 @@
             <q-list>
               <q-item v-if="canSaveTreeInProject" v-close-popup clickable @click="openMetaDialog()">
                 <q-item-section avatar>
-                  <q-avatar icon="ion-git-network" color="primary" text-color="white" />
+                  <q-avatar icon="edit" color="primary" text-color="white" />
                 </q-item-section>
                 <q-item-section>
                   <q-item-label>
@@ -134,7 +138,7 @@
 
               <q-item v-close-popup clickable @click="exportPNG()">
                 <q-item-section avatar>
-                  <q-avatar icon="ion-md-color-palette" color="primary" text-color="white" />
+                  <q-avatar icon="image" color="primary" text-color="white" />
                 </q-item-section>
                 <q-item-section>
                   <q-item-label>{{ $t('sentenceCard.treePNG') }}</q-item-label>
@@ -258,6 +262,12 @@
     </div>
 
     <template>
+      <SentenceSegmentation 
+        v-if="showSentSegmentationDial" 
+        :sentence-bus="sentenceBus" 
+        :reactive-sentences-obj="reactiveSentencesObj"
+        :user-id="openTabUser"
+        />
       <RelationDialog :sentence-bus="sentenceBus" />
       <UposDialog :sentence-bus="sentenceBus" />
       <XposDialog :sentence-bus="sentenceBus" />
@@ -273,7 +283,6 @@
 </template>
 
 <script lang="ts">
-// import Vue from "vue";
 import mitt, { Emitter } from 'mitt';
 
 import { ReactiveSentence } from 'dependencytreejs/src/ReactiveSentence';
@@ -291,6 +300,7 @@ import TokensReplaceDialog from './TokensReplaceDialog.vue';
 import StatisticsDialog from './StatisticsDialog.vue';
 import MultiEditDialog from './MultiEditDialog.vue';
 import TagsMenu from './TagsMenu.vue';
+import SentenceSegmentation from './SentenceSegmentation.vue';
 import { reactive_sentences_obj_t, sentence_bus_events_t, sentence_bus_t } from 'src/types/main_types';
 import { mapActions, mapState, mapWritableState } from 'pinia';
 import { notifyError, notifyMessage } from 'src/utils/notify';
@@ -325,6 +335,7 @@ export default defineComponent({
     StatisticsDialog,
     MultiEditDialog,
     TagsMenu,
+    SentenceSegmentation,
   },
   props: {
     index: {
@@ -357,20 +368,12 @@ export default defineComponent({
       openTabUser: '',
       sentenceData: this.$props.sentence,
       EMMETT: 'emmett.strickland',
-      graphInfo: {
-        conllGraph: null,
-        dirty: false,
-        redo: false,
-        user: '',
-      },
-      conllSavedCounter: 0,
-      view: null,
       canUndo: false,
       canRedo: false,
       canSave: true,
       focused: false,
+      showSentSegmentationDial: false,
       hasPendingChanges,
-      forceRerender: 0,
       tags: [],
     };
   },
@@ -537,9 +540,7 @@ export default defineComponent({
               this.openTabUser = changedConllUser;
               this.exportedConll = exportedConll;
             }
-            this.graphInfo.dirty = false;
             notifyMessage({ position: 'top', message: 'Saved on the server', icon: 'save' });
-            this.forceRerender += 1; // nasty trick to rerender the indication of last time
           }
         })
         .catch((error) => {

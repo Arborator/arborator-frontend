@@ -9,7 +9,7 @@ import CodemirrorVueWrapper from 'codemirror-editor-vue3';
 
 import 'codemirror/lib/codemirror.css';
 
-import { defineComponent } from 'vue';
+import { defineComponent, PropType } from 'vue';
 
 CodeMirror.defineMode('grew', () => {
   const words = {
@@ -74,21 +74,22 @@ export default defineComponent({
   name: 'GrewCodeMirror',
   components: { CodemirrorVueWrapper },
   props: {
-    // query: {
-    //   type: String,
-    //   required: true,
-    // },
     disabled: {
-      type: Boolean,
+      type: Boolean as PropType<boolean>,
       required: false,
       default: false,
     },
+    lineNumbers: {
+      type: Boolean as PropType<boolean>,
+      required: false,
+      default: true, 
+    }
   },
   data() {
     return {
       cmOption: {
         tabSize: 4,
-        lineNumbers: true,
+        lineNumbers: this.lineNumbers,
         lineWrapping: true,
         line: true,
         mode: 'grew',

@@ -8,13 +8,13 @@
       </q-bar>
       <q-card-section>
         <div v-if="getAppliedRules?.length > 0">
-          <q-list bordered separator v-for="rule in getAppliedRules">
+          <q-list bordered separator v-for="rule in getAppliedRules" class="custom-frame2">
             <q-item>
               <q-item-section top avatar>
                 {{ rule.name }}
               </q-item-section>
               <q-item-section>
-                <GrewCodeMirror v-model:value="rule.query" :disabled="true"></GrewCodeMirror>
+                <GrewCodeMirror v-model:value="rule.query" :disabled="true" :line-numbers="false"></GrewCodeMirror>
               </q-item-section>
               <q-item-section side top>
                 <q-btn size="sm" flat icon="content_copy" color="primary" @click="copyQuery(rule.query)">

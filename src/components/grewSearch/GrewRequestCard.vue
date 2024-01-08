@@ -139,7 +139,7 @@
           </q-bar>
         </div>
       </q-form>
-      <AppliedRuleHistory v-if="isShowHistory"  @closed="isShowHistory = false"/>
+      <AppliedRuleHistory v-if="isShowHistory"  @closed="isShowHistory = false"  @copied-pattern="getCopiedPattern" />
     </q-card-section>
   </q-card>
 </template>
@@ -230,30 +230,14 @@ export default defineComponent({
   },
   methods: {
     ...mapActions(useGrewSearchStore, ['changeLastGrewQuery']),
-    /**
-     * Call parent onsearch function and update store and history
-     *
-     * @returns void
-     */
     onSearch() {
       this.parentOnSearch(this.currentQuery, this.treeType.value, this.otherUser);
       this.changeLastGrewQuery({ text: this.currentQuery, type: this.currentQueryType, userType: this.treeType.value });
     },
-    /**
-     * Call parent onsearch function and update store and history
-     *
-     * @returns void
-     */
     tryRules() {
       this.parentOnTryRules(this.currentQuery, this.treeType.value, this.otherUser);
       this.changeLastGrewQuery({ text: this.currentQuery, type: this.currentQueryType, userType: this.treeType.value });
     },
-    /**
-     * Modify the search pattern (search string)
-     *
-     * @param {string} pattern
-     * @returns void
-     */
     changeQuery(query: string, type: 'SEARCH' | 'REWRITE') {
       this.currentQuery = query;
       this.currentQueryType = type;
@@ -261,6 +245,9 @@ export default defineComponent({
         this.treeType = this.treeTypes[0];
       }
     },
+    getCopiedPattern(value: any) {
+      this.currentQuery = value;
+    }
   },
 });
 </script>

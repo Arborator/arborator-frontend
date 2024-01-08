@@ -473,9 +473,10 @@ export default {
   },
   appliedRulesHist: {
     title: 'History of applied rules',
-    copyRuletooltip: 'Copy the rule',
     modifiedSentences: 'Modified sentences',
-    noHistory: 'No available history'
+    noHistory: 'No available history',
+    selectedRules: ['selected', 'rule', 'rules'],
+
   },
   cancel: 'Cancel',
   delete: 'Delete',

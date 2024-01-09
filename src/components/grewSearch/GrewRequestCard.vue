@@ -153,6 +153,7 @@ import { mapActions, mapState } from 'pinia';
 import { useGrewSearchStore } from 'src/pinia/modules/grewSearch';
 import { useUserStore } from 'src/pinia/modules/user';
 import { useProjectStore } from 'src/pinia/modules/project';
+import { LocalStorage } from 'quasar';
 import { defineComponent, PropType } from 'vue';
 
 export default defineComponent({
@@ -196,12 +197,13 @@ export default defineComponent({
       treeTypes,
       otherUser: '',
       isShowHistory: false,
+      savedRulesNumber: 0,
     };
   },
   computed: {
     ...mapState(useGrewSearchStore, ['lastQuery', 'grewTreeTypes', 'canRewriteRule']),
     ...mapState(useUserStore, ['isLoggedIn', 'avatar', 'username']),
-    ...mapState(useProjectStore, ['blindAnnotationMode','shownFeaturesChoices', 'annotationFeatures', 'canSaveTreeInProject', 'canSeeOtherUsersTrees', 'isValidator']),
+    ...mapState(useProjectStore, ['name','blindAnnotationMode','shownFeaturesChoices', 'annotationFeatures', 'canSaveTreeInProject', 'canSeeOtherUsersTrees', 'isValidator']),
     treeOptions() {
       if (this.searchReplaceTab == 'SEARCH') {
         return this.treeTypes.filter((element) => this.grewTreeTypes.includes(element.value));
@@ -217,7 +219,6 @@ export default defineComponent({
         this.treeType = this.treeTypes[0];
       }
     }
-
   },
   mounted() {
     if (this.lastQuery !== null) {
@@ -227,6 +228,7 @@ export default defineComponent({
     }
     this.searchReplaceTab = this.currentQueryType;
     this.treeType = this.treeOptions[0];
+    this.savedRulesNumber = (LocalStorage.getItem(this.name) as any[] || []).length;
   },
   methods: {
     ...mapActions(useGrewSearchStore, ['changeLastGrewQuery']),
@@ -241,6 +243,9 @@ export default defineComponent({
     changeQuery(query: string, type: 'SEARCH' | 'REWRITE') {
       this.currentQuery = query;
       this.currentQueryType = type;
+      if (type === 'REWRITE' && this.savedRulesNumber > 1) {
+        this.currentQuery = query.replace('r1', `r${this.savedRulesNumber + 1}`);
+      }
       if (type === 'REWRITE' && this.treeType.value === 'all') {
         this.treeType = this.treeTypes[0];
       }

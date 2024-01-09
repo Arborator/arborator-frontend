@@ -139,6 +139,10 @@ export default defineComponent({
   },
   methods: {
     onFeatureDialogOk() {
+      const newMetaJson = this.sentenceBus.sentenceSVGs[this.userId].metaJson;
+      let oldText = this.sentenceBus.sentenceSVGs[this.userId].metaJson.text as string;
+      const oldForm = this.token.FORM;
+
       this.token.FEATS = this.featTable.feat.reduce((obj, r) => {
         if (r.v) (obj as { [key: string]: string })[r.a] = r.v;
         return obj;
@@ -153,18 +157,17 @@ export default defineComponent({
         token: this.token,
         userId: this.userId,
       });
-      const newNodeJson = this.sentenceBus.sentenceSVGs[this.userId].treeJson.nodesJson;
-      const newMetaJson = this.sentenceBus.sentenceSVGs[this.userId].metaJson;
-      const newText = Object.values(newNodeJson).map(({FORM}) => FORM).join(" ");
-      newMetaJson.text = newText;
-      this.sentenceBus.emit('tree-update:sentence', {
-        sentenceJson: {
-          metaJson: newMetaJson,
-          treeJson: this.sentenceBus.sentenceSVGs[this.userId].treeJson,
-        },
-        userId: this.userId,
-      });
-      this.$emit('changed:metaText')
+      if (oldForm !== this.token.FORM) {
+        newMetaJson.text = oldText.replace(oldForm, this.token.FORM);
+        this.sentenceBus.emit('tree-update:sentence', {
+          sentenceJson: {
+            metaJson: newMetaJson,
+            treeJson: this.sentenceBus.sentenceSVGs[this.userId].treeJson,
+          },
+          userId: this.userId,
+        });
+        this.$emit('changed:metaText');
+      }
     },
   },
 });

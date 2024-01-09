@@ -17,6 +17,7 @@ CodeMirror.defineMode('grew', () => {
     pattern: 'builtin',
     commands: 'builtin',
     without: 'builtin',
+    rule: 'builtin',
   };
   function tokenBase(stream: any, state: any) {
     const ch = stream.next();

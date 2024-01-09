@@ -73,7 +73,7 @@
     <div :class="$q.dark.isActive ? 'text-white' : 'text-blue-grey-10'" class="q-pa-sm">
       <q-radio dense size="md" v-model="branchSyn" val="arboratorgrew" />
       {{ $t('github.arboratorgrewBranch[0]') }}
-      <span style="background-color: #7f90c0"><code>arboratorgrew</code></span> 
+      <span style="background-color: #7f90c0"><code>arboratorgrew</code></span>
       {{ $t('github.arboratorgrewBranch[1]') }}
     </div>
     <div :class="$q.dark.isActive ? 'text-white' : 'text-blue-grey-10'" class="q-pa-sm">
@@ -187,7 +187,7 @@ export default defineComponent({
         repositoryName: repoName,
         branchImport: branch,
         branchSyn: branchSyn,
-        username: this.customUsername !== '' ? this.customUsername: this.username,
+        username: this.customUsername !== '' ? this.customUsername : this.username,
       };
       this.loading = true;
       var interval = setTimeout(() => {

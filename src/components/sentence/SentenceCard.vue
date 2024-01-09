@@ -238,7 +238,7 @@
       </q-tab-panels>
       <div v-if="openTabUser" dense class="custom-frame1" style="padding-left: 15px">
         <q-list dense>
-          <q-item v-for="meta in shownMeta" :key="meta" style="min-height: unset; padding-left: 0px;">
+          <q-item v-for="meta in shownMeta" :key="meta" style="min-height: unset; padding-left: 0px">
             <q-chip dense size="xs" style="margin-left: 0">{{ meta }} </q-chip>
             {{ reactiveSentencesObj[openTabUser].state.metaJson[meta] }}
           </q-item>
@@ -261,7 +261,7 @@
       <RelationDialog :sentence-bus="sentenceBus" />
       <UposDialog :sentence-bus="sentenceBus" />
       <XposDialog :sentence-bus="sentenceBus" />
-      <FeaturesDialog :sentence-bus="sentenceBus" @changed:meta-text="changeText()"/>
+      <FeaturesDialog :sentence-bus="sentenceBus" @changed:meta-text="changeText()" />
       <MetaDialog :sentence-bus="sentenceBus" />
       <ConlluDialog :sentence-bus="sentenceBus" />
       <ExportSVG :sentence-bus="sentenceBus" :reactive-sentences-obj="reactiveSentencesObj" />
@@ -635,8 +635,8 @@ export default defineComponent({
         if (event.keyCode === 89 && this.canRedo && event.ctrlKey) {
           this.redo();
         }
-      } 
-    }
+      }
+    },
   },
 });
 </script>

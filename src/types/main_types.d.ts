@@ -59,7 +59,7 @@ export type sentence_bus_events_t = {
   'action:addEmptyToken': { userId: string };
   'action:tabSelected': { userId: string };
   'tree-update:tree': { userId: string; tree: TreeJson };
-  'tree-update:tags': { sentenceJson: SentenceJson; userId: string};
+  'tree-update:tags': { sentenceJson: SentenceJson; userId: string };
 };
 export interface sentence_bus_t extends Emitter<sentence_bus_events_t> {
   sentenceSVGs: { [key: string]: SentenceSVG };

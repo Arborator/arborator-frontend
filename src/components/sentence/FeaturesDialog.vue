@@ -34,20 +34,8 @@
       </q-card-section>
 
       <q-card-actions class="sticky-card-actions" align="around">
-        <q-btn 
-          v-close-popup 
-          outline
-          color="primary"
-          :label="$t('cancel')" 
-          style="width: 45%; margin-left: auto; margin-right: auto" 
-          />
-        <q-btn 
-          v-close-popup 
-          color="primary" 
-          label="Ok" 
-          style="width: 45%; margin-left: auto; margin-right: auto" 
-          @click="onFeatureDialogOk()" 
-          />
+        <q-btn v-close-popup outline color="primary" :label="$t('cancel')" style="width: 45%; margin-left: auto; margin-right: auto" />
+        <q-btn v-close-popup color="primary" label="Ok" style="width: 45%; margin-left: auto; margin-right: auto" @click="onFeatureDialogOk()" />
       </q-card-actions>
     </q-card>
   </q-dialog>

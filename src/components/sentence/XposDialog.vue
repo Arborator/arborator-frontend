@@ -1,10 +1,5 @@
 <template>
-  <PosDialog 
-    :sentence-bus="sentenceBus"
-    :title="'XPOS'"
-    :pos-options="annotationFeatures.XPOS"
-    :event-name="'open:xposDialog'"
-  />
+  <PosDialog :sentence-bus="sentenceBus" :title="'XPOS'" :pos-options="annotationFeatures.XPOS" :event-name="'open:xposDialog'" />
 </template>
 
 <script lang="ts">
@@ -17,7 +12,7 @@ import PosDialog from './PosDialog.vue';
 export default defineComponent({
   name: 'XposDialog',
   components: {
-    PosDialog
+    PosDialog,
   },
   props: {
     sentenceBus: {

@@ -124,7 +124,7 @@ export default defineComponent({
     sampleIds: {
       type: Object as PropType<string[]>,
       required: true,
-    }
+    },
   },
   components: { ResultView },
   setup(props, ctx) {

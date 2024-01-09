@@ -15,16 +15,13 @@ export const useGrewSearchStore = defineStore('grewSearch', {
       if (useProjectStore().blindAnnotationMode) {
         if (useProjectStore().canSaveTreeInProject) {
           return this.treeTypes.filter((element) => element == 'user');
-        }
-        else {
+        } else {
           return this.treeTypes.filter((element) => ['validated', 'base_tree', 'all'].includes(element));
         }
-      }
-      else {
+      } else {
         if (!useProjectStore().canSaveTreeInProject) {
           return this.treeTypes.filter((element) => ['recent', 'validated', 'all'].includes(element));
-        }
-        else {
+        } else {
           return this.treeTypes.filter((element) => element != 'base_tree');
         }
       }
@@ -32,11 +29,10 @@ export const useGrewSearchStore = defineStore('grewSearch', {
     canRewriteRule(): boolean {
       if (useProjectStore().blindAnnotationMode) {
         return useProjectStore().isValidator;
-      }
-      else {
+      } else {
         return useProjectStore().canSaveTreeInProject;
       }
-    }
+    },
   },
   actions: {
     switchGrewDialog(newDialogState: boolean) {

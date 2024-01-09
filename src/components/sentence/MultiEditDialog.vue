@@ -53,7 +53,7 @@ import { reactive_sentences_obj_t, sentence_bus_t } from 'src/types/main_types';
 import { tokenJson_T } from 'conllup/lib/conll';
 import { emptyTreeJson } from 'conllup/lib/conll';
 
-type metaLabel_t = 'UPOS' | 'DEPREL' | 'HEAD' | 'LEMMA' |'FEATS'| 'MISC';
+type metaLabel_t = 'UPOS' | 'DEPREL' | 'HEAD' | 'LEMMA' | 'FEATS' | 'MISC';
 
 import { defineComponent } from 'vue';
 
@@ -89,12 +89,18 @@ export default defineComponent({
         this.checkBoxesAll[metaLabel] = false;
       }
       for (const token in this.treeJson.nodesJson) {
-        const checkBoxesToken: { [key in metaLabel_t]: boolean } = { UPOS: false, DEPREL: false, HEAD: false, LEMMA: false, FEATS: false, MISC: false };
+        const checkBoxesToken: { [key in metaLabel_t]: boolean } = {
+          UPOS: false,
+          DEPREL: false,
+          HEAD: false,
+          LEMMA: false,
+          FEATS: false,
+          MISC: false,
+        };
         this.checkBoxes[token] = checkBoxesToken;
       }
       this.dialogOpened = true;
     });
-   
   },
   beforeUnmount() {
     this.sentenceBus.off('open:openMultiEditDialog');
@@ -104,14 +110,14 @@ export default defineComponent({
       for (const token in this.treeJson.nodesJson) {
         for (const metaLabel of this.metaLabels) {
           const toDeleteBool = this.checkBoxes[token][metaLabel];
-          const node =  this.treeJson.nodesJson[token] as any;
+          const node = this.treeJson.nodesJson[token] as any;
           if (toDeleteBool) {
             node[metaLabel as keyof tokenJson_T] = '_';
             if (metaLabel === 'HEAD') {
               node.DEPREL = '_';
             }
             if (['FEATS', 'MISC'].includes(metaLabel)) {
-              node[metaLabel] = {}
+              node[metaLabel] = {};
             }
           }
         }

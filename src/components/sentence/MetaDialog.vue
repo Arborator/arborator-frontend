@@ -15,20 +15,8 @@
         :title="$t('attributeTable.metadata')"
       ></AttributeTable>
       <q-card-actions class="sticky-card-actions" align="around">
-        <q-btn 
-          v-close-popup 
-          outline
-          color="primary" 
-          :label="$t('cancel')" 
-          style="width: 45%; margin-left: auto; margin-right: auto" 
-        />
-        <q-btn
-          v-close-popup
-          color="primary"
-          label="Ok"
-          style="width: 45%; margin-left: auto; margin-right: auto"
-          @click="onMetaDialogOk()"
-        />
+        <q-btn v-close-popup outline color="primary" :label="$t('cancel')" style="width: 45%; margin-left: auto; margin-right: auto" />
+        <q-btn v-close-popup color="primary" label="Ok" style="width: 45%; margin-left: auto; margin-right: auto" @click="onMetaDialogOk()" />
       </q-card-actions>
     </q-card>
   </q-dialog>
@@ -42,7 +30,6 @@ import { notifyError, notifyMessage } from 'src/utils/notify';
 
 import { PropType, defineComponent } from 'vue';
 import AttributeTable from './AttributeTable.vue';
-
 
 export default defineComponent({
   components: { AttributeTable },

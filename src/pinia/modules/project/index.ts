@@ -43,12 +43,12 @@ export const useProjectStore = defineStore('project', {
       if (this.isGuest) {
         return false;
       }
-      if(this.isGuest){
-        return false
+      if (this.isGuest) {
+        return false;
       }
       if (this.isValidator && this.blindAnnotationMode) {
         // In the blind annotation Validator can't save a tree. They can only save special tree : base_tree and Validated
-        return false
+        return false;
       }
       if (state.visibility === 2) {
         // anyone (logged in) can save in public project (visibility === 2)
@@ -78,17 +78,16 @@ export const useProjectStore = defineStore('project', {
       return false;
     },
     canExportTrees(state): boolean {
-      if(state.blindAnnotationMode && (!useUserStore().isLoggedIn || this.isGuest)){
-        return false
-      } 
+      if (state.blindAnnotationMode && (!useUserStore().isLoggedIn || this.isGuest)) {
+        return false;
+      }
       return true;
     },
-    getAnnotationSetting(state): string{
-      if(this.config === 'ud') {
-        return JSON.stringify(state.annotationFeaturesUD, null, 4)
-      }
-      else{
-        return JSON.stringify(state.annotationFeatures, null, 4)
+    getAnnotationSetting(state): string {
+      if (this.config === 'ud') {
+        return JSON.stringify(state.annotationFeaturesUD, null, 4);
+      } else {
+        return JSON.stringify(state.annotationFeatures, null, 4);
       }
     },
     getSUDAnnofJson: (state) => JSON.stringify(state.annotationFeatures, null, 4),
@@ -146,7 +145,6 @@ export const useProjectStore = defineStore('project', {
               let fetchedAnnotationFeatures = response.data.annotationFeatures;
               // check if there is a json in proper format, otherwise use default ConfigConllu
               if (typeof fetchedAnnotationFeatures !== 'object' || fetchedAnnotationFeatures === null) {
-
                 fetchedAnnotationFeatures = this.annotationFeatures;
               }
               this.annotationFeatures = fetchedAnnotationFeatures;
@@ -160,7 +158,7 @@ export const useProjectStore = defineStore('project', {
     // there is still a mismatch between all name 'updateProjectSettings' and 'updateProjectSettings'
     // ... so we have to get a proper data structure of the whole setting for then having better
     // ... separation of conscerns for API calls
-   
+
     updateProjectSettings(projectName: string, toUpdateObject: Partial<project_extended_t | project_with_diff_t>) {
       return new Promise((resolve, reject) => {
         api
@@ -211,20 +209,20 @@ export const useProjectStore = defineStore('project', {
     },
     getImage(projectName: string) {
       const treeImage = '/images/niko-photos-tGTVxeOr_Rs-unsplash.jpg';
-      api.getProjectImage(projectName)
-      .then((response) => {
-        if (Object.keys(response.data).length > 0){
-          const imageData = response.data.image_data;
-          const imageExt = response.data.image_ext
-          this.imageSrc = `data:image/${imageExt};base64,${imageData}`;
-        }
-        else {
-          this.imageSrc = treeImage;
-        }
-      })
-      .catch((error) => {
-        notifyError(error)
-      });
+      api
+        .getProjectImage(projectName)
+        .then((response) => {
+          if (Object.keys(response.data).length > 0) {
+            const imageData = response.data.image_data;
+            const imageExt = response.data.image_ext;
+            this.imageSrc = `data:image/${imageExt};base64,${imageData}`;
+          } else {
+            this.imageSrc = treeImage;
+          }
+        })
+        .catch((error) => {
+          notifyError(error);
+        });
     },
     updateProjectConlluSchema(projectname: string, annotationFeatures: annotationFeatures_t) {
       return new Promise((resolve, reject) => {

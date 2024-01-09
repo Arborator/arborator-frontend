@@ -1,13 +1,13 @@
 import api from '../../../api/backend-api';
 import { notifyError, notifyMessage } from 'src/utils/notify';
-import { defineStore } from "pinia";
+import { defineStore } from 'pinia';
 import { useProjectStore } from '../project';
 import { sentence_bus_t } from 'src/types/main_types';
 import { grewSearchResultSentence_t } from 'src/api/backend-types';
 
 export interface tag_t {
-  value: string,
-  color: string,
+  value: string;
+  color: string;
 }
 export const useTagsStore = defineStore('tags', {
   state: () => {
@@ -16,11 +16,11 @@ export const useTagsStore = defineStore('tags', {
       { value: 'IN PROGRESS', color: 'teal-4' },
       { value: 'TODO', color: 'orange-4' },
       { value: 'NEW', color: 'yellow-4' },
-      { value: 'ASAP', color: 'deep-orange-4' }
+      { value: 'ASAP', color: 'deep-orange-4' },
     ];
     return {
       defaultTags,
-    }
+    };
   },
   actions: {
     getUserTags(username: string) {
@@ -36,7 +36,7 @@ export const useTagsStore = defineStore('tags', {
           }
         })
         .catch((error) => {
-          notifyError({ error })
+          notifyError({ error });
         });
     },
     removeTag(sentence: grewSearchResultSentence_t, tag: string, sentenceBus: sentence_bus_t, username: string) {
@@ -45,7 +45,8 @@ export const useTagsStore = defineStore('tags', {
         tree: sentenceBus.sentenceSVGs[username].exportConll(),
       };
       const sampleName = sentence.sample_name as string;
-      api.removeTag(useProjectStore().name, sampleName, data)
+      api
+        .removeTag(useProjectStore().name, sampleName, data)
         .then((response) => {
           notifyMessage({ message: 'The tag is removed' });
           sentenceBus.emit('tree-update:tags', {
@@ -59,9 +60,8 @@ export const useTagsStore = defineStore('tags', {
           sentence.conlls[username] = exportedConll;
         })
         .catch((error) => {
-          notifyError({ error })
+          notifyError({ error });
         });
-    }
-  }
-
-})
+    },
+  },
+});

@@ -8,7 +8,7 @@
         <q-tooltip content-class="bg-white text-primary">{{ $t('projectSettings.windowClose') }}</q-tooltip>
       </q-btn>
     </q-bar>
-   
+
     <q-card-section class="q-pa-sm row q-gutter-md">
       <q-banner rounded class="col-md-4 offset-md-4 col-xs-12 col-sm-12">
         <q-img :ratio="16 / 9" :src="imageSrc" basic>
@@ -19,7 +19,18 @@
         </q-img>
 
         <template #action>
-          <q-file  dense outlined v-model="uploadImage.image" label="Change Image" borderless standout filled use-chips clearable :loading="uploadImage.submitting">
+          <q-file
+            dense
+            outlined
+            v-model="uploadImage.image"
+            label="Change Image"
+            borderless
+            standout
+            filled
+            use-chips
+            clearable
+            :loading="uploadImage.submitting"
+          >
             <template #after>
               <q-btn
                 color="primary"
@@ -91,11 +102,18 @@
               <q-item-label caption>{{ $t('projectSettings.chooseUserDiffCaption') }}</q-item-label>
             </q-item-section>
             <q-item-section>
-              <q-select outlined dense v-model="diffUserIdLocal" :disable="!diffModeLocal" :label="$t('projectSettings.selectDiffUser')" color="primary" :options="projectTreesFrom" />
+              <q-select
+                outlined
+                dense
+                v-model="diffUserIdLocal"
+                :disable="!diffModeLocal"
+                :label="$t('projectSettings.selectDiffUser')"
+                color="primary"
+                :options="projectTreesFrom"
+              />
             </q-item-section>
           </q-item>
           <q-item>
-
             <q-item-section>
               <q-item-label>{{ $t('projectSettings.projectLanguage') }}</q-item-label>
               <q-item-label caption>{{ $t('projectSettings.projectLanguageCaption') }} {{ language }}</q-item-label>
@@ -108,7 +126,7 @@
                 <div class="col-1">
                   <q-btn color="primary" flat round dense icon="save" @click="updateProjectLanguage()" />
                 </div>
-              </div> 
+              </div>
             </q-item-section>
           </q-item>
         </q-list>
@@ -191,11 +209,7 @@
             {{ annotationFeaturesComment }}
           </q-chip>
         </q-toolbar>
-        <Codemirror 
-          v-model:value="annotationFeaturesJson" 
-          :options="cmOption" 
-          @input="checkAnnotationFeatures"
-          ></Codemirror>
+        <Codemirror v-model:value="annotationFeaturesJson" :options="cmOption" @input="checkAnnotationFeatures"></Codemirror>
       </q-card>
     </q-card-section>
   </q-card>
@@ -208,14 +222,14 @@ import Codemirror from 'codemirror-editor-vue3';
 import 'codemirror-editor-vue3/dist/style.css';
 import 'codemirror/mode/javascript/javascript.js';
 import 'codemirror/lib/codemirror.css';
-import 'codemirror/addon/fold/foldcode'; 
-import 'codemirror/addon/fold/foldgutter'; 
+import 'codemirror/addon/fold/foldcode';
+import 'codemirror/addon/fold/foldgutter';
 import 'codemirror/addon/fold/foldgutter.css';
-import 'codemirror/addon/fold/brace-fold'; 
+import 'codemirror/addon/fold/brace-fold';
 
 import ConfirmAction from './ConfirmAction.vue';
 import UserSelect from './UserSelect.vue';
-import LanguageSelect from "../components/shared/LanguageSelect.vue";
+import LanguageSelect from '../components/shared/LanguageSelect.vue';
 
 import { mapActions, mapState, mapWritableState } from 'pinia';
 import { useProjectStore } from 'src/pinia/modules/project';
@@ -258,7 +272,7 @@ export default defineComponent({
       annotationFeaturesJson: '',
       annotationFeaturesOk: true,
       annotationFeaturesComment: '',
-      projectDescription:'',
+      projectDescription: '',
       selectedLanguage: '',
       cmOption: {
         tabSize: 8,
@@ -301,7 +315,7 @@ export default defineComponent({
       'language',
       'languagesList',
     ]),
-  
+
     blindAnnotationModeLocal: {
       get() {
         return this.blindAnnotationMode || false;
@@ -428,11 +442,11 @@ export default defineComponent({
         notifyError({ error: 'No image was selected' });
       }
     },
-    
+
     getProjectImage() {
       this.getImage(this.projectname);
     },
-  
+
     triggerConfirm(method: CallableFunction, arg: string) {
       this.confirmActionDial = true;
       this.confirmActionCallback = method;
@@ -444,8 +458,8 @@ export default defineComponent({
     },
 
     updateProjectLanguage() {
-      this.updateProjectSettings(this.projectname, { language: this.selectedLanguage as string });  
-    }
+      this.updateProjectSettings(this.projectname, { language: this.selectedLanguage as string });
+    },
   },
 });
 </script>

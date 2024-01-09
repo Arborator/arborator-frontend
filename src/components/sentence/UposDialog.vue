@@ -1,10 +1,5 @@
 <template>
-  <PosDialog
-    :sentence-bus="sentenceBus"
-    :title="'UPOS'"
-    :pos-options="annotationFeatures.UPOS"
-    :event-name="'open:uposDialog'"
-  />
+  <PosDialog :sentence-bus="sentenceBus" :title="'UPOS'" :pos-options="annotationFeatures.UPOS" :event-name="'open:uposDialog'" />
 </template>
 
 <script lang="ts">

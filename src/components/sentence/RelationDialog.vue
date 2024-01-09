@@ -3,27 +3,25 @@
     <q-card style="min-width: 700px">
       <q-bar v-if="gov && dep" class="bg-primary text-white sticky-bar">
         <div class="text-weight-bold">
-          {{ $t('attributeTable.relation[0]') }} "{{ gov.FORM }}" {{ $t('attributeTable.relation[1]') }} "{{ dep.FORM }}"
-           ( {{ $t('attributeTable.relation[2]') }} : {{ activeRelation }})
+          {{ $t('attributeTable.relation[0]') }} "{{ gov.FORM }}" {{ $t('attributeTable.relation[1]') }} "{{ dep.FORM }}" (
+          {{ $t('attributeTable.relation[2]') }} : {{ activeRelation }})
         </div>
         <q-space />
         <q-btn v-close-popup flat dense icon="close" />
       </q-bar>
       <q-card-section v-for="(deprel, i) in deprels" class="q-gutter-md">
-        <div class="text-h6">
-          {{ deprel.name }} : {{ deprels[i].values[selectedDep[i].selected.indexOf(true)] }}
-        </div>
+        <div class="text-h6">{{ deprel.name }} : {{ deprels[i].values[selectedDep[i].selected.indexOf(true)] }}</div>
         <div class="row">
-          <div v-for="(val, j) in deprel.values" >
-            <q-chip 
+          <div v-for="(val, j) in deprel.values">
+            <q-chip
               :outline="!selectedDep[i].selected[j]"
               v-if="val != ''"
               text-color="white"
-              color="primary" 
+              color="primary"
               v-model:selected="selectedDep[i].selected[j]"
-              @update:selected="unselectOtherDep(i, j)" 
+              @update:selected="unselectOtherDep(i, j)"
             >
-            {{ val }}
+              {{ val }}
             </q-chip>
           </div>
         </div>
@@ -99,11 +97,11 @@ export default defineComponent({
   },
   computed: {
     ...mapState(useProjectStore, ['annotationFeatures']),
-    activeRelation(){
+    activeRelation() {
       let newDeprel = '';
-      for(const i in this.deprels){
-        if (this.selectedDep[i].selected.includes(true)){
-          newDeprel += this.deprels[i].join + this.deprels[i].values[this.selectedDep[i].selected.indexOf(true)]
+      for (const i in this.deprels) {
+        if (this.selectedDep[i].selected.includes(true)) {
+          newDeprel += this.deprels[i].join + this.deprels[i].values[this.selectedDep[i].selected.indexOf(true)];
         }
       }
       return newDeprel;
@@ -139,7 +137,7 @@ export default defineComponent({
     this.sentenceBus.off('open:relationDialog');
   },
   methods: {
-    unselectOtherDep(depName: number, depValue: number ){
+    unselectOtherDep(depName: number, depValue: number) {
       this.selectedDep[depName].selected.forEach((dep, i) => {
         if (dep && i != depValue) {
           this.selectedDep[depName].selected[i] = false;

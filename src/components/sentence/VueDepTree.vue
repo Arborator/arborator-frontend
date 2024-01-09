@@ -157,8 +157,8 @@ export default defineComponent({
         this.statusChangeHadler();
       }
     });
-    this.sentenceBus.on('tree-update:tags', ({sentenceJson, userId}) => {
-      if(userId === this.treeUserId){
+    this.sentenceBus.on('tree-update:tags', ({ sentenceJson, userId }) => {
+      if (userId === this.treeUserId) {
         this.reactiveSentence.updateSentence(sentenceJson);
       }
     });

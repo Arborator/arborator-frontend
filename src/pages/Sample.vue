@@ -15,10 +15,10 @@
             :virtual-scroll-item-size="70"
           >
             <template #default="{ item, index }">
-              <SentenceCard 
-                :key="samplename + item.sent_id" 
-                :sentence="item" 
-                :index="index" 
+              <SentenceCard
+                :key="samplename + item.sent_id"
+                :sentence="item"
+                :index="index"
                 :blind-annotation-level="blindAnnotationLevel"
                 :is-focused="focusedSentences[index]"
                 @focused-sent="loseFocus"
@@ -33,12 +33,7 @@
           </div>
         </div>
 
-        <GrewSearch 
-          :sentence-count="numberOfTrees" 
-          :search-scope="samplename" 
-          :sample-names="[samplename]"
-          :trees-from="userIds"
-        />
+        <GrewSearch :sentence-count="numberOfTrees" :search-scope="samplename" :sample-names="[samplename]" :trees-from="userIds" />
 
         <RelationTableMain :sample-names="[samplename]" />
       </div>
@@ -64,7 +59,7 @@ export default defineComponent({
     SentenceCard,
     GrewSearch,
     RelationTableMain,
-    AdvancedFilter
+    AdvancedFilter,
   },
   beforeRouteLeave(to, from, next) {
     if (this.pendingModifications.size > 0) {
@@ -89,19 +84,19 @@ export default defineComponent({
       required: true,
     },
   },
-  data() { 
-    const splitterModel: number = 10; 
-    const splitterHeight: number = 0; 
+  data() {
+    const splitterModel: number = 10;
+    const splitterHeight: number = 0;
     const focusedSentences: boolean[] = [];
     return {
       splitterModel,
       splitterHeight,
       focusedSentences,
-    }
+    };
   },
   computed: {
     ...mapState(useGrewSearchStore, ['pendingModifications']),
-    ...mapState(useTreesStore, ["trees", "filteredTrees", "loading", "numberOfTrees", "userIds", "blindAnnotationLevel"]),
+    ...mapState(useTreesStore, ['trees', 'filteredTrees', 'loading', 'numberOfTrees', 'userIds', 'blindAnnotationLevel']),
   },
   created() {
     window.addEventListener('resize', this.calculateHeight);
@@ -110,7 +105,7 @@ export default defineComponent({
     this.getSampleTrees({ projectName: this.projectname, sampleName: this.samplename }).then(() => {
       this.scrollToIndexFromURL();
       this.focusedSentences = Array(Object.keys(this.filteredTrees).length).fill(false);
-    }); 
+    });
     document.title = `${this.projectname}/${this.samplename}`;
     LocalStorage.remove('save_status');
     this.calculateHeight();
@@ -122,12 +117,7 @@ export default defineComponent({
     ...mapActions(useGrewSearchStore, ['emptyPendingModification']),
     ...mapActions(useTreesStore, ['getSampleTrees', 'applyFilterTrees', 'getUsersTags']),
     scrollToIndexFromURL() {
-      if (
-        !this.loading &&
-        this.$refs &&
-        this.$refs.virtualListRef &&
-        this.$route.params.nr !== undefined
-      ) {
+      if (!this.loading && this.$refs && this.$refs.virtualListRef && this.$route.params.nr !== undefined) {
         const sendId = this.$route.params.nr as string;
         const nrAsInt = parseInt(this.$route.params.nr as string, 10) - 1;
         const indexInValues = Object.values(this.trees).findIndex((tree) => tree.sent_id === sendId);
@@ -144,9 +134,9 @@ export default defineComponent({
         this.splitterHeight = window.innerHeight - 35;
       }
     },
-    loseFocus(value: any){
-      const index = this.filteredTrees.findIndex(tree => tree.sent_id == value);
-      for (const sentId in this.focusedSentences){
+    loseFocus(value: any) {
+      const index = this.filteredTrees.findIndex((tree) => tree.sent_id == value);
+      for (const sentId in this.focusedSentences) {
         this.focusedSentences[sentId] = parseInt(sentId) == index;
       }
     },

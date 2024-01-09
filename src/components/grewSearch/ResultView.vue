@@ -122,7 +122,6 @@ export default defineComponent({
     userType: {
       type: String as PropType<string>,
       required: false,
-
     },
     parentOnShowTable: {
       type: Function as PropType<CallableFunction>,
@@ -184,12 +183,12 @@ export default defineComponent({
   watch: {
     'samplesFrozen.selected': {
       handler: function (newVal) {
-        if (Object.values(newVal).some(element => element == false)) {
+        if (Object.values(newVal).some((element) => element == false)) {
           this.all = false;
-        }  
+        }
       },
       deep: true,
-    }
+    },
   },
   mounted() {
     this.freezeSamples();
@@ -267,21 +266,21 @@ export default defineComponent({
       this.searchresultsCopy = selectedResults;
       for (const sample in selectedResults) {
         for (const sentId in selectedResults[sample]) {
-          if (!this.isValidator || this.userType !== "validated") {
-            let toSaveConll = ""
+          if (!this.isValidator || this.userType !== 'validated') {
+            let toSaveConll = '';
             if (selectedResults[sample][sentId].conlls[this.username]) {
-              toSaveConll = selectedResults[sample][sentId].conlls[this.username]
+              toSaveConll = selectedResults[sample][sentId].conlls[this.username];
             } else {
-              toSaveConll = Object.values(selectedResults[sample][sentId].conlls)[0]
+              toSaveConll = Object.values(selectedResults[sample][sentId].conlls)[0];
             }
-            const sentenceJson = sentenceConllToJson(toSaveConll)
-            sentenceJson.metaJson.user_id = this.username
-            sentenceJson.metaJson.timestamp = Math.round(Date.now())
-            this.searchresultsCopy[sample][sentId].conlls[this.username] = sentenceJsonToConll(sentenceJson)
+            const sentenceJson = sentenceConllToJson(toSaveConll);
+            sentenceJson.metaJson.user_id = this.username;
+            sentenceJson.metaJson.timestamp = Math.round(Date.now());
+            this.searchresultsCopy[sample][sentId].conlls[this.username] = sentenceJsonToConll(sentenceJson);
           }
           for (const userId in this.searchresultsCopy[sample][sentId].conlls) {
-            if (!this.isValidator || this.userType !== "validated") {
-              if (userId !== this.username) delete this.searchresultsCopy[sample][sentId].conlls[userId]
+            if (!this.isValidator || this.userType !== 'validated') {
+              if (userId !== this.username) delete this.searchresultsCopy[sample][sentId].conlls[userId];
             }
             this.toSaveCounter += 1;
           }
@@ -310,11 +309,9 @@ export default defineComponent({
           query: this.query,
           results: this.toSaveCounter,
           date: new Date().toLocaleString('en-GB', { hour12: false }),
-        }
+        };
         LocalStorage.set(this.projectName, [savedRule]);
-      }
-      else {
-        
+      } else {
         const listRules = savedRules as any[];
         listRules.push({
           name: `r${listRules.length + 1}`,
@@ -324,7 +321,7 @@ export default defineComponent({
         });
         LocalStorage.set(this.projectName, listRules);
       }
-    }
+    },
   },
 });
 </script>

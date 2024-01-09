@@ -1,11 +1,9 @@
 <template>
   <q-item clickable @click.native.prevent="goTo()">
-    <q-tooltip v-if="isProjectAdmin || isSuperAdmin" class="bg-purple text-body2" anchor="top middle" :offset="[10, 10]"
-      :delay="100">
+    <q-tooltip v-if="isProjectAdmin || isSuperAdmin" class="bg-purple text-body2" anchor="top middle" :offset="[10, 10]" :delay="100">
       {{ $t('projectHub.tooltipRightClickDelete') }}
     </q-tooltip>
-    <q-popup-proxy v-if="isProjectAdmin || isSuperAdmin" transition-show="flip-up" transition-hide="flip-down"
-      context-menu>
+    <q-popup-proxy v-if="isProjectAdmin || isSuperAdmin" transition-show="flip-up" transition-hide="flip-down" context-menu>
       <q-card>
         <q-card-section>
           <q-list>
@@ -38,7 +36,9 @@
       </q-avatar>
     </q-item-section>
     <q-item-section>
-      <q-item-label lines="1"><span class="text-weight-bold">{{ project.projectName }}</span></q-item-label>
+      <q-item-label lines="1"
+        ><span class="text-weight-bold">{{ project.projectName }}</span></q-item-label
+      >
       <q-item-label caption lines="2">
         {{ project.description }}
       </q-item-label>
@@ -84,12 +84,11 @@
       </div>
     </q-item-section>
     <q-dialog v-model="showRenameProjectDial">
-      <RenameProjectDialog  :project-name="project.projectName" />
+      <RenameProjectDialog :project-name="project.projectName" />
     </q-dialog>
 
     <q-dialog v-model="confirmActionDial">
-      <confirm-action :parent-action="confirmActionCallback" :arg1="confirmActionArg1"
-        :target-name="project.projectName"></confirm-action>
+      <confirm-action :parent-action="confirmActionCallback" :arg1="confirmActionArg1" :target-name="project.projectName"></confirm-action>
     </q-dialog>
   </q-item>
 </template>
@@ -168,19 +167,19 @@ export default defineComponent({
       this.parentProjectSettings(this.project.projectName);
     },
     getProjectImage() {
-      api.getProjectImage(this.project.projectName)
+      api
+        .getProjectImage(this.project.projectName)
         .then((response) => {
           if (Object.keys(response.data).length > 0) {
             const imageData = response.data.image_data;
-            const imageExt = response.data.image_ext
+            const imageExt = response.data.image_ext;
             this.imageSrc = `data:image/${imageExt};base64,${imageData}`;
-          }
-          else {
+          } else {
             this.imageSrc = '';
           }
         })
         .catch((error) => {
-          notifyError(error)
+          notifyError(error);
         });
     },
     deleteProject() {

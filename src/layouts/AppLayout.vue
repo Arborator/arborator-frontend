@@ -1,6 +1,6 @@
 <template>
   <q-layout view="hHh Lpr fFf">
-    <q-header  style="height: 2.3vw;" :class="`${$q.dark.isActive ? 'bg-dark' : 'bg-white'} custom-bottom-border`" id="main-header">
+    <q-header style="height: 2.3vw" :class="`${$q.dark.isActive ? 'bg-dark' : 'bg-white'} custom-bottom-border`" id="main-header">
       <q-bar :class="$q.dark.isActive ? 'bg-dark' : 'bg-white text-black'">
         <q-btn flat round icon="menu" @click="drawerLeft = !drawerLeft" />
         <q-btn flat to="/" :ripple="false" type="a">
@@ -82,7 +82,7 @@
               </q-item>
             </q-list>
           </q-btn-dropdown>
-          <q-btn v-show="isLoggedIn" outline color="primary" >
+          <q-btn v-show="isLoggedIn" outline color="primary">
             <q-icon :name="loggedWithGithub ? 'fab fa-github' : 'fab fa-google'" class="q-mr-md" />
             <q-tooltip> {{ $t('userInformation') }} {{ loggedWithGithub ? ' Github' : 'Gmail' }} </q-tooltip>
             <q-icon v-if="getUserInfos.picture_url === ''" name="account_circle" />
@@ -315,9 +315,9 @@ export default defineComponent({
 }
 
 .body--light .sticky-card-actions {
-  position: sticky; 
-  bottom: 0; 
-  z-index: 1; 
+  position: sticky;
+  bottom: 0;
+  z-index: 1;
   background-color: white;
 }
 
@@ -342,9 +342,9 @@ export default defineComponent({
 }
 
 .body--dark .sticky-card-actions {
-  position: sticky; 
-  bottom: 0; 
-  z-index: 1; 
+  position: sticky;
+  bottom: 0;
+  z-index: 1;
   background-color: #1e1e1e;
 }
 
@@ -367,6 +367,4 @@ export default defineComponent({
   top: 0;
   z-index: 1;
 }
-
-
 </style>

@@ -36,7 +36,7 @@
     <q-img
       class="clickable"
       :ratio="16 / 9"
-      :src=" imageSrc == '' ? '/images/small.niko-photos-tGTVxeOr_Rs-unsplash.jpg' : imageSrc"
+      :src="imageSrc == '' ? '/images/small.niko-photos-tGTVxeOr_Rs-unsplash.jpg' : imageSrc"
       basic
       @click="goTo()"
     >
@@ -65,7 +65,7 @@
         </q-chip>
       </q-card-actions>
       <q-card-actions>
-        <q-btn v-if="isProjectAdmin" round color="negative"  icon="delete_forever" @click="triggerConfirm(deleteProject)">
+        <q-btn v-if="isProjectAdmin" round color="negative" icon="delete_forever" @click="triggerConfirm(deleteProject)">
           <q-tooltip class="bg-purple text-body2" anchor="top middle" :offset="[10, 10]" :delay="100">
             <!-- {{ $t('projectHub.tooltipRightClickDelete') }} -->
             {{ $t('projectHub.rightClickDelete') }}
@@ -96,8 +96,6 @@ import { useUserStore } from 'src/pinia/modules/user';
 import { timeAgo } from 'src/utils/timeAgoUtils';
 import { project_extended_t } from 'src/api/backend-types';
 import { defineComponent, PropType } from 'vue';
-
-
 
 export default defineComponent({
   components: { ProjectIcon, ConfirmAction, RenameProjectDialog },
@@ -132,7 +130,7 @@ export default defineComponent({
       return this.project.admins.includes(this.username) || this.isSuperAdmin;
     },
   },
-  mounted(){
+  mounted() {
     this.getProjectImage();
   },
   methods: {
@@ -153,20 +151,20 @@ export default defineComponent({
       this.parentProjectSettings(this.project.projectName);
     },
     getProjectImage() {
-      api.getProjectImage(this.project.projectName)
+      api
+        .getProjectImage(this.project.projectName)
         .then((response) => {
           if (Object.keys(response.data).length > 0) {
             const imageData = response.data.image_data;
-            const imageExt = response.data.image_ext
+            const imageExt = response.data.image_ext;
             this.imageSrc = `data:image/${imageExt};base64,${imageData}`;
-          }
-          else {
+          } else {
             this.imageSrc = '';
           }
         })
         .catch((error) => {
-          notifyError(error)
-      });
+          notifyError(error);
+        });
     },
     deleteProject() {
       this.parentDeleteProject(this.project.projectName);

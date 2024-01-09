@@ -106,7 +106,7 @@ export default {
         'For quick graphical modification of a CoNLL file:',
         'CoNLL files graphical editor',
         'The legacy Arborator is still running here',
-        'ArboratorGrew LICENSE'
+        'ArboratorGrew LICENSE',
       ],
     },
     footertextmadewith: 'Made with',
@@ -156,7 +156,7 @@ export default {
     title: 'Rename the project',
     inputLabel: 'Project name',
     renameBtn: 'Rename',
-    inputError: "please type something",
+    inputError: 'please type something',
   },
 
   // page when you enter a project ( samples info, etc)
@@ -177,7 +177,7 @@ export default {
       'Click to interrupt parsing',
     ],
     tootlipConstructiconPanel: 'See the constructicon',
-    tooltipSynchronize:'Synchronize with github',
+    tooltipSynchronize: 'Synchronize with github',
     tooltipMore: 'More options',
     tooltipConstructicon: 'See constructicon',
     tooltipSyncGit: 'Synchronize with Github',
@@ -240,7 +240,7 @@ export default {
     annotSettings: 'Annotation settings',
     annotMode: 'Annotation mode',
     blindAnnot: 'Blind annotation',
-    blindAnnotCaption: "In this case the annotators will not be able to see others' trees."
+    blindAnnotCaption: "In this case the annotators will not be able to see others' trees.",
   },
 
   exportSamples: {
@@ -277,9 +277,13 @@ export default {
     windowClose: 'Close',
     descriptionSave: 'Save description',
     toggleVisibility: 'Visibility',
-    toggleVisibilityCaption: 'Private projects limit access and annotation, visible projects limit annotation and open projects allow anyone to view and contribute',
-    togglePrivateCaption:
-      ['Private projects restrain access and annotation.', 'Visible projects restrain only annotation.', 'Open projects allow anyone to view and contribute their annotation.'],
+    toggleVisibilityCaption:
+      'Private projects limit access and annotation, visible projects limit annotation and open projects allow anyone to view and contribute',
+    togglePrivateCaption: [
+      'Private projects restrain access and annotation.',
+      'Visible projects restrain only annotation.',
+      'Open projects allow anyone to view and contribute their annotation.',
+    ],
     toggleAllVisible: 'All trees visible',
     toggleAllVisibleCaption: "If true, annotators will be able to see others' trees",
     toggleBlindAnnotationMode: 'Blind annotation mode',
@@ -339,9 +343,9 @@ export default {
     selectTooltip: 'Select the sentence to split the tokens',
     annotationErrors: 'See your annotation errors',
     saveBaseTree: 'Save as base_tree',
-    saveTree: ["Save tree", "as"],
+    saveTree: ['Save tree', 'as'],
     validateTree: 'Validate this tree',
-    addTag: "Add tags to this tree",
+    addTag: 'Add tags to this tree',
     editMetadata: "Edit this trees's metadata",
     multiEditDial: 'Base_tree edition',
     diffMode: ['Enter', 'Leave', 'Diff mode'],
@@ -357,13 +361,12 @@ export default {
     automaticParsing: 'Automatic parsing',
     conllText: 'Text Conll',
     statisticDial: 'Stastistics of the current opened tree',
-
   },
   tagsMenu: {
     enterTags: 'Enter tags',
     addTags: 'Add',
     createNewTag: 'Press enter to create this tag',
-    tagsFormatError: 'You cannot add an empty tag or a tag containing ","'
+    tagsFormatError: 'You cannot add an empty tag or a tag containing ","',
   },
   attributeTable: {
     addFeature: 'Add new feature',
@@ -376,7 +379,7 @@ export default {
   },
   constructicon: {
     uploadTooltip: 'Upload existing constructicon',
-    downloadTooltip : 'Download existing constructicon',
+    downloadTooltip: 'Download existing constructicon',
     searchLabel: 'Search items ...',
     addNewItem: 'Add new item',
     title: 'Title',
@@ -386,7 +389,7 @@ export default {
     saveBtn: 'Save',
     editBtn: 'Edit',
     deleteBtn: 'Delete',
-    search: 'Search'
+    search: 'Search',
   },
   userSelect: {
     share: 'Share',
@@ -394,7 +397,7 @@ export default {
     roles: ['Admin', 'Validator', 'Annotator', 'Guest'],
     revokeAccess: 'Revoke Access',
     noResult: 'No result',
-    copyLink : 'Copy Link',
+    copyLink: 'Copy Link',
     role: 'Role',
     owner: 'Owner',
     userAccess: 'Users with access',
@@ -416,7 +419,7 @@ export default {
     parseHint: 'Parsing will go under the name `parser',
     customParserUser: 'Custom parsing user',
     parseUser: 'Parsing user',
-    keepHeads:'keep existing heads',
+    keepHeads: 'keep existing heads',
     pipelineSummary: 'Pipeline Summary',
     trainingSents: 'training sentences',
     parseSents: 'parsing sentences',
@@ -440,7 +443,7 @@ export default {
     uploadFileLabel: 'Pick or drop files',
     uploadFileTooltip: 'Select file to upload',
     reservedUsernameError: 'is reserved username for ArboratorGrew',
-    emptyUsernameError: 'You can not upload file without userId please type something'
+    emptyUsernameError: 'You can not upload file without userId please type something',
   },
   advancedFilter: {
     textFilter: 'Text filter',
@@ -462,21 +465,19 @@ export default {
     firstToken: 'First token',
     secondToken: 'Second token',
     multiWordToken: 'Add multiword token',
-    
   },
   multiEditDialog: {
     text: 'Select what you want to remove',
-    all: 'All'
+    all: 'All',
   },
   lexicon: {
-    replaceEntry: "Replace entry",
+    replaceEntry: 'Replace entry',
   },
   appliedRulesHist: {
     title: 'History of applied rules',
     modifiedSentences: 'Modified sentences',
     noHistory: 'No available history',
     selectedRules: ['selected', 'rule', 'rules'],
-
   },
   cancel: 'Cancel',
   delete: 'Delete',

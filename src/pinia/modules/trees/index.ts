@@ -2,10 +2,8 @@ import { defineStore } from 'pinia';
 
 import { notifyMessage, notifyError } from 'src/utils/notify';
 import api from '../../../api/backend-api';
-import {
-  grewSearchResultSentence_t,
-} from 'src/api/backend-types';
-import { sentenceConllToJson, sentenceJson_T } from "conllup/lib/conll";
+import { grewSearchResultSentence_t } from 'src/api/backend-types';
+import { sentenceConllToJson, sentenceJson_T } from 'conllup/lib/conll';
 import { useTagsStore } from '../tags';
 
 export const useTreesStore = defineStore('trees', {
@@ -34,7 +32,7 @@ export const useTreesStore = defineStore('trees', {
       const counter: { [key: string]: number } = {};
       const treesConlls = state.filteredTrees.map((sentence) => sentence.conlls);
       for (const user of this.userIds) {
-        counter[user as string] = treesConlls.filter(conll => user as string in conll).length;
+        counter[user as string] = treesConlls.filter((conll) => (user as string) in conll).length;
       }
       return counter;
     },
@@ -46,7 +44,7 @@ export const useTreesStore = defineStore('trees', {
         }
       }
       return [...userIds];
-    }
+    },
   },
   actions: {
     getSampleTrees({ projectName, sampleName }: { projectName: string; sampleName: string }) {
@@ -82,8 +80,8 @@ export const useTreesStore = defineStore('trees', {
       }
     },
     applyFilterTrees() {
-      this.filteredTrees = this.sortedSentIds.map((sentId) => 
-        Object.values(this.trees).find((tree) => tree.sent_id == String(sentId)) as grewSearchResultSentence_t
+      this.filteredTrees = this.sortedSentIds.map(
+        (sentId) => Object.values(this.trees).find((tree) => tree.sent_id == String(sentId)) as grewSearchResultSentence_t
       );
       if (this.textFilter !== '') {
         this.filteredTrees = Object.values(this.trees).filter((tree) => {
@@ -129,7 +127,10 @@ export const useTreesStore = defineStore('trees', {
           if (usersToNotHaveDiffsThatHaveTrees.length <= 1) {
             return false;
           }
-          return !sentencesHaveDiffs(usersToNotHaveDiffsThatHaveTrees.map((user) => tree.conlls[user]), this.featuresSetForNotDiffs)
+          return !sentencesHaveDiffs(
+            usersToNotHaveDiffsThatHaveTrees.map((user) => tree.conlls[user]),
+            this.featuresSetForNotDiffs
+          );
         });
       }
       if (this.selectedTags.length > 0) {
@@ -143,7 +144,7 @@ export const useTreesStore = defineStore('trees', {
               }
             }
           }
-        })
+        });
       }
     },
   },

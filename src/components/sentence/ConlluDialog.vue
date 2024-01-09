@@ -14,21 +14,15 @@
         <q-toolbar inset>
           <q-space />
           <q-btn v-close-popup flat no-caps :label="$t('cancel')" />
-          <q-btn 
-            v-close-popup 
-            color="primary" 
-            label="Ok" 
-            :disabled="currentConllContent === conllContent" 
-            @click="onConllDialogOk()" 
-            />
+          <q-btn v-close-popup color="primary" label="Ok" :disabled="currentConllContent === conllContent" @click="onConllDialogOk()" />
         </q-toolbar>
       </q-footer>
-    </q-layout>  
+    </q-layout>
   </q-dialog>
 </template>
 
 <script lang="ts">
-import {sentenceConllToJson } from 'conllup/lib/conll';
+import { sentenceConllToJson } from 'conllup/lib/conll';
 import CodeMirror2 from 'codemirror';
 import Codemirror from 'codemirror-editor-vue3';
 import 'codemirror-editor-vue3/dist/style.css';
@@ -72,7 +66,7 @@ CodeMirror2.defineMode('tsv', () => {
     },
     lineComment: '#',
   };
-}); 
+});
 export default defineComponent({
   components: { Codemirror },
   props: {
@@ -142,7 +136,7 @@ export default defineComponent({
         }
       }
       return isMetaChanged;
-    }
+    },
   },
 });
 </script>

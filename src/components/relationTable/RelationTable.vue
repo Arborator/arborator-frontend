@@ -8,24 +8,9 @@
     </q-bar>
 
     <q-card-section>
-      <q-select 
-        dense 
-        outlined 
-        v-model="treeType" 
-        :options="treeOptions" 
-        :label="$t('grewSearch.treesType')"
-        @update:model-value="getRelationTable()"
-      >
+      <q-select dense outlined v-model="treeType" :options="treeOptions" :label="$t('grewSearch.treesType')" @update:model-value="getRelationTable()">
         <template v-slot:selected-item="scope">
-        
-          <q-chip
-            v-if="scope.opt.value == 'user' || scope.opt.value == 'user_recent'"
-            dense
-            square
-            color="white"
-            text-color="primary"
-            size="md"
-          >
+          <q-chip v-if="scope.opt.value == 'user' || scope.opt.value == 'user_recent'" dense square color="white" text-color="primary" size="md">
             <q-avatar>
               <img :src="avatar" />
               <q-badge v-if="scope.opt.value == 'user_recent'" floating transparent>+</q-badge>
@@ -60,13 +45,7 @@
               <span class="text-primary text-bold">Select an edge</span>
             </q-toolbar-title>
           </q-toolbar>
-          <q-input 
-            outlined 
-            dense 
-            ref="filter" 
-            v-model="filter" 
-            label="filter dependency relations"
-          >
+          <q-input outlined dense ref="filter" v-model="filter" label="filter dependency relations">
             <template #append>
               <q-icon v-if="filter !== ''" name="clear" class="cursor-pointer" @click="resetFilter" />
             </template>
@@ -149,14 +128,13 @@ import { notifyError } from 'src/utils/notify';
 import { defineComponent, PropType } from 'vue';
 import { grewSearchResult_t } from 'src/api/backend-types';
 
-
 export default defineComponent({
   components: { ResultView },
   props: {
     sampleNames: {
       type: Object as PropType<string[]>,
       default: [],
-    }
+    },
   },
   data() {
     const resultSearch: grewSearchResult_t = {};
@@ -190,14 +168,14 @@ export default defineComponent({
     };
   },
   computed: {
-    ...mapState(useProjectStore, ['getProjectConfig', 'canSaveTreeInProject', ]),
+    ...mapState(useProjectStore, ['getProjectConfig', 'canSaveTreeInProject']),
     ...mapState(useUserStore, ['avatar']),
-    treeOptions(){
-      if(!this.canSaveTreeInProject){
+    treeOptions() {
+      if (!this.canSaveTreeInProject) {
         return this.treeTypes.slice(2);
       }
       return this.treeTypes;
-    }
+    },
   },
   mounted() {
     this.getRelationTable();
@@ -207,7 +185,7 @@ export default defineComponent({
     }, 500);
   },
   methods: {
-    getRelationTable(){
+    getRelationTable() {
       let edgesList = [];
       this.relationTree = [];
       const data = { sampleIds: this.sampleNames, tableType: this.treeType.value };
@@ -228,7 +206,7 @@ export default defineComponent({
     },
     displayTable() {
       const keySet = new Set();
-      const currentEdges = (this.relationTableInfos as any)[this.currentEdge] || {}
+      const currentEdges = (this.relationTableInfos as any)[this.currentEdge] || {};
       for (const gov of Object.keys(currentEdges)) {
         keySet.add(gov);
         for (const dep of Object.keys(currentEdges[gov])) {
@@ -263,7 +241,7 @@ export default defineComponent({
           (colSum as any)[dep as string] = (colSum as any)[dep as string] + num || num;
         }
         row['sum'] = rowSum;
-        if (rowSum > 0)  rows.push(row);
+        if (rowSum > 0) rows.push(row);
         (this.relationsTotal as any)[this.currentEdge] += rowSum;
       }
       (colSum as any)['sum'] = Object.values(colSum).reduce((sum, value) => (sum as number) + (value as number), 0);
@@ -279,7 +257,6 @@ export default defineComponent({
         sortBy: 'sum',
         descending: true,
       };
-
     },
     resetFilter() {
       this.filter = '';
@@ -305,8 +282,8 @@ export default defineComponent({
         })
         .catch((error) => {
           notifyError({ error });
-      });
-    }, 
+        });
+    },
   },
 });
 </script>

@@ -24,7 +24,7 @@ export interface UserStateInterface {
   query_class: string | null;
   super_admin: boolean;
   username: string;
-  reservedUserIds: string[],
+  reservedUserIds: string[];
 }
 
 // default user state

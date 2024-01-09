@@ -32,16 +32,14 @@
               >
                 <template #append>
                   <div v-for="val in selectedLanguagesForFilter">
-                    <q-chip removable size="sm" @remove="removeFilter(val)">{{ val }}</q-chip> 
+                    <q-chip removable size="sm" @remove="removeFilter(val)">{{ val }}</q-chip>
                   </div>
                   <q-btn flat icon="language" color="primary">
                     <q-menu>
-                      <div class="row q-pa-md text-bold">
-                        Filter by language
-                      </div>
+                      <div class="row q-pa-md text-bold">Filter by language</div>
                       <q-separator />
                       <div class="row q-pa-md">
-                        <LanguageSelect :multiple="true" :languages-list="projectsLanguages" @selected-value="getSelectedLanguages"  />
+                        <LanguageSelect :multiple="true" :languages-list="projectsLanguages" @selected-value="getSelectedLanguages" />
                       </div>
                     </q-menu>
                   </q-btn>
@@ -222,13 +220,13 @@ export default defineComponent({
     ProjectSettingsView,
     ConfirmAction,
     LanguageSelect,
-    EmailCollectDialog
+    EmailCollectDialog,
   },
   data() {
     const projects: project_extended_t[] = [];
     const visibleProjects: project_extended_t[] = [];
     const storage: StorageInterface = useStorage();
-    const projectsLanguages: { index: number, name: string}[] = [];
+    const projectsLanguages: { index: number; name: string }[] = [];
     return {
       projects,
       visibleProjects,
@@ -301,12 +299,12 @@ export default defineComponent({
     },
   },
   watch: {
-    reloadProjects(newVal){
-      if(newVal) {
+    reloadProjects(newVal) {
+      if (newVal) {
         this.getProjects();
         this.reloadProjects = false;
       }
-    }
+    },
   },
   mounted() {
     document.title = `ArboratorGrew: ${this.$t('projectHub.title')}`;
@@ -329,10 +327,9 @@ export default defineComponent({
         .then((response) => {
           this.projects = response.data as project_extended_t[];
           this.visibleProjects = response.data as project_extended_t[];
-          this.projectsLanguages = [... new Set(this.projects.map(project => project.language))]
-            .filter(language => language !== '' && language !== null)
-            .map((language, i) => ({index: i+1 , name: language})
-          );
+          this.projectsLanguages = [...new Set(this.projects.map((project) => project.language))]
+            .filter((language) => language !== '' && language !== null)
+            .map((language, i) => ({ index: i + 1, name: language }));
           this.sortProjects();
           this.loadingProjects = false;
           this.initLoading = false;
@@ -343,21 +340,19 @@ export default defineComponent({
         });
     },
     searchProject(pattern: string) {
-
       const lowercasePattern = pattern.toLowerCase();
       this.visibleProjects = this.projects.filter((project) => {
-
-        const projectNameIncludesPattern = project.projectName.toLowerCase().includes(lowercasePattern);       
-        const projectMatchesLangFilter = this.selectedLanguagesForFilter.length === 0 || 
-          this.selectedLanguagesForFilter.map((lang) => lang as string).includes(project.language);
+        const projectNameIncludesPattern = project.projectName.toLowerCase().includes(lowercasePattern);
+        const projectMatchesLangFilter =
+          this.selectedLanguagesForFilter.length === 0 || this.selectedLanguagesForFilter.map((lang) => lang as string).includes(project.language);
         return projectNameIncludesPattern && projectMatchesLangFilter;
       });
     },
-    getSelectedLanguages(value: any){
+    getSelectedLanguages(value: any) {
       this.selectedLanguagesForFilter = value;
     },
-    removeFilter(val: string){
-      this.selectedLanguagesForFilter.splice(this.selectedLanguagesForFilter.map(val => val as string).indexOf(val),1)
+    removeFilter(val: string) {
+      this.selectedLanguagesForFilter.splice(this.selectedLanguagesForFilter.map((val) => val as string).indexOf(val), 1);
     },
     sortProjects() {
       this.visibleProjects.sort((a, b) => b.lastAccess - a.lastAccess);

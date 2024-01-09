@@ -25,12 +25,18 @@
                 <q-select outlined v-model="option" :label="$t('uploadSample.tokenizeSelect')" :options="tokenizeOptions" />
               </div>
               <div v-if="option">
-                <q-select v-if="option.value === 'plainText'" outlined :label="$t('uploadSample.languageSelect')" v-model="lang" :options="langOptions" />
+                <q-select
+                  v-if="option.value === 'plainText'"
+                  outlined
+                  :label="$t('uploadSample.languageSelect')"
+                  v-model="lang"
+                  :options="langOptions"
+                />
                 <div v-if="option.value === 'vertical'" class="text-body1">
-                 {{  $t('uploadSample.verticalHint') }}
+                  {{ $t('uploadSample.verticalHint') }}
                 </div>
                 <div v-if="option.value === 'horizontal'" class="text-body1">
-                  {{  $t('uploadSample.horizontalHint') }}
+                  {{ $t('uploadSample.horizontalHint') }}
                 </div>
               </div>
               <q-input outlined v-model="text" type="textarea" :label="$t('uploadSample.text')" />
@@ -66,11 +72,11 @@
                       icon="cloud_upload"
                       round
                       :loading="uploadSample.submitting"
-                      :disable="disableUploadBtn || customUserId === '' || customUserId.toLowerCase() ==='validated' "
+                      :disable="disableUploadBtn || customUserId === '' || customUserId.toLowerCase() === 'validated'"
                       @click="uploadSamples()"
                     />
                     <q-tooltip v-if="uploadSample.attachment.file.length == 0" content-class="text-white bg-primary">
-                     {{ $t('uploadSample.uploadFileTooltip') }}
+                      {{ $t('uploadSample.uploadFileTooltip') }}
                     </q-tooltip>
                   </template>
                 </q-file>
@@ -81,9 +87,9 @@
                   v-model="customUserId"
                   :label="$t('uploadSample.customUsername')"
                   :rules="[
-                    val => !reservedUserIds.includes(val.toLowerCase()) ||`${val} `+ $t('uploadSample.reservedUsernameError'),
-                    val => val && val.length > 0 || $t('uploadSample.emptyUsernameError')]
-                  "
+                    (val) => !reservedUserIds.includes(val.toLowerCase()) || `${val} ` + $t('uploadSample.reservedUsernameError'),
+                    (val) => (val && val.length > 0) || $t('uploadSample.emptyUsernameError'),
+                  ]"
                 />
               </div>
             </q-tab-panel>
@@ -228,13 +234,13 @@ export default defineComponent({
     },
     checkSentFormatError(sentence: string, sampleName: string) {
       if (/\n\s*\n\S/.test(sentence)) {
-        notifyError({ error: `${sampleName} contains empty line that doesn't start with a digit or # `});
-        this.formatError = true; 
+        notifyError({ error: `${sampleName} contains empty line that doesn't start with a digit or # ` });
+        this.formatError = true;
       }
       if (Object.values(sentenceConllToJson(sentence)['metaJson']).some((metaVal) => metaVal == undefined)) {
-        notifyError({ error: `${sampleName} contains sentence with empty metadata value`});
+        notifyError({ error: `${sampleName} contains sentence with empty metadata value` });
         this.formatError = true;
-      } 
+      }
     },
     triggerFormatErrors() {
       this.samplesWithoutSentIds.forEach((sampleName) => {

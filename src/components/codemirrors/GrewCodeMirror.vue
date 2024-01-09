@@ -82,8 +82,8 @@ export default defineComponent({
     lineNumbers: {
       type: Boolean as PropType<boolean>,
       required: false,
-      default: true, 
-    }
+      default: true,
+    },
   },
   data() {
     return {

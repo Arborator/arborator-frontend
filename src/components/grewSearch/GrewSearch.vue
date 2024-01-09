@@ -1,26 +1,20 @@
 <template>
-  <q-page-sticky :position="breakpoint ? 'bottom-right' : 'bottom-right'" :offset="breakpoint ? [18, 18] : [30, 80]"
-    style="z-index: 999">
+  <q-page-sticky :position="breakpoint ? 'bottom-right' : 'bottom-right'" :offset="breakpoint ? [18, 18] : [30, 80]" style="z-index: 999">
     <q-btn size="20px" round color="primary" icon="img:/svg/g.svg" @click="grewDialog = !grewDialog">
-      <q-tooltip anchor="center left" content-class="bg-primary" content-style="font-size: 16px"> {{
-        $t('projectView.tooltipFabGrew') }} </q-tooltip>
+      <q-tooltip anchor="center left" content-class="bg-primary" content-style="font-size: 16px"> {{ $t('projectView.tooltipFabGrew') }} </q-tooltip>
     </q-btn>
   </q-page-sticky>
   <q-dialog v-model="grewDialog" seamless position="right" full-width>
-    <GrewRequestCard 
-      :parentOnSearch="onSearch" 
-      :parentOnTryRules="onTryRules" 
-      :trees-from="treesFrom"
-    ></GrewRequestCard>
+    <GrewRequestCard :parentOnSearch="onSearch" :parentOnTryRules="onTryRules" :trees-from="treesFrom"></GrewRequestCard>
   </q-dialog>
   <q-dialog v-model="resultSearchDialog" maximized transition-show="fade" transition-hide="fade">
-    <ResultView 
-      :searchresults="resultSearch" 
-      :totalsents="sentenceCount" 
+    <ResultView
+      :searchresults="resultSearch"
+      :totalsents="sentenceCount"
       :searchscope="searchScope"
-      :parentOnShowTable="onShowTable" 
+      :parentOnShowTable="onShowTable"
       :query-type="queryType"
-      :query="query" 
+      :query="query"
       :userType="userType"
     ></ResultView>
   </q-dialog>
@@ -63,18 +57,18 @@ export default defineComponent({
   },
   data() {
     const result: {
-      resultSearchDialog: boolean,
-      resultSearch: grewSearchResult_t,
-      queryType: string,
-      query: string,
-      userType: string,
-      window: { width: number; height: number },
+      resultSearchDialog: boolean;
+      resultSearch: grewSearchResult_t;
+      queryType: string;
+      query: string;
+      userType: string;
+      window: { width: number; height: number };
     } = {
       resultSearchDialog: false,
       resultSearch: {},
-      queryType: "",
-      query: "",
-      userType: "",
+      queryType: '',
+      query: '',
+      userType: '',
       window: { width: 0, height: 0 },
     };
     return result;
@@ -105,7 +99,6 @@ export default defineComponent({
         .catch((error) => {
           notifyError({ error });
         });
-
     },
     onTryRules(query: string, userType: string, otherUser: string) {
       const data = { query: query, userType: userType, sampleIds: this.sampleNames, otherUser: otherUser };

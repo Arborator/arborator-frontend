@@ -75,7 +75,6 @@
                   <q-item-label>{{ $t('projectView.lexicon[7]') }}</q-item-label>
                 </q-item-section>
               </q-item>
-
             </q-list>
           </q-btn-dropdown>
         </div>
@@ -165,7 +164,6 @@ export default defineComponent({
     ...mapActions(useLexiconStore, ['fetchLexicon']),
 
     fetchLexicon_(lexiconType: string) {
-
       let prune: number;
 
       this.features = this.principalFeatures.concat(this.secondaryFeatures);

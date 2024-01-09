@@ -320,7 +320,6 @@
 </template>
 
 <script lang="ts">
-
 import { notifyMessage } from 'src/utils/notify';
 
 import { openURL, copyToClipboard, LocalStorage } from 'quasar';

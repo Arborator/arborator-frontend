@@ -1,82 +1,70 @@
 <template>
   <q-page id="container">
-      <q-card flat style="max-width: 100%">
-        <q-card-section class="project-header">
-          <q-img class="project-image" :src="imageSrc" basic>
-            <div class="absolute-bottom text-h6" style="padding: 6px">
-              <ProjectIcon :visibility="visibility" :blindAnnotationMode="blindAnnotationMode"/>
-              {{ $t('projectView.project') }} {{ projectName }}
-              <q-btn v-if="isAdmin" flat round icon="settings" @click="projectSettingsDial = true">
-                <q-tooltip :delay="300" content-class="text-white bg-primary">{{ $t('projectView.tooltipSettings') }}</q-tooltip>
-              </q-btn>
-              <q-btn v-else flat round :color="$q.dark.isActive ? 'primary' : ''" icon="settings" @click="simpleProjectInfoDialog = true">
-                <q-tooltip :delay="300" content-class="text-white bg-primary">{{ $t('projectView.tooltipViewAdmin') }}</q-tooltip>
-              </q-btn>
-            </div>
-          </q-img>
-          <div class="text-primary">{{ description }}</div>
-        </q-card-section>
+    <q-card flat style="max-width: 100%">
+      <q-card-section class="project-header">
+        <q-img class="project-image" :src="imageSrc" basic>
+          <div class="absolute-bottom text-h6" style="padding: 6px">
+            <ProjectIcon :visibility="visibility" :blindAnnotationMode="blindAnnotationMode" />
+            {{ $t('projectView.project') }} {{ projectName }}
+            <q-btn v-if="isAdmin" flat round icon="settings" @click="projectSettingsDial = true">
+              <q-tooltip :delay="300" content-class="text-white bg-primary">{{ $t('projectView.tooltipSettings') }}</q-tooltip>
+            </q-btn>
+            <q-btn v-else flat round :color="$q.dark.isActive ? 'primary' : ''" icon="settings" @click="simpleProjectInfoDialog = true">
+              <q-tooltip :delay="300" content-class="text-white bg-primary">{{ $t('projectView.tooltipViewAdmin') }}</q-tooltip>
+            </q-btn>
+          </div>
+        </q-img>
+        <div class="text-primary">{{ description }}</div>
+      </q-card-section>
 
-        <q-card-section class="shadow-4" v-if="isShowLexiconPanel">
-          <q-bar class="bg-primary text-white">
-            <q-space />
-            <q-btn @click="isShowLexiconPanel = false" dense flat icon="close"> </q-btn>
-          </q-bar>
-          <LexiconMain :sample-ids="selectedSamplesNames"></LexiconMain>
-        </q-card-section>
+      <q-card-section class="shadow-4" v-if="isShowLexiconPanel">
+        <q-bar class="bg-primary text-white">
+          <q-space />
+          <q-btn @click="isShowLexiconPanel = false" dense flat icon="close"> </q-btn>
+        </q-bar>
+        <LexiconMain :sample-ids="selectedSamplesNames"></LexiconMain>
+      </q-card-section>
 
-        <!-- Parsing Panel -->
-        <q-card-section v-if="isShowParsingPanel">
-          <q-bar class="bg-primary text-white">
-            <q-space />
-            <q-btn @click="isShowParsingPanel = false" dense flat icon="close"> </q-btn>
-          </q-bar>
-          <ParsingPanel :samples="samples" :parentGetProjectSamples="getProjectSamples"></ParsingPanel>
-        </q-card-section>
+      <!-- Parsing Panel -->
+      <q-card-section v-if="isShowParsingPanel">
+        <q-bar class="bg-primary text-white">
+          <q-space />
+          <q-btn @click="isShowParsingPanel = false" dense flat icon="close"> </q-btn>
+        </q-bar>
+        <ParsingPanel :samples="samples" :parentGetProjectSamples="getProjectSamples"></ParsingPanel>
+      </q-card-section>
 
       <q-card-section>
-        <q-table 
+        <q-table
           flat
-          bordered 
-          ref="textsTable" 
-          :key="tableKey" 
+          bordered
+          ref="textsTable"
+          :key="tableKey"
           v-model:pagination="table.pagination"
           v-model:selected="table.selected"
           :class="($q.dark.isActive ? 'my-sticky-header-table-dark' : 'my-sticky-header-table') + ' rounded-borders'"
-          title="Samples" 
-          :rows="samples" 
-          :columns="table.fields" 
-          row-key="sample_name" 
+          title="Samples"
+          :rows="samples"
+          :columns="table.fields"
+          row-key="sample_name"
           :loading="table.loading"
-          loading-label="loading" 
-          :filter="table.filter" 
-          :filter-method="searchSamples" 
+          loading-label="loading"
+          :filter="table.filter"
+          :filter-method="searchSamples"
           binary-state-sort
-          :visible-columns="blindAnnotationMode ? table.visibleColumnsBlindAnnotationMode : table.visibleColumns" 
+          :visible-columns="blindAnnotationMode ? table.visibleColumnsBlindAnnotationMode : table.visibleColumns"
           selection="multiple"
-          :table-header-class="$q.dark.isActive ? 'text-white' : 'text-primary'" 
+          :table-header-class="$q.dark.isActive ? 'text-white' : 'text-primary'"
           virtual-scroll
-          table-style="max-height:80vh" 
-            hide-no-data
+          table-style="max-height:80vh"
+          hide-no-data
           :rows-per-page-options="[30]"
         >
-     
-            <template #bottom class="q-gutter-md">
-              <div class="q-pa-md">
-                Records per page
-              </div>
-              <q-select 
-                dense 
-                borderless 
-                v-model="table.pagination.rowsPerPage"
-                :options="recordsPerPage"
-               />
-              <q-pagination 
-                v-model="table.pagination.page" 
-                :max="Math.ceil(samplesNumber / table.pagination.rowsPerPage)" 
-                :input="true"
-              />
-            </template>
+          <template #bottom class="q-gutter-md">
+            <div class="q-pa-md">Records per page</div>
+            <q-select dense borderless v-model="table.pagination.rowsPerPage" :options="recordsPerPage" />
+            <q-pagination v-model="table.pagination.page" :max="Math.ceil(samplesNumber / table.pagination.rowsPerPage)" :input="true" />
+          </template>
           <template #top="props">
             <!-- begining of Options bar -->
             <q-btn-group flat>
@@ -89,29 +77,29 @@
 
               <!-- single and main button for export -->
               <div v-if="canExportTrees">
-                <q-btn 
-                  flat 
-                  color="default" 
-                  icon="cloud_download" 
+                <q-btn
+                  flat
+                  color="default"
+                  icon="cloud_download"
                   :loading="table.exporting"
                   :disable="table.selected.length < 1"
-                  @click="isShowExportDialo = true" 
+                  @click="isShowExportDialo = true"
                 />
                 <q-tooltip v-if="table.selected.length < 1" :delay="300" content-class="text-white bg-primary">
                   {{ $t('projectView.tooltipExportSample[0]') }}
                 </q-tooltip>
                 <q-tooltip v-else :delay="300" content-class="text-white bg-primary">
-                  {{$t('projectView.tooltipExportSample[1]') }}
+                  {{ $t('projectView.tooltipExportSample[1]') }}
                 </q-tooltip>
               </div>
 
               <!-- single and main button for export evaluation -->
               <div>
-                <q-btn 
-                  v-if="isValidator && blindAnnotationMode" 
-                  flat 
-                  color="default" 
-                  icon="analytics" 
+                <q-btn
+                  v-if="isValidator && blindAnnotationMode"
+                  flat
+                  color="default"
+                  icon="analytics"
                   :loading="table.exporting"
                   :disable="(visibility === 0 && isGuest) || table.selected.length !== 1"
                   @click="exportEvaluation()"
@@ -122,14 +110,14 @@
               </div>
 
               <!-- single and main button for deletion -->
-              <q-btn 
-                v-if="isAdmin" 
-                flat 
-                color="default" 
+              <q-btn
+                v-if="isAdmin"
+                flat
+                color="default"
                 icon="delete_forever"
-                :text-color="table.selected.length !== 0 ? 'red' : 'default'" 
+                :text-color="table.selected.length !== 0 ? 'red' : 'default'"
                 :disable="table.selected.length < 1"
-                :loading="table.loadingDelete" 
+                :loading="table.loadingDelete"
                 @click="triggerConfirm(deleteSamples)"
               >
                 <q-tooltip v-if="table.selected.length < 1" :delay="300" content-class="text-white bg-primary">
@@ -145,14 +133,14 @@
 
               <!-- single and main button for lexicon -->
               <div v-if="canSaveTreeInProject">
-                <q-btn 
-                  flat 
-                  color="default" 
-                  icon="playlist_add_check" 
+                <q-btn
+                  flat
+                  color="default"
+                  icon="playlist_add_check"
                   :loading="table.exporting"
-                  :disable="table.selected.length < 1 || isFreezed" 
+                  :disable="table.selected.length < 1 || isFreezed"
                   @click="isShowLexiconPanel = true"
-                 />
+                />
                 <q-tooltip v-if="table.selected.length < 1" :delay="300" content-class="text-white bg-primary">
                   {{ $t('projectView.tooltipCreateLexicon[0]') }}
                 </q-tooltip>
@@ -163,11 +151,15 @@
 
               <!-- single and main button for parsing -->
               <div v-if="isAdmin">
-                <q-btn :disable="isFreezed" flat icon="precision_manufacturing" @click="bootParserPanelToggle()"
-                  :color="isShowParsingPanel ? 'primary' : 'default'">
+                <q-btn
+                  :disable="isFreezed"
+                  flat
+                  icon="precision_manufacturing"
+                  @click="bootParserPanelToggle()"
+                  :color="isShowParsingPanel ? 'primary' : 'default'"
+                >
                   <q-tooltip content-class="text-body2 bg-primary">
-                    {{ isShowParsingPanel ? $t('projectView.tooltipParsingPanel[1]') :
-                      $t('projectView.tooltipParsingPanel[0]') }} Parsing Panel
+                    {{ isShowParsingPanel ? $t('projectView.tooltipParsingPanel[1]') : $t('projectView.tooltipParsingPanel[0]') }} Parsing Panel
                   </q-tooltip>
                 </q-btn>
               </div>
@@ -183,8 +175,13 @@
 
               <!-- Single and main button for synchronization -->
               <div>
-                <q-btn v-if="isAllowdedToSync && !githubSynchronizedRepo" :disable="isFreezed" flat icon="fab fa-github"
-                  @click="isShowSyncDialog = true">
+                <q-btn
+                  v-if="isAllowdedToSync && !githubSynchronizedRepo"
+                  :disable="isFreezed"
+                  flat
+                  icon="fab fa-github"
+                  @click="isShowSyncDialog = true"
+                >
                 </q-btn>
                 <q-tooltip>
                   {{ $t('projectView.tooltipSynchronize') }}
@@ -208,15 +205,13 @@
                       </q-item-section>
                     </q-item>
 
-                    <q-item clickable :disable="table.selected.length < 1" v-close-popup
-                      @click="removeUserTreesDial = true">
+                    <q-item clickable :disable="table.selected.length < 1" v-close-popup @click="removeUserTreesDial = true">
                       <q-item-section avatar>
                         <q-avatar icon="person_remove" />
                       </q-item-section>
                       <q-item-section>
                         <q-item-label>{{ $t('projectView.removeUserTrees[0]') }}</q-item-label>
-                        <q-item-label v-if="table.selected.length < 1" caption>{{
-                          $t('projectView.removeUserTrees[1]') }}</q-item-label>
+                        <q-item-label v-if="table.selected.length < 1" caption>{{ $t('projectView.removeUserTrees[1]') }}</q-item-label>
                       </q-item-section>
                     </q-item>
                   </q-list>
@@ -224,47 +219,53 @@
                 <q-tooltip> {{ $t('projectView.tooltipMore') }} </q-tooltip>
               </div>
 
-                <!-- Other github options (only for synchronized projects) -->
-                <div v-if="isAllowdedToSync && githubSynchronizedRepo && !isDeleteSync">
-                  <GithubOptions
-                    :projectName="projectName"
-                    :repositoryName="githubSynchronizedRepo"
-                    :key="reload"
-                    @remove="reloadAfterDeleteSynchronization"
-                    @pulled="loadProjectData"
-                  />
-                  <q-tooltip content-class="text-white bg-primary">
-                    {{ $t('projectView.tooltipSynchronizedProject') }} {{ githubSynchronizedRepo }}</q-tooltip
-                  >
-                </div>
-              </q-btn-group>
-              <!-- End of Options bar -->
+              <!-- Other github options (only for synchronized projects) -->
+              <div v-if="isAllowdedToSync && githubSynchronizedRepo && !isDeleteSync">
+                <GithubOptions
+                  :projectName="projectName"
+                  :repositoryName="githubSynchronizedRepo"
+                  :key="reload"
+                  @remove="reloadAfterDeleteSynchronization"
+                  @pulled="loadProjectData"
+                />
+                <q-tooltip content-class="text-white bg-primary">
+                  {{ $t('projectView.tooltipSynchronizedProject') }} {{ githubSynchronizedRepo }}</q-tooltip
+                >
+              </div>
+            </q-btn-group>
+            <!-- End of Options bar -->
 
             <q-space />
 
-            <q-input v-model="table.filter" dense debounce="300" :placeholder="$t('projectView.search')"
-              text-color="blue-grey-8">
+            <q-input v-model="table.filter" dense debounce="300" :placeholder="$t('projectView.search')" text-color="blue-grey-8">
               <template #append>
                 <q-icon name="search" />
               </template>
               <q-tooltip :delay="300" content-class="text-white bg-primary">
-                {{ $t('projectView.tooltipSearch')}}
+                {{ $t('projectView.tooltipSearch') }}
               </q-tooltip>
             </q-input>
 
             <q-space />
 
-            <q-select v-model="table.visibleColumns" multiple borderless dense options-dense
-              :display-value="$q.lang.table.columns" emit-value map-options :options="filterFields(table)"
-              option-value="name" style="min-width: 100px">
-              <q-tooltip :delay="300" content-class="text-white bg-primary">{{ $t('projectView.tooltipSelectVisible')
-              }}</q-tooltip>
+            <q-select
+              v-model="table.visibleColumns"
+              multiple
+              borderless
+              dense
+              options-dense
+              :display-value="$q.lang.table.columns"
+              emit-value
+              map-options
+              :options="filterFields(table)"
+              option-value="name"
+              style="min-width: 100px"
+            >
+              <q-tooltip :delay="300" content-class="text-white bg-primary">{{ $t('projectView.tooltipSelectVisible') }}</q-tooltip>
             </q-select>
 
-            <q-btn flat round dense :icon="props.inFullscreen ? 'fullscreen_exit' : 'fullscreen'" class="q-ml-md"
-              @click="props.toggleFullscreen">
-              <q-tooltip :delay="300" content-class="text-white bg-primary">{{ $t('projectView.tooltipFullscreen')
-              }}</q-tooltip>
+            <q-btn flat round dense :icon="props.inFullscreen ? 'fullscreen_exit' : 'fullscreen'" class="q-ml-md" @click="props.toggleFullscreen">
+              <q-tooltip :delay="300" content-class="text-white bg-primary">{{ $t('projectView.tooltipFullscreen') }}</q-tooltip>
             </q-btn>
           </template>
 
@@ -274,9 +275,17 @@
                 <q-toggle v-model="props.selected" dense />
               </q-td>
               <q-td key="samplename" :props="props">
-                <q-btn :disable="isFreezed" outline color="white" :text-color="$q.dark.isActive ? 'white' : 'black'"
-                  class="full-width" :to="'/projects/' + projectName + '/' + props.row.sample_name"
-                  icon-right="open_in_browser" no-caps>{{ props.row.sample_name }}</q-btn>
+                <q-btn
+                  :disable="isFreezed"
+                  outline
+                  color="white"
+                  :text-color="$q.dark.isActive ? 'white' : 'black'"
+                  class="full-width"
+                  :to="'/projects/' + projectName + '/' + props.row.sample_name"
+                  icon-right="open_in_browser"
+                  no-caps
+                  >{{ props.row.sample_name }}</q-btn
+                >
               </q-td>
               <q-td key="sentences" :props="props">{{ props.row.sentences }}</q-td>
               <q-td key="tokens" :props="props">{{ props.row.tokens }}</q-td>
@@ -284,21 +293,25 @@
                 <div v-if="Object.keys(props.row.treeByUser).length >= 5">
                   {{ props.row.treesFrom.length }} users
                   <q-tooltip>
-                    <p v-for="(nSentences, userId) in props.row.treeByUser" :key="userId" :props="userId">
-                      {{ userId }} ({{ nSentences }})
-                    </p>
+                    <p v-for="(nSentences, userId) in props.row.treeByUser" :key="userId" :props="userId">{{ userId }} ({{ nSentences }})</p>
                   </q-tooltip>
                 </div>
                 <div v-else>
-                  <div v-for="(nSentences, userId) in props.row.treeByUser" :key="userId" :props="userId">
-                    {{ userId }} ({{ nSentences }})
-                  </div>
+                  <div v-for="(nSentences, userId) in props.row.treeByUser" :key="userId" :props="userId">{{ userId }} ({{ nSentences }})</div>
                 </div>
               </q-td>
               <q-td key="blindAnnotationLevel" :props="props">
-                <q-select v-model="props.row.blindAnnotationLevel" outlined :options="blindAnnotationModeOptions" map-options emit-value
-                  label="Blind annotation model" :dense="false" :disable="!isAdmin"
-                  @update:model-value="updateBlindAnnotationLevel(props.row)" />
+                <q-select
+                  v-model="props.row.blindAnnotationLevel"
+                  outlined
+                  :options="blindAnnotationModeOptions"
+                  map-options
+                  emit-value
+                  label="Blind annotation model"
+                  :dense="false"
+                  :disable="!isAdmin"
+                  @update:model-value="updateBlindAnnotationLevel(props.row)"
+                />
               </q-td>
             </q-tr>
           </template>
@@ -306,20 +319,19 @@
       </q-card-section>
     </q-card>
     <template v-if="!isFreezed && canExportTrees">
-      <GrewSearch 
-        :sentence-count="sentenceCount" 
-        :search-scope="projectName" 
+      <GrewSearch
+        :sentence-count="sentenceCount"
+        :search-scope="projectName"
         :sample-names="selectedSamplesNames"
         :trees-from="getProjectTreesFrom"
-        @reload="loadProjectData" 
+        @reload="loadProjectData"
       />
       <RelationTableMain :sample-names="selectedSamplesNames" />
     </template>
 
     <!-- Settings dialog -->
     <q-dialog v-model="projectSettingsDial" transition-show="slide-up" transition-hide="slide-down">
-      <ProjectSettingsView :project-trees-from="getProjectTreesFrom" :projectname="projectName" style="width: 90vw">
-      </ProjectSettingsView>
+      <ProjectSettingsView :project-trees-from="getProjectTreesFrom" :projectname="projectName" style="width: 90vw"> </ProjectSettingsView>
     </q-dialog>
 
     <!--Project information dialog-->
@@ -355,7 +367,7 @@
 
     <!--Add project language dialog-->
     <ProjectLangNotif v-if="showAddLangDialog" />
-    
+
     <!--Export dialog-->
     <q-dialog v-model="isShowExportDialo">
       <ExportDialog :samples="table.selected" />
@@ -363,12 +375,10 @@
 
     <!--Delete confirm dialog-->
     <q-dialog v-model="confirmActionDial">
-      <confirm-action :parent-action="confirmActionCallback" :arg1="confirmActionArg1"
-        :target-name="projectName"></confirm-action>
+      <confirm-action :parent-action="confirmActionCallback" :arg1="confirmActionArg1" :target-name="projectName"></confirm-action>
     </q-dialog>
 
     <!-- Lexicon Panel -->
-
 
     <!-- Constructicon Dialog -->
     <q-dialog v-model="isShowConstructiconDialogCop" seamless full-width>
@@ -377,7 +387,7 @@
 
     <!--Synchronization dialog-->
     <q-dialog v-model="isShowSyncDialog">
-      <q-card style="min-width: 50vw;">
+      <q-card style="min-width: 50vw">
         <GithubSyncDialog :project-name="projectName" @created="reloadAfterSync"></GithubSyncDialog>
       </q-card>
     </q-dialog>
@@ -396,7 +406,6 @@
         </q-card-section>
       </q-card>
     </q-dialog>
-
   </q-page>
 </template>
 
@@ -597,17 +606,17 @@ export default defineComponent({
       return this.isAdmin && this.language === null;
     },
     recordsPerPage(): number[] {
-      const listRecords = []
-      for (let i=1; i <this.sampleNames.length/10; i++) {
-        listRecords.push(i*10);
-      } 
-      listRecords.push(this.sampleNames.length);  
+      const listRecords = [];
+      for (let i = 1; i < this.sampleNames.length / 10; i++) {
+        listRecords.push(i * 10);
+      }
+      listRecords.push(this.sampleNames.length);
       this.table.pagination.rowsPerPage = listRecords[0];
       return listRecords;
     },
     selectedSamplesNames(): string[] {
       return this.table.selected.map((sample) => sample.sample_name);
-    }
+    },
   },
   watch: {
     reloadCommits(newVal) {
@@ -657,10 +666,10 @@ export default defineComponent({
     },
     loadProjectData() {
       this.getProjectSamples();
-      this.reload +=  1;
+      this.reload += 1;
     },
     getProjectImage() {
-      this.getImage(this.projectName); 
+      this.getImage(this.projectName);
     },
     getProjectSamples() {
       api.getProjectSamples(this.projectName as string).then((response) => {
@@ -717,7 +726,7 @@ export default defineComponent({
     },
 
     displayWarning() {
-      notifyMessage({ message: 'These files will be also deleted from your synchronized Github repository', type: 'warning', position: 'top' })
+      notifyMessage({ message: 'These files will be also deleted from your synchronized Github repository', type: 'warning', position: 'top' });
     },
 
     bootParserPanelToggle() {

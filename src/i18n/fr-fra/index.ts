@@ -171,13 +171,13 @@ export default {
     tooltipConstructicon: 'Voir le constructicon',
     tooltipSyncGit: 'Synchroniser avec Github',
     tootlipConstructiconPanel: 'Voir le constructicon',
-    tooltipSynchronize:'Synchroniser ce projet avec github',
+    tooltipSynchronize: 'Synchroniser ce projet avec github',
     tooltipMore: "Plus d'options",
     tooltipSynchronizedProject: 'Ce projet est synchronisé avec',
     tooltipSearch: 'Rechercher un échantillon',
     tooltipSelectVisible: 'Sélectionner les colonnes visibles',
     tooltipFullscreen: 'tableau plein écran',
-    tooltipFabGrew: "Recherche avec Grew",
+    tooltipFabGrew: 'Recherche avec Grew',
     tooltipFabGrewValidated: 'Les arbres validés',
     tooltipFabGrewPending: 'Les arbres en attente',
     tooltipFabGrewUser: 'Uniquement mes arbres',
@@ -268,11 +268,15 @@ export default {
     windowClose: 'Fermer',
     descriptionSave: 'Sauvegarder la description',
     toggleVisibility: 'Visibilité',
-    toggleVisibilityCaption: "Les projets privés limitent l'accès et l'annotation, les projets visibles limitent l'annotation et les projets ouverts permettent à quiconque de voir et contribuer",
-    togglePrivateCaption:
-      ["Les projets privés limitent l'accès et l'annotation.", "Les projets visibles limitent uniquement l'annotation.", "Les projets ouverts permettent à quiconque de voir et de contribuer à leur annotation."],
+    toggleVisibilityCaption:
+      "Les projets privés limitent l'accès et l'annotation, les projets visibles limitent l'annotation et les projets ouverts permettent à quiconque de voir et contribuer",
+    togglePrivateCaption: [
+      "Les projets privés limitent l'accès et l'annotation.",
+      "Les projets visibles limitent uniquement l'annotation.",
+      'Les projets ouverts permettent à quiconque de voir et de contribuer à leur annotation.',
+    ],
     toggleAllVisible: 'Tous les arbres sont visibles',
-    toggleAllVisibleCaption: "Si oui, les annotateurs pourront voir les arbres des autres.",
+    toggleAllVisibleCaption: 'Si oui, les annotateurs pourront voir les arbres des autres.',
     toggleBlindAnnotationMode: 'Mode Annotation aveugle',
     toggleBlindAnnotationModeCaption: 'Si oui, le projet a les propriétés de mode annotation aveugle',
     toggleDiffMode: 'Mode Diff',
@@ -348,14 +352,12 @@ export default {
     automaticParsing: 'Parsing automatique',
     conllText: 'Texte Conll',
     statisticDial: "Statistiques de l'arbre ouvert",
-
-
   },
   tagsMenu: {
     enterTags: 'Saisir les tags',
     addTags: 'Ajouter',
     createNewTag: 'Cliquez sur "Entrée" pour créer ce tag',
-    tagsFormatError: 'Vous ne pouvez pas ajouter un tag vide ou un tag contenant ","'
+    tagsFormatError: 'Vous ne pouvez pas ajouter un tag vide ou un tag contenant ","',
   },
   attributeTable: {
     addFeature: 'Ajouter un nouveau feature',
@@ -373,7 +375,7 @@ export default {
   },
   constructicon: {
     uploadTooltip: 'Téléverser un constructicon existant',
-    downloadTooltip : 'Télécharger un constructicon existant',
+    downloadTooltip: 'Télécharger un constructicon existant',
     searchLabel: 'Rechercher un élément ...',
     addNewItem: 'Ajouter un nouvel élément ',
     title: 'Titre',
@@ -383,7 +385,7 @@ export default {
     saveBtn: 'Sauvegarder',
     editBtn: 'Editer',
     deleteBtn: 'Supprimer',
-    search: 'Rechercher'
+    search: 'Rechercher',
   },
   userSelect: {
     share: 'Partager',
@@ -391,7 +393,7 @@ export default {
     roles: ['Admin', 'Validateur', 'Annotateur', 'Invité'],
     revokeAccess: "Révoquer l'accès",
     noResult: 'Aucun résultat',
-    copyLink : 'Copier le lien',
+    copyLink: 'Copier le lien',
     role: 'Rôle',
     owner: 'propriétaire',
     userAccess: 'Utilisateurs ayant accès',
@@ -413,7 +415,7 @@ export default {
     parseHint: 'le parsing sera fait sous le nom `parser',
     customParserUser: 'Utilisateur spécifique pour le parsing',
     parseUser: 'utilisateur pour le parsing',
-    keepHeads:'Laisser les heads existants',
+    keepHeads: 'Laisser les heads existants',
     pipelineSummary: 'Résumé de la pipeline',
     trainingSents: 'les phrases entraînées',
     parseSents: 'les phrases parsées',
@@ -437,7 +439,7 @@ export default {
     uploadFileLabel: 'Choisir ou déposer des fichiers',
     uploadFileTooltip: 'sélectionnez un fichier',
     reservedUsernameError: 'est un nom réservé pour ArboratorGrew',
-    emptyUsernameError: 'Vous ne pouvez pas télécharger de fichier sans userId, veuillez saisir quelque chose.'
+    emptyUsernameError: 'Vous ne pouvez pas télécharger de fichier sans userId, veuillez saisir quelque chose.',
   },
   advancedFilter: {
     textFilter: 'Filtre du texte',
@@ -459,11 +461,10 @@ export default {
     firstToken: 'Premier token',
     secondToken: 'Deuxième token',
     multiWordToken: 'Ajouter multiword token',
-    
   },
   multiEditDialog: {
     text: 'Séléctionnez ce que vous voulez supprimer',
-    all: 'Tous'
+    all: 'Tous',
   },
   lexicon: {
     replaceEntry: "Remplacer l'élement",
@@ -472,7 +473,7 @@ export default {
     title: 'Historique des règles appliquées.',
     copyRuletooltip: 'Copier la règle',
     modifiedSentences: 'phrases modifiées',
-    noHistory: 'Aucun historique disponible'
+    noHistory: 'Aucun historique disponible',
   },
   cancel: 'Annuler',
   delete: 'Supprimer',

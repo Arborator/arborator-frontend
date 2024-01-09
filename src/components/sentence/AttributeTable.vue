@@ -95,12 +95,12 @@ import { field_t } from 'src/types/main_types';
 import { defineComponent, PropType } from 'vue';
 
 interface actual_feat_t {
-  a: string,
-  v: string | number,
+  a: string;
+  v: string | number;
 }
-interface feature_t  {
-  name: string,
-  values: string[] | string,
+interface feature_t {
+  name: string;
+  values: string[] | string;
 }
 
 export default defineComponent({
@@ -113,7 +113,7 @@ export default defineComponent({
     featActualData: {
       type: Object as PropType<actual_feat_t[]>,
       required: true,
-    }, 
+    },
     columns: {
       type: Object as PropType<{}[]>,
       required: true,
@@ -129,7 +129,7 @@ export default defineComponent({
     isModifiable: {
       type: Boolean as PropType<boolean>,
       required: true,
-    }
+    },
   },
   data() {
     return {
@@ -144,21 +144,19 @@ export default defineComponent({
     addNewFeature() {
       this.featActualData.push({ a: '', v: '' });
     },
-    deleteFeature(row:any) {
+    deleteFeature(row: any) {
       this.featActualData.splice(this.featActualData.map((e) => e.a).indexOf(row.a), 1);
     },
     getData(timestamp: string) {
       const currentDate = Date.now();
-      const parsedTimestamp = parseInt(timestamp, 10)
+      const parsedTimestamp = parseInt(timestamp, 10);
       const diffTime = date.getDateDiff(currentDate, parsedTimestamp, 'days');
       let diffTimestr = '';
       if (diffTime === 0) {
         diffTimestr = `${date.getDateDiff(currentDate, parsedTimestamp, 'hours')} hours ago: `;
-      } 
-      else if (diffTime > 365) {
+      } else if (diffTime > 365) {
         diffTimestr = 'a long time ago: ';
-      }
-      else {
+      } else {
         diffTimestr = `${diffTime} days ago: `;
       }
       return diffTimestr + date.formatDate(parsedTimestamp, 'YYYY-MM-DD HH:mm:ss');

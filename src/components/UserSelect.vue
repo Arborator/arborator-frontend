@@ -139,7 +139,7 @@
                   <q-separator />
                   <q-item clickable v-close-popup @click="revokeUserAccess(member.username)">
                     <q-item-section>
-                      <q-item-label>{{ $t('userSelect.revokeAccess')}}</q-item-label>
+                      <q-item-label>{{ $t('userSelect.revokeAccess') }}</q-item-label>
                     </q-item-section>
                   </q-item>
                 </q-list>

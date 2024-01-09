@@ -215,24 +215,22 @@ export default defineComponent({
       const newTree = this.reactiveSentencesObj[this.userId].state.treeJson;
       const groupsJson = newTree.groupsJson;
       const nodesJson = newTree.nodesJson;
-      const newForms = Object.values(nodesJson).map((node) =>
-       ( { form: node.FORM, spaceAfter: node.MISC.SpaceAfter? false: true } ));
+      const newForms = Object.values(nodesJson).map((node) => ({ form: node.FORM, spaceAfter: node.MISC.SpaceAfter ? false : true }));
       let newMetaText = '';
       let i = 0;
       while (i < newForms.length) {
-        if (groupsJson[`${i+1}-${i+2}`]){
-          newMetaText += groupsJson[`${i+1}-${i+2}`].FORM;
-          if (newForms[i+2].spaceAfter) {
-            newMetaText += ' '
+        if (groupsJson[`${i + 1}-${i + 2}`]) {
+          newMetaText += groupsJson[`${i + 1}-${i + 2}`].FORM;
+          if (newForms[i + 2].spaceAfter) {
+            newMetaText += ' ';
           }
-          i +=2;
-        }
-        else {
+          i += 2;
+        } else {
           newMetaText += newForms[i].form;
           if (newForms[i].spaceAfter) {
-            newMetaText += ' '
+            newMetaText += ' ';
           }
-          i +=1;
+          i += 1;
         }
       }
       newMetaJson.text = newMetaText;
@@ -243,8 +241,7 @@ export default defineComponent({
         },
         userId: this.userId,
       });
-
-    }
+    },
   },
 });
 </script>

@@ -30,12 +30,7 @@ import {
   getConstructiconEntries_RV,
   saveConstructiconEntry_RV,
 } from './endpoints';
-import {
-  transcription_t,
-  ModelInfo_t,
-  ParsingSettings_t,
-  ConstructiconEntry_t,
-} from './backend-types';
+import { transcription_t, ModelInfo_t, ParsingSettings_t, ConstructiconEntry_t } from './backend-types';
 
 export const API = axios.create({
   baseURL: process.env.DEV ? '/api' : `${process.env.API}/api`,
@@ -110,7 +105,7 @@ export default {
   uploadProjectImage(projectname: string, form: any) {
     return API.post(`projects/${projectname}/image`, form, { headers: { 'Content-Type': 'multipart/form-data' } });
   },
-  getProjectImage(projectName: string){
+  getProjectImage(projectName: string) {
     return API.get(`projects/${projectName}/image`);
   },
 
@@ -338,16 +333,16 @@ export default {
   // -------------------------------------------------------- //
   // ---------------        To Refactor       --------------- //
   // -------------------------------------------------------- //
-  addTags(projectName: string, sampleName: string, data: any){
+  addTags(projectName: string, sampleName: string, data: any) {
     return API.post(`/projects/${projectName}/samples/${sampleName}/tags`, data);
   },
-  removeTag(projectName: string, sampleName: string, data: any){
+  removeTag(projectName: string, sampleName: string, data: any) {
     return API.put(`/projects/${projectName}/samples/${sampleName}/tags`, data);
   },
-  createUserTags(projectName: string, username: string, data: any){
+  createUserTags(projectName: string, username: string, data: any) {
     return API.post(`/projects/${projectName}/tags/${username}`, data);
   },
-  getUserTags(projectName: string, username: string){
+  getUserTags(projectName: string, username: string) {
     return API.get(`/projects/${projectName}/tags/${username}`);
   },
   // -------------------------------------------------------- //

@@ -115,8 +115,12 @@
         <div class="text-h6 q-py-md">{{ $t('parser.pipelineSummary') }}</div>
         <q-separator />
         <div class="q-pa-md">
-          <div v-if="param.pipelineChoice !== `PARSE_ONLY`" class="text-subtitle5 q-mb-xs">{{ $t('parser.trainingSents') }} : {{ trainingSentencesCount }}</div>
-          <div v-if="param.pipelineChoice !== `TRAIN_ONLY`" class="text-subtitle5 q-mb-xs">{{ $t('parser.parseSents') }} : {{ parsingSentencesCount }}</div>
+          <div v-if="param.pipelineChoice !== `PARSE_ONLY`" class="text-subtitle5 q-mb-xs">
+            {{ $t('parser.trainingSents') }} : {{ trainingSentencesCount }}
+          </div>
+          <div v-if="param.pipelineChoice !== `TRAIN_ONLY`" class="text-subtitle5 q-mb-xs">
+            {{ $t('parser.parseSents') }} : {{ parsingSentencesCount }}
+          </div>
           <div class="text-subtitle5 q-mb-xs">{{ $t('parser.timeEstimated') }} = {{ estimatedTime }}mn</div>
         </div>
 

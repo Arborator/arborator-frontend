@@ -16,12 +16,12 @@ interface configState {
   language: string;
   diffMode: boolean;
   diffUserId: string;
-  reloadProjects: boolean,
+  reloadProjects: boolean;
   shownFeatures: string[];
   shownMeta: string[];
   annotationFeatures: annotationFeatures_t;
   annotationFeaturesUD: annotationFeatures_t;
-  languagesList: { index: number, name: string}[];
+  languagesList: { index: number; name: string }[];
 }
 
 // default config state
@@ -43,7 +43,7 @@ export default function defaultState(): configState {
     language: '',
     diffMode: false,
     diffUserId: '',
-    reloadProjects: false, 
+    reloadProjects: false,
     shownFeatures: ['FORM', 'UPOS', 'LEMMA', 'MISC.Gloss'],
     shownMeta: ['text_en'],
     languagesList: languages,

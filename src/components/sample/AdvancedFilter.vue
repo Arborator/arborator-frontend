@@ -4,16 +4,16 @@
       <q-input v-model="textFilter" :label="$t('advancedFilter.textFilter')" outlined dense color="primary"></q-input>
     </div>
     <div class="col-3 q-px-md q-gutter-md">
-      <q-select 
-        outlined 
-        dense 
-        v-model="selectedTags" 
-        use-chips 
-        multiple 
-        option-value="value" 
+      <q-select
+        outlined
+        dense
+        v-model="selectedTags"
+        use-chips
+        multiple
+        option-value="value"
         label="Tags"
-        :options="defaultTags" 
-        emit-value 
+        :options="defaultTags"
+        emit-value
         @focus="getUsersTags()"
       >
         <template class="q-pa-md" v-slot:option="scope">
@@ -37,15 +37,15 @@
     <div v-for="(filter, index) in listFilters">
       <div class="row q-gutter-md q-pt-md">
         <div class="col-6">
-          <q-select 
-            outlined 
-            dense 
-            v-model="filter.setUsers" 
-            multiple 
-            :options="userIds" 
-            use-chips 
+          <q-select
+            outlined
+            dense
+            v-model="filter.setUsers"
+            multiple
+            :options="userIds"
+            use-chips
             stack-label
-            :label="$t('advancedFilter.usersSelect')" 
+            :label="$t('advancedFilter.usersSelect')"
           />
         </div>
         <q-btn-dropdown outline split color="primary" :label="filter.operator.label">
@@ -62,40 +62,27 @@
             </q-item>
           </q-list>
         </q-btn-dropdown>
-        <q-select 
-          v-if="filter.choice.val == 'diff'" 
-          class="col-2" 
-          dense 
-          outlined 
+        <q-select
+          v-if="filter.choice.val == 'diff'"
+          class="col-2"
+          dense
+          outlined
           v-model="filter.diffSetFeatures"
-          multiple 
-          :options="featuresSet" 
-          use-chips 
-          stack-label 
+          multiple
+          :options="featuresSet"
+          use-chips
+          stack-label
           :label="$t('grewSearch.showDiffFaturesSelect')"
         >
           <q-tooltip>{{ $t('grewSearch.showDiffFeaturesTooltip') }}</q-tooltip>
         </q-select>
-        <q-btn 
-          v-if="index != 0" 
-          outline 
-          class="col-1" 
-          color="primary" 
-          icon="delete" 
-          @click="removeRow(index)" 
-        />
-        <q-btn 
-          v-if="index == listFilters.length - 1 && index < 3" 
-          outline 
-          class="col-1" 
-          color="primary" 
-          icon="add"
-          @click="addRow()" 
-        />
+        <q-btn v-if="index != 0" outline class="col-1" color="primary" icon="delete" @click="removeRow(index)" />
+        <q-btn v-if="index == listFilters.length - 1 && index < 3" outline class="col-1" color="primary" icon="add" @click="addRow()" />
       </div>
     </div>
     <div class="q-pt-md text-body1">
-      <span>{{ Object.keys(filteredTrees).length }} trees
+      <span
+        >{{ Object.keys(filteredTrees).length }} trees
         <q-tooltip>{{ numberOfTreesPerUser }}</q-tooltip>
       </span>
     </div>
@@ -103,7 +90,6 @@
 </template>
 
 <script lang="ts">
-
 import { mapActions, mapState, mapWritableState } from 'pinia';
 import { useProjectStore } from 'src/pinia/modules/project';
 import { useTagsStore } from 'src/pinia/modules/tags';
@@ -112,14 +98,14 @@ import { useTreesStore } from 'src/pinia/modules/trees';
 import { defineComponent } from 'vue';
 
 interface filter_t {
-  setUsers: string[], 
-  operator: element_t, 
-  choice: element_t, 
-  diffSetFeatures: string[],
+  setUsers: string[];
+  operator: element_t;
+  choice: element_t;
+  diffSetFeatures: string[];
 }
 interface element_t {
-  val: string,
-  label: string
+  val: string;
+  label: string;
 }
 
 export default defineComponent({
@@ -127,7 +113,7 @@ export default defineComponent({
   data() {
     const filterOperators: element_t[] = [
       { val: 'have', label: this.$t('advancedFilter.filterOperators[0]') },
-      { val: 'not_have', label: this.$t('advancedFilter.filterOperators[1]') }
+      { val: 'not_have', label: this.$t('advancedFilter.filterOperators[1]') },
     ];
     const filterChoices: element_t[] = [
       { val: 'tree', label: this.$t('advancedFilter.filterChoices[0]') },
@@ -139,13 +125,22 @@ export default defineComponent({
       filterChoices,
       filterOperators,
       listFilters,
-    }
+    };
   },
   computed: {
     ...mapState(useProjectStore, ['featuresSet']),
-    ...mapState(useTreesStore, ["trees", "filteredTrees", "numberOfTreesPerUser", "numberOfTrees", "userIds"]),
-    ...mapState(useTagsStore, ["defaultTags"]),
-    ...mapWritableState(useTreesStore, ["textFilter", "usersToHaveTree", "usersToNotHaveTree", "usersToHaveDiffs", "usersToNotHaveDiffs", "featuresSetForDiffs", "featuresSetForNotDiffs", "selectedTags"]),
+    ...mapState(useTreesStore, ['trees', 'filteredTrees', 'numberOfTreesPerUser', 'numberOfTrees', 'userIds']),
+    ...mapState(useTagsStore, ['defaultTags']),
+    ...mapWritableState(useTreesStore, [
+      'textFilter',
+      'usersToHaveTree',
+      'usersToNotHaveTree',
+      'usersToHaveDiffs',
+      'usersToNotHaveDiffs',
+      'featuresSetForDiffs',
+      'featuresSetForNotDiffs',
+      'selectedTags',
+    ]),
   },
   mounted() {
     this.clearAll();
@@ -185,7 +180,7 @@ export default defineComponent({
         operator: this.filterOperators[0],
         choice: this.filterChoices[0],
         diffSetFeatures: [],
-      })
+      });
     },
     removeRow(index: number) {
       this.listFilters.splice(index, 1);

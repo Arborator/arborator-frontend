@@ -35,7 +35,7 @@
               :options-sanitize="true"
               @input-value="onInput()"
             />
-            <q-select v-else v-model="props.row.a" dense clearable use-input borderless :options="computeAttributeOptions()" />
+            <q-select v-else v-model="props.row.a" dense clearable borderless :options="computeAttributeOptions()" />
           </q-td>
 
           <q-td key="v" :props="props">
@@ -91,7 +91,6 @@
 
 <script lang="ts">
 import { date } from 'quasar';
-import { field_t } from 'src/types/main_types';
 import { defineComponent, PropType } from 'vue';
 
 interface actual_feat_t {

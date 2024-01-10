@@ -13,7 +13,7 @@
         <q-input v-if="features.includes('Gloss')" outlined v-model="formattedItem.gloss" label="Gloss" />
       </q-card-section>
       <q-separator />
-      <q-card-section style="max-height: 70vh" class="scroll">
+      <q-card-section style="max-height: 70vh" class="scroll" v-if="formattedItem.features.length > 0">
         <AttributeTable
           :featActualData="formattedItem.features"
           :columns="columns"

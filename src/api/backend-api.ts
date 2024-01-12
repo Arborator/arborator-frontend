@@ -118,6 +118,9 @@ export default {
   uploadSample(projectname: string, data: any) {
     return API.post<{ status: 'OK' }>(`/projects/${projectname}/samples`, data, { timeout: 400000 });
   },
+  deleteSamples(projectname: string, data: any) {
+    return API.patch(`/projects/${projectname}/samples`, data);
+  },
   tokenizeSample(projectName: string, data: any) {
     return API.post(`/projects/${projectName}/samples/tokenize`, data, { timeout: 400000 });
   },
@@ -134,9 +137,6 @@ export default {
     return API.post(`/projects/${projectname}/samples/export`, data, {
       responseType: 'arraybuffer',
     });
-  },
-  deleteSample(projectname: string, samplename: string) {
-    return API.delete(`/projects/${projectname}/samples/${samplename}`);
   },
   updateSampleBlindAnnotationLevel(projectname: string, samplename: string, blindAnnotationLevel: number) {
     return API.post(`/projects/${projectname}/samples/${samplename}/blind-annotation-level`, { blindAnnotationLevel });

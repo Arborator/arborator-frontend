@@ -683,17 +683,18 @@ export default defineComponent({
     },
 
     deleteSamples() {
+      const data = { sampleIds: this.table.selected.map((sample) => sample.sample_name)};
+      api
+        .deleteSamples(this.projectName as string, data )
+        .then(() => {
+          this.table.selected = [];
+          notifyMessage({ message: 'Delete success' });
+          this.loadProjectData();
+        })
+        .catch((error) => {
+          notifyError({ error });
+        });
       for (const sample of this.table.selected) {
-        api
-          .deleteSample(this.projectName as string, sample.sample_name)
-          .then(() => {
-            this.table.selected = [];
-            notifyMessage({ message: 'Delete success' });
-            this.loadProjectData();
-          })
-          .catch((error) => {
-            notifyError({ error });
-          });
         if (this.githubSynchronizedRepo && this.isOwner) {
           this.deleteSampleFromGithub(sample.sample_name);
         }

@@ -9,7 +9,7 @@
       <q-form class="q-gutter-md">
         <div class="q-pa-xs">
           <div class="row">
-            <div class="col-10 q-pr-md">
+            <div class="col-9 q-pr-md">
               <q-select dense outlined v-model="treeType" :options="treeOptions" :label="$t('grewSearch.treesType')" color="primary">
                 <template v-slot:selected-item="scope">
                   <q-chip
@@ -45,17 +45,17 @@
                 </template>
               </q-select>
             </div>
-            <div class="col-2">
+            <div class="col-3">
               <q-select v-if="treeType.value === 'others'" v-model="otherUser" outlined dense :options="treesFrom" label="Select users"> </q-select>
             </div>
           </div>
           <div class="row">
-            <div class="col-10">
+            <div class="col-9">
               <GrewCodeMirror v-model:value="currentQuery" style="height: 70vh"></GrewCodeMirror>
               <q-separator />
             </div>
 
-            <div class="col-2">
+            <div class="col-3">
               <q-tabs outlined v-model="searchReplaceTab" dense no-caps active-color="primary" indicator-color="primary" class="primary text-grey">
                 <q-tab name="SEARCH" icon="search" :label="$t('grewSearch.search')">
                   <q-tooltip content-class="bg-primary" anchor="top middle" self="bottom middle" :offset="[10, 10]">

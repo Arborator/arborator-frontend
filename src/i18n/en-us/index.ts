@@ -481,7 +481,13 @@ export default {
     title: 'sentence Segmentation',
     selectSplitLabel: 'Select the token from which the second sentence will start',
     showResultBtn: 'Show result',
-    editGeneratedMeta: 'Edit the generated metadata'
+    editGeneratedMeta: 'Edit the generated metadata',
+    saveResults: 'Save results',
+    sentIdWarningMsg: [
+      'This sent_id is already used, choose another one',
+      'The sent_id is the same sent_id used in the second sentence',
+      'The sent_id is the same sent_id used in the first sentence',
+    ]
   },
   cancel: 'Cancel',
   delete: 'Delete',

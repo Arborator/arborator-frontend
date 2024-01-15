@@ -476,9 +476,15 @@ export default {
   },
   sentenceSegmentation: {
     title: 'Segmentation de la phrase',
-    selectSplitLabel: 'Sélectionnez le tpken à partir duquel la deuxième phrase commencera.',
+    selectSplitLabel: 'Sélectionnez le token à partir duquel la deuxième phrase commencera.',
     showResultBtn: 'Afficher le résultat',
-    editGeneratedMeta: 'Editer les métadonnées généréers'
+    editGeneratedMeta: 'Editer les métadonnées générées',
+    saveResults: 'Sauvegarder le résultat',
+    sentIdWarningMsg: [
+      'Ce sent_id est déjà utilisé, choisissez un autre',
+      'Ce sent_id est le même sent_id utilisé dans la seconde phrase',
+      'Ce sent_id est le même sent_id utilisé dans la première phrase',
+    ]
   },
   cancel: 'Annuler',
   delete: 'Supprimer',

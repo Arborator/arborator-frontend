@@ -58,7 +58,7 @@
             </q-select>
           </div>
           <div class="col">
-            <q-btn color="primary" :label="$t('sentenceSegmentation.showResultBtn')" @click="showReactiveSentences()" />
+            <q-btn :disable="token.form == ''" flat color="primary" :label="$t('sentenceSegmentation.showResultBtn')" @click="showReactiveSentences()" />
           </div>
         </div>
 
@@ -121,7 +121,11 @@
                 dense
                 outlined
                 v-model="firstReactiveSentence[userId].state.metaJson.sent_id"
-                label="text"
+                label="sent_id"
+                :rules="[
+                  (val) => !sortedSentIds.includes(val) || $t('sentenceSegmentation.sentIdWarningMsg[0]'),
+                  (val) => val !== secondReactiveSentence[userId].state.metaJson.sent_id || $t('sentenceSegmentation.sentIdWarningMsg[1]') 
+                ]"
               />
             </div>
             <div class="col q-gutter-sm">
@@ -135,9 +139,16 @@
                 dense
                 outlined
                 v-model="secondReactiveSentence[userId].state.metaJson.sent_id"
-                label="text"
+                label="sent_id"
+                :rules="[
+                  (val) => !sortedSentIds.includes(val) || $t('sentenceSegmentation.sentIdWarningMsg[0]'),
+                  (val) => val !== firstReactiveSentence[userId].state.metaJson.sent_id || $t('sentenceSegmentation.sentIdWarningMsg[2]') 
+                ]"
               />
             </div>
+          </div>
+          <div>
+            <q-btn :disable="disableSaveResultBtn" outline color="primary" icon="save" :label="$t('sentenceSegmentation.saveResults')" />
           </div>
         </div>
       </q-card-section>
@@ -147,10 +158,12 @@
 <script lang="ts">
 import VueDepTree from './VueDepTree.vue';
 
-import { sentenceJson_T, emptySentenceJson, sentenceJsonToConll } from 'conllup/lib/conll';
+import { emptySentenceJson, sentenceJsonToConll, sentenceJson_T } from 'conllup/lib/conll';
 import { ReactiveSentence } from 'dependencytreejs/src/ReactiveSentence';
-import { sentence_bus_t, reactive_sentences_obj_t } from 'src/types/main_types';
-import { defineComponent, PropType } from 'vue';
+import { mapState } from 'pinia';
+import { useTreesStore } from 'src/pinia/modules/trees';
+import { reactive_sentences_obj_t, sentence_bus_t } from 'src/types/main_types';
+import { PropType, defineComponent } from 'vue';
 
 export default defineComponent({
   name: "SentenceSegmentation",
@@ -193,10 +206,16 @@ export default defineComponent({
     }
   },
   computed: {
+    ...mapState(useTreesStore, ['sortedSentIds']),
     getSentenceForms(): any[] {
       return Object.values(this.reactiveSentencesObj[this.userId].state.treeJson.nodesJson)
         .map((token) => ({ index: parseInt(token.ID), form: token.FORM }));
     },
+    disableSaveResultBtn(): boolean {
+      const firstSentId = this.firstReactiveSentence[this.userId].state.metaJson.sent_id as string;
+      const sencondSentId = this.secondReactiveSentence[this.userId].state.metaJson.sent_id as string;
+      return firstSentId === sencondSentId || this.sortedSentIds.includes(firstSentId) || this.sortedSentIds.includes(sencondSentId);
+    }
   },
   mounted() {
     this.hasPendingChanges[this.userId] = false;
@@ -240,7 +259,7 @@ export default defineComponent({
           this.secondSentence.metaJson[metaKey] = String(Date.now()*1000);
         } else if (metaKey == 'sent_id') {
           this.firstSentence.metaJson[metaKey] = `${metaValue}_split1`;
-          this.secondSentence.metaJson[metaKey] = `${metaValue}_split2`
+          this.secondSentence.metaJson[metaKey] = `${metaValue}_split2`;
         }
         else {
           this.firstSentence.metaJson[metaKey] = metaValue;
@@ -258,7 +277,7 @@ export default defineComponent({
       secondReactiveSentence.fromSentenceConll(sentenceJsonToConll(this.secondSentence) as string);
       this.firstReactiveSentence[this.userId] = firstReactiveSentence;
       this.secondReactiveSentence[this.userId] = secondReactiveSentence;
-    }
+    }, 
   }
 
 });

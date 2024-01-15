@@ -73,6 +73,10 @@ export default defineComponent({
       },
       type: Object as PropType<package_t>,
     },
+    interactive: {
+      type: Boolean as PropType<boolean>,
+      default: true,
+    }
   },
   data() {
     const sentenceSVG: SentenceSVG = null as unknown as SentenceSVG; // trick to not have to initialize an empty SentenceSVG
@@ -106,7 +110,7 @@ export default defineComponent({
     const sentenceSVGOptions = defaultSentenceSVGOptions();
     sentenceSVGOptions.shownFeatures = this.shownFeatures;
     sentenceSVGOptions.drawEnhancedTokens = true;
-    sentenceSVGOptions.interactive = !(this.isStudent && this.treeUserId === 'validated');
+    sentenceSVGOptions.interactive = !(this.isStudent && this.treeUserId === 'validated') && this.interactive;
     sentenceSVGOptions.arcHeight = 40;
     sentenceSVGOptions.tokenSpacing = 25;
 

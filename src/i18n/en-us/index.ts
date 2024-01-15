@@ -477,6 +477,12 @@ export default {
     modifiedSentences: 'Modified sentences',
     noHistory: 'No available history'
   },
+  sentenceSegmentation: {
+    title: 'sentence Segmentation',
+    selectSplitLabel: 'Select the token from which the second sentence will start',
+    showResultBtn: 'Show result',
+    editGeneratedMeta: 'Edit the generated metadata'
+  },
   cancel: 'Cancel',
   delete: 'Delete',
   confirm: 'Confirm',

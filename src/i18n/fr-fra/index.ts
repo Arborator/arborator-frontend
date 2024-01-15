@@ -474,6 +474,12 @@ export default {
     modifiedSentences: 'phrases modifiées',
     noHistory: 'Aucun historique disponible'
   },
+  sentenceSegmentation: {
+    title: 'Segmentation de la phrase',
+    selectSplitLabel: 'Sélectionnez le tpken à partir duquel la deuxième phrase commencera.',
+    showResultBtn: 'Afficher le résultat',
+    editGeneratedMeta: 'Editer les métadonnées généréers'
+  },
   cancel: 'Annuler',
   delete: 'Supprimer',
   confirm: 'Confirmer',

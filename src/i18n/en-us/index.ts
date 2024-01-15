@@ -11,7 +11,7 @@ export default {
   loginbtn: 'Log in',
   loginselector: 'Connect via',
   switchLanguage: 'Switch the language of the user interface',
-  documentation: 'See the documantation',
+  documentation: 'See the documentation',
   feedback: 'Any questions, feature requests or bug report ? See our github issues page',
   darkMode: 'Toggle dark mode',
   projectAdmin: 'You are admin of this project',

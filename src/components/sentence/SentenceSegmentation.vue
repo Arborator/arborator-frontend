@@ -120,6 +120,12 @@
               <q-input
                 dense
                 outlined
+                v-model="firstReactiveSentence[userId].state.metaJson.text_en"
+                label="text_en"
+              />
+              <q-input
+                dense
+                outlined
                 v-model="firstReactiveSentence[userId].state.metaJson.sent_id"
                 label="sent_id"
                 :rules="[
@@ -138,6 +144,12 @@
               <q-input
                 dense
                 outlined
+                v-model="secondReactiveSentence[userId].state.metaJson.text_en"
+                label="text_en"
+              />
+              <q-input
+                dense
+                outlined
                 v-model="secondReactiveSentence[userId].state.metaJson.sent_id"
                 label="sent_id"
                 :rules="[
@@ -148,7 +160,14 @@
             </div>
           </div>
           <div>
-            <q-btn :disable="disableSaveResultBtn" outline color="primary" icon="save" :label="$t('sentenceSegmentation.saveResults')" />
+            <q-btn 
+              :disable="disableSaveResultBtn" 
+              outline 
+              color="primary" 
+              icon="save" 
+              :label="$t('sentenceSegmentation.saveResults')" 
+              @click="saveSplitResult()"
+             />
           </div>
         </div>
       </q-card-section>
@@ -157,13 +176,20 @@
 </template>
 <script lang="ts">
 import VueDepTree from './VueDepTree.vue';
+import api from 'src/api/backend-api';
 
-import { emptySentenceJson, sentenceJsonToConll, sentenceJson_T } from 'conllup/lib/conll';
+import { emptySentenceJson, sentenceJsonToConll, sentenceJson_T, treeJson_T, metaJson_T } from 'conllup/lib/conll';
 import { ReactiveSentence } from 'dependencytreejs/src/ReactiveSentence';
 import { mapState } from 'pinia';
+import { notifyError, notifyMessage } from 'src/utils/notify';
 import { useTreesStore } from 'src/pinia/modules/trees';
+import { useProjectStore } from 'src/pinia/modules/project';
 import { reactive_sentences_obj_t, sentence_bus_t } from 'src/types/main_types';
 import { PropType, defineComponent } from 'vue';
+
+interface sentence_t {
+  [key: string]: sentenceJson_T
+}
 
 export default defineComponent({
   name: "SentenceSegmentation",
@@ -186,8 +212,8 @@ export default defineComponent({
   },
   data() {
     const hasPendingChanges: { [key: string]: boolean } = {};
-    const firstSentence: sentenceJson_T = emptySentenceJson();
-    const secondSentence: sentenceJson_T = emptySentenceJson();
+    const firstSentences: sentence_t = {};
+    const secondSentences: sentence_t = {};
     const firstReactiveSentence: reactive_sentences_obj_t = {};
     const secondReactiveSentence: reactive_sentences_obj_t = {};
     return {
@@ -197,16 +223,18 @@ export default defineComponent({
       sentence: '',
       sentId: '',
       token: {},
-      firstSentence,
-      secondSentence,
+      firstSentences,
+      secondSentences,
       firstReactiveSentence,
       secondReactiveSentence,
       showResults: false,
       forceRender: 0,
+      openTabUser: this.userId,
     }
   },
   computed: {
     ...mapState(useTreesStore, ['sortedSentIds']),
+    ...mapState(useProjectStore, ['name']),
     getSentenceForms(): any[] {
       return Object.values(this.reactiveSentencesObj[this.userId].state.treeJson.nodesJson)
         .map((token) => ({ index: parseInt(token.ID), form: token.FORM }));
@@ -227,57 +255,90 @@ export default defineComponent({
       this.$emit('closed');
     },
     splitSentence(indexSplit: number) {
-      const sentenceTree = this.reactiveSentencesObj[this.userId].state.treeJson;
-      const sentenceMeta = this.reactiveSentencesObj[this.userId].state.metaJson;
-      this.firstSentence = emptySentenceJson();
-      this.secondSentence = emptySentenceJson();
+      for (const [userId, reactiveSentenceObj] of Object.entries(this.reactiveSentencesObj)) {
+        let sentenceTree = reactiveSentenceObj.state.treeJson;
+        let sentenceMeta = reactiveSentenceObj.state.metaJson;
+        this.firstSentences[userId] = emptySentenceJson();
+        this.secondSentences[userId] = emptySentenceJson();
+        this.splitSentenceTree(indexSplit, userId, sentenceTree);
+        this.updateSentenceMeta(this.firstSentences[userId], 'split1', sentenceMeta);
+        this.updateSentenceMeta(this.secondSentences[userId], 'split2', sentenceMeta); 
+      } 
+    },
+    splitSentenceTree(indexSplit: number, userId: string, sentenceTree: treeJson_T) {
       Object.values(sentenceTree.nodesJson).forEach((token, index) => {
         let id = index + 1;
         if (id < indexSplit) {
-          this.firstSentence.treeJson.nodesJson[`${id}`] = { ...token };
-          if (token.HEAD >= indexSplit) this.firstSentence.treeJson.nodesJson[`${id}`].HEAD = 0;
+          this.firstSentences[userId].treeJson.nodesJson[`${id}`] = { ...token };
+          if (token.HEAD >= indexSplit) this.firstSentences[userId].treeJson.nodesJson[`${id}`].HEAD = 0;
         }
         else {
           let newId = id + 1 - indexSplit;
-          this.secondSentence.treeJson.nodesJson[`${newId}`] = { ...token };
-          this.secondSentence.treeJson.nodesJson[`${newId}`].ID = `${newId}`;
+          this.secondSentences[userId].treeJson.nodesJson[`${newId}`] = { ...token };
+          this.secondSentences[userId].treeJson.nodesJson[`${newId}`].ID = `${newId}`;
           if (token.HEAD < indexSplit) {
-            this.secondSentence.treeJson.nodesJson[`${newId}`].HEAD = 0;
+            this.secondSentences[userId].treeJson.nodesJson[`${newId}`].HEAD = 0;
           }
           else {
-            this.secondSentence.treeJson.nodesJson[`${newId}`].HEAD = token.HEAD + 1 - indexSplit;
+            this.secondSentences[userId].treeJson.nodesJson[`${newId}`].HEAD = token.HEAD + 1 - indexSplit;
           }
         }
       });
-
+    },
+    updateSentenceMeta(targetSentence: sentenceJson_T, split: string, sentenceMeta: metaJson_T) {
       for (const [metaKey, metaValue] of Object.entries(sentenceMeta)) {
         if (metaKey == 'text') {
-          this.firstSentence.metaJson[metaKey] = Object.values(this.firstSentence.treeJson.nodesJson).map(token => token.FORM).join(' ');
-          this.secondSentence.metaJson[metaKey] = Object.values(this.secondSentence.treeJson.nodesJson).map(token => token.FORM).join(' ');
+          targetSentence.metaJson[metaKey] = Object.values(targetSentence.treeJson.nodesJson).map(token => token.FORM).join(' ');
         } else if (metaKey == 'timestamp') {
-          this.firstSentence.metaJson[metaKey] = String(Date.now()*1000);
-          this.secondSentence.metaJson[metaKey] = String(Date.now()*1000);
+          targetSentence.metaJson[metaKey] = String(Date.now()*1000);
         } else if (metaKey == 'sent_id') {
-          this.firstSentence.metaJson[metaKey] = `${metaValue}_split1`;
-          this.secondSentence.metaJson[metaKey] = `${metaValue}_split2`;
+          targetSentence.metaJson[metaKey] = `${metaValue}_${split}`;
+        } else {
+          targetSentence.metaJson[metaKey] = metaValue;
         }
-        else {
-          this.firstSentence.metaJson[metaKey] = metaValue;
-          this.secondSentence.metaJson[metaKey] = metaValue;
-        }
-
       }
     },
     showReactiveSentences() {
       this.forceRender += 1;
       this.showResults = true;
-      const firstReactiveSentence = new ReactiveSentence();
-      const secondReactiveSentence = new ReactiveSentence();
-      firstReactiveSentence.fromSentenceConll(sentenceJsonToConll(this.firstSentence) as string);
-      secondReactiveSentence.fromSentenceConll(sentenceJsonToConll(this.secondSentence) as string);
-      this.firstReactiveSentence[this.userId] = firstReactiveSentence;
-      this.secondReactiveSentence[this.userId] = secondReactiveSentence;
+      this.createReactiveSentence(this.firstSentences, this.firstReactiveSentence as reactive_sentences_obj_t);
+      this.createReactiveSentence(this.secondSentences, this.secondReactiveSentence as reactive_sentences_obj_t);
     }, 
+    createReactiveSentence(targetSentences: sentence_t, reactiveSentencesObj: reactive_sentences_obj_t) {
+      for (const userId in targetSentences) {
+        const reactiveSentence = new ReactiveSentence();
+        reactiveSentence.fromSentenceConll(sentenceJsonToConll(targetSentences[userId]) as string);
+        reactiveSentencesObj[userId] = reactiveSentence;
+      }
+    },
+    saveSplitResult() {
+      this.updateChangedMetadata(this.firstSentences, this.firstReactiveSentence as reactive_sentences_obj_t);
+      this.updateChangedMetadata(this.secondSentences, this.secondReactiveSentence as reactive_sentences_obj_t);
+      const firstSentencesJson = this.firstSentences;
+      const secondSentencesJson = this.secondSentences;
+      const sampleName = this.$route.params.samplename as string;
+      const data = {
+        sentId: this.sentId,
+        firstSents: firstSentencesJson,
+        secondSents: secondSentencesJson,
+      };
+      api
+        .splitTree(this.name, sampleName, data)
+        .then(() => {
+          notifyMessage({ message: `sentence '${this.sentId}' is successfully splitted into two sentences`});
+          this.closeDialog();
+        })
+        .catch(() => {
+          notifyError({ error: 'Error while splitting the sentence'});
+        }) 
+    },
+    updateChangedMetadata(targetSentences: sentence_t, targetReactiveSentence: reactive_sentences_obj_t) {
+      for (const sentence of Object.values(targetSentences)) {
+        sentence.metaJson.text = targetReactiveSentence[this.userId].state.metaJson.text;
+        sentence.metaJson.sent_id = targetReactiveSentence[this.userId].state.metaJson.sent_id;
+        sentence.metaJson.text_en = targetReactiveSentence[this.userId].state.metaJson.text_en; 
+      }
+    },
   }
 
 });

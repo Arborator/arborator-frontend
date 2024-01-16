@@ -159,7 +159,9 @@ export default {
   deleteUserTrees(projectName: string, sampleName: string, username: string) {
     return API.delete(`/projects/${projectName}/samples/${sampleName}/trees/${username}`);
   },
-
+  splitTree(projectName: string, sampleName: string, data: any) {
+    return API.post(`/projects/${projectName}/samples/${sampleName}/trees/split`, data)
+  },
   // ----------------------------------------------------- //
   // ---------------          Grew         --------------- //
   // ----------------------------------------------------- //
@@ -336,7 +338,7 @@ export default {
     return API.post(`/projects/${projectName}/${username}/synchronize-github/pull-request`, data);
   },
   // -------------------------------------------------------- //
-  // ---------------        To Refactor       --------------- //
+  // ---------------       Tags              --------------- //
   // -------------------------------------------------------- //
   addTags(projectName: string, sampleName: string, data: any){
     return API.post(`/projects/${projectName}/samples/${sampleName}/tags`, data);

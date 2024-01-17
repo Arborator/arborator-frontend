@@ -171,6 +171,73 @@
           </div>
         </div>
       </q-card-section>
+      <!-- Merge sentences -->
+      <q-card-section v-else>
+        <div class="row q-py-md q-gutter-md">
+          <div class="col">
+            <q-select 
+              dense 
+              outlined 
+              v-model="mergedSentId"
+              :label="$t('sentenceSegmentation.selectMergeLabel')"
+              :options="sortedSentIds"
+              @update:model-value="MergeSentences()"
+            >
+            </q-select>
+          </div>
+          <div class="col">
+            <q-btn :disable="mergedSentId == ''" flat color="primary" :label="$t('sentenceSegmentation.showResultBtn')" @click="showReactiveSentences()" />
+          </div>
+        </div>
+        <div v-if="showResults">
+          <div class="row">
+            <q-chip class="text-center" :color="$q.dark.isActive ? 'grey' : ''" dense> 
+              {{ mergedReactiveSentence[userId].state.metaJson.sent_id }} 
+            </q-chip>
+            {{ mergedReactiveSentence[userId].state.metaJson.text }}
+          </div>
+          <div style="overflow: auto" class="custom-frame2">
+            <VueDepTree
+              :key="forceRender" 
+              :card-id="1" 
+              :conll="mergedReactiveSentence[userId].exportConll()"
+              :reactive-sentence="mergedReactiveSentence[userId]" 
+              :reactive-sentences-obj="mergedReactiveSentence"
+              :diff-mode="'NO_DIFF'" 
+              :sentence-bus="sentenceBus" 
+              :tree-user-id="userId"
+              :has-pending-changes="hasPendingChanges"
+              >
+            </VueDepTree>
+          </div>
+           <div class="q-gutter-md q-py-md">
+            <q-input
+              class="row"
+              dense
+              outlined
+              v-model="mergedReactiveSentence[userId].state.metaJson.text"
+              label="text"
+            />
+            <q-input
+              class="row"
+              dense
+              outlined
+              v-model="mergedReactiveSentence[userId].state.metaJson.text_en"
+              label="text_en"
+            />
+            <q-input
+              class="row"
+              dense
+              outlined
+              v-model="mergedReactiveSentence[userId].state.metaJson.sent_id"
+              label="sent_id"
+              :rules="[
+                (val) => !sortedSentIds.includes(val) || $t('sentenceSegmentation.sentIdWarningMsg[0]'),
+              ]"
+            />
+          </div>
+        </div>
+      </q-card-section>
     </q-card>
   </q-dialog>
 </template>
@@ -178,14 +245,14 @@
 import VueDepTree from './VueDepTree.vue';
 import api from 'src/api/backend-api';
 
-import { emptySentenceJson, sentenceJsonToConll, sentenceJson_T, treeJson_T, metaJson_T } from 'conllup/lib/conll';
+import { emptySentenceJson, sentenceConllToJson, sentenceJsonToConll, sentenceJson_T, treeJson_T, metaJson_T } from 'conllup/lib/conll';
 import { ReactiveSentence } from 'dependencytreejs/src/ReactiveSentence';
 import { mapState } from 'pinia';
 import { notifyError, notifyMessage } from 'src/utils/notify';
 import { useTreesStore } from 'src/pinia/modules/trees';
 import { useProjectStore } from 'src/pinia/modules/project';
 import { reactive_sentences_obj_t, sentence_bus_t } from 'src/types/main_types';
-import { PropType, defineComponent } from 'vue';
+import { PropType, defineComponent } from 'vue'
 
 interface sentence_t {
   [key: string]: sentenceJson_T
@@ -214,11 +281,13 @@ export default defineComponent({
     const hasPendingChanges: { [key: string]: boolean } = {};
     const firstSentences: sentence_t = {};
     const secondSentences: sentence_t = {};
+    const mergedSentences: sentence_t = {};
     const firstReactiveSentence: reactive_sentences_obj_t = {};
     const secondReactiveSentence: reactive_sentences_obj_t = {};
+    const mergedReactiveSentence: reactive_sentences_obj_t = {};
     return {
       showDial: true,
-      option: 'split',
+      option: 'merge',
       hasPendingChanges,
       sentence: '',
       sentId: '',
@@ -227,13 +296,15 @@ export default defineComponent({
       secondSentences,
       firstReactiveSentence,
       secondReactiveSentence,
+      mergedReactiveSentence,
+      mergedSentences, 
       showResults: false,
       forceRender: 0,
-      openTabUser: this.userId,
+      mergedSentId: '',
     }
   },
   computed: {
-    ...mapState(useTreesStore, ['sortedSentIds']),
+    ...mapState(useTreesStore, ['sortedSentIds', 'filteredTrees']),
     ...mapState(useProjectStore, ['name']),
     getSentenceForms(): any[] {
       return Object.values(this.reactiveSentencesObj[this.userId].state.treeJson.nodesJson)
@@ -274,14 +345,12 @@ export default defineComponent({
         }
         else {
           let newId = id + 1 - indexSplit;
-          this.secondSentences[userId].treeJson.nodesJson[`${newId}`] = { ...token };
-          this.secondSentences[userId].treeJson.nodesJson[`${newId}`].ID = `${newId}`;
-          if (token.HEAD < indexSplit) {
-            this.secondSentences[userId].treeJson.nodesJson[`${newId}`].HEAD = 0;
+          let newToken = {
+            ...token, 
+            ID: `${newId}`,
+            HEAD: token.HEAD < indexSplit ? 0 : token.HEAD + 1 - indexSplit
           }
-          else {
-            this.secondSentences[userId].treeJson.nodesJson[`${newId}`].HEAD = token.HEAD + 1 - indexSplit;
-          }
+          this.secondSentences[userId].treeJson.nodesJson[`${newId}`] = { ...newToken };
         }
       });
     },
@@ -301,8 +370,13 @@ export default defineComponent({
     showReactiveSentences() {
       this.forceRender += 1;
       this.showResults = true;
-      this.createReactiveSentence(this.firstSentences, this.firstReactiveSentence as reactive_sentences_obj_t);
-      this.createReactiveSentence(this.secondSentences, this.secondReactiveSentence as reactive_sentences_obj_t);
+      if (this.option === 'split') {
+        this.createReactiveSentence(this.firstSentences, this.firstReactiveSentence as reactive_sentences_obj_t);
+        this.createReactiveSentence(this.secondSentences, this.secondReactiveSentence as reactive_sentences_obj_t);
+      } else {
+        this.createReactiveSentence(this.mergedSentences, this.mergedReactiveSentence as reactive_sentences_obj_t);
+      }
+      
     }, 
     createReactiveSentence(targetSentences: sentence_t, reactiveSentencesObj: reactive_sentences_obj_t) {
       for (const userId in targetSentences) {
@@ -339,6 +413,41 @@ export default defineComponent({
         sentence.metaJson.text_en = targetReactiveSentence[this.userId].state.metaJson.text_en; 
       }
     },
+    MergeSentences() {
+      const secondSentenceConlls = this.filteredTrees[this.sortedSentIds.indexOf(this.mergedSentId)].conlls
+      for (const [userId, reactiveSentence] of Object.entries(this.reactiveSentencesObj)) {
+        if (Object.keys(secondSentenceConlls).includes(userId)) {
+          this.mergedSentences[userId] = emptySentenceJson();
+          const secondSentenceJson = sentenceConllToJson(secondSentenceConlls[userId]);
+
+          const sentenceTree = reactiveSentence.state.treeJson;
+          const sentenceMeta = reactiveSentence.state.metaJson;
+          Object.values(sentenceTree.nodesJson).forEach((token, index) => {
+            this.mergedSentences[userId].treeJson.nodesJson[`${index + 1}`] = { ...token };
+          });
+
+          let secondSentenceTree = secondSentenceJson.treeJson;
+          let secondSentenceMeta = secondSentenceJson.metaJson;
+          let length = Object.values(this.mergedSentences[userId].treeJson.nodesJson).length;
+          Object.values(secondSentenceTree.nodesJson).forEach((token, index) => {
+            let newId = index + length + 1;
+            this.mergedSentences[userId].treeJson.nodesJson[`${newId}`] = {
+              ...token,
+              ID: `${newId}`,
+              HEAD: token.HEAD > 0 ? token.HEAD+ length : 0,
+            };
+          });
+
+          this.mergedSentences[userId].metaJson = {
+            ...sentenceMeta, 
+            ...secondSentenceMeta, 
+            text: sentenceMeta.text + ' ' + secondSentenceMeta.text,
+            timestamp: String(Date.now()*1000), 
+            sent_id: sentenceMeta.sent_id + '_' + secondSentenceMeta.sent_id,
+          }
+        }
+      }
+    }
   }
 
 });

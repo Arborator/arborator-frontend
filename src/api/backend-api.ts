@@ -160,7 +160,10 @@ export default {
     return API.delete(`/projects/${projectName}/samples/${sampleName}/trees/${username}`);
   },
   splitTree(projectName: string, sampleName: string, data: any) {
-    return API.post(`/projects/${projectName}/samples/${sampleName}/trees/split`, data)
+    return API.post(`/projects/${projectName}/samples/${sampleName}/trees/split`, data);
+  },
+  mergeTrees(projectName: string, sampleName: string, data: any) {
+    return API.post(`/projects/${projectName}/samples/${sampleName}/trees/merge`, data);
   },
   // ----------------------------------------------------- //
   // ---------------          Grew         --------------- //

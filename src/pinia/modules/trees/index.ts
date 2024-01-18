@@ -24,6 +24,7 @@ export const useTreesStore = defineStore('trees', {
       featuresSetForDiffs: [] as string[],
       featuresSetForNotDiffs: [] as string[],
       selectedTags: [] as string[],
+      reloadTrees: false as boolean,
     };
   },
   getters: {

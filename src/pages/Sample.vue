@@ -102,15 +102,18 @@ export default defineComponent({
   computed: {
     ...mapState(useGrewSearchStore, ['pendingModifications']),
     ...mapState(useTreesStore, ["trees", "filteredTrees", "loading", "numberOfTrees", "userIds", "blindAnnotationLevel"]),
+    ...mapWritableState(useTreesStore, ['reloadTrees']),
   },
   created() {
     window.addEventListener('resize', this.calculateHeight);
   },
+  watch: {
+    reloadTrees(newVal) {
+      if (newVal) this.getTrees();
+    }
+  },
   mounted() {
-    this.getSampleTrees({ projectName: this.projectname, sampleName: this.samplename }).then(() => {
-      this.scrollToIndexFromURL();
-      this.focusedSentences = Array(Object.keys(this.filteredTrees).length).fill(false);
-    }); 
+    this.getTrees();
     document.title = `${this.projectname}/${this.samplename}`;
     LocalStorage.remove('save_status');
     this.calculateHeight();
@@ -121,6 +124,13 @@ export default defineComponent({
   methods: {
     ...mapActions(useGrewSearchStore, ['emptyPendingModification']),
     ...mapActions(useTreesStore, ['getSampleTrees', 'applyFilterTrees', 'getUsersTags']),
+    getTrees() {
+      this.getSampleTrees({ projectName: this.projectname, sampleName: this.samplename }).then(() => {
+      this.scrollToIndexFromURL();
+      this.focusedSentences = Array(Object.keys(this.filteredTrees).length).fill(false);
+      this.reloadTrees = false;
+      }); 
+    },
     scrollToIndexFromURL() {
       if (
         !this.loading &&

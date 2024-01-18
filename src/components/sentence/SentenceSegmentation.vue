@@ -247,7 +247,7 @@ import api from 'src/api/backend-api';
 
 import { emptySentenceJson, sentenceConllToJson, sentenceJsonToConll, sentenceJson_T, treeJson_T, metaJson_T } from 'conllup/lib/conll';
 import { ReactiveSentence } from 'dependencytreejs/src/ReactiveSentence';
-import { mapState } from 'pinia';
+import { mapState, mapWritableState } from 'pinia';
 import { notifyError, notifyMessage } from 'src/utils/notify';
 import { useTreesStore } from 'src/pinia/modules/trees';
 import { useProjectStore } from 'src/pinia/modules/project';
@@ -305,6 +305,7 @@ export default defineComponent({
   },
   computed: {
     ...mapState(useTreesStore, ['sortedSentIds', 'filteredTrees']),
+    ...mapWritableState(useTreesStore, ['reloadTrees']),
     ...mapState(useProjectStore, ['name']),
     getSentenceForms(): any[] {
       return Object.values(this.reactiveSentencesObj[this.userId].state.treeJson.nodesJson)
@@ -400,6 +401,7 @@ export default defineComponent({
         .splitTree(this.name, sampleName, data)
         .then(() => {
           notifyMessage({ message: `sentence '${this.sentId}' is successfully splitted into two sentences`});
+          this.reloadTrees = true;
           this.closeDialog();
         })
         .catch(() => {

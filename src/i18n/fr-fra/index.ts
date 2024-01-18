@@ -484,7 +484,8 @@ export default {
       'Ce sent_id est déjà utilisé, choisissez un autre',
       'Ce sent_id est le même sent_id utilisé dans la seconde phrase',
       'Ce sent_id est le même sent_id utilisé dans la première phrase',
-    ]
+    ],
+    selectMergeLabel: 'Sélectionnez le sent_id de la phrase que vous souhaitez fusionner avec la phrase actuelle',
   },
   cancel: 'Annuler',
   delete: 'Supprimer',

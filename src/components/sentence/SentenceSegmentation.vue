@@ -159,7 +159,7 @@
               outlined
               v-model="mergedSentId"
               :label="$t('sentenceSegmentation.selectMergeLabel')"
-              :options="sortedSentIds"
+              :options="sortedSentIds.filter(sent => sent !== sentId)"
               @update:model-value="MergeSentences()"
             >
             </q-select>

@@ -1,7 +1,6 @@
 <template>
   <q-select
     v-model="selectedLanguages"
-    @update:model-value="emitSelectedVal"
     outlined
     dense
     use-input
@@ -11,8 +10,10 @@
     :multiple="multiple"
     stack-label
     emit-value
+    new-value-mode="add"
     :rules="rules"
     :label="$t('createProjectCard.enterLanguage') + label"
+    @update:model-value="emitSelectedVal"
     @filter="filterLanguages"
   >
     <template v-slot:selected-item="scope">

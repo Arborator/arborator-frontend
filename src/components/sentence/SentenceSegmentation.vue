@@ -15,8 +15,10 @@
             dense 
             outlined 
             v-model="option" 
-            label="Select option" 
-            :options="['split', 'merge']"
+            :label="$t('sentenceSegmentation.selectOptionLabel')"
+            option-label="label"
+            option-value="value"
+            :options="segmentOptions"
             @update:model-value="showResults = false"
             >
           </q-select>
@@ -24,7 +26,7 @@
       </q-card-section>
 
       <!-- split sentences -->
-      <q-card-section v-if="option === 'split'">
+      <q-card-section v-if="option.value === 'split'">
         <div class="row">
           <q-chip class="text-center" :color="$q.dark.isActive ? 'grey' : ''" dense> {{ sentId }} </q-chip>
           {{ sentence }}
@@ -267,6 +269,10 @@ export default defineComponent({
     },
   },
   data() {
+    const segmentOptions = [
+      { value: 'split', label: this.$t('sentenceSegmentation.segmentOptions[0]') },
+      { value: 'merge', label: this.$t('sentenceSegmentation.segmentOptions[1]') },
+    ]
     const hasPendingChanges: { [key: string]: boolean } = {};
     const firstSentences: sentence_t = {};
     const secondSentences: sentence_t = {};
@@ -276,7 +282,8 @@ export default defineComponent({
     const mergedReactiveSentence: reactive_sentences_obj_t = {};
     return {
       showDial: true,
-      option: 'split',
+      segmentOptions,
+      option: segmentOptions[0],
       hasPendingChanges,
       sentence: '',
       sentId: '',
@@ -363,7 +370,7 @@ export default defineComponent({
     showReactiveSentences() {
       this.forceRender += 1;
       this.showResults = true;
-      if (this.option === 'split') {
+      if (this.option.value === 'split') {
         this.createReactiveSentence(this.firstSentences, this.firstReactiveSentence as reactive_sentences_obj_t);
         this.createReactiveSentence(this.secondSentences, this.secondReactiveSentence as reactive_sentences_obj_t);
       } else {

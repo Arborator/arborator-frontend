@@ -476,6 +476,8 @@ export default {
   },
   sentenceSegmentation: {
     title: 'Segmentation de la phrase',
+    selectOptionLabel: 'Sélectionnez un choix de segmentation',
+    segmentOptions: ['Diviser', 'Fusionner'],
     selectSplitLabel: 'Sélectionnez le token à partir duquel la deuxième phrase commencera.',
     showResultBtn: 'Afficher le résultat',
     editGeneratedMeta: 'Editer les métadonnées générées',

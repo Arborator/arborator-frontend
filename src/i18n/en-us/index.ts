@@ -479,6 +479,8 @@ export default {
   },
   sentenceSegmentation: {
     title: 'sentence Segmentation',
+    selectOptionLabel: 'Select segmentation option',
+    segmentOptions: ['Split', 'Merge'],
     selectSplitLabel: 'Select the token from which the second sentence will start',
     showResultBtn: 'Show result',
     editGeneratedMeta: 'Edit the generated metadata',

@@ -11,7 +11,15 @@
           {{ $t('sentenceSegmentation.title') }}
         </div>
         <div class="col">
-          <q-select dense outlined v-model="option" label="Select option" :options="['split', 'merge']"> </q-select>
+          <q-select 
+            dense 
+            outlined 
+            v-model="option" 
+            label="Select option" 
+            :options="['split', 'merge']"
+            @update:model-value="showResults = false"
+            >
+          </q-select>
         </div>
       </q-card-section>
 
@@ -209,7 +217,7 @@
           </div>
           <div>
             <q-btn 
-              :disable="sortedSentIds.includes(mergedReactiveSentence[userId].state.metaJson.sent_id)" 
+              :disable="sortedSentIds.includes(mergedReactiveSentence[userId].state.metaJson.sent_id as string)" 
               outline 
               color="primary" 
               icon="save" 

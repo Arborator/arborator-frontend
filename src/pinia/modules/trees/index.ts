@@ -13,7 +13,7 @@ export const useTreesStore = defineStore('trees', {
       filteredTrees: [] as grewSearchResultSentence_t[],
       loading: false as boolean,
       blindAnnotationLevel: 0 as number,
-      sortedSentIds: [] as number[],
+      sortedSentIds: [] as string[],
       textFilter: '' as string,
       usersToHaveTree: [] as string[],
       usersToNotHaveTree: [] as string[],
@@ -22,6 +22,7 @@ export const useTreesStore = defineStore('trees', {
       featuresSetForDiffs: [] as string[],
       featuresSetForNotDiffs: [] as string[],
       selectedTags: [] as string[],
+      reloadTrees: false as boolean,
     };
   },
   getters: {
@@ -80,8 +81,8 @@ export const useTreesStore = defineStore('trees', {
       }
     },
     applyFilterTrees() {
-      this.filteredTrees = this.sortedSentIds.map(
-        (sentId) => Object.values(this.trees).find((tree) => tree.sent_id == String(sentId)) as grewSearchResultSentence_t
+      this.filteredTrees = this.sortedSentIds.map((sentId) => 
+        Object.values(this.trees).find((tree) => tree.sent_id == sentId) as grewSearchResultSentence_t
       );
       if (this.textFilter !== '') {
         this.filteredTrees = Object.values(this.trees).filter((tree) => {

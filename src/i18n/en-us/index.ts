@@ -479,6 +479,21 @@ export default {
     noHistory: 'No available history',
     selectedRules: ['selected', 'rule', 'rules'],
   },
+  sentenceSegmentation: {
+    title: 'sentence Segmentation',
+    selectOptionLabel: 'Select segmentation option',
+    segmentOptions: ['Split', 'Merge'],
+    selectSplitLabel: 'Select the token from which the second sentence will start',
+    showResultBtn: 'Show result',
+    editGeneratedMeta: 'Edit the generated metadata',
+    saveResults: 'Save results',
+    sentIdWarningMsg: [
+      'This sent_id is already used, choose another one',
+      'The sent_id is the same sent_id used in the second sentence',
+      'The sent_id is the same sent_id used in the first sentence',
+    ], 
+    selectMergeLabel: 'Select the sent_id of the phrase you wish to merge with the current phrase'
+  },
   cancel: 'Cancel',
   delete: 'Delete',
   confirm: 'Confirm',

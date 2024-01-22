@@ -52,15 +52,14 @@
 
 <script lang="ts">
 import AttributeTable from './AttributeTable.vue';
-import { PropType } from 'vue';
-import { sentence_bus_t } from 'src/types/main_types';
+
+import { tokenJson_T, emptyTokenJson } from 'conllup/lib/conll';
 import { mapState } from 'pinia';
 import { useProjectStore } from 'src/pinia/modules/project';
-import { tokenJson_T } from 'conllup/lib/conll';
-import conllup from 'conllup';
-const emptyTokenJson = conllup.emptyTokenJson;
+import { notifyMessage } from 'src/utils/notify';
+import { sentence_bus_t } from 'src/types/main_types';
 
-import { defineComponent } from 'vue';
+import { defineComponent, PropType } from 'vue';
 
 export default defineComponent({
   components: { AttributeTable },
@@ -157,6 +156,7 @@ export default defineComponent({
         token: this.dep,
         userId: this.userId,
       });
+      this.checkSeveralRoots();
     },
     onDeleteRelation() {
       this.dep.DEPREL = '_';
@@ -165,6 +165,17 @@ export default defineComponent({
         token: this.dep,
         userId: this.userId,
       });
+    },
+    checkSeveralRoots() {
+      const rootsNumber = Object.values(this.sentenceBus.sentenceSVGs[this.userId].treeJson.nodesJson)
+        .filter((token) => token.DEPREL === 'root').length;
+      if (rootsNumber > 1) {
+        notifyMessage({
+          message: "This sentence has several roots it should be splitted into two sentences !",
+          type: 'warning',
+          icon: 'warning',
+        });
+      }
     },
   },
 });

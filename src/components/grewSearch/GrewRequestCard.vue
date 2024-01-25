@@ -107,7 +107,7 @@
           </q-bar>
         </div>
       </q-form>
-      <AppliedRuleHistory v-if="isShowHistory" @closed="isShowHistory = false" @copied-pattern="getCopiedPattern" />
+      <GrewHistory v-if="isShowHistory" @closed="isShowHistory = false" />
     </q-card-section>
   </q-card>
 </template>
@@ -116,17 +116,17 @@
 import 'codemirror/theme/gruvbox-dark.css';
 import GrewCodeMirror from 'components/codemirrors/GrewCodeMirror.vue';
 import grewTemplates from '../../assets/grew-templates.json';
-import AppliedRuleHistory from './AppliedRuleHistory.vue';
+import GrewHistory from './GrewHistory.vue';
 import { mapActions, mapState } from 'pinia';
 import { useGrewSearchStore } from 'src/pinia/modules/grewSearch';
 import { useUserStore } from 'src/pinia/modules/user';
 import { useProjectStore } from 'src/pinia/modules/project';
-import { LocalStorage } from 'quasar';
+import { useGrewHistoryStore } from 'src/pinia/modules/grewHistory';
 import { defineComponent, PropType } from 'vue';
 
 export default defineComponent({
   name: 'GrewRequestCard',
-  components: { GrewCodeMirror, AppliedRuleHistory },
+  components: { GrewCodeMirror, GrewHistory },
   props: {
     parentOnSearch: {
       type: Function as PropType<CallableFunction>,
@@ -165,14 +165,12 @@ export default defineComponent({
       treeTypes,
       otherUser: '',
       isShowHistory: false,
-      savedRulesNumber: 0,
     };
   },
   computed: {
     ...mapState(useGrewSearchStore, ['lastQuery', 'grewTreeTypes', 'canRewriteRule']),
     ...mapState(useUserStore, ['isLoggedIn', 'avatar', 'username']),
     ...mapState(useProjectStore, [
-      'name',
       'blindAnnotationMode',
       'shownFeaturesChoices',
       'annotationFeatures',
@@ -203,12 +201,13 @@ export default defineComponent({
     }
     this.searchReplaceTab = this.currentQueryType;
     this.treeType = this.treeOptions[0];
-    this.savedRulesNumber = ((LocalStorage.getItem(this.name) as any[]) || []).length;
   },
   methods: {
     ...mapActions(useGrewSearchStore, ['changeLastGrewQuery']),
+    ...mapActions(useGrewHistoryStore, ['saveHistory']),
     onSearch() {
       this.parentOnSearch(this.currentQuery, this.treeType.value, this.otherUser);
+      this.saveSearchRequest();
       this.changeLastGrewQuery({ text: this.currentQuery, type: this.currentQueryType, userType: this.treeType.value });
     },
     tryRules() {
@@ -218,16 +217,17 @@ export default defineComponent({
     changeQuery(query: string, type: 'SEARCH' | 'REWRITE') {
       this.currentQuery = query;
       this.currentQueryType = type;
-      if (type === 'REWRITE' && this.savedRulesNumber > 1) {
-        this.currentQuery = query.replace('r1', `r${this.savedRulesNumber + 1}`);
-      }
       if (type === 'REWRITE' && this.treeType.value === 'all') {
         this.treeType = this.treeTypes[0];
       }
     },
-    getCopiedPattern(value: any) {
-      this.currentQuery = value;
-    },
+    saveSearchRequest() {
+      const historyRecord = {
+        type: 'search',
+        request: this.currentQuery,
+      };
+      this.saveHistory(historyRecord);
+    }
   },
 });
 </script>

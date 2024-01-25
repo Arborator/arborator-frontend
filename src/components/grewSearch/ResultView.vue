@@ -85,12 +85,12 @@
 
 <script lang="ts">
 import { sentenceConllToJson, sentenceJsonToConll } from 'conllup/lib/conll';
-import { mapState } from 'pinia';
-import { LocalStorage } from 'quasar';
+import { mapState, mapActions } from 'pinia';
 import { grewSearchResult_t, sample_t } from 'src/api/backend-types';
 import { useGrewSearchStore } from 'src/pinia/modules/grewSearch';
 import { useProjectStore } from 'src/pinia/modules/project';
 import { useUserStore } from 'src/pinia/modules/user';
+import { useGrewHistoryStore } from 'src/pinia/modules/grewHistory';
 import { notifyMessage } from 'src/utils/notify';
 import { PropType, defineComponent } from 'vue';
 import api from '../../api/backend-api';
@@ -194,11 +194,7 @@ export default defineComponent({
     this.freezeSamples();
   },
   methods: {
-    /**
-     * Freeze the samples in order to speed up computation for onscroll loading view
-     *
-     * @returns void
-     */
+    ...mapActions(useGrewHistoryStore, ['saveHistory']),
     freezeSamples() {
       const listIds = []; // list: [["WAZA_10_Bluetooth-Lifestory_MG","WAZA_10_Bluetooth-Lifestory_MG__86"],["WAZA_10_Bluetooth-Lifestory_MG","WAZA_10_Bluetooth-Lifestory_MG__79"], ...
       let index = 0;
@@ -250,8 +246,8 @@ export default defineComponent({
         api.applyRule(this.$route.params.projectname as string, datasample).then(() => {
           this.resultSearchDialog = false;
           this.parentOnShowTable(this.resultSearchDialog);
+          this.saveAppliedRule();
           notifyMessage({ message: `Rule applied (user "${this.username}" rewrote and saved "${this.toSaveCounter}" at once)` });
-          this.storeAppliedRule();
         });
       } else {
         notifyMessage({
@@ -282,8 +278,8 @@ export default defineComponent({
             if (!this.isValidator || this.userType !== 'validated') {
               if (userId !== this.username) delete this.searchresultsCopy[sample][sentId].conlls[userId];
             }
-            this.toSaveCounter += 1;
           }
+          this.toSaveCounter += 1;
         }
       }
     },
@@ -301,27 +297,15 @@ export default defineComponent({
       return selectedResults;
     },
 
-    storeAppliedRule() {
-      const savedRules = LocalStorage.getItem(this.projectName);
-      if (savedRules == null) {
-        const savedRule = {
-          name: 'r1',
-          query: this.query,
-          results: this.toSaveCounter,
-          date: new Date().toLocaleString('en-GB', { hour12: false }),
-        };
-        LocalStorage.set(this.projectName, [savedRule]);
-      } else {
-        const listRules = savedRules as any[];
-        listRules.push({
-          name: `r${listRules.length + 1}`,
-          query: this.query,
-          results: this.toSaveCounter,
-          date: new Date().toLocaleString('en-GB', { hour12: false }),
-        });
-        LocalStorage.set(this.projectName, listRules);
-      }
-    },
+    saveAppliedRule() {
+      const historyRecord = {
+        type: 'rewrite',
+        request: this.query,
+        modifiedSentences: this.toSaveCounter
+      };
+      this.saveHistory(historyRecord);
+    }
+  
   },
 });
 </script>

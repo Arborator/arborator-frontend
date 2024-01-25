@@ -29,6 +29,7 @@ import {
   getGithubSynchronizedRepository_RV,
   getConstructiconEntries_RV,
   saveConstructiconEntry_RV,
+  getGrewHistory_RV,
 } from './endpoints';
 import { transcription_t, ModelInfo_t, ParsingSettings_t, ConstructiconEntry_t } from './backend-types';
 
@@ -351,10 +352,19 @@ export default {
     return API.get(`/projects/${projectName}/tags/${username}`);
   },
   // -------------------------------------------------------- //
-  // ---------------        To Refactor       --------------- //
+  // ---------------       grewHistory        --------------- //
   // -------------------------------------------------------- //
-
-  getUsersTreeFrom(projectname: string) {
-    return API.get(`projects/${projectname}/treesfrom`);
+  getGrewHistory(projectName: string) {
+    return API.get<getGrewHistory_RV>(`projects/${projectName}/history`);
   },
+  saveGrewRequest(projectName: string, data: any) {
+    return API.post(`projects/${projectName}/history`, data);
+  },
+  deleteAllHistory(projectName: string) {
+    return API.delete(`projects/${projectName}/history`);
+  },
+  deleteHistoryRecord(projectName: string, recordId: string) {
+    return API.delete(`projects/${projectName}/history/${recordId}`);
+  },
+  
 };

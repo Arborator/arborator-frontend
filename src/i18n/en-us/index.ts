@@ -473,12 +473,6 @@ export default {
   lexicon: {
     replaceEntry: 'Replace entry',
   },
-  appliedRulesHist: {
-    title: 'History of applied rules',
-    modifiedSentences: 'Modified sentences',
-    noHistory: 'No available history',
-    selectedRules: ['selected', 'rule', 'rules'],
-  },
   sentenceSegmentation: {
     title: 'sentence Segmentation',
     selectOptionLabel: 'Select segmentation option',

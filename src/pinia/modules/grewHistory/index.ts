@@ -19,6 +19,9 @@ export const useGrewHistoryStore = defineStore('grewHistory', {
 		rewriteHistory(state) {
 			return state.grewHistory.filter((record) => record.type === 'rewrite');
 		},
+		favoriteHistory(state) {
+			return state.grewHistory.filter((record) => record.favorite);
+		}
 	},
 	actions: {
 		getHistory() {
@@ -42,7 +45,6 @@ export const useGrewHistoryStore = defineStore('grewHistory', {
         date: Date.now(),
         modified_sentences: historyRecord.type === 'search' ? historyRecord.modified_sentences : 0,
       };
-      console.log(data)
 			api
 				.saveGrewRequest(useProjectStore().name, data)
 				.then(() => {
@@ -52,6 +54,26 @@ export const useGrewHistoryStore = defineStore('grewHistory', {
 					notifyError({ error: 'Error happened while saving the history' });
 				});
 		},
+		updateHistory(recordId: string, changes: any) {
+			api
+				.updateHistoryRecord(useProjectStore().name, recordId, changes)
+				.then(() => {
+					notifyMessage({ message: 'History favorites are updated'});
+				})
+				.catch(() => {
+					notifyError({ error: 'Error happened while updating history favorites' });
+				})
+		},
+		deleteAllHistory() {
+			api
+				.deleteAllHistory(useProjectStore().name)
+				.then(() => {
+					notifyMessage({ message: 'Grew History is successfully deleted' });
+				})
+				.catch(() => {
+					notifyError({ error: 'Error happened while deleting grew history'});
+				});
+		}
 	},
 
 })

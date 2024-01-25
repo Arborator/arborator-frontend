@@ -19,7 +19,7 @@
                 dense
                 outlined
                 v-model="historyType"
-                :options="['All', 'Search', 'Rewrite']"
+                :options="['All', 'Search', 'Rewrite', 'Favorites']"
                 label="Select category"          
               >
               </q-select>
@@ -28,7 +28,7 @@
         </q-card-section>
         <q-card-section v-if="filteredHistory.length > 0">
           <div class="row" style="justify-content: right;">
-            <q-btn flat no-caps color="primary" icon="delete" label="Delete history"></q-btn>
+            <q-btn flat no-caps color="primary" icon="delete" label="Delete history" @click="deleteAllHistory()"></q-btn>
           </div>
           <q-list v-for="record in filteredHistory" bordered separator class="custom-frame2">
             <q-item>
@@ -46,8 +46,7 @@
                 <q-item-label v-else caption>
                   No modified sentence
                 </q-item-label>
-
-                <q-toggle v-model="record.favorite" color="primary" checked-icon="star" />
+                <q-toggle v-model="record.favorite" color="primary" checked-icon="star" @update:model-value="updateHistoryFavorites(record)" />
               </q-item-section>
             </q-item>
           </q-list>
@@ -83,7 +82,7 @@ export default defineComponent({
       };
   },
   computed: {
-    ...mapState(useGrewHistoryStore, ['grewHistory', 'rewriteHistory', 'searchHistory']),
+    ...mapState(useGrewHistoryStore, ['grewHistory', 'rewriteHistory', 'searchHistory', 'favoriteHistory']),
     ...mapState(useProjectStore, ['name']),
     filteredHistory(): grewHistoryRecord_t[]  {
       if (this.historyType === 'Search') {
@@ -92,6 +91,9 @@ export default defineComponent({
       if (this.historyType === 'Rewrite') {
         return this.rewriteHistory;
       }
+      if (this.historyType === 'Favorites') {
+        return this.favoriteHistory;
+      }
       return this.grewHistory;
     }
   },
@@ -99,13 +101,16 @@ export default defineComponent({
     this.getHistory();
   },
   methods: {
-    ...mapActions(useGrewHistoryStore, ['getHistory']),
+    ...mapActions(useGrewHistoryStore, ['getHistory', 'updateHistory', 'deleteAllHistory']),
     formatDate(timestamp: number) {
       return new Date(timestamp).toLocaleString('en-GB', { hour12: false });
     },
     closeDial() {
       this.$emit('closed');
     },
+    updateHistoryFavorites(historyRecord: grewHistoryRecord_t) {
+      this.updateHistory(historyRecord.uuid, { favorite: historyRecord.favorite });
+    }
   },
 });
 </script>

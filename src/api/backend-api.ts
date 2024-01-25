@@ -366,5 +366,8 @@ export default {
   deleteHistoryRecord(projectName: string, recordId: string) {
     return API.delete(`projects/${projectName}/history/${recordId}`);
   },
+  updateHistoryRecord(projectName: string, recordId: string, data: any) {
+    return API.put(`projects/${projectName}/history/${recordId}`, data);
+  }
   
 };

@@ -1,104 +1,112 @@
 <template>
-  <q-dialog v-model="showHistoryDial" full-width persistent>
+  <q-dialog v-model="showHistoryDial" full-width persistent maximized>
     <q-card style="min-width: 50vw">
       <q-bar class="bg-primary text-white sticky-bar">
         <q-space />
         <q-btn v-close-popup flat dense icon="close" @click="closeDial()" />
       </q-bar>
       <q-card-section>
-          <div class="row q-gutter-md">
-            <div class="col-8">
-              <q-input dense outlined v-model="search" label="Search in the history">
-                <template #append>
-                  <q-icon name="search" />
-                </template>
-              </q-input>
-            </div>
-            <div class="col">
-              <q-select
-                dense
-                outlined
-                v-model="historyType"
-                :options="['All', 'Search', 'Rewrite', 'Favorites']"
-                label="Select category"          
-              >
-              </q-select>
-            </div>
+        <div class="row q-gutter-md">
+          <div class="col-8">
+            <q-input dense outlined v-model="filterRequest" :label="$t('grewHistory.searchLabel')" @update:model-value="searchInHistory()">
+              <template #append>
+                <q-icon name="search" />
+              </template>
+            </q-input>
           </div>
-        </q-card-section>
-        <q-card-section v-if="filteredHistory.length > 0">
-          <div class="row" style="justify-content: right;">
-            <q-btn flat no-caps color="primary" icon="delete" label="Delete history" @click="deleteAllHistory()"></q-btn>
+          <div class="col">
+            <q-select
+              dense
+              outlined
+              v-model="historyType"
+              :options="historyTypes"
+              option-value="value"
+              option-label="label"
+              :label="$t('grewHistory.selectLabel')"
+            >
+            </q-select>
           </div>
-          <q-list v-for="record in filteredHistory" bordered separator class="custom-frame2">
+        </div>
+      </q-card-section>
+      <q-card-section v-if="filteredHistory.length > 0">
+        <div class="row" style="justify-content: right">
+          <q-btn flat no-caps color="primary" icon="delete" :label="$t('grewHistory.deleteHistory')" @click="deleteAllHistory()"></q-btn>
+        </div>
+        <q-scroll-area style="height: 80vh;">
+          <q-list v-for="(record, index) in filteredHistory" bordered separator class="custom-frame2">
             <q-item>
               <q-item-section top avatar>
                 <q-item-label caption> {{ formatDate(record.date) }}</q-item-label>
-                <q-checkbox v-model="val" />
+                <q-item-label v-if="record.type === 'rewrite'" caption> {{ record.modified_sentences }} {{ $t('grewHistory.modifiedSentences')}} </q-item-label>
+                <q-item-label v-else caption> {{ $t('grewHistory.noModifiedSentences') }} </q-item-label>
+                <q-toggle v-model="record.favorite" color="primary" checked-icon="star" @update:model-value="updateHistoryFavorites(record)" />
               </q-item-section>
               <q-item-section>
                 <GrewCodeMirror v-model:value="record.request" :disabled="true" :line-numbers="false"></GrewCodeMirror>
               </q-item-section>
-              <q-item-section side top>
-                <q-item-label v-if="record.type === 'rewrite'" caption>
-                  {{ record.modified_sentences }} modified sentences
-                </q-item-label>
-                <q-item-label v-else caption>
-                  No modified sentence
-                </q-item-label>
-                <q-toggle v-model="record.favorite" color="primary" checked-icon="star" @update:model-value="updateHistoryFavorites(record)" />
+              <q-item-section side>
+                <q-btn flat icon="content_copy" color="primary" @click="copyRequest(record)" />
               </q-item-section>
             </q-item>
           </q-list>
-        </q-card-section>
-        <q-card-section v-else>
-          No history in this project
-        </q-card-section>
+        </q-scroll-area>
+      </q-card-section>
+      <q-card-section v-else> {{ $t('grewHistory.noSearchResults') }} </q-card-section>
     </q-card>
   </q-dialog>
 </template>
 
 <script lang="ts">
-
 import GrewCodeMirror from '../codemirrors/GrewCodeMirror.vue';
 
 import { mapActions, mapState } from 'pinia';
 import { useGrewHistoryStore } from 'src/pinia/modules/grewHistory';
 import { useProjectStore } from 'src/pinia/modules/project';
+import { notifyMessage } from 'src/utils/notify';
 import { grewHistoryRecord_t } from 'src/api/backend-types';
-import { defineComponent} from 'vue';
+import { defineComponent } from 'vue';
 
 export default defineComponent({
   components: {
-    GrewCodeMirror
+    GrewCodeMirror,
   },
   name: 'GrewHistory',
   data() {
-      return {
-        showHistoryDial: true,
-        search: '',
-        historyType: 'All',
-        val: false
-      };
+    const selectedRequests: boolean[] = [];
+    const historyTypes = [
+      { value: 'all', label: this.$t('grewHistory.historyTypes[0]') },
+      { value: 'search', label: this.$t('grewHistory.historyTypes[1]') },
+      { value: 'rewrite', label: this.$t('grewHistory.historyTypes[2]') },
+      { value: 'favorites', label: this.$t('grewHistory.historyTypes[3]') },
+    ]
+    return {
+      showHistoryDial: true,
+      filterRequest: '',
+      historyTypes,
+      historyType: historyTypes[0],
+      selectedRequests,
+      val: false,
+    };
   },
   computed: {
     ...mapState(useGrewHistoryStore, ['grewHistory', 'rewriteHistory', 'searchHistory', 'favoriteHistory']),
     ...mapState(useProjectStore, ['name']),
     filteredHistory(): grewHistoryRecord_t[]  {
-      if (this.historyType === 'Search') {
-        return this.searchHistory;
+      if (this.historyType.value == 'search') {
+        return this.searchInHistory(this.searchHistory);
       }
-      if (this.historyType === 'Rewrite') {
-        return this.rewriteHistory;
+      if (this.historyType.value == 'rewrite') {
+        return this.searchInHistory(this.rewriteHistory);
       }
-      if (this.historyType === 'Favorites') {
-        return this.favoriteHistory;
+      if (this.historyType.value == 'favorites') {
+        return this.searchInHistory(this.favoriteHistory);
       }
-      return this.grewHistory;
+      return this.searchInHistory(this.grewHistory);
     }
   },
   mounted() {
     this.getHistory();
+    this.selectedRequests = Array(this.filteredHistory.length).fill(false);
   },
   methods: {
     ...mapActions(useGrewHistoryStore, ['getHistory', 'updateHistory', 'deleteAllHistory']),
@@ -110,10 +118,17 @@ export default defineComponent({
     },
     updateHistoryFavorites(historyRecord: grewHistoryRecord_t) {
       this.updateHistory(historyRecord.uuid, { favorite: historyRecord.favorite });
+    },
+    searchInHistory(history: grewHistoryRecord_t[]) {
+      return history.filter((record) => {
+        return record.request.toLowerCase().includes(this.filterRequest.toLowerCase());
+      }, []);  
+    },
+    copyRequest(record: grewHistoryRecord_t) {
+      this.$emit('copied-request', record);
+      notifyMessage({ message: 'Request copied' })
     }
   },
 });
 </script>
-<style>
-
-</style>
+<style></style>

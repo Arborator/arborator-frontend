@@ -488,6 +488,15 @@ export default {
     ], 
     selectMergeLabel: 'Select the sent_id of the phrase you wish to merge with the current phrase'
   },
+  grewHistory: {
+    searchLabel: 'Search in the history',
+    selectLabel: 'Select category',
+    modifiedSentences: 'Modified Sentences',
+    noModifiedSentences: 'No modified sentences',
+    noSearchResults: 'No search results',
+    historyTypes: ['All', 'Search', 'Rewrite', 'Favorites'],
+    deleteHistory: 'Delete History',
+  },
   cancel: 'Cancel',
   delete: 'Delete',
   confirm: 'Confirm',

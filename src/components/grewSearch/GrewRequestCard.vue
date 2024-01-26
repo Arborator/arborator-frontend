@@ -107,7 +107,7 @@
           </q-bar>
         </div>
       </q-form>
-      <GrewHistory v-if="isShowHistory" @closed="isShowHistory = false" />
+      <GrewHistory v-if="isShowHistory" @closed="isShowHistory = false" @copied-request="getCopiedRequest" />
     </q-card-section>
   </q-card>
 </template>
@@ -227,7 +227,12 @@ export default defineComponent({
         request: this.currentQuery,
       };
       this.saveHistory(historyRecord);
-    }
+    },
+    getCopiedRequest(value: any) {
+      this.currentQuery = value.request;
+      this.currentQueryType = value.type === 'search' ? 'SEARCH' : 'REWRITE';
+      this.searchReplaceTab = (value.type as string).toUpperCase();
+    },
   },
 });
 </script>

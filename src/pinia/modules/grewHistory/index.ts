@@ -43,7 +43,7 @@ export const useGrewHistoryStore = defineStore('grewHistory', {
         type: historyRecord.type === 'search' ? 'search' : 'rewrite',
         favorite: false,
         date: Date.now(),
-        modified_sentences: historyRecord.type === 'rewrite' ? historyRecord.modified_sentences : 0,
+        modified_sentences: historyRecord.type === 'rewrite' ? historyRecord.modifiedSentences : 0,
       };
 			api
 				.saveGrewRequest(useProjectStore().name, data)

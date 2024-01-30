@@ -46,7 +46,7 @@
               </q-select>
             </div>
             <div class="col-3">
-              <q-select v-if="treeType.value === 'others'" v-model="otherUser" outlined dense :options="treesFrom" label="Select users"> </q-select>
+              <q-select v-if="treeType.value === 'others'" v-model="otherUser" outlined dense :options="treesFrom" :label="$t('grewSearch.selectUser')"> </q-select>
             </div>
           </div>
           <div class="row">
@@ -94,15 +94,32 @@
             </div>
           </div>
           <q-bar class="row q-pa-md absolute-bottom custom-frame2">
-            <q-btn v-if="searchReplaceTab === 'SEARCH'" color="primary" :label="$t('grewSearch.search')" no-caps icon="search" @click="onSearch" />
             <q-btn
+              v-if="searchReplaceTab === 'SEARCH'" 
+              :disable="disableBtn"  
+              color="primary" 
+              :label="$t('grewSearch.search')" 
+              no-caps 
+              icon="search" 
+              @click="onSearch"
+            >
+              <q-tooltip v-if="disableBtn">
+                {{ $t('grewSearch.btnDisabledTooltip') }}
+              </q-tooltip>
+            </q-btn>
+            <q-btn
+              :disable="disableBtn"
               v-if="searchReplaceTab === 'REWRITE'"
               color="primary"
               :label="$t('grewSearch.tryRules')"
               no-caps
               icon="autorenew"
               @click="tryRules"
-            />
+            >
+              <q-tooltip v-if="disableBtn">
+                {{ $t('grewSearch.btnDisabledTooltip') }}
+              </q-tooltip>
+            </q-btn>
             {{ treeType.label }}
           </q-bar>
         </div>
@@ -187,6 +204,9 @@ export default defineComponent({
         return this.treeTypes.filter((element) => this.grewTreeTypes.includes(element.value) && !['all', 'pending'].includes(element.value));
       }
     },
+    disableBtn() {
+      return this.treeType.value === 'others' && !this.otherUser;
+    }
   },
   watch: {
     searchReplaceTab(newVal) {

@@ -261,6 +261,8 @@ export default {
     applyRule: 'Appliquer la règle',
     applyRuleTooltip: 'Sélectionnez au moins un arbre sur lequel vous souhaitez appliquer la règle',
     selectAllTooltip: 'Selectionnez tous',
+    btnDisabledTooltip: "Sélectionnez d'abord le nom d'utilisateur",
+    selectUser: "Séléctionnez le nom d'utilisateur",
   },
   // window which displays project settings
   projectSettings: {

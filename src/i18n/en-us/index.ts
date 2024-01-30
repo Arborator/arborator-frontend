@@ -270,6 +270,8 @@ export default {
     applyRule: 'Apply rule',
     applyRuleTooltip: 'Select at least one tree to which you wish to apply the rule',
     selectAllTooltip: 'Select All',
+    btnDisabledTooltip: 'You need to select first the username',
+    selectUser: 'Select username',
   },
   // window which displays project settings
   projectSettings: {

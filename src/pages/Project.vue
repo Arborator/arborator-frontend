@@ -716,7 +716,7 @@ export default defineComponent({
 
     deleteSampleFromGithub(sampleName: string) {
       api
-        .deleteFileFromGithub(this.projectName, this.username, sampleName)
+        .deleteFileFromGithub(this.projectName, sampleName)
         .then(() => {
           notifyMessage({ message: 'Delete from Github' });
           this.loadProjectData();
@@ -739,7 +739,7 @@ export default defineComponent({
         // So we need to use this hack of setTimeout if we want to access to the updated sample.blindAnnotationLevel
         api
           .updateSampleBlindAnnotationLevel(this.projectName as string, sample.sample_name, sample.blindAnnotationLevel)
-          .then((response) => {
+          .then(() => {
             notifyMessage({ message: 'The new blind annotation level was correctly saved in the server' });
           })
           .catch((error) => {

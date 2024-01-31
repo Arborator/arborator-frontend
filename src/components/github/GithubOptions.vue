@@ -115,7 +115,7 @@ export default defineComponent({
   methods: {
     getChanges() {
       api
-        .getChanges(this.projectName, this.username)
+        .getChanges(this.projectName)
         .then((response) => {
           this.changesNumber = response.data;
         })
@@ -125,7 +125,7 @@ export default defineComponent({
     },
     getPulls() {
       api
-        .checkPull(this.projectName, this.username)
+        .checkPull(this.projectName)
         .then((response) => {
           this.checkPulls = response.data;
           if (!this.checkPulls && this.isOwner) {
@@ -133,12 +133,12 @@ export default defineComponent({
           }
         })
         .catch((error) => {
-          notifyError({ error });
+          notifyError({ error: 'Error while checking changes to pull' });
         });
     },
     deleteSynchronization() {
       api
-        .deleteSynchronization(this.projectName, this.username)
+        .deleteSynchronization(this.projectName)
         .then(() => {
           this.$emit('remove');
         })
@@ -153,7 +153,7 @@ export default defineComponent({
     pullChanges() {
       const data = { repositoryName: this.repositoryName };
       api
-        .pullChanges(this.projectName, this.username, data)
+        .pullChanges(this.projectName)
         .then(() => {
           notifyMessage({ message: `The changes from ${this.repositoryName} are pulled in ${this.projectName}` });
           this.$emit('pulled');

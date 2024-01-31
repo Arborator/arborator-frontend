@@ -25,7 +25,7 @@
         </q-btn-dropdown>
       </div>
       <div class="col">
-        <q-input v-model="search" filled :label="$t('github.search')" type="text" @update:model-value="searchRepo(search)">
+        <q-input dense outlined v-model="search" :label="$t('github.search')" type="text" @update:model-value="searchRepo(search)">
           <template #append>
             <q-icon name="search" />
           </template>
@@ -63,13 +63,12 @@
           <q-item-label class="text-left">{{ selectedRepository }}</q-item-label>
         </q-item-section>
         <q-item-section class="col">
-          <q-select filled v-model="branch" :options="listBranches" :label="$t('github.selectBranch')">
+          <q-select dense outlined v-model="branch" :options="listBranches" :label="$t('github.selectBranch')">
             <q-tooltip>{{ $t('github.selectBranch') }}</q-tooltip>
           </q-select>
         </q-item-section>
       </q-item>
     </q-list>
-    <q-input outlined dense v-model="customUsername" :label="$t('uploadSample.customUsername')" />
     <div :class="$q.dark.isActive ? 'text-white' : 'text-blue-grey-10'" class="q-pa-sm">
       <q-radio dense size="md" v-model="branchSyn" val="arboratorgrew" />
       {{ $t('github.arboratorgrewBranch[0]') }}
@@ -122,12 +121,10 @@ export default defineComponent({
       currentPage: 1,
       pageIndex: 1,
       totalItemPerPage: 8,
-      customUsername: '',
       loading: false,
     };
   },
   computed: {
-    ...mapState(useUserStore, ['username']),
     githubOwners() {
       const githubUsers = [];
       for (const repo of this.repositories) {
@@ -148,21 +145,18 @@ export default defineComponent({
   methods: {
     getGithubRepositories() {
       api
-        .getGithubRepositories(this.projectName as string, this.username)
+        .getGithubRepositories()
         .then((response) => {
           this.repositories = response.data;
           if (this.repositories.length == 0) this.noRepositories = true;
         })
-        .catch((error) => {
-          notifyError(error);
+        .catch(() => {
+          notifyError({ error: 'Error while getting Github repositories'});
         });
     },
     getRepositoriesPerOwner(owner: string) {
       this.repositoriesPerOwner = [];
       this.repositoriesPerOwner = this.repositories.filter((repo) => repo.owner_name == owner).map((repo) => ({ name: repo.name as string }));
-    },
-    existRepositoryName(repoName: string) {
-      return this.repositories.map((repo) => repo.name.split('/')[1]).includes(repoName);
     },
     searchRepo(repoName: string) {
       this.repositoriesPerOwner = this.repositories.filter((repo) => {
@@ -170,9 +164,9 @@ export default defineComponent({
       });
     },
     getRepoBranches(repoName: string) {
-      this.selectedRepository = repoName;
+      this.selectedRepository = repoName; 
       api
-        .getGithubRepoBranches(this.projectName, this.username, this.selectedRepository)
+        .getGithubRepoBranches(this.selectedRepository)
         .then((response) => {
           this.listBranches = response.data;
           this.branch = this.listBranches[0];
@@ -184,10 +178,9 @@ export default defineComponent({
     async synchronizeWithGitRepo(repoName: string, branch: string, branchSyn: string) {
       if (branchSyn == 'default') branchSyn = branch;
       const data = {
-        repositoryName: repoName,
+        fullName: repoName,
         branchImport: branch,
-        branchSyn: branchSyn,
-        username: this.customUsername !== '' ? this.customUsername : this.username,
+        branchSync: branchSyn,
       };
       this.loading = true;
       var interval = setTimeout(() => {

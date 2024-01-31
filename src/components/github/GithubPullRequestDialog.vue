@@ -12,10 +12,10 @@
     <q-card-section v-else>
       <div class="row q-gutter-md">
         <div class="col-8">
-          <q-input filled v-model="title" label="Pull request title" />
+          <q-input outlined dense v-model="title" label="Pull request title" />
         </div>
         <div class="col">
-          <q-select filled v-model="branch" :options="listBranches" label="Base Branch" />
+          <q-select outlined dense v-model="branch" :options="listBranches" label="Base Branch" />
         </div>
       </div>
       <q-card-actions align="around">
@@ -79,7 +79,7 @@ export default defineComponent({
     },
     getRepoBranches() {
       api
-        .getGithubRepoBranches(this.projectName, this.username, this.repositoryName)
+        .getGithubRepoBranches(this.repositoryName)
         .then((response) => {
           this.branches = response.data;
         })
@@ -91,7 +91,7 @@ export default defineComponent({
       const title = this.title + ': Opened by ArboratorGrew';
       const data = { title: title, repositoryName: this.repositoryName, branch: this.branch };
       api
-        .openPullRequest(this.projectName, this.username, data)
+        .openPullRequest(this.projectName, data)
         .then((response) => {
           notifyMessage({ message: 'New pull request created' });
           this.$emit('created');

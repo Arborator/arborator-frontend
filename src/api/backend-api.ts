@@ -299,41 +299,38 @@ export default {
   // -------------------------------------------------------- //
   // ---------------          Github         --------------- //
   // -------------------------------------------------------- //
-  getGithubRepositories(projectName: string, username: string) {
-    return API.get<getGithubRepositories_RV>(`/projects/${projectName}/${username}/github`);
+  getGithubRepositories() {
+    return API.get<getGithubRepositories_RV>(`/projects/github`);
   },
-  createGithubRepository(projectName: string, username: string, data: any) {
-    return API.post(`/projects/${projectName}/${username}/github`, data);
-  },
-  getGithubRepoBranches(projectName: string, username: string, repoName: string) {
-    return API.get(`/projects/${projectName}/${username}/github/branch?full_name=${repoName}`);
+  getGithubRepoBranches(repoName: string) {
+    return API.get(`/projects/github/branch?full_name=${repoName}`);
   },
   synchronizeWithGithubRepo(projectName: string, data: any) {
-    return API.post(`/projects/${projectName}/synchronize-github`, data, { timeout: 4000000 });
+    return API.post(`/projects/${projectName}/synchronize`, data, { timeout: 4000000 });
   },
   getSynchronizedGithubRepository(projectName: string) {
-    return API.get<getGithubSynchronizedRepository_RV>(`/projects/${projectName}/synchronize-github`);
+    return API.get<getGithubSynchronizedRepository_RV>(`/projects/${projectName}/synchronize`);
   },
-  deleteSynchronization(projectName: string, username: string) {
-    return API.delete(`/projects/${projectName}/synchronize-github`);
+  deleteSynchronization(projectName: string) {
+    return API.delete(`/projects/${projectName}/synchronize`);
   },
-  getChanges(projectName: string, username: string) {
-    return API.get(`/projects/${projectName}/${username}/synchronize-github/commit`);
+  getChanges(projectName: string) {
+    return API.get(`/projects/${projectName}/synchronize/commit`);
   },
-  commitChanges(projectName: string, username: string, data: any) {
-    return API.post(`/projects/${projectName}/${username}/synchronize-github/commit`, data);
+  commitChanges(projectName: string, data: any) {
+    return API.post(`/projects/${projectName}/synchronize/commit`, data);
   },
-  checkPull(projectName: string, username: string) {
-    return API.get(`/projects/${projectName}/${username}/synchronize-github/pull`);
+  checkPull(projectName: string) {
+    return API.get(`/projects/${projectName}/synchronize/pull`);
   },
-  pullChanges(projectName: string, username: string, data: any) {
-    return API.post(`/projects/${projectName}/${username}/synchronize-github/pull`, data);
+  pullChanges(projectName: string) {
+    return API.post(`/projects/${projectName}/synchronize/pull`);
   },
-  deleteFileFromGithub(projectName: string, username: string, fileName: string) {
-    return API.delete(`/projects/${projectName}/${username}/synchronize-github/${fileName}`);
+  deleteFileFromGithub(projectName: string, fileName: string) {
+    return API.delete(`/projects/${projectName}/synchronize/${fileName}`);
   },
-  openPullRequest(projectName: string, username: string, data: any) {
-    return API.post(`/projects/${projectName}/${username}/synchronize-github/pull-request`, data);
+  openPullRequest(projectName: string, data: any) {
+    return API.post(`/projects/${projectName}/synchronize/pull-request`, data);
   },
   // -------------------------------------------------------- //
   // ---------------       Tags              --------------- //

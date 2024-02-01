@@ -69,7 +69,7 @@
                 </q-tab>
               </q-tabs>
               <q-separator />
-              <q-tab-panels v-model="searchReplaceTab" animated class="shadow-2" @input="treeType == null">
+              <q-tab-panels v-model="searchReplaceTab" animated class="shadow-2" @input="treeType == null" @transition="switchGrewMode">
                 <q-tab-panel name="SEARCH">
                   <q-tabs v-model="searchQueryTab" dense no-caps vertical switch-indicator class="primary" indicator-color="primary">
                     <template v-for="query in searchQueries" :key="query.name">
@@ -120,8 +120,6 @@ import GrewHistory from './GrewHistory.vue';
 import { mapActions, mapState } from 'pinia';
 import { useGrewSearchStore } from 'src/pinia/modules/grewSearch';
 import { useUserStore } from 'src/pinia/modules/user';
-import { useProjectStore } from 'src/pinia/modules/project';
-import { useGrewHistoryStore } from 'src/pinia/modules/grewHistory';
 import { defineComponent, PropType } from 'vue';
 
 export default defineComponent({
@@ -169,15 +167,7 @@ export default defineComponent({
   },
   computed: {
     ...mapState(useGrewSearchStore, ['lastQuery', 'grewTreeTypes', 'canRewriteRule']),
-    ...mapState(useUserStore, ['isLoggedIn', 'avatar', 'username']),
-    ...mapState(useProjectStore, [
-      'blindAnnotationMode',
-      'shownFeaturesChoices',
-      'annotationFeatures',
-      'canSaveTreeInProject',
-      'canSeeOtherUsersTrees',
-      'isValidator',
-    ]),
+    ...mapState(useUserStore, ['avatar']),
     treeOptions() {
       if (this.searchReplaceTab == 'SEARCH') {
         return this.treeTypes.filter((element) => this.grewTreeTypes.includes(element.value));
@@ -204,10 +194,8 @@ export default defineComponent({
   },
   methods: {
     ...mapActions(useGrewSearchStore, ['changeLastGrewQuery']),
-    ...mapActions(useGrewHistoryStore, ['saveHistory']),
     onSearch() {
       this.parentOnSearch(this.currentQuery, this.treeType.value, this.otherUser);
-      this.saveSearchRequest();
       this.changeLastGrewQuery({ text: this.currentQuery, type: this.currentQueryType, userType: this.treeType.value });
     },
     tryRules() {
@@ -221,12 +209,20 @@ export default defineComponent({
         this.treeType = this.treeTypes[0];
       }
     },
-    saveSearchRequest() {
-      const historyRecord = {
-        type: 'search',
-        request: this.currentQuery,
-      };
-      this.saveHistory(historyRecord);
+    switchGrewMode() {
+      const pattern = this.currentQuery.match(/pattern((.|\n)*?)}/);
+      if (this.searchReplaceTab === 'REWRITE' && this.currentQueryType === 'SEARCH') {
+        if (pattern) {
+          this.currentQuery = `rule r {\n \t${pattern[0]} \n \tcommands { \n \t% add the pattern you want to have to replace … \n }\n}`;
+          this.currentQueryType = 'REWRITE';
+        }
+      }
+      if (this.searchReplaceTab === 'SEARCH' && this.currentQueryType === 'REWRITE') {
+        if (pattern) {
+          this.currentQuery = pattern[0];
+          this.currentQueryType = 'SEARCH'
+        }
+      }
     },
     getCopiedRequest(value: any) {
       this.currentQuery = value.request;

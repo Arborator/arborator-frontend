@@ -72,7 +72,7 @@
                       icon="cloud_upload"
                       round
                       :loading="uploadSample.submitting"
-                      :disable="disableUploadBtn || customUserId === '' || customUserId.toLowerCase() === 'validated'"
+                      :disable="disableUploadBtn || customUserId === ''"
                       @click="uploadSamples()"
                     />
                     <q-tooltip v-if="uploadSample.attachment.file.length == 0" content-class="text-white bg-primary">
@@ -87,7 +87,7 @@
                   v-model="customUserId"
                   :label="$t('uploadSample.customUsername')"
                   :rules="[
-                    (val) => !reservedUserIds.includes(val.toLowerCase()) || `${val} ` + $t('uploadSample.reservedUsernameError'),
+                    (val) => reservedUserId !== val.toLowerCase() || `${val} ` + $t('uploadSample.reservedUsernameError'),
                     (val) => (val && val.length > 0) || $t('uploadSample.emptyUsernameError'),
                   ]"
                 />
@@ -169,7 +169,7 @@ export default defineComponent({
 
   computed: {
     ...mapState(useUserStore, { userid: 'id' }),
-    ...mapState(useUserStore, ['username', 'reservedUserIds']),
+    ...mapState(useUserStore, ['username', 'reservedUserId']),
     ...mapState(useProjectStore, ['blindAnnotationMode']),
     disableTokenizeBtn() {
       if (this.option.value == 'plainText') {

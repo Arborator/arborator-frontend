@@ -88,8 +88,8 @@
                   </q-tabs>
                 </q-tab-panel>
               </q-tab-panels>
-              <div v-if="searchReplaceTab === 'REWRITE'" class="q-pa-md">
-                <q-btn label="History" icon="history" color="primary" @click="isShowHistory = true" />
+              <div class="q-pa-md">
+                <q-btn :label="$t('grewHistory.historyBtn')" icon="history" color="primary" @click="isShowHistory = true" />
               </div>
             </div>
           </div>

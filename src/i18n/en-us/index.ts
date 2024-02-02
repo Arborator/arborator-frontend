@@ -489,6 +489,7 @@ export default {
     selectMergeLabel: 'Select the sent_id of the phrase you wish to merge with the current phrase'
   },
   grewHistory: {
+    historyBtn: 'History',
     searchLabel: 'Search in the history',
     selectLabel: 'Select category',
     modifiedSentences: 'Modified Sentences',

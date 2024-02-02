@@ -485,6 +485,7 @@ export default {
     selectMergeLabel: 'Sélectionnez le sent_id de la phrase que vous souhaitez fusionner avec la phrase actuelle',
   },
   grewHistory: {
+    historyBtn: 'Historique',
     searchLabel: "Recherchez dans l'historique",
     selectLabel: 'Sélectionnez une catégorie',
     modifiedSentences: 'phrases modifiées',

@@ -3,7 +3,7 @@
     <q-header style="height: 2.3vw" :class="`${$q.dark.isActive ? 'bg-dark' : 'bg-white'} custom-bottom-border`" id="main-header">
       <q-bar :class="$q.dark.isActive ? 'bg-dark' : 'bg-white text-black'">
         <q-btn flat round icon="menu" @click="drawerLeft = !drawerLeft" />
-        <q-btn flat to="/" :ripple="false" type="a">
+        <q-btn flat to="/projects" :ripple="false" type="a">
           <div class="q-btn__content text-center col items-center q-anchor--skip row">
             <img v-if="$q.dark.isActive" alt="Arborator" src="/svg/arborator.grew.white.svg" style="height: 2.3vw" />
             <img v-else alt="Arborator" src="/svg/arborator.grew.svg" style="height: 2.3vw" />

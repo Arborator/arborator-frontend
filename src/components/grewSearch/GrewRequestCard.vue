@@ -88,7 +88,7 @@
                   </q-tabs>
                 </q-tab-panel>
               </q-tab-panels>
-              <div class="q-pa-md">
+              <div v-if="isLoggedIn" class="q-pa-md">
                 <q-btn :label="$t('grewHistory.historyBtn')" icon="history" color="primary" @click="isShowHistory = true" />
               </div>
             </div>
@@ -184,7 +184,7 @@ export default defineComponent({
   },
   computed: {
     ...mapState(useGrewSearchStore, ['lastQuery', 'grewTreeTypes', 'canRewriteRule']),
-    ...mapState(useUserStore, ['avatar']),
+    ...mapState(useUserStore, ['avatar', 'isLoggedIn']),
     treeOptions() {
       if (this.searchReplaceTab == 'SEARCH') {
         return this.treeTypes.filter((element) => this.grewTreeTypes.includes(element.value));

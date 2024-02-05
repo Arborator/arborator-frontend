@@ -17,6 +17,7 @@ import {
   githubRepository_t,
   githubSynchronizedRepository_t,
   ConstructiconEntry_t,
+  grewHistoryRecord_t,
 } from './backend-types';
 
 export interface logout_RV {
@@ -139,3 +140,7 @@ export type parserParseStatus_RV = parser_generic_RV_failure | parserParseStatus
 export type getGithubRepositories_RV = githubRepository_t[];
 
 export type getGithubSynchronizedRepository_RV = githubSynchronizedRepository_t;
+
+
+///////////// GrewHistory ////////////////////
+export type getGrewHistory_RV = grewHistoryRecord_t[];

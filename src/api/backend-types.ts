@@ -213,3 +213,14 @@ export interface githubSynchronizedRepository_t {
   repositoryName: string;
   branch: string;
 }
+
+////////////////GrewHistory //////////////////
+
+export interface grewHistoryRecord_t {
+  uuid: string,
+  request: string;
+  type: string;
+  favorite: boolean;
+  date: number;
+  modified_sentences: number;
+}

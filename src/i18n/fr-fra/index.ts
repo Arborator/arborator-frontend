@@ -471,12 +471,6 @@ export default {
   lexicon: {
     replaceEntry: "Remplacer l'élement",
   },
-  appliedRulesHist: {
-    title: 'Historique des règles appliquées.',
-    copyRuletooltip: 'Copier la règle',
-    modifiedSentences: 'phrases modifiées',
-    noHistory: 'Aucun historique disponible',
-  },
   sentenceSegmentation: {
     title: 'Segmentation de la phrase',
     selectOptionLabel: 'Sélectionnez un choix de segmentation',
@@ -491,6 +485,19 @@ export default {
       'Ce sent_id est le même sent_id utilisé dans la première phrase',
     ],
     selectMergeLabel: 'Sélectionnez le sent_id de la phrase que vous souhaitez fusionner avec la phrase actuelle',
+  },
+  grewHistory: {
+    historyBtn: 'Historique',
+    searchLabel: "Recherchez dans l'historique",
+    selectLabel: 'Sélectionnez une catégorie',
+    modifiedSentences: 'phrases modifiées',
+    noModifiedSentences: 'Aucune phrase modifiée',
+    noSearchResults: 'Aucun résultat de recherche',
+    historyTypes: ["Tout l'historique", 'Recherche', 'Réécriture', 'Favoris'],
+    deleteHistory: "Supprimer tout l'historique",
+    favoriteTooltip: ['Ajoutez cette requête aux favoris', 'Supprimez cette requête des favoris'],
+    copyTooltip: 'Copiez cette requête',
+    deleteTooltip: "Supprimez tout l'historique",
   },
   cancel: 'Annuler',
   delete: 'Supprimer',

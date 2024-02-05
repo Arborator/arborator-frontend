@@ -25,8 +25,8 @@ import GrewRequestCard from './GrewRequestCard.vue';
 import ResultView from './ResultView.vue';
 import api from '../../api/backend-api';
 import { useGrewSearchStore } from 'src/pinia/modules/grewSearch';
-import { mapWritableState, mapState } from 'pinia';
-import { useUserStore } from 'src/pinia/modules/user';
+import { useGrewHistoryStore } from 'src/pinia/modules/grewHistory';
+import { mapWritableState, mapActions } from 'pinia';
 import { notifyError } from 'src/utils/notify';
 import { defineComponent, PropType } from 'vue';
 import { grewSearchResult_t } from 'src/api/backend-types';
@@ -78,9 +78,9 @@ export default defineComponent({
       return this.window.width <= 400;
     },
     ...mapWritableState(useGrewSearchStore, ['grewDialog']),
-    ...mapState(useUserStore, ['username']),
   },
   methods: {
+    ...mapActions(useGrewHistoryStore, ['saveHistory']),
     onShowTable(resultSearchDialog: any) {
       this.resultSearchDialog = resultSearchDialog;
       this.grewDialog = false;
@@ -94,6 +94,7 @@ export default defineComponent({
         .searchRequest(this.$route.params.projectname as string, data)
         .then((response) => {
           this.resultSearch = response.data;
+          this.saveSearchRequest(searchPattern);
           this.resultSearchDialog = true;
         })
         .catch((error) => {
@@ -116,6 +117,13 @@ export default defineComponent({
             error: error.response.data.message,
           });
         });
+    },
+    saveSearchRequest(query: string) {
+      const historyRecord = {
+        type: 'search',
+        request: query,
+      };
+      this.saveHistory(historyRecord);
     },
   },
 });

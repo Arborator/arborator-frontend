@@ -121,9 +121,9 @@ export default defineComponent({
     ...mapActions(useTreesStore, ['getSampleTrees', 'applyFilterTrees', 'getUsersTags']),
     getTrees() {
       this.getSampleTrees({ projectName: this.projectname, sampleName: this.samplename }).then(() => {
-      this.scrollToIndexFromURL();
-      this.focusedSentences = Array(Object.keys(this.filteredTrees).length).fill(false);
-      this.reloadTrees = false;
+        this.scrollToIndexFromURL();
+        this.focusedSentences = Array(Object.keys(this.filteredTrees).length).fill(false);
+        this.reloadTrees = false;
       }); 
     },
     scrollToIndexFromURL() {

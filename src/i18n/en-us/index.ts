@@ -475,12 +475,6 @@ export default {
   lexicon: {
     replaceEntry: 'Replace entry',
   },
-  appliedRulesHist: {
-    title: 'History of applied rules',
-    modifiedSentences: 'Modified sentences',
-    noHistory: 'No available history',
-    selectedRules: ['selected', 'rule', 'rules'],
-  },
   sentenceSegmentation: {
     title: 'sentence Segmentation',
     selectOptionLabel: 'Select segmentation option',
@@ -495,6 +489,19 @@ export default {
       'The sent_id is the same sent_id used in the first sentence',
     ], 
     selectMergeLabel: 'Select the sent_id of the phrase you wish to merge with the current phrase'
+  },
+  grewHistory: {
+    historyBtn: 'History',
+    searchLabel: 'Search in the history',
+    selectLabel: 'Select category',
+    modifiedSentences: 'Modified Sentences',
+    noModifiedSentences: 'No modified sentences',
+    noSearchResults: 'No search results',
+    historyTypes: ['All', 'Search', 'Rewrite', 'Favorites'],
+    deleteHistory: 'Delete History',
+    favoriteTooltip: ['Add this request to the favorites', 'Remove this request from the favorites'],
+    copyTooltip: 'Copy this request',
+    deleteTooltip: 'Delete all the history',
   },
   cancel: 'Cancel',
   delete: 'Delete',

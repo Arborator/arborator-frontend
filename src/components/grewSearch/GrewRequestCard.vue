@@ -69,7 +69,7 @@
                 </q-tab>
               </q-tabs>
               <q-separator />
-              <q-tab-panels v-model="searchReplaceTab" animated class="shadow-2" @input="treeType == null">
+              <q-tab-panels v-model="searchReplaceTab" animated class="shadow-2" @input="treeType == null" @transition="switchGrewMode">
                 <q-tab-panel name="SEARCH">
                   <q-tabs v-model="searchQueryTab" dense no-caps vertical switch-indicator class="primary" indicator-color="primary">
                     <template v-for="query in searchQueries" :key="query.name">
@@ -88,8 +88,8 @@
                   </q-tabs>
                 </q-tab-panel>
               </q-tab-panels>
-              <div v-if="searchReplaceTab === 'REWRITE'" class="q-pa-md">
-                <q-btn label="History" icon="history" color="primary" @click="isShowHistory = true" />
+              <div class="q-pa-md">
+                <q-btn :label="$t('grewHistory.historyBtn')" icon="history" color="primary" @click="isShowHistory = true" />
               </div>
             </div>
           </div>
@@ -124,7 +124,7 @@
           </q-bar>
         </div>
       </q-form>
-      <AppliedRuleHistory v-if="isShowHistory" @closed="isShowHistory = false" @copied-pattern="getCopiedPattern" />
+      <GrewHistory v-if="isShowHistory" @closed="isShowHistory = false" @copied-request="getCopiedRequest" />
     </q-card-section>
   </q-card>
 </template>
@@ -133,17 +133,15 @@
 import 'codemirror/theme/gruvbox-dark.css';
 import GrewCodeMirror from 'components/codemirrors/GrewCodeMirror.vue';
 import grewTemplates from '../../assets/grew-templates.json';
-import AppliedRuleHistory from './AppliedRuleHistory.vue';
+import GrewHistory from './GrewHistory.vue';
 import { mapActions, mapState } from 'pinia';
 import { useGrewSearchStore } from 'src/pinia/modules/grewSearch';
 import { useUserStore } from 'src/pinia/modules/user';
-import { useProjectStore } from 'src/pinia/modules/project';
-import { LocalStorage } from 'quasar';
 import { defineComponent, PropType } from 'vue';
 
 export default defineComponent({
   name: 'GrewRequestCard',
-  components: { GrewCodeMirror, AppliedRuleHistory },
+  components: { GrewCodeMirror, GrewHistory },
   props: {
     parentOnSearch: {
       type: Function as PropType<CallableFunction>,
@@ -182,21 +180,11 @@ export default defineComponent({
       treeTypes,
       otherUser: '',
       isShowHistory: false,
-      savedRulesNumber: 0,
     };
   },
   computed: {
     ...mapState(useGrewSearchStore, ['lastQuery', 'grewTreeTypes', 'canRewriteRule']),
-    ...mapState(useUserStore, ['isLoggedIn', 'avatar', 'username']),
-    ...mapState(useProjectStore, [
-      'name',
-      'blindAnnotationMode',
-      'shownFeaturesChoices',
-      'annotationFeatures',
-      'canSaveTreeInProject',
-      'canSeeOtherUsersTrees',
-      'isValidator',
-    ]),
+    ...mapState(useUserStore, ['avatar']),
     treeOptions() {
       if (this.searchReplaceTab == 'SEARCH') {
         return this.treeTypes.filter((element) => this.grewTreeTypes.includes(element.value));
@@ -223,7 +211,6 @@ export default defineComponent({
     }
     this.searchReplaceTab = this.currentQueryType;
     this.treeType = this.treeOptions[0];
-    this.savedRulesNumber = ((LocalStorage.getItem(this.name) as any[]) || []).length;
   },
   methods: {
     ...mapActions(useGrewSearchStore, ['changeLastGrewQuery']),
@@ -238,15 +225,29 @@ export default defineComponent({
     changeQuery(query: string, type: 'SEARCH' | 'REWRITE') {
       this.currentQuery = query;
       this.currentQueryType = type;
-      if (type === 'REWRITE' && this.savedRulesNumber > 1) {
-        this.currentQuery = query.replace('r1', `r${this.savedRulesNumber + 1}`);
-      }
       if (type === 'REWRITE' && this.treeType.value === 'all') {
         this.treeType = this.treeTypes[0];
       }
     },
-    getCopiedPattern(value: any) {
-      this.currentQuery = value;
+    switchGrewMode() {
+      const pattern = this.currentQuery.match(/pattern((.|\n)*?)}/);
+      if (this.searchReplaceTab === 'REWRITE' && this.currentQueryType === 'SEARCH') {
+        if (pattern) {
+          this.currentQuery = `rule r {\n \t${pattern[0]} \n \tcommands { \n \t% add the pattern you want to have to replace … \n }\n}`;
+          this.currentQueryType = 'REWRITE';
+        }
+      }
+      if (this.searchReplaceTab === 'SEARCH' && this.currentQueryType === 'REWRITE') {
+        if (pattern) {
+          this.currentQuery = pattern[0];
+          this.currentQueryType = 'SEARCH'
+        }
+      }
+    },
+    getCopiedRequest(value: any) {
+      this.currentQuery = value.request;
+      this.currentQueryType = value.type === 'search' ? 'SEARCH' : 'REWRITE';
+      this.searchReplaceTab = (value.type as string).toUpperCase();
     },
   },
 });

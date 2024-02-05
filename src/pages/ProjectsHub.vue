@@ -6,11 +6,13 @@
         <q-card-section class="q-pa-md row items-start q-gutter-md">
           <q-toolbar class="text-center">
             <div>
-              <q-btn id="createproject" :disable="!isLoggedIn" color="primary" round dense icon="add" @click="creaProjectDial = true"></q-btn>
-              <q-tooltip v-if="!isLoggedIn" :delay="300" content-class="text-white bg-primary">{{
-                $t('projectHub.tooltipCreaProject[0]')
-              }}</q-tooltip>
-              <q-tooltip v-else :delay="300" class-content="text-white bg-primary">{{ $t('projectHub.tooltipCreaProject[1 ]') }}</q-tooltip>
+              <q-btn :disable="!isLoggedIn" color="primary" round dense icon="add" @click="creaProjectDial = true"></q-btn>
+              <q-tooltip v-if="!isLoggedIn" :delay="300" content-class="text-white bg-primary">
+                {{ $t('projectHub.tooltipCreaProject[0]') }}
+              </q-tooltip>
+              <q-tooltip v-else :delay="300" class-content="text-white bg-primary">
+                {{ $t('projectHub.tooltipCreaProject[1 ]') }}
+              </q-tooltip>
             </div>
             <q-btn round dense :icon="listMode ? 'view_module' : 'list'" @click="toggleProjectView()">
               <q-tooltip :delay="300" content-class="text-white bg-primary">{{ $t('projectHub.tooltipChangeView') }}</q-tooltip>
@@ -86,8 +88,12 @@
           <!-- if not mobile: -->
           <!-- four groups: my projects, my old projects, other projects, other old projects: -->
           <div v-if="isLoggedIn && !$q.platform.is.mobile" class="q-pa-md row items-start q-gutter-md">
-            <div v-if="myProjects.length" class="text-h6 col-12">
-              <q-chip color="primary" class="category" text-color="white"> {{ $t('projectHub.myProjects') }} </q-chip>
+            <div class="text-h6 col-12">
+              <q-chip color="primary" class="category" text-color="white" :label="$t('projectHub.myProjects')"> 
+                <q-tooltip>
+                  {{ $t('projectHub.myProjectsTooltip') }}
+                </q-tooltip>
+              </q-chip>
             </div>
             <ProjectCard
               v-for="project in myProjects()"
@@ -317,7 +323,7 @@ export default defineComponent({
     openURL,
     myProjects() {
       return this.visibleProjects.filter((project) => {
-        return (this.isCreatedByMe(project) || this.isSharedWithMe(project)) && !this.isOld(project);
+        return (this.isCreatedByMe(project) || this.isSharedWithMe(project) || this.haveTreeInProject(project)) && !this.isOld(project);
       });
     },
     getProjects() {
@@ -364,6 +370,9 @@ export default defineComponent({
       const projectMember = [...project.admins, ...project.annotators, ...project.validators, ...project.guests];
       return projectMember.includes(this.username);
     },
+    haveTreeInProject(project: project_extended_t) {
+      return project.users.includes(this.username);
+    }, 
     isOld(project: project_extended_t) {
       // either not used since more than a year or empty and older than an hour or the project has no admins
       return project.lastAccess < this.ayear || (project.numberSamples < 1 && project.lastAccess < -3600) || project.admins.length === 0;

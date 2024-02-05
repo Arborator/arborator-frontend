@@ -139,6 +139,7 @@ export default {
     projectCategory: 'Catégorie',
     allProjects: 'Tous les projets',
     myProjects: 'Mes projets',
+    myProjectsTooltip: 'Projets que je possède et projets sur lesquels je travaille',
     myOldProjects: 'Mon purgatoire des projets',
     myOldProjectInfo:
       "Ces anciens projets n'ont pas été utilisés depuis longtemps. Nous sommes susceptibles de les supprimer à tout moment. Utilisez-les ou téléchargez les données et effacez le projet (clic droit).",

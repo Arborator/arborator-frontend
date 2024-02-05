@@ -142,6 +142,7 @@ export default {
     projectCategory: 'Category',
     allProjects: 'All the projects',
     myProjects: 'My Projects',
+    myProjectsTooltip: 'Projects I own and those I am working on',
     myOldProjects: 'My Project Purgatory',
     myOldProjectInfo:
       'These old projects have not been used for a long time. We might delete them anytime. Use them or download the data and erase the project (right click).',

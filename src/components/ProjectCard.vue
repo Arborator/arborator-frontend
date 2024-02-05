@@ -125,7 +125,7 @@ export default defineComponent({
     };
   },
   computed: {
-    ...mapState(useUserStore, ['isLoggedIn', 'username', 'isSuperAdmin']),
+    ...mapState(useUserStore, ['username', 'isSuperAdmin']),
     isProjectAdmin() {
       return this.project.admins.includes(this.username) || this.isSuperAdmin;
     },

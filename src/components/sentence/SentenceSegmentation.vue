@@ -449,6 +449,7 @@ export default defineComponent({
       }
     },
     saveMergeResults() {
+      this.updateChangedMetadata(this.mergedSentences, this.mergedReactiveSentence as reactive_sentences_obj_t);
       const data = {
         firstSentId: this.sentId,
         secondSentId: this.mergedSentId,

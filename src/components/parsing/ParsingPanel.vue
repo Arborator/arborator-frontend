@@ -35,7 +35,7 @@
             v-model="param.trainSamplesNames"
             :options="allSamplesNames"
             multiple
-            :label="$t('parser.filesToParse')"
+            :label="$t('parser.filesToTrain')"
             stack-label
             use-chips
           />

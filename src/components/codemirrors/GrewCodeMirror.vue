@@ -6,8 +6,7 @@
 import 'codemirror/theme/dracula.css';
 import CodeMirror from 'codemirror';
 import CodemirrorVueWrapper from 'codemirror-editor-vue3';
-
-import 'codemirror/lib/codemirror.css';
+import 'codemirror-editor-vue3/dist/style.css';
 
 import { defineComponent, PropType } from 'vue';
 

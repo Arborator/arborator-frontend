@@ -64,7 +64,7 @@ export default defineComponent({
       selected: [],
       loading: false,
       pagination: {
-        sortBy: 'key',
+        sortBy: 'ID',
         descending: false,
         page: 1,
         rowsPerPage: 10,
@@ -121,7 +121,6 @@ export default defineComponent({
     },
     onConllDialogOk() {
       this.conllTable.forEach((row, index) => {
-        console.log(_featuresConllToJson(row.FEATS))
         this.nodesJson[`${index + 1}`] = {
           ...row, 
           FEATS: row.FEATS ? _featuresConllToJson(row.FEATS) : {},
@@ -138,9 +137,9 @@ export default defineComponent({
         userId: this.userId,
       });  
       notifyMessage({
-          message: "Conllu changed locally, don't forget to save !",
-          type: 'warning',
-          icon: 'warning',
+        message: "Conllu changed locally, don't forget to save !",
+        type: 'warning',
+        icon: 'warning',
       });   
     },
   },

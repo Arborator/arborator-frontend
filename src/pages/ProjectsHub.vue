@@ -88,7 +88,7 @@
           <!-- if not mobile: -->
           <!-- four groups: my projects, my old projects, other projects, other old projects: -->
           <div v-if="isLoggedIn && !$q.platform.is.mobile" class="q-pa-md row items-start q-gutter-md">
-            <div class="text-h6 col-12">
+            <div :key="myProjects.length" class="text-h6 col-12">
               <q-chip color="primary" class="category" text-color="white" :label="$t('projectHub.myProjects')"> 
                 <q-tooltip>
                   {{ $t('projectHub.myProjectsTooltip') }}

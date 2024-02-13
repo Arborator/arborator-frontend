@@ -505,6 +505,12 @@ export default {
     copyTooltip: 'Copy this request',
     deleteTooltip: 'Delete all the history',
   },
+  conllDial: {
+    title: 'Conll Dialog',
+    tableView: 'Table View',
+    conllView: 'Conll View',
+    copyConll: 'Copy Conll',
+  },
   cancel: 'Cancel',
   delete: 'Delete',
   confirm: 'Confirm',

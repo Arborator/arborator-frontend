@@ -103,6 +103,15 @@
                   </q-item-label>
                 </q-item-section>
               </q-item>
+
+              <q-item v-close-popup clickable @click="openConllDialog()">
+                <q-item-section avatar>
+                  <q-avatar icon="format_list_numbered" color="primary" text-color="white" />
+                </q-item-section>
+                <q-item-section>
+                  <q-item-label>{{ $t('sentenceCard.treeConll') }}</q-item-label>
+                </q-item-section>
+              </q-item>
     
               <q-item v-if="!blindAnnotationMode" v-close-popup clickable @click="toggleDiffMode()">
                 <q-item-section avatar>
@@ -127,14 +136,6 @@
                 </q-item-section>
               </q-item>
 
-              <q-item v-close-popup clickable @click="openConllDialog()">
-                <q-item-section avatar>
-                  <q-avatar icon="format_list_numbered" color="primary" text-color="white" />
-                </q-item-section>
-                <q-item-section>
-                  <q-item-label>{{ $t('sentenceCard.treeConll') }}</q-item-label>
-                </q-item-section>
-              </q-item>
 
               <q-item v-close-popup clickable @click="exportSVG()">
                 <q-item-section avatar>

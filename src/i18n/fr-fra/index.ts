@@ -501,6 +501,12 @@ export default {
     copyTooltip: 'Copiez cette requête',
     deleteTooltip: "Supprimez tout l'historique",
   },
+  conllDial: {
+    title: 'Conll Dialog',
+    tableView: 'Tableau',
+    conllView: 'Conll',
+    copyConll: 'Copier Conll',
+  },
   cancel: 'Annuler',
   delete: 'Supprimer',
   confirm: 'Confirmer',

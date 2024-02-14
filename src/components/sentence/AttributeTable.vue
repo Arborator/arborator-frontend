@@ -80,7 +80,7 @@
           </q-td>
           <q-td v-if="isModifiable === true && !metadata.includes(props.row.a)" key="actions" :props="props">
             <q-btn dense round flat color="grey" icon="delete" @click="deleteFeature(props.row)">
-              <q-tooltip :delay="300"> {{ $t('attributeTable.eraseAttribute') }} {{ props.row.a }}</q-tooltip>
+              <q-tooltip :delay="300"> {{ $t('attributeTable.eraseFeature') }} {{ props.row.a }}</q-tooltip>
             </q-btn>
           </q-td>
         </q-tr>

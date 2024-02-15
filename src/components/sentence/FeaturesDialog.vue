@@ -1,6 +1,6 @@
 <template>
   <q-dialog v-model="featuresDialogOpened">
-    <q-card>
+    <q-card style="width: 40vw">
       <q-bar class="bg-primary text-white sticky-bar">
         <div class="text-weight-bold">{{ $t('attributeTable.features') }} "{{ token['FORM'] }}"</div>
         <q-space />

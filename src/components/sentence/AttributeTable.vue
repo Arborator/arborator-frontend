@@ -9,9 +9,9 @@
       :rows="featActualData"
       :columns="columns"
       row-key="name"
-      :pagination="pagination"
       hide-no-data
-      :hide-bottom="title === 'Form' || title === 'Lemma'"
+      :rows-per-page-options="[0]"
+      hide-pagination
     >
       <template v-if="isModifiable === true" #top-right>
         <q-btn color="primary" round size="s" dense icon="add" @click="addNewFeature()">
@@ -20,7 +20,7 @@
       </template>
       <template #body="props">
         <q-tr :props="props">
-          <q-td key="a" :props="props" style="width: 150px">
+          <q-td key="a" :props="props">
             <div v-if="props.row.a !== ''">
               {{ props.row.a }}
             </div>

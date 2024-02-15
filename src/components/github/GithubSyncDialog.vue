@@ -70,13 +70,16 @@
       </q-item>
     </q-list>
     <div :class="$q.dark.isActive ? 'text-white' : 'text-blue-grey-10'" class="q-pa-sm">
-      <q-radio dense size="md" v-model="branchSyn" val="arboratorgrew" />
-      {{ $t('github.arboratorgrewBranch[0]') }}
-      <span style="background-color: #7f90c0"><code>arboratorgrew</code></span>
-      {{ $t('github.arboratorgrewBranch[1]') }}
-    </div>
-    <div :class="$q.dark.isActive ? 'text-white' : 'text-blue-grey-10'" class="q-pa-sm">
       <q-radio dense size="md" v-model="branchSyn" val="default" /> {{ $t('github.defaultBranch') }}
+    </div>
+    <div :class="$q.dark.isActive ? 'text-white' : 'text-blue-grey-10'" class=" row q-pa-sm">
+      <div class="col">
+        <q-radio dense size="md" v-model="branchSyn" val="new" />
+        {{ $t('github.arboratorgrewBranch') }}
+      </div>
+      <div class="col-4">
+        <q-input :disable="branchSyn !== 'new'" dense outlined v-model="branchToUse" :label="$t('github.newBranchName')"></q-input>
+      </div>
     </div>
     <div class="row q-gutter-md justify-center">
       <q-btn :loading="loading" :disable="branch == ''" color="primary" @click="synchronizeWithGitRepo(selectedRepository, branch, branchSyn)"
@@ -90,8 +93,6 @@
 </template>
 <script lang="ts">
 import api from '../../api/backend-api';
-import { mapState } from 'pinia';
-import { useUserStore } from 'src/pinia/modules/user';
 import { githubRepository_t } from '../../api/backend-types';
 import { notifyError, notifyMessage } from 'src/utils/notify';
 
@@ -116,7 +117,8 @@ export default defineComponent({
       search: '',
       listBranches,
       branch: '',
-      branchSyn: 'arboratorgrew',
+      branchSyn: 'default',
+      branchToUse: '',
       noRepositories: false,
       currentPage: 1,
       pageIndex: 1,
@@ -169,6 +171,7 @@ export default defineComponent({
         .getGithubRepoBranches(this.selectedRepository)
         .then((response) => {
           this.listBranches = response.data;
+          this.branchToUse = this.listBranches.includes('arboratorgrew') ? '' : 'arboratorgrew'
           this.branch = this.listBranches[0];
         })
         .catch((error) => {
@@ -176,11 +179,10 @@ export default defineComponent({
         });
     },
     async synchronizeWithGitRepo(repoName: string, branch: string, branchSyn: string) {
-      if (branchSyn == 'default') branchSyn = branch;
       const data = {
         fullName: repoName,
         branchImport: branch,
-        branchSync: branchSyn,
+        branchSync: branchSyn === 'default' ? branch : this.branchToUse,
       };
       this.loading = true;
       var interval = setTimeout(() => {

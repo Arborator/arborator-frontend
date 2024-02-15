@@ -328,6 +328,7 @@ export default {
     newBranchName: 'Name of branch to use',
     defaultBranch: ' Use the selected branch (Be careful if you work with a repository that has many collaborators).',
     synchronize: 'Synchronize',
+    syncBtnTooltip: 'You need to set the branch name first',
     syncWarningMessage: 'The repository is large, the synchronization will take some time',
     synchronizeMessage: 'is synchronized with',
     commitNotif: ['You have', 'change', 'changes', "You don't have changes to commit"],

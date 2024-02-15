@@ -82,11 +82,19 @@
       </div>
     </div>
     <div class="row q-gutter-md justify-center">
-      <q-btn :loading="loading" :disable="branch == ''" color="primary" @click="synchronizeWithGitRepo(selectedRepository, branch, branchSyn)"
-        >{{ $t('github.synchronize') }}
+      <q-btn 
+        :loading="loading" 
+        :disable="disableSyncBtn" 
+        color="primary" 
+        @click="synchronizeWithGitRepo(selectedRepository, branch, branchSyn)"
+        :label="$t('github.synchronize')"
+      >
         <template v-slot:loading>
           <q-spinner color="grey-11" size="xs" />
         </template>
+        <q-tooltip v-if="disableSyncBtn">
+          {{  $t('github.syncBtnTooltip') }}
+        </q-tooltip>
       </q-btn>
     </div>
   </q-card-section>
@@ -140,6 +148,9 @@ export default defineComponent({
         (this.pageIndex - 1) * this.totalItemPerPage + this.totalItemPerPage
       );
     },
+    disableSyncBtn() {
+      return this.branchSyn === 'new' && this.branchToUse === '';
+    }, 
   },
   mounted() {
     this.getGithubRepositories();

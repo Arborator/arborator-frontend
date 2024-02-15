@@ -319,6 +319,7 @@ export default {
     newBranchName: "Nom de la branche à utiliser",
     defaultBranch: ' Utiliser la branche sélectionnée (Attention si vous travaillez avec un dépôt qui a de nombreux collaborateurs).',
     synchronize: 'Synchroniser',
+    syncBtnTooltip: "Vous devez d'abord définir le nom de la branche",
     syncWarningMessage: 'Le dépôt est volumineux, la synchronisarion prendra un certain temps',
     synchronizeMessage: 'est synchronisé avec',
     commitNotif: ['Vous avez ', 'changement', 'changements', "Vous n'avez pas aucun commit à effectuer"],

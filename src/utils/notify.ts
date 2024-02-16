@@ -36,12 +36,14 @@ interface ArboratorGrewError_t {
 export function notifyError(ArboratorGrewError: ArboratorGrewError_t) {
   console.error('ArboratorGrewError : ', ArboratorGrewError);
 
-  const timeout = ArboratorGrewError.timeout || 10000;
+  const timeout = 0;
   if (typeof ArboratorGrewError.error === 'string') {
     Notify.create({
       message: ArboratorGrewError.error,
       type: 'negative',
       icon: 'warning',
+      position: 'top', 
+      closeBtn: 'X',
       timeout,
     });
     return;

@@ -76,6 +76,8 @@ export function notifyError(ArboratorGrewError: ArboratorGrewError_t) {
     message: msg,
     type: 'negative',
     icon: 'warning',
+    closeBtn: 'X',
+    position: 'top',
     timeout,
   });
 }

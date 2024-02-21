@@ -7,7 +7,7 @@
           <q-select
             style="text-transform: capitalize"
             v-model="principalFeatures"
-            filled
+            outlined
             multiple
             :options="principalFeatureOptions"
             :option-label="(feature) => feature.charAt(0).toUpperCase() + feature.slice(1)"
@@ -18,9 +18,9 @@
         </div>
         <div class="col-5">
           <q-select
-            :disable="principalFeatures.length === 0"
+            :disable="!principalFeatures.length"
             v-model="secondaryFeatures"
-            filled
+            outlined
             multiple
             :options="secondaryFeatureOptions"
             :option-label="(feature) => feature.charAt(0).toUpperCase() + feature.slice(1)"
@@ -31,7 +31,7 @@
         </div>
         <div>
           <q-tooltip content-class="bg-white text-primary">{{ $t('projectView.lexicon[8]') }}</q-tooltip>
-          <q-btn-dropdown class="float-right" size="md" outline color="primary" label=" get Lexicon">
+          <q-btn-dropdown :disable="!principalFeatures.length" class="float-right" size="md" outline color="primary" label=" get Lexicon">
             <q-list>
               <q-item v-if="canSaveTreeInProject" v-close-popup clickable @click="fetchLexicon_('user')">
                 <q-item-section avatar>

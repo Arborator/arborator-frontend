@@ -358,8 +358,6 @@ export default defineComponent({
           targetSentence.metaJson[metaKey] = Object.values(targetSentence.treeJson.nodesJson)
             .map((token) => token.FORM)
             .join(' ');
-        } else if (metaKey == 'timestamp') {
-          targetSentence.metaJson[metaKey] = String(Date.now() * 1000);
         } else if (metaKey == 'sent_id') {
           targetSentence.metaJson[metaKey] = `${metaValue}_${split}`;
         } else {
@@ -442,7 +440,7 @@ export default defineComponent({
             ...sentenceMeta,
             ...secondSentenceMeta,
             text: sentenceMeta.text + ' ' + secondSentenceMeta.text,
-            timestamp: String(Date.now() * 1000),
+            timestamp: sentenceMeta.timestamp,
             sent_id: sentenceMeta.sent_id + '_' + secondSentenceMeta.sent_id,
           };
         }

@@ -297,6 +297,7 @@ export default defineComponent({
       showResults: false,
       forceRender: 0,
       mergedSentId: '',
+      mergeWarningMessage: '',
     };
   },
   computed: {
@@ -373,6 +374,15 @@ export default defineComponent({
         this.createReactiveSentence(this.secondSentences, this.secondReactiveSentence as reactive_sentences_obj_t);
       } else {
         this.createReactiveSentence(this.mergedSentences, this.mergedReactiveSentence as reactive_sentences_obj_t);
+        if (this.mergeWarningMessage) {
+          this.$q.notify({
+            message: this.mergeWarningMessage,
+            color: 'warning',
+            position: 'top',
+            closeBtn: 'X',
+            timeout: 0,
+          });
+        }
       }
     },
     createReactiveSentence(targetSentences: sentence_t, reactiveSentencesObj: reactive_sentences_obj_t) {
@@ -412,38 +422,65 @@ export default defineComponent({
       }
     },
     MergeSentences() {
+      const usersDiff = [];
+      this.mergeWarningMessage = '';
       const secondSentenceConlls = this.filteredTrees[this.sortedSentIds.indexOf(this.mergedSentId)].conlls;
       for (const [userId, reactiveSentence] of Object.entries(this.reactiveSentencesObj)) {
         if (Object.keys(secondSentenceConlls).includes(userId)) {
-          this.mergedSentences[userId] = emptySentenceJson();
-          const secondSentenceJson = sentenceConllToJson(secondSentenceConlls[userId]);
-
-          const sentenceTree = reactiveSentence.state.treeJson;
-          const sentenceMeta = reactiveSentence.state.metaJson;
-          Object.values(sentenceTree.nodesJson).forEach((token, index) => {
-            this.mergedSentences[userId].treeJson.nodesJson[`${index + 1}`] = { ...token };
-          });
-
-          let secondSentenceTree = secondSentenceJson.treeJson;
-          let secondSentenceMeta = secondSentenceJson.metaJson;
-          let length = Object.values(this.mergedSentences[userId].treeJson.nodesJson).length;
-          Object.values(secondSentenceTree.nodesJson).forEach((token, index) => {
-            let newId = index + length + 1;
-            this.mergedSentences[userId].treeJson.nodesJson[`${newId}`] = {
-              ...token,
-              ID: `${newId}`,
-              HEAD: token.HEAD > 0 ? token.HEAD + length : 0,
-            };
-          });
-
-          this.mergedSentences[userId].metaJson = {
-            ...sentenceMeta,
-            ...secondSentenceMeta,
-            text: sentenceMeta.text + ' ' + secondSentenceMeta.text,
-            timestamp: sentenceMeta.timestamp,
-            sent_id: sentenceMeta.sent_id + '_' + secondSentenceMeta.sent_id,
-          };
+          const firstSentenceConll = reactiveSentence.exportConll();
+          const secondSentenceConll = secondSentenceConlls[userId];
+          this.mergedSentences[userId] = this.mergeConlls(firstSentenceConll, secondSentenceConll);
         }
+        else {
+          usersDiff.push(userId);
+          this.mergedSentences[userId] = reactiveSentence.state;
+        }
+      }
+      for (const userId of Object.keys(secondSentenceConlls)) {
+        if (!Object.keys(this.reactiveSentencesObj).includes(userId)) {
+          usersDiff.push(userId);
+          this.mergedSentences[userId] = sentenceConllToJson(secondSentenceConlls[userId]);
+        }
+      }
+      if (usersDiff.length) {
+        this.mergeWarningMessage = `Users "${usersDiff.join(', ')}" do not have trees in both sentences, so their trees are merged with empty trees`;
+      }
+    },
+    mergeConlls(firstSentenceConll: string, secondSentenceConll: string) {
+      const mergedSentence = emptySentenceJson();
+      const firstSentenceJson = sentenceConllToJson(firstSentenceConll);
+      const secondSentenceJson = sentenceConllToJson(secondSentenceConll);
+      Object.values(firstSentenceJson.treeJson.nodesJson).forEach((token, index) => {
+        mergedSentence.treeJson.nodesJson[`${index + 1}`] = { ...token };
+      });
+      let length = Object.values(mergedSentence.treeJson.nodesJson).length;
+      Object.values(secondSentenceJson.treeJson.nodesJson).forEach((token, index) => {
+        let newId = index + length + 1;
+        mergedSentence.treeJson.nodesJson[`${newId}`] = {
+          ...token,
+          ID: `${newId}`,
+          HEAD: token.HEAD > 0 ? token.HEAD + length : 0,
+        };
+      });
+      mergedSentence.metaJson = {
+        ...firstSentenceJson.metaJson,
+        ...secondSentenceJson.metaJson,
+        text: firstSentenceJson.metaJson.text + ' ' + secondSentenceJson.metaJson.text,
+        timestamp: firstSentenceJson.metaJson.timestamp > secondSentenceJson.metaJson.timestamp ? firstSentenceJson.metaJson.timestamp: secondSentenceJson.metaJson.timestamp,
+        sent_id: this.proposeMergedSentId(firstSentenceJson.metaJson.sent_id as  string, secondSentenceJson.metaJson.sent_id as string),
+      };
+      return mergedSentence;
+    },
+    proposeMergedSentId(firstSentId: string, secondSentId: string) {
+      const firstSentIdParts = firstSentId.split('_');
+      const secondSentIdParts = secondSentId.split('_');
+      const firstSentSuffix = firstSentIdParts.pop();
+      const secondSentSuffix = secondSentIdParts.pop();
+      if (JSON.stringify(firstSentIdParts) === JSON.stringify(secondSentIdParts)) {
+        return firstSentId + '_' + secondSentSuffix;
+      }
+      else {
+        return firstSentId + '_' + secondSentId;
       }
     },
     saveMergeResults() {

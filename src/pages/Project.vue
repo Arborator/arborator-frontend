@@ -38,12 +38,10 @@
         <q-table
           flat
           bordered
-          ref="textsTable"
           :key="tableKey"
           v-model:pagination="table.pagination"
           v-model:selected="table.selected"
           :class="($q.dark.isActive ? 'my-sticky-header-table-dark' : 'my-sticky-header-table') + ' rounded-borders'"
-          title="Samples"
           :rows="samples"
           :columns="table.fields"
           row-key="sample_name"
@@ -248,22 +246,6 @@
 
             <q-space />
 
-            <q-select
-              v-model="table.visibleColumns"
-              multiple
-              borderless
-              dense
-              options-dense
-              :display-value="$q.lang.table.columns"
-              emit-value
-              map-options
-              :options="filterFields(table)"
-              option-value="name"
-              style="min-width: 100px"
-            >
-              <q-tooltip :delay="300" content-class="text-white bg-primary">{{ $t('projectView.tooltipSelectVisible') }}</q-tooltip>
-            </q-select>
-
             <q-btn flat round dense :icon="props.inFullscreen ? 'fullscreen_exit' : 'fullscreen'" class="q-ml-md" @click="props.toggleFullscreen">
               <q-tooltip :delay="300" content-class="text-white bg-primary">{{ $t('projectView.tooltipFullscreen') }}</q-tooltip>
             </q-btn>
@@ -454,7 +436,6 @@ export default defineComponent({
   data() {
     const samples: sample_t[] = [];
     const selected: sample_t[] = [];
-    const projectTreesFrom: string[] = [];
     const confirmActionCallback: CallableFunction = () => {
       console.log('Callback not init yet');
     };
@@ -481,20 +462,14 @@ export default defineComponent({
           field: 'number_tokens',
         },
         {
-          name: 'profs',
-          label: this.$t('projectView.tableFields[5]'),
-          sortable: true,
-          field: 'roles.prof',
-        },
-        {
           name: 'treesFrom',
-          label: this.$t('projectView.tableFields[6]'),
+          label: this.$t('projectView.tableFields[3]'),
           sortable: true,
           field: 'treesFrom',
         },
         {
           name: 'blindAnnotationLevel',
-          label: this.$t('projectView.tableFields[7]'),
+          label: this.$t('projectView.tableFields[4]'),
           sortable: true,
           field: 'blindAnnotationLevel',
         },
@@ -515,10 +490,6 @@ export default defineComponent({
     };
     return {
       table,
-      multiple: [],
-      options: ['Google', 'Facebook', 'Twitter', 'Apple', 'Oracle'],
-      tab: 'texts',
-      assignDial: false,
       uploadDial: false,
       projectSettingsDial: false,
       simpleProjectInfoDialog: false,
@@ -531,7 +502,6 @@ export default defineComponent({
       confirmActionCallback,
       confirmActionArg1: '',
       samples,
-      projectTreesFrom,
       blindAnnotationModeOptions: [
         {
           label: '1: validated_visible',
@@ -550,7 +520,6 @@ export default defineComponent({
           value: 4,
         },
       ],
-      features: [],
       sampleNames,
       window: { width: 0, height: 0 },
       tableKey: 0,
@@ -566,7 +535,6 @@ export default defineComponent({
   },
   computed: {
     ...mapState(useProjectStore, [
-      'annotationFeatures',
       'visibility',
       'isAdmin',
       'isGuest',
@@ -576,7 +544,6 @@ export default defineComponent({
       'imageSrc',
       'description',
       'isValidator',
-      'isProjectMember',
       'canSaveTreeInProject',
       'isOwner',
       'freezed',
@@ -585,7 +552,7 @@ export default defineComponent({
       'language',
     ]),
     ...mapWritableState(useProjectStore, ['freezed']),
-    ...mapState(useUserStore, ['isLoggedIn', 'isSuperAdmin', 'loggedWithGithub', 'avatar', 'username']),
+    ...mapState(useUserStore, ['isSuperAdmin']),
     ...mapState(useGithubStore, ['reloadCommits']),
     projectName(): string {
       return this.$route.params.projectname as string;
@@ -660,10 +627,6 @@ export default defineComponent({
       this.getSynchronizedGithubRepo();
     },
 
-    filterFields(tableJson: table_t<unknown>) {
-      // to remove some fields from visiblecolumns select options
-      return tableJson.fields.filter((obj) => obj.field !== 'syntInfo' && obj.field !== 'cat' && obj.field !== 'redistributions');
-    },
     loadProjectData() {
       this.getProjectSamples();
       this.reload += 1;

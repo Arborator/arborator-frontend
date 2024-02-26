@@ -191,7 +191,7 @@ export default {
     tooltipWindows: ['Minimize', 'Maximize', 'Close'],
     search: 'Rechercher',
     uploadSelectDial: 'Select one or multiple conll files',
-    tableFields: ['Nom', 'Nb Phrases', 'Nb Tokens', 'Annotateurs', 'Validateurs', 'Prof', 'Arbres de', "Niveau d'annotation aveugle"],
+    tableFields: ['Nom', 'Nb Phrases', 'Nb Tokens', 'Arbres de', "Niveau d'annotation aveugle"],
     addUser: 'Ajouter un utilisateur',
     lexicon: [
       'Sélectionnez une ou plusieurs features pour le Lexique',

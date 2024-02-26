@@ -199,7 +199,7 @@ export default {
     tooltipWindows: ['Minimize', 'Maximize', 'Close'],
     search: 'Search',
     uploadSelectDial: 'Select one or multiple conll files',
-    tableFields: ['Name', 'Nb Sentences', 'Nb Tokens', 'Annotators', 'Validators', 'Prof', 'Trees From', 'Blind annotation level'],
+    tableFields: ['Name', 'Nb Sentences', 'Nb Tokens', 'Trees From', 'Blind annotation level'],
     addUser: 'Add user',
     lexicon: [
       'Select one or multiple features for the Lexicon',

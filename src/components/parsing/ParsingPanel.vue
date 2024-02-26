@@ -1,160 +1,248 @@
 <template>
   <q-card flat bordered>
-    <div class="row q-pa-md q-gutter-md">
-      <div class="col">
-        <div class="text-h6 q-py-md">{{ $t('parser.settings') }}</div>
-        <q-separator />
-        <div class="q-py-md">
-          <q-option-group :disable="disableUI" :options="param.pipelineOptions" type="radio" v-model="param.pipelineChoice" />
+    <!-- pretrained Models -->
+    <q-card-section v-if="isShowModels">
+      <div class="row">
+        <div class="col q-gutter-md">
+          <q-btn 
+            :disable="!parserData.param.canRemoveParser || !modelsTable.selected.length" 
+            outline 
+            color="primary" 
+            no-caps 
+            :label="$t('parser.removeModel')" 
+            icon="delete"
+            @click="removeModel()"
+          >
+            <q-tooltip v-if="!modelsTable.selected.length">
+              {{ $t('parser.disableRemoveBtnTooltip[0]') }}
+            </q-tooltip>
+            <q-tooltip v-if="!parserData.param.canRemoveParser">
+              {{ $t('parser.disableRemoveBtnTooltip[1]') }}
+            </q-tooltip>
+          </q-btn>
+          <q-btn 
+            no-caps 
+            outline 
+            color="primary" 
+            :label="$t('parser.trainBtn')" 
+            icon="add" 
+            @click="onclickTrain()" 
+            />
+          <q-btn 
+            :disable="!modelsTable.selected.length"
+            no-caps 
+            outline 
+            color="primary" 
+            :label="$t('parser.parseBtn')" 
+            icon="edit_note" 
+            @click="parserData.param.pipelineChoice = 'PARSE_ONLY'; isShowModels = false;"
+          >
+            <q-tooltip v-if="!modelsTable.selected.length">
+              {{ $t('parser.disableRemoveBtnTooltip[0]') }}
+            </q-tooltip>
+          </q-btn>
         </div>
-        <q-separator />
-        <div class="q-pa-md">
-          <q-select
-            outlined
-            dense
-            :disable="disableUI"
-            v-model="param.baseModel"
-            :options="param.baseModelsOptions"
-            :label="$t('parser.pretrainModel')"
-            :hint="$t('parser.pretrainModelHint')"
-            clearable
-          />
-        </div>
-      </div>
-      <q-separator vertical inset class="q-mx-lg" />
-      <div v-show="param.pipelineChoice !== 'PARSE_ONLY'" class="col">
-        <div class="text-h6 q-py-md">{{ $t('parser.trainSettings') }}</div>
-        <q-separator />
-        <div class="q-pa-sm">
-          <q-toggle :disable="disableUI" v-model="param.trainAll" :label="$t('parser.trainOnAllfiles')" />
-          <q-select
-            dense
-            outlined
-            :disable="disableUI"
-            :class="{ invisible: param.trainAll }"
-            v-model="param.trainSamplesNames"
-            :options="allSamplesNames"
-            multiple
-            :label="$t('parser.filesToTrain')"
-            stack-label
-            use-chips
-          />
-          <q-toggle :disable="disableUI" v-model="param.isCustomTrainingUser" :label="$t('parser.customUser')" />
-          <q-select
-            dense
-            outlined
-            :disable="disableUI"
-            :class="{ invisible: !param.isCustomTrainingUser }"
-            v-model="param.trainingUser"
-            :options="trainingTreesFrom"
-            :label="$t('parser.trainingUser')"
-            stack-label
-          />
-        </div>
-        <q-separator />
-        <div class="q-pa-sm">
-          <q-input
-            outlined
-            dense
-            :disable="disableUI"
-            v-model.number="param.maxEpoch"
-            type="number"
-            label="epochs"
-            min="3"
-            max="300"
-            style="max-width: 100px"
-            :rules="[(val) => (val >= 3 && val <= 300) || 'Please use 3 to 300 epochs']"
-          />
+        <div class="col">
+          <q-input outlined dense v-model="modelsTable.filter" icon="search" :label="$t('parser.searchLabel')">
+            <template #append>
+              <q-icon name="search" />
+            </template>
+          </q-input>
         </div>
       </div>
-      <q-separator v-show="param.pipelineChoice !== 'PARSE_ONLY'" vertical inset class="q-mx-lg" />
-      <div v-show="param.pipelineChoice !== 'TRAIN_ONLY'" class="col">
-        <div class="text-h6 q-py-md">{{ $t('parser.parseSettings') }}</div>
-        <q-separator />
-        <div class="q-pa-md q-gutter-md">
-          <q-toggle :disable="disableUI" v-model="param.parseAll" :label="$t('parser.parseAllFiles')" />
-          <q-select
-            dense
-            outlined
-            :disable="disableUI"
-            :class="{ invisible: param.parseAll }"
-            v-model="param.parseSamplesNames"
-            :options="allSamplesNames"
-            multiple
-            :label="$t('parser.filesToParse')"
-            stack-label
-            use-chips
-          />
-          <q-input
-            :disable="disableUI"
-            dense
-            outlined
-            v-model="param.parserSuffix"
-            :label="$t('parser.parseSuffix')"
-            :hint="$t('parser.parseHint') + param.parserSuffix + '`'"
-          />
-        </div>
-        <q-separator />
-        <div class="q-pa-md">
-          <q-toggle :disable="disableUI" v-model="param.isCustomParsingUser" :label="$t('parser.customParserUser')" />
-          <q-select
-            :disable="disableUI"
-            :class="{ invisible: !param.isCustomParsingUser }"
-            v-model="param.parsingUser"
-            dense
-            outlined
-            :options="parsingTreesFrom"
-            :label="$t('parser.parseUser')"
-            stack-label
-          />
-          <q-toggle :disable="disableUI" v-model="param.keepHeads" :label="$t('parser.keepHeads')" />
-        </div>
+      <q-table 
+        flat 
+        :columns="modelsTable.fields"
+        :rows="parserData.param.availableModels"
+        v-model:selected="modelsTable.selected"
+        :filter="modelsTable.filter" 
+        :filter-method="filterModels"
+        selection="single" 
+        hide-no-data
+      > 
+      </q-table>
+    </q-card-section>
+    <q-card-section v-if="!isShowModels" class="q-gutter-md">
+      <div>
+        <q-btn flat icon="arrow_back" @click="isShowModels = true; parserData.param.pipelineChoice = ''" />
       </div>
-      <q-separator v-show="param.pipelineChoice !== 'TRAIN_ONLY'" vertical inset class="q-mx-lg" />
-      <div class="col">
-        <div class="text-h6 q-py-md">{{ $t('parser.pipelineSummary') }}</div>
-        <q-separator />
-        <div class="q-pa-md">
-          <div v-if="param.pipelineChoice !== `PARSE_ONLY`" class="text-subtitle5 q-mb-xs">
-            {{ $t('parser.trainingSents') }} : {{ trainingSentencesCount }}
+      <!-- training panel -->
+      <div v-if="parserData.param.pipelineChoice === 'TRAIN_AND_PARSE' || parserData.param.pipelineChoice === 'TRAIN_ONLY'" class="q-gutter-md">
+        <div class="row text-h6">
+          {{ $t('parser.trainSettings') }}
+        </div>
+        <div class="row">
+          <div class="col">
+            <q-toggle v-model="parserData.param.trainAll" :label="$t('parser.trainOnAllfiles')"></q-toggle>
           </div>
-          <div v-if="param.pipelineChoice !== `TRAIN_ONLY`" class="text-subtitle5 q-mb-xs">
-            {{ $t('parser.parseSents') }} : {{ parsingSentencesCount }}
+          <div v-if="!parserData.param.trainAll" class="col-4 q-pr-md">
+            <q-select
+              dense 
+              outlined 
+              v-model="parserData.param.trainSamplesNames" 
+              :options="allSamplesNames"  
+              :label="$t('parser.filesToTrain')"
+              use-chips 
+              multiple 
+              stack-label
+              />
           </div>
-          <div class="text-subtitle5 q-mb-xs">{{ $t('parser.timeEstimated') }} = {{ estimatedTime }}mn</div>
-        </div>
-
-        <q-btn
-          v-close-popup
-          color="primary"
-          :disable="paramError || isHealthy === false"
-          label="START"
-          :loading="taskStatus !== null"
-          push
-          @click="parserPipelineStart()"
-        />
-        <div v-if="taskStatus !== null">
-          <div class="text-subtitle5 q-mb-xs">{{ $t('parser.currentTask') }}: {{ taskStatus.taskType }}</div>
-          <div v-if="taskStatus.taskAdditionalMessage" class="text-subtitle5 q-mb-xs">
-            {{ taskStatus.taskAdditionalMessage }}
+          <div class="col">
+            <q-toggle 
+              v-model="parserData.param.isCustomTrainingUser" 
+              :label="$t('parser.customUser')"
+              />
+          </div>
+          <div v-if="parserData.param.isCustomTrainingUser" class="col-4">
+            <q-select 
+              dense 
+              outlined 
+              v-model="parserData.param.trainingUser" 
+              :options="trainingTreesFrom"
+              :label="$t('parser.trainingUser')"
+              stack-label
+            />
           </div>
         </div>
-        <div v-if="isHealthy === false">
-          <p class="text-subtitle5 q-mb-xs text-red-14">
-            /!\ Sorry, the parsing server is unreachable, and it's not under our control. Please come back in some time.
-          </p>
+        <div class="row">
+          <div class="col q-pr-md">
+            <q-input
+              outlined
+              dense
+              v-model.number="parserData.param.maxEpoch"
+              type="number"
+              label="epochs"
+              min="3"
+              max="300" 
+              :rules="[(val) => (val >= 3 && val <= 300) || 'Please use 3 to 300 epochs']"
+            />
+          </div>
+          <div class="col">
+            <q-btn-toggle
+              v-model="parserData.param.pipelineChoice"
+              no-caps
+              toggle-color="primary"
+              :options="[
+                {label: $t('parser.parserChoices[0]'), value: 'TRAIN_AND_PARSE'},
+                {label: $t('parser.parserChoices[1]'), value: 'TRAIN_ONLY'},
+              ]"
+            />
+          </div>
         </div>
       </div>
-    </div>
+      <!-- parsing panel -->
+      <div v-if="parserData.param.pipelineChoice === 'TRAIN_AND_PARSE' || parserData.param.pipelineChoice === 'PARSE_ONLY'" class="q-gutter-md">
+        <div class="row text-h6">
+          {{ $t('parser.parseSettings') }}
+        </div>
+        <div class="row">
+          <div class="col">
+            <q-toggle v-model="parserData.param.parseAll" :label="$t('parser.parseAllFiles')" />
+          </div>
+          <div v-if="!parserData.param.parseAll" class="col-4 q-pr-md">
+            <q-select 
+              dense
+              outlined
+              v-model="parserData.param.parseSamplesNames" 
+              :options="allSamplesNames"
+              :label="$t('parser.filesToParse')"
+              use-chips 
+              multiple 
+              stack-label
+             />
+          </div>
+          <div class="col">
+            <q-toggle v-model="parserData.param.isCustomParsingUser" :label="$t('parser.customParserUser')" />
+          </div>
+          <div v-if="parserData.param.isCustomParsingUser" class="col-4">
+            <q-select
+              v-model="parserData.param.parsingUser"
+              dense
+              outlined
+              :options="parsingTreesFrom"
+              :label="$t('parser.parseUser')"
+              stack-label
+            />
+          </div>
+        </div>
+        <div class="row">
+          <div class="col q-pr-md">
+            <q-input 
+              dense
+              outlined
+              v-model="parserData.param.parserSuffix" 
+              :label="$t('parser.parseSuffix')"
+              :hint="$t('parser.parseHint') + parserData.param.parserSuffix + '`'" 
+              stack-label
+              />
+          </div>
+          <div class="col">
+            <q-select dense outlined v-model="parserData.param.columnsToKeep" :options="conllColumns" multiple use-chips :label="$t('parser.columnsToKeep')" />
+          </div>
+        </div>
+      </div>
+      <div v-if="!isShowModels" class="q-gutter-md">
+        <q-separator />
+        <div class="row text-h6">
+          {{ $t('parser.pipelineSummary') }}
+        </div>
+        <div>
+          <q-item bordered separator>
+            <q-item-section>
+              <q-item-label class="text-weight-bold text-grey">{{ $t('parser.trainingSents') }}</q-item-label>
+              <q-item-label lines="2">{{ trainingSentencesCount }}</q-item-label>
+            </q-item-section>
+            <q-item-section>
+              <q-item-label class="text-weight-bold text-grey">{{ $t('parser.parseSents') }} </q-item-label>
+              <q-item-label lines="2">{{ parsingSentencesCount }}</q-item-label>
+            </q-item-section>
+            <q-item-section>
+              <q-item-label class="text-weight-bold text-grey">{{ $t('parser.timeEstimated') }}</q-item-label>
+              <q-item-label lines="2">{{ estimatedTime }} mn</q-item-label>
+            </q-item-section>
+          </q-item>
+          <q-separator />
+          <div v-if="parserData.taskStatus !== null">
+            <div class="text-subtitle5 q-mb-xs">{{ $t('parser.currentTask') }}: {{ parserData.taskStatus.taskType }}</div>
+            <div v-if="parserData.taskStatus.taskAdditionalMessage" class="text-subtitle5 q-mb-xs">
+              {{ parserData.taskStatus.taskAdditionalMessage }}
+            </div>
+          </div>
+          <div v-if="parserData.isHealthy === false">
+            <p class="text-subtitle5 q-mb-xs text-red-14">
+              /!\ Sorry, the parsing server is unreachable, and it's not under our control. Please come back in some time.
+            </p>
+          </div>
+        </div>
+        <div class="row" style="justify-content: right">
+          <q-btn 
+            :disable="paramError || parserData.isHealthy === false"
+            color="primary" 
+            :label="$t('parser.startBtn')"
+            :loading="parserData.taskStatus !== null"
+            push
+            @click="parserPipelineStart()"
+          />
+        </div>
+      </div>
+    </q-card-section>
   </q-card>
 </template>
-
 <script lang="ts">
+import api from 'src/api/backend-api';
+import { mapState, mapActions } from 'pinia';
+import { useProjectStore } from 'src/pinia/modules/project';
+import { useUserStore } from 'src/pinia/modules/user';
+import { notifyMessage, notifyError } from 'src/utils/notify';
+import { table_t } from 'src/types/main_types';
+import { ModelInfo_t, sample_t, ParsingSettings_t } from 'src/api/backend-types';
 import { defineComponent, PropType } from 'vue';
-import api from '../../api/backend-api';
-import { ModelInfo_t, ParsingSettings_t, sample_t } from 'src/api/backend-types';
-import { notifyMessage } from 'src/utils/notify';
+
 const kirParserSentPerSecSpeed: number = 140;
+const TIMEOUT_TASK_STATUS_CHECKER = 1000 * 60 * 60 * 3; // 3 hours
+const REFRESH_RATE_TASK_STATUS_CHECKER = 1000 * 10; // 10 seconds
+
+type pipelineChoice_t = '' | 'TRAIN_AND_PARSE' | 'TRAIN_ONLY' | 'PARSE_ONLY' ;
 
 type taskType_t = 'ASK_TRAINING' | 'TRAINING' | 'ASK_PARSING' | 'PARSING';
 
@@ -165,22 +253,18 @@ type taskStatus_t = null | {
   taskIntervalChecker: null | ReturnType<typeof setTimeout>;
 };
 
-type pipelineChoice_t = 'TRAIN_AND_PARSE' | 'TRAIN_ONLY' | 'PARSE_ONLY';
-
 interface parser_t {
   progress: string;
   taskStatus: taskStatus_t;
   isHealthy: boolean;
   param: {
     pipelineChoice: pipelineChoice_t;
-    pipelineOptions: { label: string; value: pipelineChoice_t }[];
+    availableModels: any[],
     baseModel: ModelInfo_t | null;
-    baseModelsOptions: { label: string; value: ModelInfo_t }[];
-    advancedSettings: boolean;
-    keepUpos: boolean;
+    columnsToKeep: string[],
     isCustomTrainingUser: boolean;
-    trainingUser: string;
     isCustomParsingUser: boolean;
+    trainingUser: string;
     parsingUser: string;
     trainAll: boolean;
     parseAll: boolean;
@@ -188,15 +272,11 @@ interface parser_t {
     parseSamplesNames: string[];
     maxEpoch: number;
     parserSuffix: string;
-    keepHeads: boolean;
+    canRemoveParser: boolean,
   };
 }
-
-const TIMEOUT_TASK_STATUS_CHECKER = 1000 * 60 * 60 * 3; // 3 hours
-const REFRESH_RATE_TASK_STATUS_CHECKER = 1000 * 10; // 10 seconds
 export default defineComponent({
-  name: 'ParsingPanel',
-  components: {},
+  name: 'Parsing',
   props: {
     samples: {
       type: Array as PropType<sample_t[]>,
@@ -207,26 +287,71 @@ export default defineComponent({
       required: true,
     },
   },
-
   data() {
-    const data: parser_t = {
-      taskStatus: null,
+    const modelsTable: table_t<any> = {
+      fields: [
+        {
+          name: 'projectName',
+          label: this.$t('parser.modelsTableColumns[0]'),
+          sortable: true,
+          field: 'projectName',
+        },
+        {
+          name: 'language',
+          label: this.$t('parser.modelsTableColumns[1]'),
+          sortable: true,
+          field: 'language',
+        },
+        {
+          name: 'sentencesNumber',
+          label: this.$t('parser.modelsTableColumns[2]'),
+          sortable: true,
+          field: 'sentencesNumber',
+        },
+        {
+          name: 'trainingDate',
+          label: this.$t('parser.modelsTableColumns[3]'),
+          sortable: true,
+          field: 'modelId',
+        },
+        {
+          name: 'bestLAS',
+          label: this.$t('parser.modelsTableColumns[4]'),
+          sortable: true,
+          field: 'bestLAS',
+        },
+        {
+          name: 'epoch',
+          label: this.$t('parser.modelsTableColumns[5]'),
+          sortable: true,
+          field: 'epoch',
+        },
+      ],
+      visibleColumns: [],
+      filter: '',
+      selected: [],
+      loading: false,
+      pagination: {
+        sortBy: 'name',
+        descending: false,
+        page: 1,
+        rowsPerPage: 10,
+      },
+      loadingDelete: false,
+      exporting: false
+    };
+    const parserData: parser_t = {
       progress: 'bootstrap parsing',
+      taskStatus: null,
       isHealthy: true,
       param: {
-        pipelineChoice: 'TRAIN_AND_PARSE',
-        pipelineOptions: [
-          { label: this.$t('parser.parserChoices[0]'), value: 'TRAIN_AND_PARSE' },
-          { label: this.$t('parser.parserChoices[1]'), value: 'TRAIN_ONLY' },
-          { label: this.$t('parser.parserChoices[2]'), value: 'PARSE_ONLY' },
-        ],
+        pipelineChoice: '',
+        availableModels: [],
         baseModel: null,
-        baseModelsOptions: [],
-        advancedSettings: false,
-        keepUpos: false,
+        columnsToKeep: [],
         isCustomTrainingUser: false,
-        trainingUser: '',
         isCustomParsingUser: false,
+        trainingUser: '',
         parsingUser: '',
         trainAll: true,
         trainSamplesNames: [],
@@ -234,30 +359,37 @@ export default defineComponent({
         parseSamplesNames: [],
         maxEpoch: 100,
         parserSuffix: '',
-        keepHeads: false,
+        canRemoveParser: true,
       },
     };
-    return data;
-  },
-  mounted() {
-    this.fetchBaseModelsAvailables();
+    const conllColumns = ['LEMMA', 'UPOS', 'XPOS', 'FEATS', 'HEAD', 'DEPREL'];
+    return {
+      modelsTable,
+      conllColumns,
+      search: '',
+      isShowModels: true,
+      parserData,
+      modelOptions: [],
+    };
   },
   computed: {
+    ...mapState(useProjectStore, ['name', 'admins']),
+    ...mapState(useUserStore, ['isSuperAdmin', 'username']),
     allSamplesNames() {
       return this.samples.map((sample) => sample.sample_name).sort(this.caseUnsensitiveCompare);
     },
     trainingSamplesSelected() {
-      if (this.param.trainAll) {
+      if (this.parserData.param.trainAll) {
         return this.samples;
       } else {
-        return this.samples.filter((sample) => this.param.trainSamplesNames.includes(sample.sample_name));
+        return this.samples.filter((sample) => this.parserData.param.trainSamplesNames.includes(sample.sample_name));
       }
     },
     parsingSamplesSelected() {
-      if (this.param.parseAll) {
+      if (this.parserData.param.parseAll) {
         return this.samples;
       } else {
-        return this.samples.filter((sample) => this.param.parseSamplesNames.includes(sample.sample_name));
+        return this.samples.filter((sample) => this.parserData.param.parseSamplesNames.includes(sample.sample_name));
       }
     },
     allTreesFrom() {
@@ -270,41 +402,38 @@ export default defineComponent({
       return this.getTreesUsersFromSamples(this.parsingSamplesSelected);
     },
     trainingSentencesCount() {
-      if (this.param.isCustomTrainingUser === false || this.param.trainingUser === '') {
+      if (this.parserData.param.isCustomTrainingUser === false || this.parserData.param.trainingUser === '') {
         return this.trainingSamplesSelected.reduce((partialSum, sample) => partialSum + sample.sentences, 0);
       } else {
-        return this.trainingSamplesSelected.reduce((partialSum, sample) => partialSum + sample.treeByUser[this.param.trainingUser], 0);
+        return this.trainingSamplesSelected.reduce((partialSum, sample) => partialSum + sample.treeByUser[this.parserData.param.trainingUser], 0);
       }
     },
     parsingSentencesCount() {
-      if (this.param.isCustomParsingUser === false || this.param.parsingUser === '') {
+      if (this.parserData.param.isCustomParsingUser === false || this.parserData.param.parsingUser === '') {
         return this.parsingSamplesSelected.reduce((partialSum, sample) => partialSum + sample.sentences, 0);
       } else {
-        return this.parsingSamplesSelected.reduce((partialSum, sample) => partialSum + sample.treeByUser[this.param.parsingUser], 0);
+        return this.parsingSamplesSelected.reduce((partialSum, sample) => partialSum + sample.treeByUser[this.parserData.param.parsingUser], 0);
       }
     },
     estimatedTime() {
       const timeInitialisationTrainingTask_s = 60;
-      const trainingEstimatedTime_s = this.param.maxEpoch * (0.5 + this.trainingSentencesCount / kirParserSentPerSecSpeed);
+      const trainingEstimatedTime_s = this.parserData.param.maxEpoch * (0.5 + this.trainingSentencesCount / kirParserSentPerSecSpeed);
       const timeInitialisationParsingTask_s = 60;
       const parsingEstimatedTime_s = this.parsingSentencesCount / kirParserSentPerSecSpeed;
       let totalEstimatedTime_s = 0;
-      if (this.param.pipelineChoice !== 'PARSE_ONLY') {
+      if (this.parserData.param.pipelineChoice !== 'PARSE_ONLY') {
         totalEstimatedTime_s += timeInitialisationTrainingTask_s + trainingEstimatedTime_s;
       }
-      if (this.param.pipelineChoice !== 'TRAIN_ONLY') {
+      if (this.parserData.param.pipelineChoice !== 'TRAIN_ONLY') {
         totalEstimatedTime_s += timeInitialisationParsingTask_s + parsingEstimatedTime_s;
       }
       return Math.ceil(totalEstimatedTime_s / 60);
     },
     noTrainFileSelectedError() {
-      return this.param.pipelineChoice !== 'PARSE_ONLY' && this.param.trainAll === false && this.param.trainSamplesNames.length === 0;
+      return this.parserData.param.pipelineChoice !== 'PARSE_ONLY' && this.parserData.param.trainAll === false && this.parserData.param.trainSamplesNames.length === 0;
     },
     noParseFileSelectedError() {
-      return this.param.pipelineChoice !== 'TRAIN_ONLY' && this.param.parseAll === false && this.param.parseSamplesNames.length === 0;
-    },
-    noSelectedBaseModelForParsingError() {
-      return this.param.pipelineChoice === 'PARSE_ONLY' && !this.param.baseModel;
+      return this.parserData.param.pipelineChoice !== 'TRAIN_ONLY' && this.parserData.param.parseAll === false && this.parserData.param.parseSamplesNames.length === 0;
     },
     paramError() {
       if (this.noTrainFileSelectedError) {
@@ -313,70 +442,114 @@ export default defineComponent({
       if (this.noParseFileSelectedError) {
         return true;
       }
-      if (this.noSelectedBaseModelForParsingError) {
-        return true;
-      }
       return false;
     },
-    disableUI() {
-      return !!this.taskStatus || this.isHealthy === false;
-    },
+  }, 
+  watch: {
+    'modelsTable.selected': {
+      handler: function (selected) {
+        if (selected.length) {
+          this.fetchProjectSettings({ projectname: selected[0].projectName } as { projectname: string });
+          if (!this.admins.includes(this.username) && !this.isSuperAdmin) {
+            this.parserData.param.canRemoveParser = false;
+          }
+        }
+      },
+      deep: true,
+    }
+  },
+  mounted() {
+    this.fetchBaseModelsAvailables();
   },
   methods: {
+    ...mapActions(useProjectStore, ['fetchProjectSettings']),
     getTreesUsersFromSamples(samples: sample_t[]) {
       const allTreesFromWithDuplicate = samples.map((sample) => sample.treesFrom).reduce((a: string[], b: string[]) => [...a, ...b], []);
       return [...new Set(allTreesFromWithDuplicate)];
     },
-    fetchBaseModelsAvailables() {
-      api.parserList().then((response) => {
-        if (response.data.status === 'failure') {
-          notifyMessage({ message: 'Sorry, the parsing server is unreachable and not under our control, please come back later', type: 'negative' });
-          this.isHealthy = false;
-        } else {
-          const options = response.data.data.map((baseModelMeta) => {
-            return {
-              label: `${baseModelMeta.model_info.project_name} - ${baseModelMeta.model_info.model_id} (${
-                baseModelMeta.scores_best.training_diagnostics.epoch
-              } epochs ; ${baseModelMeta.scores_best.LAS_epoch.toFixed(4)} LAS ; ${
-                baseModelMeta.scores_best.training_diagnostics.data_description.n_train_sents +
-                baseModelMeta.scores_best.training_diagnostics.data_description.n_test_sents
-              } sents)`,
-              value: baseModelMeta.model_info,
-            };
-          });
-          options.sort((a, b) => this.caseUnsensitiveCompare(a.label, b.label)); // sort by label (case-insensitive)
-          this.param.baseModelsOptions = options;
-        }
-      });
-    },
     caseUnsensitiveCompare(a: string, b: string) {
       return a.toLowerCase().localeCompare(b.toLowerCase());
     },
+    onclickTrain() {
+      this.parserData.param.pipelineChoice = 'TRAIN_AND_PARSE'; 
+      this.isShowModels= false;
+      if (this.parserData.param.availableModels.map((model) => model.projectName).some((project) => project === this.name)) {
+        this.$q.notify({
+          message: 'There is already model trained with the samples of this project, if you want to train new model please remove unused models of this projects',
+          position: 'top',
+          color: 'warning',
+          timeout: 0,
+          closeBtn: 'X',
+        });
+      }
+    },
+    filterModels(rows: any, terms: any) {
+      return rows.filter((row: any) => row.projectName.indexOf(terms) !== -1);
+    },
+    removeModel() {
+      const modelId = this.modelsTable.selected[0].modelId;
+      const projectName = this.modelsTable.selected[0].projectName;
+      api
+        .parserRemove(projectName, modelId)
+        .then(() => {
+          notifyMessage({ message: `Model ${projectName}_${modelId} has been deleted successfully` });
+          this.fetchBaseModelsAvailables();
+        })
+        .catch((error) => {
+          notifyError({ error: error.response.data.message });
+        });
+    },
+    fetchBaseModelsAvailables() {
+      api
+        .parserList()
+        .then((response) => {
+          if (response.data.status === 'success') {
+            this.parserData.param.availableModels = response.data.data.map((pretrainedModel) => {
+              return {
+                projectName: pretrainedModel.model_info.project_name,
+                modelId: pretrainedModel.model_info.model_id,
+                language: pretrainedModel.language,
+                sentencesNumber: pretrainedModel.scores_best.training_diagnostics.data_description.n_train_sents +
+                pretrainedModel.scores_best.training_diagnostics.data_description.n_test_sents,
+                epoch: pretrainedModel.scores_best.training_diagnostics.epoch,
+                bestLAS: pretrainedModel.scores_best.LAS_epoch.toFixed(4),
+              }
+            });
+          }
+        })
+        .catch((error) => {
+          notifyError({ error: error.response.data.message });
+        }); 
+    },
     parserPipelineStart() {
-      if (this.param.pipelineChoice === 'TRAIN_AND_PARSE' || this.param.pipelineChoice === 'TRAIN_ONLY') {
+      if (this.parserData.param.pipelineChoice === 'TRAIN_AND_PARSE' || this.parserData.param.pipelineChoice === 'TRAIN_ONLY') {
         this.parserTrainStart();
       } else {
-        if (this.param.baseModel) {
-          this.parserParseStart((this.param.baseModel as any).value as ModelInfo_t);
+        if (this.modelsTable.selected.length) {
+          this.parserData.param.baseModel = { 
+            project_name: this.modelsTable.selected[0].projectName,
+            model_id: this.modelsTable.selected[0].modelId,
+          };
+          this.parserParseStart((this.parserData.param.baseModel as any).value as ModelInfo_t);
         }
       }
     },
     parserTrainStart() {
-      this.taskStatus = {
+      this.parserData.taskStatus = {
         taskType: 'ASK_TRAINING',
         taskTimeStarted: Date.now(),
         taskIntervalChecker: null,
       };
 
-      const trainSampleNames = this.param.trainAll ? this.allSamplesNames : this.param.trainSamplesNames;
-      const trainUser = this.param.isCustomTrainingUser ? this.param.trainingUser : 'last';
-      const maxEpoch = this.param.maxEpoch;
-      const baseModel = this.param.baseModel ? ((this.param.baseModel as any).value as ModelInfo_t) : null;
+      const trainSampleNames = this.parserData.param.trainAll ? this.allSamplesNames : this.parserData.param.trainSamplesNames;
+      const trainUser = this.parserData.param.isCustomTrainingUser ? this.parserData.param.trainingUser : 'last';
+      const maxEpoch = this.parserData.param.maxEpoch;
+      const baseModel = this.parserData.param.baseModel ? ((this.parserData.param.baseModel as any).value as ModelInfo_t) : null;
       api
         .parserTrainStart(this.$route.params.projectname as any as string, trainSampleNames, trainUser, maxEpoch, baseModel)
         .then((response) => {
           if (response.data.status === 'failure') {
-            notifyMessage({ message: 'Training could not start : ' + response.data.error, type: 'negative' });
+            notifyError({ error: 'Training could not start : ' + response.data.error });
             this.clearCurrentTask();
           } else {
             notifyMessage({ message: 'Model training started' });
@@ -386,7 +559,7 @@ export default defineComponent({
               setTimeout(this.parserTrainStatus(modelInfo, trainTaskId) as any, 10);
             }, REFRESH_RATE_TASK_STATUS_CHECKER);
 
-            this.taskStatus = {
+            this.parserData.taskStatus = {
               taskType: 'TRAINING',
               taskTimeStarted: Date.now(),
               taskIntervalChecker,
@@ -412,18 +585,18 @@ export default defineComponent({
             });
             this.clearCurrentTask();
             this.fetchBaseModelsAvailables();
-            if (this.param.pipelineChoice === 'TRAIN_AND_PARSE') {
+            if (this.parserData.param.pipelineChoice === 'TRAIN_AND_PARSE') {
               this.parserParseStart(modelInfo);
             }
-          } else if (this.taskStatus && Date.now() - this.taskStatus.taskTimeStarted > TIMEOUT_TASK_STATUS_CHECKER) {
+          } else if (this.parserData.taskStatus && Date.now() - this.parserData.taskStatus.taskTimeStarted > TIMEOUT_TASK_STATUS_CHECKER) {
             this.clearCurrentTask();
           } else if (!response.data.data.ready) {
-            if (this.taskStatus) {
+            if (this.parserData.taskStatus) {
               if (response.data.data.scores_history) {
                 const last_epoch = response.data.data.scores_history[response.data.data.scores_history.length - 1];
                 const best_epoch = response.data.data.scores_best;
                 if (best_epoch) {
-                  this.taskStatus.taskAdditionalMessage = `epoch ${last_epoch.training_diagnostics.epoch} ; LAS=${last_epoch.LAS_chuliu_epoch} (best: epoch ${best_epoch.training_diagnostics.epoch} ; LAS=${best_epoch.LAS_chuliu_epoch})`;
+                  this.parserData.taskStatus.taskAdditionalMessage = `epoch ${last_epoch.training_diagnostics.epoch} ; LAS=${last_epoch.LAS_chuliu_epoch.toFixed(4)} (best: epoch ${best_epoch.training_diagnostics.epoch} ; LAS=${best_epoch.LAS_chuliu_epoch.toFixed(4)})`;
                 }
               }
             }
@@ -435,24 +608,29 @@ export default defineComponent({
         });
     },
     parserParseStart(modelInfo: ModelInfo_t) {
-      this.taskStatus = {
+      this.parserData.taskStatus = {
         taskType: 'ASK_PARSING',
         taskTimeStarted: Date.now(),
         taskIntervalChecker: null,
       };
 
       const projectName = this.$route.params.projectname as any as string;
-      const toParseSamplesNames = this.param.parseAll ? this.allSamplesNames : this.param.parseSamplesNames;
-      const parserSuffix = this.param.parserSuffix;
-      const parsingUser = this.param.isCustomParsingUser ? this.param.parsingUser : 'last';
+      const toParseSamplesNames = this.parserData.param.parseAll ? this.allSamplesNames : this.parserData.param.parseSamplesNames;
+      const parserSuffix = this.parserData.param.parserSuffix;
+      const parsingUser = this.parserData.param.isCustomParsingUser ? this.parserData.param.parsingUser : 'last';
       const parsingSettings: ParsingSettings_t = {
-        keep_heads: this.param.keepHeads ? 'EXISTING' : 'NONE',
+        keep_heads: this.parserData.param.columnsToKeep.includes('HEAD') ? 'EXISTING' : 'NONE',
+        keep_upos: this.parserData.param.columnsToKeep.includes('UPOS') ? 'EXISTING' : 'NONE',
+        keep_feats: this.parserData.param.columnsToKeep.includes('FEATS') ? 'EXISTING' : 'NONE',
+        keep_xpos: this.parserData.param.columnsToKeep.includes('XPOS') ? 'EXISTING' : 'NONE',
+        keep_deprels: this.parserData.param.columnsToKeep.includes('DEPREL') ? 'EXISTING' : 'NONE',
+        keep_lemmas: this.parserData.param.columnsToKeep.includes('LEMMA') ? 'EXISTING' : 'NONE',
       };
       api
         .parserParseStart(projectName, modelInfo, toParseSamplesNames, parsingUser, parsingSettings)
         .then((response) => {
           if (response.data.status === 'failure') {
-            notifyMessage({ message: 'Parsing could not start : ' + response.data.error, type: 'negative' });
+            notifyError({ error: 'Parsing could not start : ' + response.data.error });
             this.clearCurrentTask();
           } else {
             notifyMessage({ message: 'Sentences parsing started' });
@@ -461,7 +639,7 @@ export default defineComponent({
               setTimeout(this.parserParseStatus(projectName, modelInfo, parseTaskId, parserSuffix) as any, 10);
             }, REFRESH_RATE_TASK_STATUS_CHECKER);
 
-            this.taskStatus = {
+            this.parserData.taskStatus = {
               taskType: 'PARSING',
               taskTimeStarted: Date.now(),
               taskIntervalChecker,
@@ -483,7 +661,7 @@ export default defineComponent({
             this.clearCurrentTask();
             this.parentGetProjectSamples();
             notifyMessage({ message: 'Sentences parsing ended!' });
-          } else if (this.taskStatus && Date.now() - this.taskStatus.taskTimeStarted > TIMEOUT_TASK_STATUS_CHECKER) {
+          } else if (this.parserData.taskStatus && Date.now() - this.parserData.taskStatus.taskTimeStarted > TIMEOUT_TASK_STATUS_CHECKER) {
             // 3 hours
             this.clearCurrentTask();
           }
@@ -494,18 +672,14 @@ export default defineComponent({
         });
     },
     clearCurrentTask() {
-      if (this.taskStatus) {
-        if (this.taskStatus.taskIntervalChecker) {
-          clearInterval(this.taskStatus.taskIntervalChecker);
+      if (this.parserData.taskStatus) {
+        if (this.parserData.taskStatus.taskIntervalChecker) {
+          clearInterval(this.parserData.taskStatus.taskIntervalChecker);
         }
-        this.taskStatus = null;
+        this.parserData.taskStatus = null;
       }
     },
-  },
+  }
 });
 </script>
-<style>
-.invisible {
-  visibility: hidden;
-}
-</style>
+<style></style>

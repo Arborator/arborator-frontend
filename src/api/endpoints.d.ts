@@ -98,6 +98,7 @@ interface parserList_RV_success {
   status: 'success';
   data: {
     model_info: ModelInfo_t;
+    language: string,
     scores_best: ScoresBest_t;
     scores_history: ScoresHistory_t;
   }[];

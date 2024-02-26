@@ -21,7 +21,6 @@ import {
   whoIAm_RV,
   updateUser_ED,
   getLexicon_RV,
-  parserList_RV_success,
   parserList_RV,
   parserTrainStatus_RV,
   parserParseStatus_RV,
@@ -254,6 +253,9 @@ export default {
   // ---------------------------------------------------- //
   parserList() {
     return API.get<parserList_RV>(`/parser/list`);
+  },
+  parserRemove(projectName: string, modelId: string) {
+    return API.delete(`parser/list/${projectName}/${modelId}`);
   },
   parserTrainStart(projectname: string, trainSampleNames: string[], trainUser: string, maxEpoch: number, baseModel: ModelInfo_t | null) {
     const data = {

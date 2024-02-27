@@ -533,16 +533,7 @@ export default defineComponent({
         })
         .catch((error) => {
           notifyError({ error: error.response.data.message });
-        }); 
-        this.parserData.param.availableModels.push({
-          projectName: 'arbo12',
-          modelId: '2023-12-03_13:15:32.459',
-          language: 'Haussa',
-          sentencesNumber: 1864,
-          epoch: 40,
-          bestLAS: 0.7671,
-        })
-        
+        });    
     },
     parserPipelineStart() {
       if (this.parserData.param.pipelineChoice === 'TRAIN_AND_PARSE' || this.parserData.param.pipelineChoice === 'TRAIN_ONLY') {

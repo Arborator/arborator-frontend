@@ -11,7 +11,7 @@
             no-caps 
             :label="$t('parser.removeModel')" 
             icon="delete"
-            @click="removeModel()"
+            @click="triggerConfirm(removeModel)"
           >
             <q-tooltip v-if="!modelsTable.selected.length">
               {{ $t('parser.disableRemoveBtnTooltip[0]') }}
@@ -227,8 +227,12 @@
       </div>
     </q-card-section>
   </q-card>
+  <q-dialog v-model="confirmActionDial">
+    <ConfirmAction :parent-action="confirmActionCallback" :target-name="modelsTable.selected[0].projectName" />
+  </q-dialog>
 </template>
 <script lang="ts">
+import ConfirmAction from '../ConfirmAction.vue';
 import api from 'src/api/backend-api';
 import { mapState, mapActions } from 'pinia';
 import { useProjectStore } from 'src/pinia/modules/project';
@@ -277,6 +281,9 @@ interface parser_t {
 }
 export default defineComponent({
   name: 'Parsing',
+  components: {
+    ConfirmAction
+  },
   props: {
     samples: {
       type: Array as PropType<sample_t[]>,
@@ -363,6 +370,7 @@ export default defineComponent({
       },
     };
     const conllColumns = ['LEMMA', 'UPOS', 'XPOS', 'FEATS', 'HEAD', 'DEPREL'];
+    const confirmActionCallback = null as unknown as CallableFunction;
     return {
       modelsTable,
       conllColumns,
@@ -370,6 +378,8 @@ export default defineComponent({
       isShowModels: true,
       parserData,
       modelOptions: [],
+      confirmActionCallback,
+      confirmActionDial: false,
     };
   },
   computed: {
@@ -486,6 +496,10 @@ export default defineComponent({
     filterModels(rows: any, terms: any) {
       return rows.filter((row: any) => row.projectName.indexOf(terms) !== -1);
     },
+    triggerConfirm(method: CallableFunction) {
+      this.confirmActionDial = true;
+      this.confirmActionCallback = method;
+    },
     removeModel() {
       const modelId = this.modelsTable.selected[0].modelId;
       const projectName = this.modelsTable.selected[0].projectName;
@@ -520,6 +534,15 @@ export default defineComponent({
         .catch((error) => {
           notifyError({ error: error.response.data.message });
         }); 
+        this.parserData.param.availableModels.push({
+          projectName: 'arbo12',
+          modelId: '2023-12-03_13:15:32.459',
+          language: 'Haussa',
+          sentencesNumber: 1864,
+          epoch: 40,
+          bestLAS: 0.7671,
+        })
+        
     },
     parserPipelineStart() {
       if (this.parserData.param.pipelineChoice === 'TRAIN_AND_PARSE' || this.parserData.param.pipelineChoice === 'TRAIN_ONLY') {

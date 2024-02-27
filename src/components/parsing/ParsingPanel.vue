@@ -5,7 +5,8 @@
       <div class="row">
         <div class="col q-gutter-md">
           <q-btn 
-            :disable="!parserData.param.canRemoveParser || !modelsTable.selected.length" 
+            v-if="false"
+            :disable="disableUI || !parserData.param.canRemoveParser || !modelsTable.selected.length" 
             outline 
             color="primary" 
             no-caps 
@@ -20,7 +21,8 @@
               {{ $t('parser.disableRemoveBtnTooltip[1]') }}
             </q-tooltip>
           </q-btn>
-          <q-btn 
+          <q-btn
+            :disable="disableUI" 
             no-caps 
             outline 
             color="primary" 
@@ -29,7 +31,7 @@
             @click="onclickTrain()" 
             />
           <q-btn 
-            :disable="!modelsTable.selected.length"
+            :disable="disableUI || !modelsTable.selected.length"
             no-caps 
             outline 
             color="primary" 
@@ -54,11 +56,12 @@
         flat 
         :columns="modelsTable.fields"
         :rows="parserData.param.availableModels"
-        v-model:selected="modelsTable.selected"
         :filter="modelsTable.filter" 
-        :filter-method="filterModels"
-        selection="single" 
+        :filter-method="filterModels" 
         hide-no-data
+        row-key="projectName"
+        selection="single"
+        v-model:selected="modelsTable.selected"
       > 
       </q-table>
     </q-card-section>
@@ -257,6 +260,14 @@ type taskStatus_t = null | {
   taskIntervalChecker: null | ReturnType<typeof setTimeout>;
 };
 
+type tableItem_t = {
+  projectName: string,
+  modelId: string,
+  language: string,
+  sentencesNumber: Number
+  epoch: number,
+  bestLAS: number,
+}
 interface parser_t {
   progress: string;
   taskStatus: taskStatus_t;
@@ -295,7 +306,7 @@ export default defineComponent({
     },
   },
   data() {
-    const modelsTable: table_t<any> = {
+    const modelsTable: table_t<tableItem_t> = {
       fields: [
         {
           name: 'projectName',
@@ -339,7 +350,7 @@ export default defineComponent({
       selected: [],
       loading: false,
       pagination: {
-        sortBy: 'name',
+        sortBy: 'projectName',
         descending: false,
         page: 1,
         rowsPerPage: 10,
@@ -454,6 +465,9 @@ export default defineComponent({
       }
       return false;
     },
+    disableUI() {
+      return !!this.parserData.taskStatus || this.parserData.isHealthy === false;
+    },
   }, 
   watch: {
     'modelsTable.selected': {
@@ -533,7 +547,7 @@ export default defineComponent({
         })
         .catch((error) => {
           notifyError({ error: error.response.data.message });
-        });    
+        });   
     },
     parserPipelineStart() {
       if (this.parserData.param.pipelineChoice === 'TRAIN_AND_PARSE' || this.parserData.param.pipelineChoice === 'TRAIN_ONLY') {

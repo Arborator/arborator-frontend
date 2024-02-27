@@ -470,7 +470,7 @@ export default defineComponent({
     },
   }, 
   watch: {
-    'modelsTable.selected': {
+    /*'modelsTable.selected': {
       handler: function (selected) {
         if (selected.length) {
           this.fetchProjectSettings({ projectname: selected[0].projectName } as { projectname: string });
@@ -480,7 +480,7 @@ export default defineComponent({
         }
       },
       deep: true,
-    }
+    }*/
   },
   mounted() {
     this.fetchBaseModelsAvailables();

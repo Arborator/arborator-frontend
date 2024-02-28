@@ -5,7 +5,6 @@
       <div class="row">
         <div class="col q-gutter-md">
           <q-btn 
-            v-if="false"
             :disable="disableUI || !parserData.param.canRemoveParser || !modelsTable.selected.length" 
             outline 
             color="primary" 
@@ -237,7 +236,7 @@
 <script lang="ts">
 import ConfirmAction from '../ConfirmAction.vue';
 import api from 'src/api/backend-api';
-import { mapState, mapActions } from 'pinia';
+import { mapState } from 'pinia';
 import { useProjectStore } from 'src/pinia/modules/project';
 import { useUserStore } from 'src/pinia/modules/user';
 import { notifyMessage, notifyError } from 'src/utils/notify';
@@ -267,6 +266,7 @@ type tableItem_t = {
   sentencesNumber: Number
   epoch: number,
   bestLAS: number,
+  admins: string[],
 }
 interface parser_t {
   progress: string;
@@ -394,7 +394,7 @@ export default defineComponent({
     };
   },
   computed: {
-    ...mapState(useProjectStore, ['name', 'admins']),
+    ...mapState(useProjectStore, ['name']),
     ...mapState(useUserStore, ['isSuperAdmin', 'username']),
     allSamplesNames() {
       return this.samples.map((sample) => sample.sample_name).sort(this.caseUnsensitiveCompare);
@@ -470,23 +470,21 @@ export default defineComponent({
     },
   }, 
   watch: {
-    /*'modelsTable.selected': {
+    'modelsTable.selected': {
       handler: function (selected) {
         if (selected.length) {
-          this.fetchProjectSettings({ projectname: selected[0].projectName } as { projectname: string });
-          if (!this.admins.includes(this.username) && !this.isSuperAdmin) {
+          if (!selected[0].admins.includes(this.username) && !this.isSuperAdmin) {
             this.parserData.param.canRemoveParser = false;
           }
         }
       },
       deep: true,
-    }*/
+    }
   },
   mounted() {
     this.fetchBaseModelsAvailables();
   },
   methods: {
-    ...mapActions(useProjectStore, ['fetchProjectSettings']),
     getTreesUsersFromSamples(samples: sample_t[]) {
       const allTreesFromWithDuplicate = samples.map((sample) => sample.treesFrom).reduce((a: string[], b: string[]) => [...a, ...b], []);
       return [...new Set(allTreesFromWithDuplicate)];
@@ -541,6 +539,7 @@ export default defineComponent({
                 projectName: pretrainedModel.model_info.project_name,
                 modelId: pretrainedModel.model_info.model_id,
                 language: pretrainedModel.language,
+                admins: pretrainedModel.admins,
                 sentencesNumber: pretrainedModel.scores_best.training_diagnostics.data_description.n_train_sents +
                 pretrainedModel.scores_best.training_diagnostics.data_description.n_test_sents,
                 epoch: pretrainedModel.scores_best.training_diagnostics.epoch,

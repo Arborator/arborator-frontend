@@ -99,6 +99,7 @@ interface parserList_RV_success {
   data: {
     model_info: ModelInfo_t;
     language: string,
+    admins: string[],
     scores_best: ScoresBest_t;
     scores_history: ScoresHistory_t;
   }[];

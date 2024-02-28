@@ -508,7 +508,9 @@ export default defineComponent({
       }
     },
     filterModels(rows: any, terms: any) {
-      return rows.filter((row: any) => row.projectName.toLowerCase().indexOf(terms.toLowerCase()) !== -1);
+      return rows.filter((row: any) => 
+        row.projectName.toLowerCase().indexOf(terms.toLowerCase()) !== -1 || row.language.toLowerCase().indexOf(terms.toLowerCase()) !== -1
+      );
     },
     triggerConfirm(method: CallableFunction) {
       this.confirmActionDial = true;

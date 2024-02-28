@@ -558,7 +558,7 @@ export default defineComponent({
             project_name: this.modelsTable.selected[0].projectName,
             model_id: this.modelsTable.selected[0].modelId,
           };
-          this.parserParseStart((this.parserData.param.baseModel as any).value as ModelInfo_t);
+          this.parserParseStart((this.parserData.param.baseModel as any) as ModelInfo_t);
         }
       }
     },

@@ -59,7 +59,7 @@
         :filter="modelsTable.filter" 
         :filter-method="filterModels" 
         hide-no-data
-        row-key="projectName"
+        row-key="modelId"
         selection="single"
         v-model:selected="modelsTable.selected"
       > 
@@ -508,7 +508,7 @@ export default defineComponent({
       }
     },
     filterModels(rows: any, terms: any) {
-      return rows.filter((row: any) => row.projectName.indexOf(terms) !== -1);
+      return rows.filter((row: any) => row.projectName.toLowerCase().indexOf(terms.toLowerCase()) !== -1);
     },
     triggerConfirm(method: CallableFunction) {
       this.confirmActionDial = true;

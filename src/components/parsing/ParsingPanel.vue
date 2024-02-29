@@ -5,7 +5,7 @@
       <div class="row">
         <div class="col q-gutter-md">
           <q-btn 
-            :disable="disableUI || !parserData.param.canRemoveParser || !modelsTable.selected.length" 
+            :disable="disableUI || !parserData.param.canRemoveParser" 
             outline 
             color="primary" 
             no-caps 
@@ -377,7 +377,7 @@ export default defineComponent({
         parseSamplesNames: [],
         maxEpoch: 100,
         parserSuffix: '',
-        canRemoveParser: true,
+        canRemoveParser: false,
       },
     };
     const conllColumns = ['LEMMA', 'UPOS', 'XPOS', 'FEATS', 'HEAD', 'DEPREL'];
@@ -473,7 +473,10 @@ export default defineComponent({
     'modelsTable.selected': {
       handler: function (selected) {
         if (selected.length) {
-          if (!selected[0].admins.includes(this.username) && !this.isSuperAdmin) {
+          if (selected[0].admins.includes(this.username) || this.isSuperAdmin) {
+            this.parserData.param.canRemoveParser = true;
+          }
+          else {
             this.parserData.param.canRemoveParser = false;
           }
         }

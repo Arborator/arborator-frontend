@@ -11,6 +11,8 @@ export interface lexiconItem_FE_t extends lexiconItem_t {
 export const useLexiconStore = defineStore('lexicon', {
   state: () => {
     return {
+      principalFeatures: [] as string[],
+      secondaryFeatures: [] as string[],
       lexiconLoading: false as boolean,
       lexiconItems: [] as lexiconItem_FE_t[],
       lexiconModificationItemBefore: {} as lexiconItem_FE_t,

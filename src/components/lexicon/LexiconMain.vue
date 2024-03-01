@@ -115,7 +115,7 @@
 import LexiconTableBase from './LexiconTableBase.vue';
 import LexiconModificationDialog from './LexiconModificationDialog.vue';
 
-import { mapState, mapActions } from 'pinia';
+import { mapState, mapActions, mapWritableState } from 'pinia';
 import { useLexiconStore } from 'src/pinia/modules/lexicon';
 import { useProjectStore } from 'src/pinia/modules/project';
 import { useUserStore } from 'src/pinia/modules/user';
@@ -134,13 +134,9 @@ export default defineComponent({
     LexiconModificationDialog,
   },
   data() {
-    const principalFeatures: string[] = [];
-    const secondaryFeatures: string[] = [];
     const features: string[] = [];
     return {
       lexiconType: '',
-      principalFeatures,
-      secondaryFeatures,
       features,
       isShowLexiconTable: false,
       isShowLexiconFeatures: true,
@@ -149,7 +145,8 @@ export default defineComponent({
   computed: {
     ...mapState(useProjectStore, ['annotationFeatures', 'canSeeOtherUsersTrees', 'canSaveTreeInProject']),
     ...mapState(useUserStore, ['isLoggedIn', 'isSuperAdmin', 'avatar']),
-    ...mapState(useLexiconStore, ['lexiconItems', 'lexiconLoading', 'lexiconItemsModified']),
+    ...mapState(useLexiconStore, ['lexiconItems', 'lexiconLoading', 'lexiconItemsModified', 'principalFeatures', 'secondaryFeatures']),
+    ...mapWritableState(useLexiconStore, ['principalFeatures', 'secondaryFeatures']),
     projectName() {
       return this.$route.params.projectname;
     },

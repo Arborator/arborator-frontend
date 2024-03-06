@@ -56,18 +56,18 @@
           </q-input>
         </div>
         <q-btn color="default" flat label="tsv" @click="exportLexiconTSV">
-          <q-tooltip :delay="300" content-class="text-white bg-primary">{{ $t('projectView.tooltipExportLexicon[0]') }}</q-tooltip>
+          <q-tooltip :delay="300" content-class="text-white bg-primary">{{ $t('lexicon.tooltipExportLexicon[0]') }}</q-tooltip>
         </q-btn>
         <q-btn color="default" flat label="json" @click="exportLexiconJSON">
-          <q-tooltip :delay="300" content-class="text-white bg-primary">{{ $t('projectView.tooltipExportLexicon[1]') }} </q-tooltip>
+          <q-tooltip :delay="300" content-class="text-white bg-primary">{{ $t('lexicon.tooltipExportLexicon[1]') }} </q-tooltip>
         </q-btn>
         <div>
           <q-btn-group v-if="compareWithBefore" flat>
             <q-btn color="default" :disable="table.selected.length === 0" flat icon="compare_arrows" @click="get()">
-              <q-tooltip>{{ $t('projectView.tooltipRuleGrewLexicon') }}</q-tooltip>
+              <q-tooltip>{{ $t('lexicon.tooltipRuleGrewLexicon') }}</q-tooltip>
             </q-btn>
             <q-btn color="default" :disable="table.selected.length === 0" flat icon-right="delete_forever" @click="deleteSelected()">
-              <q-tooltip>{{ $t('projectView.tooltipUnstageModifiedItem') }}</q-tooltip>
+              <q-tooltip>{{ $t('lexicon.tooltipUnstageModifiedItem') }}</q-tooltip>
             </q-btn>
           </q-btn-group>
         </div>

@@ -1,7 +1,7 @@
 <template>
   <q-card flat bordered>
     <q-card-section v-if="isShowLexiconFeatures">
-      <div class="text-h6 q-mb-md">{{ $t('projectView.lexicon[0]') }}</div>
+      <div class="text-h6 q-mb-md">{{ $t('lexicon.lexiconTitle') }}</div>
       <div class="row q-gutter-md">
         <div class="col-5">
           <q-select
@@ -11,7 +11,7 @@
             :options="principalFeatureOptions"
             use-chips
             stack-label
-            :label="$t('projectView.lexicon[1]')"
+            :label="$t('lexicon.similarFeatures')"
           />
         </div>
         <div class="col-5">
@@ -23,11 +23,11 @@
             :options="secondaryFeatureOptions"
             use-chips
             stack-label
-            :label="$t('projectView.lexicon[2]')"
+            :label="$t('lexicon.ambiguousFeatures')"
           />
         </div>
         <div>
-          <q-tooltip content-class="bg-white text-primary">{{ $t('projectView.lexicon[8]') }}</q-tooltip>
+          <q-tooltip content-class="bg-white text-primary">{{ $t('lexicon.selectTreeType') }}</q-tooltip>
           <q-btn-dropdown :disable="!principalFeatures.length" class="float-right" size="md" outline color="primary" label=" get Lexicon">
             <q-list>
               <q-item v-if="canSaveTreeInProject" v-close-popup clickable @click="fetchLexicon_('user')">
@@ -38,7 +38,7 @@
                   <q-icon v-else name="account_circle" />
                 </q-item-section>
                 <q-item-section>
-                  <q-item-label>{{ $t('projectView.lexicon[3]') }}</q-item-label>
+                  <q-item-label>{{ $t('lexicon.lexiconOptions[0]') }}</q-item-label>
                 </q-item-section>
               </q-item>
 
@@ -51,7 +51,16 @@
                   <q-icon v-else name="account_circle" />
                 </q-item-section>
                 <q-item-section>
-                  <q-item-label>{{ $t('projectView.lexicon[4]') }}</q-item-label>
+                  <q-item-label>{{ $t('lexicon.lexiconOptions[1]') }}</q-item-label>
+                </q-item-section>
+              </q-item>
+
+              <q-item v-if="canSeeOtherUsersTrees" v-close-popup clickable @click="fetchLexicon_('all')">
+                <q-item-section avatar>
+                  <q-icon name="groups" />
+                </q-item-section>
+                <q-item-section>
+                  <q-item-label>{{ $t('lexicon.lexiconOptions[2]') }}</q-item-label>
                 </q-item-section>
               </q-item>
 
@@ -60,7 +69,7 @@
                   <q-icon name="schedule" />
                 </q-item-section>
                 <q-item-section>
-                  <q-item-label>{{ $t('projectView.lexicon[5]') }}</q-item-label>
+                  <q-item-label>{{ $t('lexicon.lexiconOptions[3]') }}</q-item-label>
                 </q-item-section>
               </q-item>
 
@@ -69,7 +78,7 @@
                   <q-icon name="verified" />
                 </q-item-section>
                 <q-item-section>
-                  <q-item-label>{{ $t('projectView.lexicon[7]') }}</q-item-label>
+                  <q-item-label>{{ $t('lexicon.lexiconOptions[4]') }}</q-item-label>
                 </q-item-section>
               </q-item>
             </q-list>

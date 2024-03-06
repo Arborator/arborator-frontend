@@ -5,12 +5,10 @@
       <div class="row q-gutter-md">
         <div class="col-5">
           <q-select
-            style="text-transform: capitalize"
             v-model="principalFeatures"
             outlined
             multiple
             :options="principalFeatureOptions"
-            :option-label="(feature) => feature.charAt(0).toUpperCase() + feature.slice(1)"
             use-chips
             stack-label
             :label="$t('projectView.lexicon[1]')"
@@ -23,7 +21,6 @@
             outlined
             multiple
             :options="secondaryFeatureOptions"
-            :option-label="(feature) => feature.charAt(0).toUpperCase() + feature.slice(1)"
             use-chips
             stack-label
             :label="$t('projectView.lexicon[2]')"

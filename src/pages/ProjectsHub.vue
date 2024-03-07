@@ -81,7 +81,6 @@
                 style="max-width: 80vw"
                 :project="item"
                 :parent-delete-project="deleteProject"
-                :parent-project-settings="showProjectSettings"
               ></ProjectCard>
             </template>
           </q-virtual-scroll>
@@ -101,7 +100,6 @@
               style="max-width: 270px"
               :project="project"
               :parent-delete-project="deleteProject"
-              :parent-project-settings="showProjectSettings"
             ></ProjectCard>
             <div v-if="isLoggedIn && myOldProjects.length" class="text-h6 col-12">
               <q-chip color="primary" class="category" text-color="white"> {{ $t('projectHub.myOldProjects') }} </q-chip><br />
@@ -114,7 +112,6 @@
               style="max-width: 270px"
               :project="project"
               :parent-delete-project="deleteProject"
-              :parent-project-settings="showProjectSettings"
             ></ProjectCard>
           </div>
           <div v-if="!$q.platform.is.mobile" class="q-pa-md row items-start q-gutter-md">
@@ -127,7 +124,6 @@
               style="max-width: 250px"
               :project="project"
               :parent-delete-project="deleteProject"
-              :parent-project-settings="showProjectSettings"
             ></ProjectCard>
             <div v-if="isLoggedIn && otherOldProjects.length" class="text-h6 col-12">
               <q-chip color="primary" class="category" text-color="white">{{ $t('projectHub.otherOldProjects') }}</q-chip>
@@ -141,7 +137,6 @@
               style="max-width: 250px"
               :project="project"
               :parent-delete-project="deleteProject"
-              :parent-project-settings="showProjectSettings"
             ></ProjectCard>
           </div>
         </q-card-section>
@@ -175,7 +170,6 @@
                   :key="item.id"
                   :project="item"
                   :parent-delete-project="deleteProject"
-                  :parent-project-settings="showProjectSettings"
                 ></ProjectItem>
               </template>
             </q-virtual-scroll>
@@ -188,10 +182,6 @@
     </div>
 
     <CreaProjectCard v-if="creaProjectDial" :parent-get-projects="getProjects" @created="creaProjectDial = false"></CreaProjectCard>
-
-    <q-dialog v-model="projectSettingsDial" transition-show="slide-up" transition-hide="slide-down">
-      <ProjectSettingsView :projectname="projectNameTarget" style="width: 90vw"></ProjectSettingsView>
-    </q-dialog>
 
     <q-dialog v-model="confirmActionDial">
       <ConfirmAction :parent-action="confirmActionCallback" :arg1="confirmActionArg1"></ConfirmAction>
@@ -206,7 +196,6 @@ import api from '../api/backend-api';
 import ProjectCard from '../components/ProjectCard.vue';
 import ProjectItem from '../components/ProjectItem.vue';
 import CreaProjectCard from '../components/CreaProjectCard.vue';
-import ProjectSettingsView from '../components/ProjectSettingsView.vue';
 import ConfirmAction from '../components/ConfirmAction.vue';
 import LanguageSelect from 'src/components/shared/LanguageSelect.vue';
 import EmailCollectDialog from 'src/components/Index/EmailCollectDialog.vue';
@@ -224,7 +213,6 @@ export default defineComponent({
     ProjectCard,
     ProjectItem,
     CreaProjectCard,
-    ProjectSettingsView,
     ConfirmAction,
     LanguageSelect,
     EmailCollectDialog,
@@ -250,7 +238,6 @@ export default defineComponent({
       search: '',
       listMode: true,
       creaProjectDial: false,
-      projectSettingsDial: false,
       projectNameTarget: '',
       initLoading: false,
       loadingProjects: true,
@@ -383,10 +370,6 @@ export default defineComponent({
       if (this.storage) {
         this.storage.setStorageSync('project_view', this.listMode);
       }
-    },
-    showProjectSettings(projectName: string) {
-      this.projectNameTarget = projectName;
-      this.projectSettingsDial = true;
     },
     deleteProject(projectName: string) {
       api

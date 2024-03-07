@@ -11,13 +11,13 @@
     <q-card-section>
       <q-input
         outlined
-        v-model="NewProjectName"
+        v-model="newProjectName"
         :label="$t('renameProject.inputLabel')"
         lazy-rules
         :rules="[(val) => (val && val.length > 0) || $t('renameProject.inputError')]"
       />
       <div class="flex flex-center">
-        <q-btn v-close-popup :disable="NewProjectName === ''" color="primary" :label="$t('renameProject.renameBtn')" @click="renameProject()" />
+        <q-btn v-close-popup :disable="newProjectName === ''" color="primary" :label="$t('renameProject.renameBtn')" @click="renameProject()" />
       </div>
     </q-card-section>
   </q-card>
@@ -38,13 +38,13 @@ export default defineComponent({
   },
   data() {
     return {
-      NewProjectName: this.projectName,
+      newProjectName: this.projectName,
     };
   },
   methods: {
     ...mapActions(useProjectStore, ['updateProjectSettings']),
     renameProject() {
-      this.updateProjectSettings(this.projectName, { projectName: this.NewProjectName });
+      this.updateProjectSettings(this.projectName, { projectName: this.newProjectName });
     },
   },
 });

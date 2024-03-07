@@ -47,7 +47,12 @@
       </q-banner>
     </q-card-section>
     <!-- project description: -->
-    <q-card-section>
+    <q-card-section class="q-gutter-sm">
+      <q-input outlined v-model="newProjectName" :label="$t('renameProject.title')">
+        <template #append>
+          <q-btn flat color="primary" icon="save" @click="renameProject()" />
+        </template>
+      </q-input>
       <q-input v-model="projectDescription" style="height: 100px" label="Description" outlined type="textarea" />
       <q-btn color="primary" :label="$t('projectSettings.descriptionSave')" icon="save" dense flat @click="saveDescription"></q-btn>
     </q-card-section>
@@ -227,7 +232,6 @@ import 'codemirror/addon/fold/foldgutter';
 import 'codemirror/addon/fold/foldgutter.css';
 import 'codemirror/addon/fold/brace-fold';
 
-import ConfirmAction from './ConfirmAction.vue';
 import UserSelect from './UserSelect.vue';
 import LanguageSelect from '../components/shared/LanguageSelect.vue';
 
@@ -244,7 +248,6 @@ export default defineComponent({
     ProjectIcon,
     Codemirror,
     UserSelect,
-    ConfirmAction,
     LanguageSelect,
   },
   props: {
@@ -258,22 +261,15 @@ export default defineComponent({
     },
   },
   data() {
-    const confirmActionCallback: CallableFunction = () => {
-      console.log('default callback');
-    };
     const uploadImage: { image: string | null; submitting: boolean } = { image: null, submitting: false };
     return {
-      addAdminDial: false,
-      addGuestDial: false,
-      confirmActionCallback,
-      confirmActionDial: false,
-      confirmActionArg1: '',
       uploadImage,
       annotationFeaturesJson: '',
       annotationFeaturesOk: true,
       annotationFeaturesComment: '',
       projectDescription: '',
       selectedLanguage: '',
+      newProjectName: this.projectname,
       cmOption: {
         tabSize: 8,
         styleActiveLine: true,
@@ -296,21 +292,15 @@ export default defineComponent({
       'visibility',
       'shownFeatures',
       'shownMeta',
-      'admins',
-      'guests',
       'imageSrc',
       'language',
     ]),
     ...mapState(useProjectStore, [
-      'isAdmin',
-      'admins',
-      'guests',
       'shownFeaturesChoices',
       'shownMetaChoices',
       'getSUDAnnofJson',
       'getUDAnnofJson',
       'getAnnotationSetting',
-      'config',
       'imageSrc',
       'language',
       'languagesList',
@@ -386,11 +376,6 @@ export default defineComponent({
       'getImage',
       'updateProjectshownFeatures',
     ]),
-    /**
-     * Parse annotation features. Display a related informative message dependeing on success
-     *
-     * @returns void
-     */
     checkAnnotationFeatures() {
       try {
         JSON.parse(this.annotationFeaturesJson);
@@ -425,6 +410,16 @@ export default defineComponent({
       this.updateProjectSettings(this.projectname, { description: this.projectDescription });
     },
 
+    renameProject() {
+      this.updateProjectSettings(this.projectname, {projectName: this.newProjectName});
+      this.$router.push({
+        name: 'project',
+        params: {
+          projectname: this.newProjectName,
+        },
+      });
+    },
+
     uploadProjectImage() {
       this.uploadImage.submitting = true;
       if (this.uploadImage.image) {
@@ -445,12 +440,6 @@ export default defineComponent({
 
     getProjectImage() {
       this.getImage(this.projectname);
-    },
-
-    triggerConfirm(method: CallableFunction, arg: string) {
-      this.confirmActionDial = true;
-      this.confirmActionCallback = method;
-      this.confirmActionArg1 = arg;
     },
 
     getSelectedLanguage(value: any) {

@@ -11,12 +11,6 @@
       <q-card>
         <q-card-section>
           <q-list>
-            <q-item v-close-popup clickable @click="projectSettings()">
-              <q-item-section>{{ $t('projectHub.rightClickSettings') }}</q-item-section>
-              <q-item-section side>
-                <q-icon name="settings" />
-              </q-item-section>
-            </q-item>
             <q-item v-close-popup clickable @click="showRenameProjectDial = true">
               <q-item-section>{{ $t('projectHub.rightClickRename') }}</q-item-section>
               <q-item-section side>
@@ -67,7 +61,6 @@
       <q-card-actions>
         <q-btn v-if="isProjectAdmin" round color="negative" icon="delete_forever" @click="triggerConfirm(deleteProject)">
           <q-tooltip class="bg-purple text-body2" anchor="top middle" :offset="[10, 10]" :delay="100">
-            <!-- {{ $t('projectHub.tooltipRightClickDelete') }} -->
             {{ $t('projectHub.rightClickDelete') }}
           </q-tooltip>
         </q-btn>
@@ -108,10 +101,6 @@ export default defineComponent({
       type: Function as PropType<(value: string) => void>,
       required: true,
     },
-    parentProjectSettings: {
-      type: Function as PropType<(value: string) => void>,
-      required: true,
-    },
   },
   data() {
     const confirmActionCallback = null as unknown as CallableFunction;
@@ -146,9 +135,6 @@ export default defineComponent({
           infos: this.project as any,
         },
       });
-    },
-    projectSettings() {
-      this.parentProjectSettings(this.project.projectName);
     },
     getProjectImage() {
       api

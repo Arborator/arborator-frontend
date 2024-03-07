@@ -182,7 +182,7 @@ export default {
     tooltipFabGrewValidated: 'Les arbres validés',
     tooltipFabGrewPending: 'Les arbres en attente',
     tooltipFabGrewUser: 'Uniquement mes arbres',
-    tooltipFabGrewUserRecent: 'Mes arbres, avec les arbres les plus récents',
+    tooltipFabGrewUserRecent: 'Mes arbres, complétés par les arbres les plus récents',
     tooltipFabGrewRecent: 'Les arbres les plus récents',
     tooltipFabGrewOther: "Les arbres d'un utilisateur spécifique",
     tooltipFabGrewAll: 'Tous les arbres',

@@ -3,64 +3,64 @@
 		{
 			"type": "SEARCH",
 			"name": "POS query",
-			"pattern": "% Search for a token of a given upos\n% Available tags: ADJ, ADP, ADV, AUX, CONJ, DET, INTJ, NOUN, NUM, PART, PRON, PROPN, PUNCT, SCONJ, SYM, VERB, X\npattern { N [upos=\"NUM\"] }"
+			"pattern": "% Search for a token of a given upos\n% Available tags: ADJ, ADP, ADV, AUX, CONJ, DET, INTJ, NOUN, NUM, PART, PRON, PROPN, PUNCT, SCONJ, SYM, VERB, X\npattern { X [upos=\"NUM\"] }"
 		},
 		{
 			"type": "SEARCH",
 			"name": "Form query",
-			"pattern": "% Search for a given word form\npattern { N [form=\"Form_to_search\"] }"
+			"pattern": "% Search for a given word form\npattern { X [form=\"Form_to_search\"] }"
 		},
 		{
 			"type": "SEARCH",
 			"name": "Lemma query",
-			"pattern": "% Search for a given lemma (lemmatization is not available for all languages)\n\npattern { N [lemma=\"Lemma_to_search\"] }"
+			"pattern": "% Search for a given lemma\npattern { X [lemma=\"Lemma_to_search\"] }"
 		},
 		{
 			"type": "SEARCH",
 			"name": "Dependency relation query",
-			"pattern": "% Search for a dependency relation\npattern { GOV -[advcl]-> DEP }"
+			"pattern": "% Search for a dependency relation\npattern { X -[det]-> Y }"
 		},
 		{
 			"type": "SEARCH",
 			"name": "Relation and tags query",
-			"pattern": "% Search for a \"det\" dependency relation\n% such that the governor's tag is different from NOUN, PROPN and ADJ\n\npattern {\nGOV [upos <> NOUN|ADJ|PROPN];\nGOV -[det]-> DEP;\n}"
+			"pattern": "% Search for a \"det\" dependency relation\n% such that the governor's tag is different from NOUN, PROPN and ADJ\n\npattern {\X [upos <> NOUN|ADJ|PROPN];\nX -[det]-> Y;\n}"
 		},
 		{
 			"type": "SEARCH",
 			"name": "Complex Query",
-			"pattern": "% Complex query, feel free to adjust as you wish\n\npattern { \n  N [\n    upos = VERB, \n    Mood = Ind|Imp, \n    Tense <> Fut, \n    Number, \n    !Person, \n    form = \"être\", \n    lemma = re\"s.*\" \n  ] \n}\n\n% EXPLANATION :\n% upos is a VERB\n% Mood is either Ind or Imp\n% Tense is not Fut\n% The feat Number has to exist\n% The feat Person has to not exist\n% The form has to be \"être\"\n% The lemma has to follow the regex \"s.*\" (start by \"s.\")"
+			"pattern": "% Complex query, feel free to adjust as you wish\n\npattern { \n  X [\n    upos = VERB, \n    Mood = Ind|Imp, \n    Tense <> Fut, \n    Number, \n    !Person, \n    form = \"être\", \n    lemma = re\"s.*\" \n  ] \n}\n\n% EXPLANATION:\n% upos is a VERB\n% Mood is either Ind or Imp\n% Tense is not Fut\n% The feat Number has to exist\n% The feat Person has to not exist\n% The form has to be \"être\"\n% The lemma has to follow the regex \"s.*\" (start by \"s.\")"
 		}
 	],
 	"rewriteQueries": [
 		{
 			"type": "REWRITE",
 			"name": "Rewrite Pos",
-			"pattern": "rule r { pattern { N [upos=VERB] } commands { N.upos = V } }"
+			"pattern": "% Change all upos VERB into upos V\nrule r {\n  pattern { X [upos=VERB] }\n  commands { X.upos = V }\n}"
 		},
 		{
 			"type": "REWRITE",
 			"name": "Rewrite Deprel label",
-			"pattern": "rule r {\n  pattern { e: GOV -[compound:vo]-> DEP }\n  commands { \n  \t% If you want to rename the label main:aux@deep in one time :\n    e.label = \"comp:obj@agent\\m\";\n    \n    % % Or if you want to rename feature by feature : \n    % e.1 = comp;\n    % e.2 = obj;\n\t% e.deep = agent;\n\t% e.type = m;\n\t}\n}"
+			"pattern": "rule r {\n  pattern { e: X -[compound:vo]-> Y }\n  commands { \n  \t% If you want to rename the label main:aux@deep in one time:\n    e.label = \"comp:obj@agent/m\";\n    \n    % Or if you want to rename feature by feature: \n    % e.1 = comp;\n    % e.2 = obj;\n\t% e.deep = agent;\n\t% e.type = m;\n\t}\n}"
 		},
 		{
 			"type": "REWRITE",
 			"name": "Delete Dependency",
-			"pattern": "rule r {\n  pattern { e: GOV -[det]-> DEP }\n  commands { \n  \t% If you want to delete the dependency\n    del_edge e;\n\t}\n}"
+			"pattern": "rule r {\n  pattern { e: X -[det]-> Y }\n  commands { \n  \t% If you want to delete the dependency\n    del_edge e;\n\t}\n}"
 		},
-		{
-			"type": "REWRITE",
-			"name": "Shift Dependency",
-			"pattern": "% in this template rule, we inverse the relation from NOUN -> ADJ to ADJ -> NOUN\nrule r {\n  pattern {\n    M1 [upos=NOUN] ; \n    M2 [upos=ADJ] ; \n    e: M1 -[mod]-> M2 ; \n  }\n  commands { \n    del_edge e; % delete the edge\n    add_edge M2 -[mod]-> M1; % add the inverse edge\n    \n    % and then shift the in-edges pointing to M1 and redirect to M2\n    shift_in M1 ==> M2;\n    \n    % facultative : if you also want to redirect all out-edges (starting from M1) to M2 (will start from M2), use the following line :\n    %shift_out M1 ==> M2;\n\t}\n}"
-		}, 
 		{
 			"type": "REWRITE",
 			"name": "Add Dependency",
 			"pattern": "% The following rule add a dependency det between a DET and a NOUN\nrule r1 {\n pattern { X[upos=DET] ; Y[upos=NOUN] ; X < Y } \n without { * -> X } \n commands { Y -[det]-> X } \n}"
-		}, 
+		},
 		{
 			"type": "REWRITE",
 			"name": "Expand Feature",
-			"pattern": "% The following two rules expand the feature Gloss=1SG by the two features Person=1, Number=Sing\nrule r1 {\n  pattern { N [Gloss=1SG, Person<>1] }\n commands { add_feat N.Person=1 } \n}\nrule r2 {\n pattern { N [Gloss=1SG, Number<>Sing] }\n commands { add_feat N.Number=Sing }\n}"
+			"pattern": "% The following two rules expand the feature Gloss=1SG by the two features Person=1, Number=Sing\nrule r1 {\n pattern { X [Gloss=1SG] }\n without{ X.Person=1 }\n commands { X.Person=1 } \n}\nrule r2 {\n  pattern { X [Gloss=1SG] }\n  without { X.Number=Sing }\n  commands { X.Number=Sing }\n}"
+		},
+		{
+			"type": "REWRITE",
+			"name": "Shift Dependency",
+			"pattern": "% in this template rule, we inverse the relation from NOUN -> ADJ to ADJ -> NOUN\nrule r {\n  pattern {\n    X1 [upos=NOUN] ; \n    X2 [upos=ADJ] ; \n    e: X1 -[mod]-> X2 ; \n  }\n  commands { \n    del_edge e; % delete the edge\n    add_edge X2 -[mod]-> X1; % add the inverse edge\n    \n    % and then shift the in-edges pointing to X1 and redirect to X2\n    shift_in X1 ==> X2;\n    \n    % facultative: if you also want to redirect all out-edges (starting from X1) to X2 (will start from X2), use the following line:\n    %shift_out X1 ==> X2;\n\t}\n}"
 		}
 	]
 }

@@ -23,7 +23,7 @@
 		{
 			"type": "SEARCH",
 			"name": "Relation and tags query",
-			"pattern": "% Search for a \"det\" dependency relation\n% such that the governor's tag is different from NOUN, PROPN and ADJ\n\npattern {\X [upos <> NOUN|ADJ|PROPN];\nX -[det]-> Y;\n}"
+			"pattern": "% Search for a \"det\" dependency relation\n% such that the governor's tag is different from NOUN, PROPN and ADJ\n\npattern {\nX [upos <> NOUN|ADJ|PROPN];\nX -[det]-> Y;\n}"
 		},
 		{
 			"type": "SEARCH",

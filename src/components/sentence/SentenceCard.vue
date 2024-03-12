@@ -5,7 +5,7 @@
         <span class="text-grey" style="padding-left: 10px">{{ index + 1 }}</span>
         <q-chip class="text-center" :color="$q.dark.isActive ? 'grey' : ''" dense> {{ sentence.sent_id }} </q-chip>&nbsp;&nbsp;&nbsp;
         <q-input
-          v-model="sentenceData.sentence"
+          v-model="sentenceText"
           :style="openTabUser === '' ? 'width: 100%' : 'width: 65%'"
           class="row items-center justify-center"
           v-bind="$attrs"
@@ -378,6 +378,7 @@ export default defineComponent({
       reactiveSentencesObj,
       openTabUser: '',
       sentenceData: this.$props.sentence,
+      sentenceText: this.$props.sentence.sentence,
       EMMETT: 'emmett.strickland',
       canUndo: false,
       canRedo: false,
@@ -548,6 +549,7 @@ export default defineComponent({
 
             if (this.openTabUser !== changedConllUser) {
               this.reactiveSentencesObj[this.openTabUser].fromSentenceConll(this.sentenceData.conlls[this.openTabUser]);
+              this.sentenceText = this.reactiveSentencesObj[this.openTabUser].state.metaJson.text as string;
               this.openTabUser = changedConllUser;
               this.exportedConll = exportedConll;
             }
@@ -567,6 +569,12 @@ export default defineComponent({
       this.sentenceBus.emit('action:tabSelected', {
         userId: this.openTabUser,
       });
+      if (this.openTabUser !== '') {
+        this.sentenceText = this.reactiveSentencesObj[this.openTabUser].state.metaJson.text as string;
+      }
+      else {
+        this.sentenceText = this.sentenceData.sentence;
+      }
     },
     openMetaDialog() {
       this.sentenceBus.emit('open:metaDialog', { userId: this.openTabUser });

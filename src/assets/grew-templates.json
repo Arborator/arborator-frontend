@@ -50,12 +50,12 @@
 		{
 			"type": "REWRITE",
 			"name": "Add Dependency",
-			"pattern": "% The following rule add a dependency det between a DET and a NOUN\nrule r1 {\n pattern { X[upos=DET] ; Y[upos=NOUN] ; X < Y } \n without { * -> X } \n commands { Y -[det]-> X } \n}"
+			"pattern": "% The following rule add a dependency det between a DET and a NOUN\nrule r1 {\n pattern { X[upos=DET] ; Y[upos=NOUN] ; X < Y } \n without { * -> X } \n commands { add_edge Y -[det]-> X } \n}"
 		},
 		{
 			"type": "REWRITE",
 			"name": "Expand Feature",
-			"pattern": "% The following two rules expand the feature Gloss=1SG by the two features Person=1, Number=Sing\nrule r1 {\n pattern { X [Gloss=1SG] }\n without{ X.Person=1 }\n commands { X.Person=1 } \n}\nrule r2 {\n  pattern { X [Gloss=1SG] }\n  without { X.Number=Sing }\n  commands { X.Number=Sing }\n}"
+			"pattern": "% The following two rules expand the feature Gloss=1SG by the two features Person=1, Number=Sing\nrule r1 {\n pattern { X [Gloss=\"1SG\"] }\n without{ X.Person=1 }\n commands { X.Person=1 } \n}\nrule r2 {\n  pattern { X [Gloss=\"1SG\"] }\n  without { X.Number=Sing }\n  commands { X.Number=Sing }\n}"
 		},
 		{
 			"type": "REWRITE",

@@ -42,7 +42,7 @@
 </template>
 
 <script lang="ts">
-import { LocalStorage, QVirtualScroll } from 'quasar';
+import { QVirtualScroll } from 'quasar';
 
 import { mapActions, mapState, mapWritableState } from 'pinia';
 import { useGrewSearchStore } from 'src/pinia/modules/grewSearch';
@@ -108,9 +108,8 @@ export default defineComponent({
     }
   },
   mounted() {
-    this.getTrees();
     document.title = `${this.projectname}/${this.samplename}`;
-    LocalStorage.remove('save_status');
+    this.getTrees();
     this.calculateHeight();
   },
   beforeUnmount() {

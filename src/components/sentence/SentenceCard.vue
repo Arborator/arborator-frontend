@@ -500,10 +500,6 @@ export default defineComponent({
     removeUserTag(tag: string) {
       this.removeTag(this.sentenceData, tag, this.sentenceBus, this.openTabUser);
     },
-    /**
-     * Receive canUndo, canRedo status from VueDepTree child component and
-     * decide whether to disable undo, redo buttons or not
-     */
     handleStatusChange(event: { canUndo: boolean; canRedo: boolean }) {
       this.canUndo = event.canUndo;
       this.canRedo = event.canRedo;
@@ -553,6 +549,7 @@ export default defineComponent({
               this.openTabUser = changedConllUser;
               this.exportedConll = exportedConll;
             }
+            this.removePendingModification(this.sentence.sent_id);
             notifyMessage({ position: 'top', message: 'Saved on the server', icon: 'save' });
           }
         })

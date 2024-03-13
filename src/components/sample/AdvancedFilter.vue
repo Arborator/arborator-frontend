@@ -1,7 +1,14 @@
 <template>
   <div class="row q-pa-md">
     <div class="col-8">
-      <q-input v-model="textFilter" :label="$t('advancedFilter.textFilter')" outlined dense color="primary"></q-input>
+      <q-input 
+        v-model="textFilter" 
+        :label="$t('advancedFilter.textFilter')" 
+        outlined 
+        dense 
+        color="primary"
+        @keyup.enter="applyAdvancedFilter()"
+        ></q-input>
     </div>
     <div class="col-3 q-px-md q-gutter-md">
       <q-select

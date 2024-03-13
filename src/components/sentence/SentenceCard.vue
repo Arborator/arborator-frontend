@@ -483,6 +483,7 @@ export default defineComponent({
           event,
         });
       }
+      event.stopPropagation();
     },
     undo() {
       if (this.openTabUser !== '') {
@@ -578,7 +579,7 @@ export default defineComponent({
       this.sentenceBus.emit('open:metaDialog', { userId: this.openTabUser });
     },
     changeText() {
-      this.sentenceData.sentence = this.reactiveSentencesObj[this.openTabUser].getSentenceText();
+      this.sentenceText = this.reactiveSentencesObj[this.openTabUser].getSentenceText();
     },
     toggleDiffMode() {
       this.diffMode = !this.diffMode;

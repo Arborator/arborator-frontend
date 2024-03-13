@@ -154,7 +154,6 @@ export default defineComponent({
           },
           userId: this.userId,
         });
-        this.$emit('changed:metaText');
       }
     },
   },

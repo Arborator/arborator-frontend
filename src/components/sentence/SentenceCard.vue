@@ -297,6 +297,7 @@
 import mitt, { Emitter } from 'mitt';
 
 import { ReactiveSentence } from 'dependencytreejs/src/ReactiveSentence';
+import { constructTextFromTreeJson } from 'conllup/lib/conll';
 import api from '../../api/backend-api';
 
 import VueDepTree from './VueDepTree.vue';
@@ -567,7 +568,7 @@ export default defineComponent({
         userId: this.openTabUser,
       });
       if (this.openTabUser !== '') {
-        this.sentenceText = this.reactiveSentencesObj[this.openTabUser].state.metaJson.text as string;
+        this.sentenceText = constructTextFromTreeJson(this.reactiveSentencesObj[this.openTabUser].state.treeJson);
       }
       else {
         this.sentenceText = this.sentenceData.sentence;

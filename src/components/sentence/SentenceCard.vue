@@ -490,6 +490,7 @@ export default defineComponent({
         this.sentenceBus.emit('action:undo', {
           userId: this.openTabUser,
         });
+        this.sentenceText = this.reactiveSentencesObj[this.openTabUser].getSentenceText();
       }
     },
     redo() {
@@ -497,6 +498,7 @@ export default defineComponent({
         this.sentenceBus.emit('action:redo', {
           userId: this.openTabUser,
         });
+        this.sentenceText = this.reactiveSentencesObj[this.openTabUser].getSentenceText();
       }
     },
     removeUserTag(tag: string) {

@@ -448,7 +448,7 @@ export default {
   },
   tokenReplaceDialog: {
     merge: 'Merge',
-    mergeOptions: ['Merge right', 'Merge left'],
+    mergeOptions: ['Merge left', 'Merge right'],
     insert: 'Insert',
     insertOptions: ['Insert before', 'Insert after'],
     split: 'Split token',

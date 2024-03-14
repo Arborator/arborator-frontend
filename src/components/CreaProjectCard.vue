@@ -154,7 +154,7 @@ import LanguageSelect from './shared/LanguageSelect.vue';
 
 import api from '../api/backend-api';
 import { notifyError, notifyMessage } from 'src/utils/notify';
-import { mapActions, mapState } from 'pinia';
+import { mapState } from 'pinia';
 import { useUserStore } from 'src/pinia/modules/user';
 import { useProjectStore } from 'src/pinia/modules/project';
 import { defineComponent, PropType } from 'vue';
@@ -200,7 +200,7 @@ export default defineComponent({
   },
   computed: {
     ...mapState(useUserStore, ['username', 'loggedWithGithub', 'isSuperAdmin']),
-    ...mapState(useProjectStore, ['languagesList']),
+    ...mapState(useProjectStore, ['languagesList', 'annotationFeatures', 'annotationFeaturesUD']),
     canSyncWithGithub() {
       return this.loggedWithGithub && this.isShowSyncBtn && !this.isShowGithubSyncPanel;
     },
@@ -209,7 +209,6 @@ export default defineComponent({
     },
   },
   methods: {
-    ...mapActions(useProjectStore, ['resetAnnotationFeatures']),
     getSelectedLanguage(value: any) {
       if (value) {
         this.project.language = value;
@@ -217,9 +216,10 @@ export default defineComponent({
     },
     onSubmit() {
       this.submitting = true;
-      this.resetAnnotationFeatures();
+      const annotationFeaturesJson = this.project.config === 'ud' ? this.annotationFeaturesUD : this.annotationFeatures;
       const data = {
         ...this.project,
+        conllSchema: annotationFeaturesJson,
         username: this.username,
       };
       api

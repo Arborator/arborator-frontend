@@ -154,7 +154,7 @@ import LanguageSelect from './shared/LanguageSelect.vue';
 
 import api from '../api/backend-api';
 import { notifyError, notifyMessage } from 'src/utils/notify';
-import { mapState } from 'pinia';
+import { mapState, mapActions } from 'pinia';
 import { useUserStore } from 'src/pinia/modules/user';
 import { useProjectStore } from 'src/pinia/modules/project';
 import { defineComponent, PropType } from 'vue';
@@ -209,12 +209,14 @@ export default defineComponent({
     },
   },
   methods: {
+    ...mapActions(useProjectStore, ['resetAnnotationFeatures']),
     getSelectedLanguage(value: any) {
       if (value) {
         this.project.language = value;
       }
     },
     onSubmit() {
+      this.resetAnnotationFeatures();
       this.submitting = true;
       const annotationFeaturesJson = this.project.config === 'ud' ? this.annotationFeaturesUD : this.annotationFeatures;
       const data = {

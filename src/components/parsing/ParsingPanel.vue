@@ -68,6 +68,16 @@
       <div>
         <q-btn flat icon="arrow_back" @click="isShowModels = true; parserData.param.pipelineChoice = ''" />
       </div>
+      <div v-if="modelsTable.selected.length" class="row q-gutter-md">
+        <div class="text-h6">
+          {{ $t('parser.baseModel') }} : {{ modelsTable.selected[0].projectName+'_' + modelsTable.selected[0].modelId }}
+        </div>
+      </div>
+      <div v-else class="row q-gutter-md">
+        <div>
+          {{ $t('parser.noBaseModelSelected') }}
+        </div>
+      </div>
       <!-- training panel -->
       <div v-if="parserData.param.pipelineChoice === 'TRAIN_AND_PARSE' || parserData.param.pipelineChoice === 'TRAIN_ONLY'" class="q-gutter-md">
         <div class="row text-h6">
@@ -574,11 +584,16 @@ export default defineComponent({
         taskTimeStarted: Date.now(),
         taskIntervalChecker: null,
       };
-
+      if (this.modelsTable.selected.length) {
+        this.parserData.param.baseModel = { 
+          project_name: this.modelsTable.selected[0].projectName,
+          model_id: this.modelsTable.selected[0].modelId,
+        };
+      }
       const trainSampleNames = this.parserData.param.trainAll ? this.allSamplesNames : this.parserData.param.trainSamplesNames;
       const trainUser = this.parserData.param.isCustomTrainingUser ? this.parserData.param.trainingUser : 'last';
       const maxEpoch = this.parserData.param.maxEpoch;
-      const baseModel = this.parserData.param.baseModel ? ((this.parserData.param.baseModel as any).value as ModelInfo_t) : null;
+      const baseModel = this.parserData.param.baseModel ? ((this.parserData.param.baseModel as any) as ModelInfo_t) : null;
       api
         .parserTrainStart(this.$route.params.projectname as any as string, trainSampleNames, trainUser, maxEpoch, baseModel)
         .then((response) => {

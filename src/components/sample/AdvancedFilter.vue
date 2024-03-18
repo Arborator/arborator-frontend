@@ -19,7 +19,7 @@
         multiple
         option-value="value"
         label="Tags"
-        :options="defaultTags"
+        :options="userTags"
         emit-value
         @focus="getUsersTags()"
       >
@@ -137,7 +137,7 @@ export default defineComponent({
   computed: {
     ...mapState(useProjectStore, ['featuresSet']),
     ...mapState(useTreesStore, ['trees', 'filteredTrees', 'numberOfTreesPerUser', 'numberOfTrees', 'userIds']),
-    ...mapState(useTagsStore, ['defaultTags']),
+    ...mapState(useTagsStore, ['userTags']),
     ...mapWritableState(useTreesStore, [
       'textFilter',
       'usersToHaveTree',

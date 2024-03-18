@@ -30,9 +30,14 @@
           </template>
           <template class="q-pa-md" v-slot:option="scope">
             <div class="row q-pa-xs">
-              <q-chip v-bind="scope.itemProps" icon="add" :color="scope.opt.color" size="sm">
-                {{ scope.opt.value }}
-              </q-chip>
+              <div class="col-9">
+                <q-chip v-bind="scope.itemProps" icon="add" :color="scope.opt.color" size="sm">
+                  {{ scope.opt.value }}
+                </q-chip>
+              </div>
+              <div v-if="!defaultTags.map(tag => tag.value).includes(scope.opt.value)" class="col-1">
+                <q-btn flat icon="delete" color="primary" @click="removeUserTag(scope.opt.value)" />
+              </div>
             </div>
             <q-separator />
           </template>
@@ -57,11 +62,13 @@ import api from '../../api/backend-api';
 import { notifyError, notifyMessage } from 'src/utils/notify';
 import { reactive_sentences_obj_t, sentence_bus_t } from 'src/types/main_types';
 import { grewSearchResultSentence_t } from 'src/api/backend-types';
-import { mapState, mapActions } from 'pinia';
+import { mapState, mapActions, mapWritableState } from 'pinia';
 import { useUserStore } from 'src/pinia/modules/user';
 import { useTagsStore, tag_t } from 'src/pinia/modules/tags';
+import { useProjectStore } from 'src/pinia/modules/project';
 
 import { defineComponent, PropType } from 'vue';
+import { error } from 'console';
 
 export default defineComponent({
   name: 'TagsMenu',
@@ -96,11 +103,10 @@ export default defineComponent({
     };
   },
   computed: {
-    ...mapState(useTagsStore, ['defaultTags']),
+    ...mapState(useTagsStore, ['userTags', 'defaultTags']),
+    ...mapWritableState(useTagsStore, ['userTags']),
     ...mapState(useUserStore, ['username']),
-    projectName() {
-      return this.$route.params.projectname as string;
-    },
+    ...mapState(useProjectStore, ['name']),
   },
   watch: {
     tags() {
@@ -119,7 +125,7 @@ export default defineComponent({
       const conll = this.reactiveSentencesObj[this.openTabUser].exportConllWithModifiedMeta(metaToReplace);
       const data = { tags: this.tags, tree: conll };
       api
-        .addTags(this.projectName, this.sampleName, data)
+        .addTags(this.name, this.sampleName, data)
         .then((response) => {
           this.sentenceBus.emit('tree-update:tags', {
             sentenceJson: {
@@ -138,7 +144,7 @@ export default defineComponent({
         });
     },
     filterTags(val: string, update: (callback: () => void) => void) {
-      const tagsListWithoutRedundants = [...new Set(this.defaultTags)];
+      const tagsListWithoutRedundants = [...new Set(this.userTags)];
       const existingTagsString = (this.reactiveSentencesObj[this.openTabUser].state.metaJson['tags'] as string) || '';
       const existingTagsArray = existingTagsString.split(',').map((tag) => tag.trim());
 
@@ -160,10 +166,10 @@ export default defineComponent({
       if (this.CheckTagsFormatError(val)) {
         this.tagsFormatError = true;
       } else {
-        if (!this.defaultTags.map((tag) => tag.value).includes(val)) {
-          this.defaultTags.push({ value: val, color: 'grey-4' });
+        if (!this.userTags.map((tag) => tag.value).includes(val)) {
+          this.userTags.push({ value: val, color: 'grey-4' });
           const data = { tags: val };
-          api.createUserTags(this.projectName, this.username, data).catch((error) => {
+          api.createUserTags(this.name, this.username, data).catch((error) => {
             notifyError(error);
           });
         }
@@ -173,6 +179,18 @@ export default defineComponent({
     CheckTagsFormatError(val: string) {
       return val.trim().length === 0 || val.includes(',');
     },
+    removeUserTag(tag: string) {
+      api
+        .deleteUserTag(this.name, this.username, tag)
+        .then(() => {
+          notifyMessage({ message: `${tag} is successfully removed` });
+          this.userTags.splice(this.userTags.map(tag => tag.value).indexOf(tag), 1)
+          this.filterTags('', () => {})
+        })
+        .catch(() => {
+          notifyError({ error: `Error appeared while deleting tag`});
+        })
+    }
   },
 });
 </script>

@@ -260,7 +260,7 @@
         <div class="row">
           <div class="text-overline">Tags:</div>
           <div v-for="tag in userTags">
-            <q-chip v-if="openTabUser === username || isValidator" removable outline color="primary" size="sm" @remove="removeUserTag(tag)">
+            <q-chip v-if="openTabUser === username || isValidator" removable outline color="primary" size="sm" @remove="removeSentenceTag(tag)">
               {{ tag }}
             </q-chip>
             <q-chip v-else outline color="primary" size="sm">
@@ -396,7 +396,6 @@ export default defineComponent({
     ...mapWritableState(useGithubStore, ['reloadCommits']),
     ...mapState(useProjectStore, ['isAdmin', 'isValidator', 'blindAnnotationMode', 'getProjectConfig', 'canSaveTreeInProject', 'shownMeta']),
     ...mapState(useUserStore, ['isLoggedIn', 'username']),
-    ...mapState(useTagsStore, ['defaultTags']),
     lastModifiedTime() {
       const lastModifiedTime: { [key: string]: string } = {};
       for (const user of Object.keys(this.reactiveSentencesObj)) {
@@ -501,7 +500,7 @@ export default defineComponent({
         this.sentenceText = this.reactiveSentencesObj[this.openTabUser].getSentenceText();
       }
     },
-    removeUserTag(tag: string) {
+    removeSentenceTag(tag: string) {
       this.removeTag(this.sentenceData, tag, this.sentenceBus, this.openTabUser);
     },
     handleStatusChange(event: { canUndo: boolean; canRedo: boolean }) {

@@ -345,10 +345,13 @@ export default {
     return API.put(`/projects/${projectName}/samples/${sampleName}/tags`, data);
   },
   createUserTags(projectName: string, username: string, data: any) {
-    return API.post(`/projects/${projectName}/tags/${username}`, data);
+    return API.post(`/projects/${projectName}/${username}/tags`, data);
   },
   getUserTags(projectName: string, username: string) {
-    return API.get(`/projects/${projectName}/tags/${username}`);
+    return API.get(`/projects/${projectName}/${username}/tags`);
+  },
+  deleteUserTag(projectName: string, username: string, tag: string) {
+    return API.delete(`/projects/${projectName}/${username}/tags/${tag}`);
   },
   // -------------------------------------------------------- //
   // ---------------       grewHistory        --------------- //

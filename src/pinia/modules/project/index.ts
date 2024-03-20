@@ -166,8 +166,8 @@ export const useProjectStore = defineStore('project', {
           .then((response) => {
             this.$patch(toUpdateObject);
             this.reloadProjects = true;
-            notifyMessage({ message: 'New project settings saved on the server', icon: 'save' });
             resolve(response);
+            notifyMessage({ message: 'New project settings saved on the server', icon: 'save' });
           })
           .catch((error) => {
             notifyError({

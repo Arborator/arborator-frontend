@@ -413,6 +413,7 @@ export default defineComponent({
     async renameProject() {
       await this.updateProjectSettings(this.projectname, {projectName: this.newProjectName});
       this.$router.push({
+        replace: true,
         name: 'project',
         params: {
           projectname: this.newProjectName,

@@ -215,12 +215,12 @@ export default defineComponent({
   methods: {
     ...mapActions(useGrewSearchStore, ['changeLastGrewQuery']),
     onSearch() {
-      this.parentOnSearch(this.currentQuery, this.treeType.value, this.otherUser);
-      this.changeLastGrewQuery({ text: this.currentQuery, type: this.currentQueryType, userType: this.treeType.value });
+      this.parentOnSearch(this.currentQuery.normalize('NFC'), this.treeType.value, this.otherUser);
+      this.changeLastGrewQuery({ text: this.currentQuery.normalize('NFC'), type: this.currentQueryType, userType: this.treeType.value });
     },
     tryRules() {
-      this.parentOnTryRules(this.currentQuery, this.treeType.value, this.otherUser);
-      this.changeLastGrewQuery({ text: this.currentQuery, type: this.currentQueryType, userType: this.treeType.value });
+      this.parentOnTryRules(this.currentQuery.normalize('NFC'), this.treeType.value, this.otherUser);
+      this.changeLastGrewQuery({ text: this.currentQuery.normalize('NFC'), type: this.currentQueryType, userType: this.treeType.value });
     },
     changeQuery(query: string, type: 'SEARCH' | 'REWRITE') {
       this.currentQuery = query;

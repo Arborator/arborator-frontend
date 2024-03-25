@@ -4,7 +4,7 @@
       <q-space />
       <div class="text-weight-bold">{{ $t('projectSettings.title') }}</div>
       <q-space />
-      <q-btn v-close-popup dense flat icon="close">
+      <q-btn dense flat icon="close" @click="closeDialog()">
         <q-tooltip content-class="bg-white text-primary">{{ $t('projectSettings.windowClose') }}</q-tooltip>
       </q-btn>
     </q-bar>
@@ -264,6 +264,7 @@ export default defineComponent({
     const uploadImage: { image: string | null; submitting: boolean } = { image: null, submitting: false };
     return {
       uploadImage,
+      currentAnnotationSchema: '',
       annotationFeaturesJson: '',
       annotationFeaturesOk: true,
       annotationFeaturesComment: '',
@@ -363,6 +364,7 @@ export default defineComponent({
   },
   mounted() {
     this.annotationFeaturesJson = this.getAnnotationSetting;
+    this.currentAnnotationSchema = this.getAnnotationSetting;
     this.getProjectImage();
   },
 
@@ -390,6 +392,7 @@ export default defineComponent({
       this.updateProjectConlluSchema(this.projectname, JSON.parse(this.annotationFeaturesJson))
         .then(() => {
           notifyMessage({ message: 'New annotation settings saved on the server', icon: 'save' });
+          this.currentAnnotationSchema = this.getAnnotationSetting;
         })
         .catch((error) => {
           notifyError({ error });
@@ -450,6 +453,28 @@ export default defineComponent({
     updateProjectLanguage() {
       this.updateProjectSettings(this.projectname, { language: this.selectedLanguage as string });
     },
+
+    closeDialog() {
+      if (this.currentAnnotationSchema !== this.annotationFeaturesJson) {
+        this.$q.notify({
+          message: 'You have unsaved changes in your annotation schema configuration, Do you really want to leave ?',
+          position: 'top',
+          color: 'warning',
+          timeout: 0,
+          closeBtn: 'X',
+          actions: [
+            {
+              label: 'Continue',
+              handler: () => {
+                this.$emit('closed');
+              },
+            },
+          ]
+        });
+      } else  {
+        this.$emit('closed')
+      }
+    }
   },
 });
 </script>

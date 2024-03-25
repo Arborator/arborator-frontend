@@ -313,7 +313,7 @@
 
     <!-- Settings dialog -->
     <q-dialog v-model="projectSettingsDial" transition-show="slide-up" transition-hide="slide-down">
-      <ProjectSettingsView :project-trees-from="getProjectTreesFrom" :projectname="projectName" style="width: 90vw"> </ProjectSettingsView>
+      <ProjectSettingsView :project-trees-from="getProjectTreesFrom" :projectname="projectName" style="width: 90vw" @closed="projectSettingsDial = false"> </ProjectSettingsView>
     </q-dialog>
 
     <!--Project information dialog-->

@@ -150,7 +150,6 @@ export default defineComponent({
     },
   },
   methods: {
-    ...mapActions(useProjectStore, ['getImage']),
     timeAgo(secsAgo: number) {
       return timeAgo(secsAgo);
     },
@@ -165,22 +164,6 @@ export default defineComponent({
     },
     projectSettings() {
       this.parentProjectSettings(this.project.projectName);
-    },
-    getProjectImage() {
-      api
-        .getProjectImage(this.project.projectName)
-        .then((response) => {
-          if (Object.keys(response.data).length > 0) {
-            const imageData = response.data.image_data;
-            const imageExt = response.data.image_ext;
-            this.imageSrc = `data:image/${imageExt};base64,${imageData}`;
-          } else {
-            this.imageSrc = '';
-          }
-        })
-        .catch((error) => {
-          notifyError(error);
-        });
     },
     deleteProject() {
       this.parentDeleteProject(this.project.projectName);

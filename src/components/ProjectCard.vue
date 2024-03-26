@@ -81,9 +81,8 @@ import ConfirmAction from '../components/ConfirmAction.vue';
 import ProjectIcon from 'components/shared/ProjectIcon.vue';
 import RenameProjectDialog from './RenameProjectDialog.vue';
 
-import api from 'src/api/backend-api';
-import { notifyError } from 'src/utils/notify';
-import { mapState, mapActions } from 'pinia';
+
+import { mapState } from 'pinia';
 import { useProjectStore } from 'src/pinia/modules/project';
 import { useUserStore } from 'src/pinia/modules/user';
 import { timeAgo } from 'src/utils/timeAgoUtils';
@@ -115,15 +114,12 @@ export default defineComponent({
   },
   computed: {
     ...mapState(useUserStore, ['username', 'isSuperAdmin']),
+    ...mapState(useProjectStore, ['image']),
     isProjectAdmin() {
       return this.project.admins.includes(this.username) || this.isSuperAdmin;
     },
   },
-  mounted() {
-    this.getProjectImage();
-  },
   methods: {
-    ...mapActions(useProjectStore, ['getImage']),
     timeAgo(secsAgo: number) {
       return timeAgo(secsAgo);
     },
@@ -135,22 +131,6 @@ export default defineComponent({
           infos: this.project as any,
         },
       });
-    },
-    getProjectImage() {
-      api
-        .getProjectImage(this.project.projectName)
-        .then((response) => {
-          if (Object.keys(response.data).length > 0) {
-            const imageData = response.data.image_data;
-            const imageExt = response.data.image_ext;
-            this.imageSrc = `data:image/${imageExt};base64,${imageData}`;
-          } else {
-            this.imageSrc = '';
-          }
-        })
-        .catch((error) => {
-          notifyError(error);
-        });
     },
     deleteProject() {
       this.parentDeleteProject(this.project.projectName);

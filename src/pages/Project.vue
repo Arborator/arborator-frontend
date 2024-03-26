@@ -2,10 +2,10 @@
   <q-page id="container">
     <q-card flat style="max-width: 100%">
       <q-card-section class="project-header">
-        <q-img class="project-image" :src="imageSrc" basic>
+        <q-img class="project-image" :src="image" basic>
           <div class="absolute-bottom text-h6" style="padding: 6px">
             <ProjectIcon :visibility="visibility" :blindAnnotationMode="blindAnnotationMode" />
-            {{ $t('projectView.project') }} {{ projectName }}
+            {{ $t('projectView.project') }} {{ name }}
             <q-btn v-if="isAdmin" flat round icon="settings" @click="projectSettingsDial = true">
               <q-tooltip :delay="300" content-class="text-white bg-primary">{{ $t('projectView.tooltipSettings') }}</q-tooltip>
             </q-btn>
@@ -220,7 +220,7 @@
               <!-- Other github options (only for synchronized projects) -->
               <div v-if="isAllowdedToSync && githubSynchronizedRepo && !isDeleteSync">
                 <GithubOptions
-                  :projectName="projectName"
+                  :projectName="name"
                   :repositoryName="githubSynchronizedRepo"
                   :key="reload"
                   @remove="reloadAfterDeleteSynchronization"
@@ -263,7 +263,7 @@
                   color="white"
                   :text-color="$q.dark.isActive ? 'white' : 'black'"
                   class="full-width"
-                  :to="'/projects/' + projectName + '/' + props.row.sample_name"
+                  :to="'/projects/' + name + '/' + props.row.sample_name"
                   icon-right="open_in_browser"
                   no-caps
                   >{{ props.row.sample_name }}</q-btn
@@ -303,7 +303,7 @@
     <template v-if="!isFreezed && canExportTrees">
       <GrewSearch
         :sentence-count="sentenceCount"
-        :search-scope="projectName"
+        :search-scope="name"
         :sample-names="selectedSamplesNames"
         :trees-from="getProjectTreesFrom"
         @reload="loadProjectData"
@@ -313,7 +313,7 @@
 
     <!-- Settings dialog -->
     <q-dialog v-model="projectSettingsDial" transition-show="slide-up" transition-hide="slide-down">
-      <ProjectSettingsView :project-trees-from="getProjectTreesFrom" :projectname="projectName" style="width: 90vw"> </ProjectSettingsView>
+      <ProjectSettingsView :project-trees-from="getProjectTreesFrom" :projectName="name" style="width: 90vw"> </ProjectSettingsView>
     </q-dialog>
 
     <!--Project information dialog-->
@@ -357,7 +357,7 @@
 
     <!--Delete confirm dialog-->
     <q-dialog v-model="confirmActionDial">
-      <confirm-action :parent-action="confirmActionCallback" :arg1="confirmActionArg1" :target-name="projectName"></confirm-action>
+      <confirm-action :parent-action="confirmActionCallback" :arg1="confirmActionArg1" :target-name="name"></confirm-action>
     </q-dialog>
 
     <!-- Lexicon Panel -->
@@ -370,7 +370,7 @@
     <!--Synchronization dialog-->
     <q-dialog v-model="isShowSyncDialog">
       <q-card style="min-width: 50vw">
-        <GithubSyncDialog :project-name="projectName" @created="reloadAfterSync"></GithubSyncDialog>
+        <GithubSyncDialog :project-name="name" @created="reloadAfterSync"></GithubSyncDialog>
       </q-card>
     </q-dialog>
 
@@ -535,13 +535,13 @@ export default defineComponent({
   },
   computed: {
     ...mapState(useProjectStore, [
+      'name',
       'visibility',
       'isAdmin',
       'isGuest',
       'admins',
       'image',
       'blindAnnotationMode',
-      'imageSrc',
       'description',
       'isValidator',
       'canSaveTreeInProject',
@@ -554,9 +554,6 @@ export default defineComponent({
     ...mapWritableState(useProjectStore, ['freezed']),
     ...mapState(useUserStore, ['isSuperAdmin']),
     ...mapState(useGithubStore, ['reloadCommits']),
-    projectName(): string {
-      return this.$route.params.projectname as string;
-    },
     routePath(): string {
       return this.$route.path;
     },
@@ -596,23 +593,22 @@ export default defineComponent({
   },
   mounted() {
     this.loadProjectData();
-    this.getProjectImage();
     this.notifyFreezedProject();
-    document.title = `ArboratorGrew: ${this.projectName}`;
+    document.title = `ArboratorGrew: ${this.name}`;
     this.getSynchronizedGithubRepo();
   },
   unmounted() {
     window.removeEventListener('resize', this.handleResize);
   },
   methods: {
-    ...mapActions(useProjectStore, ['updateProjectSettings', 'getImage']),
+    ...mapActions(useProjectStore, ['updateProjectSettings']),
     handleResize() {
       this.window.width = window.innerWidth;
       this.window.height = window.innerHeight;
     },
 
     goToRoute() {
-      this.$router.push(`/projects/${this.projectName}/samples`);
+      this.$router.push(`/projects/${this.name}/samples`);
     },
 
     reloadAfterSync() {
@@ -631,11 +627,8 @@ export default defineComponent({
       this.getProjectSamples();
       this.reload += 1;
     },
-    getProjectImage() {
-      this.getImage(this.projectName);
-    },
     getProjectSamples() {
-      api.getProjectSamples(this.projectName as string).then((response) => {
+      api.getProjectSamples(this.$route.params.projectname as string).then((response) => {
         this.samples = response.data;
         this.samplesNumber = this.samples.length;
         this.sampleNames = [];
@@ -648,7 +641,7 @@ export default defineComponent({
     deleteSamples() {
       const data = { sampleIds: this.table.selected.map((sample) => sample.sample_name)};
       api
-        .deleteSamples(this.projectName as string, data )
+        .deleteSamples(this.name, data )
         .then(() => {
           this.table.selected = [];
           notifyMessage({ message: 'Delete success' });
@@ -668,7 +661,7 @@ export default defineComponent({
       notifyMessage({
         message: this.freezed ? `Your project is unfreezed` : `Your project is freezed the are other collaborators can't add new changes`,
       });
-      this.updateProjectSettings(this.projectName, { freezed: !this.freezed });
+      this.updateProjectSettings(this.name, { freezed: !this.freezed });
     },
 
     notifyFreezedProject() {
@@ -679,7 +672,7 @@ export default defineComponent({
 
     deleteSampleFromGithub(sampleName: string) {
       api
-        .deleteFileFromGithub(this.projectName, sampleName)
+        .deleteFileFromGithub(this.name, sampleName)
         .then(() => {
           notifyMessage({ message: 'Delete from Github' });
           this.loadProjectData();
@@ -701,7 +694,7 @@ export default defineComponent({
         // IMPORTANT : Since quasar v2 (vue v3), the update method (in q-select) occurs BEFORE the value is updated
         // So we need to use this hack of setTimeout if we want to access to the updated sample.blindAnnotationLevel
         api
-          .updateSampleBlindAnnotationLevel(this.projectName as string, sample.sample_name, sample.blindAnnotationLevel)
+          .updateSampleBlindAnnotationLevel(this.name, sample.sample_name, sample.blindAnnotationLevel)
           .then(() => {
             notifyMessage({ message: 'The new blind annotation level was correctly saved in the server' });
           })
@@ -722,7 +715,7 @@ export default defineComponent({
 
     getSynchronizedGithubRepo() {
       api
-        .getSynchronizedGithubRepository(this.projectName)
+        .getSynchronizedGithubRepository(this.name)
         .then((response) => {
           this.githubSynchronizedRepo = response.data.repositoryName;
         })
@@ -748,7 +741,7 @@ export default defineComponent({
     removeUserTrees() {
       for (const sample of this.table.selected) {
         api
-          .deleteUserTrees(this.projectName as string, sample.sample_name, this.user)
+          .deleteUserTrees(this.name, sample.sample_name, this.user)
           .then(() => {
             notifyMessage({ message: `${this.user} trees are removed successfully` });
             this.removeUserTreesDial = false;
@@ -761,7 +754,7 @@ export default defineComponent({
     },
 
     exportEvaluation() {
-      const projectName = this.projectName as string;
+      const projectName = this.name;
       const sampleName = this.table.selected[0].sample_name;
       const fileName = `${sampleName}_evaluations`;
       api

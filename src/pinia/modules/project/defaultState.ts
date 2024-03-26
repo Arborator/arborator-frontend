@@ -9,7 +9,7 @@ interface configState {
   visibility: number;
   description: string;
   image: string;
-  imageSrc: string;
+  imageTree: string;
   blindAnnotationMode: boolean;
   freezed: boolean;
   config: string;
@@ -36,7 +36,7 @@ export default function defaultState(): configState {
     visibility: 2,
     description: '',
     image: '',
-    imageSrc: '',
+    imageTree: '/images/niko-photos-tGTVxeOr_Rs-unsplash.jpg',
     blindAnnotationMode: false,
     freezed: false,
     config: '',

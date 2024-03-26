@@ -16,7 +16,7 @@ export interface user_t {
 }
 
 //// PROJECT ////
-export interface project_with_diff_t {
+export interface project_t {
   id: number;
   projectName: string;
   description: string;
@@ -53,9 +53,9 @@ export interface project_extended_t {
   lastWriteAccess: number;
 }
 
-export type shownMeta = string[];
+export type shownMeta_t = string[];
 
-export type shownFeatures = string[];
+export type shownFeatures_t = string[];
 
 export interface annotationFeatures_t {
   META: string[];

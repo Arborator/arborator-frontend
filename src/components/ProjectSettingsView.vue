@@ -11,56 +11,60 @@
 
     <q-card-section class="q-pa-sm row q-gutter-md">
       <q-banner rounded class="col-md-4 offset-md-4 col-xs-12 col-sm-12">
-        <q-img :ratio="16 / 9" :src="imageSrc" basic>
+        <q-img 
+          :ratio="16 / 9" 
+          :src="image ? image : imageTree" 
+          basic
+        >
           <div class="absolute-bottom text-h6">
             <ProjectIcon :visibility="visibilityLocal" :blind-annotation-mode="blindAnnotationModeLocal" />
-            {{ projectname }}
+            {{ projectName }}
           </div>
         </q-img>
-
-        <template #action>
+      </q-banner>
+    </q-card-section>
+    
+    <q-card-section class="q-pa-sm row items-start q-gutter-md">
+      <q-card bordered flat class="col col-sm-12">
+        <q-card-section class="q-gutter-md">
           <q-file
-            dense
             outlined
             v-model="uploadImage.image"
             label="Change Image"
-            borderless
-            standout
-            filled
             use-chips
             clearable
             :loading="uploadImage.submitting"
           >
-            <template #after>
+            <template v-slot:append>
               <q-btn
+                flat
                 color="primary"
                 icon="cloud_upload"
-                round
                 :loading="uploadImage.submitting"
-                :disable="uploadImage.image === null"
+                :disable="!uploadImage.image"
                 accept=".jpg, image/*"
                 @click="uploadProjectImage()"
               />
             </template>
           </q-file>
-        </template>
-      </q-banner>
+          <q-input outlined v-model="newProjectName" :label="$t('renameProject.title')">
+            <template #append>
+              <q-btn flat color="primary" icon="save" @click="renameProject()" />
+            </template>
+          </q-input>
+          <q-input v-model="projectDescription" label="Description" outlined type="textarea">
+            <template #append>
+              <q-btn color="primary" icon="save" dense flat @click="saveDescription"/>
+            </template>
+          </q-input>
+        </q-card-section>
+      </q-card>
     </q-card-section>
-    <!-- project description: -->
-    <q-card-section class="q-gutter-sm">
-      <q-input outlined v-model="newProjectName" :label="$t('renameProject.title')">
-        <template #append>
-          <q-btn flat color="primary" icon="save" @click="renameProject()" />
-        </template>
-      </q-input>
-      <q-input v-model="projectDescription" style="height: 100px" label="Description" outlined type="textarea" />
-      <q-btn color="primary" :label="$t('projectSettings.descriptionSave')" icon="save" dense flat @click="saveDescription"></q-btn>
-    </q-card-section>
-    <!-- project options: -->
+    
     <q-card-section class="q-pa-sm row items-start q-gutter-md">
       <q-card bordered flat class="col col-sm-12">
         <q-list>
-          <q-item tag="label">
+          <q-item>
             <q-item-section>
               <q-item-label>{{ $t('projectSettings.toggleVisibility') }}</q-item-label>
               <q-item-label caption>{{ $t('projectSettings.toggleVisibilityCaption') }}</q-item-label>
@@ -80,8 +84,7 @@
               </div>
             </q-item-section>
           </q-item>
-
-          <q-item tag="label">
+          <q-item>
             <q-item-section>
               <q-item-label>{{ $t('projectSettings.toggleBlindAnnotationMode') }}</q-item-label>
               <q-item-label caption>{{ $t('projectSettings.toggleBlindAnnotationModeCaption') }}</q-item-label>
@@ -90,8 +93,7 @@
               <q-toggle v-model="blindAnnotationModeLocal" color="primary" checked-icon="check" unchecked-icon="clear" />
             </q-item-section>
           </q-item>
-
-          <q-item id="option__diff-mode" tag="label">
+          <q-item>
             <q-item-section>
               <q-item-label>{{ $t('projectSettings.toggleDiffMode') }}</q-item-label>
               <q-item-label caption>{{ $t('projectSettings.toggleDiffModeCaption') }}</q-item-label>
@@ -100,8 +102,7 @@
               <q-toggle v-model="diffModeLocal" color="primary" checked-icon="check" unchecked-icon="clear" />
             </q-item-section>
           </q-item>
-
-          <q-item id="option__usertree-diff" tag="label">
+          <q-item>
             <q-item-section>
               <q-item-label>{{ $t('projectSettings.chooseUserDiff') }}</q-item-label>
               <q-item-label caption>{{ $t('projectSettings.chooseUserDiffCaption') }}</q-item-label>
@@ -125,10 +126,10 @@
             </q-item-section>
             <q-item-section>
               <div class="row">
-                <div class="col-11 q-pr-md">
+                <div class="col-md-11 q-pr-md">
                   <LanguageSelect :multiple="false" :languages-list="languagesList" @selected-value="getSelectedLanguage" />
                 </div>
-                <div class="col-1">
+                <div class="col-md-1">
                   <q-btn color="primary" flat round dense icon="save" @click="updateProjectLanguage()" />
                 </div>
               </div>
@@ -137,9 +138,9 @@
         </q-list>
       </q-card>
     </q-card-section>
+
     <q-card-section class="full row justify-between q-gutter-md">
-      <UserSelect :project-name="$props.projectname" />
-      <!-- shown features: -->
+      <UserSelect :project-name="projectName" />
       <q-card flat bordered class="col">
         <q-card-section>
           <div class="text-h6 text-center">
@@ -149,7 +150,7 @@
         <q-card-section>
           <q-select
             v-model="shownFeaturesLocal"
-            filled
+            outlined
             multiple
             :options="shownFeaturesChoices"
             use-chips
@@ -160,7 +161,7 @@
         <q-card-section>
           <q-select
             v-model="shownMetaLocal"
-            filled
+            outlined
             multiple
             :options="shownMetaChoices"
             use-chips
@@ -251,7 +252,7 @@ export default defineComponent({
     LanguageSelect,
   },
   props: {
-    projectname: {
+    projectName: {
       type: String as PropType<string>,
       required: true,
     },
@@ -261,7 +262,7 @@ export default defineComponent({
     },
   },
   data() {
-    const uploadImage: { image: string | null; submitting: boolean } = { image: null, submitting: false };
+    const uploadImage: { image: File | null; submitting: boolean } = { image: null, submitting: false };
     return {
       uploadImage,
       annotationFeaturesJson: '',
@@ -269,7 +270,7 @@ export default defineComponent({
       annotationFeaturesComment: '',
       projectDescription: '',
       selectedLanguage: '',
-      newProjectName: this.projectname,
+      newProjectName: this.projectName,
       cmOption: {
         tabSize: 8,
         styleActiveLine: true,
@@ -292,7 +293,8 @@ export default defineComponent({
       'visibility',
       'shownFeatures',
       'shownMeta',
-      'imageSrc',
+      'image',
+      'imageTree',
       'language',
     ]),
     ...mapState(useProjectStore, [
@@ -301,7 +303,7 @@ export default defineComponent({
       'getSUDAnnofJson',
       'getUDAnnofJson',
       'getAnnotationSetting',
-      'imageSrc',
+      'image',
       'language',
       'languagesList',
     ]),
@@ -311,7 +313,7 @@ export default defineComponent({
         return this.blindAnnotationMode || false;
       },
       set(value: boolean) {
-        this.updateProjectSettings(this.projectname, { blindAnnotationMode: value });
+        this.updateProjectSettings(this.projectName, { blindAnnotationMode: value });
       },
     },
     diffModeLocal: {
@@ -319,7 +321,7 @@ export default defineComponent({
         return this.diffMode || false;
       },
       set(value: boolean) {
-        this.updateProjectSettings(this.projectname, { diffMode: value });
+        this.updateProjectSettings(this.projectName, { diffMode: value });
       },
     },
     diffUserIdLocal: {
@@ -327,7 +329,7 @@ export default defineComponent({
         return this.diffUserId || '';
       },
       set(value: string) {
-        this.updateProjectSettings(this.projectname, { diffUserId: value });
+        this.updateProjectSettings(this.projectName, { diffUserId: value });
       },
     },
     visibilityLocal: {
@@ -335,7 +337,7 @@ export default defineComponent({
         return this.visibility;
       },
       set(value: number) {
-        this.updateProjectSettings(this.projectname, { visibility: value });
+        this.updateProjectSettings(this.projectName, { visibility: value });
       },
     },
     shownFeaturesLocal: {
@@ -344,7 +346,7 @@ export default defineComponent({
       },
       set(value: string[]) {
         this.updateProjectshownFeatures({
-          projectname: this.projectname,
+          projectName: this.projectName,
           toUpdateObject: { shownFeatures: value },
         });
       },
@@ -355,7 +357,7 @@ export default defineComponent({
       },
       set(value: string[]) {
         this.updateProjectshownFeatures({
-          projectname: this.$props.projectname,
+          projectName: this.$props.projectName,
           toUpdateObject: { shownMeta: value },
         });
       },
@@ -363,7 +365,6 @@ export default defineComponent({
   },
   mounted() {
     this.annotationFeaturesJson = this.getAnnotationSetting;
-    this.getProjectImage();
   },
 
   methods: {
@@ -373,7 +374,6 @@ export default defineComponent({
       'resetAnnotationFeaturesUD',
       'updateProjectSettings',
       'postImage',
-      'getImage',
       'updateProjectshownFeatures',
     ]),
     checkAnnotationFeatures() {
@@ -387,7 +387,7 @@ export default defineComponent({
       }
     },
     saveAnnotationSettings() {
-      this.updateProjectConlluSchema(this.projectname, JSON.parse(this.annotationFeaturesJson))
+      this.updateProjectConlluSchema(this.projectName, JSON.parse(this.annotationFeaturesJson))
         .then(() => {
           notifyMessage({ message: 'New annotation settings saved on the server', icon: 'save' });
         })
@@ -407,15 +407,15 @@ export default defineComponent({
     },
 
     saveDescription() {
-      this.updateProjectSettings(this.projectname, { description: this.projectDescription });
+      this.updateProjectSettings(this.projectName, { description: this.projectDescription });
     },
 
     async renameProject() {
-      await this.updateProjectSettings(this.projectname, {projectName: this.newProjectName});
+      await this.updateProjectSettings(this.projectName, {projectName: this.newProjectName});
       this.$router.push({
         name: 'project',
         params: {
-          projectname: this.newProjectName,
+          projectName: this.newProjectName,
         },
       });
     },
@@ -426,7 +426,6 @@ export default defineComponent({
         this.postImage(this.uploadImage.image)
           .then(() => {
             this.uploadImage.submitting = false;
-            this.getProjectImage();
             notifyMessage({ message: 'Uploaded image saved!' });
           })
           .catch((error) => {
@@ -438,16 +437,14 @@ export default defineComponent({
       }
     },
 
-    getProjectImage() {
-      this.getImage(this.projectname);
-    },
+    
 
     getSelectedLanguage(value: any) {
       this.selectedLanguage = value;
     },
 
     updateProjectLanguage() {
-      this.updateProjectSettings(this.projectname, { language: this.selectedLanguage as string });
+      this.updateProjectSettings(this.projectName, { language: this.selectedLanguage });
     },
   },
 });

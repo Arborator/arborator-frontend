@@ -1,12 +1,11 @@
 import {
+  project_t,
+  project_extended_t,
+  shownFeatures_t,
+  shownMeta_t,
   annotationFeatures_t,
   project_access_t,
-  project_t,
-  project_with_diff_t,
-  project_extended_t,
   sample_t,
-  shownFeatures,
-  shownMeta,
   user_t,
   timed_tokens_t,
   grewSearchResult_t as grewSearchResult_t,
@@ -24,30 +23,33 @@ export interface logout_RV {
   logout: true;
 }
 
+////////////////// User //////////////////////
 export type getUsers_RV = user_t[];
 
 export type whoIAm_RV = user_t;
 
 export type updateUser_ED = Partial<user_t>;
 
+/////////////////// Project ///////////////////
+
 export type getProjects_RV = project_extended_t[];
 
-export type createProject_ED = project_t;
+export type createProject_ED = Partial<project_t>;
 
-export type getProject_RV = project_with_diff_t;
+export type getProject_RV = project_t;
 
-export type updateProject_ED = Partial<project_with_diff_t>;
+export type updateProject_ED = Partial<project_t>;
 
-export type updateProject_RV = project_with_diff_t;
+export type updateProject_RV = project_t;
 
 export interface getProjectFeatures_RV {
-  shownMeta: shownMeta;
-  shownFeatures: shownFeatures;
+  shownMeta: shownMeta_t;
+  shownFeatures: shownFeatures_t;
 }
 
 export interface updateProjectFeatures_ED {
-  shownFeatures?: string[];
-  shownMeta?: string[];
+  shownFeatures?: shownMeta_t;
+  shownMeta?: shownMeta_t;
 }
 
 export interface getProjectConlluSchema_RV {
@@ -61,6 +63,7 @@ export interface updateProjectConlluSchema_ED {
 export type getProjectUsersAccess_RV = project_access_t;
 
 export type updateManyProjectUserAccess_RV = project_access_t;
+
 
 //// SAMPLES
 export type getProjectSamples_RV = sample_t[];

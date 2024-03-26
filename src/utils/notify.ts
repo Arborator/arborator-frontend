@@ -12,9 +12,9 @@ interface ArboratorMessage_t {
 
 export function notifyMessage(arboratorMessage: ArboratorMessage_t) {
   const message = arboratorMessage.message;
-  const timeout = arboratorMessage.timeout || 10000;
-  const position = arboratorMessage.position || 'top-right';
-  const type = arboratorMessage.type || 'positive';
+  const timeout = arboratorMessage.timeout ?? 10000;
+  const position = arboratorMessage.position ?? 'top-right';
+  const type = arboratorMessage.type ?? 'positive';
   const icon = arboratorMessage.icon;
 
   Notify.create({

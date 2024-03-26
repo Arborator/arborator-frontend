@@ -200,11 +200,11 @@
         </div>
         <div>
           <q-item bordered separator>
-            <q-item-section>
+            <q-item-section v-if="parserData.param.pipelineChoice === 'TRAIN_AND_PARSE' || parserData.param.pipelineChoice === 'TRAIN_ONLY'">
               <q-item-label class="text-weight-bold text-grey">{{ $t('parser.trainingSents') }}</q-item-label>
               <q-item-label lines="2">{{ trainingSentencesCount }}</q-item-label>
             </q-item-section>
-            <q-item-section>
+            <q-item-section v-if="parserData.param.pipelineChoice === 'TRAIN_AND_PARSE' || parserData.param.pipelineChoice === 'PARSE_ONLY'">
               <q-item-label class="text-weight-bold text-grey">{{ $t('parser.parseSents') }} </q-item-label>
               <q-item-label lines="2">{{ parsingSentencesCount }}</q-item-label>
             </q-item-section>
@@ -273,7 +273,7 @@ type tableItem_t = {
   projectName: string,
   modelId: string,
   language: string,
-  sentencesNumber: Number
+  sentencesNumber: number
   epoch: number,
   bestLAS: number,
   admins: string[],
@@ -631,6 +631,7 @@ export default defineComponent({
             const scores_best = response.data.data.scores_best;
             notifyMessage({
               message: `Model ${modelInfo.model_id}: training ended ; LAS=${scores_best.LAS_chuliu_epoch} ; best_epoch=${scores_best.training_diagnostics.epoch}`,
+              timeout: 0,
             });
             this.clearCurrentTask();
             this.fetchBaseModelsAvailables();
@@ -709,7 +710,7 @@ export default defineComponent({
           } else if (response.data.data.ready) {
             this.clearCurrentTask();
             this.parentGetProjectSamples();
-            notifyMessage({ message: 'Sentences parsing ended!' });
+            notifyMessage({ message: 'Sentences parsing ended!', timeout: 0, });
           } else if (this.parserData.taskStatus && Date.now() - this.parserData.taskStatus.taskTimeStarted > TIMEOUT_TASK_STATUS_CHECKER) {
             // 3 hours
             this.clearCurrentTask();
@@ -731,4 +732,3 @@ export default defineComponent({
   }
 });
 </script>
-<style></style>

@@ -367,7 +367,7 @@ export default defineComponent({
       return this.setError('UPOS', false, '');
     }, 
     checkHEAD(val: number) {
-      if (val !== -1 || (val < 0 && val > this.conllTable.length)) {
+      if (val !== -1 && (val < 0 || val > this.conllTable.length)) {
         return this.setError('HEAD', true, 'HEAD value must be either -1 or 0 or < sentence length');
       }
       return this.setError('HEAD', false, '');

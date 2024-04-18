@@ -308,7 +308,7 @@
         :trees-from="getProjectTreesFrom"
         @reload="loadProjectData"
       />
-      <RelationTableMain :sample-names="selectedSamplesNames" />
+      <RelationTableMain :sample-names="selectedSamplesNames" :trees-from="getProjectTreesFrom" />
     </template>
 
     <!-- Settings dialog -->

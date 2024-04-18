@@ -35,7 +35,7 @@
 
         <GrewSearch :sentence-count="numberOfTrees" :search-scope="samplename" :sample-names="[samplename]" :trees-from="userIds" />
 
-        <RelationTableMain :sample-names="[samplename]" />
+        <RelationTableMain :sample-names="[samplename]" :treesFrom="userIds" />
       </div>
     </template>
   </q-splitter>

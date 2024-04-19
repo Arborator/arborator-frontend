@@ -120,8 +120,13 @@
           </div>
           <div class="row q-gutter-md q-py-md">
             <div class="col q-gutter-sm">
-              <q-input dense outlined v-model="firstReactiveSentence[userId].state.metaJson.text" label="text" />
-              <q-input dense outlined v-model="firstReactiveSentence[userId].state.metaJson.text_en" label="text_en" />
+              <q-input 
+                v-for="meta in Object.keys(firstReactiveSentence[userId].state.metaJson).filter((key) => key.includes('text'))" 
+                dense 
+                outlined 
+                v-model="firstReactiveSentence[userId].state.metaJson[meta]" 
+                :label="meta" 
+                />
               <q-input
                 dense
                 outlined
@@ -134,8 +139,13 @@
               />
             </div>
             <div class="col q-gutter-sm">
-              <q-input dense outlined v-model="secondReactiveSentence[userId].state.metaJson.text" label="text" />
-              <q-input dense outlined v-model="secondReactiveSentence[userId].state.metaJson.text_en" label="text_en" />
+              <q-input 
+                v-for="meta in Object.keys(secondReactiveSentence[userId].state.metaJson).filter((key) => key.includes('text'))" 
+                dense 
+                outlined 
+                v-model="secondReactiveSentence[userId].state.metaJson[meta]" 
+                :label="meta" 
+                />
               <q-input
                 dense
                 outlined
@@ -206,8 +216,14 @@
             </VueDepTree>
           </div>
           <div class="q-gutter-md q-py-md">
-            <q-input class="row" dense outlined v-model="mergedReactiveSentence[userId].state.metaJson.text" label="text" />
-            <q-input class="row" dense outlined v-model="mergedReactiveSentence[userId].state.metaJson.text_en" label="text_en" />
+            <q-input 
+              class="row"
+              v-for="meta in Object.keys(mergedReactiveSentence[userId].state.metaJson).filter((key) => key.includes('text'))" 
+              dense 
+              outlined 
+              v-model="mergedReactiveSentence[userId].state.metaJson[meta]" 
+              :label="meta"
+              />
             <q-input
               class="row"
               dense
@@ -280,6 +296,7 @@ export default defineComponent({
     const firstReactiveSentence: reactive_sentences_obj_t = {};
     const secondReactiveSentence: reactive_sentences_obj_t = {};
     const mergedReactiveSentence: reactive_sentences_obj_t = {};
+    const token: { form: string, index: number } = { form: '', index: 0 };
     return {
       showDial: true,
       segmentOptions,
@@ -287,7 +304,7 @@ export default defineComponent({
       hasPendingChanges,
       sentence: '',
       sentId: '',
-      token: {},
+      token,
       firstSentences,
       secondSentences,
       firstReactiveSentence,
@@ -332,8 +349,8 @@ export default defineComponent({
         this.firstSentences[userId] = emptySentenceJson();
         this.secondSentences[userId] = emptySentenceJson();
         this.splitSentenceTree(indexSplit, userId, sentenceTree);
-        this.updateSentenceMeta(this.firstSentences[userId], 'split1', sentenceMeta);
-        this.updateSentenceMeta(this.secondSentences[userId], 'split2', sentenceMeta);
+        this.splitSentenceMeta(this.firstSentences[userId], 'split1', sentenceMeta);
+        this.splitSentenceMeta(this.secondSentences[userId], 'split2', sentenceMeta);
       }
     },
     splitSentenceTree(indexSplit: number, userId: string, sentenceTree: treeJson_T) {
@@ -353,7 +370,7 @@ export default defineComponent({
         }
       });
     },
-    updateSentenceMeta(targetSentence: sentenceJson_T, split: string, sentenceMeta: metaJson_T) {
+    splitSentenceMeta(targetSentence: sentenceJson_T, split: string, sentenceMeta: metaJson_T) {
       for (const [metaKey, metaValue] of Object.entries(sentenceMeta)) {
         if (metaKey == 'text') {
           targetSentence.metaJson[metaKey] = Object.values(targetSentence.treeJson.nodesJson)
@@ -388,7 +405,7 @@ export default defineComponent({
     createReactiveSentence(targetSentences: sentence_t, reactiveSentencesObj: reactive_sentences_obj_t) {
       for (const userId in targetSentences) {
         const reactiveSentence = new ReactiveSentence();
-        reactiveSentence.fromSentenceConll(sentenceJsonToConll(targetSentences[userId]) as string);
+        reactiveSentence.fromSentenceConll(sentenceJsonToConll(targetSentences[userId]));
         reactiveSentencesObj[userId] = reactiveSentence;
       }
     },
@@ -416,9 +433,10 @@ export default defineComponent({
     },
     updateChangedMetadata(targetSentences: sentence_t, targetReactiveSentence: reactive_sentences_obj_t) {
       for (const sentence of Object.values(targetSentences)) {
-        sentence.metaJson.text = targetReactiveSentence[this.userId].state.metaJson.text;
+        for (const metaKey of Object.keys(targetReactiveSentence[this.userId].state.metaJson).filter((key) => key.includes('text'))) {
+          sentence.metaJson[metaKey] = targetReactiveSentence[this.userId].state.metaJson[metaKey];
+        }
         sentence.metaJson.sent_id = targetReactiveSentence[this.userId].state.metaJson.sent_id;
-        sentence.metaJson.text_en = targetReactiveSentence[this.userId].state.metaJson.text_en;
       }
     },
     MergeSentences() {
@@ -466,6 +484,8 @@ export default defineComponent({
         ...firstSentenceJson.metaJson,
         ...secondSentenceJson.metaJson,
         text: firstSentenceJson.metaJson.text + ' ' + secondSentenceJson.metaJson.text,
+        text_en: firstSentenceJson.metaJson.text_en + ' ' + secondSentenceJson.metaJson.text_en,
+        phonetic_text: firstSentenceJson.metaJson.phonetic_text + ' ' + secondSentenceJson.metaJson.phonetic_text,
         timestamp: firstSentenceJson.metaJson.timestamp > secondSentenceJson.metaJson.timestamp ? firstSentenceJson.metaJson.timestamp: secondSentenceJson.metaJson.timestamp,
         sent_id: this.proposeMergedSentId(firstSentenceJson.metaJson.sent_id as  string, secondSentenceJson.metaJson.sent_id as string),
       };

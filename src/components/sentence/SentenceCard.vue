@@ -440,7 +440,7 @@ export default defineComponent({
   created() {
     for (const [userId, conll] of Object.entries(this.sentence.conlls)) {
       const reactiveSentence = new ReactiveSentence();
-      reactiveSentence.fromSentenceConll(conll as string);
+      reactiveSentence.fromSentenceConll(conll);
       this.reactiveSentencesObj[userId] = reactiveSentence;
       this.hasPendingChanges[userId] = false;
     }
@@ -596,12 +596,8 @@ export default defineComponent({
           timestamp: parseInt(reactiveSentence.state.metaJson.timestamp as string, 10),
         });
       }
-      // sort from newest to oldest but put the validated tree in the beginning
-      const orderedUserAndTimestamps = userAndTimestamps.sort((a, b) => b.timestamp - a.timestamp);
-      const validatedTreeIndex = orderedUserAndTimestamps.findIndex((val) => val.user == 'validated');
-      if (validatedTreeIndex != -1) {
-        orderedUserAndTimestamps.unshift(orderedUserAndTimestamps.splice(validatedTreeIndex, 1)[0]);
-      }
+      // sort from newest to oldest 
+      const orderedUserAndTimestamps = [...userAndTimestamps].sort((a, b) => b.timestamp - a.timestamp);
       const orderedConlls: { [key: string]: string } = {};
       for (const userAndTimestamp of orderedUserAndTimestamps) {
         orderedConlls[userAndTimestamp.user] = filteredConlls[userAndTimestamp.user];

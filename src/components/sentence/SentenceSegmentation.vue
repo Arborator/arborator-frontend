@@ -283,6 +283,10 @@ export default defineComponent({
       type: String as PropType<string>,
       required: true,
     },
+    sampleName: {
+      type: String as PropType<string>,
+      required: true,
+    }
   },
   data() {
     const segmentOptions = [
@@ -414,14 +418,13 @@ export default defineComponent({
       this.updateChangedMetadata(this.secondSentences, this.secondReactiveSentence as reactive_sentences_obj_t);
       const firstSentencesJson = this.firstSentences;
       const secondSentencesJson = this.secondSentences;
-      const sampleName = this.$route.params.samplename as string;
       const data = {
         sentId: this.sentId,
         firstSents: firstSentencesJson,
         secondSents: secondSentencesJson,
       };
       api
-        .splitTree(this.name, sampleName, data)
+        .splitTree(this.name, this.sampleName, data)
         .then(() => {
           notifyMessage({ message: `sentence '${this.sentId}' is successfully splitted into two sentences` });
           this.reloadTrees = true;
@@ -510,9 +513,8 @@ export default defineComponent({
         secondSentId: this.mergedSentId,
         mergedSentences: this.mergedSentences,
       };
-      const sampleName = this.$route.params.samplename as string;
       api
-        .mergeTrees(this.name, sampleName, data)
+        .mergeTrees(this.name, this.sampleName, data)
         .then(() => {
           notifyMessage({
             message: `the sentence '${this.sentId}' and the sentence '${this.mergedSentId}' are successfully merged`,

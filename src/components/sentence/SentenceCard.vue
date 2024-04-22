@@ -190,7 +190,7 @@
         :active-bg-color="$q.dark.isActive ? '' : 'grey-2'"
         style="transition: unset"
       >
-        <!-- v-for="(tree, user) in filteredConlls" -->
+
         <q-tab
           v-for="(tree, user) in filteredConlls"
           :key="`${reactiveSentencesObj[user].state.metaJson.timestamp}-${user}`"
@@ -277,6 +277,7 @@
         :sentence-bus="sentenceBus" 
         :reactive-sentences-obj="reactiveSentencesObj"
         :user-id="openTabUser"
+        :sample-name="(sentence.sample_name as string)"
         @closed="showSentSegmentationDial = false"
         />
       <RelationDialog :sentence-bus="sentenceBus" />
@@ -314,6 +315,7 @@ import MultiEditDialog from './MultiEditDialog.vue';
 import TagsMenu from './TagsMenu.vue';
 import SentenceSegmentation from './SentenceSegmentation.vue';
 import { reactive_sentences_obj_t, sentence_bus_events_t, sentence_bus_t } from 'src/types/main_types';
+import { grewSearchResultSentence_t, matches_t } from 'src/api/backend-types';
 import { mapActions, mapState, mapWritableState } from 'pinia';
 import { notifyError, notifyMessage } from 'src/utils/notify';
 import { useProjectStore } from 'src/pinia/modules/project';
@@ -321,7 +323,7 @@ import { useGithubStore } from 'src/pinia/modules/github';
 import { useUserStore } from 'src/pinia/modules/user';
 import { useTagsStore } from 'src/pinia/modules/tags';
 import { useGrewSearchStore } from 'src/pinia/modules/grewSearch';
-import { PropType } from 'vue';
+import { PropType, defineComponent } from 'vue';
 
 function sentenceBusFactory(): sentence_bus_t {
   let sentenceBus: Emitter<sentence_bus_events_t> = mitt<sentence_bus_events_t>();
@@ -329,8 +331,6 @@ function sentenceBusFactory(): sentence_bus_t {
   return sentenceBus as sentence_bus_t;
 }
 
-import { defineComponent } from 'vue';
-import { grewSearchResultSentence_t, matches_t } from 'src/api/backend-types';
 
 export default defineComponent({
   name: 'SentenceCard',

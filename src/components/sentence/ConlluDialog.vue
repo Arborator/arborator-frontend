@@ -403,7 +403,7 @@ export default defineComponent({
           return this.setError('DEPREL', true, "The value of deprel doesn't exist in your config");
         };
       }
-      return this.setError('DEPREL', true, '');
+      return this.setError('DEPREL', false, '');
     },
     setError(col: string, isError: boolean, errorMsg: string) {
       this.formatErrorTable[col].error = isError;

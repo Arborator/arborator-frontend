@@ -34,36 +34,37 @@
       basic
       @click="goTo()"
     >
-      <div class="absolute-bottom text-h6">
-        <ProjectIcon :visibility="project.visibility" :blind-annotation-mode="project.blindAnnotationMode" />
-        {{ project.projectName }}
-      </div>
     </q-img>
+    <q-card-section @click="goTo()">
+      <div class="row text-h6">
+        <div class="col">
+          {{ project.projectName }}
+        </div> 
+        <div>
+          <q-btn flat rounded icon="more_vert"></q-btn>
+        </div>
+      </div>
+      <div class="text-subtitle2">{{ project.description }}</div>
+    </q-card-section>
     <q-card-section>
-      <q-item class="justify-around q-px-md" @click="goTo()">
-        <q-item-label>{{ project.description }}</q-item-label>
-      </q-item>
-
+      <q-card-actions vertical class="q-pa-md clickable" @click="goTo()">
+        <div class="text-caption">
+          {{ project.admins[0] }}
+        </div>
+        <div class="text-caption">
+          {{ $t('projectHub.lastAccess') }} {{ timeAgo(project.lastAccess) }}
+        </div>
+        <div class="text-caption">
+          {{ $t('projectHub.lastWriteAccess') }} {{ timeAgo(project.lastWriteAccess) }}
+        </div>
+      </q-card-actions>
+    </q-card-section>
+    <q-separator />
+    <q-card-section>
       <q-card-actions vertical class="q-pa-md clickable" @click="goTo()">
         <q-chip size="md" icon="fas fa-vial" color="secondary" text-color="white">
           {{ project.numberSamples }} {{ project.numberSamples === 1 ? $t('projectHub.sample') : $t('projectHub.samples') }}
         </q-chip>
-
-        <q-space />
-        <!-- v-if="project.lastAccess > project.lastWriteAccess" -->
-        <q-chip size="sm" icon="fingerprint" :color="project.lastAccess > project.lastWriteAccess ? 'info' : 'blue-grey'" text-color="white">
-          {{ $t('projectHub.lastAccess') }} {{ timeAgo(project.lastAccess) }}
-        </q-chip>
-        <q-chip size="sm" icon="edit" color="primary" text-color="white">
-          {{ $t('projectHub.lastWriteAccess') }} {{ timeAgo(project.lastWriteAccess) }}
-        </q-chip>
-      </q-card-actions>
-      <q-card-actions>
-        <q-btn v-if="isProjectAdmin" round color="negative" icon="delete_forever" @click="triggerConfirm(deleteProject)">
-          <q-tooltip class="bg-purple text-body2" anchor="top middle" :offset="[10, 10]" :delay="100">
-            {{ $t('projectHub.rightClickDelete') }}
-          </q-tooltip>
-        </q-btn>
       </q-card-actions>
     </q-card-section>
     <q-dialog v-model="showRenameProjectDial">

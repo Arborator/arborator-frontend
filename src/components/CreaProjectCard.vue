@@ -176,7 +176,6 @@ export default defineComponent({
     const annotationConfigOptions = [
       { value: 'sud', label: 'SUD' },
       { value: 'ud', label: 'UD' },
-      { value: 'eud', label: 'EUD' },
       { value: 'other', label: 'Other' },
     ];
     return {
@@ -199,7 +198,7 @@ export default defineComponent({
     };
   },
   computed: {
-    ...mapState(useUserStore, ['username', 'loggedWithGithub', 'isSuperAdmin']),
+    ...mapState(useUserStore, ['username', 'loggedWithGithub']),
     ...mapState(useProjectStore, ['languagesList']),
     canSyncWithGithub() {
       return this.loggedWithGithub && this.isShowSyncBtn && !this.isShowGithubSyncPanel;

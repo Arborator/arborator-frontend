@@ -1,18 +1,33 @@
 <template>
   <q-item clickable @click.native.prevent="goTo()">
-    <q-tooltip v-if="isProjectAdmin || isSuperAdmin" class="bg-purple text-body2" anchor="top middle" :offset="[10, 10]" :delay="100">
-      {{ $t('projectHub.tooltipRightClickDelete') }}
-    </q-tooltip>
-    <q-popup-proxy v-if="isProjectAdmin || isSuperAdmin" transition-show="flip-up" transition-hide="flip-down" context-menu>
-      <q-card>
-        <q-card-section>
+    <q-item-section avatar>
+      <q-avatar rounded color="primary" text-color="white">
+        <img :src="project.image ? project.image : '/images/small.niko-photos-tGTVxeOr_Rs-unsplash.jpg'" alt="tree"/>
+      </q-avatar>
+    </q-item-section>
+    <q-item-section>
+      <q-item-label lines="1">
+        <span class="text-weight-bold">{{ project.projectName }}</span>
+      </q-item-label>
+      <q-item-label class="text-caption text-grey-9 text-weight-medium" style="text-decoration: underline;" lines="2">
+        {{ project.admins[0] }}
+      </q-item-label>
+      <q-item-label caption lines="3">
+        {{ $t('projectHub.lastAccess') }} {{ timeAgo(project.lastAccess) }}.{{ $t('projectHub.lastWriteAccess') }} {{ timeAgo(project.lastWriteAccess) }}
+      </q-item-label>
+    </q-item-section>
+    <q-item-section side>
+      <q-item-label lines="1">
+        <q-avatar flat color="primary" text-color="white" size="sm" icon="person"/>
+      </q-item-label>
+      <q-item-label caption lines="2">
+        {{ project.numberSamples }} {{ project.numberSamples === 1 ? $t('projectHub.sample') : $t('projectHub.samples') }}
+      </q-item-label>
+    </q-item-section>
+    <q-item-section side>
+      <q-btn flat icon="more_vert" @click.native.stop>
+        <q-menu>
           <q-list>
-            <q-item v-close-popup clickable @click="projectSettings()">
-              <q-item-section>{{ $t('projectHub.rightClickSettings') }}</q-item-section>
-              <q-item-section side>
-                <q-icon name="settings" />
-              </q-item-section>
-            </q-item>
             <q-item v-close-popup clickable @click="showRenameProjectDial = true">
               <q-item-section>{{ $t('projectHub.rightClickRename') }}</q-item-section>
               <q-item-section side>
@@ -26,100 +41,38 @@
               </q-item-section>
             </q-item>
           </q-list>
-        </q-card-section>
-      </q-card>
-    </q-popup-proxy>
-    <q-item-section avatar>
-      <q-avatar v-show="imageSrc == ''" rounded color="primary" text-color="white" icon="fas fa-tree" />
-      <q-avatar v-show="imageSrc != ''" rounded color="primary" text-color="white">
-        <img :src="imageSrc" />
-      </q-avatar>
-    </q-item-section>
-    <q-item-section>
-      <q-item-label lines="1"
-        ><span class="text-weight-bold">{{ project.projectName }}</span></q-item-label
-      >
-      <q-item-label caption lines="2">
-        {{ project.description }}
-      </q-item-label>
-    </q-item-section>
-    <q-item-section thumbnail>
-      <q-chip size="sm" icon="fingerprint" color="info" text-color="white">
-        {{ $t('projectHub.lastAccess') }} {{ timeAgo(project.lastAccess) }}
-      </q-chip>
-      <q-chip size="sm" icon="edit" color="primary" text-color="white">
-        {{ $t('projectHub.lastWriteAccess') }} {{ timeAgo(project.lastWriteAccess) }}
-      </q-chip>
-    </q-item-section>
-    <q-item-section v-if="project.admins.length > 2 && isLoggedIn" style="max-width: 30px">
-      <q-btn size="sm" flat icon="expand_more" @click.native.stop>
-        <q-menu>
-          <q-list bordered separator>
-            <q-item v-for="adm in moreAdmins" v-close-popup thumbnail>
-              <q-item-section>
-                <q-item-label class="text-weight-light"> {{ adm }}</q-item-label>
-              </q-item-section>
-            </q-item>
-          </q-list>
         </q-menu>
       </q-btn>
-    </q-item-section>
-    <q-item-section v-for="adm in displayedAdmins" v-if="isLoggedIn" :key="adm" side>
-      <q-chip v-if="username === adm" size="sm">
-        <q-avatar>
-          <img :src="getUserInfos.picture_url || undefined" />
-        </q-avatar>
-        {{ adm }}
-      </q-chip>
-      <q-chip v-else icon="account_circle" :label="adm" size="sm" />
-    </q-item-section>
-    <q-item-section side>
-      <q-badge color="secondary">
-        {{ project.numberSamples }} {{ project.numberSamples === 1 ? $t('projectHub.sample') : $t('projectHub.samples') }}
-      </q-badge>
-    </q-item-section>
-    <q-item-section side>
-      <div class="absolute-bottom text-h6">
-        <ProjectIcon :visibility="project.visibility" :blind-annotation-mode="project.blindAnnotationMode" />
-      </div>
     </q-item-section>
     <q-dialog v-model="showRenameProjectDial">
       <RenameProjectDialog :project-name="project.projectName" />
     </q-dialog>
-
     <q-dialog v-model="confirmActionDial">
       <confirm-action :parent-action="confirmActionCallback" :arg1="confirmActionArg1" :target-name="project.projectName"></confirm-action>
     </q-dialog>
   </q-item>
+  <q-separator />
 </template>
 
 <script lang="ts">
-import ProjectIcon from 'components/shared/ProjectIcon.vue';
 import ConfirmAction from '../components/ConfirmAction.vue';
 import RenameProjectDialog from './RenameProjectDialog.vue';
 
-import api from 'src/api/backend-api';
-import { notifyError } from 'src/utils/notify';
-import { mapState, mapActions } from 'pinia';
+import { mapState } from 'pinia';
 import { useUserStore } from 'src/pinia/modules/user';
-import { useProjectStore } from 'src/pinia/modules/project';
 import { timeAgo } from 'src/utils/timeAgoUtils';
 
 import { defineComponent, PropType } from 'vue';
 import { project_extended_t } from 'src/api/backend-types';
 
 export default defineComponent({
-  components: { ProjectIcon, ConfirmAction, RenameProjectDialog },
+  components: { ConfirmAction, RenameProjectDialog },
   props: {
     project: {
       type: Object as PropType<project_extended_t>,
       required: true,
     },
     parentDeleteProject: {
-      type: Function as PropType<(value: string) => void>,
-      required: true,
-    },
-    parentProjectSettings: {
       type: Function as PropType<(value: string) => void>,
       required: true,
     },
@@ -133,12 +86,11 @@ export default defineComponent({
       showListAdmins: false,
       confirmActionCallback,
       confirmActionArg1: '',
-      imageSrc: '',
       showRenameProjectDial: false,
     };
   },
   computed: {
-    ...mapState(useUserStore, ['isLoggedIn', 'getUserInfos', 'isSuperAdmin', 'username']),
+    ...mapState(useUserStore, ['isSuperAdmin', 'username']),
     isProjectAdmin() {
       return this.project.admins.includes(this.username) || this.isSuperAdmin;
     },
@@ -162,9 +114,6 @@ export default defineComponent({
         },
       });
     },
-    projectSettings() {
-      this.parentProjectSettings(this.project.projectName);
-    },
     deleteProject() {
       this.parentDeleteProject(this.project.projectName);
     },
@@ -176,4 +125,3 @@ export default defineComponent({
 });
 </script>
 
-<style scoped></style>

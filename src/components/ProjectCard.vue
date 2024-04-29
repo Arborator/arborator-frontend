@@ -41,7 +41,6 @@
           </q-btn>
         </div>
       </div>
-      <div class="text-subtitle2">{{ project.description }}</div>
       <q-card-actions vertical class="clickable" @click="goTo()">
         <div class="text-caption text-grey-9 text-weight-medium" style="text-decoration: underline;">
           {{ project.admins[0] }}
@@ -61,7 +60,9 @@
           {{ project.numberSamples }} {{ project.numberSamples === 1 ? $t('projectHub.sample') : $t('projectHub.samples') }}
         </div>
         <div class="col-">
-          <q-avatar flat color="primary" text-color="white" size="sm" icon="person"/>
+          <q-avatar color="primary" size="1.2rem" text-color="white">
+            <img :src="project.ownerAvatarUrl " alt="owner" />
+          </q-avatar>
         </div>
       </div>
     </q-card-section>

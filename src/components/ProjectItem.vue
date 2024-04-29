@@ -18,7 +18,9 @@
     </q-item-section>
     <q-item-section side>
       <q-item-label lines="1">
-        <q-avatar flat color="primary" text-color="white" size="sm" icon="person"/>
+        <q-avatar color="primary" size="1.2rem" text-color="white">
+          <img :src="project.ownerAvatarUrl " alt="owner" />
+        </q-avatar>
       </q-item-label>
       <q-item-label caption lines="2">
         {{ project.numberSamples }} {{ project.numberSamples === 1 ? $t('projectHub.sample') : $t('projectHub.samples') }}

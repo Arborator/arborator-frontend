@@ -41,6 +41,7 @@ export interface project_extended_t {
   config: string;
   language: string;
   users: string[];
+  ownerAvatarUrl: string,
   admins: string[];
   validators: string[];
   annotators: string[];

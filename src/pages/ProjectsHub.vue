@@ -12,7 +12,6 @@
             :disable="!isLoggedIn" 
             color="primary" 
             label="New Project" 
-            rounded 
             icon="add" 
             size="md"
             @click="creaProjectDial = true"
@@ -24,13 +23,12 @@
               {{ $t('projectHub.tooltipCreaProject[1 ]') }}
             </q-tooltip>
           </q-btn>
-          <q-btn v-if="isLoggedIn" no-caps rounded label="My Projects" />
+          <q-btn v-if="isLoggedIn" no-caps  label="My Projects" />
         </q-toolbar>
       </q-card-section>
       <q-card-section>
         <q-input
           outlined
-          rounded
           v-model="search"
           bottom-slots
           :label="$t('projectHub.emptySearch')"

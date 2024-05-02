@@ -241,12 +241,10 @@ import { useProjectStore } from 'src/pinia/modules/project';
 import { notifyError, notifyMessage } from 'src/utils/notify';
 
 import { defineComponent, PropType } from 'vue';
-import ProjectIcon from 'components/shared/ProjectIcon.vue';
 
 export default defineComponent({
   name: 'ProjectSettingsView',
   components: {
-    ProjectIcon,
     Codemirror,
     UserSelect,
     LanguageSelect,

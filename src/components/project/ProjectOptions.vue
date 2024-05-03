@@ -1,0 +1,146 @@
+<template>
+  <div v-if="selectedSamples.length && isAdmin" class="row items-center custom-frame1">
+    <q-btn round flat icon="close" />
+    <div>
+      {{ selectedSamples.length }}
+      <span v-if="selectedSamples.length === 1"> Sample</span>
+      <span v-else>Samples</span>
+    </div>
+    <q-btn flat icon="delete" @click="triggerConfirmAction(deleteSamples)" />
+    <q-btn flat icon="download" @click="isShowExportDial = true" />
+    <q-btn 
+      flat 
+      v-if="isValidator && blindAnnotationMode"
+      icon="analytics"
+      :disable="(visibility === 0 && isGuest) || selectedSamples.length !== 1"
+      @click="exportEvaluation()"
+    >
+
+    </q-btn>
+    <q-btn v-if="isOwner" flat icon="more_vert">
+      <q-menu>
+        <q-list>
+          <q-item clickable v-close-popup @click="isShowDeleteUserTreesDial = true">
+            <q-item-section label>
+              Remove user trees
+            </q-item-section>
+          </q-item>
+        </q-list>
+      </q-menu>
+    </q-btn>
+  </div>
+  <q-dialog v-model="isShowExportDial">
+    <ExportDialog :samples="selectedSamples" />
+  </q-dialog>
+  <q-dialog v-model="isShowDeleteUserTreesDial">
+    <DeleteUserTreesDial :selected-samples="selectedSamples"/>
+  </q-dialog>
+  <q-dialog v-model="confirmActionDial">
+    <ConfirmAction :parent-action="confirmActionCallback" :arg1="confirmActionArg1" :target-name="name" />
+  </q-dialog>
+</template>
+<script lang="ts">
+import ExportDialog from './ExportDialog.vue';
+import ConfirmAction from '../ConfirmAction.vue';
+import DeleteUserTreesDial from '../project/DeleteUserTreesDial.vue';
+
+import api from 'src/api/backend-api';
+import { mapState } from 'pinia';
+import { useProjectStore } from 'src/pinia/modules/project';
+import { notifyError, notifyMessage } from 'src/utils/notify';
+import { sample_t } from 'src/api/backend-types';
+import { defineComponent, PropType } from 'vue';
+
+export default defineComponent({
+  name: 'ProjectOptions',
+  components: {
+    ExportDialog,
+    ConfirmAction,
+    DeleteUserTreesDial,
+  },
+  props: {
+    selectedSamples: {
+      type: Object as PropType<sample_t[]>,
+      required: true,
+    }, 
+    canDeleteFromGithub: {
+      type: Boolean as PropType<boolean>,
+    }
+  },
+  data() {
+    const confirmActionCallback: CallableFunction = () => {};
+    return {
+      confirmActionCallback,
+      confirmActionArg1: '',
+      confirmActionDial: false,
+      isShowExportDial: false,
+      isShowDeleteUserTreesDial: false,
+    }
+  },
+  computed: {
+    ...mapState(useProjectStore, [
+      'name', 
+      'visibility',
+      'blindAnnotationMode',
+      'isAdmin', 
+      'isOwner',
+      'isValidator',
+      'isGuest',
+    ]),
+  },
+  methods: {
+    deleteSamples() {
+      const data = { sampleIds: this.selectedSamples.map((sample) => sample.sample_name)};
+      api
+        .deleteSamples(this.name, data )
+        .then(() => {
+          notifyMessage({ message: 'Delete success' });
+          if (this.canDeleteFromGithub) this.deleteSamplesFromGithub();
+          this.$emit('reload');
+        })
+        .catch((error) => {
+          notifyError({ error });
+        });
+    },
+    deleteSamplesFromGithub() {
+      const data = { sampleIds: this.selectedSamples.map((sample) => sample.sample_name) };
+      api
+        .deleteFileFromGithub(this.name, data)
+        .then(() => {
+          notifyMessage({ message: 'Delete from Github' });
+        })
+        .catch((error) => {
+          notifyError({ error });
+        });
+    },
+    triggerConfirmAction(method: CallableFunction) {
+      this.confirmActionCallback = method;
+      this.confirmActionDial = true;
+    },
+    exportEvaluation() {
+      const projectName = this.name;
+      const sampleName = this.selectedSamples[0].sample_name;
+      const fileName = `${sampleName}_evaluations`;
+      api
+        .exportEvaluation(projectName, sampleName)
+        .then((response) => {
+          this.downloadFileAttachement(response.data, fileName);
+        })
+        .catch((error) => {
+          notifyError({ error });
+        });
+    },
+    downloadFileAttachement(data: any, fileName: string): void {
+      const fileURL = window.URL.createObjectURL(new Blob([data]));
+      const fileLink = document.createElement('a');
+
+      fileLink.href = fileURL;
+      fileLink.setAttribute('download', `${fileName}.tsv`);
+      document.body.appendChild(fileLink);
+
+      fileLink.click();
+    },
+  }
+});
+</script>
+

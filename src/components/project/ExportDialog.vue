@@ -85,7 +85,7 @@ export default defineComponent({
     ...mapState(useUserStore, ['username']),
     ...mapState(useProjectStore, ['canSaveTreeInProject', 'canSeeOtherUsersTrees']),
     otherUsers() {
-      let otherUsers: String[] = [];
+      let otherUsers: string[] = [];
       for (const sample of this.samples) {
         const sampleTreesFrom = sample.treesFrom;
         for (const userId of sampleTreesFrom) {
@@ -106,7 +106,7 @@ export default defineComponent({
   methods: {
     exportSamplesZip() {
       const sampleNames: string[] = [];
-      var usersToExport: string[] = [];
+      let usersToExport: string[] = [];
       if (this.user) {
         usersToExport.push(this.username);
       }
@@ -146,4 +146,4 @@ export default defineComponent({
 });
 </script>
 
-<style></style>
+

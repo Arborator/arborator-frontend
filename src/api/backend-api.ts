@@ -325,8 +325,8 @@ export default {
   pullChanges(projectName: string) {
     return API.post(`/projects/${projectName}/synchronize/pull`);
   },
-  deleteFileFromGithub(projectName: string, fileName: string) {
-    return API.delete(`/projects/${projectName}/synchronize/${fileName}`);
+  deleteFileFromGithub(projectName: string, data: any) {
+    return API.patch(`/projects/${projectName}/synchronize/files`, data);
   },
   openPullRequest(projectName: string, data: any) {
     return API.post(`/projects/${projectName}/synchronize/pull-request`, data);

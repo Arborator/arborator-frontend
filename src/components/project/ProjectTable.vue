@@ -17,9 +17,11 @@
     :table-header-class="$q.dark.isActive ? 'text-white' : 'text-primary'"
     virtual-scroll
     table-style="max-height:80vh"
+    row-key="sample_name"
     hide-no-data
     :rows-per-page-options="[30]"
     :pagination="table.pagination"
+    @update:selected="getSelectedSamples()"
   >
     <template #top-right>
       <q-input v-model="table.filter" dense debounce="300" :placeholder="$t('projectView.search')" text-color="blue-grey-8">
@@ -76,30 +78,6 @@
             @update:model-value="updateBlindAnnotationLevel(props.row)"
           />
         </q-td>
-        <q-td key="actions" :props="props">
-          <q-btn round flat color="grey-8" icon="more_vert">
-            <q-menu>
-              <q-list>
-                <q-item v-close-popup clickable>
-                  <q-item-section>
-                    Delete
-                  </q-item-section>
-                  <q-item-section side>
-                    <q-avatar text-color="primary" icon="delete" />
-                  </q-item-section>
-                </q-item>
-                <q-item v-close-popup clickable>
-                  <q-item-section>
-                    Download
-                  </q-item-section>
-                  <q-item-section side>
-                    <q-avatar text-color="primary" icon="download" />
-                  </q-item-section>
-                </q-item>
-              </q-list>
-            </q-menu>
-          </q-btn>
-        </q-td>
       </q-tr>
     </template>
   </q-table>
@@ -151,16 +129,10 @@ export default defineComponent({
           sortable: true,
           field: 'blindAnnotationLevel',
         },
-        {
-          name:'actions',
-          label: 'Actions',
-          sortable: false,
-          field: 'actions'
-        }
       ],
       selected,
-      visibleColumns: ['samplename', 'treesFrom', 'tokens', 'sentences', 'actions'],
-      visibleColumnsBlindAnnotationMode: ['samplename', 'blindAnnotationLevel', 'treesFrom', 'tokens', 'sentences', 'actions'],
+      visibleColumns: ['samplename', 'treesFrom', 'tokens', 'sentences'],
+      visibleColumnsBlindAnnotationMode: ['samplename', 'blindAnnotationLevel', 'treesFrom', 'tokens', 'sentences'],
       filter: '',
       loading: false,
       pagination: {
@@ -220,6 +192,9 @@ export default defineComponent({
         }
       });
     },
+    getSelectedSamples() {
+      this.$emit('selected-samples', this.table.selected);
+    },
     searchSamples(rows: sample_t[], terms: any) {
       return rows.filter((row) => row.sample_name.toLowerCase().indexOf(terms.toLowerCase) !== -1);
     },
@@ -240,3 +215,47 @@ export default defineComponent({
   }
 });
 </script>
+<style scoped lang="stylus">
+.my-sticky-header-table {
+  /* max height is important */
+  .q-table__middle {
+    max-height: 70vh;
+    min-height: 20vh;
+  }
+
+  .q-table__top, .q-table__bottom, thead tr:first-child th { /* bg color is important for th; just specify one */
+    background-color: $grey-1; /* #eeeeee */
+  }
+
+  thead tr:first-child th {
+    position: sticky;
+    top: 0;
+    opacity: 1;
+    z-index: 2;
+  }
+}
+.q-table__bottom {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.my-sticky-header-table-dark {
+  /* max height is important */
+  .q-table__middle {
+    max-height: 70vh;
+    min-height: 20vh;
+  }
+
+  .q-table__top, .q-table__bottom, thead tr:first-child th { /* bg color is important for th; just specify one */
+    background-color: #1d1d1d;
+  }
+
+  thead tr:first-child th {
+    position: sticky;
+    top: 0;
+    opacity: 1;
+    z-index: 2;
+  }
+}
+</style>

@@ -103,6 +103,15 @@
             </q-item-section>
           </q-item>
           <q-item>
+            <q-item-section v-if="isOwner">
+              <q-item-label>Freeze Project</q-item-label>
+              <q-item-label caption>Only admins can freeze projects if{{ $t('projectSettings.toggleDiffModeCaption') }}  </q-item-label>
+            </q-item-section>
+            <q-item-section avatar>
+              <q-toggle v-model="freezed" color="primary" checked-icon="check" unchecked-icon="clear" />
+            </q-item-section>
+          </q-item>
+          <q-item>
             <q-item-section>
               <q-item-label>{{ $t('projectSettings.chooseUserDiff') }}</q-item-label>
               <q-item-label caption>{{ $t('projectSettings.chooseUserDiffCaption') }}</q-item-label>
@@ -115,7 +124,7 @@
                 :disable="!diffModeLocal"
                 :label="$t('projectSettings.selectDiffUser')"
                 color="primary"
-                :options="projectTreesFrom"
+                :options="projectTressFrom"
               />
             </q-item-section>
           </q-item>
@@ -241,6 +250,7 @@ import { useProjectStore } from 'src/pinia/modules/project';
 import { notifyError, notifyMessage } from 'src/utils/notify';
 
 import { defineComponent, PropType } from 'vue';
+import { sample_t } from 'src/api/backend-types';
 
 export default defineComponent({
   name: 'ProjectSettingsView',
@@ -254,9 +264,9 @@ export default defineComponent({
       type: String as PropType<string>,
       required: true,
     },
-    projectTreesFrom: {
-      type: Object as PropType<string[]>,
-      default: [],
+    samples: {
+      type: Object as PropType<sample_t[]>,
+      required: true,
     },
   },
   data() {
@@ -294,8 +304,10 @@ export default defineComponent({
       'image',
       'imageTree',
       'language',
+      'freezed',
     ]),
     ...mapState(useProjectStore, [
+      'isOwner',
       'shownFeaturesChoices',
       'shownMetaChoices',
       'getSUDAnnofJson',
@@ -312,6 +324,14 @@ export default defineComponent({
       },
       set(value: boolean) {
         this.updateProjectSettings(this.projectName, { blindAnnotationMode: value });
+      },
+    },
+    freezed: {
+      get(): boolean {
+        return this.freezed || false;
+      },
+      set(value: boolean) {
+        this.updateProjectSettings(this.projectName, { freezed: value });
       },
     },
     diffModeLocal: {
@@ -360,6 +380,11 @@ export default defineComponent({
         });
       },
     },
+
+    projectTressFrom() {
+      const treesFrom = this.samples.map((sample) => sample.treesFrom).reduce((a: string[], b: string[]) => [...a, ...b], []);
+      return [...new Set(treesFrom)];
+    }
   },
   mounted() {
     this.annotationFeaturesJson = this.getAnnotationSetting;

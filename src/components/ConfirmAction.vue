@@ -62,11 +62,6 @@ export default defineComponent({
     };
   },
   methods: {
-    /**
-     * Trigger a parentAction to handle confirm dialog
-     *
-     * @returns void
-     */
     confirm() {
       if (this.$props.targetName != null) {
         if (this.$props.targetName == this.name) this.parentAction(this.arg1, this.name);

@@ -305,15 +305,16 @@ export default defineComponent({
       for (const node of Object.values(this.nodesJson)) {
         this.conllTable.push({
           ...node,
-          FEATS: this.formatTableEntry(node.FEATS),
-          DEPS: this.formatTableEntry(node.DEPS),
-          MISC: this.formatTableEntry(node.MISC),
+          HEAD: node.HEAD === -1 ? '_' : node.HEAD,
+          FEATS: this.formatTableEntry(node.FEATS, '='),
+          DEPS: this.formatTableEntry(node.DEPS, ':'),
+          MISC: this.formatTableEntry(node.MISC, '='),
         });
       }
     },
-    formatTableEntry(entry: any) {
+    formatTableEntry(entry: any, linkOperator: string ) {
       return Object.entries(entry)
-        .map(([key, value]) => `${key}=${value}`)
+        .map(([key, value]) => `${key}${linkOperator}${value}`)
         .join('|');
     },
     createTableFields() {
@@ -391,6 +392,9 @@ export default defineComponent({
     checkDEPREL(val: string) {
       const splitRegex = new RegExp(`[${this.annotationFeatures.DEPREL.map((dep) => dep.join).join('')}]`, 'g');
       const splittedDeprels = val.split(splitRegex);
+      if (val === '') {
+        return this.setError('DEPREL', true, "You can't put an empty value for DEPREL");
+      }
       for (const splittedDeprel of splittedDeprels) {
         let depExist = false;
         for (const dep of this.annotationFeatures.DEPREL) {
@@ -399,7 +403,7 @@ export default defineComponent({
             break;
           }
         }
-        if (!depExist) {
+        if (!depExist && val !== '_') {
           return this.setError('DEPREL', true, "The value of deprel doesn't exist in your config");
         };
       }

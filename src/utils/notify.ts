@@ -58,7 +58,7 @@ export function notifyError(ArboratorGrewError: ArboratorGrewError_t) {
       } else if (error.response.status === 401) {
         msg = error.response.data ? error.response.data.message.message : i18n.global.t('error401');
       } else if (error.response.status === 406) {
-        const grewErrorMessage = error.response.data.message.message || 'Unknown error, please contact the administrators';
+        const grewErrorMessage = error.response.data.message || 'Unknown error, please contact the administrators';
         msg = `Grew internal error : ${grewErrorMessage}`;
       } else if (error.response.status === 415) {
         msg = error.response.data ? error.response.data.message.message : i18n.global.t('error415');

@@ -5,6 +5,7 @@
       <div class="row q-gutter-md">
         <div class="col-3">
           <q-select
+            dense
             v-model="selectedSamples"
             outlined
             multiple
@@ -16,6 +17,7 @@
         </div>
         <div class="col-3">
           <q-select
+            dense
             v-model="principalFeatures"
             outlined
             multiple
@@ -27,6 +29,7 @@
         </div>
         <div class="col-3">
           <q-select
+            dense
             :disable="!principalFeatures.length"
             v-model="secondaryFeatures"
             outlined
@@ -175,7 +178,6 @@ export default defineComponent({
   },
   methods: {
     ...mapActions(useLexiconStore, ['fetchLexicon']),
-
     fetchLexicon_(lexiconType: string) {
       let prune: number;
 

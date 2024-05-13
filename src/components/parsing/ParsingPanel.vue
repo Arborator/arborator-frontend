@@ -1,5 +1,5 @@
 <template>
-  <q-card flat bordered>
+  <q-card flat>
     <!-- pretrained Models -->
     <q-card-section v-if="isShowModels">
       <div class="row">
@@ -263,7 +263,7 @@ type tableItem_t = {
   projectName: string,
   modelId: string,
   language: string,
-  sentencesNumber: Number
+  sentencesNumber: number
   epoch: number,
   bestLAS: number,
   admins: string[],
@@ -716,4 +716,4 @@ export default defineComponent({
   }
 });
 </script>
-<style></style>
+

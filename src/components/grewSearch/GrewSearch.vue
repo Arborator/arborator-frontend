@@ -1,12 +1,5 @@
 <template>
-  <q-page-sticky :position="breakpoint ? 'bottom-right' : 'bottom-right'" :offset="breakpoint ? [18, 18] : [30, 80]" style="z-index: 999">
-    <q-btn size="20px" round color="primary" icon="img:/svg/g.svg" @click="grewDialog = !grewDialog">
-      <q-tooltip anchor="center left" content-class="bg-primary" content-style="font-size: 16px"> {{ $t('projectView.tooltipFabGrew') }} </q-tooltip>
-    </q-btn>
-  </q-page-sticky>
-  <q-dialog v-model="grewDialog" seamless position="right" full-width>
-    <GrewRequestCard :parentOnSearch="onSearch" :parentOnTryRules="onTryRules" :trees-from="treesFrom"></GrewRequestCard>
-  </q-dialog>
+  <GrewRequestCard :parentOnSearch="onSearch" :parentOnTryRules="onTryRules" :samples="samples"></GrewRequestCard>
   <q-dialog v-model="resultSearchDialog" maximized transition-show="fade" transition-hide="fade">
     <ResultView
       :searchresults="resultSearch"
@@ -23,14 +16,15 @@
 <script lang="ts">
 import GrewRequestCard from './GrewRequestCard.vue';
 import ResultView from './ResultView.vue';
-import api from '../../api/backend-api';
-import { useGrewSearchStore } from 'src/pinia/modules/grewSearch';
-import { useGrewHistoryStore } from 'src/pinia/modules/grewHistory';
-import { mapWritableState, mapActions } from 'pinia';
-import { notifyError } from 'src/utils/notify';
-import { defineComponent, PropType } from 'vue';
-import { grewSearchResult_t } from 'src/api/backend-types';
 
+import api from '../../api/backend-api';
+import { notifyError } from 'src/utils/notify';
+import { mapState, mapActions } from 'pinia';
+import { useGrewHistoryStore } from 'src/pinia/modules/grewHistory';
+import { grewSearchResult_t, sample_t } from 'src/api/backend-types';
+
+import { defineComponent, PropType } from 'vue';
+import { useProjectStore } from 'src/pinia/modules/project';
 export default defineComponent({
   components: {
     GrewRequestCard,
@@ -40,20 +34,14 @@ export default defineComponent({
   props: {
     sentenceCount: {
       type: Number as PropType<number>,
-      required: true,
-    },
-    sampleNames: {
-      type: Object as PropType<string[]>,
-      default: [],
-    },
-    treesFrom: {
-      type: Object as PropType<string[]>,
-      required: true,
     },
     searchScope: {
       type: String as PropType<string>,
-      required: true,
     },
+    samples: {
+      type: Object as PropType<sample_t[]>,
+      required: true,
+    }
   },
   data() {
     const result: {
@@ -62,36 +50,30 @@ export default defineComponent({
       queryType: string;
       query: string;
       userType: string;
-      window: { width: number; height: number };
     } = {
       resultSearchDialog: false,
       resultSearch: {},
       queryType: '',
       query: '',
       userType: '',
-      window: { width: 0, height: 0 },
     };
     return result;
   },
   computed: {
-    breakpoint() {
-      return this.window.width <= 400;
-    },
-    ...mapWritableState(useGrewSearchStore, ['grewDialog']),
+    ...mapState(useProjectStore, ['name']),
   },
   methods: {
     ...mapActions(useGrewHistoryStore, ['saveHistory']),
     onShowTable(resultSearchDialog: any) {
       this.resultSearchDialog = resultSearchDialog;
-      this.grewDialog = false;
       if (this.queryType == 'REWRITE') this.$emit('reload');
     },
-    onSearch(searchPattern: string, userType: string, otherUser: string) {
-      const data = { pattern: searchPattern, userType: userType, sampleIds: this.sampleNames, otherUser: otherUser };
+    onSearch(searchPattern: string, treeType: string, otherUser: string, selectedSamples: string[]) {
+      const data = { pattern: searchPattern, userType: treeType, sampleIds: selectedSamples, otherUser: otherUser };
       this.queryType = 'SEARCH';
-      this.userType = userType;
+      this.userType = treeType;
       api
-        .searchRequest(this.$route.params.projectname as string, data)
+        .searchRequest(this.name, data)
         .then((response) => {
           this.resultSearch = response.data;
           this.saveSearchRequest(searchPattern);
@@ -101,13 +83,13 @@ export default defineComponent({
           notifyError({ error });
         });
     },
-    onTryRules(query: string, userType: string, otherUser: string) {
-      const data = { query: query, userType: userType, sampleIds: this.sampleNames, otherUser: otherUser };
+    onTryRules(query: string, userType: string, otherUser: string, selectedSamples: string[]) {
+      const data = { query: query, userType: userType, sampleIds: selectedSamples, otherUser: otherUser };
       this.queryType = 'REWRITE';
       this.query = query;
       this.userType = userType;
       api
-        .tryPackage(this.$route.params.projectname as string, data)
+        .tryPackage(this.name, data)
         .then((response) => {
           this.resultSearchDialog = true;
           this.resultSearch = response.data;
@@ -129,4 +111,3 @@ export default defineComponent({
 });
 </script>
 
-<style></style>

@@ -58,6 +58,27 @@
         </q-card-section>
         <q-card-section>
           <div class="row q-gutter-md" style="justify-content: right;">
+            <q-btn
+              v-if="isAllowdedToSync && !syncGithubRepo" 
+              no-caps 
+              outline 
+              color="primary" 
+              label="Synchronize with Github" 
+              icon="fab fa-github" 
+              @click="syncGithubDial= true" 
+              />
+            <div v-if="isAllowdedToSync && syncGithubRepo">
+              <GithubOptions
+                :projectName="name"
+                :repositoryName="syncGithubRepo"
+                :key="reload"
+                @pulled="loadProjectData"
+                @remove="loadAfterGithubSync"
+              />
+              <q-tooltip content-class="text-white bg-primary">
+                {{ $t('projectView.tooltipSynchronizedProject') }} {{ syncGithubRepo }}
+              </q-tooltip>
+            </div>
             <q-btn no-caps outline color="primary" label="Settings" icon="tune"  @click="projectSettingsDial = true" />
             <q-btn no-caps unelevated color="primary" label="New sample" icon="add"  @click="uploadDial = true" />
           </div>
@@ -83,7 +104,6 @@
             <q-tab-panel class="q-pa-none" name="grew">
               <GrewSearch
                 :search-scope="name"
-                :sample-names="samples"
                 :samples="samples"
                 @reload="loadProjectData"
               />
@@ -92,10 +112,10 @@
               <ParsingPanel :samples="samples" :parentGetProjectSamples="getProjectSamples"></ParsingPanel>
             </q-tab-panel>
             <q-tab-panel class="q-pa-none" name="lexicon">
-              <LexiconMain :sample-ids="samples.map((sample) => sample.sample_name)"></LexiconMain>
+              <LexiconMain :sample-ids="sampleNames"></LexiconMain>
             </q-tab-panel>
             <q-tab-panel class="q-pa-none" name="relation_table">
-              <RelationTable :sample-names="samples.map((sample) => sample.sample_name)"></RelationTable>
+              <RelationTable :samples="samples"></RelationTable>
             </q-tab-panel>
             <q-tab-panel class="q-pa-none" name="constructicon">
               <ConstructiconDialog />
@@ -103,6 +123,11 @@
           </q-tab-panels>
         </q-card-section>
       </q-card>
+      <q-dialog v-model="syncGithubDial">
+        <q-card style="min-width: 50vw">
+          <GithubSyncDialog :projectName="name" @created="loadAfterGithubSync()" />
+        </q-card>
+      </q-dialog>
       <q-dialog v-model="projectSettingsDial">
         <ProjectSettingsView :projectName="name" :samples="samples" />
       </q-dialog>
@@ -124,10 +149,15 @@ import ProjectOptions from 'src/components/project/ProjectOptions.vue';
 import RelationTable from 'src/components/relationTable/RelationTable.vue';
 import GrewSearch from 'src/components/grewSearch/GrewSearch.vue';
 import ConstructiconDialog from 'src/components/constructicon/ConstructiconDialog.vue';
+import GithubSyncDialog from 'src/components/github/GithubSyncDialog.vue';
+import GithubOptions from 'src/components/github/GithubOptions.vue';
 
-import { mapState} from 'pinia';
+import { mapState } from 'pinia';
 import { useProjectStore } from 'src/pinia/modules/project';
+import { useGithubStore } from 'src/pinia/modules/github';
+import { notifyError } from 'src/utils/notify';
 import { sample_t } from 'src/api/backend-types';
+
 import { defineComponent } from 'vue';
 
 export default defineComponent({
@@ -142,18 +172,22 @@ export default defineComponent({
     RelationTable,
     ProjectOptions,
     ConstructiconDialog,
+    GithubSyncDialog,
+    GithubOptions,
   },
   data() {
     const samples: sample_t[] = [];
     const selectedSamples: sample_t[] = [];
     const sampleNames: string[] = [];
     return {
-      uploadDial: false,
-      projectSettingsDial: false,
       samples,
       sampleNames,
       selectedSamples,
-      window: { width: 0, height: 0 },
+      uploadDial: false,
+      projectSettingsDial: false,
+      syncGithubDial: false,
+      isDeleteSync: false,
+      syncGithubRepo: '',
       reload: 0,
       tab: 'samples'
     };
@@ -161,55 +195,56 @@ export default defineComponent({
   computed: {
     ...mapState(useProjectStore, [
       'name',
+      'description',
       'visibility',
-      'isAdmin',
-      'admins',
       'image',
       'blindAnnotationMode',
-      'description',
+      'admins',
+      'isOwner',
+      'isAdmin',
       'isValidator',
+      'isAllowdedToSync',
     ]),
-  },
-  watch: {
-    
-  },
-  created() {
-    window.addEventListener('resize', this.handleResize);
-    this.handleResize();
+    ...mapState(useGithubStore, ['reloadCommits']),
   },
   mounted() {
+    document.title = `ArboratorGrew: ${this.$route.params.projectname}`;
     this.loadProjectData();
-    document.title = `ArboratorGrew: ${this.name}`;
-
+    this.getSynchronizedGithubRepo();
   },
-  unmounted() {
-    window.removeEventListener('resize', this.handleResize);
+  watch: {
+    reloadCommits(newVal) {
+      if (newVal > 0) this.loadProjectData();
+    },
   },
   methods: {
-    
-    handleResize() {
-      this.window.width = window.innerWidth;
-      this.window.height = window.innerHeight;
-    },
-
-    goToRoute() {
-      this.$router.push(`/projects/${this.name}/samples`);
-    },
     loadProjectData() {
       this.getProjectSamples();
       this.reload += 1;
     },
+    loadAfterGithubSync() {
+      this.syncGithubDial = false;
+      this.loadProjectData();
+      this.getSynchronizedGithubRepo();
+    },
     getProjectSamples() {
-      api.getProjectSamples(this.$route.params.projectname as string).then((response) => {
+      api.getProjectSamples(this.name).then((response) => {
         this.samples = response.data;
-        this.sampleNames = [];
-        for (const sample of this.samples) {
-          this.sampleNames.push(sample.sample_name);
-        }
+        this.sampleNames = this.samples.map((sample) => sample.sample_name); 
       });
     },
     getSelectedSamples(value: any) {
       this.selectedSamples = value;
+    },
+    getSynchronizedGithubRepo() {
+      api
+        .getSynchronizedGithubRepository(this.name)
+        .then((response) => {
+          this.syncGithubRepo = response.data.repositoryName;
+        })
+        .catch((error) => {
+          notifyError({ error });
+        });
     },
   },
 });

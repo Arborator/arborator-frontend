@@ -104,7 +104,7 @@ export default defineComponent({
   props: {
     samples: {
       type: Object as PropType<sample_t[]>,
-      default: [],
+      required: true,
     },
   },
   data() {

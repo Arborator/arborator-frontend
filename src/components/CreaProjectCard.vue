@@ -12,17 +12,16 @@
         <div class="text-h6 text-left">{{ $t('createProjectCard.title') }}</div>
       </q-card-section>
       <q-card-section v-if="!isShowSyncBtn && !isShowGithubSyncPanel" style="min-height: 20vw">
-        <q-form id="createprojectform" class="q-gutter-md" @submit="onSubmit">
+        <q-form class="q-gutter-md" @submit="onSubmit">
           <q-input
             dense
             outlined
-            id="projectnameinput"
             v-model="project.projectName"
             :label="$t('createProjectCard.projectName') + ' *'"
             lazy-rules
             :rules="[(val) => (val && val.length > 0) || $t('createProjectCard.inputWarning')]"
           />
-          <q-input outlined dense id="descriptioninput" v-model="project.description" label="Description" />
+          <q-input outlined dense v-model="project.description" label="Description" />
           <q-separator />
           <q-list>
             <q-item tag="label" v-ripple>
@@ -133,7 +132,7 @@
             </q-item>
           </q-list>
           <div class="row q-gutter-md justify-center">
-            <q-btn :disable="disableSubmitBtn" id="submitproject" type="submit" :label="$t('createProjectCard.create')" color="primary" />
+            <q-btn :disable="disableSubmitBtn" type="submit" :label="$t('createProjectCard.create')" color="primary" />
           </div>
         </q-form>
       </q-card-section>
@@ -219,7 +218,6 @@ export default defineComponent({
       this.resetAnnotationFeatures();
       const data = {
         ...this.project,
-        username: this.username,
       };
       api
         .createProject(data)

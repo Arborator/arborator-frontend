@@ -208,9 +208,12 @@ export default defineComponent({
       'isAllowdedToSync',
     ]),
     ...mapState(useGithubStore, ['reloadCommits']),
+    projectName(): string {
+      return this.$route.params.projectname as string;
+    }
   },
   mounted() {
-    document.title = `ArboratorGrew: ${this.$route.params.projectname}`;
+    document.title = `ArboratorGrew: ${this.projectName}`;
     this.loadProjectData();
     this.getSynchronizedGithubRepo();
   },
@@ -230,7 +233,7 @@ export default defineComponent({
       this.syncGithubDial = false;
     },
     getProjectSamples() {
-      api.getProjectSamples(this.name).then((response) => {
+      api.getProjectSamples(this.projectName).then((response) => {
         this.samples = response.data;
         this.sampleNames = this.samples.map((sample) => sample.sample_name); 
       });
@@ -240,7 +243,7 @@ export default defineComponent({
     },
     getSynchronizedGithubRepo() {
       api
-        .getSynchronizedGithubRepository(this.name)
+        .getSynchronizedGithubRepository(this.projectName)
         .then((response) => {
           this.syncGithubRepo = response.data.repositoryName;
         })

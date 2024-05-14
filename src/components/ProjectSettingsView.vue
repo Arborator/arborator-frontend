@@ -17,7 +17,7 @@
           basic
         >
           <div class="absolute-bottom text-h6">
-            <ProjectIcon :visibility="visibilityLocal" :blind-annotation-mode="blindAnnotationModeLocal" />
+            <ProjectVisibility :visibility="visibilityLocal" :blind-annotation-mode="blindAnnotationModeLocal" />
             {{ projectName }}
           </div>
         </q-img>
@@ -251,6 +251,7 @@ import { notifyError, notifyMessage } from 'src/utils/notify';
 
 import { defineComponent, PropType } from 'vue';
 import { sample_t } from 'src/api/backend-types';
+import ProjectVisibility from './shared/ProjectVisibility.vue';
 
 export default defineComponent({
   name: 'ProjectSettingsView',
@@ -258,6 +259,7 @@ export default defineComponent({
     Codemirror,
     UserSelect,
     LanguageSelect,
+    ProjectVisibility,
   },
   props: {
     projectName: {

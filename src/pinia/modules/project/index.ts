@@ -115,13 +115,15 @@ export const useProjectStore = defineStore('project', {
           this.diffMode = response.data.diffMode;
           this.diffUserId = response.data.diffUserId;
           this.visibility = response.data.visibility;
-          this.image = response.data.image;
           this.description = response.data.description;
           this.freezed = response.data.freezed;
           this.config = response.data.config;
           this.language = response.data.language;
         })
         .then(() => {
+          api.getProjectImage(projectName).then((response) => {
+            this.image = response.data;
+          });
           api.getProjectUsersAccess(projectName).then((response) => {
             this.admins = response.data.admins;
             this.validators = response.data.validators;

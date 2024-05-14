@@ -84,6 +84,9 @@ export default {
   uploadProjectImage(projectName: string, form: any) {
     return API.post(`projects/${projectName}/image`, form, { headers: { 'Content-Type': 'multipart/form-data' } });
   },
+  getProjectImage(projectName: string) {
+    return API.get(`projects/${projectName}/image`);
+  },
   getProjectFeatures(projectName: string) {
     return API.get<getProjectFeatures_RV>(`projects/${projectName}/features`);
   },

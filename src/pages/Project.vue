@@ -10,6 +10,9 @@
                 <span>
                   <ProjectVisibility :visibility="visibility" :blindAnnotationMode="blindAnnotationMode"></ProjectVisibility>
                 </span>
+                <span v-if="syncGithubRepo">
+                  <q-chip outline color="secondary" size="sm" >Synchronized with {{ syncGithubRepo }}</q-chip>
+                </span>
               </div>
               <div class="text-body2">
                 {{ description }}
@@ -61,7 +64,6 @@
             <q-btn
               v-if="isAllowdedToSync && !syncGithubRepo" 
               no-caps 
-              outline 
               color="primary" 
               label="Synchronize with Github" 
               icon="fab fa-github" 
@@ -99,7 +101,7 @@
           <q-tab-panels v-model="tab">
             <q-tab-panel class="q-pa-none" name="samples">
               <ProjectOptions :selected-samples="selectedSamples" ></ProjectOptions>
-              <ProjectTable @selected-samples="getSelectedSamples"></ProjectTable>
+              <ProjectTable :key="reload" @selected-samples="getSelectedSamples"></ProjectTable>
             </q-tab-panel>
             <q-tab-panel class="q-pa-none" name="grew">
               <GrewSearch
@@ -223,9 +225,9 @@ export default defineComponent({
       this.reload += 1;
     },
     loadAfterGithubSync() {
-      this.syncGithubDial = false;
       this.loadProjectData();
       this.getSynchronizedGithubRepo();
+      this.syncGithubDial = false;
     },
     getProjectSamples() {
       api.getProjectSamples(this.name).then((response) => {

@@ -81,8 +81,24 @@
                 {{ $t('projectView.tooltipSynchronizedProject') }} {{ syncGithubRepo }}
               </q-tooltip>
             </div>
-            <q-btn no-caps outline color="primary" label="Settings" icon="tune"  @click="projectSettingsDial = true" />
-            <q-btn no-caps unelevated color="primary" label="New sample" icon="add"  @click="uploadDial = true" />
+            <q-btn 
+              v-if="isAdmin"
+              no-caps 
+              outline 
+              color="primary" 
+              label="Settings" 
+              icon="tune"  
+              @click="projectSettingsDial = true" 
+              />
+            <q-btn 
+              v-if="isAdmin"
+              no-caps 
+              unelevated 
+              color="primary" 
+              label="New sample" 
+              icon="add"  
+              @click="uploadDial = true" 
+              />
           </div>
           <q-tabs
             v-model="tab"
@@ -95,7 +111,7 @@
             <q-tab name="grew" label="Grew" />
             <q-tab name="relation_table" label="Relation Table"/>
             <q-tab name="lexicon" label="Lexicon" />
-            <q-tab name="parser" label="Parser" />
+            <q-tab v-if="isAdmin" name="parser" label="Parser" />
             <q-tab name="constructicon" label="constructicon" /> 
           </q-tabs>
           <q-tab-panels v-model="tab">

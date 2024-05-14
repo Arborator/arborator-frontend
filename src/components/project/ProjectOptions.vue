@@ -1,13 +1,13 @@
 <template>
-  <div v-if="selectedSamples.length && isAdmin" class="row items-center custom-frame1">
+  <div v-if="selectedSamples.length" class="row items-center custom-frame1">
     <q-btn round flat icon="close" />
     <div>
       {{ selectedSamples.length }}
       <span v-if="selectedSamples.length === 1"> Sample</span>
       <span v-else>Samples</span>
     </div>
-    <q-btn flat icon="delete" @click="triggerConfirmAction(deleteSamples)" />
-    <q-btn flat icon="download" @click="isShowExportDial = true" />
+    <q-btn v-if="isAdmin" flat icon="delete" @click="triggerConfirmAction(deleteSamples)" />
+    <q-btn v-if="canExportTrees" flat icon="download" @click="isShowExportDial = true" />
     <q-btn 
       flat 
       v-if="isValidator && blindAnnotationMode"
@@ -15,9 +15,8 @@
       :disable="(visibility === 0 && isGuest) || selectedSamples.length !== 1"
       @click="exportEvaluation()"
     >
-
     </q-btn>
-    <q-btn v-if="isOwner" flat icon="more_vert">
+    <q-btn v-if="isAdmin" flat icon="more_vert">
       <q-menu>
         <q-list>
           <q-item clickable v-close-popup @click="isShowDeleteUserTreesDial = true">
@@ -83,9 +82,9 @@ export default defineComponent({
       'visibility',
       'blindAnnotationMode',
       'isAdmin', 
-      'isOwner',
       'isValidator',
       'isGuest',
+      'canExportTrees',
     ]),
   },
   methods: {

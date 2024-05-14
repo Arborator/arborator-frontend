@@ -73,7 +73,7 @@
             <q-tab name="relation_table" label="Relation Table"/>
             <q-tab name="lexicon" label="Lexicon" />
             <q-tab name="parser" label="Parser" />
-            <q-tab name="github" label="Github" /> 
+            <q-tab name="constructicon" label="constructicon" /> 
           </q-tabs>
           <q-tab-panels v-model="tab">
             <q-tab-panel class="q-pa-none" name="samples">
@@ -96,6 +96,9 @@
             </q-tab-panel>
             <q-tab-panel class="q-pa-none" name="relation_table">
               <RelationTable :sample-names="samples.map((sample) => sample.sample_name)"></RelationTable>
+            </q-tab-panel>
+            <q-tab-panel class="q-pa-none" name="constructicon">
+              <ConstructiconDialog />
             </q-tab-panel>
           </q-tab-panels>
         </q-card-section>
@@ -120,6 +123,7 @@ import ProjectTable from 'src/components/project/ProjectTable.vue';
 import ProjectOptions from 'src/components/project/ProjectOptions.vue';
 import RelationTable from 'src/components/relationTable/RelationTable.vue';
 import GrewSearch from 'src/components/grewSearch/GrewSearch.vue';
+import ConstructiconDialog from 'src/components/constructicon/ConstructiconDialog.vue';
 
 import { mapState} from 'pinia';
 import { useProjectStore } from 'src/pinia/modules/project';
@@ -137,6 +141,7 @@ export default defineComponent({
     ProjectTable,
     RelationTable,
     ProjectOptions,
+    ConstructiconDialog,
   },
   data() {
     const samples: sample_t[] = [];

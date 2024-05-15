@@ -2,10 +2,7 @@
   <GrewRequestCard :parentOnSearch="onSearch" :parentOnTryRules="onTryRules" :samples="samples"></GrewRequestCard>
   <q-dialog v-model="resultSearchDialog" maximized transition-show="fade" transition-hide="fade">
     <ResultView
-      :searchresults="resultSearch"
-      :totalsents="sentenceCount"
-      :searchscope="searchScope"
-      :parentOnShowTable="onShowTable"
+      :searchResults="resultSearch"
       :query-type="queryType"
       :query="query"
       :userType="userType"

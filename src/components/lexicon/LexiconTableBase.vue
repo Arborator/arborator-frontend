@@ -80,7 +80,7 @@
     </q-table>
     <q-card-section>
       <q-dialog v-model="visuTreeDial" maximized transition-show="fade" transition-hide="fade">
-        <ResultView :searchresults="resultSearch" :searchscope="projectName"></ResultView>
+        <ResultView :searchResults="resultSearch"></ResultView>
       </q-dialog>
     </q-card-section>
   </q-card>
@@ -88,15 +88,17 @@
 
 <script lang="ts">
 import api from '../../api/backend-api';
-import { computed } from 'vue';
-import { mapActions, mapState } from 'pinia';
 import ResultView from '../grewSearch/ResultView.vue';
+
+import { mapActions, mapState } from 'pinia';
 import { lexiconItem_FE_t, useLexiconStore } from 'src/pinia/modules/lexicon';
 import { useGrewSearchStore } from 'src/pinia/modules/grewSearch';
-import { table_t } from 'src/types/main_types';
 import { notifyError, notifyMessage } from 'src/utils/notify';
-import { defineComponent, PropType } from 'vue';
+
+import { table_t } from 'src/types/main_types';
 import { grewSearchResult_t } from 'src/api/backend-types';
+
+import { defineComponent, PropType, computed } from 'vue';
 
 export default defineComponent({
   name: 'LexiconTable',
@@ -241,7 +243,7 @@ export default defineComponent({
       let pattern = 'pattern { N[';
       for (const [feat, value] of Object.entries(lex_item.feats)) {
         if (feat && value) {
-          pattern += `${feat} = \"${value}\", `;
+          pattern += `${feat} = "${value}", `;
         } else {
           pattern += `!${feat}, `;
         }
@@ -256,8 +258,8 @@ export default defineComponent({
       for (const feat in before.feats) {
         if (before.feats[feat] != after[feat]) {
           if (after[feat]) {
-            withouts += `\nwithout { N.${feat} = \"${after[feat]}\" }`;
-            commands += `N.${feat} = \"${after[feat]}\"; `;
+            withouts += `\nwithout { N.${feat} = "${after[feat]}" }`;
+            commands += `N.${feat} = "${after[feat]}"; `;
           } else {
             commands += `del_feat N.${feat}; `;
           }

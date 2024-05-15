@@ -77,12 +77,7 @@
       </div>
     </q-card-section>
     <q-dialog v-model="visuTreeDial" maximized transition-show="fade" transition-hide="fade">
-      <result-view
-        :searchresults="resultSearch"
-        :totalsents="relationsTotal[currentEdge]"
-        :searchscope="tableName"
-        :parent-on-show-table="onShowTable"
-      ></result-view>
+      <ResultView :searchResults="resultSearch"></ResultView>
     </q-dialog>
   </q-card>
 </template>

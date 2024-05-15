@@ -2,9 +2,8 @@
   <q-table
     flat
     :key="tableKey"
-    v-model:pagination="table.pagination"
     v-model:selected="table.selected"
-    :class="($q.dark.isActive ? 'my-sticky-header-table-dark' : 'my-sticky-header-table') + ' rounded-borders'"
+    :class="($q.dark.isActive ? 'my-sticky-header-table-dark' : 'my-sticky-header-table') + ' rounded-borders'"    
     :rows="samples"
     :columns="table.fields"
     :loading="table.loading"
@@ -19,7 +18,6 @@
     table-style="max-height:80vh"
     row-key="sample_name"
     hide-no-data
-    :rows-per-page-options="[30]"
     :pagination="table.pagination"
     @update:selected="getSelectedSamples()"
   >
@@ -89,14 +87,18 @@ import { useProjectStore } from 'src/pinia/modules/project';
 import { notifyError, notifyMessage } from 'src/utils/notify';
 import { sample_t } from '../../api/backend-types';
 import { table_t } from '../../types/main_types';
-import { defineComponent } from 'vue';
+import { defineComponent, PropType } from 'vue';
 
 export default defineComponent({
   name: 'ProjectTable',
+  props: {
+    samples: {
+      type: Array as PropType<sample_t[]>,
+      required: true,
+    },
+  },
   data() {
-    const samples: sample_t[] = [];
     const selected: sample_t[] = [];
-    const sampleNames: string[] = [];
     const table: table_t<sample_t> = {
       fields: [
         {
@@ -145,10 +147,8 @@ export default defineComponent({
       exporting: false,
     };
     return {
-      samples,
       selected,
       table,
-      sampleNames,
       tableKey: 0,
       blindAnnotationModeOptions: [
         {
@@ -179,19 +179,7 @@ export default defineComponent({
       'blindAnnotationMode'
     ]),
   },
-  mounted() {
-    this.getProjectSamples();
-  },
   methods: {
-    getProjectSamples() {
-      api.getProjectSamples(this.$route.params.projectname as string).then((response) => {
-        this.samples = response.data;
-        this.sampleNames = [];
-        for (const sample of this.samples) {
-          this.sampleNames.push(sample.sample_name);
-        }
-      });
-    },
     getSelectedSamples() {
       this.$emit('selected-samples', this.table.selected);
     },

@@ -117,7 +117,7 @@
           <q-tab-panels v-model="tab">
             <q-tab-panel class="q-pa-none" name="samples">
               <ProjectOptions :selected-samples="selectedSamples" ></ProjectOptions>
-              <ProjectTable :key="reload" @selected-samples="getSelectedSamples"></ProjectTable>
+              <ProjectTable :key="reload" :samples="samples" @selected-samples="getSelectedSamples"></ProjectTable>
             </q-tab-panel>
             <q-tab-panel class="q-pa-none" name="grew">
               <GrewSearch

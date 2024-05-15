@@ -1,9 +1,9 @@
 <template>
-  <div v-if="selectedSamples.length" class="row items-center custom-frame1">
-    <q-btn round flat icon="close" />
+  <div v-if="selectedSamples.length" class="row rounded-borders	items-center custom-frame1">
+    <q-btn round flat icon="close" @click="unselectSamples()" />
     <div>
       {{ selectedSamples.length }}
-      <span v-if="selectedSamples.length === 1"> Sample</span>
+      <span v-if="selectedSamples.length === 1">Sample</span>
       <span v-else>Samples</span>
     </div>
     <q-btn v-if="isAdmin" flat icon="delete" @click="triggerConfirmAction(deleteSamples)" />
@@ -52,6 +52,7 @@ import { defineComponent, PropType } from 'vue';
 
 export default defineComponent({
   name: 'ProjectOptions',
+  emits: ['unselect', 'reload'],
   components: {
     ExportDialog,
     ConfirmAction,
@@ -139,6 +140,9 @@ export default defineComponent({
 
       fileLink.click();
     },
+    unselectSamples() {
+      this.$emit('unselect');
+    }
   }
 });
 </script>

@@ -116,8 +116,13 @@
           </q-tabs>
           <q-tab-panels v-model="tab">
             <q-tab-panel class="q-pa-none" name="samples">
-              <ProjectOptions :selected-samples="selectedSamples" ></ProjectOptions>
-              <ProjectTable :key="reload" :samples="samples" @selected-samples="getSelectedSamples"></ProjectTable>
+              <ProjectOptions :selected-samples="selectedSamples" @unselect="unselectSamples = true"></ProjectOptions>
+              <ProjectTable 
+                :key="reload" 
+                :samples="samples" 
+                :parent-unselect-samples="unselectSamples" 
+                @selected-samples="getSelectedSamples"
+              ></ProjectTable>
             </q-tab-panel>
             <q-tab-panel class="q-pa-none" name="grew">
               <GrewSearch
@@ -205,6 +210,7 @@ export default defineComponent({
       projectSettingsDial: false,
       syncGithubDial: false,
       isDeleteSync: false,
+      unselectSamples: false,
       syncGithubRepo: '',
       reload: 0,
       tab: 'samples'
@@ -256,6 +262,7 @@ export default defineComponent({
     },
     getSelectedSamples(value: any) {
       this.selectedSamples = value;
+      this.unselectSamples = !this.selectedSamples.length;
     },
     getSynchronizedGithubRepo() {
       api

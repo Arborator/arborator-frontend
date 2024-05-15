@@ -79,7 +79,7 @@
       </q-tr>
     </template>
   </q-table>
-</template>
+  </template>
 <script lang="ts">
 import api from '../../api/backend-api';
 import { mapState } from 'pinia';
@@ -91,7 +91,12 @@ import { defineComponent, PropType } from 'vue';
 
 export default defineComponent({
   name: 'ProjectTable',
+  emits: ['selected-samples'],
   props: {
+    parentUnselectSamples: {
+      type: Boolean as PropType<boolean>,
+      required: true,
+    },
     samples: {
       type: Array as PropType<sample_t[]>,
       required: true,
@@ -178,6 +183,14 @@ export default defineComponent({
       'isOwner', 
       'blindAnnotationMode'
     ]),
+  },
+  watch: {
+    parentUnselectSamples(newVal) {
+      if(newVal) {
+        this.table.selected = [];
+        this.getSelectedSamples();
+      }
+    }
   },
   methods: {
     getSelectedSamples() {

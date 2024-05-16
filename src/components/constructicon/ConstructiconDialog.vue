@@ -1,5 +1,5 @@
 <template>
-  <q-card flat>
+  <q-card bordered flat>
     <q-card-section class="row q-gutter-md" style="justify-content: right">
       <q-btn 
         v-if="canSaveTreeInProject" 

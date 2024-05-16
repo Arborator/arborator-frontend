@@ -1,5 +1,5 @@
 <template>
-  <q-card flat>
+  <q-card bordered flat>
     <q-card-section v-if="isShowLexiconFeatures">
       <div class="text-h6 q-mb-md">{{ $t('lexicon.lexiconTitle') }}</div>
       <div class="row q-gutter-md">

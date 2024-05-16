@@ -1,5 +1,5 @@
 <template>
-  <q-card flat>
+  <q-card bordered flat>
     <!-- pretrained Models -->
     <q-card-section v-if="isShowModels">
       <div class="row">

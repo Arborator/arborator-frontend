@@ -65,11 +65,10 @@
               v-if="isAllowdedToSync && !syncGithubRepo" 
               no-caps 
               color="primary" 
-              label="Synchronize with Github" 
+              :label="$t('projectView.tooltipSyncGit')" 
               icon="fab fa-github" 
               @click="syncGithubDial= true" 
             >
-              {{ $t('projectView.tooltipSyncGit') }}
             </q-btn>
             <div v-if="isAllowdedToSync && syncGithubRepo">
               <GithubOptions

@@ -18,7 +18,7 @@
                 {{ description }}
               </div>
               <div class="text-caption text-weight-medium" :class="$q.dark.isActive ? 'white' : 'grey-8' ">
-                Created by
+                {{ $t('projectView.createdBy')}}
                 <span style="text-decoration: underline;">{{ admins[0] }}</span>
               </div>
             </div>
@@ -35,7 +35,7 @@
         </q-card-section>
         <q-card-section class="q-gutter-md">
           <div class="row text-h6">
-            Project overview 
+            {{ $t('projectView.projectOverview') }}
             <span>
               <q-icon name="trending_up"></q-icon>
             </span>
@@ -68,7 +68,9 @@
               label="Synchronize with Github" 
               icon="fab fa-github" 
               @click="syncGithubDial= true" 
-              />
+            >
+              {{ $t('projectView.tooltipSyncGit') }}
+            </q-btn>
             <div v-if="isAllowdedToSync && syncGithubRepo">
               <GithubOptions
                 :projectName="name"
@@ -86,19 +88,27 @@
               no-caps 
               outline 
               color="primary" 
-              label="Settings" 
+              :label="$t('projectView.settings')" 
               icon="tune"  
               @click="projectSettingsDial = true" 
-              />
+            >
+              <q-tooltip>
+                {{ $t('projectView.tooltipSettings') }}
+              </q-tooltip>
+            </q-btn>
             <q-btn 
               v-if="isAdmin"
               no-caps 
               unelevated 
               color="primary" 
-              label="New sample" 
+              :label="$t('projectView.newSample')"
               icon="add"  
               @click="uploadDial = true" 
-              />
+            >
+              <q-tooltip>
+                {{ $t('projectView.tooltipAddSample') }}
+              </q-tooltip>
+            </q-btn>
           </div>
           <q-tabs
             v-model="tab"
@@ -107,12 +117,12 @@
             align="left"
             class="primary"
           >
-            <q-tab name="samples" label="Samples" />
-            <q-tab name="grew" label="Grew" />
-            <q-tab name="relation_table" label="Relation Table"/>
-            <q-tab name="lexicon" label="Lexicon" />
-            <q-tab v-if="isAdmin" name="parser" label="Parser" />
-            <q-tab name="constructicon" label="constructicon" /> 
+            <q-tab name="samples" :label="$t('projectView.projectTabs[0]')" />
+            <q-tab name="grew" :label="$t('projectView.projectTabs[1]')" />
+            <q-tab name="relation_table" :label="$t('projectView.projectTabs[2]')" />
+            <q-tab name="lexicon" :label="$t('projectView.projectTabs[3]')" />
+            <q-tab v-if="isAdmin" name="parser" :label="$t('projectView.projectTabs[4]')" />
+            <q-tab name="constructicon" :label="$t('projectView.projectTabs[5]')" /> 
           </q-tabs>
           <q-tab-panels v-model="tab">
             <q-tab-panel class="q-pa-none" name="samples">

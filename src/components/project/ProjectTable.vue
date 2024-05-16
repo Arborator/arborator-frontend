@@ -1,5 +1,6 @@
 <template>
   <q-table
+    bordered
     flat
     :key="tableKey"
     v-model:selected="table.selected"
@@ -22,12 +23,12 @@
     @update:selected="getSelectedSamples()"
   >
     <template #top-right>
-      <q-input v-model="table.filter" dense debounce="300" :placeholder="$t('projectView.search')" text-color="blue-grey-8">
+      <q-input v-model="table.filter" dense debounce="300" :placeholder="$t('projectTable.search')" text-color="blue-grey-8">
         <template #append>
           <q-icon name="search" />
         </template>
         <q-tooltip :delay="300" content-class="text-white bg-primary">
-          {{ $t('projectView.tooltipSearch') }}
+          {{ $t('projectTable.tooltipSearch') }}
         </q-tooltip>
       </q-input>
     </template>
@@ -54,7 +55,7 @@
         <q-td key="tokens" :props="props">{{ props.row.tokens }}</q-td>
         <q-td key="treesFrom" :props="props">
           <div v-if="Object.keys(props.row.treeByUser).length >= 5">
-            {{ props.row.treesFrom.length }} users
+            {{ props.row.treesFrom.length }} {{ $t('projectTable.users') }}
             <q-tooltip>
               <p v-for="(nSentences, userId) in props.row.treeByUser" :key="userId" :props="userId">{{ userId }} ({{ nSentences }})</p>
             </q-tooltip>
@@ -108,31 +109,31 @@ export default defineComponent({
       fields: [
         {
           name: 'samplename',
-          label: this.$t('projectView.tableFields[0]'),
+          label: this.$t('projectTable.tableFields[0]'),
           sortable: true,
           field: 'samplename',
         },
         {
           name: 'sentences',
-          label: this.$t('projectView.tableFields[1]'),
+          label: this.$t('projectTable.tableFields[1]'),
           sortable: true,
           field: 'sentences',
         },
         {
           name: 'tokens',
-          label: this.$t('projectView.tableFields[2]'),
+          label: this.$t('projectTable.tableFields[2]'),
           sortable: true,
           field: 'number_tokens',
         },
         {
           name: 'treesFrom',
-          label: this.$t('projectView.tableFields[3]'),
+          label: this.$t('projectTable.tableFields[3]'),
           sortable: true,
           field: 'treesFrom',
         },
         {
           name: 'blindAnnotationLevel',
-          label: this.$t('projectView.tableFields[4]'),
+          label: this.$t('projectTable.tableFields[4]'),
           sortable: true,
           field: 'blindAnnotationLevel',
         },

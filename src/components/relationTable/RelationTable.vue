@@ -1,11 +1,11 @@
 <template>
-  <q-card flat>
+  <q-card flat bordered>
     <q-card-section class="q-gutter-md row">
       <div class="col-8">
         <TreesTypeSelect :grew-option="'relation_table'" :samples="samples" @selected-value="getSelectedValues"></TreesTypeSelect>
       </div> 
       <div class="col">
-        <q-btn no-caps color="primary" label="Generate relation table" @click="getRelationTable()" />
+        <q-btn no-caps color="primary" :label="$t('relationTable.generateTable')" @click="getRelationTable()" />
       </div>
     </q-card-section>
     <q-card-section>
@@ -13,10 +13,10 @@
         <div class="col-2">
           <q-toolbar class="text-center">
             <q-toolbar-title>
-              <span class="text-primary text-bold">Select an edge</span>
+              <span class="text-primary text-bold">{{ $t('relationTable.selectEdge') }}</span>
             </q-toolbar-title>
           </q-toolbar>
-          <q-input outlined dense ref="filter" v-model="filter" label="filter dependency relations">
+          <q-input outlined dense ref="filter" v-model="filter" :label="$t('relationTable.filterRelations')">
             <template #append>
               <q-icon v-if="filter !== ''" name="clear" class="cursor-pointer" @click="resetFilter" />
             </template>

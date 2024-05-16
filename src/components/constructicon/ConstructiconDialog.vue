@@ -7,7 +7,7 @@
         dense 
         color="primary"
         icon="file_upload" 
-        label="Upload constructicon" 
+        :label="$t('constructicon.uploadBtn')" 
         @click="uploadConstructiconDialog = true"
       >
         <q-tooltip>{{ $t('constructicon.uploadTooltip') }}</q-tooltip>
@@ -15,7 +15,7 @@
       <q-dialog v-model="uploadConstructiconDialog">
         <q-uploader :url="backendApi.generateURLforConstructiconUpload(name)" label="Choose a File" @uploaded="loadConstructiconEntries" />
       </q-dialog>
-      <q-btn no-caps outline color="primary" label="Download constructicon" dense icon="file_download" @click="downloadConstructicon">
+      <q-btn no-caps outline color="primary" :label="$t('constructicon.downloadBtn')"  dense icon="file_download" @click="downloadConstructicon">
         <q-tooltip>{{ $t('constructicon.downloadTooltip') }}</q-tooltip>
       </q-btn>
     </q-card-section>

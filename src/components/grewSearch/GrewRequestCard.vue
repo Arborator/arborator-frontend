@@ -1,5 +1,5 @@
 <template>
-  <q-card flat>
+  <q-card flat bordered>
     <q-card-section>
       <TreesTypeSelect :grew-option="searchReplaceTab" :samples="samples" @selected-value="getSelectedValues"></TreesTypeSelect>
     </q-card-section>

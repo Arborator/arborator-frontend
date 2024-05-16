@@ -3,11 +3,19 @@
     <q-btn round flat icon="close" @click="unselectSamples()" />
     <div>
       {{ selectedSamples.length }}
-      <span v-if="selectedSamples.length === 1">Sample</span>
-      <span v-else>Samples</span>
+      <span v-if="selectedSamples.length === 1">{{ $t('projectOptions.sample[0]') }}</span>
+      <span v-else>{{ $t('projectOptions.sample[1]') }}</span>
     </div>
-    <q-btn v-if="isAdmin" flat icon="delete" @click="triggerConfirmAction(deleteSamples)" />
-    <q-btn v-if="canExportTrees" flat icon="download" @click="isShowExportDial = true" />
+    <q-btn v-if="isAdmin" flat icon="delete" @click="triggerConfirmAction(deleteSamples)">
+      <q-tooltip>
+       {{ $t('projectOptions.tooltipDeleteSample') }} 
+      </q-tooltip>
+    </q-btn>
+    <q-btn v-if="canExportTrees" flat icon="download" @click="isShowExportDial = true">
+      <q-tooltip>
+        {{ $t('projectOptions.tooltipExportSample') }}
+      </q-tooltip>
+    </q-btn>
     <q-btn 
       flat 
       v-if="isValidator && blindAnnotationMode"
@@ -15,13 +23,16 @@
       :disable="(visibility === 0 && isGuest) || selectedSamples.length !== 1"
       @click="exportEvaluation()"
     >
+      <q-tooltip>
+        {{ $t('projectOptions.tooltipExportEvaluation') }}
+      </q-tooltip>
     </q-btn>
     <q-btn v-if="isAdmin" flat icon="more_vert">
       <q-menu>
         <q-list>
           <q-item clickable v-close-popup @click="isShowDeleteUserTreesDial = true">
             <q-item-section label>
-              Remove user trees
+              {{ $t('projectOptions.removeUserTrees') }}
             </q-item-section>
           </q-item>
         </q-list>

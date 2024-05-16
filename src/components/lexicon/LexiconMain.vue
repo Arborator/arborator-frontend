@@ -12,7 +12,7 @@
             :options="sampleIds"
             use-chips
             stack-label
-            label="Select samples"
+            :label="$t('lexicon.selectSample')"
           />
         </div>
         <div class="col-3">

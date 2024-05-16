@@ -11,7 +11,7 @@
             no-caps 
             :disable="!isLoggedIn" 
             color="primary" 
-            label="New Project" 
+            :label="$t('projectHub.newProject')" 
             icon="add" 
             size="md"
             @click="creaProjectDial = true"
@@ -20,10 +20,10 @@
               {{ $t('projectHub.tooltipCreaProject[0]') }}
             </q-tooltip>
             <q-tooltip v-else :delay="300" class-content="text-white bg-primary">
-              {{ $t('projectHub.tooltipCreaProject[1 ]') }}
+              {{ $t('projectHub.tooltipCreaProject[1]') }}
             </q-tooltip>
           </q-btn>
-          <q-btn v-if="isLoggedIn" no-caps  label="My Projects" />
+          <q-btn v-if="isLoggedIn" no-caps  :label="$t('projectHub.myProjects')" />
         </q-toolbar>
       </q-card-section>
       <q-card-section>
@@ -62,8 +62,16 @@
             class="float-right"
             :label="$t('projectHub.projectCategory')"
           />
-          <q-btn :color="listMode ? 'primary':''" round flat icon="fas fa-list" @click="toggleProjectView()" />
-          <q-btn :color="!listMode ? 'primary':''" round flat icon="grid_view" @click="toggleProjectView()" /> 
+          <q-btn :color="listMode ? 'primary':''" round flat icon="fas fa-list" @click="toggleProjectView()">
+            <q-tooltip>
+              {{ $t('projectHub.tooltipListView') }}
+            </q-tooltip>
+          </q-btn>
+          <q-btn :color="!listMode ? 'primary':''" round flat icon="grid_view" @click="toggleProjectView()"> 
+            <q-tooltip>
+              {{ $t('projectHub.tooltipGridView') }}
+            </q-tooltip>
+          </q-btn>
         </div>
       </q-card-section>
       <q-card-section v-if="initLoading" class="row q-pa-md items-start q-gutter-md" style="width: 90vw; height: 60vh">

@@ -130,28 +130,23 @@ export default {
   // list of projects page
   projectHub: {
     tooltipCreaProject: ['Login your account to create new project', 'Create a new project'],
-    tooltipChangeView: 'Change view',
-    tooltipRightClickDelete: 'Right click to delete',
+    tooltipListView: 'Show list view',
+    tooltipGridView: 'Show grid view',
+    newProject: 'New project',
     title: 'Projects',
     sample: 'sample',
     samples: 'samples',
-    rightClickSettings: 'Settings',
     rightClickDelete: 'Delete',
     rightClickRename: 'Rename',
     emptySearch: 'Search for project',
     projectCategory: 'Category',
     allProjects: 'All the projects',
     myProjects: 'My Projects',
-    myProjectsTooltip: 'Projects I own and those I am working on',
     myOldProjects: 'My Project Purgatory',
-    myOldProjectInfo:
-      'These old projects have not been used for a long time. We might delete them anytime. Use them or download the data and erase the project (right click).',
     otherProjects: 'Other Projects',
     otherOldProjects: 'The Project Purgatory',
-    otherOldProjectInfo: 'These old projects have not been used for a long time. We may delete them at any time. Use them or notify the creators.',
     lastAccess: 'last access',
     lastWriteAccess: 'last modification',
-    longtime: 'a long time ago',
   },
   renameProject: {
     title: 'Rename the project',
@@ -163,51 +158,34 @@ export default {
   // page when you enter a project ( samples info, etc)
   projectView: {
     project: 'Project',
+    createdBy: 'Created by',
+    settings: 'Settings',
     tooltipSettings: 'Modify project settings',
-    tooltipViewAdmin: 'View administrator information',
+    newSample: 'New Sample',
     tooltipAddSample: 'Add new samples',
-    tooltipExportSample: ['Select the samples you want to export', 'Export selected samples'],
-    tooltipDeleteSample: ['Select the samples you want to delete', 'Delete selected samples'],
-    tooltipExportEvaluation: 'Export evaluations of the students (only works if only one sample is selected)',
-    tooltipCreateLexicon: ['Select the samples to create a lexicon', 'Create lexicon from selected samples'],
-    tooltipParsingPanel: ['Open parsing panel', 'Close parsing panel'],
-    tooltipParser: [
-      'Select samples to train a parser',
-      'train with the selected samples',
-      'Click to set the parameters for parser',
-      'Click to interrupt parsing',
-    ],
-    tootlipConstructiconPanel: 'See the constructicon',
-    tooltipSynchronize: 'Synchronize with github',
-    tooltipMore: 'More options',
-    tooltipConstructicon: 'See constructicon',
+    projectOverview: 'Project Overview',
     tooltipSyncGit: 'Synchronize with Github',
     tooltipSynchronizedProject: 'This project is synchronized with',
-    tooltipSearch: 'Search a sample',
-    tooltipSelectVisible: 'Select visible columns',
-    tooltipFullscreen: 'Fullscreen table',
-    tooltipFabGrew: 'Search with Grew',
-    tooltipFabGrewValidated: 'Validated trees',
-    tooltipFabGrewPending: 'Pending trees',
-    tooltipFabGrewUser: 'Only my trees',
-    tooltipFabGrewUserRecent: 'My trees, filled up with the most recent trees',
-    tooltipFabGrewRecent: 'Most recent trees',
-    tooltipFabGrewOther: 'Trees of specific user',
-    tooltipFabGrewAll: 'All trees',
-    tooltipFabGrewBaseTree: 'Base trees',
-    tooltipRelationTable: 'Get Relation Tables',
-    tooltipWindows: ['Minimize', 'Maximize', 'Close'],
-    search: 'Search',
-    uploadSelectDial: 'Select one or multiple conll files',
-    tableFields: ['Name', 'Nb Sentences', 'Nb Tokens', 'Trees From', 'Blind annotation level'],
-    projectInfoDial: {
-      title: 'Project Information',
-      ifAdmin: 'Contact these project administrators if you need access or further information:',
-      else: 'Contact the project administrator if you need access or further information:',
-    },
-    freezeProject: ['Freeze this project', 'Unfreeze this project', 'This project is freezed'],
-    removeUserTrees: ["Remove user's trees", 'Select samples'],
+    projectTabs: ['Samples', 'Grew', 'Relation table', 'Lexicon', 'Parser', 'Constructicon']
   },
+
+  // project table that contains samples informations
+  projectTable: {
+    tooltipSearch: 'Search a sample',
+    search: 'Search',
+    users: 'User',
+    tableFields: ['Name', 'Nb sentences', 'Nb tokens', 'Trees from', "Blind annotation level"],
+  },
+
+  // Component project options
+  projectOptions: {
+    sample: ['Sample', 'Samples'],
+    tooltipDeleteSample: 'Remove selected samples',
+    tooltipExportSample: 'Export selected samples',
+    tooltipExportEvaluation: 'Export evaluations from selected samples',
+    removeUserTrees: 'Remove user trees',
+  },
+
   // dialog window which displays create project card
   createProjectCard: {
     title: 'Create New Project',
@@ -237,25 +215,35 @@ export default {
   },
 
   grewSearch: {
+    selectSample: 'Select sample',
     treesType: 'Search in',
+    recentTree: 'Recent trees',
+    userTree: 'My trees',
+    validatedTree: 'Validated trees',
+    pendingTree: "Pending trees (Trees of sentence that's not validated yet)",
+    allTree: 'All trees',
+    baseTree: 'Base trees',
+    otherTree: 'Tress of specific user',
     search: 'Search',
     rewrite: 'Rewrite',
     tryRules: 'Try rules',
     grewSearchTooltip: 'Examples of Grew search statements',
     grewRewriteTooltip: 'Examples of Grew search and replacement statements',
-    grewBtnTooltip: 'You have to select trees type first',
-    showDiffTitle: 'Select the set of features  and users for which you look for differences',
-    showDiffUsersSelect: 'Select the set of users',
-    showDiffUsersTooltip: 'You have to select at least two users',
     showDiffFaturesSelect: 'Select the set of features',
     showDiffFeaturesTooltip: 'if empty and at least two diff users are selected, all features will be taken into account for diff',
-    showDiffBtn: 'Show differences',
     applyRule: 'Apply rule',
     applyRuleTooltip: 'Select at least one tree to which you wish to apply the rule',
     selectAllTooltip: 'Select All',
     btnDisabledTooltip: 'You need to select first the username',
     selectUser: 'Select username',
   },
+
+  relationTable: {
+    generateTable: 'Generate relations table',
+    selectEdge: 'Select a relation',
+    filterRelations: 'Filter dependency relations',
+  },
+
   // window which displays project settings
   projectSettings: {
     title: 'Settings',
@@ -365,7 +353,9 @@ export default {
     tokenReplaceDial: ['Replacing', 'by', 'Changing tokens breaks the comparability of different annotations of the same sentence', 'Replacement'],
   },
   constructicon: {
+    uploadBtn: 'Upload constructicon',
     uploadTooltip: 'Upload existing constructicon',
+    downloadBtn: 'Download constructicon',
     downloadTooltip: 'Download existing constructicon',
     searchLabel: 'Search items ...',
     addNewItem: 'Add new item',
@@ -463,6 +453,7 @@ export default {
     all: 'All',
   },
   lexicon: {
+    selectSample: 'Select samples',
     lexiconOptions: [
       'Get the lexicon of my trees',
       'Get the lexicon of my recent trees',

@@ -4,7 +4,7 @@
       <q-select
         dense
         outlined
-        label="Select sample"
+        :label="$t('grewSearch.selectSample')"
         v-model="selectedSamples"
         :options="samples"
         multiple
@@ -78,14 +78,13 @@ export default defineComponent({
   },
   data() {
     const treeTypes = [
-      { value: 'recent', label: this.$t('projectView.tooltipFabGrewRecent'), icon: 'schedule' },
-      { value: 'user', label: this.$t('projectView.tooltipFabGrewUser') },
-      { value: 'user_recent', label: this.$t('projectView.tooltipFabGrewUserRecent') },
-      { value: 'validated', label: this.$t('projectView.tooltipFabGrewValidated'), icon: 'verified' },
-      { value: 'pending', label: this.$t('projectView.tooltipFabGrewPending'), icon: 'pending' },
-      { value: 'all', label: this.$t('projectView.tooltipFabGrewAll'), icon: 'groups' },
-      { value: 'base_tree', label: this.$t('projectView.tooltipFabGrewBaseTree'), icon: 'linear_scale' },
-      { value: 'others', label: this.$t('projectView.tooltipFabGrewOther'), icon: 'group' },
+      { value: 'recent', label: this.$t('grewSearch.recentTree'), icon: 'schedule' },
+      { value: 'user', label: this.$t('grewSearch.userTree') },
+      { value: 'validated', label: this.$t('grewSearch.validatedTree'), icon: 'verified' },
+      { value: 'pending', label: this.$t('grewSearch.pendingTree'), icon: 'pending' },
+      { value: 'all', label: this.$t('grewSearch.allTree'), icon: 'groups' },
+      { value: 'base_tree', label: this.$t('grewSearch.baseTree'), icon: 'linear_scale' },
+      { value: 'others', label: this.$t('grewSearch.otherTree'), icon: 'group' },
     ];
     const treeType = treeTypes[0];
     const selectedSamples: sample_t[] = [];

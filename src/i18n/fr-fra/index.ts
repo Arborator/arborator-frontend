@@ -127,29 +127,23 @@ export default {
   // list of projects page
   projectHub: {
     tooltipCreaProject: ['Se connecter pour créer un nouveau projet', 'Créer un nouveau projet'],
-    tooltipChangeView: "Changer l'affichage",
-    tooltipRightClickDelete: 'Clic droit pour supprimer',
+    tooltipListView: 'Afficher la vue de liste',
+    tooltipGridView: 'Afficher la vue de grille',
+    newProject: 'Nouveau projet',
     title: 'Projets',
     sample: 'échantillon',
     samples: 'échantillons',
-    rightClickSettings: 'Paramètres',
     rightClickDelete: 'Supprimer',
     rightClickRename: 'Renommer',
     emptySearch: 'chercher un projet',
     projectCategory: 'Catégorie',
     allProjects: 'Tous les projets',
     myProjects: 'Mes projets',
-    myProjectsTooltip: 'Projets que je possède et projets sur lesquels je travaille',
     myOldProjects: 'Mon purgatoire des projets',
-    myOldProjectInfo:
-      "Ces anciens projets n'ont pas été utilisés depuis longtemps. Nous sommes susceptibles de les supprimer à tout moment. Utilisez-les ou téléchargez les données et effacez le projet (clic droit).",
     otherProjects: "D'autres projets",
     otherOldProjects: 'Le purgatoire des projets',
-    otherOldProjectInfo:
-      "Ces anciens projets n'ont pas été utilisés depuis longtemps. Nous sommes susceptibles de les supprimer à tout moment. Utilisez-les ou prevenez les créateurs.",
     lastAccess: 'dernier accès',
     lastWriteAccess: 'dernière modification',
-    longtime: 'ça fait une éternité',
   },
   renameProject: {
     title: 'Renommer le projet',
@@ -161,44 +155,32 @@ export default {
   // page when you enter a project ( samples info, etc)
   projectView: {
     project: 'Projet',
+    createdBy: 'Créé par',
+    settings: 'Paramètres',
     tooltipSettings: 'Modifier les paramètres du projet',
-    tooltipViewAdmin: "Voir les informations de l'administrateur",
+    newSample: 'Nouvel échantillon',
     tooltipAddSample: 'Ajouter un nouvel échantillon',
-    tooltipExportSample: ['Sélectionnez les échantillons à exporter', 'Exporter les échantillons sélectionnés'],
-    tooltipDeleteSample: ['Sélectionnez les échantillons à supprimer', 'Supprimer les échantillons sélectionnés'],
-    tooltipExportEvaluation: 'Exporter les évaluations des étudiants (ne fonctionne que si un seul échantillon est sélectionné)',
-    tooltipCreateLexicon: ['Sélectionnez les échantillons pour créer le lexique', "Créer le lexique à partir d'échantillons sélectionnés"],
-    tooltipParsingPanel: ['Ouvrir le parseur', 'Fermer le parseur'],
-    tooltipConstructicon: 'Voir le constructicon',
+    projectOverview: 'Aperçu du projet',
     tooltipSyncGit: 'Synchroniser avec Github',
-    tootlipConstructiconPanel: 'Voir le constructicon',
-    tooltipSynchronize: 'Synchroniser ce projet avec github',
-    tooltipMore: "Plus d'options",
     tooltipSynchronizedProject: 'Ce projet est synchronisé avec',
+    projectTabs: ['Echantillon', 'Grew', 'Table de relation', 'Lexique', 'Parseur', 'Constructicon']
+  },
+
+  // Component project table that contains samples informations
+  projectTable: {
     tooltipSearch: 'Rechercher un échantillon',
-    tooltipSelectVisible: 'Sélectionner les colonnes visibles',
-    tooltipFullscreen: 'tableau plein écran',
-    tooltipFabGrew: 'Recherche avec Grew',
-    tooltipFabGrewValidated: 'Les arbres validés',
-    tooltipFabGrewPending: 'Les arbres en attente',
-    tooltipFabGrewUser: 'Uniquement mes arbres',
-    tooltipFabGrewUserRecent: 'Mes arbres, complétés par les arbres les plus récents',
-    tooltipFabGrewRecent: 'Les arbres les plus récents',
-    tooltipFabGrewOther: "Les arbres d'un utilisateur spécifique",
-    tooltipFabGrewAll: 'Tous les arbres',
-    tooltipFabGrewBaseTree: 'Les arbres de base',
-    tooltipRelationTable: 'Obtenir la table des relations',
-    tooltipWindows: ['Minimize', 'Maximize', 'Close'],
     search: 'Rechercher',
-    uploadSelectDial: 'Select one or multiple conll files',
-    tableFields: ['Nom', 'Nb Phrases', 'Nb Tokens', 'Arbres de', "Niveau d'annotation aveugle"],
-    projectInfoDial: {
-      title: 'Information sur le projet',
-      ifAdmin: "Contactez ces administrateurs de projet si vous avez besoin d'un accès ou de plus de détails:",
-      else: "Contactez l'administrateur du projet si vous avez besoin d'un accès ou de plus de détails:",
-    },
-    freezeProject: ['Désactiver ce projet', 'Réactiver ce projet', 'Ce projet est désactivé'],
-    removeUserTrees: ["Supprimer les arbres d'un utilisateur", 'Sélectionnez des échantillons'],
+    users: 'Utilisateurs',
+    tableFields: ['Nom', 'Nb phrases', 'Nb tokens', 'Arbres de', "Niveau d'annotation à l'aveugle"],
+  },
+
+  // Component project options
+  projectOptions: {
+    sample: ['Echantillon', 'Echantillons'],
+    tooltipDeleteSample: 'Supprimer les échantillons sélectionnés',
+    tooltipExportSample: 'Exporter les échantillons sélectionnés',
+    tooltipExportEvaluation: 'Exporter les évaluations à partir les échantillons sélectionnés',
+    removeUserTrees: "Supprimer les arbres d'un utilisateur",
   },
 
   // dialog window which displays create project card
@@ -230,16 +212,20 @@ export default {
   },
 
   grewSearch: {
+    selectSample: 'Sélectionner un échantillon',
     treesType: 'Rechercher sur',
+    recentTree: 'Les arbres récents',
+    userTree: 'Mes arbres',
+    validatedTree: 'Les arbres validés',
+    pendingTree: "Les arbres en attente, (les arbres des phrases qui ne sont pas encore validés)",
+    allTree: 'Tous les arbres',
+    baseTree: 'Les arbres de base',
+    otherTree: "Les arbres d'un utilisateur spécifique",
     search: 'Rechercher',
     rewrite: 'Réécrire',
     tryRules: 'Essayer les règles',
     grewSearchTooltip: 'Examples de requêtes de recherche de Grew',
     grewRewriteTooltip: 'Examples de requêtes de recherche et remplacement de Grew',
-    grewBtnTooltip: "Vous devez d'abord sélectionner le type d'arbre",
-    showDiffTitle: 'Sélectionnez la liste des features et des utilisateurs dont vous cherchez la différence',
-    showDiffUsersSelect: 'Sélectionnez la liste des utilisateurs',
-    showDiffUsersTooltip: 'Vous devez sélectionner au moins deux utilisateurs',
     showDiffFaturesSelect: 'Sélectionnez la liste des features',
     showDiffBtn: 'Afficher les différences',
     applyRule: 'Appliquer la règle',
@@ -248,6 +234,13 @@ export default {
     btnDisabledTooltip: "Sélectionnez d'abord le nom d'utilisateur",
     selectUser: "Séléctionnez le nom d'utilisateur",
   },
+
+  relationTable: {
+    generateTable: 'Générer la table des relations',
+    selectEdge: 'Sélectionner une relation',
+    filterRelations: 'Filtrer les relations de dépendence',
+  },
+  
   // window which displays project settings
   projectSettings: {
     title: 'Paramètres',
@@ -362,7 +355,9 @@ export default {
     ],
   },
   constructicon: {
+    uploadBtn: 'Importer un constructicon',
     uploadTooltip: 'Téléverser un constructicon existant',
+    downloadBtn: 'Télécharger un constructicon',
     downloadTooltip: 'Télécharger un constructicon existant',
     searchLabel: 'Rechercher un élément ...',
     addNewItem: 'Ajouter un nouvel élément ',
@@ -460,6 +455,7 @@ export default {
     all: 'Tous',
   },
   lexicon: {
+    selectSample: 'Sélectionnez un échantillon',
     lexiconOptions: [
       'Obtenir le lexique de mes arbres',
       'Obtenir le lexique de mes arbres récents',

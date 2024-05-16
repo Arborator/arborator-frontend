@@ -33,8 +33,7 @@
           bottom-slots
           :label="$t('projectHub.emptySearch')"
           type="text"
-          @input="searchProject(search)"
-          @keyup.enter="searchProject(search)"
+          @update:model-value="searchProject(search)"
         >
           <template #append>
             <div v-for="val in selectedLanguagesForFilter">
@@ -256,6 +255,12 @@ export default defineComponent({
         this.reloadProjects = false;
       }
     },
+    selectedLanguagesForFilter: {
+      handler() {
+        this.searchProject(this.search);
+      },
+      deep: true,
+    }
   },
   mounted() {
     document.title = `ArboratorGrew: ${this.$t('projectHub.title')}`;

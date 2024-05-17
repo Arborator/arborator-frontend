@@ -86,11 +86,12 @@ import api from '../../api/backend-api';
 import SentenceCard from '../sentence/SentenceCard.vue';
 
 import { sentenceConllToJson, sentenceJsonToConll } from 'conllup/lib/conll';
-import { mapState, mapActions } from 'pinia';
+import { mapState, mapWritableState, mapActions } from 'pinia';
 import { useGrewSearchStore } from 'src/pinia/modules/grewSearch';
 import { useProjectStore } from 'src/pinia/modules/project';
 import { useUserStore } from 'src/pinia/modules/user';
 import { useGrewHistoryStore } from 'src/pinia/modules/grewHistory';
+import { useGithubStore } from 'src/pinia/modules/github';
 import { notifyMessage } from 'src/utils/notify';
 
 import { grewSearchResult_t, sample_t } from 'src/api/backend-types';
@@ -130,7 +131,6 @@ export default defineComponent({
     const filteredSamples: string[] = [];
     return {
       searchresultsCopy,
-      resultSearchDialog: true,
       samplesFrozen,
       filteredSamples,
       loading: false,
@@ -145,6 +145,7 @@ export default defineComponent({
     ...mapState(useProjectStore, ['canSaveTreeInProject', 'isValidator']),
     ...mapState(useGrewSearchStore, ['canRewriteRule']),
     ...mapState(useUserStore, ['username']),
+    ...mapWritableState(useGithubStore, ['reloadCommits']),
     projectName(): string {
       return this.$route.params.projectname as string;
     },
@@ -233,7 +234,7 @@ export default defineComponent({
       if (this.toSaveCounter >= 1) {
         const datasample = { data: this.searchresultsCopy };
         api.applyRule(this.$route.params.projectname as string, datasample).then(() => {
-          this.resultSearchDialog = false;
+          this.reloadCommits += 1;
           this.saveAppliedRule();
           notifyMessage({ message: `Rule applied (user "${this.username}" rewrote and saved "${this.toSaveCounter}" at once)` });
         });

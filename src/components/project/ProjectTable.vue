@@ -191,6 +191,11 @@ export default defineComponent({
         this.table.selected = [];
         this.getSelectedSamples();
       }
+    },
+    samples(newVal, oldVal) {
+      if (newVal !== oldVal) {
+        this.getSelectedSamples();
+      }
     }
   },
   methods: {

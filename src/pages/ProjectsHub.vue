@@ -141,9 +141,6 @@
       </q-card-section>
     </q-card>
     <CreaProjectCard v-if="creaProjectDial" :parent-get-projects="getProjects" @created="creaProjectDial = false"></CreaProjectCard>
-    <q-dialog v-model="confirmActionDial">
-      <ConfirmAction :parent-action="confirmActionCallback" :arg1="confirmActionArg1"></ConfirmAction>
-    </q-dialog>
   </q-page>
 </template>
 
@@ -152,7 +149,6 @@ import api from '../api/backend-api';
 import ProjectCard from '../components/ProjectCard.vue';
 import ProjectItem from '../components/ProjectItem.vue';
 import CreaProjectCard from '../components/CreaProjectCard.vue';
-import ConfirmAction from '../components/ConfirmAction.vue';
 import LanguageSelect from 'src/components/shared/LanguageSelect.vue';
 import EmailCollectDialog from 'src/components/Index/EmailCollectDialog.vue';
 
@@ -170,7 +166,6 @@ export default defineComponent({
     ProjectCard,
     ProjectItem,
     CreaProjectCard,
-    ConfirmAction,
     LanguageSelect,
     EmailCollectDialog,
   },
@@ -194,9 +189,6 @@ export default defineComponent({
       creaProjectDial: false,
       initLoading: false,
       skelNumber: [...Array(5).keys()],
-      confirmActionDial: false,
-      confirmActionCallback: null,
-      confirmActionArg1: '',
       ayear: -3600 * 24 * 365,
       currentPage: 1,
       pageIndex: 1,

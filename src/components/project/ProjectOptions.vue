@@ -46,7 +46,7 @@
     <DeleteUserTreesDial :selected-samples="selectedSamples"/>
   </q-dialog>
   <q-dialog v-model="confirmActionDial">
-    <ConfirmAction :parent-action="confirmActionCallback" :arg1="confirmActionArg1" :target-name="name" />
+    <ConfirmAction :parent-action="confirmActionCallback" :target-name="name" />
   </q-dialog>
 </template>
 <script lang="ts">
@@ -82,7 +82,6 @@ export default defineComponent({
     const confirmActionCallback: CallableFunction = () => {};
     return {
       confirmActionCallback,
-      confirmActionArg1: '',
       confirmActionDial: false,
       isShowExportDial: false,
       isShowDeleteUserTreesDial: false,

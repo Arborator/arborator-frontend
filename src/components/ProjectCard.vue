@@ -70,7 +70,7 @@
       <RenameProjectDialog :project-name="project.projectName" />
     </q-dialog>
     <q-dialog v-model="confirmActionDial">
-      <ConfirmAction :parent-action="confirmActionCallback" :arg1="confirmActionArg1" :target-name="project.projectName"></ConfirmAction>
+      <ConfirmAction :parent-action="confirmActionCallback"  :target-name="project.projectName"></ConfirmAction>
     </q-dialog>
   </q-card>
 </template>
@@ -104,7 +104,6 @@ export default defineComponent({
       hover: false,
       confirmActionCallback,
       confirmActionDial: false,
-      confirmActionArg1: '',
       showRenameProjectDial: false,
     };
   },

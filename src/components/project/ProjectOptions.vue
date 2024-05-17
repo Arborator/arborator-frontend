@@ -113,7 +113,7 @@ export default defineComponent({
         });
     },
     deleteSamplesFromGithub() {
-      const data = { sampleIds: this.selectedSamples.map((sample) => sample.sample_name) };
+      const data = { sampleNames: this.selectedSamples.map((sample) => sample.sample_name) };
       api
         .deleteFileFromGithub(this.name, data)
         .then(() => {
@@ -124,8 +124,14 @@ export default defineComponent({
         });
     },
     triggerConfirmAction(method: CallableFunction) {
+      if (this.canDeleteFromGithub) this.triggerWarning();
       this.confirmActionCallback = method;
       this.confirmActionDial = true;
+    },
+    triggerWarning() {
+      if (this.canDeleteFromGithub) {
+        notifyMessage({ message: 'These files will be also deleted from your synchronized Github repository', type: 'warning', position: 'top' });
+      }
     },
     exportEvaluation() {
       const projectName = this.name;

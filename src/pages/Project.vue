@@ -123,7 +123,7 @@
             <q-tab v-if="isAdmin" name="parser" :label="$t('projectView.projectTabs[4]')" />
             <q-tab name="constructicon" :label="$t('projectView.projectTabs[5]')" /> 
           </q-tabs>
-          <q-tab-panels v-model="tab">
+          <q-tab-panels keep-alive v-model="tab">
             <q-tab-panel class="q-pa-none" name="samples">
               <ProjectOptions 
                 :selected-samples="selectedSamples"
@@ -189,9 +189,10 @@ import ConstructiconDialog from 'src/components/constructicon/ConstructiconDialo
 import GithubSyncDialog from 'src/components/github/GithubSyncDialog.vue';
 import GithubOptions from 'src/components/github/GithubOptions.vue';
 
-import { mapState } from 'pinia';
+import { mapState, mapWritableState } from 'pinia';
 import { useProjectStore } from 'src/pinia/modules/project';
 import { useGithubStore } from 'src/pinia/modules/github';
+import { useGrewSearchStore } from 'src/pinia/modules/grewSearch';
 import { notifyError } from 'src/utils/notify';
 import { sample_t } from 'src/api/backend-types';
 
@@ -244,6 +245,7 @@ export default defineComponent({
       'isAllowdedToSync',
     ]),
     ...mapState(useGithubStore, ['reloadCommits']),
+    ...mapWritableState(useGrewSearchStore, ['grewDialog']),
     projectName(): string {
       return this.$route.params.projectname as string;
     }
@@ -257,6 +259,12 @@ export default defineComponent({
     reloadCommits(newVal) {
       if (newVal > 0) this.loadProjectData();
     },
+    grewDialog(newVal) {
+      if (newVal) {
+        this.tab = 'grew'
+        this.grewDialog = false;
+      }
+    }
   },
   methods: {
     loadProjectData() {

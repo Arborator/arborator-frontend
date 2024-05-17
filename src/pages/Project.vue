@@ -125,7 +125,11 @@
           </q-tabs>
           <q-tab-panels v-model="tab">
             <q-tab-panel class="q-pa-none" name="samples">
-              <ProjectOptions :selected-samples="selectedSamples" @unselect="unselectSamples = true"></ProjectOptions>
+              <ProjectOptions 
+                :selected-samples="selectedSamples" 
+                @unselect="unselectSamples = true"
+                @reload="loadProjectData"
+              ></ProjectOptions>
               <ProjectTable 
                 :key="reload" 
                 :samples="samples" 

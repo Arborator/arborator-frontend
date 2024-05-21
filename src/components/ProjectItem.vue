@@ -2,24 +2,25 @@
   <q-item clickable @click.native.prevent="goTo()">
     <q-item-section avatar>
       <q-avatar rounded color="primary" text-color="white">
-        <img :src="project.image ? project.image : '/images/small.niko-photos-tGTVxeOr_Rs-unsplash.jpg'" alt="tree"/>
+        <img :src="project.image ? project.image : '/images/small.niko-photos-tGTVxeOr_Rs-unsplash.jpg'" alt="tree" />
       </q-avatar>
     </q-item-section>
     <q-item-section>
       <q-item-label lines="1">
         <span class="text-weight-bold">{{ project.projectName }}</span>
       </q-item-label>
-      <q-item-label class="text-caption text-grey-9 text-weight-medium" style="text-decoration: underline;" lines="2">
+      <q-item-label class="text-caption text-grey-9 text-weight-medium" style="text-decoration: underline" lines="2">
         {{ project.admins[0] }}
       </q-item-label>
       <q-item-label caption lines="3">
-        {{ $t('projectHub.lastAccess') }} {{ timeAgo(project.lastAccess) }}.{{ $t('projectHub.lastWriteAccess') }} {{ timeAgo(project.lastWriteAccess) }}
+        {{ $t('projectHub.lastAccess') }} {{ timeAgo(project.lastAccess) }}.{{ $t('projectHub.lastWriteAccess') }}
+        {{ timeAgo(project.lastWriteAccess) }}
       </q-item-label>
     </q-item-section>
     <q-item-section side>
       <q-item-label lines="1">
         <q-avatar color="primary" size="1.2rem" text-color="white">
-          <img :src="project.ownerAvatarUrl " alt="owner" />
+          <img :src="project.ownerAvatarUrl" alt="owner" />
         </q-avatar>
       </q-item-label>
       <q-item-label caption lines="2">
@@ -126,4 +127,3 @@ export default defineComponent({
   },
 });
 </script>
-

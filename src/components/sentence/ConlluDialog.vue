@@ -20,8 +20,8 @@
               color="white"
               text-color="primary"
               :options="[
-                {label: $t('conllDial.tableView'), value: 'table'},
-                {label: $t('conllDial.conllView'), value: 'conll'}
+                { label: $t('conllDial.tableView'), value: 'table' },
+                { label: $t('conllDial.conllView'), value: 'conll' },
               ]"
             />
           </div>
@@ -29,7 +29,8 @@
       </q-card-section>
       <q-card-section v-if="view === 'table'" class="q-pa-none">
         <q-table
-          flat borderd
+          flat
+          borderd
           :rows="conllTable"
           :columns="table.fields"
           class="my-sticky-header-table"
@@ -41,13 +42,9 @@
             <q-tr :props="props">
               <q-td v-for="col of conllColumns" :key="col" :props="props">
                 {{ props.row[col] }}
-                  <q-popup-edit v-if="col !== 'ID'" v-model="props.row[col]" auto-save v-slot="scope" >
-                    <q-input  
-                      dense
-                      autofocus
-                      v-model="scope.value" 
-                      />
-                  </q-popup-edit>
+                <q-popup-edit v-if="col !== 'ID'" v-model="props.row[col]" auto-save v-slot="scope">
+                  <q-input dense autofocus v-model="scope.value" />
+                </q-popup-edit>
               </q-td>
             </q-tr>
           </template>
@@ -58,8 +55,8 @@
       </q-card-section>
       <q-card-actions class="sticky-card-actions" align="around">
         <q-btn v-close-popup outline color="primary" :label="$t('cancel')" style="width: 45%; margin-left: auto; margin-right: auto" />
-        <q-btn v-if="view === 'table'" v-close-popup color="primary" label="Ok" style="width: 45%;" @click="onConllDialogOk()" />
-        <q-btn v-else v-close-popup color="primary" :label="$t('conllDial.copyConll')" style="width: 45%;" @click="copyConll()" />
+        <q-btn v-if="view === 'table'" v-close-popup color="primary" label="Ok" style="width: 45%" @click="onConllDialogOk()" />
+        <q-btn v-else v-close-popup color="primary" :label="$t('conllDial.copyConll')" style="width: 45%" @click="copyConll()" />
       </q-card-actions>
     </q-card>
   </q-dialog>
@@ -108,7 +105,7 @@ CodeMirror2.defineMode('tsv', () => {
     },
     lineComment: '#',
   };
-}); 
+});
 export default defineComponent({
   components: { Codemirror },
   props: {
@@ -164,7 +161,7 @@ export default defineComponent({
         this.currentConllContent = this.sentenceBus.sentenceSVGs[this.userId].exportConll();
       },
       deep: true,
-    }
+    },
   },
   mounted() {
     this.sentenceBus.on('open:conlluDialog', ({ userId }) => {
@@ -213,30 +210,29 @@ export default defineComponent({
             treeJson: this.sentenceBus.sentenceSVGs[this.userId].treeJson,
           },
           userId: this.userId,
-        }); 
+        });
         notifyMessage({
           message: "Conllu changed locally, don't forget to save !",
           type: 'warning',
           icon: 'warning',
-        }); 
-      }  
+        });
+      }
     },
     generateConllFromTable() {
       this.conllTable.forEach((row, index) => {
         this.nodesJson[`${index + 1}`] = {
-          ...row, 
+          ...row,
           FEATS: row.FEATS ? _featuresConllToJson(row.FEATS) : {},
           MISC: row.MISC ? _featuresConllToJson(row.MISC) : {},
           DEPS: row.DEPS ? _depsConllToJson(row.DEPS) : {},
-        }
-      }); 
+        };
+      });
       this.sentenceBus.sentenceSVGs[this.userId].treeJson.nodesJson = { ...this.nodesJson };
     },
     copyConll() {
-      copyToClipboard(this.currentConllContent)
-      .then(() => {
+      copyToClipboard(this.currentConllContent).then(() => {
         notifyMessage({ message: 'Conll Copied!' });
-      })
+      });
     },
   },
 });
@@ -245,5 +241,5 @@ export default defineComponent({
 <style scoped>
 .bordered {
   border: 1px solid #999999;
-} 
+}
 </style>

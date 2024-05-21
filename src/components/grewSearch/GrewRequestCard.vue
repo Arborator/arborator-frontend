@@ -3,10 +3,18 @@
     <q-card-section>
       <TreesTypeSelect :grew-option="searchReplaceTab" :samples="samples" @selected-value="getSelectedValues"></TreesTypeSelect>
     </q-card-section>
-    <q-card-section> 
+    <q-card-section>
       <div class="row q-col-gutter-md" style="position: relative">
         <div class="col-3">
-          <q-tabs outlined v-model="searchReplaceTab" dense no-caps active-color="primary" indicator-color="primary" class="primary bordered text-grey">
+          <q-tabs
+            outlined
+            v-model="searchReplaceTab"
+            dense
+            no-caps
+            active-color="primary"
+            indicator-color="primary"
+            class="primary bordered text-grey"
+          >
             <q-tab name="SEARCH" icon="search" :label="$t('grewSearch.search')">
               <q-tooltip content-class="bg-primary" anchor="top middle" self="bottom middle" :offset="[10, 10]">
                 {{ $t('grewSearch.grewSearchTooltip') }}
@@ -46,9 +54,17 @@
         </div>
       </div>
     </q-card-section>
-    <q-card-actions style="justify-content: right;">
+    <q-card-actions style="justify-content: right">
       <div class="row q-pa-md">
-        <q-btn v-if="searchReplaceTab === 'SEARCH'" :disable="disableBtn" color="primary" :label="$t('grewSearch.search')" no-caps icon="search" @click="onSearch">
+        <q-btn
+          v-if="searchReplaceTab === 'SEARCH'"
+          :disable="disableBtn"
+          color="primary"
+          :label="$t('grewSearch.search')"
+          no-caps
+          icon="search"
+          @click="onSearch"
+        >
           <q-tooltip v-if="disableBtn">
             {{ $t('grewSearch.btnDisabledTooltip') }}
           </q-tooltip>
@@ -96,7 +112,7 @@ export default defineComponent({
   },
   data() {
     const currentQueryType: 'SEARCH' | 'REWRITE' = grewTemplates.searchQueries[0].type as 'SEARCH' | 'REWRITE';
-    const data: { selectedSamples: string[], treeType: string, otherUser: string } = { selectedSamples: [], treeType: 'recent', otherUser: '' };
+    const data: { selectedSamples: string[]; treeType: string; otherUser: string } = { selectedSamples: [], treeType: 'recent', otherUser: '' };
     return {
       searchReplaceTab: grewTemplates.searchQueries[0].type,
       searchQueryTab: grewTemplates.searchQueries[0].type,

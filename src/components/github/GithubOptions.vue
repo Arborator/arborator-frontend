@@ -50,7 +50,8 @@
         </q-item-section>
         <q-item-section>
           <q-item-label> {{ $t('github.removeSync[0]') }} </q-item-label>
-          <q-item-label caption  @click.native.stop> {{ $t('github.removeSync[1]') }} 
+          <q-item-label caption @click.native.stop>
+            {{ $t('github.removeSync[1]') }}
             <a :href="repositoryLink" target="_blank"> {{ repositoryName }}</a>
           </q-item-label>
         </q-item-section>
@@ -112,7 +113,7 @@ export default defineComponent({
     ...mapState(useProjectStore, ['isOwner']),
     repositoryLink() {
       return `https://github.com/${this.repositoryName}`;
-    }
+    },
   },
   mounted() {
     this.getChanges();

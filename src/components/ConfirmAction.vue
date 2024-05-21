@@ -15,22 +15,12 @@
           :label="$t('confirmAction.label')"
           :hint="$t('confirmAction.hint')"
           lazy-rules
-          :rules="[
-            (val) => (val && val.length > 0) || $t('confirmAction.warning[0]'),
-            (val) => val == targetName || $t('confirmAction.warning[1]'),
-          ]"
+          :rules="[(val) => (val && val.length > 0) || $t('confirmAction.warning[0]'), (val) => val == targetName || $t('confirmAction.warning[1]')]"
         />
       </q-card-section>
       <q-card-actions align="around">
         <q-btn v-close-popup flat :label="$t('cancel')"></q-btn>
-        <q-btn
-          v-close-popup
-          :label="$t('confirm')"
-          type="submit"
-          color="primary"
-          @keyup.enter="confirm()"
-          @click="confirm()"
-        />
+        <q-btn v-close-popup :label="$t('confirm')" type="submit" color="primary" @keyup.enter="confirm()" @click="confirm()" />
       </q-card-actions>
     </q-form>
   </q-card>

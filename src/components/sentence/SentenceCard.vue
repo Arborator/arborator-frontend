@@ -32,8 +32,6 @@
             <q-tooltip>{{ $t('sentenceCard.annotationErrors') }}</q-tooltip>
           </q-btn>
 
-          
-
           <q-btn v-if="isValidator" flat round dense icon="verified" :disable="openTabUser === ''" @click="save('validated')">
             <q-tooltip>{{ $t('sentenceCard.validateTree') }}</q-tooltip>
           </q-btn>
@@ -112,7 +110,7 @@
                   <q-item-label>{{ $t('sentenceCard.treeConll') }}</q-item-label>
                 </q-item-section>
               </q-item>
-    
+
               <q-item v-if="!blindAnnotationMode" v-close-popup clickable @click="toggleDiffMode()">
                 <q-item-section avatar>
                   <q-avatar icon="ion-git-network" color="primary" text-color="white" />
@@ -130,12 +128,9 @@
                   <q-avatar icon="content_cut" color="primary" text-color="white" />
                 </q-item-section>
                 <q-item-section>
-                  <q-item-label>
-                    Sentence segmentation
-                  </q-item-label>
+                  <q-item-label> Sentence segmentation </q-item-label>
                 </q-item-section>
               </q-item>
-
 
               <q-item v-close-popup clickable @click="exportSVG()">
                 <q-item-section avatar>
@@ -272,13 +267,13 @@
     </div>
 
     <template>
-      <SentenceSegmentation 
-        v-if="showSentSegmentationDial" 
-        :sentence-bus="sentenceBus" 
+      <SentenceSegmentation
+        v-if="showSentSegmentationDial"
+        :sentence-bus="sentenceBus"
         :reactive-sentences-obj="reactiveSentencesObj"
         :user-id="openTabUser"
         @closed="showSentSegmentationDial = false"
-        />
+      />
       <RelationDialog :sentence-bus="sentenceBus" />
       <UposDialog :sentence-bus="sentenceBus" />
       <XposDialog :sentence-bus="sentenceBus" />

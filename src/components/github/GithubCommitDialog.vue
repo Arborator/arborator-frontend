@@ -40,7 +40,7 @@ export default defineComponent({
   methods: {
     commitChanges() {
       const githubMessage = this.message + ': committed by ArboratorGrew';
-      const data = { commitMessage: githubMessage, };
+      const data = { commitMessage: githubMessage };
       api
         .commitChanges(this.projectName, data)
         .then(() => {

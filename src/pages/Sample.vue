@@ -105,7 +105,7 @@ export default defineComponent({
   watch: {
     reloadTrees(newVal) {
       if (newVal) this.getTrees();
-    }
+    },
   },
   mounted() {
     this.getTrees();
@@ -124,7 +124,7 @@ export default defineComponent({
         this.scrollToIndexFromURL();
         this.focusedSentences = Array(Object.keys(this.filteredTrees).length).fill(false);
         this.reloadTrees = false;
-      }); 
+      });
     },
     scrollToIndexFromURL() {
       if (!this.loading && this.$refs && this.$refs.virtualListRef && this.$route.params.nr !== undefined) {

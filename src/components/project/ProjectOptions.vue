@@ -1,5 +1,5 @@
 <template>
-  <div v-if="selectedSamples.length" class="row rounded-borders	items-center custom-frame1">
+  <div v-if="selectedSamples.length" class="row rounded-borders items-center custom-frame1">
     <q-btn round flat icon="close" @click="unselectSamples()" />
     <div>
       {{ selectedSamples.length }}
@@ -8,7 +8,7 @@
     </div>
     <q-btn v-if="isAdmin" flat icon="delete" @click="triggerConfirmAction(deleteSamples)">
       <q-tooltip>
-       {{ $t('projectOptions.tooltipDeleteSample') }} 
+        {{ $t('projectOptions.tooltipDeleteSample') }}
       </q-tooltip>
     </q-btn>
     <q-btn v-if="canExportTrees" flat icon="download" @click="isShowExportDial = true">
@@ -16,8 +16,8 @@
         {{ $t('projectOptions.tooltipExportSample') }}
       </q-tooltip>
     </q-btn>
-    <q-btn 
-      flat 
+    <q-btn
+      flat
       v-if="isValidator && blindAnnotationMode"
       icon="analytics"
       :disable="(visibility === 0 && isGuest) || selectedSamples.length !== 1"
@@ -43,7 +43,7 @@
     <ExportDialog :samples="selectedSamples" />
   </q-dialog>
   <q-dialog v-model="isShowDeleteUserTreesDial">
-    <DeleteUserTreesDial :selected-samples="selectedSamples"/>
+    <DeleteUserTreesDial :selected-samples="selectedSamples" />
   </q-dialog>
   <q-dialog v-model="confirmActionDial">
     <ConfirmAction :parent-action="confirmActionCallback" :target-name="name" />
@@ -73,10 +73,10 @@ export default defineComponent({
     selectedSamples: {
       type: Object as PropType<sample_t[]>,
       required: true,
-    }, 
+    },
     canDeleteFromGithub: {
       type: Boolean as PropType<boolean>,
-    }
+    },
   },
   data() {
     const confirmActionCallback: CallableFunction = () => {};
@@ -85,24 +85,16 @@ export default defineComponent({
       confirmActionDial: false,
       isShowExportDial: false,
       isShowDeleteUserTreesDial: false,
-    }
+    };
   },
   computed: {
-    ...mapState(useProjectStore, [
-      'name', 
-      'visibility',
-      'blindAnnotationMode',
-      'isAdmin', 
-      'isValidator',
-      'isGuest',
-      'canExportTrees',
-    ]),
+    ...mapState(useProjectStore, ['name', 'visibility', 'blindAnnotationMode', 'isAdmin', 'isValidator', 'isGuest', 'canExportTrees']),
   },
   methods: {
     deleteSamples() {
-      const data = { sampleIds: this.selectedSamples.map((sample) => sample.sample_name)};
+      const data = { sampleIds: this.selectedSamples.map((sample) => sample.sample_name) };
       api
-        .deleteSamples(this.name, data )
+        .deleteSamples(this.name, data)
         .then(() => {
           notifyMessage({ message: 'Delete success' });
           if (this.canDeleteFromGithub) this.deleteSamplesFromGithub();
@@ -158,8 +150,7 @@ export default defineComponent({
     },
     unselectSamples() {
       this.$emit('unselect');
-    }
-  }
+    },
+  },
 });
 </script>
-

@@ -3,7 +3,7 @@
     <q-card-section class="q-gutter-md row">
       <div class="col-8">
         <TreesTypeSelect :grew-option="'relation_table'" :samples="samples" @selected-value="getSelectedValues"></TreesTypeSelect>
-      </div> 
+      </div>
       <div class="col">
         <q-btn no-caps color="primary" :label="$t('relationTable.generateTable')" @click="getRelationTable()" />
       </div>
@@ -41,7 +41,7 @@
           <q-toolbar class="text-center">
             <q-toolbar-title>
               <span class="text-primary text-bold">
-                {{ 'Relation Table for "' + currentEdge + '" containing a total of ' + relationsTotal[currentEdge] + ' occurrences'}}
+                {{ 'Relation Table for "' + currentEdge + '" containing a total of ' + relationsTotal[currentEdge] + ' occurrences' }}
               </span>
             </q-toolbar-title>
           </q-toolbar>
@@ -105,7 +105,7 @@ export default defineComponent({
   data() {
     const resultSearch: grewSearchResult_t = {};
     const relationTree: { label: string; icon: string; children: string[] }[] = [];
-    const data: { selectedSamples: string[], treeType: string, otherUser: string } = { selectedSamples: [], treeType: 'recent', otherUser: '' };
+    const data: { selectedSamples: string[]; treeType: string; otherUser: string } = { selectedSamples: [], treeType: 'recent', otherUser: '' };
     return {
       currentEdge: '',
       visuTreeDial: false,
@@ -224,7 +224,7 @@ export default defineComponent({
       this.onSearch(searchPattern);
     },
     onShowTable(resultSearchDialog: any) {
-     console .log(resultSearchDialog);
+      console.log(resultSearchDialog);
     },
     onSearch(searchPattern: string) {
       const data = { pattern: searchPattern, userType: this.data.treeType, sampleIds: this.data.selectedSamples };

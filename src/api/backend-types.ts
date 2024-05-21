@@ -41,7 +41,7 @@ export interface project_extended_t {
   config: string;
   language: string;
   users: string[];
-  ownerAvatarUrl: string,
+  ownerAvatarUrl: string;
   admins: string[];
   validators: string[];
   annotators: string[];
@@ -207,7 +207,7 @@ export interface ParsingSettings_t {
   keep_feats: 'NONE' | 'EXISTING';
   keep_xpos: 'NONE' | 'EXISTING';
   keep_deprels: 'NONE' | 'EXISTING';
-  keep_lemmas:'NONE' | 'EXISTING';
+  keep_lemmas: 'NONE' | 'EXISTING';
 }
 
 //////////////Github ///////////////////
@@ -224,7 +224,7 @@ export interface githubSynchronizedRepository_t {
 ////////////////GrewHistory //////////////////
 
 export interface grewHistoryRecord_t {
-  uuid: string,
+  uuid: string;
   request: string;
   type: string;
   favorite: boolean;

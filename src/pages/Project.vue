@@ -1,7 +1,7 @@
 <template>
   <q-page id="container" class="custom-frame1">
     <div class="q-pa-md">
-      <q-card flat style="max-width: 100%;">
+      <q-card flat style="max-width: 100%">
         <q-card-section>
           <div class="row q-pa-md justify-between flex flex-center">
             <div class="col-4 justify-center">
@@ -11,21 +11,21 @@
                   <ProjectVisibility :visibility="visibility" :blindAnnotationMode="blindAnnotationMode"></ProjectVisibility>
                 </span>
                 <span v-if="syncGithubRepo">
-                  <q-chip outline color="secondary" size="sm" >Synchronized with {{ syncGithubRepo }}</q-chip>
+                  <q-chip outline color="secondary" size="sm">Synchronized with {{ syncGithubRepo }}</q-chip>
                 </span>
               </div>
               <div class="text-body2">
                 {{ description }}
               </div>
-              <div class="text-caption text-weight-medium" :class="$q.dark.isActive ? 'white' : 'grey-8' ">
-                {{ $t('projectView.createdBy')}}
-                <span style="text-decoration: underline;">{{ admins[0] }}</span>
+              <div class="text-caption text-weight-medium" :class="$q.dark.isActive ? 'white' : 'grey-8'">
+                {{ $t('projectView.createdBy') }}
+                <span style="text-decoration: underline">{{ admins[0] }}</span>
               </div>
             </div>
             <div v-if="!$q.platform.is.mobile" class="col-4" style="display: flex; justify-content: flex-end">
-              <q-img 
-                style="height: 170px; max-width: 300px" 
-                :src="image ? image: '/images/small.niko-photos-tGTVxeOr_Rs-unsplash.jpg'" 
+              <q-img
+                style="height: 170px; max-width: 300px"
+                :src="image ? image : '/images/small.niko-photos-tGTVxeOr_Rs-unsplash.jpg'"
                 class="rounded-borders"
                 alt="project_image"
               />
@@ -42,32 +42,26 @@
           </div>
           <div class="row justify-between q-gutter-md">
             <q-card flat bordered class="col">
-              <q-card-section>
-                88
-              </q-card-section>
+              <q-card-section> 88 </q-card-section>
             </q-card>
             <q-card flat bordered class="col">
-              <q-card-section>
-                88
-              </q-card-section>
+              <q-card-section> 88 </q-card-section>
             </q-card>
             <q-card flat bordered class="col">
-              <q-card-section>
-                88
-              </q-card-section>
+              <q-card-section> 88 </q-card-section>
             </q-card>
           </div>
           <q-separator />
         </q-card-section>
         <q-card-section>
-          <div class="row q-gutter-md" style="justify-content: right;">
+          <div class="row q-gutter-md" style="justify-content: right">
             <q-btn
-              v-if="isAllowdedToSync && !syncGithubRepo" 
-              no-caps 
-              color="primary" 
-              :label="$t('projectView.tooltipSyncGit')" 
-              icon="fab fa-github" 
-              @click="syncGithubDial= true" 
+              v-if="isAllowdedToSync && !syncGithubRepo"
+              no-caps
+              color="primary"
+              :label="$t('projectView.tooltipSyncGit')"
+              icon="fab fa-github"
+              @click="syncGithubDial = true"
             >
             </q-btn>
             <div v-if="isAllowdedToSync && syncGithubRepo">
@@ -78,72 +72,44 @@
                 @pulled="loadProjectData"
                 @remove="loadAfterGithubSync"
               />
-              <q-tooltip content-class="text-white bg-primary">
-                {{ $t('projectView.tooltipSynchronizedProject') }} {{ syncGithubRepo }}
-              </q-tooltip>
+              <q-tooltip content-class="text-white bg-primary"> {{ $t('projectView.tooltipSynchronizedProject') }} {{ syncGithubRepo }} </q-tooltip>
             </div>
-            <q-btn 
-              v-if="isAdmin"
-              no-caps 
-              outline 
-              color="primary" 
-              :label="$t('projectView.settings')" 
-              icon="tune"  
-              @click="projectSettingsDial = true" 
-            >
+            <q-btn v-if="isAdmin" no-caps outline color="primary" :label="$t('projectView.settings')" icon="tune" @click="projectSettingsDial = true">
               <q-tooltip>
                 {{ $t('projectView.tooltipSettings') }}
               </q-tooltip>
             </q-btn>
-            <q-btn 
-              v-if="isAdmin"
-              no-caps 
-              unelevated 
-              color="primary" 
-              :label="$t('projectView.newSample')"
-              icon="add"  
-              @click="uploadDial = true" 
-            >
+            <q-btn v-if="isAdmin" no-caps unelevated color="primary" :label="$t('projectView.newSample')" icon="add" @click="uploadDial = true">
               <q-tooltip>
                 {{ $t('projectView.tooltipAddSample') }}
               </q-tooltip>
             </q-btn>
           </div>
-          <q-tabs
-            v-model="tab"
-            no-caps
-            inline-label
-            align="left"
-            class="primary"
-          >
+          <q-tabs v-model="tab" no-caps inline-label align="left" class="primary">
             <q-tab name="samples" :label="$t('projectView.projectTabs[0]')" />
             <q-tab name="grew" :label="$t('projectView.projectTabs[1]')" />
             <q-tab name="relation_table" :label="$t('projectView.projectTabs[2]')" />
             <q-tab name="lexicon" :label="$t('projectView.projectTabs[3]')" />
             <q-tab v-if="isAdmin" name="parser" :label="$t('projectView.projectTabs[4]')" />
-            <q-tab name="constructicon" :label="$t('projectView.projectTabs[5]')" /> 
+            <q-tab name="constructicon" :label="$t('projectView.projectTabs[5]')" />
           </q-tabs>
           <q-tab-panels keep-alive v-model="tab">
             <q-tab-panel class="q-pa-none" name="samples">
-              <ProjectOptions 
+              <ProjectOptions
                 :selected-samples="selectedSamples"
-                :canDeleteFromGithub="isAllowdedToSync && syncGithubRepo !== ''" 
+                :canDeleteFromGithub="isAllowdedToSync && syncGithubRepo !== ''"
                 @unselect="unselectSamples = true"
                 @reload="loadProjectData"
               ></ProjectOptions>
-              <ProjectTable 
-                :key="reload" 
-                :samples="samples" 
-                :parent-unselect-samples="unselectSamples" 
+              <ProjectTable
+                :key="reload"
+                :samples="samples"
+                :parent-unselect-samples="unselectSamples"
                 @selected-samples="getSelectedSamples"
               ></ProjectTable>
             </q-tab-panel>
             <q-tab-panel class="q-pa-none" name="grew">
-              <GrewSearch
-                :search-scope="name"
-                :samples="samples"
-                @reload="loadProjectData"
-              />
+              <GrewSearch :search-scope="name" :samples="samples" @reload="loadProjectData" />
             </q-tab-panel>
             <q-tab-panel class="q-pa-none" name="parser">
               <ParsingPanel :samples="samples" :parentGetProjectSamples="getProjectSamples"></ParsingPanel>
@@ -228,7 +194,7 @@ export default defineComponent({
       unselectSamples: false,
       syncGithubRepo: '',
       reload: 0,
-      tab: 'samples'
+      tab: 'samples',
     };
   },
   computed: {
@@ -248,7 +214,7 @@ export default defineComponent({
     ...mapWritableState(useGrewSearchStore, ['grewDialog']),
     projectName(): string {
       return this.$route.params.projectname as string;
-    }
+    },
   },
   mounted() {
     document.title = `ArboratorGrew: ${this.projectName}`;
@@ -261,10 +227,10 @@ export default defineComponent({
     },
     grewDialog(newVal) {
       if (newVal) {
-        this.tab = 'grew'
+        this.tab = 'grew';
         this.grewDialog = false;
       }
-    }
+    },
   },
   methods: {
     loadProjectData() {
@@ -279,7 +245,7 @@ export default defineComponent({
     getProjectSamples() {
       api.getProjectSamples(this.projectName).then((response) => {
         this.samples = response.data;
-        this.sampleNames = this.samples.map((sample) => sample.sample_name); 
+        this.sampleNames = this.samples.map((sample) => sample.sample_name);
       });
     },
     getSelectedSamples(value: any) {
@@ -299,5 +265,3 @@ export default defineComponent({
   },
 });
 </script>
-
-

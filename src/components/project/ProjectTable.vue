@@ -4,7 +4,7 @@
     flat
     :key="tableKey"
     v-model:selected="table.selected"
-    :class="($q.dark.isActive ? 'my-sticky-header-table-dark' : 'my-sticky-header-table') + ' rounded-borders'"    
+    :class="($q.dark.isActive ? 'my-sticky-header-table-dark' : 'my-sticky-header-table') + ' rounded-borders'"
     :rows="samples"
     :columns="table.fields"
     :loading="table.loading"
@@ -47,7 +47,7 @@
             class="full-width"
             :to="'/projects/' + name + '/' + props.row.sample_name"
             no-caps
-            >
+          >
             {{ props.row.sample_name }}
           </q-btn>
         </q-td>
@@ -80,7 +80,7 @@
       </q-tr>
     </template>
   </q-table>
-  </template>
+</template>
 <script lang="ts">
 import api from '../../api/backend-api';
 import { mapState } from 'pinia';
@@ -174,20 +174,14 @@ export default defineComponent({
           value: 4,
         },
       ],
-    }
+    };
   },
   computed: {
-    ...mapState(useProjectStore, [
-      'name',
-      'isAdmin',
-      'freezed', 
-      'isOwner', 
-      'blindAnnotationMode'
-    ]),
+    ...mapState(useProjectStore, ['name', 'isAdmin', 'freezed', 'isOwner', 'blindAnnotationMode']),
   },
   watch: {
     parentUnselectSamples(newVal) {
-      if(newVal) {
+      if (newVal) {
         this.table.selected = [];
         this.getSelectedSamples();
       }
@@ -196,7 +190,7 @@ export default defineComponent({
       if (newVal !== oldVal) {
         this.getSelectedSamples();
       }
-    }
+    },
   },
   methods: {
     getSelectedSamples() {
@@ -219,7 +213,7 @@ export default defineComponent({
           });
       }, 0);
     },
-  }
+  },
 });
 </script>
 <style scoped lang="stylus">

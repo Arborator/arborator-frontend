@@ -11,11 +11,7 @@
 
     <q-card-section class="q-pa-sm row q-gutter-md">
       <q-banner rounded class="col-md-4 offset-md-4 col-xs-12 col-sm-12">
-        <q-img 
-          :ratio="16 / 9" 
-          :src="image ? image : imageTree" 
-          basic
-        >
+        <q-img :ratio="16 / 9" :src="image ? image : imageTree" basic>
           <div class="absolute-bottom text-h6">
             <ProjectVisibility :visibility="visibilityLocal" :blind-annotation-mode="blindAnnotationModeLocal" />
             {{ projectName }}
@@ -23,18 +19,11 @@
         </q-img>
       </q-banner>
     </q-card-section>
-    
+
     <q-card-section class="q-pa-sm row items-start q-gutter-md">
       <q-card bordered flat class="col col-sm-12">
         <q-card-section class="q-gutter-md">
-          <q-file
-            outlined
-            v-model="uploadImage.image"
-            label="Change Image"
-            use-chips
-            clearable
-            :loading="uploadImage.submitting"
-          >
+          <q-file outlined v-model="uploadImage.image" label="Change Image" use-chips clearable :loading="uploadImage.submitting">
             <template v-slot:append>
               <q-btn
                 flat
@@ -54,13 +43,13 @@
           </q-input>
           <q-input v-model="projectDescription" label="Description" outlined type="textarea">
             <template #append>
-              <q-btn color="primary" icon="save" dense flat @click="saveDescription"/>
+              <q-btn color="primary" icon="save" dense flat @click="saveDescription" />
             </template>
           </q-input>
         </q-card-section>
       </q-card>
     </q-card-section>
-    
+
     <q-card-section class="q-pa-sm row items-start q-gutter-md">
       <q-card bordered flat class="col col-sm-12">
         <q-list>
@@ -105,7 +94,7 @@
           <q-item>
             <q-item-section v-if="isOwner">
               <q-item-label>Freeze Project</q-item-label>
-              <q-item-label caption>Only admins can freeze projects if{{ $t('projectSettings.toggleDiffModeCaption') }}  </q-item-label>
+              <q-item-label caption>Only admins can freeze projects if{{ $t('projectSettings.toggleDiffModeCaption') }} </q-item-label>
             </q-item-section>
             <q-item-section avatar>
               <q-toggle v-model="freezed" color="primary" checked-icon="check" unchecked-icon="clear" />
@@ -386,7 +375,7 @@ export default defineComponent({
     projectTressFrom() {
       const treesFrom = this.samples.map((sample) => sample.treesFrom).reduce((a: string[], b: string[]) => [...a, ...b], []);
       return [...new Set(treesFrom)];
-    }
+    },
   },
   mounted() {
     this.annotationFeaturesJson = this.getAnnotationSetting;
@@ -436,7 +425,7 @@ export default defineComponent({
     },
 
     async renameProject() {
-      await this.updateProjectSettings(this.projectName, {projectName: this.newProjectName});
+      await this.updateProjectSettings(this.projectName, { projectName: this.newProjectName });
       this.$router.push({
         name: 'project',
         params: {
@@ -461,8 +450,6 @@ export default defineComponent({
         notifyError({ error: 'No image was selected' });
       }
     },
-
-    
 
     getSelectedLanguage(value: any) {
       this.selectedLanguage = value;

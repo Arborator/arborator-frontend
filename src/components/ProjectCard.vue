@@ -14,12 +14,12 @@
       @click="goTo()"
     >
     </q-img>
-    <q-separator/>
+    <q-separator />
     <q-card-section>
       <div class="row text-h6">
         <div class="col">
           {{ project.projectName }}
-        </div> 
+        </div>
         <div v-if="isProjectAdmin">
           <q-btn flat round icon="more_vert">
             <q-menu>
@@ -42,15 +42,11 @@
         </div>
       </div>
       <q-card-actions vertical class="clickable" @click="goTo()">
-        <div class="text-caption text-grey-9 text-weight-medium" style="text-decoration: underline;">
+        <div class="text-caption text-grey-9 text-weight-medium" style="text-decoration: underline">
           {{ project.admins[0] }}
         </div>
-        <div class="text-caption">
-          {{ $t('projectHub.lastAccess') }} {{ timeAgo(project.lastAccess) }}
-        </div>
-        <div class="text-caption">
-          {{ $t('projectHub.lastWriteAccess') }} {{ timeAgo(project.lastWriteAccess) }}
-        </div>
+        <div class="text-caption">{{ $t('projectHub.lastAccess') }} {{ timeAgo(project.lastAccess) }}</div>
+        <div class="text-caption">{{ $t('projectHub.lastWriteAccess') }} {{ timeAgo(project.lastWriteAccess) }}</div>
       </q-card-actions>
     </q-card-section>
     <q-separator />
@@ -61,7 +57,7 @@
         </div>
         <div class="col-">
           <q-avatar color="primary" size="1.2rem" text-color="white">
-            <img :src="project.ownerAvatarUrl " alt="owner" />
+            <img :src="project.ownerAvatarUrl" alt="owner" />
           </q-avatar>
         </div>
       </div>
@@ -70,7 +66,7 @@
       <RenameProjectDialog :project-name="project.projectName" />
     </q-dialog>
     <q-dialog v-model="confirmActionDial">
-      <ConfirmAction :parent-action="confirmActionCallback"  :target-name="project.projectName"></ConfirmAction>
+      <ConfirmAction :parent-action="confirmActionCallback" :target-name="project.projectName"></ConfirmAction>
     </q-dialog>
   </q-card>
 </template>
@@ -78,7 +74,6 @@
 <script lang="ts">
 import ConfirmAction from '../components/ConfirmAction.vue';
 import RenameProjectDialog from './RenameProjectDialog.vue';
-
 
 import { mapState } from 'pinia';
 import { useUserStore } from 'src/pinia/modules/user';

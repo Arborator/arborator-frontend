@@ -1,13 +1,13 @@
 <template>
   <q-card bordered flat>
     <q-card-section class="row q-gutter-md" style="justify-content: right">
-      <q-btn 
-        v-if="canSaveTreeInProject" 
-        no-caps 
-        dense 
+      <q-btn
+        v-if="canSaveTreeInProject"
+        no-caps
+        dense
         color="primary"
-        icon="file_upload" 
-        :label="$t('constructicon.uploadBtn')" 
+        icon="file_upload"
+        :label="$t('constructicon.uploadBtn')"
         @click="uploadConstructiconDialog = true"
       >
         <q-tooltip>{{ $t('constructicon.uploadTooltip') }}</q-tooltip>
@@ -15,7 +15,7 @@
       <q-dialog v-model="uploadConstructiconDialog">
         <q-uploader :url="backendApi.generateURLforConstructiconUpload(name)" label="Choose a File" @uploaded="loadConstructiconEntries" />
       </q-dialog>
-      <q-btn no-caps outline color="primary" :label="$t('constructicon.downloadBtn')"  dense icon="file_download" @click="downloadConstructicon">
+      <q-btn no-caps outline color="primary" :label="$t('constructicon.downloadBtn')" dense icon="file_download" @click="downloadConstructicon">
         <q-tooltip>{{ $t('constructicon.downloadTooltip') }}</q-tooltip>
       </q-btn>
     </q-card-section>
@@ -114,7 +114,6 @@ import { ConstructiconEntry_t } from 'src/api/backend-types';
 
 import { v4 as uuidv4 } from 'uuid';
 import { defineComponent } from 'vue';
-
 
 interface data_t {
   splitterModel: number;

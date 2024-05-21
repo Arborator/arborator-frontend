@@ -160,7 +160,7 @@ export const useProjectStore = defineStore('project', {
             resolve(response);
           })
           .catch((error) => {
-            notifyError({ error: error, });
+            notifyError({ error: error });
             reject(error);
           });
       });

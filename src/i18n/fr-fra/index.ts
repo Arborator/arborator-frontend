@@ -163,7 +163,7 @@ export default {
     projectOverview: 'Aperçu du projet',
     tooltipSyncGit: 'Synchroniser avec Github',
     tooltipSynchronizedProject: 'Ce projet est synchronisé avec',
-    projectTabs: ['Echantillon', 'Grew', 'Table de relation', 'Lexique', 'Parseur', 'Constructicon']
+    projectTabs: ['Echantillon', 'Grew', 'Table de relation', 'Lexique', 'Parseur', 'Constructicon'],
   },
 
   // Component project table that contains samples informations
@@ -217,7 +217,7 @@ export default {
     recentTree: 'Les arbres récents',
     userTree: 'Mes arbres',
     validatedTree: 'Les arbres validés',
-    pendingTree: "Les arbres en attente, (les arbres des phrases qui ne sont pas encore validés)",
+    pendingTree: 'Les arbres en attente, (les arbres des phrases qui ne sont pas encore validés)',
     allTree: 'Tous les arbres',
     baseTree: 'Les arbres de base',
     otherTree: "Les arbres d'un utilisateur spécifique",
@@ -240,7 +240,7 @@ export default {
     selectEdge: 'Sélectionner une relation',
     filterRelations: 'Filtrer les relations de dépendence',
   },
-  
+
   // window which displays project settings
   projectSettings: {
     title: 'Paramètres',
@@ -292,7 +292,7 @@ export default {
     noGithubRepos: "Vous devez d'abord créer votre premier dépôt Github",
     selectBranch: 'Séléctionner une branche à cloner',
     arboratorgrewBranch: "Créer une nouvelle branche et l'utiliser pour les commits de ArboratorGrew.",
-    newBranchName: "Nom de la branche à utiliser",
+    newBranchName: 'Nom de la branche à utiliser',
     defaultBranch: ' Utiliser la branche sélectionnée (Attention si vous travaillez avec un dépôt qui a de nombreux collaborateurs).',
     synchronize: 'Synchroniser',
     syncBtnTooltip: "Vous devez d'abord définir le nom de la branche",
@@ -464,7 +464,7 @@ export default {
       'Obtenir le lexique des arbres validés',
     ],
     lexiconTitle: 'Sélectionnez une ou plusieurs features pour le lexique',
-    similarFeatures: 'Features similaires', 
+    similarFeatures: 'Features similaires',
     ambiguousFeatures: 'Features ambiguës',
     selectTreeType: 'Sélectionnez le type des arbres',
     tooltipExportLexicon: ['Exporter en tsv', 'Exporter en json'],

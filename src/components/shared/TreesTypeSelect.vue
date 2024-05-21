@@ -15,7 +15,15 @@
       </q-select>
     </div>
     <div class="col">
-      <q-select dense outlined v-model="treeType" :options="treeOptions" :label="$t('grewSearch.treesType')" color="primary" @update:model-value="emitSelectedValues">
+      <q-select
+        dense
+        outlined
+        v-model="treeType"
+        :options="treeOptions"
+        :label="$t('grewSearch.treesType')"
+        color="primary"
+        @update:model-value="emitSelectedValues"
+      >
         <template v-slot:selected-item="scope">
           <q-chip v-if="scope.opt.value == 'user' || scope.opt.value == 'user_recent'" dense square color="white" text-color="primary" size="md">
             <q-avatar>
@@ -40,18 +48,18 @@
             </q-item-section>
           </q-item>
         </template>
-      </q-select>  
+      </q-select>
     </div>
     <div class="col">
-      <q-select 
-        v-if="treeType.value === 'others'" 
-        v-model="otherUser" 
-        outlined 
-        dense 
-        :options="treesFrom" 
+      <q-select
+        v-if="treeType.value === 'others'"
+        v-model="otherUser"
+        outlined
+        dense
+        :options="treesFrom"
         :label="$t('grewSearch.selectUser')"
         @update:model-value="emitSelectedValues"
-        >
+      >
       </q-select>
     </div>
   </div>
@@ -74,7 +82,7 @@ export default defineComponent({
     samples: {
       type: Object as PropType<sample_t[]>,
       required: true,
-    }
+    },
   },
   data() {
     const treeTypes = [
@@ -93,7 +101,7 @@ export default defineComponent({
       treeType,
       otherUser: '',
       treeTypes,
-    }
+    };
   },
   computed: {
     ...mapState(useUserStore, ['avatar']),
@@ -108,7 +116,7 @@ export default defineComponent({
     treesFrom() {
       const samples = this.selectedSamples.length ? this.selectedSamples : this.samples;
       return [...new Set(samples.map((sample) => sample.treesFrom).reduce((a: string[], b: string[]) => [...a, ...b], []))];
-    }
+    },
   },
   watch: {
     grewOption(newVal) {
@@ -122,13 +130,13 @@ export default defineComponent({
   },
   methods: {
     emitSelectedValues() {
-      const data = { 
+      const data = {
         selectedSamples: this.selectedSamples.map((sample) => sample.sample_name),
         treeType: this.treeType.value,
         otherUser: this.otherUser,
       };
       this.$emit('selected-value', data);
-    }
-  }
+    },
+  },
 });
 </script>

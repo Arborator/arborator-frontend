@@ -72,7 +72,7 @@
     <div :class="$q.dark.isActive ? 'text-white' : 'text-blue-grey-10'" class="q-pa-sm">
       <q-radio dense size="md" v-model="branchSyn" val="default" /> {{ $t('github.defaultBranch') }}
     </div>
-    <div :class="$q.dark.isActive ? 'text-white' : 'text-blue-grey-10'" class=" row q-pa-sm">
+    <div :class="$q.dark.isActive ? 'text-white' : 'text-blue-grey-10'" class="row q-pa-sm">
       <div class="col">
         <q-radio dense size="md" v-model="branchSyn" val="new" />
         {{ $t('github.arboratorgrewBranch') }}
@@ -82,10 +82,10 @@
       </div>
     </div>
     <div class="row q-gutter-md justify-center">
-      <q-btn 
-        :loading="loading" 
-        :disable="disableSyncBtn" 
-        color="primary" 
+      <q-btn
+        :loading="loading"
+        :disable="disableSyncBtn"
+        color="primary"
         @click="synchronizeWithGitRepo(selectedRepository, branch, branchSyn)"
         :label="$t('github.synchronize')"
       >
@@ -93,7 +93,7 @@
           <q-spinner color="grey-11" size="xs" />
         </template>
         <q-tooltip v-if="disableSyncBtn">
-          {{  $t('github.syncBtnTooltip') }}
+          {{ $t('github.syncBtnTooltip') }}
         </q-tooltip>
       </q-btn>
     </div>
@@ -150,7 +150,7 @@ export default defineComponent({
     },
     disableSyncBtn() {
       return this.branchSyn === 'new' && this.branchToUse === '';
-    }, 
+    },
   },
   mounted() {
     this.getGithubRepositories();
@@ -164,7 +164,7 @@ export default defineComponent({
           if (this.repositories.length == 0) this.noRepositories = true;
         })
         .catch(() => {
-          notifyError({ error: 'Error while getting Github repositories'});
+          notifyError({ error: 'Error while getting Github repositories' });
         });
     },
     getRepositoriesPerOwner(owner: string) {
@@ -177,12 +177,12 @@ export default defineComponent({
       });
     },
     getRepoBranches(repoName: string) {
-      this.selectedRepository = repoName; 
+      this.selectedRepository = repoName;
       api
         .getGithubRepoBranches(this.selectedRepository)
         .then((response) => {
           this.listBranches = response.data;
-          this.branchToUse = this.listBranches.includes('arboratorgrew') ? '' : 'arboratorgrew'
+          this.branchToUse = this.listBranches.includes('arboratorgrew') ? '' : 'arboratorgrew';
           this.branch = this.listBranches[0];
         })
         .catch((error) => {

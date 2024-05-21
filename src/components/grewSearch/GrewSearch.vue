@@ -1,12 +1,7 @@
 <template>
   <GrewRequestCard :parentOnSearch="onSearch" :parentOnTryRules="onTryRules" :samples="samples"></GrewRequestCard>
   <q-dialog v-model="resultSearchDialog" maximized transition-show="fade" transition-hide="fade">
-    <ResultView
-      :searchResults="resultSearch"
-      :query-type="queryType"
-      :query="query"
-      :userType="userType"
-    ></ResultView>
+    <ResultView :searchResults="resultSearch" :query-type="queryType" :query="query" :userType="userType"></ResultView>
   </q-dialog>
 </template>
 
@@ -38,7 +33,7 @@ export default defineComponent({
     samples: {
       type: Object as PropType<sample_t[]>,
       required: true,
-    }
+    },
   },
   data() {
     const result: {
@@ -107,4 +102,3 @@ export default defineComponent({
   },
 });
 </script>
-

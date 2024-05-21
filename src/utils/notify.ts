@@ -42,7 +42,7 @@ export function notifyError(ArboratorGrewError: ArboratorGrewError_t) {
       message: ArboratorGrewError.error,
       type: 'negative',
       icon: 'warning',
-      position: 'top', 
+      position: 'top',
       closeBtn: 'X',
       timeout,
     });

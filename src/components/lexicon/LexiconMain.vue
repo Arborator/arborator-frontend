@@ -42,12 +42,19 @@
         </div>
         <div>
           <q-tooltip content-class="bg-white text-primary">{{ $t('lexicon.selectTreeType') }}</q-tooltip>
-          <q-btn-dropdown :disable="!principalFeatures.length || !selectedSamples.length" class="float-right" size="md" outline color="primary" label=" get Lexicon">
+          <q-btn-dropdown
+            :disable="!principalFeatures.length || !selectedSamples.length"
+            class="float-right"
+            size="md"
+            outline
+            color="primary"
+            label=" get Lexicon"
+          >
             <q-list>
               <q-item v-if="canSaveTreeInProject" v-close-popup clickable @click="fetchLexicon_('user')">
                 <q-item-section avatar>
                   <q-avatar v-if="isLoggedIn" size="1.2rem">
-                    <img :src="avatar"  alt="avatar">
+                    <img :src="avatar" alt="avatar" />
                   </q-avatar>
                   <q-icon v-else name="account_circle" />
                 </q-item-section>
@@ -59,7 +66,7 @@
               <q-item v-close-popup v-if="canSeeOtherUsersTrees && canSaveTreeInProject" clickable @click="fetchLexicon_('user_recent')">
                 <q-item-section avatar>
                   <q-avatar v-if="isLoggedIn" size="1.2rem">
-                    <img :src="avatar" alt="avatar"/>
+                    <img :src="avatar" alt="avatar" />
                     <q-badge floating transparent color="principal">+</q-badge>
                   </q-avatar>
                   <q-icon v-else name="account_circle" />
@@ -195,7 +202,7 @@ export default defineComponent({
       this.isShowLexiconTable = true;
     },
     displayMessage() {
-      let message =  'We search all lexicon entries that have the same ';
+      let message = 'We search all lexicon entries that have the same ';
       this.principalFeatures.forEach((element) => {
         message += `"${element}", `;
       });

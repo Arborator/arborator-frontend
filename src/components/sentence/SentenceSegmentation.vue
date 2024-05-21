@@ -11,16 +11,16 @@
           {{ $t('sentenceSegmentation.title') }}
         </div>
         <div class="col">
-          <q-select 
-            dense 
-            outlined 
-            v-model="option" 
+          <q-select
+            dense
+            outlined
+            v-model="option"
             :label="$t('sentenceSegmentation.selectOptionLabel')"
             option-label="label"
             option-value="value"
             :options="segmentOptions"
             @update:model-value="showResults = false"
-            >
+          >
           </q-select>
         </div>
       </q-card-section>
@@ -169,7 +169,7 @@
               outlined
               v-model="mergedSentId"
               :label="$t('sentenceSegmentation.selectMergeLabel')"
-              :options="sortedSentIds.filter(sent => sent !== sentId)"
+              :options="sortedSentIds.filter((sent) => sent !== sentId)"
               @update:model-value="MergeSentences()"
             >
             </q-select>
@@ -218,14 +218,14 @@
             />
           </div>
           <div>
-            <q-btn 
-              :disable="sortedSentIds.includes(mergedReactiveSentence[userId].state.metaJson.sent_id as string)" 
-              outline 
-              color="primary" 
-              icon="save" 
-              :label="$t('sentenceSegmentation.saveResults')" 
+            <q-btn
+              :disable="sortedSentIds.includes(mergedReactiveSentence[userId].state.metaJson.sent_id as string)"
+              outline
+              color="primary"
+              icon="save"
+              :label="$t('sentenceSegmentation.saveResults')"
               @click="saveMergeResults()"
-              />
+            />
           </div>
         </div>
       </q-card-section>
@@ -272,7 +272,7 @@ export default defineComponent({
     const segmentOptions = [
       { value: 'split', label: this.$t('sentenceSegmentation.segmentOptions[0]') },
       { value: 'merge', label: this.$t('sentenceSegmentation.segmentOptions[1]') },
-    ]
+    ];
     const hasPendingChanges: { [key: string]: boolean } = {};
     const firstSentences: sentence_t = {};
     const secondSentences: sentence_t = {};
@@ -430,8 +430,7 @@ export default defineComponent({
           const firstSentenceConll = reactiveSentence.exportConll();
           const secondSentenceConll = secondSentenceConlls[userId];
           this.mergedSentences[userId] = this.mergeConlls(firstSentenceConll, secondSentenceConll);
-        }
-        else {
+        } else {
           usersDiff.push(userId);
           this.mergedSentences[userId] = reactiveSentence.state;
         }
@@ -466,8 +465,11 @@ export default defineComponent({
         ...firstSentenceJson.metaJson,
         ...secondSentenceJson.metaJson,
         text: firstSentenceJson.metaJson.text + ' ' + secondSentenceJson.metaJson.text,
-        timestamp: firstSentenceJson.metaJson.timestamp > secondSentenceJson.metaJson.timestamp ? firstSentenceJson.metaJson.timestamp: secondSentenceJson.metaJson.timestamp,
-        sent_id: this.proposeMergedSentId(firstSentenceJson.metaJson.sent_id as  string, secondSentenceJson.metaJson.sent_id as string),
+        timestamp:
+          firstSentenceJson.metaJson.timestamp > secondSentenceJson.metaJson.timestamp
+            ? firstSentenceJson.metaJson.timestamp
+            : secondSentenceJson.metaJson.timestamp,
+        sent_id: this.proposeMergedSentId(firstSentenceJson.metaJson.sent_id as string, secondSentenceJson.metaJson.sent_id as string),
       };
       return mergedSentence;
     },
@@ -478,8 +480,7 @@ export default defineComponent({
       const secondSentSuffix = secondSentIdParts.pop();
       if (JSON.stringify(firstSentIdParts) === JSON.stringify(secondSentIdParts)) {
         return firstSentId + '_' + secondSentSuffix;
-      }
-      else {
+      } else {
         return firstSentId + '_' + secondSentId;
       }
     },

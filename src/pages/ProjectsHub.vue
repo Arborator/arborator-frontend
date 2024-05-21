@@ -7,12 +7,12 @@
           <q-toolbar-title :class="($q.dark.isActive ? '' : 'text-primary') + ' text-bold'">
             {{ $t('projectHub.title') }}
           </q-toolbar-title>
-          <q-btn 
-            no-caps 
-            :disable="!isLoggedIn" 
-            color="primary" 
-            :label="$t('projectHub.newProject')" 
-            icon="add" 
+          <q-btn
+            no-caps
+            :disable="!isLoggedIn"
+            color="primary"
+            :label="$t('projectHub.newProject')"
+            icon="add"
             size="md"
             @click="creaProjectDial = true"
           >
@@ -23,18 +23,11 @@
               {{ $t('projectHub.tooltipCreaProject[1]') }}
             </q-tooltip>
           </q-btn>
-          <q-btn v-if="isLoggedIn" no-caps  :label="$t('projectHub.myProjects')" />
+          <q-btn v-if="isLoggedIn" no-caps :label="$t('projectHub.myProjects')" />
         </q-toolbar>
       </q-card-section>
       <q-card-section>
-        <q-input
-          outlined
-          v-model="search"
-          bottom-slots
-          :label="$t('projectHub.emptySearch')"
-          type="text"
-          @update:model-value="searchProject(search)"
-        >
+        <q-input outlined v-model="search" bottom-slots :label="$t('projectHub.emptySearch')" type="text" @update:model-value="searchProject(search)">
           <template #append>
             <div v-for="val in selectedLanguagesForFilter">
               <q-chip removable size="sm" @remove="removeFilter(val)">{{ val }}</q-chip>
@@ -50,7 +43,7 @@
             </q-btn>
           </template>
         </q-input>
-        <div class="row q-gutter-md" style="justify-content: right;">
+        <div class="row q-gutter-md" style="justify-content: right">
           <q-select
             v-if="isLoggedIn"
             v-model="projectType"
@@ -61,12 +54,12 @@
             class="float-right"
             :label="$t('projectHub.projectCategory')"
           />
-          <q-btn :color="listMode ? 'primary':''" round flat icon="fas fa-list" @click="toggleProjectView()">
+          <q-btn :color="listMode ? 'primary' : ''" round flat icon="fas fa-list" @click="toggleProjectView()">
             <q-tooltip>
               {{ $t('projectHub.tooltipListView') }}
             </q-tooltip>
           </q-btn>
-          <q-btn :color="!listMode ? 'primary':''" round flat icon="grid_view" @click="toggleProjectView()"> 
+          <q-btn :color="!listMode ? 'primary' : ''" round flat icon="grid_view" @click="toggleProjectView()">
             <q-tooltip>
               {{ $t('projectHub.tooltipGridView') }}
             </q-tooltip>
@@ -98,12 +91,7 @@
           :virtual-scroll-item-size="200"
         >
           <template #default="{ item }">
-            <ProjectCard
-              :key="item.id"
-              style="max-width: 80vw"
-              :project="item"
-              :parent-delete-project="deleteProject"
-            ></ProjectCard>
+            <ProjectCard :key="item.id" style="max-width: 80vw" :project="item" :parent-delete-project="deleteProject"></ProjectCard>
           </template>
         </q-virtual-scroll>
         <div v-if="!$q.platform.is.mobile" class="q-pa-md row items-start q-gutter-md">
@@ -126,12 +114,7 @@
             :virtual-scroll-item-size="200"
           >
             <template #default="{ item }">
-              <ProjectItem
-                v-if="isLoggedIn || !isOld(item)"
-                :key="item.id"
-                :project="item"
-                :parent-delete-project="deleteProject"
-              ></ProjectItem>
+              <ProjectItem v-if="isLoggedIn || !isOld(item)" :key="item.id" :project="item" :parent-delete-project="deleteProject"></ProjectItem>
             </template>
           </q-virtual-scroll>
         </q-list>
@@ -252,7 +235,7 @@ export default defineComponent({
         this.searchProject(this.search);
       },
       deep: true,
-    }
+    },
   },
   mounted() {
     document.title = `ArboratorGrew: ${this.$t('projectHub.title')}`;
@@ -263,7 +246,7 @@ export default defineComponent({
   methods: {
     toggleProjectView() {
       this.listMode = !this.listMode;
-      LocalStorage.set('project_view', this.listMode)
+      LocalStorage.set('project_view', this.listMode);
     },
     isCreatedByMe(project: project_extended_t) {
       return project.admins[0] === this.username;
@@ -274,7 +257,7 @@ export default defineComponent({
     },
     haveTreeInProject(project: project_extended_t) {
       return project.users.includes(this.username);
-    }, 
+    },
     isOld(project: project_extended_t) {
       // either not used since more than a year or empty and older than an hour or the project has no admins
       return project.lastAccess < this.ayear || (project.numberSamples < 1 && project.lastAccess < -3600) || project.admins.length === 0;

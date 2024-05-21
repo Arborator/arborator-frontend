@@ -3,9 +3,7 @@
     <q-bar class="bg-primary text-white sticky-bar">
       <q-icon name="img:/svg/grew.svg" size="7rem" />
       <q-space />
-      <div class="text-weight-bold">
-        {{ sentenceCount }} <span v-if="sentenceCount === 1">result</span><span v-else>results</span>
-      </div>
+      <div class="text-weight-bold">{{ sentenceCount }} <span v-if="sentenceCount === 1">result</span><span v-else>results</span></div>
       <q-space />
       <q-btn v-close-popup flat dense icon="close" />
     </q-bar>
@@ -290,11 +288,10 @@ export default defineComponent({
       const historyRecord = {
         type: 'rewrite',
         request: this.query,
-        modifiedSentences: this.toSaveCounter
+        modifiedSentences: this.toSaveCounter,
       };
       this.saveHistory(historyRecord);
-    }
-  
+    },
   },
 });
 </script>

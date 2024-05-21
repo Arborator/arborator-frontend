@@ -64,7 +64,6 @@ export type getProjectUsersAccess_RV = project_access_t;
 
 export type updateManyProjectUserAccess_RV = project_access_t;
 
-
 //// SAMPLES
 export type getProjectSamples_RV = sample_t[];
 
@@ -101,8 +100,8 @@ interface parserList_RV_success {
   status: 'success';
   data: {
     model_info: ModelInfo_t;
-    language: string,
-    admins: string[],
+    language: string;
+    admins: string[];
     scores_best: ScoresBest_t;
     scores_history: ScoresHistory_t;
   }[];
@@ -145,7 +144,6 @@ export type parserParseStatus_RV = parser_generic_RV_failure | parserParseStatus
 export type getGithubRepositories_RV = githubRepository_t[];
 
 export type getGithubSynchronizedRepository_RV = githubSynchronizedRepository_t;
-
 
 ///////////// GrewHistory ////////////////////
 export type getGrewHistory_RV = grewHistoryRecord_t[];

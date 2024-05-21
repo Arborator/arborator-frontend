@@ -167,11 +167,12 @@ export default defineComponent({
       });
     },
     checkSeveralRoots() {
-      const rootsNumber = Object.values(this.sentenceBus.sentenceSVGs[this.userId].treeJson.nodesJson)
-        .filter((token) => token.DEPREL === 'root').length;
+      const rootsNumber = Object.values(this.sentenceBus.sentenceSVGs[this.userId].treeJson.nodesJson).filter(
+        (token) => token.DEPREL === 'root'
+      ).length;
       if (rootsNumber > 1) {
         notifyMessage({
-          message: "This sentence has several roots it should be splitted into two sentences !",
+          message: 'This sentence has several roots it should be splitted into two sentences !',
           type: 'warning',
           icon: 'warning',
         });

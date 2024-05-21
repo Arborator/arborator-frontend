@@ -36,12 +36,14 @@
             </q-tooltip>
           </q-btn>
         </div>
-        <q-scroll-area style="height: 80vh;">
-          <q-list v-for="(record) in filteredHistory" bordered separator class="custom-frame2">
+        <q-scroll-area style="height: 80vh">
+          <q-list v-for="record in filteredHistory" bordered separator class="custom-frame2">
             <q-item>
               <q-item-section top avatar>
                 <q-item-label caption> {{ formatDate(record.date) }}</q-item-label>
-                <q-item-label v-if="record.type === 'rewrite'" caption> {{ record.modified_sentences }} {{ $t('grewHistory.modifiedSentences')}} </q-item-label>
+                <q-item-label v-if="record.type === 'rewrite'" caption>
+                  {{ record.modified_sentences }} {{ $t('grewHistory.modifiedSentences') }}
+                </q-item-label>
                 <q-item-label v-else caption> {{ $t('grewHistory.noModifiedSentences') }} </q-item-label>
                 <q-toggle v-model="record.favorite" color="primary" checked-icon="star" @update:model-value="updateHistoryFavorites(record)">
                   <q-tooltip v-if="!record.favorite">
@@ -68,7 +70,7 @@
       </q-card-section>
       <q-card-section v-else> {{ $t('grewHistory.noSearchResults') }} </q-card-section>
       <q-dialog v-model="confirmDelete">
-        <ConfirmAction :parent-action="confirmActionCallback" :target-name="name" ></ConfirmAction>
+        <ConfirmAction :parent-action="confirmActionCallback" :target-name="name"></ConfirmAction>
       </q-dialog>
     </q-card>
   </q-dialog>
@@ -111,7 +113,7 @@ export default defineComponent({
   computed: {
     ...mapState(useGrewHistoryStore, ['grewHistory', 'rewriteHistory', 'searchHistory', 'favoriteHistory']),
     ...mapState(useProjectStore, ['name']),
-    filteredHistory(): grewHistoryRecord_t[]  {
+    filteredHistory(): grewHistoryRecord_t[] {
       if (this.historyType.value == 'search') {
         return this.searchInHistory(this.searchHistory);
       }
@@ -122,7 +124,7 @@ export default defineComponent({
         return this.searchInHistory(this.favoriteHistory);
       }
       return this.searchInHistory(this.grewHistory);
-    }
+    },
   },
   mounted() {
     this.getHistory();
@@ -141,11 +143,11 @@ export default defineComponent({
     searchInHistory(history: grewHistoryRecord_t[]) {
       return history.filter((record) => {
         return record.request.toLowerCase().includes(this.filterRequest.toLowerCase());
-      }, []);  
+      }, []);
     },
     copyRequest(record: grewHistoryRecord_t) {
       this.$emit('copied-request', record);
-      notifyMessage({ message: 'Request copied' })
+      notifyMessage({ message: 'Request copied' });
     },
     triggerConfirm(method: CallableFunction) {
       this.confirmDelete = true;

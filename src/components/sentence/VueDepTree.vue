@@ -76,7 +76,7 @@ export default defineComponent({
     interactive: {
       type: Boolean as PropType<boolean>,
       default: true,
-    }
+    },
   },
   data() {
     const sentenceSVG: SentenceSVG = null as unknown as SentenceSVG; // trick to not have to initialize an empty SentenceSVG

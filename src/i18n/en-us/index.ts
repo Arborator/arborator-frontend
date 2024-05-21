@@ -166,7 +166,7 @@ export default {
     projectOverview: 'Project Overview',
     tooltipSyncGit: 'Synchronize with Github',
     tooltipSynchronizedProject: 'This project is synchronized with',
-    projectTabs: ['Samples', 'Grew', 'Relation table', 'Lexicon', 'Parser', 'Constructicon']
+    projectTabs: ['Samples', 'Grew', 'Relation table', 'Lexicon', 'Parser', 'Constructicon'],
   },
 
   // project table that contains samples informations
@@ -174,7 +174,7 @@ export default {
     tooltipSearch: 'Search a sample',
     search: 'Search',
     users: 'User',
-    tableFields: ['Name', 'Nb sentences', 'Nb tokens', 'Trees from', "Blind annotation level"],
+    tableFields: ['Name', 'Nb sentences', 'Nb tokens', 'Trees from', 'Blind annotation level'],
   },
 
   // Component project options
@@ -462,7 +462,7 @@ export default {
       'Get the lexicon of validated trees',
     ],
     lexiconTitle: 'Select one or multiple features for the Lexicon',
-    similarFeatures: 'Similar features', 
+    similarFeatures: 'Similar features',
     ambiguousFeatures: 'Ambiguous features',
     selectTreeType: 'Select the tree type',
     tooltipExportLexicon: ['export to tsv', 'export to json'],
@@ -482,8 +482,8 @@ export default {
       'This sent_id is already used, choose another one',
       'The sent_id is the same sent_id used in the second sentence',
       'The sent_id is the same sent_id used in the first sentence',
-    ], 
-    selectMergeLabel: 'Select the sent_id of the phrase you wish to merge with the current phrase'
+    ],
+    selectMergeLabel: 'Select the sent_id of the phrase you wish to merge with the current phrase',
   },
   grewHistory: {
     historyBtn: 'History',

@@ -366,6 +366,5 @@ export default {
   },
   updateHistoryRecord(projectName: string, recordId: string, data: any) {
     return API.put(`projects/${projectName}/history/${recordId}`, data);
-  }
-  
+  },
 };

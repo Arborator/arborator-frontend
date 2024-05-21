@@ -29,7 +29,6 @@ export const useGrewHistoryStore = defineStore('grewHistory', {
 				.getGrewHistory(useProjectStore().name)
 				.then((response) => {
 					this.grewHistory = response.data.reverse();
-					notifyMessage({ message: 'Grew history loaded' });
 				})
 				.catch(() => {
 					notifyError({ error: 'Error happend while getting the history' });
@@ -58,13 +57,23 @@ export const useGrewHistoryStore = defineStore('grewHistory', {
 			api
 				.updateHistoryRecord(useProjectStore().name, recordId, changes)
 				.then(() => {
-					notifyMessage({ message: 'History favorites are updated'});
+					console.log('History favorites are updated');
 				})
 				.catch(() => {
 					notifyError({ error: 'Error happened while updating history favorites' });
 				})
 		},
-		deleteAllHistory() {
+    deleteHistoryItem(recordId: string) {
+      api
+        .deleteHistoryRecord(useProjectStore().name, recordId)
+        .then(() => {
+          notifyMessage({ message: 'History item deleted' });
+        })
+        .catch(() => {
+          notifyError({ error: 'Error happened while deleting history item' });
+        });
+    },
+    deleteAllHistory() {
 			api
 				.deleteAllHistory(useProjectStore().name)
 				.then(() => {

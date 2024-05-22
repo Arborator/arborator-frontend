@@ -1,5 +1,8 @@
 import { annotationFeatures_t } from 'src/api/backend-types';
 
+// default config state
+import languages from '../../../assets/languoid.json';
+
 interface configState {
   name: string;
   admins: string[];
@@ -16,7 +19,7 @@ interface configState {
   language: string;
   diffMode: boolean;
   diffUserId: string;
-  collaborativeMode: boolean,
+  collaborativeMode: boolean;
   reloadProjects: boolean;
   shownFeatures: string[];
   shownMeta: string[];
@@ -25,8 +28,6 @@ interface configState {
   languagesList: { index: number; name: string }[];
 }
 
-// default config state
-import languages from '../../../assets/languoid.json';
 export default function defaultState(): configState {
   return {
     name: '',

@@ -94,7 +94,6 @@ import { mapActions, mapState, mapWritableState } from 'pinia';
 import { useProjectStore } from 'src/pinia/modules/project';
 import { useTagsStore } from 'src/pinia/modules/tags';
 import { useTreesStore } from 'src/pinia/modules/trees';
-
 import { defineComponent } from 'vue';
 
 interface filter_t {

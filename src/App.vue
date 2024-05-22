@@ -3,11 +3,11 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from 'vue';
-
-import { useStorage } from 'vue3-storage';
-import { useUserStore } from './pinia/modules/user/index';
 import { setThemeMode } from 'dependencytreejs/src/StylesheetHandler';
+import { defineComponent } from 'vue';
+import { useStorage } from 'vue3-storage';
+
+import { useUserStore } from './pinia/modules/user/index';
 
 export default defineComponent({
   name: 'App',

@@ -47,6 +47,7 @@
   "devDependencies": {
     "@babel/eslint-parser": "^7.13.14",
     "@quasar/app": "^3.0.0",
+    "@trivago/prettier-plugin-sort-imports": "^4.3.0",
     "@types/codemirror": "^5.60.5",
     "@types/diff": "^5.0.2",
     "@types/node": "^12.20.21",
@@ -64,7 +65,7 @@
     "eslint-plugin-vue": "^7.20.0",
     "eslint-webpack-plugin": "^2.4.0",
     "postcss": "^8.4.31",
-    "prettier": "^2.5.1",
+    "prettier": "^2.8.8",
     "prettier-eslint": "^13.0.0",
     "stylus": "^0.55.0",
     "stylus-loader": "^6.2.0",

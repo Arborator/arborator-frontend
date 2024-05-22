@@ -104,16 +104,15 @@
 
 <script lang="ts">
 import GrewCodeMirror from 'components/codemirrors/GrewCodeMirror.vue';
-
-import api from '../../api/backend-api';
 import { mapActions, mapState } from 'pinia';
+import { ConstructiconEntry_t } from 'src/api/backend-types';
 import { useGrewSearchStore } from 'src/pinia/modules/grewSearch';
 import { useProjectStore } from 'src/pinia/modules/project';
 import { notifyError, notifyMessage } from 'src/utils/notify';
-import { ConstructiconEntry_t } from 'src/api/backend-types';
-
 import { v4 as uuidv4 } from 'uuid';
 import { defineComponent } from 'vue';
+
+import api from '../../api/backend-api';
 
 interface data_t {
   splitterModel: number;

@@ -111,17 +111,16 @@
 </template>
 
 <script lang="ts">
-import api from '../../api/backend-api';
-
 import { sentenceConllToJson } from 'conllup/lib/conll';
-import { useModelWrapper } from '../../composables/modelWrapper.js';
 import { mapState } from 'pinia';
-import { useUserStore } from 'src/pinia/modules/user';
-import { useProjectStore } from 'src/pinia/modules/project';
-import { notifyError, notifyMessage } from 'src/utils/notify';
 import { sample_t } from 'src/api/backend-types';
+import { useProjectStore } from 'src/pinia/modules/project';
+import { useUserStore } from 'src/pinia/modules/user';
+import { notifyError, notifyMessage } from 'src/utils/notify';
+import { PropType, defineComponent } from 'vue';
 
-import { defineComponent, PropType } from 'vue';
+import api from '../../api/backend-api';
+import { useModelWrapper } from '../../composables/modelWrapper.js';
 
 export default defineComponent({
   props: {

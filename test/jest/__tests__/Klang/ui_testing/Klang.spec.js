@@ -5,22 +5,18 @@
  * @createdBy                Khoa
  * @since                    06-12-2020
  */
-
-import { createLocalVue, mount } from '@vue/test-utils';
-import Storage from 'vue-ls';
-import Vue from 'vue';
-import Vuex from 'vuex';
-import VueRouter from 'vue-router';
-import MockAdapter from 'axios-mock-adapter';
-
 import { qLayoutInjections } from '@quasar/quasar-app-extension-testing-unit-jest';
-
+import { createLocalVue, mount } from '@vue/test-utils';
+import MockAdapter from 'axios-mock-adapter';
+import { API } from 'src/boot/axios-adapters/axios-api';
 import Klang from 'src/pages/Klang.vue';
 import store from 'src/store/index.js';
-import { API } from 'src/boot/axios-adapters/axios-api';
-
 import mocks from 'test/jest/__mocks__/Klang.json';
 import * as util from 'test/jest/utils';
+import Vue from 'vue';
+import Storage from 'vue-ls';
+import VueRouter from 'vue-router';
+import Vuex from 'vuex';
 
 // This is to mock up axios get response
 const mock_api = new MockAdapter(API);

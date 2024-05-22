@@ -23,10 +23,9 @@
   </q-card>
 </template>
 <script lang="ts">
-import { defineComponent, PropType } from 'vue';
-
 import { mapActions } from 'pinia';
 import { useProjectStore } from 'src/pinia/modules/project';
+import { PropType, defineComponent } from 'vue';
 
 export default defineComponent({
   name: 'RenameProjectDialog',

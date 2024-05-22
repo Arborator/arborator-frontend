@@ -42,6 +42,7 @@ import { mapActions, mapState } from 'pinia';
 import { lexiconItem_FE_t, useLexiconStore } from 'src/pinia/modules/lexicon';
 import { useProjectStore } from 'src/pinia/modules/project';
 import { PropType, defineComponent } from 'vue';
+
 import AttributeTable from '../sentence/AttributeTable.vue';
 
 interface formattedItem_t {

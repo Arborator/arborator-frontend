@@ -1,8 +1,8 @@
-import api from '../../../api/backend-api';
-
 import { defineStore } from 'pinia';
-import { notifyError } from 'src/utils/notify';
 import { lexiconItem_t } from 'src/api/backend-types';
+import { notifyError } from 'src/utils/notify';
+
+import api from '../../../api/backend-api';
 
 export interface lexiconItem_FE_t extends lexiconItem_t {
   key: string;

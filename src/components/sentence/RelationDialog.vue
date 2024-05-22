@@ -51,15 +51,14 @@
 </template>
 
 <script lang="ts">
-import AttributeTable from './AttributeTable.vue';
-
-import { tokenJson_T, emptyTokenJson } from 'conllup/lib/conll';
+import { emptyTokenJson, tokenJson_T } from 'conllup/lib/conll';
 import { mapState } from 'pinia';
 import { useProjectStore } from 'src/pinia/modules/project';
-import { notifyMessage } from 'src/utils/notify';
 import { sentence_bus_t } from 'src/types/main_types';
+import { notifyMessage } from 'src/utils/notify';
+import { PropType, defineComponent } from 'vue';
 
-import { defineComponent, PropType } from 'vue';
+import AttributeTable from './AttributeTable.vue';
 
 export default defineComponent({
   components: { AttributeTable },

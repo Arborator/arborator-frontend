@@ -80,21 +80,19 @@
 </template>
 
 <script lang="ts">
-import api from '../../api/backend-api';
-import SentenceCard from '../sentence/SentenceCard.vue';
-
 import { sentenceConllToJson, sentenceJsonToConll } from 'conllup/lib/conll';
-import { mapState, mapWritableState, mapActions } from 'pinia';
+import { mapActions, mapState, mapWritableState } from 'pinia';
+import { grewSearchResult_t, sample_t } from 'src/api/backend-types';
+import { useGithubStore } from 'src/pinia/modules/github';
+import { useGrewHistoryStore } from 'src/pinia/modules/grewHistory';
 import { useGrewSearchStore } from 'src/pinia/modules/grewSearch';
 import { useProjectStore } from 'src/pinia/modules/project';
 import { useUserStore } from 'src/pinia/modules/user';
-import { useGrewHistoryStore } from 'src/pinia/modules/grewHistory';
-import { useGithubStore } from 'src/pinia/modules/github';
 import { notifyMessage } from 'src/utils/notify';
-
-import { grewSearchResult_t, sample_t } from 'src/api/backend-types';
-
 import { PropType, defineComponent } from 'vue';
+
+import api from '../../api/backend-api';
+import SentenceCard from '../sentence/SentenceCard.vue';
 
 export default defineComponent({
   components: { SentenceCard },

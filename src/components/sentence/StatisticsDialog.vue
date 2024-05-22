@@ -23,8 +23,9 @@
 </template>
 
 <script lang="ts">
-import { PropType } from 'vue';
 import { sentence_bus_t } from 'src/types/main_types';
+import { PropType } from 'vue';
+import { defineComponent } from 'vue';
 
 type tag_t = 'UPOS' | 'DEPREL' | 'HEAD';
 type scores_on_tags_t = { [key in tag_t]: number };
@@ -32,8 +33,6 @@ interface stats_t {
   corrects: scores_on_tags_t;
   totals: scores_on_tags_t;
 }
-
-import { defineComponent } from 'vue';
 
 export default defineComponent({
   props: {

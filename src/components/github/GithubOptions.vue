@@ -69,16 +69,17 @@
   </q-dialog>
 </template>
 <script lang="ts">
-import GithubCommitDialog from './GithubCommitDialog.vue';
-import GithubPullRequestDialog from './GithubPullRequestDialog.vue';
-import ConfirmAction from 'src/components/ConfirmAction.vue';
-import api from '../../api/backend-api';
 import { mapState } from 'pinia';
+import ConfirmAction from 'src/components/ConfirmAction.vue';
+import { useProjectStore } from 'src/pinia/modules/project';
 import { useUserStore } from 'src/pinia/modules/user';
 import { notifyError, notifyMessage } from 'src/utils/notify';
+import { PropType, defineComponent } from 'vue';
 
-import { defineComponent, PropType } from 'vue';
-import { useProjectStore } from 'src/pinia/modules/project';
+import api from '../../api/backend-api';
+import GithubCommitDialog from './GithubCommitDialog.vue';
+import GithubPullRequestDialog from './GithubPullRequestDialog.vue';
+
 export default defineComponent({
   components: {
     GithubCommitDialog,

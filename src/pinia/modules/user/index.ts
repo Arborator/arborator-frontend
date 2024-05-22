@@ -1,11 +1,11 @@
-import defaultState from './defaultState';
-
-import { cookies } from '../../../boot/vue-cookies';
-import { i18n } from 'src/boot/i18n';
-import api from '../../../api/backend-api';
 import { defineStore } from 'pinia';
-import { notifyError, notifyMessage } from 'src/utils/notify';
 import { user_t } from 'src/api/backend-types';
+import { i18n } from 'src/boot/i18n';
+import { notifyError, notifyMessage } from 'src/utils/notify';
+
+import api from '../../../api/backend-api';
+import { cookies } from '../../../boot/vue-cookies';
+import defaultState from './defaultState';
 
 export const useUserStore = defineStore('user', {
   state: () => {

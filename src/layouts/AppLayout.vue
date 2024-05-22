@@ -165,16 +165,16 @@
 </template>
 
 <script lang="ts">
+import { setThemeMode as setThemeModeForDepTrees } from 'dependencytreejs/src/StylesheetHandler';
+import { mapActions, mapState } from 'pinia';
 import { openURL } from 'quasar';
-import { useStorage } from 'vue3-storage';
+import { useMainStore } from 'src/pinia';
+import { useUserStore } from 'src/pinia/modules/user';
+import { notifyError } from 'src/utils/notify';
 import { defineComponent } from 'vue';
+import { useStorage } from 'vue3-storage';
 
 import '../assets/css/tags-style.css';
-import { notifyError } from 'src/utils/notify';
-import { mapActions, mapState } from 'pinia';
-import { useUserStore } from 'src/pinia/modules/user';
-import { useMainStore } from 'src/pinia';
-import { setThemeMode as setThemeModeForDepTrees } from 'dependencytreejs/src/StylesheetHandler';
 
 export default defineComponent({
   name: 'TempLayout',

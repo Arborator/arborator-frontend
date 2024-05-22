@@ -18,11 +18,11 @@
   </q-dialog>
 </template>
 <script lang="ts">
-import LanguageSelect from '../components/shared/LanguageSelect.vue';
-
 import { mapActions, mapWritableState } from 'pinia';
 import { useProjectStore } from 'src/pinia/modules/project';
 import { defineComponent } from 'vue';
+
+import LanguageSelect from '../components/shared/LanguageSelect.vue';
 
 export default defineComponent({
   name: 'ProjectLangNotif',

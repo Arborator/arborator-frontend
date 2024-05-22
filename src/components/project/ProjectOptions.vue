@@ -50,16 +50,16 @@
   </q-dialog>
 </template>
 <script lang="ts">
-import ExportDialog from './ExportDialog.vue';
-import ConfirmAction from '../ConfirmAction.vue';
-import DeleteUserTreesDial from '../project/DeleteUserTreesDial.vue';
-
-import api from 'src/api/backend-api';
 import { mapState } from 'pinia';
+import api from 'src/api/backend-api';
+import { sample_t } from 'src/api/backend-types';
 import { useProjectStore } from 'src/pinia/modules/project';
 import { notifyError, notifyMessage } from 'src/utils/notify';
-import { sample_t } from 'src/api/backend-types';
-import { defineComponent, PropType } from 'vue';
+import { PropType, defineComponent } from 'vue';
+
+import ConfirmAction from '../ConfirmAction.vue';
+import DeleteUserTreesDial from '../project/DeleteUserTreesDial.vue';
+import ExportDialog from './ExportDialog.vue';
 
 export default defineComponent({
   name: 'ProjectOptions',

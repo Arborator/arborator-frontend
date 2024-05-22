@@ -1,4 +1,5 @@
 import { defineStore } from 'pinia';
+
 import { useProjectStore } from '../project';
 
 export const useGrewSearchStore = defineStore('grewSearch', {
@@ -14,8 +15,7 @@ export const useGrewSearchStore = defineStore('grewSearch', {
     grewTreeTypes(): string[] {
       if (!useProjectStore().collaborativeMode) {
         return this.treeTypes.filter((element) => element === 'validated');
-      }
-      else if (useProjectStore().blindAnnotationMode) {
+      } else if (useProjectStore().blindAnnotationMode) {
         if (useProjectStore().canSaveTreeInProject) {
           return this.treeTypes.filter((element) => element == 'user');
         } else {

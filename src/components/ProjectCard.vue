@@ -72,14 +72,14 @@
 </template>
 
 <script lang="ts">
-import ConfirmAction from '../components/ConfirmAction.vue';
-import RenameProjectDialog from './RenameProjectDialog.vue';
-
 import { mapState } from 'pinia';
+import { project_extended_t } from 'src/api/backend-types';
 import { useUserStore } from 'src/pinia/modules/user';
 import { timeAgo } from 'src/utils/timeAgoUtils';
-import { project_extended_t } from 'src/api/backend-types';
-import { defineComponent, PropType } from 'vue';
+import { PropType, defineComponent } from 'vue';
+
+import ConfirmAction from '../components/ConfirmAction.vue';
+import RenameProjectDialog from './RenameProjectDialog.vue';
 
 export default defineComponent({
   components: { ConfirmAction, RenameProjectDialog },

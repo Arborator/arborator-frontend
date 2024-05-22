@@ -140,29 +140,27 @@
 </template>
 
 <script lang="ts">
-import api from '../api/backend-api';
-
-import ProjectSettingsView from '../components/ProjectSettingsView.vue';
-import UploadDialog from '../components/project/UploadDialog.vue';
-import LexiconMain from '../components/lexicon/LexiconMain.vue';
-import ParsingPanel from '../components/parsing/ParsingPanel.vue';
-import ProjectVisibility from 'src/components/shared/ProjectVisibility.vue';
-import ProjectTable from 'src/components/project/ProjectTable.vue';
-import ProjectOptions from 'src/components/project/ProjectOptions.vue';
-import RelationTable from 'src/components/relationTable/RelationTable.vue';
-import GrewSearch from 'src/components/grewSearch/GrewSearch.vue';
-import ConstructiconDialog from 'src/components/constructicon/ConstructiconDialog.vue';
-import GithubSyncDialog from 'src/components/github/GithubSyncDialog.vue';
-import GithubOptions from 'src/components/github/GithubOptions.vue';
-
 import { mapState, mapWritableState } from 'pinia';
-import { useProjectStore } from 'src/pinia/modules/project';
+import { sample_t } from 'src/api/backend-types';
+import ConstructiconDialog from 'src/components/constructicon/ConstructiconDialog.vue';
+import GithubOptions from 'src/components/github/GithubOptions.vue';
+import GithubSyncDialog from 'src/components/github/GithubSyncDialog.vue';
+import GrewSearch from 'src/components/grewSearch/GrewSearch.vue';
+import ProjectOptions from 'src/components/project/ProjectOptions.vue';
+import ProjectTable from 'src/components/project/ProjectTable.vue';
+import RelationTable from 'src/components/relationTable/RelationTable.vue';
+import ProjectVisibility from 'src/components/shared/ProjectVisibility.vue';
 import { useGithubStore } from 'src/pinia/modules/github';
 import { useGrewSearchStore } from 'src/pinia/modules/grewSearch';
+import { useProjectStore } from 'src/pinia/modules/project';
 import { notifyError } from 'src/utils/notify';
-import { sample_t } from 'src/api/backend-types';
-
 import { defineComponent } from 'vue';
+
+import api from '../api/backend-api';
+import ProjectSettingsView from '../components/ProjectSettingsView.vue';
+import LexiconMain from '../components/lexicon/LexiconMain.vue';
+import ParsingPanel from '../components/parsing/ParsingPanel.vue';
+import UploadDialog from '../components/project/UploadDialog.vue';
 
 export default defineComponent({
   components: {

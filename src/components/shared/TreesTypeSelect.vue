@@ -66,11 +66,10 @@
 </template>
 <script lang="ts">
 import { mapState } from 'pinia';
-import { useUserStore } from 'src/pinia/modules/user';
+import { sample_t } from 'src/api/backend-types';
 import { useGrewSearchStore } from 'src/pinia/modules/grewSearch';
 import { useProjectStore } from 'src/pinia/modules/project';
-
-import { sample_t } from 'src/api/backend-types';
+import { useUserStore } from 'src/pinia/modules/user';
 import { PropType, defineComponent } from 'vue';
 
 export default defineComponent({

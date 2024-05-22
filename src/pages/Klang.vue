@@ -26,11 +26,11 @@
 </template>
 
 <script lang="ts">
-import { notifyError } from 'src/utils/notify';
-import api from '../api/backend-api';
 import { KlangProject_t } from 'src/api/backend-types';
-
+import { notifyError } from 'src/utils/notify';
 import { defineComponent } from 'vue';
+
+import api from '../api/backend-api';
 
 export default defineComponent({
   data() {

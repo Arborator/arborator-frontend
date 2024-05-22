@@ -28,7 +28,7 @@ export interface project_t {
   freezed: boolean;
   config: string;
   language: string;
-  collaborativeMode: boolean,
+  collaborativeMode: boolean;
 }
 
 export interface project_extended_t {

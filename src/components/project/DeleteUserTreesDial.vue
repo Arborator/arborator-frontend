@@ -15,15 +15,14 @@
   </q-dialog>
 </template>
 <script lang="ts">
-import ConfirmAction from '../ConfirmAction.vue';
+import { mapState } from 'pinia';
+import { PropType, defineComponent } from 'vue';
 
 import api from '../../api/backend-api';
-import { notifyError, notifyMessage } from '../../utils/notify';
-import { mapState } from 'pinia';
-import { useProjectStore } from '../../pinia/modules/project';
 import { sample_t } from '../../api/backend-types';
-
-import { defineComponent, PropType } from 'vue';
+import { useProjectStore } from '../../pinia/modules/project';
+import { notifyError, notifyMessage } from '../../utils/notify';
+import ConfirmAction from '../ConfirmAction.vue';
 
 export default defineComponent({
   name: 'DeleteUserTreesDial',

@@ -204,7 +204,8 @@ export default {
     blindAnnotCaption: "In this case the annotators will not be able to see others' trees.",
     collaborativeMode: 'Collaborative Mode',
     collaborativeAnnot: 'Collaborative Annotation',
-    collaborativeAnnotCaption: 'If you uncheck this option, you will be the only user to maintain this project, and only validated trees will be used. This action is irreversible, so please make sure you really want to uncheck this option.'
+    collaborativeAnnotCaption:
+      'If you uncheck this option, you will be the only user to maintain this project, and only validated trees will be used. This action is irreversible, so please make sure you really want to uncheck this option.',
   },
 
   exportSamples: {

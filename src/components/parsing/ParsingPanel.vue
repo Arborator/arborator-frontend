@@ -234,15 +234,16 @@
   </q-dialog>
 </template>
 <script lang="ts">
-import ConfirmAction from '../ConfirmAction.vue';
-import api from 'src/api/backend-api';
 import { mapState } from 'pinia';
+import api from 'src/api/backend-api';
+import { ModelInfo_t, ParsingSettings_t, sample_t } from 'src/api/backend-types';
 import { useProjectStore } from 'src/pinia/modules/project';
 import { useUserStore } from 'src/pinia/modules/user';
-import { notifyMessage, notifyError } from 'src/utils/notify';
 import { table_t } from 'src/types/main_types';
-import { ModelInfo_t, sample_t, ParsingSettings_t } from 'src/api/backend-types';
-import { defineComponent, PropType } from 'vue';
+import { notifyError, notifyMessage } from 'src/utils/notify';
+import { PropType, defineComponent } from 'vue';
+
+import ConfirmAction from '../ConfirmAction.vue';
 
 const kirParserSentPerSecSpeed: number = 140;
 const TIMEOUT_TASK_STATUS_CHECKER = 1000 * 60 * 60 * 3; // 3 hours

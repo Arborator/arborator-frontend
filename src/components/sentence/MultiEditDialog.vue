@@ -48,14 +48,13 @@
 </template>
 
 <script lang="ts">
-import { PropType } from 'vue';
-import { reactive_sentences_obj_t, sentence_bus_t } from 'src/types/main_types';
 import { tokenJson_T } from 'conllup/lib/conll';
 import { emptyTreeJson } from 'conllup/lib/conll';
+import { reactive_sentences_obj_t, sentence_bus_t } from 'src/types/main_types';
+import { PropType } from 'vue';
+import { defineComponent } from 'vue';
 
 type metaLabel_t = 'UPOS' | 'DEPREL' | 'HEAD' | 'LEMMA' | 'FEATS' | 'MISC';
-
-import { defineComponent } from 'vue';
 
 export default defineComponent({
   props: {

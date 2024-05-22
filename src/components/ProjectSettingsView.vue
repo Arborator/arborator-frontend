@@ -93,8 +93,8 @@
           </q-item>
           <q-item>
             <q-item-section v-if="isOwner">
-              <q-item-label>{{ $t('projectSettings.freezeProject')}}</q-item-label>
-              <q-item-label caption>{{ $t('projectSettings.freezeProjectCaption')}}</q-item-label>
+              <q-item-label>{{ $t('projectSettings.freezeProject') }}</q-item-label>
+              <q-item-label caption>{{ $t('projectSettings.freezeProjectCaption') }}</q-item-label>
             </q-item-section>
             <q-item-section avatar>
               <q-toggle v-model="freezed" color="primary" checked-icon="check" unchecked-icon="clear" />
@@ -221,25 +221,22 @@
 
 <script lang="ts">
 import Codemirror from 'codemirror-editor-vue3';
-
 // plugin-style
 import 'codemirror-editor-vue3/dist/style.css';
-import 'codemirror/mode/javascript/javascript.js';
-import 'codemirror/lib/codemirror.css';
+import 'codemirror/addon/fold/brace-fold';
 import 'codemirror/addon/fold/foldcode';
 import 'codemirror/addon/fold/foldgutter';
 import 'codemirror/addon/fold/foldgutter.css';
-import 'codemirror/addon/fold/brace-fold';
-
-import UserSelect from './UserSelect.vue';
-import LanguageSelect from '../components/shared/LanguageSelect.vue';
-
+import 'codemirror/lib/codemirror.css';
+import 'codemirror/mode/javascript/javascript.js';
 import { mapActions, mapState, mapWritableState } from 'pinia';
+import { sample_t } from 'src/api/backend-types';
 import { useProjectStore } from 'src/pinia/modules/project';
 import { notifyError, notifyMessage } from 'src/utils/notify';
+import { PropType, defineComponent } from 'vue';
 
-import { defineComponent, PropType } from 'vue';
-import { sample_t } from 'src/api/backend-types';
+import LanguageSelect from '../components/shared/LanguageSelect.vue';
+import UserSelect from './UserSelect.vue';
 import ProjectVisibility from './shared/ProjectVisibility.vue';
 
 export default defineComponent({
@@ -307,7 +304,7 @@ export default defineComponent({
       'image',
       'language',
       'languagesList',
-      'collaborativeMode'
+      'collaborativeMode',
     ]),
 
     blindAnnotationModeLocal: {

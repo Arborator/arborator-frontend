@@ -37,7 +37,6 @@
 
 <script lang="ts">
 import conllup from 'conllup';
-
 import { sentence_bus_t } from 'src/types/main_types';
 import { PropType, defineComponent } from 'vue';
 

@@ -27,8 +27,8 @@ import { mapState } from 'pinia';
 import { useProjectStore } from 'src/pinia/modules/project';
 import { sentence_bus_t } from 'src/types/main_types';
 import { notifyError, notifyMessage } from 'src/utils/notify';
-
 import { PropType, defineComponent } from 'vue';
+
 import AttributeTable from './AttributeTable.vue';
 
 export default defineComponent({

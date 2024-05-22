@@ -63,7 +63,12 @@
                 </q-item-section>
               </q-item>
 
-              <q-item v-close-popup v-if="canSeeOtherUsersTrees && canSaveTreeInProject && collaborativeMode" clickable @click="fetchLexicon_('user_recent')">
+              <q-item
+                v-close-popup
+                v-if="canSeeOtherUsersTrees && canSaveTreeInProject && collaborativeMode"
+                clickable
+                @click="fetchLexicon_('user_recent')"
+              >
                 <q-item-section avatar>
                   <q-avatar v-if="isLoggedIn" size="1.2rem">
                     <img :src="avatar" alt="avatar" />
@@ -139,14 +144,14 @@
 </template>
 
 <script lang="ts">
-import LexiconTableBase from './LexiconTableBase.vue';
-import LexiconModificationDialog from './LexiconModificationDialog.vue';
-
-import { mapState, mapActions, mapWritableState } from 'pinia';
+import { mapActions, mapState, mapWritableState } from 'pinia';
 import { useLexiconStore } from 'src/pinia/modules/lexicon';
 import { useProjectStore } from 'src/pinia/modules/project';
 import { useUserStore } from 'src/pinia/modules/user';
-import { defineComponent, PropType } from 'vue';
+import { PropType, defineComponent } from 'vue';
+
+import LexiconModificationDialog from './LexiconModificationDialog.vue';
+import LexiconTableBase from './LexiconTableBase.vue';
 
 export default defineComponent({
   name: 'LexiconMain',

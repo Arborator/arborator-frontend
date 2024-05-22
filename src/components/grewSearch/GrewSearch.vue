@@ -6,17 +6,17 @@
 </template>
 
 <script lang="ts">
+import { mapActions, mapState } from 'pinia';
+import { grewSearchResult_t, sample_t } from 'src/api/backend-types';
+import { useGrewHistoryStore } from 'src/pinia/modules/grewHistory';
+import { useProjectStore } from 'src/pinia/modules/project';
+import { notifyError } from 'src/utils/notify';
+import { PropType, defineComponent } from 'vue';
+
+import api from '../../api/backend-api';
 import GrewRequestCard from './GrewRequestCard.vue';
 import ResultView from './ResultView.vue';
 
-import api from '../../api/backend-api';
-import { notifyError } from 'src/utils/notify';
-import { mapState, mapActions } from 'pinia';
-import { useGrewHistoryStore } from 'src/pinia/modules/grewHistory';
-import { grewSearchResult_t, sample_t } from 'src/api/backend-types';
-
-import { defineComponent, PropType } from 'vue';
-import { useProjectStore } from 'src/pinia/modules/project';
 export default defineComponent({
   components: {
     GrewRequestCard,

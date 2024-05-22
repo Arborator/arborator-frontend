@@ -163,13 +163,14 @@
   </q-card>
 </template>
 <script lang="ts">
-import api from '../api/backend-api';
-import { copyToClipboard } from 'quasar';
 import { mapState, mapWritableState } from 'pinia';
+import { copyToClipboard } from 'quasar';
 import { useProjectStore } from 'src/pinia/modules/project';
 import { notifyError, notifyMessage } from 'src/utils/notify';
+import { PropType, defineComponent } from 'vue';
+
+import api from '../api/backend-api';
 import { user_t } from '../api/backend-types';
-import { defineComponent, PropType } from 'vue';
 
 interface userOption_t {
   username: string;

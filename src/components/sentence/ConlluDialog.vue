@@ -65,11 +65,10 @@
 <script lang="ts">
 import CodeMirror2 from 'codemirror';
 import Codemirror from 'codemirror-editor-vue3';
-
-import { tokenJson_T, _featuresConllToJson, _depsConllToJson, nodesJson_T } from 'conllup/lib/conll';
+import { _depsConllToJson, _featuresConllToJson, nodesJson_T, tokenJson_T } from 'conllup/lib/conll';
+import { copyToClipboard } from 'quasar';
 import { sentence_bus_t, table_t } from 'src/types/main_types';
 import { notifyMessage } from 'src/utils/notify';
-import { copyToClipboard } from 'quasar';
 import { PropType, defineComponent } from 'vue';
 
 CodeMirror2.defineMode('tsv', () => {

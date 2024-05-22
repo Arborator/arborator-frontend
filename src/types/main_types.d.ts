@@ -1,7 +1,7 @@
-import { Emitter } from 'mitt';
+import { sentenceJson_T, tokenJson_T, treeJson_T } from 'conllup/lib/conll';
 import { ReactiveSentence } from 'dependencytreejs/src/ReactiveSentence';
 import { SentenceSVG } from 'dependencytreejs/src/SentenceSVG';
-import { sentenceJson_T, tokenJson_T, treeJson_T } from 'conllup/lib/conll';
+import { Emitter } from 'mitt';
 
 //////// UI /////
 

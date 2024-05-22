@@ -201,7 +201,8 @@ export default {
     blindAnnotCaption: 'Dans ce cas, les annotateurs ne pourront pas voir les arbres des autres.',
     collaborativeMode: 'Mode collaboratif',
     collaborativeAnnot: 'Annotation collaborative',
-    collaborativeAnnotCaption: 'Si vous décochez cette option, vous serez le seul utilisateur à maintenir ce projet, et seuls les arbres validés seront utilisés. Cette action étant irréversible, assurez-vous que vous souhaitez réellement décocher cette option..'
+    collaborativeAnnotCaption:
+      'Si vous décochez cette option, vous serez le seul utilisateur à maintenir ce projet, et seuls les arbres validés seront utilisés. Cette action étant irréversible, assurez-vous que vous souhaitez réellement décocher cette option..',
   },
 
   exportSamples: {

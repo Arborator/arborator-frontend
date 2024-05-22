@@ -128,20 +128,20 @@
 </template>
 
 <script lang="ts">
+import { mapState, mapWritableState } from 'pinia';
+import { LocalStorage } from 'quasar';
+import { project_extended_t } from 'src/api/backend-types';
+import EmailCollectDialog from 'src/components/Index/EmailCollectDialog.vue';
+import LanguageSelect from 'src/components/shared/LanguageSelect.vue';
+import { useProjectStore } from 'src/pinia/modules/project';
+import { useUserStore } from 'src/pinia/modules/user';
+import { notifyError, notifyMessage } from 'src/utils/notify';
+import { defineComponent } from 'vue';
+
 import api from '../api/backend-api';
+import CreaProjectCard from '../components/CreaProjectCard.vue';
 import ProjectCard from '../components/ProjectCard.vue';
 import ProjectItem from '../components/ProjectItem.vue';
-import CreaProjectCard from '../components/CreaProjectCard.vue';
-import LanguageSelect from 'src/components/shared/LanguageSelect.vue';
-import EmailCollectDialog from 'src/components/Index/EmailCollectDialog.vue';
-
-import { LocalStorage } from 'quasar';
-import { mapState, mapWritableState } from 'pinia';
-import { useUserStore } from 'src/pinia/modules/user';
-import { useProjectStore } from 'src/pinia/modules/project';
-import { notifyError, notifyMessage } from 'src/utils/notify';
-import { project_extended_t } from 'src/api/backend-types';
-import { defineComponent } from 'vue';
 
 export default defineComponent({
   name: 'ProjectHub',

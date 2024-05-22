@@ -83,16 +83,15 @@
 </template>
 
 <script lang="ts">
-import ResultView from '../grewSearch/ResultView.vue';
-import TreesTypeSelect from '../shared/TreesTypeSelect.vue';
+import { mapState } from 'pinia';
+import { grewSearchResult_t, sample_t } from 'src/api/backend-types';
+import { useProjectStore } from 'src/pinia/modules/project';
+import { notifyError } from 'src/utils/notify';
+import { PropType, defineComponent } from 'vue';
 
 import api from '../../api/backend-api';
-import { notifyError } from 'src/utils/notify';
-import { mapState } from 'pinia';
-import { useProjectStore } from 'src/pinia/modules/project';
-import { grewSearchResult_t, sample_t } from 'src/api/backend-types';
-
-import { defineComponent, PropType } from 'vue';
+import ResultView from '../grewSearch/ResultView.vue';
+import TreesTypeSelect from '../shared/TreesTypeSelect.vue';
 
 export default defineComponent({
   components: { ResultView, TreesTypeSelect },

@@ -289,42 +289,39 @@
 </template>
 
 <script lang="ts">
-import mitt, { Emitter } from 'mitt';
-
 import { ReactiveSentence } from 'dependencytreejs/src/ReactiveSentence';
-import api from '../../api/backend-api';
+import mitt, { Emitter } from 'mitt';
+import { mapActions, mapState, mapWritableState } from 'pinia';
+import { grewSearchResultSentence_t, matches_t } from 'src/api/backend-types';
+import { useGithubStore } from 'src/pinia/modules/github';
+import { useGrewSearchStore } from 'src/pinia/modules/grewSearch';
+import { useProjectStore } from 'src/pinia/modules/project';
+import { useTagsStore } from 'src/pinia/modules/tags';
+import { useUserStore } from 'src/pinia/modules/user';
+import { reactive_sentences_obj_t, sentence_bus_events_t, sentence_bus_t } from 'src/types/main_types';
+import { notifyError, notifyMessage } from 'src/utils/notify';
+import { PropType, defineComponent } from 'vue';
 
-import VueDepTree from './VueDepTree.vue';
-import RelationDialog from './RelationDialog.vue';
-import UposDialog from './UposDialog.vue';
-import XposDialog from './XposDialog.vue';
-import FeaturesDialog from './FeaturesDialog.vue';
-import MetaDialog from './MetaDialog.vue';
+import api from '../../api/backend-api';
 import ConlluDialog from './ConlluDialog.vue';
 import ExportSVG from './ExportSVG.vue';
-import TokensReplaceDialog from './TokensReplaceDialog.vue';
-import StatisticsDialog from './StatisticsDialog.vue';
+import FeaturesDialog from './FeaturesDialog.vue';
+import MetaDialog from './MetaDialog.vue';
 import MultiEditDialog from './MultiEditDialog.vue';
-import TagsMenu from './TagsMenu.vue';
+import RelationDialog from './RelationDialog.vue';
 import SentenceSegmentation from './SentenceSegmentation.vue';
-import { reactive_sentences_obj_t, sentence_bus_events_t, sentence_bus_t } from 'src/types/main_types';
-import { mapActions, mapState, mapWritableState } from 'pinia';
-import { notifyError, notifyMessage } from 'src/utils/notify';
-import { useProjectStore } from 'src/pinia/modules/project';
-import { useGithubStore } from 'src/pinia/modules/github';
-import { useUserStore } from 'src/pinia/modules/user';
-import { useTagsStore } from 'src/pinia/modules/tags';
-import { useGrewSearchStore } from 'src/pinia/modules/grewSearch';
-import { PropType } from 'vue';
+import StatisticsDialog from './StatisticsDialog.vue';
+import TagsMenu from './TagsMenu.vue';
+import TokensReplaceDialog from './TokensReplaceDialog.vue';
+import UposDialog from './UposDialog.vue';
+import VueDepTree from './VueDepTree.vue';
+import XposDialog from './XposDialog.vue';
 
 function sentenceBusFactory(): sentence_bus_t {
   let sentenceBus: Emitter<sentence_bus_events_t> = mitt<sentence_bus_events_t>();
   (sentenceBus as sentence_bus_t).sentenceSVGs = {};
   return sentenceBus as sentence_bus_t;
 }
-
-import { defineComponent } from 'vue';
-import { grewSearchResultSentence_t, matches_t } from 'src/api/backend-types';
 
 export default defineComponent({
   name: 'SentenceCard',

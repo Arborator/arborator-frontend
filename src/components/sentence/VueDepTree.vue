@@ -7,15 +7,18 @@
 </template>
 
 <script lang="ts">
-import { LocalStorage } from 'quasar';
-import { SentenceSVG, defaultSentenceSVGOptions } from 'dependencytreejs/src/SentenceSVG';
-import { SentenceCaretaker } from 'dependencytreejs/src/ReactiveSentence';
-import { PropType } from 'vue';
-import { reactive_sentences_obj_t, sentence_bus_events_t, sentence_bus_t } from 'src/types/main_types';
-import { ReactiveSentence } from 'dependencytreejs/src/ReactiveSentence';
-import { mapState } from 'pinia';
-import { useProjectStore } from 'src/pinia/modules/project';
 import { emptyTokenJson, tokenJson_T } from 'conllup/lib/conll';
+import { SentenceCaretaker } from 'dependencytreejs/src/ReactiveSentence';
+import { ReactiveSentence } from 'dependencytreejs/src/ReactiveSentence';
+import { SentenceSVG, defaultSentenceSVGOptions } from 'dependencytreejs/src/SentenceSVG';
+import { mapState } from 'pinia';
+import { LocalStorage } from 'quasar';
+import { package_t } from 'src/api/backend-types';
+import { useProjectStore } from 'src/pinia/modules/project';
+import { useUserStore } from 'src/pinia/modules/user';
+import { reactive_sentences_obj_t, sentence_bus_events_t, sentence_bus_t } from 'src/types/main_types';
+import { PropType } from 'vue';
+import { defineComponent } from 'vue';
 
 interface svgClickEvent_t extends Event {
   detail: { clicked: string; targetLabel: 'FORM' | 'FEATS' | 'LEMMA' | 'DEPREL' };
@@ -24,10 +27,6 @@ interface svgClickEvent_t extends Event {
 interface svgHoveredEvent_t extends Event {
   detail: { dragged: string; hovered: string; isRoot: boolean };
 }
-
-import { defineComponent } from 'vue';
-import { useUserStore } from 'src/pinia/modules/user';
-import { package_t } from 'src/api/backend-types';
 
 export default defineComponent({
   props: {

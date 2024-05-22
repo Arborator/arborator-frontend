@@ -1,7 +1,9 @@
 import { boot } from 'quasar/wrappers';
 import { VueMatomo } from 'vue-matomo';
-import routes from '../router/routes';
+
 import Router from '../router/index';
+import routes from '../router/routes';
+
 export default boot(({ app }) => {
   app.use(VueMatomo, {
     host: 'https://matomo.elizia.net',

@@ -91,7 +91,7 @@
 
 <script lang="ts">
 import { date } from 'quasar';
-import { defineComponent, PropType } from 'vue';
+import { PropType, defineComponent } from 'vue';
 
 interface actual_feat_t {
   a: string;

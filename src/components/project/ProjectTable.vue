@@ -82,13 +82,14 @@
   </q-table>
 </template>
 <script lang="ts">
-import api from '../../api/backend-api';
 import { mapState } from 'pinia';
 import { useProjectStore } from 'src/pinia/modules/project';
 import { notifyError, notifyMessage } from 'src/utils/notify';
+import { PropType, defineComponent } from 'vue';
+
+import api from '../../api/backend-api';
 import { sample_t } from '../../api/backend-types';
 import { table_t } from '../../types/main_types';
-import { defineComponent, PropType } from 'vue';
 
 export default defineComponent({
   name: 'ProjectTable',

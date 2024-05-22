@@ -83,15 +83,15 @@
 <script lang="ts">
 import 'codemirror/theme/gruvbox-dark.css';
 import GrewCodeMirror from 'components/codemirrors/GrewCodeMirror.vue';
-import grewTemplates from '../../assets/grew-templates.json';
-import GrewHistory from './GrewHistory.vue';
-import TreesTypeSelect from '../shared/TreesTypeSelect.vue';
-
 import { mapActions, mapState } from 'pinia';
+import { sample_t } from 'src/api/backend-types';
 import { useGrewSearchStore } from 'src/pinia/modules/grewSearch';
 import { useUserStore } from 'src/pinia/modules/user';
-import { sample_t } from 'src/api/backend-types';
-import { defineComponent, PropType } from 'vue';
+import { PropType, defineComponent } from 'vue';
+
+import grewTemplates from '../../assets/grew-templates.json';
+import TreesTypeSelect from '../shared/TreesTypeSelect.vue';
+import GrewHistory from './GrewHistory.vue';
 
 export default defineComponent({
   name: 'GrewRequestCard',

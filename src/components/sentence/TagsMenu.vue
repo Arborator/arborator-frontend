@@ -52,16 +52,15 @@
   </q-menu>
 </template>
 <script lang="ts">
-import api from '../../api/backend-api';
-
-import { notifyError, notifyMessage } from 'src/utils/notify';
-import { reactive_sentences_obj_t, sentence_bus_t } from 'src/types/main_types';
+import { mapActions, mapState } from 'pinia';
 import { grewSearchResultSentence_t } from 'src/api/backend-types';
-import { mapState, mapActions } from 'pinia';
+import { tag_t, useTagsStore } from 'src/pinia/modules/tags';
 import { useUserStore } from 'src/pinia/modules/user';
-import { useTagsStore, tag_t } from 'src/pinia/modules/tags';
+import { reactive_sentences_obj_t, sentence_bus_t } from 'src/types/main_types';
+import { notifyError, notifyMessage } from 'src/utils/notify';
+import { PropType, defineComponent } from 'vue';
 
-import { defineComponent, PropType } from 'vue';
+import api from '../../api/backend-api';
 
 export default defineComponent({
   name: 'TagsMenu',

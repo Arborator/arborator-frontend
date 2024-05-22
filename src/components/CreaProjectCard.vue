@@ -167,15 +167,15 @@
 </template>
 
 <script lang="ts">
-import GithubSyncDialog from '../components/github/GithubSyncDialog.vue';
-import LanguageSelect from './shared/LanguageSelect.vue';
+import { mapActions, mapState } from 'pinia';
+import { useProjectStore } from 'src/pinia/modules/project';
+import { useUserStore } from 'src/pinia/modules/user';
+import { notifyError, notifyMessage } from 'src/utils/notify';
+import { PropType, defineComponent } from 'vue';
 
 import api from '../api/backend-api';
-import { notifyError, notifyMessage } from 'src/utils/notify';
-import { mapActions, mapState } from 'pinia';
-import { useUserStore } from 'src/pinia/modules/user';
-import { useProjectStore } from 'src/pinia/modules/project';
-import { defineComponent, PropType } from 'vue';
+import GithubSyncDialog from '../components/github/GithubSyncDialog.vue';
+import LanguageSelect from './shared/LanguageSelect.vue';
 
 export default defineComponent({
   components: {

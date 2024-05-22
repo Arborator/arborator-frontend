@@ -87,18 +87,16 @@
 </template>
 
 <script lang="ts">
+import { mapActions, mapState } from 'pinia';
+import { grewSearchResult_t } from 'src/api/backend-types';
+import { useGrewSearchStore } from 'src/pinia/modules/grewSearch';
+import { lexiconItem_FE_t, useLexiconStore } from 'src/pinia/modules/lexicon';
+import { table_t } from 'src/types/main_types';
+import { notifyError, notifyMessage } from 'src/utils/notify';
+import { PropType, computed, defineComponent } from 'vue';
+
 import api from '../../api/backend-api';
 import ResultView from '../grewSearch/ResultView.vue';
-
-import { mapActions, mapState } from 'pinia';
-import { lexiconItem_FE_t, useLexiconStore } from 'src/pinia/modules/lexicon';
-import { useGrewSearchStore } from 'src/pinia/modules/grewSearch';
-import { notifyError, notifyMessage } from 'src/utils/notify';
-
-import { table_t } from 'src/types/main_types';
-import { grewSearchResult_t } from 'src/api/backend-types';
-
-import { defineComponent, PropType, computed } from 'vue';
 
 export default defineComponent({
   name: 'LexiconTable',

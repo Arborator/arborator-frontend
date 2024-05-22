@@ -42,14 +42,13 @@
 </template>
 
 <script lang="ts">
-import { LocalStorage, QVirtualScroll } from 'quasar';
-
 import { mapActions, mapState, mapWritableState } from 'pinia';
+import { LocalStorage, QVirtualScroll } from 'quasar';
+import AdvancedFilter from 'src/components/sample/AdvancedFilter.vue';
 import { useGrewSearchStore } from 'src/pinia/modules/grewSearch';
 import { useTreesStore } from 'src/pinia/modules/trees';
 import { PropType, defineComponent } from 'vue';
 
-import AdvancedFilter from 'src/components/sample/AdvancedFilter.vue';
 import GrewSearch from '../components/grewSearch/GrewSearch.vue';
 import RelationTableMain from '../components/relationTable/RelationTableMain.vue';
 import SentenceCard from '../components/sentence/SentenceCard.vue';

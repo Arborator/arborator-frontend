@@ -100,11 +100,12 @@
   </q-card-section>
 </template>
 <script lang="ts">
+import { notifyError, notifyMessage } from 'src/utils/notify';
+import { PropType, defineComponent } from 'vue';
+
 import api from '../../api/backend-api';
 import { githubRepository_t } from '../../api/backend-types';
-import { notifyError, notifyMessage } from 'src/utils/notify';
 
-import { defineComponent, PropType } from 'vue';
 export default defineComponent({
   name: 'GithubSyncDialog',
   emits: ['created'],

@@ -77,15 +77,15 @@
 </template>
 
 <script lang="ts">
-import GrewCodeMirror from '../codemirrors/GrewCodeMirror.vue';
-import ConfirmAction from '../ConfirmAction.vue';
-
 import { mapActions, mapState } from 'pinia';
+import { grewHistoryRecord_t } from 'src/api/backend-types';
 import { useGrewHistoryStore } from 'src/pinia/modules/grewHistory';
 import { useProjectStore } from 'src/pinia/modules/project';
 import { notifyMessage } from 'src/utils/notify';
-import { grewHistoryRecord_t } from 'src/api/backend-types';
 import { defineComponent } from 'vue';
+
+import ConfirmAction from '../ConfirmAction.vue';
+import GrewCodeMirror from '../codemirrors/GrewCodeMirror.vue';
 
 export default defineComponent({
   components: {

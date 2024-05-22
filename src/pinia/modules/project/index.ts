@@ -1,11 +1,10 @@
-import api from '../../../api/backend-api';
-
-import defaultState from './defaultState';
-import { useUserStore } from '../user';
-
 import { defineStore } from 'pinia';
-import { notifyMessage, notifyError } from 'src/utils/notify';
 import { annotationFeatures_t, project_extended_t, project_t } from 'src/api/backend-types';
+import { notifyError, notifyMessage } from 'src/utils/notify';
+
+import api from '../../../api/backend-api';
+import { useUserStore } from '../user';
+import defaultState from './defaultState';
 
 export const useProjectStore = defineStore('project', {
   state: () => {
@@ -43,7 +42,7 @@ export const useProjectStore = defineStore('project', {
       if (this.isGuest) {
         return false;
       }
-      if(!this.collaborativeMode) {
+      if (!this.collaborativeMode) {
         return false;
       }
       if (this.isValidator && this.blindAnnotationMode) {

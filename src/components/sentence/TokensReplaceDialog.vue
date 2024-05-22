@@ -91,9 +91,9 @@
 </template>
 
 <script lang="ts">
-import { reactive_sentences_obj_t, sentence_bus_t } from 'src/types/main_types';
 import { replaceArrayOfTokens } from 'conllup/lib/conll';
-import { defineComponent, PropType } from 'vue';
+import { reactive_sentences_obj_t, sentence_bus_t } from 'src/types/main_types';
+import { PropType, defineComponent } from 'vue';
 
 export default defineComponent({
   name: 'TokensReplaceDialog',

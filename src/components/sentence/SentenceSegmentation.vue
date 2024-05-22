@@ -233,17 +233,17 @@
   </q-dialog>
 </template>
 <script lang="ts">
-import VueDepTree from './VueDepTree.vue';
-import api from 'src/api/backend-api';
-
-import { emptySentenceJson, sentenceConllToJson, sentenceJsonToConll, sentenceJson_T, treeJson_T, metaJson_T } from 'conllup/lib/conll';
+import { emptySentenceJson, metaJson_T, sentenceConllToJson, sentenceJsonToConll, sentenceJson_T, treeJson_T } from 'conllup/lib/conll';
 import { ReactiveSentence } from 'dependencytreejs/src/ReactiveSentence';
 import { mapState, mapWritableState } from 'pinia';
-import { notifyError, notifyMessage } from 'src/utils/notify';
-import { useTreesStore } from 'src/pinia/modules/trees';
+import api from 'src/api/backend-api';
 import { useProjectStore } from 'src/pinia/modules/project';
+import { useTreesStore } from 'src/pinia/modules/trees';
 import { reactive_sentences_obj_t, sentence_bus_t } from 'src/types/main_types';
+import { notifyError, notifyMessage } from 'src/utils/notify';
 import { PropType, defineComponent } from 'vue';
+
+import VueDepTree from './VueDepTree.vue';
 
 interface sentence_t {
   [key: string]: sentenceJson_T;

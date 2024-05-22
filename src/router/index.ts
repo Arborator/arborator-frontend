@@ -1,9 +1,9 @@
-import { createRouter, createMemoryHistory, createWebHistory, createWebHashHistory } from 'vue-router';
 import { route } from 'quasar/wrappers';
+import { useKlangStore } from 'src/pinia/modules/klang';
+import { useProjectStore } from 'src/pinia/modules/project';
+import { createMemoryHistory, createRouter, createWebHashHistory, createWebHistory } from 'vue-router';
 
 import routes from './routes';
-import { useProjectStore } from 'src/pinia/modules/project';
-import { useKlangStore } from 'src/pinia/modules/klang';
 
 /*
  * If not building with SSR mode, you can

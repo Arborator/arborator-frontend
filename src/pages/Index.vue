@@ -320,9 +320,8 @@
 </template>
 
 <script lang="ts">
+import { LocalStorage, copyToClipboard, openURL } from 'quasar';
 import { notifyMessage } from 'src/utils/notify';
-
-import { openURL, copyToClipboard, LocalStorage } from 'quasar';
 import { defineComponent } from 'vue';
 
 export default defineComponent({

@@ -43,7 +43,7 @@ export const useProjectStore = defineStore('project', {
       if (this.isGuest) {
         return false;
       }
-      if (this.isGuest) {
+      if(!this.collaborativeMode) {
         return false;
       }
       if (this.isValidator && this.blindAnnotationMode) {
@@ -119,6 +119,7 @@ export const useProjectStore = defineStore('project', {
           this.freezed = response.data.freezed;
           this.config = response.data.config;
           this.language = response.data.language;
+          this.collaborativeMode = response.data.collaborativeMode;
         })
         .then(() => {
           api.getProjectImage(projectName).then((response) => {

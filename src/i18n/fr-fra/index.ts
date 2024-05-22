@@ -199,6 +199,9 @@ export default {
     annotMode: "Mode d'annotation",
     blindAnnot: 'Annotation aveugle',
     blindAnnotCaption: 'Dans ce cas, les annotateurs ne pourront pas voir les arbres des autres.',
+    collaborativeMode: 'Mode collaboratif',
+    collaborativeAnnot: 'Annotation collaborative',
+    collaborativeAnnotCaption: 'Si vous décochez cette option, vous serez le seul utilisateur à maintenir ce projet, et seuls les arbres validés seront utilisés. Cette action étant irréversible, assurez-vous que vous souhaitez réellement décocher cette option..'
   },
 
   exportSamples: {
@@ -245,7 +248,6 @@ export default {
   projectSettings: {
     title: 'Paramètres',
     windowClose: 'Fermer',
-    descriptionSave: 'Sauvegarder la description',
     toggleVisibility: 'Visibilité',
     toggleVisibilityCaption:
       "Les projets privés limitent l'accès et l'annotation, les projets visibles limitent l'annotation et les projets ouverts permettent à quiconque de voir et contribuer",
@@ -254,8 +256,6 @@ export default {
       "Les projets visibles limitent uniquement l'annotation.",
       'Les projets ouverts permettent à quiconque de voir et de contribuer à leur annotation.',
     ],
-    toggleAllVisible: 'Tous les arbres sont visibles',
-    toggleAllVisibleCaption: 'Si oui, les annotateurs pourront voir les arbres des autres.',
     toggleBlindAnnotationMode: 'Mode Annotation aveugle',
     toggleBlindAnnotationModeCaption: 'Si oui, le projet a les propriétés de mode annotation aveugle',
     toggleDiffMode: 'Mode Diff',
@@ -263,8 +263,6 @@ export default {
     chooseUserDiff: 'Utilisateur Diff',
     chooseUserDiffCaption: "L'utilisateur qui sera utilisé comme une référence pour la comparaison",
     selectDiffUser: 'Sélectionner Utilisateur Diff',
-    toggleOpenProject: 'Projet ouvert',
-    toggleOpenProjectCaption: 'Si oui, tout le monde peut modifier les échantillons',
     projectLanguage: 'Langue',
     projectLanguageCaption: 'La langue du projet: ',
     shownFeaturesPanel: 'Shown Features',
@@ -275,6 +273,8 @@ export default {
     checkAnnotation: 'Ceci ressemble à du JSON raisonnable',
     resetUD: 'Réinitialiser à UD',
     resetSUD: 'Réinitialiser à SUD',
+    freezeProject: 'Désactiver le projet',
+    freezeProjectCaption: 'Seul le propriétaire peut désactiver ce projet',
   },
   settingsPage: {
     title: 'Information personelle',

@@ -41,7 +41,16 @@
               </div>
               <q-input outlined v-model="text" type="textarea" :label="$t('uploadSample.text')" />
               <q-input outlined v-model="sampleName" :label="$t('uploadSample.sampleName')" />
-              <q-input outlined v-model="customUserId" :label="$t('uploadSample.customUsername')" />
+              <q-input
+                v-if="collaborativeMode"
+                outlined
+                v-model="customUserId"
+                :label="$t('uploadSample.customUsername')"
+                :rules="[
+                  (val) => reservedUserId !== val.toLowerCase() || `${val} ` + $t('uploadSample.reservedUsernameError'),
+                  (val) => (val && val.length > 0) || $t('uploadSample.emptyUsernameError'),
+                ]"
+              />
               <div class="row q-pa-md">
                 <q-btn v-close-popup :disable="!disableTokenizeBtn" color="primary" @click="tokenizeSample">Tokenize</q-btn>
               </div>
@@ -83,6 +92,7 @@
               </div>
               <div>
                 <q-input
+                  v-if="collaborativeMode"
                   outlined
                   v-model="customUserId"
                   :label="$t('uploadSample.customUsername')"
@@ -101,15 +111,17 @@
 </template>
 
 <script lang="ts">
-import { notifyError, notifyMessage } from 'src/utils/notify';
 import api from '../../api/backend-api';
-import { sample_t } from 'src/api/backend-types';
+
+import { sentenceConllToJson } from 'conllup/lib/conll';
 import { useModelWrapper } from '../../composables/modelWrapper.js';
-import { defineComponent, PropType } from 'vue';
 import { mapState } from 'pinia';
 import { useUserStore } from 'src/pinia/modules/user';
 import { useProjectStore } from 'src/pinia/modules/project';
-import { sentenceConllToJson } from 'conllup/lib/conll';
+import { notifyError, notifyMessage } from 'src/utils/notify';
+import { sample_t } from 'src/api/backend-types';
+
+import { defineComponent, PropType } from 'vue';
 
 export default defineComponent({
   props: {
@@ -170,7 +182,7 @@ export default defineComponent({
   computed: {
     ...mapState(useUserStore, { userid: 'id' }),
     ...mapState(useUserStore, ['username', 'reservedUserId']),
-    ...mapState(useProjectStore, ['blindAnnotationMode']),
+    ...mapState(useProjectStore, ['blindAnnotationMode', 'collaborativeMode']),
     disableTokenizeBtn() {
       if (this.option.value == 'plainText') {
         return this.text && this.sampleName && this.lang.value;
@@ -271,6 +283,7 @@ export default defineComponent({
     },
     uploadSamples() {
       const form = new FormData();
+      if (!this.collaborativeMode) this.customUserId = 'validated';
       this.uploadSample.submitting = true;
       for (const file of this.uploadSample.attachment.file) {
         form.append('files', file);
@@ -299,6 +312,7 @@ export default defineComponent({
         });
     },
     tokenizeSample() {
+      if (!this.collaborativeMode) this.customUserId = 'validated';
       const data = {
         username: this.customUserId,
         text: this.text,

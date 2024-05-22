@@ -131,6 +131,25 @@
               </q-item-section>
             </q-item>
           </q-list>
+          <q-separator />
+          <div class="row">
+            <div class="col-md-7 text-h6">
+              {{ $t('createProjectCard.collaborativeMode') }}
+            </div>
+          </div>
+          <q-list>
+            <q-item>
+              <q-item-section side top>
+                <q-checkbox v-model="project.collaborativeMode" />
+              </q-item-section>
+              <q-item-section>
+                <q-item-label>{{ $t('createProjectCard.collaborativeAnnot') }}</q-item-label>
+                <q-item-label caption>
+                  {{ $t('createProjectCard.collaborativeAnnotCaption') }}
+                </q-item-label>
+              </q-item-section>
+            </q-item>
+          </q-list>
           <div class="row q-gutter-md justify-center">
             <q-btn :disable="disableSubmitBtn" type="submit" :label="$t('createProjectCard.create')" color="primary" />
           </div>
@@ -186,6 +205,7 @@ export default defineComponent({
         language: '',
         config: '',
         blindAnnotationMode: false,
+        collaborativeMode: true,
       },
       creatDialog: true,
       progress: 0,

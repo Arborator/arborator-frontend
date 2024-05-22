@@ -51,7 +51,7 @@
             label=" get Lexicon"
           >
             <q-list>
-              <q-item v-if="canSaveTreeInProject" v-close-popup clickable @click="fetchLexicon_('user')">
+              <q-item v-if="canSaveTreeInProject && collaborativeMode" v-close-popup clickable @click="fetchLexicon_('user')">
                 <q-item-section avatar>
                   <q-avatar v-if="isLoggedIn" size="1.2rem">
                     <img :src="avatar" alt="avatar" />
@@ -63,7 +63,7 @@
                 </q-item-section>
               </q-item>
 
-              <q-item v-close-popup v-if="canSeeOtherUsersTrees && canSaveTreeInProject" clickable @click="fetchLexicon_('user_recent')">
+              <q-item v-close-popup v-if="canSeeOtherUsersTrees && canSaveTreeInProject && collaborativeMode" clickable @click="fetchLexicon_('user_recent')">
                 <q-item-section avatar>
                   <q-avatar v-if="isLoggedIn" size="1.2rem">
                     <img :src="avatar" alt="avatar" />
@@ -76,7 +76,7 @@
                 </q-item-section>
               </q-item>
 
-              <q-item v-if="canSeeOtherUsersTrees" v-close-popup clickable @click="fetchLexicon_('all')">
+              <q-item v-if="canSeeOtherUsersTrees && collaborativeMode" v-close-popup clickable @click="fetchLexicon_('all')">
                 <q-item-section avatar>
                   <q-icon name="groups" />
                 </q-item-section>
@@ -85,7 +85,7 @@
                 </q-item-section>
               </q-item>
 
-              <q-item v-if="canSeeOtherUsersTrees" v-close-popup clickable @click="fetchLexicon_('recent')">
+              <q-item v-if="canSeeOtherUsersTrees && collaborativeMode" v-close-popup clickable @click="fetchLexicon_('recent')">
                 <q-item-section avatar>
                   <q-icon name="schedule" />
                 </q-item-section>
@@ -172,7 +172,7 @@ export default defineComponent({
     };
   },
   computed: {
-    ...mapState(useProjectStore, ['name', 'annotationFeatures', 'canSeeOtherUsersTrees', 'canSaveTreeInProject']),
+    ...mapState(useProjectStore, ['name', 'annotationFeatures', 'canSeeOtherUsersTrees', 'canSaveTreeInProject', 'collaborativeMode']),
     ...mapState(useUserStore, ['isLoggedIn', 'isSuperAdmin', 'avatar']),
     ...mapState(useLexiconStore, ['lexiconItems', 'lexiconLoading', 'lexiconItemsModified', 'principalFeatures', 'secondaryFeatures']),
     ...mapWritableState(useLexiconStore, ['principalFeatures', 'secondaryFeatures']),

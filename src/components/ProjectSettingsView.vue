@@ -73,7 +73,7 @@
               </div>
             </q-item-section>
           </q-item>
-          <q-item>
+          <q-item v-if="collaborativeMode">
             <q-item-section>
               <q-item-label>{{ $t('projectSettings.toggleBlindAnnotationMode') }}</q-item-label>
               <q-item-label caption>{{ $t('projectSettings.toggleBlindAnnotationModeCaption') }}</q-item-label>
@@ -82,7 +82,7 @@
               <q-toggle v-model="blindAnnotationModeLocal" color="primary" checked-icon="check" unchecked-icon="clear" />
             </q-item-section>
           </q-item>
-          <q-item>
+          <q-item v-if="collaborativeMode">
             <q-item-section>
               <q-item-label>{{ $t('projectSettings.toggleDiffMode') }}</q-item-label>
               <q-item-label caption>{{ $t('projectSettings.toggleDiffModeCaption') }}</q-item-label>
@@ -93,14 +93,14 @@
           </q-item>
           <q-item>
             <q-item-section v-if="isOwner">
-              <q-item-label>Freeze Project</q-item-label>
-              <q-item-label caption>Only admins can freeze projects if{{ $t('projectSettings.toggleDiffModeCaption') }} </q-item-label>
+              <q-item-label>{{ $t('projectSettings.freezeProject')}}</q-item-label>
+              <q-item-label caption>{{ $t('projectSettings.freezeProjectCaption')}}</q-item-label>
             </q-item-section>
             <q-item-section avatar>
               <q-toggle v-model="freezed" color="primary" checked-icon="check" unchecked-icon="clear" />
             </q-item-section>
           </q-item>
-          <q-item>
+          <q-item v-if="collaborativeMode">
             <q-item-section>
               <q-item-label>{{ $t('projectSettings.chooseUserDiff') }}</q-item-label>
               <q-item-label caption>{{ $t('projectSettings.chooseUserDiffCaption') }}</q-item-label>
@@ -138,7 +138,7 @@
     </q-card-section>
 
     <q-card-section class="full row justify-between q-gutter-md">
-      <UserSelect :project-name="projectName" />
+      <UserSelect v-if="collaborativeMode" :project-name="projectName" />
       <q-card flat bordered class="col">
         <q-card-section>
           <div class="text-h6 text-center">
@@ -307,6 +307,7 @@ export default defineComponent({
       'image',
       'language',
       'languagesList',
+      'collaborativeMode'
     ]),
 
     blindAnnotationModeLocal: {

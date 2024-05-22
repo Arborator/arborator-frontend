@@ -16,6 +16,7 @@ interface configState {
   language: string;
   diffMode: boolean;
   diffUserId: string;
+  collaborativeMode: boolean,
   reloadProjects: boolean;
   shownFeatures: string[];
   shownMeta: string[];
@@ -43,6 +44,7 @@ export default function defaultState(): configState {
     language: '',
     diffMode: false,
     diffUserId: '',
+    collaborativeMode: true,
     reloadProjects: false,
     shownFeatures: ['FORM', 'UPOS', 'LEMMA', 'MISC.Gloss'],
     shownMeta: ['text_en'],

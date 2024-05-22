@@ -68,6 +68,7 @@
 import { mapState } from 'pinia';
 import { useUserStore } from 'src/pinia/modules/user';
 import { useGrewSearchStore } from 'src/pinia/modules/grewSearch';
+import { useProjectStore } from 'src/pinia/modules/project';
 
 import { sample_t } from 'src/api/backend-types';
 import { PropType, defineComponent } from 'vue';
@@ -106,6 +107,7 @@ export default defineComponent({
   computed: {
     ...mapState(useUserStore, ['avatar']),
     ...mapState(useGrewSearchStore, ['grewTreeTypes', 'lastQuery']),
+    ...mapState(useProjectStore, ['collaborativeMode']),
     treeOptions() {
       if (this.grewOption == 'SEARCH') {
         return this.treeTypes.filter((element) => this.grewTreeTypes.includes(element.value));
@@ -126,6 +128,7 @@ export default defineComponent({
     },
   },
   mounted() {
+    if (!this.collaborativeMode) this.treeType = this.treeTypes.filter((option) => option.value === 'validated')[0];
     this.treeType = this.lastQuery !== null ? this.treeTypes.filter((option) => option.value === this.lastQuery?.userType)[0] : this.treeTypes[0];
   },
   methods: {

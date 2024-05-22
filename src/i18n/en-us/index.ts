@@ -202,6 +202,9 @@ export default {
     annotMode: 'Annotation mode',
     blindAnnot: 'Blind annotation',
     blindAnnotCaption: "In this case the annotators will not be able to see others' trees.",
+    collaborativeMode: 'Collaborative Mode',
+    collaborativeAnnot: 'Collaborative Annotation',
+    collaborativeAnnotCaption: 'If you uncheck this option, you will be the only user to maintain this project, and only validated trees will be used. This action is irreversible, so please make sure you really want to uncheck this option.'
   },
 
   exportSamples: {
@@ -248,7 +251,6 @@ export default {
   projectSettings: {
     title: 'Settings',
     windowClose: 'Close',
-    descriptionSave: 'Save description',
     toggleVisibility: 'Visibility',
     toggleVisibilityCaption:
       'Private projects limit access and annotation, visible projects limit annotation and open projects allow anyone to view and contribute',
@@ -257,8 +259,6 @@ export default {
       'Visible projects restrain only annotation.',
       'Open projects allow anyone to view and contribute their annotation.',
     ],
-    toggleAllVisible: 'All trees visible',
-    toggleAllVisibleCaption: "If true, annotators will be able to see others' trees",
     toggleBlindAnnotationMode: 'Blind annotation mode',
     toggleBlindAnnotationModeCaption: 'if true, the project has blind annotation mode properties',
     toggleDiffMode: 'Diff mode',
@@ -266,8 +266,6 @@ export default {
     chooseUserDiff: 'Diff user',
     chooseUserDiffCaption: 'user that will be used as reference for the comparaison',
     selectDiffUser: 'Select diff user',
-    toggleOpenProject: 'Open project',
-    toggleOpenProjectCaption: 'If true, anyone can edit samples',
     projectLanguage: 'Language',
     projectLanguageCaption: 'The project language is: ',
     shownFeaturesPanel: 'Shown Features',
@@ -278,6 +276,8 @@ export default {
     checkAnnotation: 'This looks like reasonable Json',
     resetUD: 'reset to UD',
     resetSUD: 'reset to SUD',
+    freezeProject: 'Freeze project',
+    freezeProjectCaption: 'Only the owner can freeze this project',
   },
   settingsPage: {
     title: 'Personal information',

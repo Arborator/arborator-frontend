@@ -6,7 +6,7 @@
         outlined
         :label="$t('grewSearch.selectSample')"
         v-model="selectedSamples"
-        :options="samples"
+        :options="samples.map(sample => sample.sampleName)"
         multiple
         use-chips
         option-label="sample_name"
@@ -133,7 +133,7 @@ export default defineComponent({
   methods: {
     emitSelectedValues() {
       const data = {
-        selectedSamples: this.selectedSamples.map((sample) => sample.sample_name),
+        selectedSamples: this.selectedSamples.map((sample) => sample.sampleName),
         treeType: this.treeType.value,
         otherUser: this.otherUser,
       };

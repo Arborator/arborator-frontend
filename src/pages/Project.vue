@@ -243,7 +243,7 @@ export default defineComponent({
     getProjectSamples() {
       api.getProjectSamples(this.projectName).then((response) => {
         this.samples = response.data;
-        this.sampleNames = this.samples.map((sample) => sample.sample_name);
+        this.sampleNames = this.samples.map((sample) => sample.sampleName);
       });
     },
     getSelectedSamples(value: any) {

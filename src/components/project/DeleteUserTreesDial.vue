@@ -52,7 +52,7 @@ export default defineComponent({
     removeUserTrees() {
       for (const sample of this.selectedSamples) {
         api
-          .deleteUserTrees(this.name, sample.sample_name, this.user)
+          .deleteUserTrees(this.name, sample.sampleName, this.user)
           .then(() => {
             notifyMessage({ message: `${this.user} trees are removed successfully` });
           })

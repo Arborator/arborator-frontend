@@ -78,10 +78,10 @@ export interface project_access_t {
 
 //// SAMPLES
 export interface sample_t {
-  sample_name: string;
+  sampleName: string;
   treesFrom: string[];
   sentences: number;
-  number_trees: number;
+  numberTrees: number;
   tokens: number;
   blindAnnotationLevel: number;
   treeByUser: { [key: string]: number };

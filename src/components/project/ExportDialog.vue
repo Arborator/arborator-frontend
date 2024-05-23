@@ -122,7 +122,7 @@ export default defineComponent({
       }
 
       for (const sample of this.samples) {
-        sampleNames.push(sample.sample_name);
+        sampleNames.push(sample.sampleName);
       }
       const data = { sampleNames: sampleNames, users: usersToExport };
       api

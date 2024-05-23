@@ -17,7 +17,7 @@
     :table-header-class="$q.dark.isActive ? 'text-white' : 'text-primary'"
     virtual-scroll
     table-style="max-height:80vh"
-    row-key="sample_name"
+    row-key="sampleName"
     hide-no-data
     :pagination="table.pagination"
     @update:selected="getSelectedSamples()"
@@ -45,10 +45,10 @@
             color="white"
             :text-color="$q.dark.isActive ? 'white' : 'black'"
             class="full-width"
-            :to="'/projects/' + name + '/' + props.row.sample_name"
+            :to="'/projects/' + name + '/' + props.row.sampleName"
             no-caps
           >
-            {{ props.row.sample_name }}
+            {{ props.row.sampleName }}
           </q-btn>
         </q-td>
         <q-td key="sentences" :props="props">{{ props.row.sentences }}</q-td>
@@ -198,14 +198,14 @@ export default defineComponent({
       this.$emit('selected-samples', this.table.selected);
     },
     searchSamples(rows: sample_t[], terms: any) {
-      return rows.filter((row) => row.sample_name.toLowerCase().indexOf(terms.toLowerCase) !== -1);
+      return rows.filter((row) => row.sampleName.toLowerCase().indexOf(terms.toLowerCase) !== -1);
     },
     updateBlindAnnotationLevel(sample: sample_t) {
       setTimeout(() => {
         // IMPORTANT : Since quasar v2 (vue v3), the update method (in q-select) occurs BEFORE the value is updated
         // So we need to use this hack of setTimeout if we want to access to the updated sample.blindAnnotationLevel
         api
-          .updateSampleBlindAnnotationLevel(this.name, sample.sample_name, sample.blindAnnotationLevel)
+          .updateSampleBlindAnnotationLevel(this.name, sample.sampleName, sample.blindAnnotationLevel)
           .then(() => {
             notifyMessage({ message: 'The new blind annotation level was correctly saved in the server' });
           })

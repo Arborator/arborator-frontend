@@ -92,7 +92,7 @@ export default defineComponent({
   },
   methods: {
     deleteSamples() {
-      const data = { sampleIds: this.selectedSamples.map((sample) => sample.sample_name) };
+      const data = { sampleIds: this.selectedSamples.map((sample) => sample.sampleName) };
       api
         .deleteSamples(this.name, data)
         .then(() => {
@@ -105,7 +105,7 @@ export default defineComponent({
         });
     },
     deleteSamplesFromGithub() {
-      const data = { sampleNames: this.selectedSamples.map((sample) => sample.sample_name) };
+      const data = { sampleNames: this.selectedSamples.map((sample) => sample.sampleName) };
       api
         .deleteFileFromGithub(this.name, data)
         .then(() => {
@@ -127,7 +127,7 @@ export default defineComponent({
     },
     exportEvaluation() {
       const projectName = this.name;
-      const sampleName = this.selectedSamples[0].sample_name;
+      const sampleName = this.selectedSamples[0].sampleName;
       const fileName = `${sampleName}_evaluations`;
       api
         .exportEvaluation(projectName, sampleName)

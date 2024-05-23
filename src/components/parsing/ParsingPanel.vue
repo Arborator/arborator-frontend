@@ -398,20 +398,20 @@ export default defineComponent({
     ...mapState(useProjectStore, ['name']),
     ...mapState(useUserStore, ['isSuperAdmin', 'username']),
     allSamplesNames() {
-      return this.samples.map((sample) => sample.sample_name).sort(this.caseUnsensitiveCompare);
+      return this.samples.map((sample) => sample.sampleName).sort(this.caseUnsensitiveCompare);
     },
     trainingSamplesSelected() {
       if (this.parserData.param.trainAll) {
         return this.samples;
       } else {
-        return this.samples.filter((sample) => this.parserData.param.trainSamplesNames.includes(sample.sample_name));
+        return this.samples.filter((sample) => this.parserData.param.trainSamplesNames.includes(sample.sampleName));
       }
     },
     parsingSamplesSelected() {
       if (this.parserData.param.parseAll) {
         return this.samples;
       } else {
-        return this.samples.filter((sample) => this.parserData.param.parseSamplesNames.includes(sample.sample_name));
+        return this.samples.filter((sample) => this.parserData.param.parseSamplesNames.includes(sample.sampleName));
       }
     },
     allTreesFrom() {

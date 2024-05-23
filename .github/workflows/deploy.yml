@@ -7,20 +7,24 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - name: checkout repository
-        uses: actions/checkout@v2
-      - name: install dependencies
-        run: npm install
-      - name: build
-        run: npm run buildProd
-      - name: copy build to server
-        uses: appleboy/scp-action
-        with: 
-          host: ${{secrets.SERVER_HOST}}
-          username: ${{secrets.SERVER_USERNAME}}
-          key: ${{secrets.SERVER_SSH_KEY}}
-          port: ${{secrets.SERVER_PORT}}
-          source: /dist/spa
-          target: /home/arborator/arborator-frontend-test
-          
+    
+    - name: checkout repository
+      uses: actions/checkout@v2
+
+    - name: install dependencies
+      run: npm install
+
+    - name: build
+      run: npm run buildProd
+
+    - name: copy build to server
+      uses: appleboy/scp-action
+      with: 
+        host: ${{secrets.SERVER_HOST}}
+        username: ${{secrets.SERVER_USERNAME}}
+        key: ${{secrets.SERVER_SSH_KEY}}
+        port: ${{secrets.SERVER_PORT}}
+        source: /dist/spa
+        target: /home/arborator/arborator-frontend-test
+
                       

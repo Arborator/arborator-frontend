@@ -195,15 +195,13 @@ export default {
   getLexicon(projectName: string, data: any) {
     return API.post<getLexicon_RV>(`projects/${projectName}/lexicon`, data);
   },
-  exportLexiconJSON(projectName: string, data: any) {
-    return API.post(`projects/${projectName}/lexicon/export-json`, data, {
+  exportLexiconJSON(data: any) {
+    return API.post(`projects/lexicon/export-json`, data, {
       responseType: 'arraybuffer',
     });
   },
-  exportLexiconTSV(projectName: string, data: any) {
-    return API.post(`projects/${projectName}/lexicon/export-tsv`, data, {
-      responseType: 'arraybuffer',
-    });
+  exportLexiconTSV(data: any) {
+    return API.post(`projects/lexicon/export-tsv`, data, {responseType: 'arraybuffer',});
   },
   // -------------------------------------------------------- //
   // ---------------        For Klang       --------------- //

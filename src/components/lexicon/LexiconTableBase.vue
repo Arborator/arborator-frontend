@@ -276,9 +276,9 @@ export default defineComponent({
       for (const lexiconItem of this.passedLexiconItems) {
         download.push(lexiconItem);
       }
-      const datasample = { data: download };
+      const data = { data: download };
       api
-        .exportLexiconTSV(this.projectName as string, datasample)
+        .exportLexiconTSV(data)
         .then((response) => {
           const url = window.URL.createObjectURL(new Blob([response.data], { type: 'text/tab-separated-values' }));
           const link = document.createElement('a');
@@ -302,9 +302,9 @@ export default defineComponent({
       for (const lexiconItem of this.passedLexiconItems) {
         download.push(lexiconItem);
       }
-      const datasample = { data: download };
+      const data = { data: download };
       api
-        .exportLexiconJSON(this.projectName as string, datasample)
+        .exportLexiconJSON(data)
         .then((response) => {
           const url = window.URL.createObjectURL(new Blob([response.data], { type: 'application/json' }));
           const link = document.createElement('a');

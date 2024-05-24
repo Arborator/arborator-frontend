@@ -123,7 +123,7 @@ export interface ConstructiconEntry_t {
   id: string;
   title: string;
   description: string;
-  grew_query: string;
+  grewQuery: string;
   tags: string[];
 }
 

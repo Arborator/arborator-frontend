@@ -168,7 +168,7 @@ export default defineComponent({
       const newEntry: ConstructiconEntry_t = {
         id: uuidv4(),
         title: '',
-        grew_query: '',
+        grewQuery: '',
         description: '',
         tags: [],
       };

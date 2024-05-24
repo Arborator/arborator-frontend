@@ -42,7 +42,7 @@
               <q-item-section top avatar>
                 <q-item-label caption> {{ formatDate(record.date) }}</q-item-label>
                 <q-item-label v-if="record.type === 'rewrite'" caption>
-                  {{ record.modified_sentences }} {{ $t('grewHistory.modifiedSentences') }}
+                  {{ record.modifiedSentences }} {{ $t('grewHistory.modifiedSentences') }}
                 </q-item-label>
                 <q-item-label v-else caption> {{ $t('grewHistory.noModifiedSentences') }} </q-item-label>
                 <q-toggle v-model="record.favorite" color="primary" checked-icon="star" @update:model-value="updateHistoryFavorites(record)">
@@ -156,4 +156,3 @@ export default defineComponent({
   },
 });
 </script>
-<style></style>

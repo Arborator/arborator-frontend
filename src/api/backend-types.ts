@@ -213,9 +213,9 @@ export interface ParsingSettings_t {
 
 //////////////Github ///////////////////
 export interface githubRepository_t {
-  name: String;
-  owner_name: String;
-  owner_avatar: String;
+  name: string;
+  owner_name: string;
+  owner_avatar: string;
 }
 export interface githubSynchronizedRepository_t {
   repositoryName: string;
@@ -230,5 +230,5 @@ export interface grewHistoryRecord_t {
   type: string;
   favorite: boolean;
   date: number;
-  modified_sentences: number;
+  modifiedSentences: number;
 }

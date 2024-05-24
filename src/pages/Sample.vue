@@ -20,8 +20,6 @@
                 :sentence="item"
                 :index="index"
                 :blind-annotation-level="blindAnnotationLevel"
-                :is-focused="focusedSentences[index]"
-                @focused-sent="loseFocus"
               >
               </SentenceCard>
             </template>
@@ -32,10 +30,6 @@
             <q-circular-progress indeterminate size="70px" :thickness="0.22" color="primary" track-color="grey-3" />
           </div>
         </div>
-
-        <GrewSearch :sentence-count="numberOfTrees" :search-scope="samplename" :sample-names="[samplename]" :trees-from="userIds" />
-
-        <RelationTableMain :sample-names="[samplename]" />
       </div>
     </template>
   </q-splitter>
@@ -86,11 +80,9 @@ export default defineComponent({
   data() {
     const splitterModel: number = 10;
     const splitterHeight: number = 0;
-    const focusedSentences: boolean[] = [];
     return {
       splitterModel,
       splitterHeight,
-      focusedSentences,
     };
   },
   computed: {
@@ -121,7 +113,6 @@ export default defineComponent({
     getTrees() {
       this.getSampleTrees({ projectName: this.projectname, sampleName: this.samplename }).then(() => {
         this.scrollToIndexFromURL();
-        this.focusedSentences = Array(Object.keys(this.filteredTrees).length).fill(false);
         this.reloadTrees = false;
       });
     },
@@ -141,12 +132,6 @@ export default defineComponent({
       } else {
         console.log("We didn't find the header, we will consider a header size of 35");
         this.splitterHeight = window.innerHeight - 35;
-      }
-    },
-    loseFocus(value: any) {
-      const index = this.filteredTrees.findIndex((tree) => tree.sent_id == value);
-      for (const sentId in this.focusedSentences) {
-        this.focusedSentences[sentId] = parseInt(sentId) == index;
       }
     },
   },

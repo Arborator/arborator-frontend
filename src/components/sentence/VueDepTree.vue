@@ -8,8 +8,7 @@
 
 <script lang="ts">
 import { emptyTokenJson, tokenJson_T } from 'conllup/lib/conll';
-import { SentenceCaretaker } from 'dependencytreejs/src/ReactiveSentence';
-import { ReactiveSentence } from 'dependencytreejs/src/ReactiveSentence';
+import { SentenceCaretaker, ReactiveSentence } from 'dependencytreejs/src/ReactiveSentence';
 import { SentenceSVG, defaultSentenceSVGOptions } from 'dependencytreejs/src/SentenceSVG';
 import { mapState } from 'pinia';
 import { LocalStorage } from 'quasar';
@@ -17,8 +16,7 @@ import { package_t } from 'src/api/backend-types';
 import { useProjectStore } from 'src/pinia/modules/project';
 import { useUserStore } from 'src/pinia/modules/user';
 import { reactive_sentences_obj_t, sentence_bus_events_t, sentence_bus_t } from 'src/types/main_types';
-import { PropType } from 'vue';
-import { defineComponent } from 'vue';
+import { defineComponent, PropType } from 'vue';
 
 interface svgClickEvent_t extends Event {
   detail: { clicked: string; targetLabel: 'FORM' | 'FEATS' | 'LEMMA' | 'DEPREL' };

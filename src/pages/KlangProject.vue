@@ -224,7 +224,7 @@ export default defineComponent({
         .then((response) => {
           const users = response.data;
           users.forEach((user) => {
-            if (user.super_admin !== true) {
+            if (user.superAdmin !== true) {
               this.users.push({
                 label: user.username,
                 value: user.username,

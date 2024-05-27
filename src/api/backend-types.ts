@@ -3,16 +3,16 @@
 //// USER ////
 export interface user_t {
   id: string;
-  auth_provider: string;
+  authProvider: string;
   username: string;
-  first_name: string;
-  family_name: string;
+  firstName: string;
+  familyName: string;
   email: string;
-  not_share_email: boolean;
-  picture_url: string;
-  super_admin: boolean;
-  created_date: number;
-  last_seen: number;
+  notShareEmail: boolean;
+  pictureUrl: string;
+  superAdmin: boolean;
+  createdDate: number;
+  lastSeen: number;
 }
 
 //// PROJECT ////

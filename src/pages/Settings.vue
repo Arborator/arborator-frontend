@@ -6,18 +6,18 @@
         <q-banner rounded :class="$q.dark.isActive ? '' : 'bg-grey-3'">
           <template #avatar>
             <q-avatar :key="avatarKey" color="default" text-color="white" size="100px">
-              <img :src="picture_url" />
+              <img :src="pictureUrl" alt="avatar" />
             </q-avatar>
           </template>
           <div class="row">
             <div :class="'col text-center text-weight-bold text-h4 ' + ($q.dark.isActive ? '' : 'text-blue-grey-10')">
-              {{ first_name }} {{ family_name }}
+              {{ firstName }} {{ familyName }}
             </div>
           </div>
           <div class="row">
             <div :class="'col text-center ' + +($q.dark.isActive ? '' : 'text-blue-grey-8')">@{{ username }}</div>
           </div>
-          <div v-show="super_admin" class="row">
+          <div v-show="superAdmin" class="row">
             <div :class="'col text-center ' + ($q.dark.isActive ? '' : 'text-blue-grey-8')">Super Admin</div>
           </div>
         </q-banner>
@@ -36,8 +36,8 @@
             <q-card-section>
               <div class="q-gutter-lg">
                 <q-input v-model="email" type="email" label="Email" />
-                <q-input v-model="first_name" type="text" :label="$t('settingsPage.firstName')" />
-                <q-input v-model="family_name" type="text" :label="$t('settingsPage.familyName')" />
+                <q-input v-model="firstName" type="text" :label="$t('settingsPage.firstName')" />
+                <q-input v-model="familyName" type="text" :label="$t('settingsPage.familyName')" />
               </div>
             </q-card-section>
             <q-card-actions align="right">
@@ -61,16 +61,16 @@ import { defineComponent } from 'vue';
 export default defineComponent({
   name: 'Settings',
   computed: {
-    ...mapWritableState(useUserStore, ['email', 'first_name', 'family_name']),
-    ...mapState(useUserStore, ['avatarKey', 'picture_url', 'super_admin', 'username']),
+    ...mapWritableState(useUserStore, ['email', 'firstName', 'familyName']),
+    ...mapState(useUserStore, ['avatarKey', 'pictureUrl', 'superAdmin', 'username']),
   },
   methods: {
     ...mapActions(useUserStore, ['updateUserInformation']),
     onSubmitModifications() {
       const data = {
         email: this.email as string,
-        first_name: (this.first_name as string) || '',
-        family_name: (this.family_name as string) || '',
+        first_name: (this.firstName as string) || '',
+        family_name: (this.familyName as string) || '',
       };
       this.updateUserInformation(data);
     },
@@ -78,4 +78,4 @@ export default defineComponent({
 });
 </script>
 
-<style scoped></style>
+

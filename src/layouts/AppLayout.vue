@@ -85,9 +85,9 @@
           <q-btn v-show="isLoggedIn" outline color="primary">
             <q-icon :name="loggedWithGithub ? 'fab fa-github' : 'fab fa-google'" class="q-mr-md" />
             <q-tooltip> {{ $t('userInformation') }} {{ loggedWithGithub ? ' Github' : 'Gmail' }} </q-tooltip>
-            <q-icon v-if="getUserInfos.picture_url === ''" name="account_circle" />
+            <q-icon v-if="getUserInfos.pictureUrl === ''" name="account_circle" />
             <q-avatar v-else :key="getUserInfos.avatarKey" color="default" text-color="white" size="xs">
-              <img :src="getUserInfos.picture_url" />
+              <img :src="getUserInfos.pictureUrl" alt="avatar" />
             </q-avatar>
             <q-menu transition-show="jump-down" transition-hide="jump-up">
               <div class="row no-wrap q-pa-md">

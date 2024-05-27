@@ -16,15 +16,15 @@ export const useProjectStore = defineStore('project', {
       return state.admins[0] === useUserStore().username;
     },
     isAdmin(state): boolean {
-      return state.admins.includes(useUserStore().username) || useUserStore().super_admin;
+      return state.admins.includes(useUserStore().username) || useUserStore().superAdmin;
     },
     isValidator(state): boolean {
       return state.validators.includes(useUserStore().username) || this.isAdmin;
     },
     isAnnotator(state): boolean {
-      return state.annotators.includes(useUserStore().username) && !useUserStore().super_admin;
+      return state.annotators.includes(useUserStore().username) && !useUserStore().superAdmin;
     },
-    isGuest: (state) => state.guests.includes(useUserStore().username) && !useUserStore().super_admin,
+    isGuest: (state) => state.guests.includes(useUserStore().username) && !useUserStore().superAdmin,
     isStudent(state): boolean {
       return !this.isValidator && state.blindAnnotationMode;
     },

@@ -215,7 +215,7 @@ export default defineComponent({
           options.push({
             username: user.username,
             email: user.email,
-            avatar: user.picture_url,
+            avatar: user.pictureUrl,
           });
         }
         return options;
@@ -241,7 +241,7 @@ export default defineComponent({
               options.push({
                 username: user.username,
                 email: user.email,
-                avatar: user.picture_url,
+                avatar: user.pictureUrl,
               });
             }
             return options;

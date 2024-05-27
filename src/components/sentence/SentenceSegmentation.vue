@@ -375,11 +375,10 @@ export default defineComponent({
       } else {
         this.createReactiveSentence(this.mergedSentences, this.mergedReactiveSentence as reactive_sentences_obj_t);
         if (this.mergeWarningMessage) {
-          this.$q.notify({
+          notifyMessage({
             message: this.mergeWarningMessage,
             color: 'warning',
             position: 'top',
-            closeBtn: 'X',
             timeout: 0,
           });
         }

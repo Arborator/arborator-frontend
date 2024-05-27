@@ -152,6 +152,7 @@ import { PropType, defineComponent } from 'vue';
 
 import LexiconModificationDialog from './LexiconModificationDialog.vue';
 import LexiconTableBase from './LexiconTableBase.vue';
+import { notifyMessage } from 'src/utils/notify';
 
 export default defineComponent({
   name: 'LexiconMain',
@@ -215,12 +216,7 @@ export default defineComponent({
       this.secondaryFeatures.forEach((element) => {
         message += `"${element}", `;
       });
-      this.$q.notify({
-        message: message,
-        color: 'positive',
-        position: 'top',
-        timeout: 3000,
-      });
+      notifyMessage({ message: message, position: 'top', timeout: 3000, });
     },
   },
 });

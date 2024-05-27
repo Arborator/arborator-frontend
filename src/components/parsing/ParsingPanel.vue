@@ -507,13 +507,12 @@ export default defineComponent({
       this.parserData.param.pipelineChoice = 'TRAIN_AND_PARSE';
       this.isShowModels = false;
       if (this.parserData.param.availableModels.map((model) => model.projectName).some((project) => project === this.name)) {
-        this.$q.notify({
+        notifyMessage({
           message:
             'There is already model trained with the samples of this project, if you want to train new model please remove unused models of this projects',
           position: 'top',
           color: 'warning',
           timeout: 0,
-          closeBtn: 'X',
         });
       }
     },

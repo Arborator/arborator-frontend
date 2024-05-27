@@ -198,12 +198,12 @@ export default defineComponent({
       };
       this.loading = true;
       let interval = setTimeout(() => {
-        this.$q.notify({
+        notifyMessage({
           message: this.$t('github.syncWarningMessage'),
           color: 'warning',
           position: 'top',
           timeout: 5000,
-        });
+        })
       }, 10000);
       api
         .synchronizeWithGithubRepo(this.projectName as string, data)

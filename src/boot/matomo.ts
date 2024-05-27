@@ -2,7 +2,6 @@ import { boot } from 'quasar/wrappers';
 import { VueMatomo } from 'vue-matomo';
 
 import Router from '../router/index';
-import routes from '../router/routes';
 
 export default boot(({ app }) => {
   app.use(VueMatomo, {

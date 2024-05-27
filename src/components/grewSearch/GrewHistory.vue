@@ -84,7 +84,7 @@ import { useProjectStore } from 'src/pinia/modules/project';
 import { notifyMessage } from 'src/utils/notify';
 import { defineComponent } from 'vue';
 
-import ConfirmAction from '../ConfirmAction.vue';
+import ConfirmAction from '../shared/ConfirmAction.vue';
 import GrewCodeMirror from '../codemirrors/GrewCodeMirror.vue';
 
 export default defineComponent({

@@ -70,7 +70,7 @@
 </template>
 <script lang="ts">
 import { mapState } from 'pinia';
-import ConfirmAction from 'src/components/ConfirmAction.vue';
+
 import { useProjectStore } from 'src/pinia/modules/project';
 import { useUserStore } from 'src/pinia/modules/user';
 import { notifyError, notifyMessage } from 'src/utils/notify';
@@ -79,6 +79,7 @@ import { PropType, defineComponent } from 'vue';
 import api from '../../api/backend-api';
 import GithubCommitDialog from './GithubCommitDialog.vue';
 import GithubPullRequestDialog from './GithubPullRequestDialog.vue';
+import ConfirmAction from '../shared/ConfirmAction.vue';
 
 export default defineComponent({
   components: {
@@ -158,7 +159,6 @@ export default defineComponent({
       this.getChanges();
     },
     pullChanges() {
-      const data = { repositoryName: this.repositoryName };
       api
         .pullChanges(this.projectName)
         .then(() => {

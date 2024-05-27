@@ -10,8 +10,6 @@ import api from '../api/backend-api';
 // "export default () => {}" function below (which runs individually
 // for each client)
 
-// const api = axios.create({ baseURL: 'https://api.example.com' });
-
 export default boot(({ app }) => {
   // for use inside Vue files (Options API) through this.$axios and this.$api
 

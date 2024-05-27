@@ -157,7 +157,7 @@ import { notifyError } from 'src/utils/notify';
 import { defineComponent } from 'vue';
 
 import api from '../api/backend-api';
-import ProjectSettingsView from '../components/ProjectSettingsView.vue';
+import ProjectSettingsView from '../components/project/ProjectSettingsView.vue';
 import LexiconMain from '../components/lexicon/LexiconMain.vue';
 import ParsingPanel from '../components/parsing/ParsingPanel.vue';
 import UploadDialog from '../components/project/UploadDialog.vue';

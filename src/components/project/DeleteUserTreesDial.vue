@@ -22,7 +22,7 @@ import api from '../../api/backend-api';
 import { sample_t } from '../../api/backend-types';
 import { useProjectStore } from '../../pinia/modules/project';
 import { notifyError, notifyMessage } from '../../utils/notify';
-import ConfirmAction from '../ConfirmAction.vue';
+import ConfirmAction from '../shared/ConfirmAction.vue';
 
 export default defineComponent({
   name: 'DeleteUserTreesDial',

@@ -139,9 +139,9 @@ import { notifyError, notifyMessage } from 'src/utils/notify';
 import { defineComponent } from 'vue';
 
 import api from '../api/backend-api';
-import CreaProjectCard from '../components/CreaProjectCard.vue';
-import ProjectCard from '../components/ProjectCard.vue';
-import ProjectItem from '../components/ProjectItem.vue';
+import CreaProjectCard from '../components/project/CreaProjectCard.vue';
+import ProjectCard from '../components/project/ProjectCard.vue';
+import ProjectItem from '../components/project/ProjectItem.vue';
 
 export default defineComponent({
   name: 'ProjectHub',

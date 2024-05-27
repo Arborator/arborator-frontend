@@ -243,7 +243,7 @@ import { table_t } from 'src/types/main_types';
 import { notifyError, notifyMessage } from 'src/utils/notify';
 import { PropType, defineComponent } from 'vue';
 
-import ConfirmAction from '../ConfirmAction.vue';
+import ConfirmAction from '../shared/ConfirmAction.vue';
 
 const kirParserSentPerSecSpeed: number = 140;
 const TIMEOUT_TASK_STATUS_CHECKER = 1000 * 60 * 60 * 3; // 3 hours
@@ -568,14 +568,12 @@ export default defineComponent({
     parserPipelineStart() {
       if (this.parserData.param.pipelineChoice === 'TRAIN_AND_PARSE' || this.parserData.param.pipelineChoice === 'TRAIN_ONLY') {
         this.parserTrainStart();
-      } else {
-        if (this.modelsTable.selected.length) {
-          this.parserData.param.baseModel = {
-            project_name: this.modelsTable.selected[0].projectName,
-            model_id: this.modelsTable.selected[0].modelId,
-          };
-          this.parserParseStart(this.parserData.param.baseModel as any as ModelInfo_t);
-        }
+      } else if (this.modelsTable.selected.length) {
+        this.parserData.param.baseModel = {
+          project_name: this.modelsTable.selected[0].projectName,
+          model_id: this.modelsTable.selected[0].modelId,
+        };
+        this.parserParseStart(this.parserData.param.baseModel as any as ModelInfo_t);
       }
     },
     parserTrainStart() {

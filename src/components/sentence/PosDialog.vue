@@ -92,7 +92,7 @@ export default defineComponent({
       });
     },
     onChangePos() {
-      if (this.selectedPos.some((val) => val == true)) {
+      if (this.selectedPos.some((val) => val)) {
         this.token[this.title] = this.posOptions[this.selectedPos.indexOf(true)];
       } else {
         this.token[this.title] = '_';
@@ -113,4 +113,3 @@ export default defineComponent({
   },
 });
 </script>
-<style></style>

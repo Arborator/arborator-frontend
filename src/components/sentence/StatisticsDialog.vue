@@ -24,8 +24,7 @@
 
 <script lang="ts">
 import { sentence_bus_t } from 'src/types/main_types';
-import { PropType } from 'vue';
-import { defineComponent } from 'vue';
+import { PropType, defineComponent } from 'vue';
 
 type tag_t = 'UPOS' | 'DEPREL' | 'HEAD';
 type scores_on_tags_t = { [key in tag_t]: number };
@@ -71,4 +70,4 @@ export default defineComponent({
   },
 });
 </script>
-<style></style>
+

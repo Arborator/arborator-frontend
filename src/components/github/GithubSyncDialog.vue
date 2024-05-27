@@ -14,7 +14,7 @@
             <q-item v-for="user in githubOwners" @click="getRepositoriesPerOwner(user.a)" clickable v-close-popup>
               <q-item-section avatar>
                 <q-avatar size="1.2rem">
-                  <img :src="user.v" />
+                  <img :src="user.v" alt="avatar" />
                 </q-avatar>
               </q-item-section>
               <q-item-section>
@@ -197,7 +197,7 @@ export default defineComponent({
         branchSync: branchSyn === 'default' ? branch : this.branchToUse,
       };
       this.loading = true;
-      var interval = setTimeout(() => {
+      let interval = setTimeout(() => {
         this.$q.notify({
           message: this.$t('github.syncWarningMessage'),
           color: 'warning',
@@ -228,4 +228,3 @@ export default defineComponent({
   },
 });
 </script>
-<style></style>

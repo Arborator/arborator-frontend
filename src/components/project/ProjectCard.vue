@@ -78,7 +78,7 @@ import { useUserStore } from 'src/pinia/modules/user';
 import { timeAgo } from 'src/utils/timeAgoUtils';
 import { PropType, defineComponent } from 'vue';
 
-import ConfirmAction from '../components/ConfirmAction.vue';
+import ConfirmAction from '../shared/ConfirmAction.vue';
 import RenameProjectDialog from './RenameProjectDialog.vue';
 
 export default defineComponent({

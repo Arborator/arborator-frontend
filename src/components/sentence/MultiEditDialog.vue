@@ -12,15 +12,15 @@
       <q-card-section>
         <table v-if="treeJson">
           <tr>
-            <th>ID</th>
-            <th>TOKEN</th>
-            <th v-for="metaLabel in metaLabels" :key="metaLabel">
+            <th scope="col">ID</th>
+            <th scope="col">TOKEN</th>
+            <th  scope="col" v-for="metaLabel in metaLabels" :key="metaLabel">
               {{ metaLabel }}
             </th>
           </tr>
           <tr>
-            <th>0</th>
-            <th>{{ $t('multiEditDialog.all') }} :</th>
+            <th scope="col" >0</th>
+            <th scope="col">{{ $t('multiEditDialog.all') }} :</th>
             <td v-for="metaLabel in metaLabels" :key="metaLabel">
               <q-checkbox v-model="checkBoxesAll[metaLabel]" @update:model-value="toggleAll(metaLabel)"></q-checkbox>
             </td>
@@ -29,8 +29,8 @@
             <td colspan="8" class="divider"><hr /></td>
           </tr>
           <tr v-for="token of treeJson.nodesJson" :key="token.ID">
-            <th>{{ token.ID }}</th>
-            <th>{{ token.FORM }}</th>
+            <th scope="col">{{ token.ID }}</th>
+            <th scope="col">{{ token.FORM }}</th>
             <td v-for="metaLabel in metaLabels" :key="metaLabel">
               <q-checkbox v-model="checkBoxes[token.ID][metaLabel]"></q-checkbox>
             </td>
@@ -48,11 +48,9 @@
 </template>
 
 <script lang="ts">
-import { tokenJson_T } from 'conllup/lib/conll';
-import { emptyTreeJson } from 'conllup/lib/conll';
+import { tokenJson_T, emptyTreeJson } from 'conllup/lib/conll';
 import { reactive_sentences_obj_t, sentence_bus_t } from 'src/types/main_types';
-import { PropType } from 'vue';
-import { defineComponent } from 'vue';
+import { PropType, defineComponent } from 'vue';
 
 type metaLabel_t = 'UPOS' | 'DEPREL' | 'HEAD' | 'LEMMA' | 'FEATS' | 'MISC';
 
@@ -140,4 +138,3 @@ export default defineComponent({
   },
 });
 </script>
-<style></style>

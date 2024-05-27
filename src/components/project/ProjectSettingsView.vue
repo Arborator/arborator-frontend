@@ -235,9 +235,9 @@ import { useProjectStore } from 'src/pinia/modules/project';
 import { notifyError, notifyMessage } from 'src/utils/notify';
 import { PropType, defineComponent } from 'vue';
 
-import LanguageSelect from '../components/shared/LanguageSelect.vue';
-import UserSelect from './UserSelect.vue';
-import ProjectVisibility from './shared/ProjectVisibility.vue';
+import LanguageSelect from '../shared/LanguageSelect.vue';
+import UserSelect from '../UserSelect.vue';
+import ProjectVisibility from '../shared/ProjectVisibility.vue';
 
 export default defineComponent({
   name: 'ProjectSettingsView',

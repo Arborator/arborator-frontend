@@ -57,7 +57,7 @@ import { useProjectStore } from 'src/pinia/modules/project';
 import { notifyError, notifyMessage } from 'src/utils/notify';
 import { PropType, defineComponent } from 'vue';
 
-import ConfirmAction from '../ConfirmAction.vue';
+import ConfirmAction from '../shared/ConfirmAction.vue';
 import DeleteUserTreesDial from '../project/DeleteUserTreesDial.vue';
 import ExportDialog from './ExportDialog.vue';
 

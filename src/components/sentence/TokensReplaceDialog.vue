@@ -135,7 +135,7 @@ export default defineComponent({
         const sentence = (event.target as HTMLInputElement).value;
         if ((sentence[this.startIndex - 1] == ' ' || this.startIndex == 0) && sentence[this.endIndex] == ' ') {
           this.selection = (event.target as HTMLInputElement).value.substring(this.startIndex, this.endIndex);
-          this.selection.includes(' ') ? (this.tokensReplaceDialogOpened = false) : (this.tokensReplaceDialogOpened = true);
+          this.tokensReplaceDialogOpened = !this.selection.includes(' ')
         }
       }
     });
@@ -184,7 +184,6 @@ export default defineComponent({
     },
     tokensReplace() {
       const oldTree = this.reactiveSentencesObj[this.userId].state.treeJson;
-      const newMetaJson = this.reactiveSentencesObj[this.userId].state.metaJson;
       const tokensIndexes = this.tokensIndexes;
       const newTokensForm = this.tokensForms;
       const newTree = replaceArrayOfTokens(oldTree, tokensIndexes, newTokensForm, true);
@@ -215,7 +214,7 @@ export default defineComponent({
       const newTree = this.reactiveSentencesObj[this.userId].state.treeJson;
       const groupsJson = newTree.groupsJson;
       const nodesJson = newTree.nodesJson;
-      const newForms = Object.values(nodesJson).map((node) => ({ form: node.FORM, spaceAfter: node.MISC.SpaceAfter ? false : true }));
+      const newForms = Object.values(nodesJson).map((node) => ({ form: node.FORM, spaceAfter: !node.MISC.SpaceAfter }));
       let newMetaText = '';
       let i = 0;
       while (i < newForms.length) {
@@ -245,4 +244,3 @@ export default defineComponent({
   },
 });
 </script>
-<style></style>

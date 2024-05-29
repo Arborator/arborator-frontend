@@ -30,6 +30,7 @@ import {
   updateTree_ED,
   updateUser_ED,
   whoIAm_RV,
+  getStatProject_RV,
 } from './endpoints';
 
 export const API = axios.create({
@@ -365,4 +366,10 @@ export default {
   updateHistoryRecord(projectName: string, recordId: string, data: any) {
     return API.put(`projects/${projectName}/history/${recordId}`, data);
   },
+  // -------------------------------------------------------- //
+  // ---------------       ProjectStats        --------------- //
+  // -------------------------------------------------------- //
+  getStats(projectName: string) {
+    return API.get<getStatProject_RV>(`projects/${projectName}/statistics`);
+  }
 };

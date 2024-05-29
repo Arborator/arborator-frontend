@@ -34,24 +34,7 @@
           <q-separator />
         </q-card-section>
         <q-card-section class="q-gutter-md">
-          <div class="row text-h6">
-            {{ $t('projectView.projectOverview') }}
-            <span>
-              <q-icon name="trending_up"></q-icon>
-            </span>
-          </div>
-          <div class="row justify-between q-gutter-md">
-            <q-card flat bordered class="col">
-              <q-card-section> 88 </q-card-section>
-            </q-card>
-            <q-card flat bordered class="col">
-              <q-card-section> 88 </q-card-section>
-            </q-card>
-            <q-card flat bordered class="col">
-              <q-card-section> 88 </q-card-section>
-            </q-card>
-          </div>
-          <q-separator />
+          <StatisticsProject :project-name="projectName"></StatisticsProject>
         </q-card-section>
         <q-card-section>
           <div class="row q-gutter-md" style="justify-content: right">
@@ -142,14 +125,6 @@
 <script lang="ts">
 import { mapState, mapWritableState } from 'pinia';
 import { sample_t } from 'src/api/backend-types';
-import ConstructiconDialog from 'src/components/constructicon/ConstructiconDialog.vue';
-import GithubOptions from 'src/components/github/GithubOptions.vue';
-import GithubSyncDialog from 'src/components/github/GithubSyncDialog.vue';
-import GrewSearch from 'src/components/grewSearch/GrewSearch.vue';
-import ProjectOptions from 'src/components/project/ProjectOptions.vue';
-import ProjectTable from 'src/components/project/ProjectTable.vue';
-import RelationTable from 'src/components/relationTable/RelationTable.vue';
-import ProjectVisibility from 'src/components/shared/ProjectVisibility.vue';
 import { useGithubStore } from 'src/pinia/modules/github';
 import { useGrewSearchStore } from 'src/pinia/modules/grewSearch';
 import { useProjectStore } from 'src/pinia/modules/project';
@@ -161,6 +136,15 @@ import ProjectSettingsView from '../components/project/ProjectSettingsView.vue';
 import LexiconMain from '../components/lexicon/LexiconMain.vue';
 import ParsingPanel from '../components/parsing/ParsingPanel.vue';
 import UploadDialog from '../components/project/UploadDialog.vue';
+import ConstructiconDialog from 'src/components/constructicon/ConstructiconDialog.vue';
+import GithubOptions from 'src/components/github/GithubOptions.vue';
+import GithubSyncDialog from 'src/components/github/GithubSyncDialog.vue';
+import GrewSearch from 'src/components/grewSearch/GrewSearch.vue';
+import ProjectOptions from 'src/components/project/ProjectOptions.vue';
+import ProjectTable from 'src/components/project/ProjectTable.vue';
+import RelationTable from 'src/components/relationTable/RelationTable.vue';
+import ProjectVisibility from 'src/components/shared/ProjectVisibility.vue';
+import StatisticsProject from 'src/components/project/StatisticsProject.vue';
 
 export default defineComponent({
   components: {
@@ -176,6 +160,7 @@ export default defineComponent({
     ConstructiconDialog,
     GithubSyncDialog,
     GithubOptions,
+    StatisticsProject,
   },
   data() {
     const samples: sample_t[] = [];

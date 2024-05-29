@@ -17,6 +17,7 @@ import {
   shownMeta_t,
   timed_tokens_t,
   user_t,
+  statProject_t,
 } from './backend-types';
 
 export interface logout_RV {
@@ -147,3 +148,7 @@ export type getGithubSynchronizedRepository_RV = githubSynchronizedRepository_t;
 
 ///////////// GrewHistory ////////////////////
 export type getGrewHistory_RV = grewHistoryRecord_t[];
+
+/////////////// statProject ////////////////////
+
+export type getStatProject_RV = statProject_t;

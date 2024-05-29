@@ -232,3 +232,27 @@ export interface grewHistoryRecord_t {
   date: number;
   modifiedSentences: number;
 }
+
+////////////////Project stat/////////////
+export interface statProject_t {
+  users: string[],
+  samplesNumber: number,
+  treesNumber: number,
+  tokensNumber: number,
+  topUser: topUser_t,
+  lastRead: lastRead_t,
+  lastWrite: lastWrite_t,
+}
+export interface topUser_t {
+  username: string,
+  treesNumber: number,
+  userAvatar: string,
+}
+export interface lastRead_t {
+  lastRead: number,
+  lastReadUsername: string,
+}
+export interface lastWrite_t {
+  lastWrite: number,
+  lastWriteUsername: string,
+}

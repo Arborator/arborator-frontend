@@ -2,7 +2,7 @@
 
 Here is the running application: https://arboratorgrew.elizia.net/
 
-Don't hesitate to create an account to try it out
+Don't hesitate to create an account to try it out.
 
 ## Documentation
 

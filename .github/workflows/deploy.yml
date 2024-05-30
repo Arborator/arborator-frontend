@@ -20,5 +20,5 @@ jobs:
         username: ${{ secrets.SERVER_USERNAME }}
         key: ${{ secrets.SERVER_SSH_KEY }}
         port: ${{ secrets.SERVER_PORT }}
-        source: /dist/spa
+        source: dist/spa
         target: /home/arborator/arborator-frontend-test

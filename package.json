@@ -12,7 +12,7 @@
     "lint": "eslint --ext .ts,.vue ./ --fix",
     "test": "echo \"See package.json => scripts for available tests.\" && exit 0",
     "buildDev": "quasar build",
-    "buildProd": "mv dist/ dist_backup/ ; quasar build && rm -r dist_backup/ || mv dist_backup/ dist/",
+    "buildProd": "quasar build",
     "test:unit": "jest --updateSnapshot",
     "test:unit:coverage": "jest --coverage",
     "test:unit:watch": "jest --watch",

@@ -371,5 +371,8 @@ export default {
   // -------------------------------------------------------- //
   getStats(projectName: string) {
     return API.get<getStatProject_RV>(`projects/${projectName}/statistics`);
+  },
+  getProjectTags(projectName: string, data: any) {
+    return API.post(`projects/${projectName}/tags`, data);
   }
 };

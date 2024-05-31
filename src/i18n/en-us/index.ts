@@ -499,6 +499,18 @@ export default {
     copyTooltip: 'Copy this request',
     deleteTooltip: 'Delete all the history',
   },
+  projectStats: {
+    users: 'Users',
+    samples: 'Samples',
+    trees: 'Trees',
+    tokens: 'Tokens',
+    activityOverview: 'Activity overview',
+    topContributor: 'Top contributor',
+    annotationProgress: 'Annotation Progress',
+    lastAccess: 'Last Access',
+    by: 'by',
+    usedTags: 'Used tags',
+  },
   conllDial: {
     title: 'Conll Dialog',
     tableView: 'Table View',

@@ -14,7 +14,7 @@
         <q-item-section>
           <q-item-label class="text-h6">{{ projectStat.users.length }}</q-item-label>
           <q-item-label caption>
-            Users
+            {{ $t('projectStats.users') }}
           </q-item-label>
         </q-item-section>
       </q-item>
@@ -27,7 +27,7 @@
         <q-item-section>
           <q-item-label class="text-h6"> {{ projectStat.samplesNumber }}</q-item-label>
           <q-item-label caption>
-            Samples
+            {{ $t('projectStats.samples') }}
           </q-item-label>
         </q-item-section>
       </q-item>
@@ -40,7 +40,7 @@
         <q-item-section>
           <q-item-label class="text-h6">{{ projectStat.treesNumber }}</q-item-label>
           <q-item-label caption>
-            Trees
+            {{ $t('projectStats.trees') }}
           </q-item-label>
         </q-item-section>
       </q-item>
@@ -53,14 +53,14 @@
         <q-item-section>
           <q-item-label class="text-h6">{{ projectStat.tokensNumber }}</q-item-label>
           <q-item-label caption>
-            Tokens
+            {{ $t('projectStats.tokens') }}
           </q-item-label>
         </q-item-section>
       </q-item>
     </q-card>
   </div>
   <div class="row text-h6">
-    Activity Overview
+    {{ $t('projectStats.activityOverview') }}
     <span>
       <q-icon name="trending_up"></q-icon>
     </span>
@@ -74,7 +74,7 @@
           </q-avatar>
         </q-item-section>
         <q-item-section>
-          <q-item-label class="text-h6">Top contributor</q-item-label>
+          <q-item-label class="text-h6">{{ $t('projectStats.topContributor') }}</q-item-label>
           <q-item-label caption>
             {{ projectStat.topUser.username }}
           </q-item-label>
@@ -83,9 +83,9 @@
       </q-item>
       <q-separator />
       <q-item>
-        <q-item-section>
-          <q-item-label class="text-h6">Annotation progress</q-item-label>
-          <q-linear-progress size="25px" :value="topUserProgress" color="secondary">
+        <q-item-section class="q-gutter-md">
+          <q-item-label class="text-h6">{{ $t('projectStats.annotationProgress') }}</q-item-label>
+          <q-linear-progress rounded size="25px" :value="topUserProgress" color="secondary">
             <div class="absolute-full flex flex-center">
               <q-badge color="white" text-color="secondary" :label="topUserProgressLabel" />
             </div>
@@ -96,20 +96,33 @@
     <q-card flat bordered class="col">
       <q-item>
         <q-item-section>
-          <q-item-label class="text-h6">Last Access</q-item-label>
+          <q-item-label class="text-h6">{{ $t('projectStats.lastAccess') }}</q-item-label>
         </q-item-section>
       </q-item>
       <q-separator />
       <q-card-section horizontal>
         <q-card-section class="col">
           <div class="text-h6 text-primary"> {{ $t('projectHub.lastWriteAccess') }} {{ timeAgo(projectStat.lastWrite.lastWrite) }}</div>
-          <div class="text-caption"> by {{ projectStat.lastWrite.lastWriteUsername }}</div>
+          <div class="text-caption">{{ $t('projectStats.by') }} {{ projectStat.lastWrite.lastWriteUsername }}</div>
         </q-card-section>
         <q-separator vertical />
         <q-card-section class="col">
           <div class="text-h6 text-primary"> {{ $t('projectHub.lastAccess') }} {{ timeAgo(projectStat.lastRead.lastRead) }}</div>
-          <div class="text-caption"> by {{ projectStat.lastRead.lastReadUsername }}</div>
+          <div class="text-caption"> {{ $t('projectStats.by') }} {{ projectStat.lastRead.lastReadUsername }}</div>
         </q-card-section>
+      </q-card-section>
+    </q-card>
+  </div>
+  <div class="row justify-between q-gutter-md">
+    <q-card flat bordered class="col">
+      <q-card-section class="q-gutter-md">
+        <div class="text-h6">
+          {{ $t('projectStats.usedTags') }}
+        </div>
+        <q-separator />
+        <div v-for="tag in projectUsedTags">
+          <q-chip outline color="primary" size="sm" :label="tag"/>
+        </div>
       </q-card-section>
     </q-card>
   </div>
@@ -134,18 +147,25 @@ export default defineComponent({
       lastRead: { lastRead: 0, lastReadUsername: '' },
       lastWrite: { lastWrite: 0, lastWriteUsername: '' },
     };
+    const projectUsedTags: string[] = [];
     return {
       projectStat,
+      projectUsedTags,
     }
   },
   props: {
     projectName: {
       type: String as PropType<string>,
       required: true,
+    },
+    sampleNames: {
+      type: Array as PropType<string[]>,
+      required: true,
     }
   },
   mounted() {
     this.getStatistics();
+    this.getProjectTags();
   },
   computed: {
     topUserProgress() {
@@ -168,6 +188,19 @@ export default defineComponent({
         .catch((error) => {
           notifyError({ error: `Error while loading project statistics ${error}` });
         });
+    },
+    getProjectTags() {
+      const data = { sampleNames: this.sampleNames}
+      console.log(data)
+      api
+        .getProjectTags(this.projectName, data)
+        .then((response) => {
+          console.log(response.data)
+          this.projectUsedTags = response.data;
+        })
+        .catch((error) => {
+          notifyError({ error: `Error happened while loading project tags: ${error}` });
+        })
     }
   }
 

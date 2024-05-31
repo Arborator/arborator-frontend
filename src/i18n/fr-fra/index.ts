@@ -501,6 +501,18 @@ export default {
     copyTooltip: 'Copiez cette requête',
     deleteTooltip: "Supprimez tout l'historique",
   },
+  projectStats: {
+    users: 'Utilisateurs',
+    samples: 'Echantillon',
+    trees: 'Arbres',
+    tokens: 'Tokens',
+    activityOverview: 'Aperçu des activités',
+    topContributor: 'Meilleur contributeur',
+    annotationProgress: "Avancement de l'annotation",
+    lastAccess: 'Dernier accès',
+    by: 'par',
+    usedTags: 'Tags utilisés',
+  },
   conllDial: {
     title: 'Conll Dialog',
     tableView: 'Tableau',

@@ -21,24 +21,24 @@
           <q-breadcrumbs-el v-if="$route.path.startsWith('/projects')" icon="view_module" to="/projects" />
           <q-breadcrumbs-el
             v-if="$route.params.projectname"
-            :label="$route.params.projectname"
+            :label="($route.params.projectname as string)"
             icon="fas fa-tree"
             :to="'/projects/' + $route.params.projectname"
           />
           <q-breadcrumbs-el
             v-if="$route.params.samplename && $route.params.projectname"
-            :label="$route.params.samplename"
+            :label="($route.params.samplename as string)"
             icon="assignment"
             :to="'/projects/' + $route.params.projectname + '/' + $route.params.samplename"
           />
           <q-breadcrumbs-el v-if="$route.path.startsWith('/klang')" icon="music_note" :to="'/klang'" />
           <q-breadcrumbs-el
             v-if="$route.params.kprojectname"
-            :label="$route.params.kprojectname"
+            :label="($route.params.kprojectname as string)"
             :to="'/klang/' + $route.params.kprojectname"
             icon="view_module"
           />
-          <q-breadcrumbs-el v-if="$route.params.ksamplename" :label="$route.params.ksamplename" />
+          <q-breadcrumbs-el v-if="$route.params.ksamplename" :label="($route.params.ksamplename as string)" />
         </q-breadcrumbs>
         <q-space />
         <div class="q-gutter-sm row items-center no-wrap" size="4rem">
@@ -85,9 +85,9 @@
           <q-btn v-show="isLoggedIn" outline color="primary">
             <q-icon :name="loggedWithGithub ? 'fab fa-github' : 'fab fa-google'" class="q-mr-md" />
             <q-tooltip> {{ $t('userInformation') }} {{ loggedWithGithub ? ' Github' : 'Gmail' }} </q-tooltip>
-            <q-icon v-if="getUserInfos.pictureUrl === ''" name="account_circle" />
-            <q-avatar v-else :key="getUserInfos.avatarKey" color="default" text-color="white" size="xs">
-              <img :src="getUserInfos.pictureUrl" alt="avatar" />
+            <q-icon v-if="pictureUrl === ''" name="account_circle" />
+            <q-avatar v-else :key="avatarKey" color="default" text-color="white" size="xs">
+              <img :src="(pictureUrl as string)" alt="avatar" />
             </q-avatar>
             <q-menu transition-show="jump-down" transition-hide="jump-up">
               <div class="row no-wrap q-pa-md">
@@ -99,7 +99,7 @@
                       </q-item-section>
                       <q-item-section> {{ $t('settings') }} </q-item-section>
                     </q-item>
-                    <q-item v-show="getUserInfos.super_admin" v-ripple clickable to="/admin">
+                    <q-item v-show="superAdmin" v-ripple clickable to="/admin">
                       <q-item-section avatar>
                         <q-icon name="vpn_key" />
                       </q-item-section>
@@ -109,12 +109,12 @@
                 </div>
                 <q-separator vertical inset class="q-mx-lg" />
                 <div class="column items-center">
-                  <q-icon v-if="getUserInfos.avatarKey === ''" name="account_circle" />
-                  <q-avatar v-else :key="getUserInfos.avatarKey" color="default" text-color="white">
-                    <img :src="getUserInfos.picture_url" />
+                  <q-icon v-if="avatarKey === ''" name="account_circle" />
+                  <q-avatar v-else :key="avatarKey" color="default" text-color="white">
+                    <img :src="(pictureUrl as string)" alt="avatar" />
                   </q-avatar>
                   <div class="text-subtitle1 q-mt-md q-mb-xs">
-                    {{ getUserInfos.username }}
+                    {{ username }}
                   </div>
                   <q-btn v-close-popup color="negative" label="Logout" size="sm" @click="logout_()" />
                 </div>
@@ -228,7 +228,7 @@ export default defineComponent({
   },
   computed: {
     ...mapState(useMainStore, ['isProjectAdmin', 'source']),
-    ...mapState(useUserStore, ['getUserInfos', 'isLoggedIn', 'loggedWithGithub']),
+    ...mapState(useUserStore, [ 'pictureUrl', 'avatarKey', 'isLoggedIn', 'loggedWithGithub', 'superAdmin', 'username']),
     notHome() {
       return this.$route.fullPath !== '/';
     },
@@ -240,7 +240,6 @@ export default defineComponent({
     },
   },
   mounted() {
-    this.isProjectAdmin;
     this.storage = useStorage();
     this.setStartingLanguage();
 

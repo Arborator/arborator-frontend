@@ -23,7 +23,7 @@
               {{ $t('projectHub.tooltipCreaProject[1]') }}
             </q-tooltip>
           </q-btn>
-          <q-btn v-if="isLoggedIn" no-caps :label="$t('projectHub.myProjects')" />
+          <q-btn v-if="isLoggedIn" no-caps :label="$t('projectHub.myProjects')" to="/myprojects" />
         </q-toolbar>
       </q-card-section>
       <q-card-section>

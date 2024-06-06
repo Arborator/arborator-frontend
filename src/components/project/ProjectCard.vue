@@ -45,7 +45,7 @@
         <div class="text-caption text-grey-9 text-weight-medium" style="text-decoration: underline">
           {{ project.admins[0] }}
         </div>
-        <div class="text-caption">{{ $t('projectHub.lastAccess') }} {{ project.lastAccess }}</div>
+        <div class="text-caption">{{ $t('projectHub.lastAccess') }} {{ timeAgo(project.lastAccess) }}</div>
         <div class="text-caption">{{ $t('projectHub.lastWriteAccess') }} {{ timeAgo(project.lastWriteAccess) }}</div>
       </q-card-actions>
     </q-card-section>

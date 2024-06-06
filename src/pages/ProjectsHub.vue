@@ -128,20 +128,20 @@
 </template>
 
 <script lang="ts">
-import { mapState, mapWritableState } from 'pinia';
+import { mapState, mapWritableState, mapActions } from 'pinia';
 import { LocalStorage } from 'quasar';
 import { project_extended_t } from 'src/api/backend-types';
-import EmailCollectDialog from 'src/components/Index/EmailCollectDialog.vue';
-import LanguageSelect from 'src/components/shared/LanguageSelect.vue';
 import { useProjectStore } from 'src/pinia/modules/project';
 import { useUserStore } from 'src/pinia/modules/user';
 import { notifyError, notifyMessage } from 'src/utils/notify';
 import { defineComponent } from 'vue';
 
 import api from '../api/backend-api';
-import CreaProjectCard from '../components/project/CreaProjectCard.vue';
-import ProjectCard from '../components/project/ProjectCard.vue';
-import ProjectItem from '../components/project/ProjectItem.vue';
+import CreaProjectCard from 'src/components/project/CreaProjectCard.vue';
+import ProjectCard from 'src/components/project/ProjectCard.vue';
+import ProjectItem from 'src/components/project/ProjectItem.vue';
+import EmailCollectDialog from 'src/components/Index/EmailCollectDialog.vue';
+import LanguageSelect from 'src/components/shared/LanguageSelect.vue';
 
 export default defineComponent({
   name: 'ProjectHub',
@@ -185,22 +185,22 @@ export default defineComponent({
     ...mapWritableState(useProjectStore, ['reloadProjects']),
     myProjects(): project_extended_t[] {
       return this.visibleProjects.filter((project) => {
-        return (this.isCreatedByMe(project) || this.isSharedWithMe(project) || this.haveTreeInProject(project)) && !this.isOld(project);
+        return this.isMyProject(project) && !this.isOldProject(project);
       });
     },
     myOldProjects(): project_extended_t[] {
       return this.visibleProjects.filter((project) => {
-        return (this.isCreatedByMe(project) || this.isSharedWithMe(project)) && this.isOld(project);
+        return this.isMyProject(project) && this.isOldProject(project);
       });
     },
     otherProjects(): project_extended_t[] {
       return this.visibleProjects.filter((project) => {
-        return !(this.isCreatedByMe(project) || this.isSharedWithMe(project)) && !this.isOld(project);
+        return !this.isMyProject(project) && !this.isOldProject(project);
       });
     },
     otherOldProjects(): project_extended_t[] {
       return this.visibleProjects.filter((project) => {
-        return !(this.isCreatedByMe(project) || this.isSharedWithMe(project)) && this.isOld(project);
+        return !this.isMyProject(project) && this.isOldProject(project);
       });
     },
     filteredProjects(): project_extended_t[] {
@@ -244,23 +244,10 @@ export default defineComponent({
     this.getProjects();
   },
   methods: {
+    ...mapActions(useProjectStore, ['isMyProject', 'isOldProject']),
     toggleProjectView() {
       this.listMode = !this.listMode;
       LocalStorage.set('project_view', this.listMode);
-    },
-    isCreatedByMe(project: project_extended_t) {
-      return project.admins[0] === this.username;
-    },
-    isSharedWithMe(project: project_extended_t) {
-      const projectMember = [...project.admins, ...project.annotators, ...project.validators, ...project.guests];
-      return projectMember.includes(this.username);
-    },
-    haveTreeInProject(project: project_extended_t) {
-      return project.users.includes(this.username);
-    },
-    isOld(project: project_extended_t) {
-      // either not used since more than a year or empty and older than an hour or the project has no admins
-      return project.lastAccess < this.ayear || (project.numberSamples < 1 && project.lastAccess < -3600) || project.admins.length === 0;
     },
     getProjects() {
       api

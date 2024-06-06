@@ -99,6 +99,14 @@ export const useProjectStore = defineStore('project', {
     },
   },
   actions: {
+    isMyProject(project: project_extended_t) {
+      const projectMember = [...project.admins, ...project.annotators, ...project.validators, ...project.guests];
+      return projectMember.includes(useUserStore().username) || project.users.includes(useUserStore().username);
+    },
+    isOldProject(project: project_extended_t) {
+      const ayear = -3600 * 24 * 365;
+      return project.lastAccess < ayear || (project.numberSamples < 1 && project.lastAccess < -3600);
+    },
     resetAnnotationFeatures(): void {
       this.annotationFeatures = defaultState().annotationFeatures;
     },

@@ -55,7 +55,7 @@
 import { mapState, mapActions } from 'pinia';
 import { useUserStore } from 'src/pinia/modules/user';
 import { useProjectStore } from 'src/pinia/modules/project';
-import { notifyError } from 'src/utils/notify';
+import { notifyError, notifyMessage } from 'src/utils/notify';
 import { project_extended_t } from 'src/api/backend-types';
 import { defineComponent } from 'vue';
 

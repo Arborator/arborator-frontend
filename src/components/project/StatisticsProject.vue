@@ -66,7 +66,7 @@
     </span>
   </div>
   <div class="row justify-between q-gutter-md">
-    <q-card flat bordered class="col">
+    <q-card v-if="projectStat.topUser" flat bordered class="col">
       <q-item>
         <q-item-section avatar>
           <q-avatar>
@@ -114,7 +114,7 @@
     </q-card>
   </div>
   <div class="row justify-between q-gutter-md">
-    <q-card flat bordered class="col">
+    <q-card v-if="projectUsedTags.length" flat bordered class="col">
       <q-card-section class="q-gutter-md">
         <div class="text-h6">
           {{ $t('projectStats.usedTags') }}

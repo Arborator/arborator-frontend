@@ -191,11 +191,9 @@ export default defineComponent({
     },
     getProjectTags() {
       const data = { sampleNames: this.sampleNames}
-      console.log(data)
       api
         .getProjectTags(this.projectName, data)
         .then((response) => {
-          console.log(response.data)
           this.projectUsedTags = response.data;
         })
         .catch((error) => {

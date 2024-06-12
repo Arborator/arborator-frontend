@@ -219,7 +219,7 @@ export default {
   },
 
   grewSearch: {
-    selectSample: 'Select sample',
+    selectSample: 'Select sample, keep it empty if you want to select all samples',
     treesType: 'Search in',
     recentTree: 'Recent trees',
     userTree: 'My trees',
@@ -454,7 +454,7 @@ export default {
     all: 'All',
   },
   lexicon: {
-    selectSample: 'Select samples',
+    selectSample: 'Select sample, keep it empty if you want to select all samples',
     lexiconOptions: [
       'Get the lexicon of my trees',
       'Get the lexicon of my recent trees',

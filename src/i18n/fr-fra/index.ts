@@ -216,7 +216,7 @@ export default {
   },
 
   grewSearch: {
-    selectSample: 'Sélectionner un échantillon',
+    selectSample: 'Sélectionnez un échantillon, laissez le champ vide si vous souhaitez sélectionner tous les échantillons.',
     treesType: 'Rechercher sur',
     recentTree: 'Les arbres récents',
     userTree: 'Mes arbres',
@@ -456,7 +456,7 @@ export default {
     all: 'Tous',
   },
   lexicon: {
-    selectSample: 'Sélectionnez un échantillon',
+    selectSample: 'Sélectionnez un échantillon, laissez le champ vide si vous souhaitez sélectionner tous les échantillons.',
     lexiconOptions: [
       'Obtenir le lexique de mes arbres',
       'Obtenir le lexique de mes arbres récents',

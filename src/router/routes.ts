@@ -1,13 +1,21 @@
 import { RouteRecordRaw } from 'vue-router';
+import { useUserStore } from 'src/pinia/modules/user';
 
 const routes: RouteRecordRaw[] = [
   {
     path: '/',
     component: () => import('src/layouts/AppLayout.vue'),
     children: [
-      { path: '', component: () => import('src/pages/Index.vue') },
+      { path: '', component: () => {
+        if (useUserStore().isLoggedIn) {
+          return import('src/pages/MyProjects.vue');
+        } 
+        else {
+          return import('src/pages/Index.vue');
+        }
+      }  
+    },
       { path: '/projects', component: () => import('src/pages/ProjectsHub.vue') },
-      { path: '/myprojects', component: () => import('src/pages/MyProjects.vue') },
       {
         path: '/projects/:projectname',
         component: () => import('src/pages/Project.vue'),

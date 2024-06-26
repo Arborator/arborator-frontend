@@ -32,17 +32,12 @@ export default {
 
   // first page (the index)
   homepage: {
+    title: "Un outil d'annotation collaboratif pour le développement des treebanks.",
+    subtitle: "ArboratorGrew ouvre de nouvelles voies pour la création, la mise à jour, la maintenance et la conservation collectives d'arbres syntaxiques.",
     accessTreebankBtn: 'Accéder aux corpus arborés',
-    slogan: "L'annotation de Treebank à échelle humaine",
-    features: [
-      'Annotez et partagez vos corpus arborés',
-      'Requêtez et recherchez en utilisant des grammaires à la pointe',
-      'Libre et Open Source',
-      'Gérez vos équipes et les accès à vos projets',
-    ],
-    scroll: "Plus d'infos en bas",
-    arboheadline: 'Annotation collaborative avec Arborator',
-    grewheadline: 'Grammaire de Graphes par Grew',
+    popularProjects: 'Projets populaires',
+    aboutAg: "A propos d'ArboratorGrew",
+    aboutUs: 'A propos de nous',
     descriptionCard: {
       title: "Un outil d'annotation collaboratif pour corpus arborés",
       subtitle: "Une interface graphique facile d'utilisation rendant l'annotation plus attrayante.",
@@ -62,16 +57,6 @@ export default {
       ],
       tooltipGrew: 'La grammaire de graphes Grew.',
     },
-    collaborativeCard: {
-      title: 'Together with others you can build beautiful treebanks',
-      subtitle: 'Social login makes Arborator-Grew a hazzle free tool',
-      content: [
-        'You control who accesses your annotation projetct, and no annotator can destroy other trees than their owns.',
-        'Push the CoNLL data onto your GitHub project and share your beautiful trees from there.',
-        'Essayez le dans le',
-      ],
-      playgroundBtn: 'terrain de jeu',
-    },
     sourceCard: {
       title: 'Code source',
       content: [
@@ -79,17 +64,8 @@ export default {
         'pour parcourir le code.',
         'Aidez la science en nous donnant vos retours à partir de',
         "la page d'issues d'Arborator.",
-        "Un guide d'installation et d'utilisation d'Arborator-Grew est à venir sous peu.",
       ],
       tooltipGit: 'Notre page GitHub',
-    },
-    storyCard: {
-      title: 'Our story',
-      subtitle: 'Arborator-Grew combines the features of two preexisting tools: Arborator and Grew.',
-      content: [
-        'Arborator is a widely used collaborative graphical online dependency treebank annotation tool. Grew is a tool for graph querying and rewriting specialized in structures needed in NLP, i.e. syntactic and semantic dependency trees and graphs. Grew also has an online version,',
-        ", where all Universal Dependencies treebanks in their classical, deep and surface-syntactic flavors can be queried. Arborator-Grew is a complete redevelopment and modernization of Arborator, replacing its own internal database storage by a new Grew API, which adds a powerful query tool to Arborator's existing treebank creation and correction features. This includes complex access control for parallel expert and crowd-sourced annotation, tree comparison visualization, and various exercise modes for teaching and training of annotators. Arborator-Grew opens up new paths of collectively creating, updating, maintaining, and curating syntactic treebanks and semantic graph banks.",
-      ],
     },
     citeCard: {
       title: 'Citez-nous !',
@@ -97,30 +73,22 @@ export default {
     toolsCard: {
       title: 'Autres outils Arborator',
       content: [
-        'Pour visualiser rapidement votre fichier CoNLL cliquez ici:',
-        'Libre accès !',
-        'Visualiseur de fichiers CoNLL',
-        'Édition graphique rapide de fichiers CoNLL:',
-        'Èditeur de fichiers CoNLL',
+        'Pour visualiser rapidement votre fichier CoNLL cliquez ici',
         "La version historique d'Arborator est toujours utilisable ici",
-        "La licence d'ArboratorGrew",
+        'Édition graphique rapide de fichiers CoNLL',
       ],
     },
     footertextmadewith: "Créé avec beaucoup d'",
-    footertextin: 'à', // reaaallllll basic one, not good enough but still buggy using span and html parse  navhome: 'Accueil',
     textGetUserEmailDialog: [
       'Pour la bonne gestion du service, nous pourrions avoir besoin de vous contacter, notamment pour la suppression de projects inutilisés. Votre email ne sera utilisé que pour des communications concernant ArboratorGrew et ne sera pas communiqué à des tiers.',
       'Vous pouvez vous opposer à la communication de votre mail mais, dans ce cas, nous nous réservons le droit de supprimer vos projets sans préavis.',
-      'Vous pouvez à tout moment modifier ou supprimer votre mail de contact depuis votre compte.',
     ],
     checkboxEmailDialog: [
       "J'ai compris que mon mail sera stocké sur le serveur d'ArboratorGrew situé en Europe.",
       'Je refuse de communiquer mon email.',
       "Je m'inscris à la newsletter qui sera envoyée pour me tenir au courant des nouvelles fonctionnalités ou des incidents sur la plateforme (newsletter, pas plus de quelques mails par mois).",
     ],
-    submitMessage: 'Vos choix sont bien mis à jour',
     inputErrorText: ["S'il vous plaît, tapez quelque chose", "S'il vous plaît, tapez une adresse valide"],
-    tootltipBtnSumbitUserEmail: 'Veuillez cocher la case si vous souhaitez recevoir des courriels.',
     submitEmailBtn: 'Soumettre',
   },
 

@@ -114,7 +114,7 @@
             :virtual-scroll-item-size="200"
           >
             <template #default="{ item }">
-              <ProjectItem v-if="isLoggedIn || !isOld(item)" :key="item.id" :project="item" :parent-delete-project="deleteProject"></ProjectItem>
+              <ProjectItem v-if="isLoggedIn || !isOldProject(item)" :key="item.id" :project="item" :parent-delete-project="deleteProject"></ProjectItem>
             </template>
           </q-virtual-scroll>
         </q-list>
@@ -297,8 +297,3 @@ export default defineComponent({
   },
 });
 </script>
-<style scoped>
-.clickable:hover {
-  cursor: pointer;
-}
-</style>

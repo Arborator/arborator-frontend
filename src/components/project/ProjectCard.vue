@@ -58,6 +58,9 @@
         <div class="col-">
           <q-avatar color="primary" size="1.2rem" text-color="white">
             <img :src="project.ownerAvatarUrl" alt="owner" />
+            <q-tooltip>
+              {{ project.admins[0] }}
+            </q-tooltip>
           </q-avatar>
         </div>
       </div>

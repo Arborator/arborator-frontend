@@ -78,7 +78,7 @@ export default defineComponent({
     },
     onSubmitEmail() {
       this.emailCollectDialog = false;
-      const data = { email: this.email, not_share_email: this.notShareEmail };
+      const data = { email: this.email, notShareEmail: this.notShareEmail };
       this.updateUserInformation(data);
     },
   },

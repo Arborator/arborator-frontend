@@ -68,9 +68,9 @@ export default defineComponent({
     ...mapActions(useUserStore, ['updateUserInformation']),
     onSubmitModifications() {
       const data = {
-        email: this.email as string,
-        first_name: (this.firstName as string) || '',
-        family_name: (this.familyName as string) || '',
+        email: this.email || '',
+        firstName: this.firstName  || '',
+        familyName: this.familyName || '',
       };
       this.updateUserInformation(data);
     },

@@ -35,7 +35,7 @@
               :options-sanitize="true"
               @input-value="onInput()"
             />
-            <q-select v-else v-model="props.row.a" dense clearable borderless :options="computeAttributeOptions()" />
+            <q-select v-else v-model="props.row.a" dense ble borderless :options="computeAttributeOptions()" />
           </q-td>
 
           <q-td key="v" :props="props">
@@ -61,7 +61,6 @@
               use-input
               input-debounce="1000"
               new-value-mode="add-unique"
-              clearable
               :options="computeValueOptions(props.row)"
               :options-sanitize="true"
               @input-value="onInput()"
@@ -72,7 +71,6 @@
               v-model="props.row.v"
               filled
               dense
-              clearable
               :options="computeValueOptions(props.row)"
               @input-value="onInput()"
             >

@@ -354,6 +354,8 @@ export default {
   parser: {
     parserChoices: ['Entraînement et Parsing', 'Entraînement Seulement', 'Parsing Seulement'],
     trainBtn: 'Entraîner un nouveau modèle',
+    baseModel: 'Modèle de base',
+    noBaseModelSelected: "Aucun modèle de base n'est sélectionné",
     trainSettings: "paramètres d'entraînement",
     trainOnAllfiles: 'Entraînement sur tous les fichiers ',
     filesToTrain: 'Echantillons à entraîner',

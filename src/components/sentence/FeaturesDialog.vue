@@ -140,8 +140,8 @@ export default defineComponent({
         if (r.v) (obj as { [key: string]: string })[r.a] = r.v;
         return obj;
       }, {});
-      this.token.FORM = this.form;
-      this.token.LEMMA = this.lemma;
+      this.token.FORM = this.form.normalize('NFC');
+      this.token.LEMMA = this.lemma.normalize('NFC');
       this.sentenceBus.emit('tree-update:token', {
         token: this.token,
         userId: this.userId,
@@ -155,7 +155,6 @@ export default defineComponent({
           },
           userId: this.userId,
         });
-        this.$emit('changed:metaText');
       }
     },
   },

@@ -351,6 +351,8 @@ export default {
   parser: {
     parserChoices: ['Train and Parse', 'Train Only', 'Parse Only'],
     trainBtn: 'Train new model',
+    baseModel: 'Base model',
+    noBaseModelSelected: 'No base model is selected',
     trainSettings: 'Train settings',
     trainOnAllfiles: 'Train on All samples',
     filesToTrain: 'Samples to train on',
@@ -406,7 +408,7 @@ export default {
   },
   tokenReplaceDialog: {
     merge: 'Merge',
-    mergeOptions: ['Merge right', 'Merge left'],
+    mergeOptions: ['Merge left', 'Merge right'],
     insert: 'Insert',
     insertOptions: ['Insert before', 'Insert after'],
     split: 'Split token',

@@ -120,8 +120,13 @@
           </div>
           <div class="row q-gutter-md q-py-md">
             <div class="col q-gutter-sm">
-              <q-input dense outlined v-model="firstReactiveSentence[userId].state.metaJson.text" label="text" />
-              <q-input dense outlined v-model="firstReactiveSentence[userId].state.metaJson.text_en" label="text_en" />
+              <q-input 
+                v-for="meta in Object.keys(firstReactiveSentence[userId].state.metaJson).filter((key) => key.includes('text'))" 
+                dense 
+                outlined 
+                v-model="firstReactiveSentence[userId].state.metaJson[meta]" 
+                :label="meta" 
+                />
               <q-input
                 dense
                 outlined
@@ -134,8 +139,13 @@
               />
             </div>
             <div class="col q-gutter-sm">
-              <q-input dense outlined v-model="secondReactiveSentence[userId].state.metaJson.text" label="text" />
-              <q-input dense outlined v-model="secondReactiveSentence[userId].state.metaJson.text_en" label="text_en" />
+              <q-input 
+                v-for="meta in Object.keys(secondReactiveSentence[userId].state.metaJson).filter((key) => key.includes('text'))" 
+                dense 
+                outlined 
+                v-model="secondReactiveSentence[userId].state.metaJson[meta]" 
+                :label="meta" 
+                />
               <q-input
                 dense
                 outlined
@@ -206,8 +216,14 @@
             </VueDepTree>
           </div>
           <div class="q-gutter-md q-py-md">
-            <q-input class="row" dense outlined v-model="mergedReactiveSentence[userId].state.metaJson.text" label="text" />
-            <q-input class="row" dense outlined v-model="mergedReactiveSentence[userId].state.metaJson.text_en" label="text_en" />
+            <q-input 
+              class="row"
+              v-for="meta in Object.keys(mergedReactiveSentence[userId].state.metaJson).filter((key) => key.includes('text'))" 
+              dense 
+              outlined 
+              v-model="mergedReactiveSentence[userId].state.metaJson[meta]" 
+              :label="meta"
+              />
             <q-input
               class="row"
               dense
@@ -267,6 +283,10 @@ export default defineComponent({
       type: String as PropType<string>,
       required: true,
     },
+    sampleName: {
+      type: String as PropType<string>,
+      required: true,
+    }
   },
   data() {
     const segmentOptions = [
@@ -280,6 +300,7 @@ export default defineComponent({
     const firstReactiveSentence: reactive_sentences_obj_t = {};
     const secondReactiveSentence: reactive_sentences_obj_t = {};
     const mergedReactiveSentence: reactive_sentences_obj_t = {};
+    const token: { form: string, index: number } = { form: '', index: 0 };
     return {
       showDial: true,
       segmentOptions,
@@ -287,7 +308,7 @@ export default defineComponent({
       hasPendingChanges,
       sentence: '',
       sentId: '',
-      token: {},
+      token,
       firstSentences,
       secondSentences,
       firstReactiveSentence,
@@ -332,8 +353,8 @@ export default defineComponent({
         this.firstSentences[userId] = emptySentenceJson();
         this.secondSentences[userId] = emptySentenceJson();
         this.splitSentenceTree(indexSplit, userId, sentenceTree);
-        this.updateSentenceMeta(this.firstSentences[userId], 'split1', sentenceMeta);
-        this.updateSentenceMeta(this.secondSentences[userId], 'split2', sentenceMeta);
+        this.splitSentenceMeta(this.firstSentences[userId], 'split1', sentenceMeta);
+        this.splitSentenceMeta(this.secondSentences[userId], 'split2', sentenceMeta);
       }
     },
     splitSentenceTree(indexSplit: number, userId: string, sentenceTree: treeJson_T) {
@@ -353,7 +374,7 @@ export default defineComponent({
         }
       });
     },
-    updateSentenceMeta(targetSentence: sentenceJson_T, split: string, sentenceMeta: metaJson_T) {
+    splitSentenceMeta(targetSentence: sentenceJson_T, split: string, sentenceMeta: metaJson_T) {
       for (const [metaKey, metaValue] of Object.entries(sentenceMeta)) {
         if (metaKey == 'text') {
           targetSentence.metaJson[metaKey] = Object.values(targetSentence.treeJson.nodesJson)
@@ -387,7 +408,7 @@ export default defineComponent({
     createReactiveSentence(targetSentences: sentence_t, reactiveSentencesObj: reactive_sentences_obj_t) {
       for (const userId in targetSentences) {
         const reactiveSentence = new ReactiveSentence();
-        reactiveSentence.fromSentenceConll(sentenceJsonToConll(targetSentences[userId]) as string);
+        reactiveSentence.fromSentenceConll(sentenceJsonToConll(targetSentences[userId]));
         reactiveSentencesObj[userId] = reactiveSentence;
       }
     },
@@ -396,14 +417,13 @@ export default defineComponent({
       this.updateChangedMetadata(this.secondSentences, this.secondReactiveSentence as reactive_sentences_obj_t);
       const firstSentencesJson = this.firstSentences;
       const secondSentencesJson = this.secondSentences;
-      const sampleName = this.$route.params.samplename as string;
       const data = {
         sentId: this.sentId,
         firstSents: firstSentencesJson,
         secondSents: secondSentencesJson,
       };
       api
-        .splitTree(this.name, sampleName, data)
+        .splitTree(this.name, this.sampleName, data)
         .then(() => {
           notifyMessage({ message: `sentence '${this.sentId}' is successfully splitted into two sentences` });
           this.reloadTrees = true;
@@ -415,9 +435,10 @@ export default defineComponent({
     },
     updateChangedMetadata(targetSentences: sentence_t, targetReactiveSentence: reactive_sentences_obj_t) {
       for (const sentence of Object.values(targetSentences)) {
-        sentence.metaJson.text = targetReactiveSentence[this.userId].state.metaJson.text;
+        for (const metaKey of Object.keys(targetReactiveSentence[this.userId].state.metaJson).filter((key) => key.includes('text'))) {
+          sentence.metaJson[metaKey] = targetReactiveSentence[this.userId].state.metaJson[metaKey];
+        }
         sentence.metaJson.sent_id = targetReactiveSentence[this.userId].state.metaJson.sent_id;
-        sentence.metaJson.text_en = targetReactiveSentence[this.userId].state.metaJson.text_en;
       }
     },
     MergeSentences() {
@@ -490,9 +511,8 @@ export default defineComponent({
         secondSentId: this.mergedSentId,
         mergedSentences: this.mergedSentences,
       };
-      const sampleName = this.$route.params.samplename as string;
       api
-        .mergeTrees(this.name, sampleName, data)
+        .mergeTrees(this.name, this.sampleName, data)
         .then(() => {
           notifyMessage({
             message: `the sentence '${this.sentId}' and the sentence '${this.mergedSentId}' are successfully merged`,

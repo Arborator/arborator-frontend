@@ -29,15 +29,25 @@
         </div>
       </q-card-section>
       <q-card-section v-if="filteredHistory.length > 0">
-        <div class="row" style="justify-content: right">
+        <div class="row q-pa-md" style="justify-content: right">
           <q-btn flat no-caps color="primary" icon="delete" :label="$t('grewHistory.deleteHistory')" @click="triggerConfirm(deleteAllHistory)">
             <q-tooltip>
               {{ $t('grewHistory.deleteTooltip') }}
             </q-tooltip>
           </q-btn>
         </div>
-        <q-scroll-area style="height: 80vh">
-          <q-list v-for="record in filteredHistory" bordered separator class="custom-frame2">
+        <div v-if="selectedItems.some(item => item)" class="row q-pa-md rounded-borders items-center custom-frame1">
+          <q-btn flat icon="close" @click="unselectItems()" />
+          <span v-if="selectedItems.filter(item => item).length > 1">
+            {{ selectedItems.filter(item => item).length }} selected items
+          </span>
+          <span v-else>
+            1 selected item
+          </span>
+          <q-btn flat icon="delete" @click="deleteSelectedHistoryItems()"></q-btn>
+        </div>
+        <q-scroll-area style="height: 80vh;">
+          <q-list v-for="(record, index) in filteredHistory" bordered separator class="custom-frame2">
             <q-item>
               <q-item-section top avatar>
                 <q-item-label caption> {{ formatDate(record.date) }}</q-item-label>
@@ -45,14 +55,7 @@
                   {{ record.modifiedSentences }} {{ $t('grewHistory.modifiedSentences') }}
                 </q-item-label>
                 <q-item-label v-else caption> {{ $t('grewHistory.noModifiedSentences') }} </q-item-label>
-                <q-toggle v-model="record.favorite" color="primary" checked-icon="star" @update:model-value="updateHistoryFavorites(record)">
-                  <q-tooltip v-if="!record.favorite">
-                    {{ $t('grewHistory.favoriteTooltip[0]') }}
-                  </q-tooltip>
-                  <q-tooltip v-else>
-                    {{ $t('grewHistory.favoriteTooltip[1]') }}
-                  </q-tooltip>
-                </q-toggle>
+                <q-checkbox v-model="selectedItems[index]"></q-checkbox>
               </q-item-section>
               <q-item-section>
                 <GrewCodeMirror v-model:value="record.request" :disabled="true" :line-numbers="false"></GrewCodeMirror>
@@ -63,6 +66,14 @@
                     {{ $t('grewHistory.copyTooltip') }}
                   </q-tooltip>
                 </q-btn>
+                <q-toggle v-model="record.favorite" color="primary" checked-icon="star" @update:model-value="updateHistoryFavorites(record)">
+                  <q-tooltip v-if="!record.favorite">
+                    {{ $t('grewHistory.favoriteTooltip[0]') }}
+                  </q-tooltip>
+                  <q-tooltip v-else>
+                    {{ $t('grewHistory.favoriteTooltip[1]') }}
+                  </q-tooltip>
+                </q-toggle>
               </q-item-section>
             </q-item>
           </q-list>
@@ -101,6 +112,7 @@ export default defineComponent({
       { value: 'favorites', label: this.$t('grewHistory.historyTypes[3]') },
     ];
     const confirmActionCallback = null as unknown as CallableFunction;
+    const selectedItems: boolean[] = [];
     return {
       showHistoryDial: true,
       filterRequest: '',
@@ -108,6 +120,7 @@ export default defineComponent({
       historyType: historyTypes[0],
       confirmDelete: false,
       confirmActionCallback,
+      selectedItems,
     };
   },
   computed: {
@@ -130,7 +143,7 @@ export default defineComponent({
     this.getHistory();
   },
   methods: {
-    ...mapActions(useGrewHistoryStore, ['getHistory', 'updateHistory', 'deleteAllHistory']),
+    ...mapActions(useGrewHistoryStore, ['getHistory', 'updateHistory', 'deleteAllHistory', 'deleteHistoryItem']),
     formatDate(timestamp: number) {
       return new Date(timestamp).toLocaleString('en-GB', { hour12: false });
     },
@@ -141,9 +154,11 @@ export default defineComponent({
       this.updateHistory(historyRecord.uuid, { favorite: historyRecord.favorite });
     },
     searchInHistory(history: grewHistoryRecord_t[]) {
-      return history.filter((record) => {
+      const historyItems =  history.filter((record) => {
         return record.request.toLowerCase().includes(this.filterRequest.toLowerCase());
       }, []);
+      this.selectedItems = Array(historyItems.length).fill(false);
+      return historyItems;  
     },
     copyRequest(record: grewHistoryRecord_t) {
       this.$emit('copied-request', record);
@@ -153,6 +168,18 @@ export default defineComponent({
       this.confirmDelete = true;
       this.confirmActionCallback = method;
     },
+    unselectItems() {
+      this.selectedItems.fill(false);
+    },
+    deleteSelectedHistoryItems() {
+      this.selectedItems.forEach((item, index) => {
+        if (item) {
+          let recordId = this.filteredHistory[index].uuid;
+          this.deleteHistoryItem(recordId);
+        }
+      })
+      this.getHistory();
+    }
   },
 });
 </script>

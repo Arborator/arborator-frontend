@@ -314,19 +314,19 @@ export default defineComponent({
       if (!this.collaborativeMode) this.customUserId = 'validated';
       const data = {
         username: this.customUserId,
-        text: this.text,
+        text: this.text.normalize('NFC'),
         option: this.option.value,
         lang: this.lang.value,
         sampleName: this.sampleName,
       };
       api
         .tokenizeSample(this.$route.params.projectname as string, data)
-        .then((response) => {
+        .then(() => {
           notifyMessage({ message: 'upload success' });
           this.$emit('uploaded:sample');
           this.uploadDialModel = false;
         })
-        .catch((error) => {
+        .catch(() => {
           notifyError({ error: 'Invalid request' });
         });
     },

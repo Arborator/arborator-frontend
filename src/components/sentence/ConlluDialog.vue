@@ -38,12 +38,120 @@
           :rows-per-page-options="[0]"
           separator="cell"
         >
-          <template v-slot:body="props">
+        <template v-slot:body="props">
             <q-tr :props="props">
-              <q-td v-for="col of conllColumns" :key="col" :props="props">
-                {{ props.row[col] }}
-                <q-popup-edit v-if="col !== 'ID'" v-model="props.row[col]" auto-save v-slot="scope">
-                  <q-input dense autofocus v-model="scope.value" />
+              <q-td key="ID" :props="props">
+                {{ props.row.ID }}
+              </q-td>
+              <q-td key="FORM" :props="props">
+                {{ props.row.FORM }}
+                <q-popup-edit v-model="props.row.FORM" auto-save v-slot="scope" >
+                  <q-input v-model="scope.value" dense autofocus />
+                </q-popup-edit>
+              </q-td>
+              <q-td key="LEMMA" :props="props">
+                {{ props.row.LEMMA }}
+                <q-popup-edit v-model="props.row.LEMMA" auto-save v-slot="scope" >
+                  <q-input v-model="scope.value" dense autofocus />
+                </q-popup-edit>
+              </q-td>
+              <q-td key="UPOS" :props="props">
+                {{ props.row.UPOS }}
+                <q-popup-edit
+                  v-model="props.row.UPOS"
+                  buttons
+                  label-set="Save"
+                  label-cancel="Close"
+                  :validate="checkUPOS"
+                  v-slot="scope"
+                >
+                  <q-input
+                    v-model="scope.value"
+                    :error="formatErrorTable.UPOS.error"
+                    :error-message="formatErrorTable.UPOS.message"
+                    dense
+                    autofocus
+                    @keyup.enter="scope.set"
+                  />
+                </q-popup-edit>
+              </q-td>
+              <q-td key="XPOS">
+                {{ props.row.XPOS }}
+                <q-popup-edit v-model="props.row.XPOS" auto-save v-slot="scope" >
+                  <q-input v-model="scope.value" dense autofocus />
+                </q-popup-edit>
+              </q-td>
+              <q-td key="FEATS" :props="props">
+                {{ props.row.FEATS }}
+                <q-popup-edit
+                  v-model="props.row.FEATS"
+                  buttons
+                  label-set="Save"
+                  label-cancel="Close"
+                  :validate="checkFEATS"
+                  v-slot="scope"
+                >
+                  <q-input
+                    v-model="scope.value"
+                    :error="formatErrorTable.FEATS.error"
+                    :error-message="formatErrorTable.FEATS.message"
+                    dense
+                    autofocus
+                    @keyup.enter="scope.set"
+                  />
+                </q-popup-edit>
+              </q-td>
+              <q-td key="HEAD" :props="props">
+                {{ props.row.HEAD }}
+                <q-popup-edit
+                  v-model.number="props.row.HEAD"
+                  buttons
+                  label-set="Save"
+                  label-cancel="Close"
+                  :validate="checkHEAD"
+                  v-slot="scope"
+                >
+                  <q-input
+                    type="number"
+                    v-model.number="scope.value"
+                    :error="formatErrorTable.HEAD.error"
+                    :error-message="formatErrorTable.HEAD.message"
+                    dense
+                    autofocus
+                    @keyup.enter="scope.set"
+                  />
+                </q-popup-edit>
+              </q-td>
+              <q-td key="DEPREL" :props="props">
+                {{ props.row.DEPREL }}
+                <q-popup-edit
+                  v-model="props.row.DEPREL"
+                  buttons
+                  label-set="Save"
+                  label-cancel="Close"
+                  :validate="checkDEPREL"
+                  v-slot="scope"
+                >
+                  <q-input
+                    v-model="scope.value"
+                    :error="formatErrorTable.DEPREL.error"
+                    :error-message="formatErrorTable.DEPREL.message"
+                    dense
+                    autofocus
+                    @keyup.enter="scope.set"
+                  />
+                </q-popup-edit>
+              </q-td>
+              <q-td key="DEPS">
+                {{ props.row.DEPS }}
+                <q-popup-edit v-model="props.row.DEPS" auto-save v-slot="scope" >
+                  <q-input v-model="scope.value" dense autofocus />
+                </q-popup-edit>
+              </q-td>
+              <q-td key="MISC">
+                {{ props.row.MISC }}
+                <q-popup-edit v-model="props.row.MISC" auto-save v-slot="scope" >
+                  <q-input v-model="scope.value" dense autofocus />
                 </q-popup-edit>
               </q-td>
             </q-tr>
@@ -65,8 +173,11 @@
 <script lang="ts">
 import CodeMirror2 from 'codemirror';
 import Codemirror from 'codemirror-editor-vue3';
-import { _depsConllToJson, _featuresConllToJson, nodesJson_T, tokenJson_T } from 'conllup/lib/conll';
+
 import { copyToClipboard } from 'quasar';
+import { tokenJson_T, _featuresConllToJson, _depsConllToJson, nodesJson_T } from 'conllup/lib/conll';
+import { mapState } from 'pinia';
+import { useProjectStore } from 'src/pinia/modules/project';
 import { sentence_bus_t, table_t } from 'src/types/main_types';
 import { notifyMessage } from 'src/utils/notify';
 import { PropType, defineComponent } from 'vue';
@@ -104,7 +215,13 @@ CodeMirror2.defineMode('tsv', () => {
     },
     lineComment: '#',
   };
-});
+}); 
+interface formatError_t {
+  [key: string]: {
+    error: boolean, 
+    message: string
+  }
+}
 export default defineComponent({
   components: { Codemirror },
   props: {
@@ -116,6 +233,7 @@ export default defineComponent({
   data() {
     const conllTable: any[] = [];
     const conllColumns = ['ID', 'FORM', 'LEMMA', 'UPOS', 'XPOS', 'FEATS', 'HEAD', 'DEPREL', 'DEPS', 'MISC'];
+    const conllColumnsToCheck = ['UPOS', 'FEATS', 'HEAD', 'DEPREL'];
     const nodesJson: nodesJson_T = {};
     const table: table_t<tokenJson_T> = {
       fields: [],
@@ -132,9 +250,11 @@ export default defineComponent({
       loadingDelete: false,
       exporting: false,
     };
+    const formatErrorTable: formatError_t = {};
     return {
       conllTable,
       conllColumns,
+      conllColumnsToCheck,
       nodesJson,
       table,
       userId: '',
@@ -151,7 +271,11 @@ export default defineComponent({
         mode: 'tsv',
         readOnly: true,
       },
+      formatErrorTable,
     };
+  },
+  computed: {
+    ...mapState(useProjectStore, ['annotationFeatures']),
   },
   watch: {
     conllTable: {
@@ -172,6 +296,9 @@ export default defineComponent({
       this.getConllTable();
     });
     this.createTableFields();
+    this.conllColumnsToCheck.forEach((column) => {
+      this.formatErrorTable[column] = { error: false, message: '' };
+    });
   },
   methods: {
     getConllTable() {
@@ -179,15 +306,16 @@ export default defineComponent({
       for (const node of Object.values(this.nodesJson)) {
         this.conllTable.push({
           ...node,
-          FEATS: this.formatTableEntry(node.FEATS),
-          DEPS: this.formatTableEntry(node.DEPS),
-          MISC: this.formatTableEntry(node.MISC),
+          HEAD: node.HEAD === -1 ? '_' : node.HEAD,
+          FEATS: this.formatTableEntry(node.FEATS, '='),
+          DEPS: this.formatTableEntry(node.DEPS, ':'),
+          MISC: this.formatTableEntry(node.MISC, '='),
         });
       }
     },
-    formatTableEntry(entry: any) {
+    formatTableEntry(entry: any, linkOperator: string ) {
       return Object.entries(entry)
-        .map(([key, value]) => `${key}=${value}`)
+        .map(([key, value]) => `${key}${linkOperator}${value}`)
         .join('|');
     },
     createTableFields() {
@@ -232,6 +360,59 @@ export default defineComponent({
       copyToClipboard(this.currentConllContent).then(() => {
         notifyMessage({ message: 'Conll Copied!' });
       });
+    },
+    checkUPOS(val: string) {
+      if(!this.annotationFeatures.UPOS.includes(val) && val !== '_') {
+        return this.setError('UPOS', true, 'This UPOS does not exist in your annotation config');
+      }
+      return this.setError('UPOS', false, '');
+    }, 
+    checkHEAD(val: number) {
+      if (val !== -1 && (val < 0 || val > this.conllTable.length)) {
+        return this.setError('HEAD', true, 'HEAD value must be either -1 or 0 or < sentence length');
+      }
+      return this.setError('HEAD', false, '');
+    },
+    checkFEATS(val: string) {
+      const featuresJson = _featuresConllToJson(val);
+      for (const [feat, value] of Object.entries(featuresJson)) {
+        if (!feat || !value) {
+          return this.setError('FEATS', true, "You can't add empty features");
+        }
+        if (!this.annotationFeatures.FEATS.map((feat) => feat.name).includes(feat)) {
+          return this.setError('FEATS', true, `The feature "${feat}" doesn't exist in your project config`);
+        }
+        const index = this.annotationFeatures.FEATS.map((feat) => feat.name).indexOf(feat);
+        if (!this.annotationFeatures.FEATS[index].values.includes(value) || index === -1) {
+          return this.setError('FEATS', true, `The value "${value}" of the feature "${feat}" doesn't exist in your project config`);
+        }
+      }
+      return this.setError('FEATS', false, '');
+    },
+    checkDEPREL(val: string) {
+      const splitRegex = new RegExp(`[${this.annotationFeatures.DEPREL.map((dep) => dep.join).join('')}]`, 'g');
+      const splittedDeprels = val.split(splitRegex);
+      if (val === '') {
+        return this.setError('DEPREL', true, "You can't put an empty value for DEPREL");
+      }
+      for (const splittedDeprel of splittedDeprels) {
+        let depExist = false;
+        for (const dep of this.annotationFeatures.DEPREL) {
+          if (dep.values.includes(splittedDeprel)) {
+            depExist = true;
+            break;
+          }
+        }
+        if (!depExist && val !== '_') {
+          return this.setError('DEPREL', true, "The value of deprel doesn't exist in your config");
+        };
+      }
+      return this.setError('DEPREL', false, '');
+    },
+    setError(col: string, isError: boolean, errorMsg: string) {
+      this.formatErrorTable[col].error = isError;
+      this.formatErrorTable[col].message = errorMsg;
+      return !isError;
     },
   },
 });

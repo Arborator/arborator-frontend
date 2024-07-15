@@ -99,9 +99,8 @@ export default defineComponent({
     },
   },
   mounted() {
-    this.getTrees();
     document.title = `${this.projectname}/${this.samplename}`;
-    LocalStorage.remove('save_status');
+    this.getTrees();
     this.calculateHeight();
   },
   beforeUnmount() {

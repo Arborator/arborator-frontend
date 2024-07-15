@@ -9,7 +9,7 @@
     </q-page-sticky>
 
     <q-dialog v-model="relationTableDial" transition-show="fade" transition-hide="fade">
-      <RelationTable :sample-names="sampleNames"></RelationTable>
+      <RelationTable :sample-names="sampleNames" :trees-from="treesFrom"></RelationTable>
     </q-dialog>
   </div>
 </template>
@@ -28,6 +28,10 @@ export default defineComponent({
       type: Object as PropType<string[]>,
       default: [],
     },
+    treesFrom: {
+      type: Object as PropType<string[]>,
+      default: [],
+    }
   },
   data() {
     return {

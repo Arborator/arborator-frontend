@@ -7,16 +7,19 @@
 </template>
 
 <script lang="ts">
+
 import { emptyTokenJson, tokenJson_T } from 'conllup/lib/conll';
 import { SentenceCaretaker, ReactiveSentence } from 'dependencytreejs/src/ReactiveSentence';
 import { SentenceSVG, defaultSentenceSVGOptions } from 'dependencytreejs/src/SentenceSVG';
-import { mapState } from 'pinia';
+import { mapState, mapActions } from 'pinia';
 import { LocalStorage } from 'quasar';
 import { package_t } from 'src/api/backend-types';
 import { useProjectStore } from 'src/pinia/modules/project';
 import { useUserStore } from 'src/pinia/modules/user';
+import { useGrewSearchStore } from 'src/pinia/modules/grewSearch';
 import { reactive_sentences_obj_t, sentence_bus_events_t, sentence_bus_t } from 'src/types/main_types';
 import { defineComponent, PropType } from 'vue';
+
 
 interface svgClickEvent_t extends Event {
   detail: { clicked: string; targetLabel: 'FORM' | 'FEATS' | 'LEMMA' | 'DEPREL' };
@@ -82,7 +85,6 @@ export default defineComponent({
       sentenceSVG,
       sentenceCaretaker,
       sentenceJson: {},
-      usermatches: [],
       history_index: 0,
       history_saveIndex: 0,
     };
@@ -140,7 +142,7 @@ export default defineComponent({
         this.history_index += 1;
         this.reactiveSentence.updateToken(token);
         this.sentenceCaretaker.backup();
-        this.statusChangeHadler();
+        this.statusChangeHandler();
       }
     });
 
@@ -148,14 +150,14 @@ export default defineComponent({
       if (userId === this.treeUserId) {
         this.reactiveSentence.updateTree(tree);
         this.sentenceCaretaker.backup();
-        this.statusChangeHadler();
+        this.statusChangeHandler();
       }
     });
     this.sentenceBus.on('tree-update:sentence', ({ sentenceJson, userId }) => {
       if (userId === this.treeUserId) {
         this.reactiveSentence.updateSentence(sentenceJson);
         this.sentenceCaretaker.backup();
-        this.statusChangeHadler();
+        this.statusChangeHandler();
       }
     });
     this.sentenceBus.on('tree-update:tags', ({ sentenceJson, userId }) => {
@@ -166,39 +168,40 @@ export default defineComponent({
     this.sentenceBus.on('action:undo', ({ userId }) => {
       if (userId === this.treeUserId) {
         this.sentenceCaretaker.undo();
-        this.statusChangeHadler();
+        this.statusChangeHandler();
       }
     });
     this.sentenceBus.on('action:redo', ({ userId }) => {
       if (userId === this.treeUserId) {
         this.sentenceCaretaker.redo();
-        this.statusChangeHadler();
+        this.statusChangeHandler();
       }
     });
     this.sentenceBus.on('action:saved', ({ userId }) => {
       if (userId === this.treeUserId) {
         this.history_saveIndex = this.sentenceCaretaker.currentStateIndex;
-        this.statusChangeHadler();
+        this.statusChangeHandler();
       }
     });
 
     this.sentenceBus.on('action:tabSelected', ({ userId }) => {
       if (userId === this.treeUserId) {
         this.sentenceSVG.drawTree();
-        this.statusChangeHadler();
+        this.statusChangeHandler();
       }
     });
     this.sentenceBus.on('action:addEmptyToken', ({ userId }) => {
       if (userId === this.treeUserId) {
         this.reactiveSentence.addEmptyToken();
         this.sentenceCaretaker.backup();
-        this.statusChangeHadler();
+        this.statusChangeHandler();
       }
     });
 
-    this.statusChangeHadler();
+    this.statusChangeHandler();
   },
   methods: {
+    ...mapActions(useGrewSearchStore, ['addPendingModification']),
     svgClickHandler(e: svgClickEvent_t) {
       const clickedId = e.detail.clicked;
       const clickedToken = { ...this.sentenceSVG.treeJson.nodesJson[clickedId] };
@@ -256,7 +259,7 @@ export default defineComponent({
     /**
      * Update the undo, redo and save status each time user makes changes.
      */
-    statusChangeHadler() {
+    statusChangeHandler() {
       const canUndo = this.sentenceCaretaker.canUndo();
       const canRedo = this.sentenceCaretaker.canRedo();
       const needSave = this.history_saveIndex !== this.sentenceCaretaker.currentStateIndex;
@@ -264,6 +267,7 @@ export default defineComponent({
       const statusObj = statusStr ? JSON.parse(statusStr as string) : {};
       let card = statusObj[this.cardId];
       this.hasPendingChanges[this.treeUserId] = needSave;
+      if (needSave) this.addPendingModification(this.reactiveSentencesObj[this.treeUserId].state.metaJson.sent_id);
 
       this.$emit('statusChanged', {
         canUndo,

@@ -122,9 +122,9 @@ export default defineComponent({
       }));
 
       for (let i = 0; i < this.deprelSplitted.length; i += 1) {
-        for (let ii = i; ii < this.deprels.length; ii += 1) {
-          if (dep.DEPREL.includes(this.deprels[ii].join + this.deprelSplitted[i])) {
-            this.selectedDep[ii].selected[this.deprels[ii].values.indexOf(this.deprelSplitted[i])] = true;
+        for (let j = i; j < this.deprels.length; j += 1) {
+          if (dep.DEPREL.includes(this.deprels[j].join + this.deprelSplitted[i]) && this.deprelSplitted[i] !== '') {
+            this.selectedDep[j].selected[this.deprels[j].values.indexOf(this.deprelSplitted[i])] = true;
           }
         }
       }

@@ -18,10 +18,20 @@
           </q-item-section>
           <q-menu anchor="top end" self="top start">
             <q-list>
-              <q-item clickable v-close-popup @click="tokenReplaceOptions('merge_right')">
+              <q-item
+                v-if="startIndex !== 0" 
+                clickable 
+                v-close-popup 
+                @click="tokenReplaceOptions('merge_left')"
+              >
                 <q-item-section>{{ $t('tokenReplaceDialog.mergeOptions[0]') }}</q-item-section>
               </q-item>
-              <q-item clickable v-close-popup @click="tokenReplaceOptions('merge_left')">
+              <q-item 
+                v-if="endIndex !== sentence.length - 1"
+                clickable 
+                v-close-popup 
+                @click="tokenReplaceOptions('merge_right')"
+              >
                 <q-item-section>{{ $t('tokenReplaceDialog.mergeOptions[1]') }}</q-item-section>
               </q-item>
             </q-list>
@@ -118,6 +128,7 @@ export default defineComponent({
       tokensIndexes,
       startIndex: 0,
       endIndex: 0,
+      sentence: '',
       selection: '',
       isShowFusion: false,
       userId: '',
@@ -132,8 +143,8 @@ export default defineComponent({
       if (event.target !== null) {
         this.startIndex = (event.target as HTMLInputElement).selectionStart || 0;
         this.endIndex = (event.target as HTMLInputElement).selectionEnd || 0;
-        const sentence = (event.target as HTMLInputElement).value;
-        if ((sentence[this.startIndex - 1] == ' ' || this.startIndex == 0) && sentence[this.endIndex] == ' ') {
+        this.sentence = (event.target as HTMLInputElement).value;
+        if ((this.sentence[this.startIndex - 1] == ' ' || this.startIndex == 0) && this.sentence[this.endIndex] == ' ') {
           this.selection = (event.target as HTMLInputElement).value.substring(this.startIndex, this.endIndex);
           this.tokensReplaceDialogOpened = !this.selection.includes(' ')
         }

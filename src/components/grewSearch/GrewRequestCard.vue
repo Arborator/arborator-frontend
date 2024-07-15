@@ -144,12 +144,12 @@ export default defineComponent({
       this.data = val;
     },
     onSearch() {
-      this.parentOnSearch(this.currentQuery, this.data.treeType, this.data.otherUser, this.data.selectedSamples);
-      this.changeLastGrewQuery({ text: this.currentQuery, type: this.currentQueryType, userType: this.data.treeType });
+      this.parentOnSearch(this.currentQuery.normalize('NFC'), this.data.treeType, this.data.otherUser, this.data.selectedSamples);
+      this.changeLastGrewQuery({ text: this.currentQuery.normalize('NFC'), type: this.currentQueryType, userType: this.data.treeType });
     },
     tryRules() {
-      this.parentOnTryRules(this.currentQuery, this.data.treeType, this.data.otherUser, this.data.selectedSamples);
-      this.changeLastGrewQuery({ text: this.currentQuery, type: this.currentQueryType, userType: this.data.treeType });
+      this.parentOnTryRules(this.currentQuery.normalize('NFC'), this.data.treeType, this.data.otherUser, this.data.selectedSamples);
+      this.changeLastGrewQuery({ text: this.currentQuery.normalize('NFC'), type: this.currentQueryType, userType: this.data.treeType });
     },
     changeQuery(query: string, type: 'SEARCH' | 'REWRITE') {
       this.currentQuery = query;

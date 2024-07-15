@@ -100,6 +100,7 @@ export default defineComponent({
       type: Object as PropType<sample_t[]>,
       required: true,
     },
+   
   },
   data() {
     const resultSearch: grewSearchResult_t = {};

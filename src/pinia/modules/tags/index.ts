@@ -19,8 +19,10 @@ export const useTagsStore = defineStore('tags', {
       { value: 'NEW', color: 'yellow-4' },
       { value: 'ASAP', color: 'deep-orange-4' },
     ];
+    const userTags = defaultTags.map(tag => { return { ...tag }});
     return {
       defaultTags,
+      userTags,
     };
   },
   actions: {
@@ -30,8 +32,8 @@ export const useTagsStore = defineStore('tags', {
         .then((response) => {
           if (response.data) {
             for (const tag of response.data) {
-              if (!this.defaultTags.map((val) => val.value).includes(tag)) {
-                this.defaultTags.push({ value: tag, color: 'gery-4' });
+              if (!this.userTags.map((val) => val.value).includes(tag)) {
+                this.userTags.push({ value: tag, color: 'gery-4' });
               }
             }
           }

@@ -63,6 +63,16 @@ export const useGrewHistoryStore = defineStore('grewHistory', {
           notifyError({ error: 'Error happened while updating history favorites' });
         });
     },
+    deleteHistoryItem(recordId: string) {
+      api
+        .deleteHistoryRecord(useProjectStore().name, recordId)
+        .then(() => {
+          notifyMessage({ message: 'History item deleted' });
+        })
+        .catch(() => {
+          notifyError({ error: 'Error happened while deleting history item' });
+        });
+    },
     deleteAllHistory() {
       api
         .deleteAllHistory(useProjectStore().name)

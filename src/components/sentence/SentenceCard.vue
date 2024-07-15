@@ -89,7 +89,7 @@
         <div class="row">
           <div class="text-overline">Tags:</div>
           <div v-for="tag in userTags">
-            <q-chip v-if="openTabUser === username || isValidator" removable outline color="primary" size="sm" @remove="removeUserTag(tag)">
+            <q-chip v-if="openTabUser === username || isValidator" removable outline color="primary" size="sm" @remove="removeSentenceTag(tag)">
               {{ tag }}
             </q-chip>
             <q-chip v-else outline color="primary" size="sm">
@@ -126,6 +126,7 @@
 
 <script lang="ts">
 import { ReactiveSentence } from 'dependencytreejs/src/ReactiveSentence';
+import { constructTextFromTreeJson } from 'conllup/lib/conll';
 import mitt, { Emitter } from 'mitt';
 import { mapActions, mapState, mapWritableState } from 'pinia';
 import { useProjectStore } from 'src/pinia/modules/project';
@@ -205,6 +206,7 @@ export default defineComponent({
       canSave: true,
       hasPendingChanges,
       tags: [],
+      sentenceText: '',
     };
   },
 
@@ -256,7 +258,7 @@ export default defineComponent({
   created() {
     for (const [userId, conll] of Object.entries(this.sentence.conlls)) {
       const reactiveSentence = new ReactiveSentence();
-      reactiveSentence.fromSentenceConll(conll as string);
+      reactiveSentence.fromSentenceConll(conll);
       this.reactiveSentencesObj[userId] = reactiveSentence;
       this.hasPendingChanges[userId] = false;
     }
@@ -277,6 +279,12 @@ export default defineComponent({
       this.sentenceBus.emit('action:tabSelected', {
         userId: this.openTabUser,
       });
+      if (this.openTabUser !== '') {
+        this.sentenceText = constructTextFromTreeJson(this.reactiveSentencesObj[this.openTabUser].state.treeJson);
+      }
+      else {
+        this.sentenceText = this.sentenceData.sentence;
+      }
     },
     toggleDiffMode() {
       this.diffMode = !this.diffMode;
@@ -312,12 +320,8 @@ export default defineComponent({
           timestamp: parseInt(reactiveSentence.state.metaJson.timestamp as string, 10),
         });
       }
-      // sort from newest to oldest but put the validated tree in the beginning
-      const orderedUserAndTimestamps = userAndTimestamps.sort((a, b) => b.timestamp - a.timestamp);
-      const validatedTreeIndex = orderedUserAndTimestamps.findIndex((val) => val.user == 'validated');
-      if (validatedTreeIndex != -1) {
-        orderedUserAndTimestamps.unshift(orderedUserAndTimestamps.splice(validatedTreeIndex, 1)[0]);
-      }
+      // sort from newest to oldest 
+      const orderedUserAndTimestamps = [...userAndTimestamps].sort((a, b) => b.timestamp - a.timestamp);
       const orderedConlls: { [key: string]: string } = {};
       for (const userAndTimestamp of orderedUserAndTimestamps) {
         orderedConlls[userAndTimestamp.user] = filteredConlls[userAndTimestamp.user];

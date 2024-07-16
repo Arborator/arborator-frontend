@@ -1,99 +1,104 @@
 <template>
-  <q-dialog :model-value="uploadDialModel" :maximized="maximizedUploadToggle" transition-show="fade" transition-hide="fade" persistent>
+  <q-dialog :model-value="uploadDialModel" persistent>
     <q-card style="min-width: 70vw">
       <q-bar class="bg-primary text-white">
         <q-space />
-        <q-btn v-if="maximizedUploadToggle" dense flat icon="minimize" @click="maximizedUploadToggle = false">
-          <q-tooltip content-class="bg-white text-primary">{{ $t('projectView.tooltipWindows[0]') }}</q-tooltip>
-        </q-btn>
-        <q-btn v-if="!maximizedUploadToggle" dense flat icon="crop_square" @click="maximizedUploadToggle = true">
-          <q-tooltip content-class="bg-white text-primary">{{ $t('projectView.tooltipWindows[1]') }}</q-tooltip>
-        </q-btn>
-        <q-btn v-close-popup="10" dense flat icon="close" @click="(uploadDialModel = false), (uploadSample.attachment.file = [])">
+        <q-btn v-close-popup="10" dense flat icon="close" @click="closeDialog()">
           <q-tooltip content-class="bg-white text-primary">{{ $t('projectView.tooltipWindows[2]') }}</q-tooltip>
         </q-btn>
       </q-bar>
+      <q-card-section class="q-gutter-y-md">
+        <q-tabs v-model="tab" dense class="text-grey" active-color="primary" indicator-color="primary" align="justify" narrow-indicator>
+          <q-tab name="inputFile" icon="description" :label="$t('uploadSample.inputFile')" />
+          <q-tab name="inputText" icon="title" :label="$t('uploadSample.inputText')" />
+        </q-tabs>
+        <q-tab-panels v-model="tab">
+          <q-tab-panel name="inputFile">
+            <q-file
+              v-model="uploadSample.attachment.file"
+              :label="$t('uploadSample.uploadFileLabel')"
+              use-chips
+              outlined
+              :loading="uploadSample.submitting"
+              multiple
+              input-style="height:100px"
+              @update:model-value="preprocess"
+            >
+              <template #prepend>
+                <q-icon name="attach_file" />
+              </template>
+            </q-file>
+          </q-tab-panel>
+          <q-tab-panel class="q-gutter-md" name="inputText">
+            <q-select outlined v-model="option" :label="$t('uploadSample.tokenizeSelect')" :options="tokenizeOptions" />
+            <div v-if="option">
+              <q-select
+                v-if="option.value === 'plainText'"
+                outlined
+                :label="$t('uploadSample.languageSelect')"
+                v-model="lang"
+                :options="langOptions"
+              />
+              <div v-if="option.value === 'vertical'" class="text-body1">
+                {{ $t('uploadSample.verticalHint') }}
+              </div>
+              <div v-if="option.value === 'horizontal'" class="text-body1">
+                {{ $t('uploadSample.horizontalHint') }}
+              </div>
+            </div>
+            <q-input outlined v-model="text" type="textarea" :label="$t('uploadSample.text')" />
+            <q-input outlined v-model="sampleName" :label="$t('uploadSample.sampleName')" />
+          </q-tab-panel>
+        </q-tab-panels>
+        <div class="row q-px-md">
+          <q-input
+            class="col"
+            outlined
+            v-model="customUserId"
+            :label="$t('uploadSample.customUsername')"
+            :rules="[
+              (val) => reservedUserId !== val.toLowerCase() || `${val} ` + $t('uploadSample.reservedUsernameError'),
+              (val) => (val && val.length > 0) || $t('uploadSample.emptyUsernameError'),
+            ]"
+          />
+        </div>
+        <q-item>
+          <q-item-section side top>
+            <q-checkbox v-model="rtl" />
+          </q-item-section>
+          <q-item-section>
+            <q-item-label>RTL configuration </q-item-label>
+            <q-item-label caption>
+              Apply Right To Left script configuration to the sample
+            </q-item-label>
+          </q-item-section>
+        </q-item>
+      </q-card-section>
       <q-card-section class="q-pa-md">
-        <div class="q-gutter-y-md">
-          <q-tabs v-model="tab" dense class="text-grey" active-color="primary" indicator-color="primary" align="justify" narrow-indicator>
-            <q-tab name="inputFile" icon="description" :label="$t('uploadSample.inputFile')" />
-            <q-tab name="inputText" icon="title" :label="$t('uploadSample.inputText')" />
-          </q-tabs>
-          <q-tab-panels v-model="tab" animated>
-            <q-tab-panel class="q-gutter-md" name="inputText">
-              <div>
-                <q-select outlined v-model="option" :label="$t('uploadSample.tokenizeSelect')" :options="tokenizeOptions" />
-              </div>
-              <div v-if="option">
-                <q-select
-                  v-if="option.value === 'plainText'"
-                  outlined
-                  :label="$t('uploadSample.languageSelect')"
-                  v-model="lang"
-                  :options="langOptions"
-                />
-                <div v-if="option.value === 'vertical'" class="text-body1">
-                  {{ $t('uploadSample.verticalHint') }}
-                </div>
-                <div v-if="option.value === 'horizontal'" class="text-body1">
-                  {{ $t('uploadSample.horizontalHint') }}
-                </div>
-              </div>
-              <q-input outlined v-model="text" type="textarea" :label="$t('uploadSample.text')" />
-              <q-input outlined v-model="sampleName" :label="$t('uploadSample.sampleName')" />
-              <q-input outlined v-model="customUserId" :label="$t('uploadSample.customUsername')" />
-              <div class="row q-pa-md">
-                <q-btn v-close-popup :disable="!disableTokenizeBtn" color="primary" @click="tokenizeSample">Tokenize</q-btn>
-              </div>
-            </q-tab-panel>
-
-            <q-tab-panel class="q-gutter-md" name="inputFile">
-              <div class="text-h6 text-blue-grey-8">
-                {{ $t('uploadSample.selectFiles') }}
-              </div>
-              <div>
-                <q-file
-                  v-model="uploadSample.attachment.file"
-                  :label="$t('uploadSample.uploadFileLabel')"
-                  use-chips
-                  outlined
-                  :loading="uploadSample.submitting"
-                  multiple
-                  input-style="height:100px"
-                  @update:model-value="preprocess"
-                >
-                  <template #prepend>
-                    <q-icon name="attach_file" />
-                  </template>
-                  <template #after>
-                    <q-btn
-                      color="primary"
-                      dense
-                      icon="cloud_upload"
-                      round
-                      :loading="uploadSample.submitting"
-                      :disable="disableUploadBtn || customUserId === ''"
-                      @click="uploadSamples()"
-                    />
-                    <q-tooltip v-if="uploadSample.attachment.file.length == 0" content-class="text-white bg-primary">
-                      {{ $t('uploadSample.uploadFileTooltip') }}
-                    </q-tooltip>
-                  </template>
-                </q-file>
-              </div>
-              <div>
-                <q-input
-                  outlined
-                  v-model="customUserId"
-                  :label="$t('uploadSample.customUsername')"
-                  :rules="[
-                    (val) => reservedUserId !== val.toLowerCase() || `${val} ` + $t('uploadSample.reservedUsernameError'),
-                    (val) => (val && val.length > 0) || $t('uploadSample.emptyUsernameError'),
-                  ]"
-                />
-              </div>
-            </q-tab-panel>
-          </q-tab-panels>
+        <div class="row justify-center" v-if="tab === 'inputFile'">
+          <q-btn
+            no-caps
+            color="primary"
+            icon="cloud_upload"
+            label="Upload sample"
+            :loading="uploadSample.submitting"
+            :disable="disableUploadBtn || customUserId === ''"
+            @click="uploadSamples()"
+            >
+            <q-tooltip v-if="uploadSample.attachment.file.length == 0" content-class="text-white bg-primary">
+              {{ $t('uploadSample.uploadFileTooltip') }}
+            </q-tooltip>
+          </q-btn>
+        </div>
+        <div v-else class="row justify-center">
+          <q-btn 
+            no-caps
+            v-close-popup 
+            :disable="!disableTokenizeBtn" 
+            label="Tokenize"
+            color="primary" 
+            @click="tokenizeSample" 
+            />
         </div>
       </q-card-section>
     </q-card>
@@ -128,7 +133,6 @@ export default defineComponent({
     };
   },
   data() {
-    let maximizedUploadToggle = false;
     const uploadSample: {
       submitting: boolean;
       attachment: { name: string | null; file: File[] };
@@ -150,7 +154,6 @@ export default defineComponent({
     const samplesWithoutSentIds: string[] = [];
     return {
       files: null,
-      maximizedUploadToggle,
       uploadSample,
       tab: 'inputFile',
       tokenizeOptions,
@@ -164,6 +167,7 @@ export default defineComponent({
       generateNewSentIds: false,
       formatError: false,
       samplesWithoutSentIds,
+      rtl: false,
     };
   },
 
@@ -223,7 +227,6 @@ export default defineComponent({
       this.formatError = false;
       const sentences = fileContent.split(/\n\n/).filter((sentence) => sentence);
       for (const sentence of sentences) {
-        this.checkSentFormatError(sentence, sampleName);
         if (this.formatError) return;
         if (sentenceConllToJson(sentence)['metaJson']['sent_id']) {
           const sentId = sentenceConllToJson(sentence)['metaJson']['sent_id'];
@@ -232,16 +235,7 @@ export default defineComponent({
       }
       if (sentences.length !== sentIds.length) this.samplesWithoutSentIds.push(sampleName);
     },
-    checkSentFormatError(sentence: string, sampleName: string) {
-      if (/\n\s*\n\S/.test(sentence)) {
-        notifyError({ error: `${sampleName} contains empty line that doesn't start with a digit or # ` });
-        this.formatError = true;
-      }
-      if (Object.values(sentenceConllToJson(sentence)['metaJson']).some((metaVal) => metaVal == undefined)) {
-        notifyError({ error: `${sampleName} contains sentence with empty metadata value` });
-        this.formatError = true;
-      }
-    },
+    
     triggerFormatErrors() {
       this.samplesWithoutSentIds.forEach((sampleName) => {
         this.warningMessage += `"${sampleName}" has sentences without sent_id.\n`;
@@ -276,6 +270,7 @@ export default defineComponent({
         form.append('files', file);
       }
       form.append('userId', this.customUserId);
+      form.append('rtl', JSON.stringify(this.rtl))
       if (this.generateNewSentIds) {
         form.append('samplesWithoutSentIds', JSON.stringify(this.samplesWithoutSentIds));
       }
@@ -293,17 +288,19 @@ export default defineComponent({
             error.message = error.response.data.message;
             notifyError({ error: error.message });
           }
-          this.$emit('uploaded:sample'); // tell to the parent that a new sample was uploaded and to fetch all samples
+          this.$emit('uploaded:sample'); 
           this.uploadSample.submitting = false;
           this.uploadDialModel = false;
         });
     },
     tokenizeSample() {
+      console.log(this.rtl)
       const data = {
         username: this.customUserId,
         text: this.text.normalize('NFC'),
         option: this.option.value,
         lang: this.lang.value,
+        rtl: this.rtl,
         sampleName: this.sampleName,
       };
       api
@@ -317,8 +314,11 @@ export default defineComponent({
           notifyError({ error: 'Invalid request' });
         });
     },
+    closeDialog() {
+      this.uploadDialModel = false;
+      this.uploadSample.attachment.file = [];
+    }
   },
 });
 </script>
 
-<style></style>

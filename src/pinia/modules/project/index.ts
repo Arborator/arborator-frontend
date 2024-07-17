@@ -117,6 +117,7 @@ export const useProjectStore = defineStore('project', {
       api
         .getProject(projectname)
         .then((response) => {
+          this.invalidProjectError = false;
           this.name = response.data.projectName;
           this.blindAnnotationMode = response.data.blindAnnotationMode;
           this.diffMode = response.data.diffMode;
@@ -152,13 +153,12 @@ export const useProjectStore = defineStore('project', {
             .catch((error) => {
               notifyError({ error });
             });
+        })
+        .catch(() => {
+          this.invalidProjectError = true;
         });
     },
-    // KK TODO
-    // there is still a mismatch between all name 'updateProjectSettings' and 'updateProjectSettings'
-    // ... so we have to get a proper data structure of the whole setting for then having better
-    // ... separation of conscerns for API calls
-
+    
     updateProjectSettings(projectName: string, toUpdateObject: Partial<project_extended_t | project_with_diff_t>) {
       return new Promise((resolve, reject) => {
         api
@@ -173,7 +173,7 @@ export const useProjectStore = defineStore('project', {
             notifyError({
               error: error,
             });
-            reject(error);
+            reject(new Error(error));
           });
       });
     },
@@ -188,7 +188,7 @@ export const useProjectStore = defineStore('project', {
           })
           .catch((error) => {
             notifyError({ error });
-            reject(error);
+            reject(new Error(error));
           });
       });
     },
@@ -203,7 +203,7 @@ export const useProjectStore = defineStore('project', {
             resolve(response);
           })
           .catch((error) => {
-            reject(error);
+            reject(new Error(error));
           });
       });
     },
@@ -235,7 +235,7 @@ export const useProjectStore = defineStore('project', {
             resolve(response);
           })
           .catch((error) => {
-            reject(error.response.data.errors);
+            reject(new Error(error));
           });
       });
     },

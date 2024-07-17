@@ -1,15 +1,21 @@
 <template>
-  <router-view />
+  <Error404 v-if="invalidProjectError"></Error404>
+  <router-view v-else />
 </template>
 
 <script lang="ts">
+import Error404 from './pages/Error404.vue';
 import { defineComponent } from 'vue';
 
+import { mapState } from 'pinia';
 import { useStorage } from 'vue3-storage';
 import { useUserStore } from './pinia/modules/user/index';
-import { setThemeMode } from 'dependencytreejs/src/StylesheetHandler';
+import { useProjectStore } from './pinia/modules/project/index';
 
 export default defineComponent({
+  components: {
+    Error404,
+  },
   name: 'App',
   data() {
     return {
@@ -23,6 +29,9 @@ export default defineComponent({
         },
       },
     };
+  },
+  computed: {
+    ...mapState(useProjectStore, ['invalidProjectError']),
   },
   mounted() {
     const userStore = useUserStore();

@@ -225,8 +225,9 @@ export default defineComponent({
     checkSentIdsErrors(fileContent: string, sampleName: string) {
       const sentIds: any[] = [];
       this.formatError = false;
-      const sentences = fileContent.split(/\n\n/).filter((sentence) => sentence);
+      const sentences = fileContent.replace(/[\r]/g, "").split(/\n\n/).filter((sentence) => sentence);
       for (const sentence of sentences) {
+        this.checkSentFormatError(sentence, sampleName)
         if (this.formatError) return;
         if (sentenceConllToJson(sentence)['metaJson']['sent_id']) {
           const sentId = sentenceConllToJson(sentence)['metaJson']['sent_id'];
@@ -235,7 +236,16 @@ export default defineComponent({
       }
       if (sentences.length !== sentIds.length) this.samplesWithoutSentIds.push(sampleName);
     },
-    
+    checkSentFormatError(sentence: string, sampleName: string) {
+      if (/\n\s*\n\S/.test(sentence)) {
+        notifyError({ error: `${sampleName} contains empty line that doesn't start with a digit or # ` });
+        this.formatError = true;
+      }
+      if (Object.values(sentenceConllToJson(sentence)['metaJson']).some((metaVal) => metaVal == undefined)) {
+        notifyError({ error: `${sampleName} contains sentence with empty metadata value` });
+        this.formatError = true;
+      }
+    },
     triggerFormatErrors() {
       this.samplesWithoutSentIds.forEach((sampleName) => {
         this.warningMessage += `"${sampleName}" has sentences without sent_id.\n`;

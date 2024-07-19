@@ -117,6 +117,7 @@ export const useProjectStore = defineStore('project', {
       api
         .getProject(projectName)
         .then((response) => {
+          this.invalidProjectError = false;
           this.name = response.data.projectName;
           this.blindAnnotationMode = response.data.blindAnnotationMode;
           this.diffMode = response.data.diffMode;
@@ -155,8 +156,12 @@ export const useProjectStore = defineStore('project', {
             .catch((error) => {
               notifyError({ error });
             });
+        })
+        .catch(() => {
+          this.invalidProjectError = true;
         });
     },
+    
     updateProjectSettings(projectName: string, toUpdateObject: Partial<project_extended_t | project_t>) {
       return new Promise((resolve, reject) => {
         api
@@ -168,8 +173,10 @@ export const useProjectStore = defineStore('project', {
             notifyMessage({ message: 'New project settings saved on the server', icon: 'save' });
           })
           .catch((error) => {
-            notifyError({ error: error });
-            reject(error);
+            notifyError({
+              error: error,
+            });
+            reject(new Error(error));
           });
       });
     },
@@ -184,7 +191,7 @@ export const useProjectStore = defineStore('project', {
           })
           .catch((error) => {
             notifyError({ error });
-            reject(error);
+            reject(new Error(error));
           });
       });
     },
@@ -199,7 +206,7 @@ export const useProjectStore = defineStore('project', {
             resolve(response);
           })
           .catch((error) => {
-            reject(error);
+            reject(new Error(error));
           });
       });
     },
@@ -214,7 +221,7 @@ export const useProjectStore = defineStore('project', {
             resolve(response);
           })
           .catch((error) => {
-            reject(error.response.data.errors);
+            reject(new Error(error));
           });
       });
     },

@@ -26,6 +26,7 @@ interface configState {
   annotationFeatures: annotationFeatures_t;
   annotationFeaturesUD: annotationFeatures_t;
   languagesList: { index: number; name: string }[];
+  invalidProjectError: boolean,
 }
 
 export default function defaultState(): configState {
@@ -334,5 +335,6 @@ export default function defaultState(): configState {
       ],
       DEPS: [],
     },
+    invalidProjectError: false,
   };
 }

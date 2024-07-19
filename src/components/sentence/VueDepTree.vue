@@ -9,14 +9,14 @@
 <script lang="ts">
 import { LocalStorage } from 'quasar';
 import { SentenceSVG, defaultSentenceSVGOptions } from 'dependencytreejs/src/SentenceSVG';
-import { SentenceCaretaker } from 'dependencytreejs/src/ReactiveSentence';
-import { PropType } from 'vue';
+import { SentenceCaretaker, ReactiveSentence } from 'dependencytreejs/src/ReactiveSentence';
 import { reactive_sentences_obj_t, sentence_bus_events_t, sentence_bus_t } from 'src/types/main_types';
-import { ReactiveSentence } from 'dependencytreejs/src/ReactiveSentence';
 import { mapState, mapActions } from 'pinia';
 import { useProjectStore } from 'src/pinia/modules/project';
-import  { useGrewSearchStore } from 'src/pinia/modules/grewSearch'
+import { useGrewSearchStore } from 'src/pinia/modules/grewSearch'
+import { useUserStore } from 'src/pinia/modules/user';
 import { emptyTokenJson, tokenJson_T } from 'conllup/lib/conll';
+import { notifyMessage } from 'src/utils/notify';
 
 interface svgClickEvent_t extends Event {
   detail: { clicked: string; targetLabel: 'FORM' | 'FEATS' | 'LEMMA' | 'DEPREL' };
@@ -26,8 +26,7 @@ interface svgHoveredEvent_t extends Event {
   detail: { dragged: string; hovered: string; isRoot: boolean };
 }
 
-import { defineComponent } from 'vue';
-import { useUserStore } from 'src/pinia/modules/user';
+import { PropType, defineComponent } from 'vue';
 import { package_t } from 'src/api/backend-types';
 
 export default defineComponent({
@@ -92,7 +91,7 @@ export default defineComponent({
   },
   computed: {
     ...mapState(useProjectStore, ['diffUserId', 'shownFeatures', 'isStudent']),
-    ...mapState(useUserStore, ['username']),
+    ...mapState(useUserStore, ['username', 'isLoggedIn']),
   },
   watch: {
     diffMode() {
@@ -144,6 +143,9 @@ export default defineComponent({
         this.reactiveSentence.updateToken(token);
         this.sentenceCaretaker.backup();
         this.statusChangeHandler();
+        if (!this.isLoggedIn) {
+          notifyMessage({ message: "You have to log in in order to save your chages", type: 'warning', timeout: 1500, });
+        }
       }
     });
 

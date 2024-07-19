@@ -7,162 +7,149 @@
         <q-btn v-close-popup flat dense icon="close" />
       </q-bar>
       <q-card-section>
-        <div class="row">
-          <div class="text-h6 col-10">
-            <span v-if="view === 'table'"> {{ $t('conllDial.tableView') }} </span>
-            <span v-else> {{ $t('conllDial.conllView') }} </span>
-          </div>
-          <div class="col">
-            <q-btn-toggle
-              v-model="view"
-              no-caps
-              toggle-color="primary"
-              color="white"
-              text-color="primary"
-              :options="[
-                {label: $t('conllDial.tableView'), value: 'table'},
-                {label: $t('conllDial.conllView'), value: 'conll'}
-              ]"
-            />
-          </div>
-        </div>
-      </q-card-section>
-      <q-card-section v-if="view === 'table'" class="q-pa-none">
-        <q-table
-          flat borderd
-          :rows="conllTable"
-          :columns="table.fields"
-          class="my-sticky-header-table"
-          hide-bottom
-          :rows-per-page-options="[0]"
-          separator="cell"
-        >
-          <template v-slot:body="props">
-            <q-tr :props="props">
-              <q-td key="ID" :props="props">
-                {{ props.row.ID }}
-              </q-td>
-              <q-td key="FORM" :props="props">
-                {{ props.row.FORM }}
-                <q-popup-edit v-model="props.row.FORM" auto-save v-slot="scope" >
-                  <q-input v-model="scope.value" dense autofocus />
-                </q-popup-edit>
-              </q-td>
-              <q-td key="LEMMA" :props="props">
-                {{ props.row.LEMMA }}
-                <q-popup-edit v-model="props.row.LEMMA" auto-save v-slot="scope" >
-                  <q-input v-model="scope.value" dense autofocus />
-                </q-popup-edit>
-              </q-td>
-              <q-td key="UPOS" :props="props">
-                {{ props.row.UPOS }}
-                <q-popup-edit
-                  v-model="props.row.UPOS"
-                  buttons
-                  label-set="Save"
-                  label-cancel="Close"
-                  :validate="checkUPOS"
-                  v-slot="scope"
-                >
-                  <q-input
-                    v-model="scope.value"
-                    :error="formatErrorTable.UPOS.error"
-                    :error-message="formatErrorTable.UPOS.message"
-                    dense
-                    autofocus
-                    @keyup.enter="scope.set"
-                  />
-                </q-popup-edit>
-              </q-td>
-              <q-td key="XPOS">
-                {{ props.row.XPOS }}
-                <q-popup-edit v-model="props.row.XPOS" auto-save v-slot="scope" >
-                  <q-input v-model="scope.value" dense autofocus />
-                </q-popup-edit>
-              </q-td>
-              <q-td key="FEATS" :props="props">
-                {{ props.row.FEATS }}
-                <q-popup-edit
-                  v-model="props.row.FEATS"
-                  buttons
-                  label-set="Save"
-                  label-cancel="Close"
-                  :validate="checkFEATS"
-                  v-slot="scope"
-                >
-                  <q-input
-                    v-model="scope.value"
-                    :error="formatErrorTable.FEATS.error"
-                    :error-message="formatErrorTable.FEATS.message"
-                    dense
-                    autofocus
-                    @keyup.enter="scope.set"
-                  />
-                </q-popup-edit>
-              </q-td>
-              <q-td key="HEAD" :props="props">
-                {{ props.row.HEAD }}
-                <q-popup-edit
-                  v-model.number="props.row.HEAD"
-                  buttons
-                  label-set="Save"
-                  label-cancel="Close"
-                  :validate="checkHEAD"
-                  v-slot="scope"
-                >
-                  <q-input
-                    type="number"
-                    v-model.number="scope.value"
-                    :error="formatErrorTable.HEAD.error"
-                    :error-message="formatErrorTable.HEAD.message"
-                    dense
-                    autofocus
-                    @keyup.enter="scope.set"
-                  />
-                </q-popup-edit>
-              </q-td>
-              <q-td key="DEPREL" :props="props">
-                {{ props.row.DEPREL }}
-                <q-popup-edit
-                  v-model="props.row.DEPREL"
-                  buttons
-                  label-set="Save"
-                  label-cancel="Close"
-                  :validate="checkDEPREL"
-                  v-slot="scope"
-                >
-                  <q-input
-                    v-model="scope.value"
-                    :error="formatErrorTable.DEPREL.error"
-                    :error-message="formatErrorTable.DEPREL.message"
-                    dense
-                    autofocus
-                    @keyup.enter="scope.set"
-                  />
-                </q-popup-edit>
-              </q-td>
-              <q-td key="DEPS">
-                {{ props.row.DEPS }}
-                <q-popup-edit v-model="props.row.DEPS" auto-save v-slot="scope" >
-                  <q-input v-model="scope.value" dense autofocus />
-                </q-popup-edit>
-              </q-td>
-              <q-td key="MISC">
-                {{ props.row.MISC }}
-                <q-popup-edit v-model="props.row.MISC" auto-save v-slot="scope" >
-                  <q-input v-model="scope.value" dense autofocus />
-                </q-popup-edit>
-              </q-td>
-            </q-tr>
-          </template>
-        </q-table>
-      </q-card-section>
-      <q-card-section v-else>
-        <Codemirror v-model:value="currentConllContent" :options="cmOption" class="bordered"></Codemirror>
+        <q-tabs v-model="view">
+          <q-tab v-if="isLoggedIn" no-caps name="table" label="Table" />
+          <q-tab no-caps name="conll" label="Conll" />
+        </q-tabs>
+        <q-tab-panels v-model="view">
+          <q-tab-panel v-if="isLoggedIn" name="table">
+            <q-table
+              flat borderd
+              :rows="conllTable"
+              :columns="table.fields"
+              class="my-sticky-header-table"
+              hide-bottom
+              :rows-per-page-options="[0]"
+              separator="cell"
+            >
+              <template v-slot:body="props">
+                <q-tr :props="props">
+                  <q-td key="ID" :props="props">
+                    {{ props.row.ID }}
+                  </q-td>
+                  <q-td key="FORM" :props="props">
+                    {{ props.row.FORM }}
+                    <q-popup-edit v-model="props.row.FORM" auto-save v-slot="scope" >
+                      <q-input v-model="scope.value" dense autofocus />
+                    </q-popup-edit>
+                  </q-td>
+                  <q-td key="LEMMA" :props="props">
+                    {{ props.row.LEMMA }}
+                    <q-popup-edit v-model="props.row.LEMMA" auto-save v-slot="scope" >
+                      <q-input v-model="scope.value" dense autofocus />
+                    </q-popup-edit>
+                  </q-td>
+                  <q-td key="UPOS" :props="props">
+                    {{ props.row.UPOS }}
+                    <q-popup-edit
+                      v-model="props.row.UPOS"
+                      buttons
+                      label-set="Save"
+                      label-cancel="Close"
+                      :validate="checkUPOS"
+                      v-slot="scope"
+                    >
+                      <q-input
+                        v-model="scope.value"
+                        :error="formatErrorTable.UPOS.error"
+                        :error-message="formatErrorTable.UPOS.message"
+                        dense
+                        autofocus
+                        @keyup.enter="scope.set"
+                      />
+                    </q-popup-edit>
+                  </q-td>
+                  <q-td key="XPOS">
+                    {{ props.row.XPOS }}
+                    <q-popup-edit v-model="props.row.XPOS" auto-save v-slot="scope" >
+                      <q-input v-model="scope.value" dense autofocus />
+                    </q-popup-edit>
+                  </q-td>
+                  <q-td key="FEATS" :props="props">
+                    {{ props.row.FEATS }}
+                    <q-popup-edit
+                      v-model="props.row.FEATS"
+                      buttons
+                      label-set="Save"
+                      label-cancel="Close"
+                      :validate="checkFEATS"
+                      v-slot="scope"
+                    >
+                      <q-input
+                        v-model="scope.value"
+                        :error="formatErrorTable.FEATS.error"
+                        :error-message="formatErrorTable.FEATS.message"
+                        dense
+                        autofocus
+                        @keyup.enter="scope.set"
+                      />
+                    </q-popup-edit>
+                  </q-td>
+                  <q-td key="HEAD" :props="props">
+                    {{ props.row.HEAD }}
+                    <q-popup-edit
+                      v-model.number="props.row.HEAD"
+                      buttons
+                      label-set="Save"
+                      label-cancel="Close"
+                      :validate="checkHEAD"
+                      v-slot="scope"
+                    >
+                      <q-input
+                        type="number"
+                        v-model.number="scope.value"
+                        :error="formatErrorTable.HEAD.error"
+                        :error-message="formatErrorTable.HEAD.message"
+                        dense
+                        autofocus
+                        @keyup.enter="scope.set"
+                      />
+                    </q-popup-edit>
+                  </q-td>
+                  <q-td key="DEPREL" :props="props">
+                    {{ props.row.DEPREL }}
+                    <q-popup-edit
+                      v-model="props.row.DEPREL"
+                      buttons
+                      label-set="Save"
+                      label-cancel="Close"
+                      :validate="checkDEPREL"
+                      v-slot="scope"
+                    >
+                      <q-input
+                        v-model="scope.value"
+                        :error="formatErrorTable.DEPREL.error"
+                        :error-message="formatErrorTable.DEPREL.message"
+                        dense
+                        autofocus
+                        @keyup.enter="scope.set"
+                      />
+                    </q-popup-edit>
+                  </q-td>
+                  <q-td key="DEPS">
+                    {{ props.row.DEPS }}
+                    <q-popup-edit v-model="props.row.DEPS" auto-save v-slot="scope" >
+                      <q-input v-model="scope.value" dense autofocus />
+                    </q-popup-edit>
+                  </q-td>
+                  <q-td key="MISC">
+                    {{ props.row.MISC }}
+                    <q-popup-edit v-model="props.row.MISC" auto-save v-slot="scope" >
+                      <q-input v-model="scope.value" dense autofocus />
+                    </q-popup-edit>
+                  </q-td>
+                </q-tr>
+              </template>
+            </q-table>
+          </q-tab-panel>
+          <q-tab-panel name="conll">
+            <Codemirror v-model:value="currentConllContent" :options="cmOption" class="bordered"></Codemirror>
+          </q-tab-panel>
+        </q-tab-panels>
       </q-card-section>
       <q-card-actions class="sticky-card-actions" align="around">
         <q-btn v-close-popup outline color="primary" :label="$t('cancel')" style="width: 45%; margin-left: auto; margin-right: auto" />
-        <q-btn v-if="view === 'table'" v-close-popup color="primary" label="Ok" style="width: 45%;" @click="onConllDialogOk()" />
+        <q-btn v-if="isLoggedIn && view === 'table'" v-close-popup color="primary" label="Ok" style="width: 45%;" @click="onConllDialogOk()" />
         <q-btn v-else v-close-popup color="primary" :label="$t('conllDial.copyConll')" style="width: 45%;" @click="copyConll()" />
       </q-card-actions>
     </q-card>
@@ -176,6 +163,7 @@ import Codemirror from 'codemirror-editor-vue3';
 import { tokenJson_T, _featuresConllToJson, _depsConllToJson, nodesJson_T } from 'conllup/lib/conll';
 import { mapState } from 'pinia';
 import { useProjectStore } from 'src/pinia/modules/project';
+import { useUserStore } from 'src/pinia/modules/user';
 import { sentence_bus_t, table_t } from 'src/types/main_types';
 import { notifyMessage } from 'src/utils/notify';
 import { copyToClipboard } from 'quasar';
@@ -275,6 +263,7 @@ export default defineComponent({
   },
   computed: {
     ...mapState(useProjectStore, ['annotationFeatures']),
+    ...mapState(useUserStore, ['isLoggedIn']),
   },
   watch: {
     conllTable: {

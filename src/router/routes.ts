@@ -7,12 +7,7 @@ const routes: RouteRecordRaw[] = [
     component: () => import('src/layouts/AppLayout.vue'),
     children: [
       { path: '', component: () => {
-        if (useUserStore().isLoggedIn) {
-          return import('src/pages/MyProjects.vue');
-        } 
-        else {
-          return import('src/pages/Index.vue');
-        }
+        return import('src/pages/Index.vue');
       }  
     },
       { path: '/projects', component: () => import('src/pages/ProjectsHub.vue') },

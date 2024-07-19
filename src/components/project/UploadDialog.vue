@@ -241,10 +241,6 @@ export default defineComponent({
         notifyError({ error: `${sampleName} contains empty line that doesn't start with a digit or # ` });
         this.formatError = true;
       }
-      if (Object.values(sentenceConllToJson(sentence)['metaJson']).some((metaVal) => metaVal == undefined)) {
-        notifyError({ error: `${sampleName} contains sentence with empty metadata value` });
-        this.formatError = true;
-      }
     },
     triggerFormatErrors() {
       this.samplesWithoutSentIds.forEach((sampleName) => {

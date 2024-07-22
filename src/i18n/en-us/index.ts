@@ -505,6 +505,7 @@ export default {
     noSearchResults: 'No search results',
     historyTypes: ['All', 'Search', 'Rewrite', 'Favorites'],
     deleteHistory: 'Delete History',
+    deleteHistoryItem: 'Delete request from history',
     favoriteTooltip: ['Add this request to the favorites', 'Remove this request from the favorites'],
     copyTooltip: 'Copy this request',
     deleteTooltip: 'Delete all the history',

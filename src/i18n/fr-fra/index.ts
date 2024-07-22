@@ -502,6 +502,7 @@ export default {
     noSearchResults: 'Aucun résultat de recherche',
     historyTypes: ["Tout l'historique", 'Recherche', 'Réécriture', 'Favoris'],
     deleteHistory: "Supprimer tout l'historique",
+    deleteHistoryItem: "Supprimer la requête de l'historique",
     favoriteTooltip: ['Ajoutez cette requête aux favoris', 'Supprimez cette requête des favoris'],
     copyTooltip: 'Copiez cette requête',
     deleteTooltip: "Supprimez tout l'historique",

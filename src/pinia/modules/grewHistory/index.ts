@@ -66,9 +66,6 @@ export const useGrewHistoryStore = defineStore('grewHistory', {
     deleteHistoryItem(recordId: string) {
       api
         .deleteHistoryRecord(useProjectStore().name, recordId)
-        .then(() => {
-          notifyMessage({ message: 'History item deleted' });
-        })
         .catch(() => {
           notifyError({ error: 'Error happened while deleting history item' });
         });

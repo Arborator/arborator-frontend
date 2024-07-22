@@ -160,7 +160,6 @@ export default defineComponent({
     },
     copyRequest(record: grewHistoryRecord_t) {
       this.$emit('copied-request', record);
-      notifyMessage({ message: 'Request copied' })
     },
     triggerConfirm(method: CallableFunction) {
       this.confirmDelete = true;

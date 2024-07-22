@@ -137,7 +137,6 @@ export default defineComponent({
           this.tags = [];
           const exportedConll = this.reactiveSentencesObj[this.openTabUser].exportConll();
           this.sentence.conlls[this.openTabUser] = exportedConll;
-          notifyMessage({ message: 'Tags Saved' });
         })
         .catch((error) => {
           notifyError({ error: error });

@@ -427,7 +427,7 @@ export default {
     sampleName: "Le nom d'échantillon",
     horizontalHint: 'Chaque phrase se trouve sur une ligne séparée, les tokens sont séparés par des espaces..',
     verticalHint: 'Chaque token est écrit sur une ligne séparée, une ligne vide indiquant la fin de la phrase.',
-    customUsername: "UserId personnalisé par défaut il s'agit de votre username",
+    customUsername: "UserId personnalisé",
     text: 'texte',
     tokenizeBtn: 'Tokéniser',
     selectFiles: 'Sélectionnez un ou plusieurs fichiers CONLL',
@@ -435,6 +435,13 @@ export default {
     uploadFileTooltip: 'sélectionnez un fichier',
     reservedUsernameError: 'est un nom réservé pour ArboratorGrew',
     emptyUsernameError: 'Vous ne pouvez pas télécharger de fichier sans userId, veuillez saisir quelque chose.',
+    userIdConfig: 'Configuration du UserId',
+    userIdOptions: [
+      "Importez vos arbres sous votre nom d'utilisateurs", 
+      'Importez vos arbres comme des arbres validated', 
+      'Importez vos arbres comme des arbres base_tree',
+      "Importez vos arbres en utilisant un nom d'utilisateur personalisé",
+    ],
   },
   advancedFilter: {
     textFilter: 'Filtre du texte',

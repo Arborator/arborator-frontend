@@ -430,7 +430,7 @@ export default {
     sampleName: 'Sample Name',
     horizontalHint: 'Each sentence on a separate line, the tokens are separated by spaces.',
     verticalHint: 'Each token on a separate line, with an empty line indicating the end of sentence.',
-    customUsername: "Custom UserId By default it's your username",
+    customUsername: "Custom UserId",
     text: 'text',
     tokenizeBtn: 'Tokenize',
     selectFiles: 'Select one or multiple conll files',
@@ -438,6 +438,13 @@ export default {
     uploadFileTooltip: 'Select file to upload',
     reservedUsernameError: 'is reserved username for ArboratorGrew',
     emptyUsernameError: 'You can not upload file without userId please type something',
+    userIdConfig: 'User Id configuration',
+    userIdOptions: [
+      'Import your trees under your username', 
+      'Import your trees as validated trees', 
+      'Import your trees as base_tree',
+      'Import your trees using custom username'
+    ],
   },
   advancedFilter: {
     textFilter: 'Text filter',

@@ -24,7 +24,7 @@ export interface UserStateInterface {
   query_class: string | null;
   super_admin: boolean;
   username: string;
-  reservedUserId: string;
+  reservedUserIds: string[];
 }
 
 // default user state
@@ -55,6 +55,6 @@ export default function defaultState(): UserStateInterface {
     query_class: null,
     super_admin: false,
     username: '',
-    reservedUserId: 'base_tree',
+    reservedUserIds: ['base_tree', 'validated'],
   };
 }

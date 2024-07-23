@@ -50,7 +50,7 @@ export default function defaultState(): configState {
     languagesList: languages,
     annotationFeatures: {
       META: ['sent_id', 'text', 'text_en', 'text_ortho', 'speaker_id', 'sound_url'],
-      UPOS: ['ADJ', 'ADP', 'ADV', 'AUX', 'CCONJ', 'DET', 'INTJ', 'NOUN', 'NUM', 'PART', 'PRON', 'PROPN', 'PUNCT', 'SCONJ', 'VERB', 'X'],
+      UPOS: ['ADJ', 'ADP', 'ADV', 'AUX', 'CCONJ', 'DET', 'INTJ', 'NOUN', 'NUM', 'PART', 'PRON', 'PROPN', 'PUNCT', 'SCONJ', 'SYM', 'VERB', 'X'],
       XPOS: [],
       FEATS: [
         { name: 'Abbr', values: ['Yes'] },
@@ -98,7 +98,7 @@ export default function defaultState(): configState {
         { name: 'Evident', values: ['Fh', 'Nfh'] },
         {
           name: 'ExtPos',
-          values: ['ADJ', 'ADP', 'ADV', 'AUX', 'CCONJ', 'DET', 'INTJ', 'NOUN', 'NUM', 'PART', 'PRON', 'PROPN', 'PUNCT', 'SCONJ', 'VERB', 'X'],
+          values: ['ADJ', 'ADP', 'ADV', 'AUX', 'CCONJ', 'DET', 'INTJ', 'NOUN', 'NUM', 'PART', 'PRON', 'PROPN', 'PUNCT', 'SCONJ', 'SYM', 'VERB', 'X'],
         },
         { name: 'Foreign', values: ['Yes'] },
         { name: 'Gender', values: ['Com', 'Fem', 'Masc', 'Neut'] },
@@ -121,7 +121,7 @@ export default function defaultState(): configState {
         { name: 'Gloss', values: 'String' },
         { name: 'Idiom', values: ['Yes'] },
         { name: 'InIdiom', values: ['Yes'] },
-        { name: 'SpaceAfter', values: ['Yes'] },
+        { name: 'SpaceAfter', values: ['No', 'Yes'] },
         { name: 'Subject', values: ['Instanciated', 'Generic', 'NoRaising', 'ObjRaising', 'OblRaising', 'SubjRaising'] },
       ],
       DEPREL: [
@@ -181,7 +181,7 @@ export default function defaultState(): configState {
     },
     annotationFeaturesUD: {
       META: ['sent_id', 'text', 'text_en', 'text_ortho', 'speaker_id', 'sound_url'],
-      UPOS: ['ADJ', 'ADP', 'ADV', 'AUX', 'CCONJ', 'DET', 'INTJ', 'NOUN', 'NUM', 'PART', 'PRON', 'PROPN', 'PUNCT', 'SCONJ', 'VERB', 'X'],
+      UPOS: ['ADJ', 'ADP', 'ADV', 'AUX', 'CCONJ', 'DET', 'INTJ', 'NOUN', 'NUM', 'PART', 'PRON', 'PROPN', 'PUNCT', 'SCONJ', 'SYM', 'VERB', 'X'],
       XPOS: [],
       FEATS: [
         { name: 'Abbr', values: ['Yes'] },
@@ -229,7 +229,7 @@ export default function defaultState(): configState {
         { name: 'Evident', values: ['Fh', 'Nfh'] },
         {
           name: 'ExtPos',
-          values: ['ADJ', 'ADP', 'ADV', 'AUX', 'CCONJ', 'DET', 'INTJ', 'NOUN', 'NUM', 'PART', 'PRON', 'PROPN', 'PUNCT', 'SCONJ', 'VERB', 'X'],
+          values: ['ADJ', 'ADP', 'ADV', 'AUX', 'CCONJ', 'DET', 'INTJ', 'NOUN', 'NUM', 'PART', 'PRON', 'PROPN', 'PUNCT', 'SCONJ', 'SYM', 'VERB', 'X'],
         },
         { name: 'Foreign', values: ['Yes'] },
         { name: 'Gender', values: ['Com', 'Fem', 'Masc', 'Neut'] },
@@ -253,7 +253,7 @@ export default function defaultState(): configState {
         { name: 'MGloss', values: 'String' },
         { name: 'Idiom', values: ['Yes'] },
         { name: 'InIdiom', values: ['Yes'] },
-        { name: 'SpaceAfter', values: ['Yes'] },
+        { name: 'SpaceAfter', values: ['No', 'Yes'] },
         { name: 'Subject', values: ['Instanciated', 'Generic', 'NoRaising', 'ObjRaising', 'OblRaising', 'SubjRaising'] },
       ],
       DEPREL: [

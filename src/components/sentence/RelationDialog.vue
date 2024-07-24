@@ -142,6 +142,11 @@ export default defineComponent({
           this.selectedDep[depName].selected[i] = false;
         }
       });
+      if (depName == 0) {
+        for (let i = 1; i < this.deprels.length; i += 1) {
+          this.selectedDep[i].selected[this.selectedDep[i].selected.indexOf(true)] = false;
+        }
+      }
     },
     onChangeRelation() {
       this.relationDialogOpened = false;

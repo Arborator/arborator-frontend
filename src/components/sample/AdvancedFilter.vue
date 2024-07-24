@@ -1,6 +1,6 @@
 <template>
-  <div class="row q-pa-md">
-    <div class="col-8">
+  <div class="row q-pa-md q-gutter-x-md">
+    <div class="col-6">
       <q-input 
         v-model="textFilter" 
         :label="$t('advancedFilter.textFilter')" 
@@ -8,7 +8,7 @@
         dense 
         color="primary"
         @keyup.enter="applyAdvancedFilter()"
-        ></q-input>
+      ></q-input>
     </div>
     <div class="col-3 q-px-md q-gutter-md">
       <q-select
@@ -31,9 +31,13 @@
         </template>
       </q-select>
     </div>
-    <div>
-      <q-btn @click="applyAdvancedFilter" color="primary">{{ $t('advancedFilter.applyFilter') }}</q-btn>
-    </div>
+    <q-btn @click="applyAdvancedFilter" color="primary">{{ $t('advancedFilter.applyFilter') }}</q-btn>
+    <q-separator vertical />
+    <q-btn outline :disable="pendingModifications.size === 0" color="primary" label="Save pending trees" @click="saveAllTrees()">
+      <q-badge v-if="pendingModifications.size > 0" color="red" floating>
+        {{ pendingModifications.size }}
+      </q-badge>
+    </q-btn>
   </div>
   <div class="q-pa-md">
     <div class="row text-h6">
@@ -101,8 +105,11 @@ import { mapActions, mapState, mapWritableState } from 'pinia';
 import { useProjectStore } from 'src/pinia/modules/project';
 import { useTagsStore } from 'src/pinia/modules/tags';
 import { useTreesStore } from 'src/pinia/modules/trees';
+import { useGrewSearchStore } from 'src/pinia/modules/grewSearch';
+import { notifyError, notifyMessage } from 'src/utils/notify';
 
 import { defineComponent } from 'vue';
+import { api } from 'src/boot/axios';
 
 interface filter_t {
   setUsers: string[];
@@ -117,6 +124,7 @@ interface element_t {
 
 export default defineComponent({
   name: 'AdvancedFilter',
+  emits: ['trees-saved'],
   data() {
     const filterOperators: element_t[] = [
       { val: 'have', label: this.$t('advancedFilter.filterOperators[0]') },
@@ -135,7 +143,7 @@ export default defineComponent({
     };
   },
   computed: {
-    ...mapState(useProjectStore, ['featuresSet']),
+    ...mapState(useProjectStore, ['featuresSet', 'name']),
     ...mapState(useTreesStore, ['trees', 'filteredTrees', 'numberOfTreesPerUser', 'numberOfTrees', 'userIds']),
     ...mapState(useTagsStore, ['userTags']),
     ...mapWritableState(useTreesStore, [
@@ -148,12 +156,14 @@ export default defineComponent({
       'featuresSetForNotDiffs',
       'selectedTags',
     ]),
+    ...mapState(useGrewSearchStore, ['pendingModifications']),
   },
   mounted() {
     this.clearAll();
   },
   methods: {
     ...mapActions(useTreesStore, ['applyFilterTrees', 'getUsersTags']),
+    ...mapActions(useGrewSearchStore, ['emptyPendingModification']),
     applyAdvancedFilter() {
       this.initializeFilters();
       for (const filter of this.listFilters) {
@@ -200,6 +210,23 @@ export default defineComponent({
       this.featuresSetForDiffs = [];
       this.featuresSetForNotDiffs = [];
     },
+    saveAllTrees() {
+      const data = {
+        conllGraph: [...this.pendingModifications.values()].join('\n\n')
+      };
+      const sampleName = this.$route.params.samplename as string;
+      api
+        .saveAllTrees(this.name, sampleName, data)
+        .then(() => {
+          notifyMessage({ position: 'top', message: 'Saved on the server', icon: 'save' });
+          this.emptyPendingModification();
+          console.log(this.pendingModifications.size)
+          this.$emit('trees-saved');
+        })
+        .catch((error) => {
+          notifyError({ error: `Error happened while saving trees ${error}` });
+        });
+    }
   },
 });
 </script>

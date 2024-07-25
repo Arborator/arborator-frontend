@@ -228,7 +228,7 @@
           @focus="activateFocus(sentence.sent_id)"
         >
           <q-card flat>
-            <q-card-section :class="($q.dark.isActive ? '' : '') + ' scrollable'">
+            <q-card-section :class="($q.dark.isActive ? '' : '') + ' scrollable'" :ref="(user as string)" @scroll="synchronizeScroll">
               <VueDepTree
                 v-if="reactiveSentencesObj"
                 :card-id="index"
@@ -552,7 +552,7 @@ export default defineComponent({
               this.openTabUser = changedConllUser;
               this.exportedConll = exportedConll;
             }
-            this.removePendingModification(this.sentence.sent_id);
+            this.removePendingModification(`${this.sentence.sent_id}_${this.openTabUser}`);
             notifyMessage({ position: 'top', message: 'Saved on the server', icon: 'save' });
           }
         })
@@ -653,6 +653,11 @@ export default defineComponent({
         }
       }
     },
+    synchronizeScroll(event: Event) {
+      for (const user of Object.keys(this.filteredConlls)) {
+        console.log(user)
+      }
+    }
   },
 });
 </script>

@@ -1,7 +1,7 @@
 <template>
   <q-splitter v-model="splitterModel" horizontal :limits="[0, 100]" :style="{ height: `${splitterHeight}px` }" emit-immediately>
     <template v-slot:before>
-      <AdvancedFilter />
+      <AdvancedFilter @trees-saved="getTrees()"  />
     </template>
     <template v-slot:after>
       <div class="custom-frame1">
@@ -32,9 +32,7 @@
             <q-circular-progress indeterminate size="70px" :thickness="0.22" color="primary" track-color="grey-3" />
           </div>
         </div>
-
         <GrewSearch :sentence-count="numberOfTrees" :search-scope="samplename" :sample-names="[samplename]" :trees-from="userIds" />
-
         <RelationTableMain :sample-names="[samplename]" :treesFrom="userIds" />
       </div>
     </template>

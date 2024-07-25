@@ -176,8 +176,7 @@ export default function defaultState(): configState {
           join: ':',
         },
         { name: 'deep', values: ['', 'agent', 'expl', 'fixed', 'foreign', 'lvc', 'm', 'name', 'num', 'relcl', 'scrap'], join: '@' },
-      ],
-      DEPS: [{ name: 'deep', values: ['comp', 'mod', 'subj'], join: '' }],
+      ]
     },
     annotationFeaturesUD: {
       META: ['sent_id', 'text', 'text_en', 'text_ortho', 'speaker_id', 'sound_url'],
@@ -329,8 +328,7 @@ export default function defaultState(): configState {
           ],
           join: ':',
         },
-      ],
-      DEPS: [],
+      ]
     },
     invalidProjectError: false,
   };

@@ -64,7 +64,6 @@ export interface annotationFeatures_t {
   FEATS: { name: string; values: string[] }[];
   MISC: { name: string; values: string[] | string }[];
   DEPREL: { name: string; values: string[]; join: string }[];
-  DEPS: { name: string; values: string[]; join: string }[];
 }
 
 export interface project_access_t {

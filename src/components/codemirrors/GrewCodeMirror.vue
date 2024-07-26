@@ -16,6 +16,7 @@ CodeMirror.defineMode('grew', () => {
     pattern: 'builtin',
     commands: 'builtin',
     without: 'builtin',
+    with: 'builtin',
     rule: 'builtin',
   };
   function tokenBase(stream: any, state: any) {
@@ -54,7 +55,7 @@ CodeMirror.defineMode('grew', () => {
       return 'operator';
     }
     stream.eatWhile(/\w/);
-    const cur = stream.current() as 'global' | 'pattern' | 'commands' | 'without' | 'with';
+    const cur = stream.current() as 'global' | 'pattern' | 'commands' | 'without' | 'with' ;
     return words[cur] || 'variable';
   }
 

@@ -54,7 +54,7 @@ CodeMirror.defineMode('grew', () => {
       return 'operator';
     }
     stream.eatWhile(/\w/);
-    const cur = stream.current() as 'global' | 'pattern' | 'commands' | 'without';
+    const cur = stream.current() as 'global' | 'pattern' | 'commands' | 'without' | 'with';
     return words[cur] || 'variable';
   }
 

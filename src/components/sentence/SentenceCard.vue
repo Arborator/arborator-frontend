@@ -228,7 +228,7 @@
           @focus="activateFocus(sentence.sent_id)"
         >
           <q-card flat>
-            <q-card-section :class="($q.dark.isActive ? '' : '') + ' scrollable'" :ref="(user as string)" @scroll="synchronizeScroll">
+            <q-card-section :class="($q.dark.isActive ? '' : '') + ' scrollable'" :id="'tab_' + user" @scroll="synchronizeScroll">
               <VueDepTree
                 v-if="reactiveSentencesObj"
                 :card-id="index"
@@ -373,6 +373,7 @@ export default defineComponent({
   data() {
     const hasPendingChanges: { [key: string]: boolean } = {};
     const reactiveSentencesObj: reactive_sentences_obj_t = {};
+    const horizontalScrollPos: number = 0;
     return {
       sentenceBus: sentenceBusFactory(),
       exportedConll: '',
@@ -388,6 +389,7 @@ export default defineComponent({
       showSentSegmentationDial: false,
       hasPendingChanges,
       tags: [],
+      horizontalScrollPos,
     };
   },
 
@@ -575,6 +577,7 @@ export default defineComponent({
       else {
         this.sentenceText = this.sentenceData.sentence;
       }
+      document.getElementById(`tab_${this.openTabUser}`)?.scrollTo({ left: this.horizontalScrollPos });
     },
     openMetaDialog() {
       this.sentenceBus.emit('open:metaDialog', { userId: this.openTabUser });
@@ -654,9 +657,7 @@ export default defineComponent({
       }
     },
     synchronizeScroll(event: Event) {
-      for (const user of Object.keys(this.filteredConlls)) {
-        console.log(user)
-      }
+      this.horizontalScrollPos = (event.target as HTMLElement).scrollLeft;
     }
   },
 });

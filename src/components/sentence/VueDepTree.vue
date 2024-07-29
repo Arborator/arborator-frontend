@@ -214,7 +214,7 @@ export default defineComponent({
     this.statusChangeHandler();
   },
   methods: {
-    ...mapActions(useGrewSearchStore, ['addPendingModification']),
+    ...mapActions(useGrewSearchStore, ['addPendingModification', 'removePendingModification']),
     svgClickHandler(e: svgClickEvent_t) {
       const clickedId = e.detail.clicked;
       const clickedToken = { ...this.sentenceSVG.treeJson.nodesJson[clickedId] };
@@ -284,6 +284,11 @@ export default defineComponent({
         `${ this.reactiveSentencesObj[this.treeUserId].state.metaJson.sent_id }_${this.reactiveSentencesObj[this.treeUserId].state.metaJson.user_id }`,
         this.reactiveSentencesObj[this.treeUserId].exportConll()
       );
+      else {
+        this.removePendingModification(`${ 
+          this.reactiveSentencesObj[this.treeUserId].state.metaJson.sent_id }_${this.reactiveSentencesObj[this.treeUserId].state.metaJson.user_id }`
+        );
+      }
 
       this.$emit('statusChanged', {
         canUndo,

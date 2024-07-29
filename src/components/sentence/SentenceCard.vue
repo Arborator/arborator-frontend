@@ -534,6 +534,7 @@ export default defineComponent({
             this.sentenceBus.emit('action:saved', {
               userId: this.openTabUser,
             });
+            this.removePendingModification(`${this.sentence.sent_id}_${this.openTabUser}`);
             this.reloadCommits += 1;
             if (this.sentenceData.conlls[changedConllUser]) {
               // the user already had a tree
@@ -552,7 +553,6 @@ export default defineComponent({
               this.openTabUser = changedConllUser;
               this.exportedConll = exportedConll;
             }
-            this.removePendingModification(`${this.sentence.sent_id}_${this.openTabUser}`);
             notifyMessage({ position: 'top', message: 'Saved on the server', icon: 'save' });
           }
         })

@@ -17,6 +17,7 @@ interface configState {
   diffMode: boolean;
   diffUserId: string;
   reloadProjects: boolean;
+  reloadSamples: boolean;
   shownFeatures: string[];
   shownMeta: string[];
   annotationFeatures: annotationFeatures_t;
@@ -45,6 +46,7 @@ export default function defaultState(): configState {
     diffMode: false,
     diffUserId: '',
     reloadProjects: false,
+    reloadSamples: false,
     shownFeatures: ['FORM', 'UPOS', 'LEMMA', 'MISC.Gloss'],
     shownMeta: ['text_en'],
     languagesList: languages,

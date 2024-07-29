@@ -550,8 +550,9 @@ export default defineComponent({
       'isAllowdedToSync',
       'canExportTrees',
       'language',
+      'reloadSamples'
     ]),
-    ...mapWritableState(useProjectStore, ['freezed']),
+    ...mapWritableState(useProjectStore, ['freezed', 'reloadSamples']),
     ...mapState(useUserStore, ['isSuperAdmin']),
     ...mapState(useGithubStore, ['reloadCommits']),
     projectName(): string {
@@ -589,6 +590,9 @@ export default defineComponent({
     reloadCommits(newVal) {
       if (newVal > 0) this.loadProjectData();
     },
+    reloadSamples(newVal) {
+      if (newVal > 0) this.loadProjectData();
+    }
   },
   created() {
     window.addEventListener('resize', this.handleResize);
@@ -638,10 +642,8 @@ export default defineComponent({
       api.getProjectSamples(this.projectName as string).then((response) => {
         this.samples = response.data;
         this.samplesNumber = this.samples.length;
-        this.sampleNames = [];
-        for (const sample of this.samples) {
-          this.sampleNames.push(sample.sample_name);
-        }
+        this.sampleNames = this.samples.map(sample => sample.sample_name);
+        this.reloadSamples = false;
       });
     },
 

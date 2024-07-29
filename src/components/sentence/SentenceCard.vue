@@ -451,9 +451,6 @@ export default defineComponent({
   },
   mounted() {
     this.focused = this.isFocused as boolean;
-    window.addEventListener('keydown', (event) => {
-      this.handleShortcut(event, '');
-    });
   },
   methods: {
     ...mapActions(useGrewSearchStore, ['removePendingModification']),
@@ -639,22 +636,6 @@ export default defineComponent({
     activateFocus(sentId: string) {
       this.focused = true;
       this.$emit('focused-sent', sentId);
-    },
-    handleShortcut(event: any, user: string) {
-      if (this.openTabUser === '') {
-        return;
-      }
-      if (this.focused) {
-        if (event.keyCode === 83 && event.shiftKey) {
-          this.save(user);
-        }
-        if (event.keyCode === 90 && this.canUndo && event.ctrlKey) {
-          this.undo();
-        }
-        if (event.keyCode === 89 && this.canRedo && event.ctrlKey) {
-          this.redo();
-        }
-      }
     },
     synchronizeScroll(event: Event) {
       this.horizontalScrollPos = (event.target as HTMLElement).scrollLeft;

@@ -107,6 +107,7 @@ export default defineComponent({
   },
   mounted() {
     document.title = `${this.projectname}/${this.samplename}`;
+    this.emptyPendingModification();
     this.getTrees();
     this.calculateHeight();
   },

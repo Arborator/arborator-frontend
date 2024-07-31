@@ -99,12 +99,6 @@
                       </q-item-section>
                       <q-item-section> {{ $t('settings') }} </q-item-section>
                     </q-item>
-                    <q-item v-show="getUserInfos.super_admin" v-ripple clickable to="/admin">
-                      <q-item-section avatar>
-                        <q-icon name="vpn_key" />
-                      </q-item-section>
-                      <q-item-section> {{ $t('admin') }} </q-item-section>
-                    </q-item>
                   </q-list>
                 </div>
                 <q-separator vertical inset class="q-mx-lg" />

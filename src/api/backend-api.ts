@@ -69,6 +69,12 @@ export default {
   getProjects() {
     return API.get<getProjects_RV>('projects');
   },
+  getMismatchProjects() {
+    return API.get('projects/mismatch-projects');
+  },
+  getProjectsLanguages() {
+    return API.get('projects/project-languages');
+  },
   createProject(data: createProject_ED) {
     return API.post('projects/', data);
   },

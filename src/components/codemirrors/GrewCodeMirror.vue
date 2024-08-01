@@ -34,8 +34,12 @@ CodeMirror.defineMode('grew', () => {
       }
     }
     if (ch === '-') {
-      const nextCh = stream.next();
-      if (nextCh === '[' || nextCh === '>') {
+      const next_ch = stream.next();
+      if (next_ch === '[') {
+        return 'quote';
+      }
+      if (next_ch === ">") {
+        stream.eat(">");
         return 'quote';
       }
     }

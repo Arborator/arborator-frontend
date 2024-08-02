@@ -70,96 +70,105 @@
         </q-card>
       </q-card-section>
       <q-card-section v-if="super_admin">
-        <div class="row q-pa-md q-gutter-md" style="justify-content: right">
-          <q-btn no-caps outline label="Extract projects languages" color="primary" @click="exportLanguages()" />
-        </div>
-        <div class="row q-gutter-x-md">
-          <q-card flat bordered class="col">
-            <q-card-section class="row">
-              <div class="col text-h6">
-                DB projects
-              </div>
-              <div style="justify-content: right;" >
-                <q-btn no-caps unelevated color="primary" label="Remove all" />
-              </div>
-            </q-card-section>
-            <q-card-section>
-              <q-virtual-scroll
-                style="max-height: 50vh;"
-                :items="dbProjects"
-                separator
-                v-slot="{ item, index }"
-              >
-                <q-item :key="index">
-                  <q-item-section>
-                    <q-item-label>{{ item }}</q-item-label>
-                  </q-item-section>
-                </q-item>
-              </q-virtual-scroll>
-            </q-card-section>
-            <q-card-section v-if="dbProjects.length === 0">
-              No DB projcts mismatch with grew server
-            </q-card-section>
-          </q-card>
-          <q-card flat bordered class="col">
-            <q-card-section class="row">
-              <div class="col text-h6">
-                Grew projects
-              </div>
-              <div style="justify-content: right;" >
-                <q-btn no-caps unelevated color="primary" label="Remove all" />
-              </div>
-            </q-card-section>
-            <q-card-section>
-              <q-virtual-scroll
-                style="max-height: 50vh;"
-                :items="grewProjects"
-                separator
-                v-slot="{ item, index }"
-              >
-                <q-item :key="index">
-                  <q-item-section>
-                    <q-item-label>{{ item }}</q-item-label>
-                  </q-item-section>
-                </q-item>
-              </q-virtual-scroll>
-            </q-card-section>
-            <q-card-section v-if="grewProjects.length === 0">
-              No grew projcts mismatch with ArboratorGrew
-            </q-card-section>
-          </q-card>
-          <q-card flat bordered class="col">
-            <q-card-section class="row">
-              <div class="col text-h6">
-                Old and empty projects
-              </div>
-              <div style="justify-content: right;" >
-                <q-btn no-caps unelevated color="primary" label="Remove all" @click="deleteEmptyAndOldProjects" />
-              </div>
-            </q-card-section>
-            <q-card-section>
-              <q-virtual-scroll
-                style="max-height: 50vh;"
-                :items="oldProjects"
-                separator
-                v-slot="{ item, index }"
-              >
-                <q-item :key="index">
-                  <q-item-section>
-                    <q-item-label>{{ item.name }}</q-item-label>
-                    <q-item-label caption>{{ item.samplesNumber }}</q-item-label>
-                  </q-item-section>
-                  <q-item-section>
-                    <q-item-label>{{ timeAgo(item.lastAccess) }}</q-item-label>
-                  </q-item-section>
-                </q-item>
-              </q-virtual-scroll>
-            </q-card-section>
-            <q-card-section v-if="oldProjects.length === 0">
-             No old projects
-            </q-card-section>
-          </q-card>
-        </div>
+        <q-table
+          flat
+          bordered
+          :rows="filteredListProject"
+          :columns="table.fields"
+          :filter="table.filter"
+          :filter-method="searchProject"
+          row-key="projectName"
+          @row-click="onRowClick"
+          hide-no-data
+          selection="single"
+          v-model:selected="table.selected"
+        >
+          <template #top>
+            <div class="row q-gutter-md">
+              <q-btn no-caps color="primary" label="Remove project" @click="deleteProject()" />
+              <q-btn no-caps outline label="Extract projects languages" color="primary" @click="exportLanguages()" />
+              <q-input outlined dense v-model="table.filter" label="Search project" text-color="blue-grey-8">
+                <template #append>
+                  <q-icon name="search" />
+                </template>
+              </q-input>
+              <q-select dense outlined v-model="projectsType" :options="['All', 'Old']" label="Select project type" />
+            </div>
+          </template>
+          <template #body-cell-visibility="props">
+            <q-td key="visibilty" :props="props">
+              <q-chip outline v-if="props.row.visibility === 0" label="private" color="red-6" />
+              <q-chip outline v-if="props.row.visibility === 1" label="visible" color="yellow-9" />
+              <q-chip outline v-if="props.row.visibility === 2" label="public" color="light-green-8" />
+            </q-td>
+          </template>
+          <template #body-cell-lastAccess="props">
+            <q-td key="lastAccess" :props="props">
+              {{ timeAgo(props.row.lastAccess) }}
+            </q-td>
+          </template>
+          <template #body-cell-lastWriteAccess="props">
+            <q-td key="lastWriteAccess" :props="props">
+              {{ timeAgo(props.row.lastAccess) }}
+            </q-td>
+          </template>
+        </q-table>
+      </q-card-section>
+      <q-card-section class="row q-gutter-x-md" v-if="super_admin">
+        <q-card flat bordered class="col">
+          <q-card-section class="row">
+            <div class="col text-h6">
+              DB projects
+            </div>
+            <div style="justify-content: right;" >
+              <q-btn no-caps unelevated color="primary" label="Remove all" />
+            </div>
+          </q-card-section>
+          <q-card-section>
+            <q-virtual-scroll
+              style="max-height: 50vh;"
+              :items="dbProjects"
+              separator
+              v-slot="{ item, index }"
+            >
+              <q-item :key="index">
+                <q-item-section>
+                  <q-item-label>{{ item }}</q-item-label>
+                </q-item-section>
+              </q-item>
+            </q-virtual-scroll>
+          </q-card-section>
+          <q-card-section v-if="dbProjects.length === 0">
+            No DB projcts mismatch with grew server
+          </q-card-section>
+        </q-card>
+        <q-card flat bordered class="col">
+          <q-card-section class="row">
+            <div class="col text-h6">
+              Grew projects
+            </div>
+            <div style="justify-content: right;" >
+              <q-btn no-caps unelevated color="primary" label="Remove all" />
+            </div>
+          </q-card-section>
+          <q-card-section>
+            <q-virtual-scroll
+              style="max-height: 50vh;"
+              :items="grewProjects"
+              separator
+              v-slot="{ item, index }"
+            >
+              <q-item :key="index">
+                <q-item-section>
+                  <q-item-label>{{ item }}</q-item-label>
+                </q-item-section>
+              </q-item>
+            </q-virtual-scroll>
+          </q-card-section>
+          <q-card-section v-if="grewProjects.length === 0">
+            No grew projcts mismatch with ArboratorGrew
+          </q-card-section>
+        </q-card>
       </q-card-section>
     </q-card>
   </q-page>
@@ -170,6 +179,8 @@ import api from 'src/api/backend-api';
 import { timeAgo } from 'src/utils/timeAgoUtils';
 import { mapActions, mapState, mapWritableState } from 'pinia';
 import { useUserStore } from 'src/pinia/modules/user';
+import { table_t } from 'src/types/main_types';
+import { project_extended_t } from 'src/api/backend-types';
 import { notifyError, notifyMessage } from 'src/utils/notify';
 import { defineComponent } from 'vue';
 
@@ -187,6 +198,90 @@ export default defineComponent({
     const dbProjects: string[] = [];
     const grewProjects: string[] = [];
     const oldProjects: any[] = [];
+    const projects: any[] = [];
+    const languages: { [language: string]: string[] } = {}
+    const table: table_t<any> = {
+      fields: [
+        {
+          name: 'projectName',
+          label: 'project Name',
+          sortable: true,
+          field: 'projectName',
+        },
+        {
+          name: 'visibility',
+          label: 'visibility',
+          sortable: true,
+          field: 'visibility',
+        },
+        {
+          name: 'language',
+          label: 'Language',
+          sortable: true,
+          field: 'language',
+        },
+        {
+          name: 'owner',
+          label: 'owner',
+          sortable: true,
+          field: 'owner',
+        },
+        {
+          name: 'contact',
+          label: 'contact',
+          sortable: true,
+          field: 'contact',
+        },
+        {
+          name: 'samplesNumber',
+          label: 'samples Number',
+          sortable: true,
+          field: 'samplesNumber',
+        },
+        {
+          name: 'lastAccess',
+          label: 'Last Access',
+          sortable: true,
+          field: 'lastAccess',
+        },
+        {
+          name: 'lastWriteAccess',
+          label: 'Last write access',
+          sortable: true,
+          field: 'lastWriteAccess',
+        },
+        {
+          name: 'syncRepo',
+          label: 'Syncronized with',
+          sortable: true,
+          field: 'syncRepo',
+        },
+        {
+          name: 'config',
+          label: 'Annotation config',
+          sortable: true,
+          field: 'config',
+        },
+        {
+          name: 'blindAnnotationMode',
+          label: 'Blind annotation mode',
+          sortable: true,
+          field: 'blindAnnotationMode',
+        },
+      ],
+      selected: [],
+      visibleColumns: ['projectName', 'langue', 'owner', 'contact', 'samplesNumber', 'lastAccess', 'lastWriteAccess', 'syncRepo', 'config'],
+      filter: '',
+      loading: false,
+      pagination: {
+        sortBy: 'projectName',
+        descending: true,
+        page: 1,
+        rowsPerPage: 10,
+      },
+      loadingDelete: false,
+      exporting: false,
+    };
     return {
       users,
       dbProjects,
@@ -194,16 +289,28 @@ export default defineComponent({
       oldProjects,
       usersFiltered,
       userSearch: '',
+      table,
+      projects,
+      languages,
+      projectsType: 'All',
     }
   },
   computed: {
     ...mapWritableState(useUserStore, ['email', 'first_name', 'family_name']),
     ...mapState(useUserStore, ['avatarKey', 'picture_url', 'super_admin', 'username']),
+    filteredListProject(): any[] {
+      if (this.projectsType === 'Old') {
+        return this.projects.filter((project: any) => project.isOld)
+      }
+      else {
+        return this.projects;
+      }
+    }
   },
   mounted() {
     this.getUsers();
     this.mismatchProjects();
-    this.getEmptyAndOldProject();
+    this.getProjects();
   },
   methods: {
     ...mapActions(useUserStore, ['updateUserInformation']),
@@ -255,6 +362,78 @@ export default defineComponent({
       link.click();
       document.body.removeChild(link);
     },
+    exportLanguages() {
+      let languageTsv = 'language\tprojects\n';
+      for (const [language, projects] of Object.entries(this.languages)) {
+        languageTsv += language + '\t' + projects.join(',') + '\n';
+      }
+      const url = window.URL.createObjectURL(new Blob([languageTsv], { type: 'text/tab-separated-values' }));
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', `languages_list.tsv`);
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+        
+    },
+    isOld(project: project_extended_t) {
+      const year = -3600 * 24 * 365;
+      return project.lastAccess < year || (project.numberSamples < 1 && project.lastAccess < -3600) || project.admins.length === 0;
+    },
+    deleteProject() {
+      api
+      .deleteProject(this.table.selected[0].projectName)
+      .then(() => {
+        notifyMessage({ message: `project ${this.table.selected[0].projectName} is deleted` });
+        this.getProjects();
+      })
+      .catch((error) => {
+        notifyError({ error: `Error happened while removing old projects ${error}` });
+      });
+    },
+    getProjects() {
+      api
+        .getProjects()
+        .then((response) => {
+          for (const project of response.data) {
+            this.projects.push({
+              projectName: project.projectName,
+              visibility: project.visibility,
+              language: project.language ? project.language : 'Not specified',
+              owner: project.owner,
+              contact: project.contactOwner ? project.contactOwner : 'Not specified',
+              samplesNumber: project.numberSamples,
+              lastAccess: project.lastAccess,
+              lastWriteAccess: project.lastWriteAccess,
+              syncRepo: project.syncGithub ? project.syncGithub: 'Not synchronized',
+              config: project.config ? project.config: 'Not specified',
+              isOld: this.isOld(project),
+              blindAnnotationMode: project.blindAnnotationMode,
+            });
+            if (Object.keys(this.languages).includes(project.language)) {
+              this.languages[project.language].push(project.projectName);
+            } 
+            else {
+              this.languages[project.language]  = []
+              this.languages[project.language].push(project.projectName);
+            }
+          }
+        })
+        .catch((error) => {
+          notifyError({ error: `Error while loading projects list ${error}`});
+        });
+    },
+    searchProject(rows: any[], terms: any) {
+      return rows.filter((row) => row.projectName.indexOf(terms) !== -1);
+    },
+    onRowClick(evt: Event, row: any) {
+      this.$router.push({
+        name: 'project',
+        params: {
+          projectname: row.projectName,
+        },
+      });
+    },
     mismatchProjects() {
       api
         .getMismatchProjects()
@@ -266,63 +445,6 @@ export default defineComponent({
           notifyError({ error: `Error happened while loading mismatch project ${error}` });
         });
     },
-    getEmptyAndOldProject() {
-      const year = -3600 * 24 *365;
-      api
-        .getProjects()
-        .then((response) => {
-          for (const project of response.data) {
-            if (project.lastAccess < year || (project.numberSamples < 1 && project.lastAccess < -3600) || project.admins.length === 0) {
-              this.oldProjects.push({
-                name: project.projectName,
-                lastAccess: project.lastAccess,
-                samplesNumber: project.numberSamples,
-              });
-            }
-          }
-        })
-        .catch((error) => {
-          notifyError({ error: `Error happened while loading empty and old project ${error}` });
-        });
-    },
-    exportLanguages() {
-      let languageTsv = '';
-      api
-        .getProjectsLanguages()
-        .then((response) => {
-          for (const language of response.data.sort()) {
-            languageTsv += language + '\n';
-          }
-          const url = window.URL.createObjectURL(new Blob([languageTsv], { type: 'text/tab-separated-values' }));
-          const link = document.createElement('a');
-          link.href = url;
-          link.setAttribute('download', `languages_list.tsv`);
-          document.body.appendChild(link);
-          link.click();
-          document.body.removeChild(link);
-        })
-        .catch((error) => {
-          notifyError({error: `Error while exporting languages list ${error}`});
-        });
-    },
-    deleteEmptyAndOldProjects() {
-      for (const project of this.oldProjects) {
-        api
-        .deleteProject(project.name)
-        .then(() => {
-          notifyMessage({ message: 'Old and empty projects are deleted' });
-          this.oldProjects = [];
-        })
-        .catch((error) => {
-          notifyError({ error: `Error happened while removing old projects ${error}` });
-        });
-      }
-    },
-    deleteMismatchProjects() {
-
-    }
-
-
   },
 });
 </script>

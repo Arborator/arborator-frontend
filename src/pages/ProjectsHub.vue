@@ -327,7 +327,7 @@ export default defineComponent({
           this.sortProjects();
           this.loadingProjects = false;
           this.initLoading = false;
-        })
+                  })
         .catch((error) => {
           notifyError({ error });
           this.loadingProjects = false;

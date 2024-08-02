@@ -40,6 +40,9 @@ export interface project_extended_t {
   freezed: boolean;
   config: string;
   language: string;
+  syncGithub: string;
+  owner: string;
+  contactOwner: string;
   users: string[];
   admins: string[];
   validators: string[];

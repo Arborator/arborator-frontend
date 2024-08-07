@@ -486,12 +486,14 @@ export default defineComponent({
       mergedSentence.metaJson = {
         ...firstSentenceJson.metaJson,
         ...secondSentenceJson.metaJson,
-        text: firstSentenceJson.metaJson.text + ' ' + secondSentenceJson.metaJson.text,
-        text_en: firstSentenceJson.metaJson.text_en + ' ' + secondSentenceJson.metaJson.text_en,
-        phonetic_text: firstSentenceJson.metaJson.phonetic_text + ' ' + secondSentenceJson.metaJson.phonetic_text,
         timestamp: firstSentenceJson.metaJson.timestamp > secondSentenceJson.metaJson.timestamp ? firstSentenceJson.metaJson.timestamp: secondSentenceJson.metaJson.timestamp,
         sent_id: this.proposeMergedSentId(firstSentenceJson.metaJson.sent_id as  string, secondSentenceJson.metaJson.sent_id as string),
       };
+      for (const key of Object.keys(firstSentenceJson.metaJson).filter(key => key.includes('text'))) {
+        if (Object.keys(secondSentenceJson.metaJson).includes(key)) {
+         mergedSentence.metaJson[key] = `${firstSentenceJson.metaJson[key]} ${secondSentenceJson.metaJson[key]}`
+        } 
+      }
       return mergedSentence;
     },
     proposeMergedSentId(firstSentId: string, secondSentId: string) {

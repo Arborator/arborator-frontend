@@ -480,7 +480,7 @@ export default defineComponent({
         mergedSentence.treeJson.nodesJson[`${newId}`] = {
           ...token,
           ID: `${newId}`,
-          HEAD: token.HEAD > 0 ? token.HEAD + length : 0,
+          HEAD: token.HEAD > 0 ? token.HEAD + length : token.HEAD,
         };
       });
       mergedSentence.metaJson = {

@@ -51,15 +51,14 @@
 </template>
 
 <script lang="ts">
-import AttributeTable from './AttributeTable.vue';
-
-import { tokenJson_T, emptyTokenJson } from 'conllup/lib/conll';
+import { emptyTokenJson, tokenJson_T } from 'conllup/lib/conll';
 import { mapState } from 'pinia';
 import { useProjectStore } from 'src/pinia/modules/project';
-import { notifyMessage } from 'src/utils/notify';
 import { sentence_bus_t } from 'src/types/main_types';
+import { notifyMessage } from 'src/utils/notify';
+import { PropType, defineComponent } from 'vue';
 
-import { defineComponent, PropType } from 'vue';
+import AttributeTable from './AttributeTable.vue';
 
 export default defineComponent({
   components: { AttributeTable },
@@ -172,11 +171,12 @@ export default defineComponent({
       });
     },
     checkSeveralRoots() {
-      const rootsNumber = Object.values(this.sentenceBus.sentenceSVGs[this.userId].treeJson.nodesJson)
-        .filter((token) => token.DEPREL === 'root').length;
+      const rootsNumber = Object.values(this.sentenceBus.sentenceSVGs[this.userId].treeJson.nodesJson).filter(
+        (token) => token.DEPREL === 'root'
+      ).length;
       if (rootsNumber > 1) {
         notifyMessage({
-          message: "This sentence has several roots it should be splitted into two sentences !",
+          message: 'This sentence has several roots it should be splitted into two sentences !',
           type: 'warning',
           icon: 'warning',
         });

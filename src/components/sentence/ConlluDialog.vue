@@ -160,13 +160,13 @@
 import CodeMirror2 from 'codemirror';
 import Codemirror from 'codemirror-editor-vue3';
 
+import { copyToClipboard } from 'quasar';
 import { tokenJson_T, _featuresConllToJson, _depsConllToJson, nodesJson_T } from 'conllup/lib/conll';
 import { mapState } from 'pinia';
 import { useProjectStore } from 'src/pinia/modules/project';
 import { useUserStore } from 'src/pinia/modules/user';
 import { sentence_bus_t, table_t } from 'src/types/main_types';
 import { notifyMessage } from 'src/utils/notify';
-import { copyToClipboard } from 'quasar';
 import { PropType, defineComponent } from 'vue';
 
 CodeMirror2.defineMode('tsv', () => {
@@ -272,7 +272,7 @@ export default defineComponent({
         this.currentConllContent = this.sentenceBus.sentenceSVGs[this.userId].exportConll();
       },
       deep: true,
-    }
+    },
   },
   mounted() {
     this.sentenceBus.on('open:conlluDialog', ({ userId }) => {
@@ -325,30 +325,29 @@ export default defineComponent({
             treeJson: this.sentenceBus.sentenceSVGs[this.userId].treeJson,
           },
           userId: this.userId,
-        }); 
+        });
         notifyMessage({
           message: "Conllu changed locally, don't forget to save !",
           type: 'warning',
           icon: 'warning',
-        }); 
-      }  
+        });
+      }
     },
     generateConllFromTable() {
       this.conllTable.forEach((row, index) => {
         this.nodesJson[`${index + 1}`] = {
-          ...row, 
+          ...row,
           FEATS: row.FEATS ? _featuresConllToJson(row.FEATS) : {},
           MISC: row.MISC ? _featuresConllToJson(row.MISC) : {},
           DEPS: row.DEPS ? _depsConllToJson(row.DEPS) : {},
-        }
-      }); 
+        };
+      });
       this.sentenceBus.sentenceSVGs[this.userId].treeJson.nodesJson = { ...this.nodesJson };
     },
     copyConll() {
-      copyToClipboard(this.currentConllContent)
-      .then(() => {
+      copyToClipboard(this.currentConllContent).then(() => {
         notifyMessage({ message: 'Conll Copied!' });
-      })
+      });
     },
     checkUPOS(val: string) {
       if(!this.annotationFeatures.UPOS.includes(val) && val !== '_') {
@@ -410,5 +409,5 @@ export default defineComponent({
 <style scoped>
 .bordered {
   border: 1px solid #999999;
-} 
+}
 </style>

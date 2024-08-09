@@ -1,9 +1,10 @@
-import api from '../../../api/backend-api';
-import { notifyError, notifyMessage } from 'src/utils/notify';
 import { defineStore } from 'pinia';
-import { useProjectStore } from '../project';
-import { sentence_bus_t } from 'src/types/main_types';
 import { grewSearchResultSentence_t } from 'src/api/backend-types';
+import { sentence_bus_t } from 'src/types/main_types';
+import { notifyError, notifyMessage } from 'src/utils/notify';
+
+import api from '../../../api/backend-api';
+import { useProjectStore } from '../project';
 
 export interface tag_t {
   value: string;

@@ -6,7 +6,7 @@
 import { exportPNG, exportSVG } from 'dependencytreejs/src/exportHandler';
 import { reactive_sentences_obj_t, sentence_bus_t } from 'src/types/main_types';
 import { notifyMessage } from 'src/utils/notify';
-import { defineComponent, PropType } from 'vue';
+import { PropType, defineComponent } from 'vue';
 
 export default defineComponent({
   props: {
@@ -54,4 +54,3 @@ export default defineComponent({
   },
 });
 </script>
-<style></style>

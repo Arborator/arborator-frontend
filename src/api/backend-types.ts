@@ -3,20 +3,20 @@
 //// USER ////
 export interface user_t {
   id: string;
-  auth_provider: string;
+  authProvider: string;
   username: string;
-  first_name: string;
-  family_name: string;
+  firstName: string;
+  familyName: string;
   email: string;
-  not_share_email: boolean;
-  picture_url: string;
-  super_admin: boolean;
-  created_date: number;
-  last_seen: number;
+  notShareEmail: boolean;
+  pictureUrl: string;
+  superAdmin: boolean;
+  createdDate: number;
+  lastSeen: number;
 }
 
 //// PROJECT ////
-export interface project_with_diff_t {
+export interface project_t {
   id: number;
   projectName: string;
   description: string;
@@ -28,6 +28,7 @@ export interface project_with_diff_t {
   freezed: boolean;
   config: string;
   language: string;
+  collaborativeMode: boolean;
 }
 
 export interface project_extended_t {
@@ -44,6 +45,7 @@ export interface project_extended_t {
   owner: string;
   contactOwner: string;
   users: string[];
+  ownerAvatarUrl: string;
   admins: string[];
   validators: string[];
   annotators: string[];
@@ -56,9 +58,9 @@ export interface project_extended_t {
   lastWriteAccess: number;
 }
 
-export type shownMeta = string[];
+export type shownMeta_t = string[];
 
-export type shownFeatures = string[];
+export type shownFeatures_t = string[];
 
 export interface annotationFeatures_t {
   META: string[];
@@ -78,10 +80,10 @@ export interface project_access_t {
 
 //// SAMPLES
 export interface sample_t {
-  sample_name: string;
+  sampleName: string;
   treesFrom: string[];
   sentences: number;
-  number_trees: number;
+  numberTrees: number;
   tokens: number;
   blindAnnotationLevel: number;
   treeByUser: { [key: string]: number };
@@ -123,7 +125,7 @@ export interface ConstructiconEntry_t {
   id: string;
   title: string;
   description: string;
-  grew_query: string;
+  grewQuery: string;
   tags: string[];
 }
 
@@ -208,14 +210,14 @@ export interface ParsingSettings_t {
   keep_feats: 'NONE' | 'EXISTING';
   keep_xpos: 'NONE' | 'EXISTING';
   keep_deprels: 'NONE' | 'EXISTING';
-  keep_lemmas:'NONE' | 'EXISTING';
+  keep_lemmas: 'NONE' | 'EXISTING';
 }
 
 //////////////Github ///////////////////
 export interface githubRepository_t {
-  name: String;
-  owner_name: String;
-  owner_avatar: String;
+  name: string;
+  owner_name: string;
+  owner_avatar: string;
 }
 export interface githubSynchronizedRepository_t {
   repositoryName: string;
@@ -225,10 +227,34 @@ export interface githubSynchronizedRepository_t {
 ////////////////GrewHistory //////////////////
 
 export interface grewHistoryRecord_t {
-  uuid: string,
+  uuid: string;
   request: string;
   type: string;
   favorite: boolean;
   date: number;
-  modified_sentences: number;
+  modifiedSentences: number;
+}
+
+////////////////Project stat/////////////
+export interface statProject_t {
+  users: string[],
+  samplesNumber: number,
+  treesNumber: number,
+  tokensNumber: number,
+  topUser: topUser_t,
+  lastRead: lastRead_t,
+  lastWrite: lastWrite_t,
+}
+export interface topUser_t {
+  username: string,
+  treesNumber: number,
+  userAvatar: string,
+}
+export interface lastRead_t {
+  lastRead: number,
+  lastReadUsername: string,
+}
+export interface lastWrite_t {
+  lastWrite: number,
+  lastWriteUsername: string,
 }

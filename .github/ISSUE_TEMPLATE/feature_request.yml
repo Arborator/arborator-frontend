@@ -1,24 +1,24 @@
 name: 💫 Feature request
 description: Template for feature request
-title: "[Feature request]: "
-labels: ["feature request!"]
+title: '[Feature request]: '
+labels: ['feature request!']
 body:
-- type: checkboxes
-  attributes:
-    label: Is there already a feature request for this?
-    description: Please search to see if a feature request already exists in the issues.
-    options:
-    - label: I have searched the existing issues
+  - type: checkboxes
+    attributes:
+      label: Is there already a feature request for this?
+      description: Please search to see if a feature request already exists in the issues.
+      options:
+        - label: I have searched the existing issues
+          required: true
+  - type: textarea
+    attributes:
+      label: Describe the problem to be solved
+      description: Concise description of the problem to be solved in this feature request.
+    validations:
       required: true
-- type: textarea
-  attributes:
-    label: Describe the problem to be solved
-    description: Concise description of the problem to be solved in this feature request.
-  validations:
-    required: true
-- type: textarea
-  attributes:
-    label: Suggest a solution
-    description: Concise description of your preferred solution.
-  validations:
-    required: false
+  - type: textarea
+    attributes:
+      label: Suggest a solution
+      description: Concise description of your preferred solution.
+    validations:
+      required: false

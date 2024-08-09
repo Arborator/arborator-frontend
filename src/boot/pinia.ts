@@ -1,6 +1,6 @@
 // src/boot/pinia
-import { boot } from 'quasar/wrappers';
 import { createPinia } from 'pinia';
+import { boot } from 'quasar/wrappers';
 
 const pinia = createPinia();
 

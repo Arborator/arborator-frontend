@@ -1,53 +1,56 @@
 import {
-  annotationFeatures_t,
-  project_access_t,
-  project_t,
-  project_with_diff_t,
-  project_extended_t,
-  sample_t,
-  shownFeatures,
-  shownMeta,
-  user_t,
-  timed_tokens_t,
-  grewSearchResult_t as grewSearchResult_t,
-  lexiconItem_t,
+  ConstructiconEntry_t,
   ModelInfo_t,
-  ScoresHistory_t,
   ScoresBest_t,
+  ScoresHistory_t,
+  annotationFeatures_t,
   githubRepository_t,
   githubSynchronizedRepository_t,
-  ConstructiconEntry_t,
   grewHistoryRecord_t,
+  grewSearchResult_t,
+  lexiconItem_t,
+  project_access_t,
+  project_extended_t,
+  project_t,
+  sample_t,
+  shownFeatures_t,
+  shownMeta_t,
+  timed_tokens_t,
+  user_t,
+  statProject_t,
 } from './backend-types';
 
 export interface logout_RV {
   logout: true;
 }
 
+////////////////// User //////////////////////
 export type getUsers_RV = user_t[];
 
 export type whoIAm_RV = user_t;
 
 export type updateUser_ED = Partial<user_t>;
 
+/////////////////// Project ///////////////////
+
 export type getProjects_RV = project_extended_t[];
 
-export type createProject_ED = project_t;
+export type createProject_ED = Partial<project_t>;
 
-export type getProject_RV = project_with_diff_t;
+export type getProject_RV = project_t;
 
-export type updateProject_ED = Partial<project_with_diff_t>;
+export type updateProject_ED = Partial<project_t>;
 
-export type updateProject_RV = project_with_diff_t;
+export type updateProject_RV = project_t;
 
 export interface getProjectFeatures_RV {
-  shownMeta: shownMeta;
-  shownFeatures: shownFeatures;
+  shownMeta: shownMeta_t;
+  shownFeatures: shownFeatures_t;
 }
 
 export interface updateProjectFeatures_ED {
-  shownFeatures?: string[];
-  shownMeta?: string[];
+  shownFeatures?: shownMeta_t;
+  shownMeta?: shownMeta_t;
 }
 
 export interface getProjectConlluSchema_RV {
@@ -98,8 +101,8 @@ interface parserList_RV_success {
   status: 'success';
   data: {
     model_info: ModelInfo_t;
-    language: string,
-    admins: string[],
+    language: string;
+    admins: string[];
     scores_best: ScoresBest_t;
     scores_history: ScoresHistory_t;
   }[];
@@ -143,6 +146,9 @@ export type getGithubRepositories_RV = githubRepository_t[];
 
 export type getGithubSynchronizedRepository_RV = githubSynchronizedRepository_t;
 
-
 ///////////// GrewHistory ////////////////////
 export type getGrewHistory_RV = grewHistoryRecord_t[];
+
+/////////////// statProject ////////////////////
+
+export type getStatProject_RV = statProject_t;

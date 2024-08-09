@@ -1,9 +1,9 @@
-import { defineStore } from 'pinia';
-
-import { notifyMessage, notifyError } from 'src/utils/notify';
-import api from '../../../api/backend-api';
-import { grewSearchResultSentence_t } from 'src/api/backend-types';
 import { sentenceConllToJson, sentenceJson_T } from 'conllup/lib/conll';
+import { defineStore } from 'pinia';
+import { grewSearchResultSentence_t } from 'src/api/backend-types';
+import { notifyError, notifyMessage } from 'src/utils/notify';
+
+import api from '../../../api/backend-api';
 import { useTagsStore } from '../tags';
 
 export const useTreesStore = defineStore('trees', {
@@ -80,8 +80,8 @@ export const useTreesStore = defineStore('trees', {
       }
     },
     applyFilterTrees() {
-      this.filteredTrees = this.sortedSentIds.map((sentId) => 
-        Object.values(this.trees).find((tree) => tree.sent_id == sentId) as grewSearchResultSentence_t
+      this.filteredTrees = this.sortedSentIds.map(
+        (sentId) => Object.values(this.trees).find((tree) => tree.sent_id == sentId) as grewSearchResultSentence_t
       );
       if (this.textFilter !== '') {
         this.filteredTrees = Object.values(this.trees).filter((tree) => {

@@ -9,6 +9,7 @@ import { defineComponent } from 'vue';
 
 import { mapState } from 'pinia';
 import { useStorage } from 'vue3-storage';
+
 import { useUserStore } from './pinia/modules/user/index';
 import { useProjectStore } from './pinia/modules/project/index';
 

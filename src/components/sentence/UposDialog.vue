@@ -6,8 +6,8 @@
 import { mapState } from 'pinia';
 import { useProjectStore } from 'src/pinia/modules/project';
 import { sentence_bus_t } from 'src/types/main_types';
-
 import { PropType, defineComponent } from 'vue';
+
 import PosDialog from './PosDialog.vue';
 
 export default defineComponent({
@@ -26,4 +26,3 @@ export default defineComponent({
   },
 });
 </script>
-<style></style>

@@ -1,34 +1,37 @@
 {
-    "ui_testing": {
-        "response_mock": [{
-            "numberTrees":8,
-            "numberTokens":100,
-            "guests":[],
-            "showAllTrees":true,
-            "projectName":"Khoatest",
-            "exerciseMode":true,
-            "description":"Testing project",
-            "numberSamples":1,
-            "id":1,
-            "admins":["42817736","42817736"],
-            "numberSentences":5,"visibility":0}
-        ]
-    },
-    "api_testing": {
-        "fields" : {
-            "numberTrees": "number",
-            "numberTokens": "number",
-            "guests": "array",
-            "showAllTrees": "boolean",
-            "projectName": "string",
-            "exerciseMode": "boolean",
-            "description": "string",
-            "numberSamples": "number",
-            "id": "number",
-            "admins": "array",
-            "numberSentences": "number",
-            "visibility": "number",
-            "image": "string"
-        }
+  "ui_testing": {
+    "response_mock": [
+      {
+        "numberTrees": 8,
+        "numberTokens": 100,
+        "guests": [],
+        "showAllTrees": true,
+        "projectName": "Khoatest",
+        "exerciseMode": true,
+        "description": "Testing project",
+        "numberSamples": 1,
+        "id": 1,
+        "admins": ["42817736", "42817736"],
+        "numberSentences": 5,
+        "visibility": 0
+      }
+    ]
+  },
+  "api_testing": {
+    "fields": {
+      "numberTrees": "number",
+      "numberTokens": "number",
+      "guests": "array",
+      "showAllTrees": "boolean",
+      "projectName": "string",
+      "exerciseMode": "boolean",
+      "description": "string",
+      "numberSamples": "number",
+      "id": "number",
+      "admins": "array",
+      "numberSentences": "number",
+      "visibility": "number",
+      "image": "string"
     }
+  }
 }

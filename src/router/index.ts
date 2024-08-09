@@ -1,9 +1,9 @@
-import { createRouter, createMemoryHistory, createWebHistory, createWebHashHistory } from 'vue-router';
 import { route } from 'quasar/wrappers';
+import { useKlangStore } from 'src/pinia/modules/klang';
+import { useProjectStore } from 'src/pinia/modules/project';
+import { createMemoryHistory, createRouter, createWebHashHistory, createWebHistory } from 'vue-router';
 
 import routes from './routes';
-import { useProjectStore } from 'src/pinia/modules/project';
-import { useKlangStore } from 'src/pinia/modules/klang';
 
 export default route(() => {
   const createHistory = process.env.SERVER
@@ -22,7 +22,7 @@ export default route(() => {
     const configStore = useProjectStore();
     const klangStore = useKlangStore();
     if (to.params.projectname && to.params.projectname !== from.params.projectname) {
-      configStore.fetchProjectSettings({ projectname: to.params.projectname } as { projectname: string });
+      configStore.fetchProjectSettings({ projectName: to.params.projectname } as { projectName: string });
       configStore.reloadSamples = true;
     }
     if (to.params.kprojectname) {

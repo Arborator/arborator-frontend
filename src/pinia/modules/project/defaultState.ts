@@ -1,5 +1,8 @@
 import { annotationFeatures_t } from 'src/api/backend-types';
 
+// default config state
+import languages from '../../../assets/languoid.json';
+
 interface configState {
   name: string;
   admins: string[];
@@ -9,13 +12,14 @@ interface configState {
   visibility: number;
   description: string;
   image: string;
-  imageSrc: string;
+  imageTree: string;
   blindAnnotationMode: boolean;
   freezed: boolean;
   config: string;
   language: string;
   diffMode: boolean;
   diffUserId: string;
+  collaborativeMode: boolean;
   reloadProjects: boolean;
   reloadSamples: boolean;
   shownFeatures: string[];
@@ -26,8 +30,6 @@ interface configState {
   invalidProjectError: boolean,
 }
 
-// default config state
-import languages from '../../../assets/languoid.json';
 export default function defaultState(): configState {
   return {
     name: '',
@@ -38,13 +40,14 @@ export default function defaultState(): configState {
     visibility: 2,
     description: '',
     image: '',
-    imageSrc: '',
+    imageTree: '/images/niko-photos-tGTVxeOr_Rs-unsplash.jpg',
     blindAnnotationMode: false,
     freezed: false,
     config: '',
     language: '',
     diffMode: false,
     diffUserId: '',
+    collaborativeMode: true,
     reloadProjects: false,
     reloadSamples: false,
     shownFeatures: ['FORM', 'UPOS', 'LEMMA', 'MISC.Gloss'],

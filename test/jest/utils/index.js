@@ -1,11 +1,10 @@
 // this is mapped in jest.config.js to resolve @vue/test-utils
-import { createLocalVue, shallowMount } from 'test-utils';
-
-import Vuex from 'vuex';
-import VueRouter from 'vue-router';
-import { Quasar, Cookies, Notify, Dialog } from 'quasar';
-import Vue from 'vue';
+import { Cookies, Dialog, Notify, Quasar } from 'quasar';
 import * as All from 'quasar';
+import { createLocalVue, shallowMount } from 'test-utils';
+import Vue from 'vue';
+import VueRouter from 'vue-router';
+import Vuex from 'vuex';
 
 // These are to import all Quasar Components
 const components = Object.keys(All).reduce((object, key) => {

@@ -6,18 +6,18 @@
           <q-banner rounded :class="$q.dark.isActive ? '' : 'bg-grey-3'">
             <template #avatar>
               <q-avatar :key="avatarKey" color="default" text-color="white" size="100px">
-                <img :src="picture_url" alt="avatar" />
+                <img :src="pictureUrl" alt="avatar" />
               </q-avatar>
             </template>
             <div class="row">
               <div :class="'col text-center text-weight-bold text-h4 ' + ($q.dark.isActive ? '' : 'text-blue-grey-10')">
-                {{ first_name }} {{ family_name }}
+                {{ firstName }} {{ familyName }}
               </div>
             </div>
             <div class="row">
               <div :class="'col text-center '+($q.dark.isActive ? '' : 'text-blue-grey-8')">@{{ username }}</div>
             </div>
-            <div v-show="super_admin" class="row">
+            <div v-show="superAdmin" class="row">
               <div :class="'col text-center '+ ($q.dark.isActive ? '' : 'text-blue-grey-8')">Super Admin</div>
             </div>
           </q-banner>
@@ -26,8 +26,8 @@
               <div class="text-h6 text-blue-grey-8">{{ $t('settingsPage.title') }}</div>
               <div class="q-gutter-lg q-pa-md">
                 <q-input outlined v-model="email" type="email" label="Email" />
-                <q-input outlined v-model="first_name" type="text" :label="$t('settingsPage.firstName')" />
-                <q-input outlined v-model="family_name" type="text" :label="$t('settingsPage.familyName')" />
+                <q-input outlined v-model="firstName" type="text" :label="$t('settingsPage.firstName')" />
+                <q-input outlined v-model="familyName" type="text" :label="$t('settingsPage.familyName')" />
               </div>
               <q-btn type="submit" icon="save" color="primary">
                 {{ $t('settingsPage.saveModifications') }}
@@ -35,7 +35,7 @@
             </q-form>
           </q-card-section>
         </q-card>
-        <q-card v-if="super_admin" bordered flat class="col">
+        <q-card v-if="superAdmin" bordered flat class="col">
           <q-card-section class="row q-gutter-x-md">
             <q-input class="col-8" outlined dense v-model="userSearch" label="search a user" @update:model-value="searchUser(userSearch)">
               <template #append>
@@ -69,7 +69,7 @@
           </q-card-section>
         </q-card>
       </q-card-section>
-      <q-card-section v-if="super_admin">
+      <q-card-section v-if="superAdmin">
         <q-table
           flat
           bordered
@@ -97,9 +97,7 @@
           </template>
           <template #body-cell-visibility="props">
             <q-td key="visibilty" :props="props">
-              <q-chip outline v-if="props.row.visibility === 0" label="private" color="red-6" />
-              <q-chip outline v-if="props.row.visibility === 1" label="visible" color="yellow-9" />
-              <q-chip outline v-if="props.row.visibility === 2" label="public" color="light-green-8" />
+              <ProjectVisibility :visibility="props.row.visibility" :blindAnnotationMode="props.row.blindAnnotationMode" /> 
             </q-td>
           </template>
           <template #body-cell-lastAccess="props">
@@ -114,7 +112,7 @@
           </template>
         </q-table>
       </q-card-section>
-      <q-card-section class="row q-gutter-x-md" v-if="super_admin">
+      <q-card-section class="row q-gutter-x-md" v-if="superAdmin">
         <q-card flat bordered class="col">
           <q-card-section class="row">
             <div class="col text-h6">
@@ -184,6 +182,8 @@ import { project_extended_t } from 'src/api/backend-types';
 import { notifyError, notifyMessage } from 'src/utils/notify';
 import { defineComponent } from 'vue';
 
+import ProjectVisibility from 'src/components/shared/ProjectVisibility.vue';
+
 interface userOption_t {
   username: string;
   email: string;
@@ -192,6 +192,9 @@ interface userOption_t {
 
 export default defineComponent({
   name: 'Settings',
+  components: {
+    ProjectVisibility,
+  },
   data() {
     const users: userOption_t[] = [];
     const usersFiltered: userOption_t[] = [];
@@ -296,8 +299,8 @@ export default defineComponent({
     }
   },
   computed: {
-    ...mapWritableState(useUserStore, ['email', 'first_name', 'family_name']),
-    ...mapState(useUserStore, ['avatarKey', 'picture_url', 'super_admin', 'username']),
+    ...mapWritableState(useUserStore, ['email', 'firstName', 'familyName']),
+    ...mapState(useUserStore, ['avatarKey', 'pictureUrl', 'superAdmin', 'username']),
     filteredListProject(): any[] {
       if (this.projectsType === 'Old') {
         return this.projects.filter((project: any) => project.isOld)
@@ -319,9 +322,9 @@ export default defineComponent({
     },
     onSubmitModifications() {
       const data = {
-        email: this.email as string,
-        first_name: (this.first_name as string) || '',
-        family_name: (this.family_name as string) || '',
+        email: this.email || '',
+        firstName: this.firstName  || '',
+        familyName: this.familyName || '',
       };
       this.updateUserInformation(data);
     },
@@ -333,7 +336,7 @@ export default defineComponent({
             this.users.push({
               username: user.username,
               email: user.email,
-              avatar: user.picture_url
+              avatar: user.pictureUrl
             });
             this.usersFiltered = this.users;
           }
@@ -448,4 +451,5 @@ export default defineComponent({
   },
 });
 </script>
+
 

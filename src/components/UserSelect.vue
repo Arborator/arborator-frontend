@@ -43,7 +43,7 @@
                 text-color="primary"
               >
                 <q-avatar color="primary" text-color="white">
-                  <img :src="scope.opt.avatar" />
+                  <img :src="scope.opt.avatar" alt="avatar" />
                 </q-avatar>
                 {{ scope.opt.username }}
               </q-chip>
@@ -52,7 +52,7 @@
               <q-item v-close-popup v-bind="scope.itemProps">
                 <q-item-section avatar>
                   <q-avatar size="1.2rem">
-                    <img :src="scope.opt.avatar" />
+                    <img :src="scope.opt.avatar" alt="avatar" />
                   </q-avatar>
                 </q-item-section>
                 <q-item-section>
@@ -88,7 +88,7 @@
           <q-item class="item">
             <q-item-section top avatar>
               <q-avatar rounded>
-                <img :src="member.avatar" />
+                <img :src="member.avatar" alt="avatar" />
               </q-avatar>
             </q-item-section>
 
@@ -163,13 +163,14 @@
   </q-card>
 </template>
 <script lang="ts">
-import api from '../api/backend-api';
-import { copyToClipboard } from 'quasar';
 import { mapState, mapWritableState } from 'pinia';
+import { copyToClipboard } from 'quasar';
 import { useProjectStore } from 'src/pinia/modules/project';
 import { notifyError, notifyMessage } from 'src/utils/notify';
+import { PropType, defineComponent } from 'vue';
+
+import api from '../api/backend-api';
 import { user_t } from '../api/backend-types';
-import { defineComponent, PropType } from 'vue';
 
 interface userOption_t {
   username: string;
@@ -214,7 +215,7 @@ export default defineComponent({
           options.push({
             username: user.username,
             email: user.email,
-            avatar: user.picture_url,
+            avatar: user.pictureUrl,
           });
         }
         return options;
@@ -240,7 +241,7 @@ export default defineComponent({
               options.push({
                 username: user.username,
                 email: user.email,
-                avatar: user.picture_url,
+                avatar: user.pictureUrl,
               });
             }
             return options;

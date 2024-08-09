@@ -3,11 +3,7 @@
     <q-bar class="bg-primary text-white sticky-bar">
       <q-icon name="img:/svg/grew.svg" size="7rem" />
       <q-space />
-      <div class="text-weight-bold">
-        {{ sentenceCount }} <span v-if="sentenceCount === 1">result</span><span v-else>results</span> of the
-        {{ totalsents }}
-        <span v-if="totalsents === 1">sentence</span><span v-else>sentences</span> in the {{ searchscope }}
-      </div>
+      <div class="text-weight-bold">{{ sentenceCount }} <span v-if="sentenceCount === 1">result</span><span v-else>results</span></div>
       <q-space />
       <q-btn v-close-popup flat dense icon="close" />
     </q-bar>
@@ -54,9 +50,9 @@
             <div style="flex-grow: 1; overflow: auto">
               <SentenceCard
                 :key="index"
-                :sentence="searchresults[item[0]][item[1]]"
+                :sentence="searchResults[item[0]][item[1]]"
                 :index="index"
-                :matches="searchresults[item[0]][item[1]]"
+                :matches="searchResults[item[0]][item[1]]"
                 :blind-annotation-level="4"
               ></SentenceCard>
             </div>
@@ -85,30 +81,24 @@
 
 <script lang="ts">
 import { sentenceConllToJson, sentenceJsonToConll } from 'conllup/lib/conll';
-import { mapState, mapActions } from 'pinia';
+import { mapActions, mapState, mapWritableState } from 'pinia';
 import { grewSearchResult_t, sample_t } from 'src/api/backend-types';
+import { useGithubStore } from 'src/pinia/modules/github';
+import { useGrewHistoryStore } from 'src/pinia/modules/grewHistory';
 import { useGrewSearchStore } from 'src/pinia/modules/grewSearch';
 import { useProjectStore } from 'src/pinia/modules/project';
 import { useUserStore } from 'src/pinia/modules/user';
-import { useGrewHistoryStore } from 'src/pinia/modules/grewHistory';
 import { notifyMessage } from 'src/utils/notify';
 import { PropType, defineComponent } from 'vue';
+
 import api from '../../api/backend-api';
 import SentenceCard from '../sentence/SentenceCard.vue';
 
 export default defineComponent({
   components: { SentenceCard },
   props: {
-    searchresults: {
+    searchResults: {
       type: Object as PropType<grewSearchResult_t>,
-      required: true,
-    },
-    totalsents: {
-      type: Number as PropType<number>,
-      required: true,
-    },
-    searchscope: {
-      type: String as PropType<string>,
       required: true,
     },
     queryType: {
@@ -122,10 +112,6 @@ export default defineComponent({
     userType: {
       type: String as PropType<string>,
       required: false,
-    },
-    parentOnShowTable: {
-      type: Function as PropType<CallableFunction>,
-      required: true,
     },
   },
 
@@ -141,7 +127,6 @@ export default defineComponent({
     const filteredSamples: string[] = [];
     return {
       searchresultsCopy,
-      resultSearchDialog: true,
       samplesFrozen,
       filteredSamples,
       loading: false,
@@ -156,22 +141,23 @@ export default defineComponent({
     ...mapState(useProjectStore, ['canSaveTreeInProject', 'isValidator']),
     ...mapState(useGrewSearchStore, ['canRewriteRule']),
     ...mapState(useUserStore, ['username']),
+    ...mapWritableState(useGithubStore, ['reloadCommits']),
     projectName(): string {
       return this.$route.params.projectname as string;
     },
     sentenceCount() {
-      return Object.keys(this.searchresults)
-        .map((sa) => Object.keys(this.searchresults[sa]))
+      return Object.keys(this.searchResults)
+        .map((sa) => Object.keys(this.searchResults[sa]))
         .flat().length;
     },
     atLeastOneSelected() {
-      return Object.values(this.samplesFrozen.selected).some((index) => index == true);
+      return Object.values(this.samplesFrozen.selected).some((index) => index);
     },
     showFilterResults() {
       return this.samplesFrozen.list.length > 0 && !this.$route.params.samplename;
     },
     samplesNames() {
-      return Object.keys(this.searchresults);
+      return Object.keys(this.searchResults);
     },
     filteredResults() {
       if (!this.selectedSample) {
@@ -183,7 +169,7 @@ export default defineComponent({
   watch: {
     'samplesFrozen.selected': {
       handler: function (newVal) {
-        if (Object.values(newVal).some((element) => element == false)) {
+        if (Object.values(newVal).some((element) => !element)) {
           this.all = false;
         }
       },
@@ -200,10 +186,10 @@ export default defineComponent({
       let index = 0;
       const index2Ids: { [key: number]: string[] } = {}; // object: {"0":["WAZA_10_Bluetooth-Lifestory_MG","WAZA_10_Bluetooth-Lifestory_MG__86"],"1":["WAZA_10_Bluetooth-Lifestory_MG","WAZA_10_Bluetooth-Lifestory_MG__79"], ...
       const selectedIndex: { [key: number]: boolean } = {};
-      this.searchresultsCopy = this.searchresults;
+      this.searchresultsCopy = this.searchResults;
       // this is sent to the sentenceCard: searchresults[item[0]][item[1]], items from this.samplesFrozen.list
-      for (const sampleId of Object.keys(this.searchresults).sort()) {
-        for (const sentId in this.searchresults[sampleId]) {
+      for (const sampleId of Object.keys(this.searchResults).sort()) {
+        for (const sentId in this.searchResults[sampleId]) {
           listIds.push([sampleId, sentId]);
           index2Ids[index] = [sampleId, sentId];
           selectedIndex[index] = false;
@@ -235,7 +221,7 @@ export default defineComponent({
 
     selectAllSentences() {
       for (const item in this.filteredResults) {
-        this.all ? (this.samplesFrozen.selected[item] = true) : (this.samplesFrozen.selected[item] = false);
+        this.samplesFrozen.selected[item] = this.all;
       }
     },
 
@@ -244,8 +230,7 @@ export default defineComponent({
       if (this.toSaveCounter >= 1) {
         const datasample = { data: this.searchresultsCopy };
         api.applyRule(this.$route.params.projectname as string, datasample).then(() => {
-          this.resultSearchDialog = false;
-          this.parentOnShowTable(this.resultSearchDialog);
+          this.reloadCommits += 1;
           this.saveAppliedRule();
           notifyMessage({ message: `Rule applied (user "${this.username}" rewrote and saved "${this.toSaveCounter}" at once)` });
         });
@@ -291,7 +276,7 @@ export default defineComponent({
           const sampleId = this.filteredResults[item][0];
           const sentId = this.filteredResults[item][1];
           if (!selectedResults[sampleId]) selectedResults[sampleId] = {};
-          selectedResults[sampleId][sentId] = this.searchresults[sampleId][sentId];
+          selectedResults[sampleId][sentId] = this.searchResults[sampleId][sentId];
         }
       }
       return selectedResults;
@@ -301,11 +286,10 @@ export default defineComponent({
       const historyRecord = {
         type: 'rewrite',
         request: this.query,
-        modifiedSentences: this.toSaveCounter
+        modifiedSentences: this.toSaveCounter,
       };
       this.saveHistory(historyRecord);
-    }
-  
+    },
   },
 });
 </script>

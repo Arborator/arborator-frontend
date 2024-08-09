@@ -1,147 +1,108 @@
 <template>
-  <q-card style="width: 10%" :class="$q.dark.isActive ? 'bg-dark' : 'bg-grey-1'">
-    <q-bar class="bg-primary text-white sticky-bar">
-      <q-icon name="img:/svg/grew.svg" size="7rem" />
-      <q-space />
-      <q-btn v-close-popup flat dense icon="close" />
-    </q-bar>
-    <q-card-section style="width: 80vw; height: 85vh">
-      <q-form class="q-gutter-md">
-        <div class="q-pa-xs">
-          <div class="row">
-            <div class="col-9 q-pr-md">
-              <q-select dense outlined v-model="treeType" :options="treeOptions" :label="$t('grewSearch.treesType')" color="primary">
-                <template v-slot:selected-item="scope">
-                  <q-chip
-                    v-if="scope.opt.value == 'user' || scope.opt.value == 'user_recent'"
-                    dense
-                    square
-                    color="white"
-                    text-color="primary"
-                    size="md"
-                  >
-                    <q-avatar>
-                      <img :src="avatar" />
-                      <q-badge v-if="scope.opt.value == 'user_recent'" floating transparent>+</q-badge>
-                    </q-avatar>
-                    {{ scope.opt.label }}
-                  </q-chip>
-                  <q-chip v-else dense square text-color="primary" size="md" :label="scope.opt.label" :icon="scope.opt.icon" />
-                </template>
-
-                <template v-slot:option="scope">
-                  <q-item v-bind="scope.itemProps">
-                    <q-item-section avatar>
-                      <q-avatar v-if="scope.opt.value == 'user' || scope.opt.value == 'user_recent'" size="1.2rem">
-                        <img :src="avatar" />
-                        <q-badge v-if="scope.opt.value == 'user_recent'" floating transparent color="principal">+</q-badge>
-                      </q-avatar>
-                      <q-icon v-else :name="scope.opt.icon" />
-                    </q-item-section>
-                    <q-item-section>
-                      <q-item-label>{{ scope.opt.label }}</q-item-label>
-                    </q-item-section>
-                  </q-item>
-                </template>
-              </q-select>
-            </div>
-            <div class="col-3">
-              <q-select v-if="treeType.value === 'others'" v-model="otherUser" outlined dense :options="treesFrom" :label="$t('grewSearch.selectUser')"> </q-select>
-            </div>
-          </div>
-          <div class="row">
-            <div class="col-9">
-              <GrewCodeMirror v-model:value="currentQuery" style="height: 70vh"></GrewCodeMirror>
-              <q-separator />
-            </div>
-
-            <div class="col-3">
-              <q-tabs outlined v-model="searchReplaceTab" dense no-caps active-color="primary" indicator-color="primary" class="primary text-grey">
-                <q-tab name="SEARCH" icon="search" :label="$t('grewSearch.search')">
-                  <q-tooltip content-class="bg-primary" anchor="top middle" self="bottom middle" :offset="[10, 10]">
-                    {{ $t('grewSearch.grewSearchTooltip') }}
-                  </q-tooltip>
-                </q-tab>
-                <q-tab v-if="canRewriteRule" name="REWRITE" icon="autorenew" :label="$t('grewSearch.rewrite')">
-                  <q-tooltip content-class="bg-primary" anchor="top middle" self="bottom middle" :offset="[10, 10]">
-                    {{ $t('grewSearch.grewRewriteTooltip') }}
-                  </q-tooltip>
-                </q-tab>
-              </q-tabs>
-              <q-separator />
-              <q-tab-panels v-model="searchReplaceTab" animated class="shadow-2" @input="treeType == null" @transition="switchGrewMode">
-                <q-tab-panel name="SEARCH">
-                  <q-tabs v-model="searchQueryTab" dense no-caps vertical switch-indicator class="primary" indicator-color="primary">
-                    <template v-for="query in searchQueries" :key="query.name">
-                      <q-tab v-ripple :name="query.name" :label="query.name" clickable @click="changeQuery(query.pattern, 'SEARCH')" />
-                    </template>
-                    <q-tab><a href="https://grew.fr/doc/request/" target="_blank">Documentation</a></q-tab>
-                  </q-tabs>
-                </q-tab-panel>
-
-                <q-tab-panel name="REWRITE">
-                  <q-tabs v-model="searchQueryTab" dense no-caps vertical switch-indicator class="primary" indicator-color="primary">
-                    <template v-for="query in rewriteQueries" :key="query.name">
-                      <q-tab v-ripple :name="query.name" :label="query.name" clickable @click="changeQuery(query.pattern, 'REWRITE')" />
-                    </template>
-                    <q-tab><a href="https://grew.fr/doc/commands/" target="_blank">Documentation</a></q-tab>
-                  </q-tabs>
-                </q-tab-panel>
-              </q-tab-panels>
-              <div v-if="isLoggedIn" class="q-pa-md">
-                <q-btn :label="$t('grewHistory.historyBtn')" icon="history" color="primary" @click="isShowHistory = true" />
-              </div>
-            </div>
-          </div>
-          <q-bar class="row q-pa-md absolute-bottom custom-frame2">
-            <q-btn
-              v-if="searchReplaceTab === 'SEARCH'" 
-              :disable="disableBtn"  
-              color="primary" 
-              :label="$t('grewSearch.search')" 
-              no-caps 
-              icon="search" 
-              @click="onSearch"
-            >
-              <q-tooltip v-if="disableBtn">
-                {{ $t('grewSearch.btnDisabledTooltip') }}
-              </q-tooltip>
-            </q-btn>
-            <q-btn
-              :disable="disableBtn"
-              v-if="searchReplaceTab === 'REWRITE'"
-              color="primary"
-              :label="$t('grewSearch.tryRules')"
-              no-caps
-              icon="autorenew"
-              @click="tryRules"
-            >
-              <q-tooltip v-if="disableBtn">
-                {{ $t('grewSearch.btnDisabledTooltip') }}
-              </q-tooltip>
-            </q-btn>
-            {{ treeType.label }}
-          </q-bar>
-        </div>
-      </q-form>
-      <GrewHistory v-if="isShowHistory" @closed="isShowHistory = false" @copied-request="getCopiedRequest" />
+  <q-card flat bordered>
+    <q-card-section>
+      <TreesTypeSelect :grew-option="searchReplaceTab" :samples="samples" @selected-value="getSelectedValues"></TreesTypeSelect>
     </q-card-section>
+    <q-card-section>
+      <div class="row q-col-gutter-md" style="position: relative">
+        <div class="col-3">
+          <q-tabs
+            outlined
+            v-model="searchReplaceTab"
+            dense
+            no-caps
+            active-color="primary"
+            indicator-color="primary"
+            class="primary bordered text-grey"
+          >
+            <q-tab name="SEARCH" icon="search" :label="$t('grewSearch.search')">
+              <q-tooltip content-class="bg-primary" anchor="top middle" self="bottom middle" :offset="[10, 10]">
+                {{ $t('grewSearch.grewSearchTooltip') }}
+              </q-tooltip>
+            </q-tab>
+            <q-tab v-if="canRewriteRule" name="REWRITE" icon="autorenew" :label="$t('grewSearch.rewrite')">
+              <q-tooltip content-class="bg-primary" anchor="top middle" self="bottom middle" :offset="[10, 10]">
+                {{ $t('grewSearch.grewRewriteTooltip') }}
+              </q-tooltip>
+            </q-tab>
+          </q-tabs>
+          <q-tab-panels class="bordered" v-model="searchReplaceTab" animated @transition="switchGrewMode">
+            <q-tab-panel name="SEARCH">
+              <q-tabs v-model="searchQueryTab" dense no-caps vertical switch-indicator class="primary" indicator-color="primary">
+                <template v-for="query in searchQueries" :key="query.name">
+                  <q-tab v-ripple :name="query.name" :label="query.name" clickable @click="changeQuery(query.pattern, 'SEARCH')" />
+                </template>
+                <q-tab><a href="https://grew.fr/doc/request/" target="_blank">Documentation</a></q-tab>
+              </q-tabs>
+            </q-tab-panel>
+
+            <q-tab-panel name="REWRITE">
+              <q-tabs v-model="searchQueryTab" dense no-caps vertical switch-indicator class="primary" indicator-color="primary">
+                <template v-for="query in rewriteQueries" :key="query.name">
+                  <q-tab v-ripple :name="query.name" :label="query.name" clickable @click="changeQuery(query.pattern, 'REWRITE')" />
+                </template>
+                <q-tab><a href="https://grew.fr/doc/commands/" target="_blank">Documentation</a></q-tab>
+              </q-tabs>
+            </q-tab-panel>
+          </q-tab-panels>
+          <div v-if="isLoggedIn" class="q-pa-md row justify-center">
+            <q-btn outline :label="$t('grewHistory.historyBtn')" color="primary" icon="history" @click="isShowHistory = true" />
+          </div>
+        </div>
+        <div class="col-8">
+          <GrewCodeMirror v-model:value="currentQuery" style="width: 75%; position: absolute" class="bordered"></GrewCodeMirror>
+        </div>
+      </div>
+    </q-card-section>
+    <q-card-actions style="justify-content: right">
+      <div class="row q-pa-md">
+        <q-btn
+          v-if="searchReplaceTab === 'SEARCH'"
+          :disable="disableBtn || (freezed && !isOwner)"
+          color="primary"
+          :label="$t('grewSearch.search')"
+          no-caps
+          icon="search"
+          @click="onSearch"
+        >
+          <q-tooltip v-if="disableBtn">
+            {{ $t('grewSearch.btnDisabledTooltip') }}
+          </q-tooltip>
+          <q-tooltip v-else-if="freezed && !isOwner">
+            The project is freezed
+          </q-tooltip>
+        </q-btn>
+        <q-btn v-else :disable="disableBtn || (freezed && !isOwner)" color="primary" :label="$t('grewSearch.tryRules')" no-caps icon="autorenew" @click="tryRules">
+          <q-tooltip v-if="disableBtn">
+            {{ $t('grewSearch.btnDisabledTooltip') }}
+          </q-tooltip>
+          <q-tooltip v-else-if="freezed && !isOwner">
+            The project is freezed
+          </q-tooltip>
+        </q-btn>
+      </div>
+    </q-card-actions>
   </q-card>
+  <GrewHistory v-if="isShowHistory" @closed="isShowHistory = false" @copied-request="getCopiedRequest" />
 </template>
 
 <script lang="ts">
-import 'codemirror/theme/gruvbox-dark.css';
+
 import GrewCodeMirror from 'components/codemirrors/GrewCodeMirror.vue';
-import grewTemplates from '../../assets/grew-templates.json';
-import GrewHistory from './GrewHistory.vue';
 import { mapActions, mapState } from 'pinia';
+import { sample_t } from 'src/api/backend-types';
 import { useGrewSearchStore } from 'src/pinia/modules/grewSearch';
 import { useUserStore } from 'src/pinia/modules/user';
-import { defineComponent, PropType } from 'vue';
+import { useProjectStore } from 'src/pinia/modules/project';
+import { PropType, defineComponent } from 'vue';
+
+import grewTemplates from '../../assets/grew-templates.json';
+import TreesTypeSelect from '../shared/TreesTypeSelect.vue';
+import GrewHistory from './GrewHistory.vue';
 
 export default defineComponent({
   name: 'GrewRequestCard',
-  components: { GrewCodeMirror, GrewHistory },
+  components: { GrewCodeMirror, GrewHistory, TreesTypeSelect },
   props: {
     parentOnSearch: {
       type: Function as PropType<CallableFunction>,
@@ -151,24 +112,14 @@ export default defineComponent({
       type: Function as PropType<CallableFunction>,
       required: true,
     },
-    treesFrom: {
-      type: Object as PropType<string[]>,
+    samples: {
+      type: Object as PropType<sample_t[]>,
       required: true,
     },
   },
   data() {
     const currentQueryType: 'SEARCH' | 'REWRITE' = grewTemplates.searchQueries[0].type as 'SEARCH' | 'REWRITE';
-    const treeTypes = [
-      { value: 'recent', label: this.$t('projectView.tooltipFabGrewRecent'), icon: 'schedule' },
-      { value: 'user', label: this.$t('projectView.tooltipFabGrewUser') },
-      { value: 'user_recent', label: this.$t('projectView.tooltipFabGrewUserRecent') },
-      { value: 'validated', label: this.$t('projectView.tooltipFabGrewValidated'), icon: 'verified' },
-      { value: 'pending', label: this.$t('projectView.tooltipFabGrewPending'), icon: 'pending' },
-      { value: 'all', label: this.$t('projectView.tooltipFabGrewAll'), icon: 'groups' },
-      { value: 'base_tree', label: this.$t('projectView.tooltipFabGrewBaseTree'), icon: 'linear_scale' },
-      { value: 'others', label: this.$t('projectView.tooltipFabGrewOther'), icon: 'group' },
-    ];
-    const treeType = treeTypes[0];
+    const data: { selectedSamples: string[]; treeType: string; otherUser: string } = { selectedSamples: [], treeType: 'recent', otherUser: '' };
     return {
       searchReplaceTab: grewTemplates.searchQueries[0].type,
       searchQueryTab: grewTemplates.searchQueries[0].type,
@@ -176,58 +127,41 @@ export default defineComponent({
       currentQueryType,
       searchQueries: grewTemplates.searchQueries,
       rewriteQueries: grewTemplates.rewriteQueries,
-      treeType,
-      treeTypes,
-      otherUser: '',
+      data,
       isShowHistory: false,
     };
   },
   computed: {
-    ...mapState(useGrewSearchStore, ['lastQuery', 'grewTreeTypes', 'canRewriteRule']),
-    ...mapState(useUserStore, ['avatar', 'isLoggedIn']),
-    treeOptions() {
-      if (this.searchReplaceTab == 'SEARCH') {
-        return this.treeTypes.filter((element) => this.grewTreeTypes.includes(element.value));
-      } else {
-        return this.treeTypes.filter((element) => this.grewTreeTypes.includes(element.value) && !['all', 'pending'].includes(element.value));
-      }
-    },
+    ...mapState(useGrewSearchStore, ['lastQuery', 'canRewriteRule']),
+    ...mapState(useUserStore, ['isLoggedIn']),
+    ...mapState(useProjectStore, ['freezed', 'isOwner']),
     disableBtn() {
-      return this.treeType.value === 'others' && !this.otherUser;
-    }
-  },
-  watch: {
-    searchReplaceTab(newVal) {
-      if (newVal === 'REWRITE' && this.treeType.value === 'all') {
-        this.treeType = this.treeTypes[0];
-      }
+      return this.data.treeType === 'others' && !this.data.otherUser;
     },
   },
   mounted() {
     if (this.lastQuery !== null) {
       this.currentQueryType = this.lastQuery.type;
       this.currentQuery = this.lastQuery.text;
-      this.treeType = this.treeTypes.filter((option) => option.value === this.lastQuery?.userType)[0];
     }
     this.searchReplaceTab = this.currentQueryType;
-    this.treeType = this.treeOptions[0];
   },
   methods: {
     ...mapActions(useGrewSearchStore, ['changeLastGrewQuery']),
+    getSelectedValues(val: any) {
+      this.data = val;
+    },
     onSearch() {
-      this.parentOnSearch(this.currentQuery.normalize('NFC'), this.treeType.value, this.otherUser);
-      this.changeLastGrewQuery({ text: this.currentQuery.normalize('NFC'), type: this.currentQueryType, userType: this.treeType.value });
+      this.parentOnSearch(this.currentQuery.normalize('NFC'), this.data.treeType, this.data.otherUser, this.data.selectedSamples);
+      this.changeLastGrewQuery({ text: this.currentQuery.normalize('NFC'), type: this.currentQueryType, userType: this.data.treeType });
     },
     tryRules() {
-      this.parentOnTryRules(this.currentQuery.normalize('NFC'), this.treeType.value, this.otherUser);
-      this.changeLastGrewQuery({ text: this.currentQuery.normalize('NFC'), type: this.currentQueryType, userType: this.treeType.value });
+      this.parentOnTryRules(this.currentQuery.normalize('NFC'), this.data.treeType, this.data.otherUser, this.data.selectedSamples);
+      this.changeLastGrewQuery({ text: this.currentQuery.normalize('NFC'), type: this.currentQueryType, userType: this.data.treeType });
     },
     changeQuery(query: string, type: 'SEARCH' | 'REWRITE') {
       this.currentQuery = query;
       this.currentQueryType = type;
-      if (type === 'REWRITE' && this.treeType.value === 'all') {
-        this.treeType = this.treeTypes[0];
-      }
     },
     switchGrewMode() {
       const pattern = this.currentQuery.match(/pattern((.|\n)*?)}/);
@@ -240,7 +174,7 @@ export default defineComponent({
       if (this.searchReplaceTab === 'SEARCH' && this.currentQueryType === 'REWRITE') {
         if (pattern) {
           this.currentQuery = pattern[0];
-          this.currentQueryType = 'SEARCH'
+          this.currentQueryType = 'SEARCH';
         }
       }
     },
@@ -253,6 +187,9 @@ export default defineComponent({
 });
 </script>
 <style scoped>
+.bordered {
+  border: 1px solid #999999;
+}
 .absolute-bottom {
   position: sticky;
   bottom: 0;

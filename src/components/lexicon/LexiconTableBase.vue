@@ -80,23 +80,23 @@
     </q-table>
     <q-card-section>
       <q-dialog v-model="visuTreeDial" maximized transition-show="fade" transition-hide="fade">
-        <ResultView :searchresults="resultSearch" :searchscope="projectName"></ResultView>
+        <ResultView :searchResults="resultSearch"></ResultView>
       </q-dialog>
     </q-card-section>
   </q-card>
 </template>
 
 <script lang="ts">
-import api from '../../api/backend-api';
-import { computed } from 'vue';
 import { mapActions, mapState } from 'pinia';
-import ResultView from '../grewSearch/ResultView.vue';
-import { lexiconItem_FE_t, useLexiconStore } from 'src/pinia/modules/lexicon';
+import { grewSearchResult_t } from 'src/api/backend-types';
 import { useGrewSearchStore } from 'src/pinia/modules/grewSearch';
+import { lexiconItem_FE_t, useLexiconStore } from 'src/pinia/modules/lexicon';
 import { table_t } from 'src/types/main_types';
 import { notifyError, notifyMessage } from 'src/utils/notify';
-import { defineComponent, PropType } from 'vue';
-import { grewSearchResult_t } from 'src/api/backend-types';
+import { PropType, computed, defineComponent } from 'vue';
+
+import api from '../../api/backend-api';
+import ResultView from '../grewSearch/ResultView.vue';
 
 export default defineComponent({
   name: 'LexiconTable',
@@ -241,7 +241,7 @@ export default defineComponent({
       let pattern = 'pattern { N[';
       for (const [feat, value] of Object.entries(lex_item.feats)) {
         if (feat && value) {
-          pattern += `${feat} = \"${value}\", `;
+          pattern += `${feat} = "${value}", `;
         } else {
           pattern += `!${feat}, `;
         }
@@ -256,8 +256,8 @@ export default defineComponent({
       for (const feat in before.feats) {
         if (before.feats[feat] != after[feat]) {
           if (after[feat]) {
-            withouts += `\nwithout { N.${feat} = \"${after[feat]}\" }`;
-            commands += `N.${feat} = \"${after[feat]}\"; `;
+            withouts += `\nwithout { N.${feat} = "${after[feat]}" }`;
+            commands += `N.${feat} = "${after[feat]}"; `;
           } else {
             commands += `del_feat N.${feat}; `;
           }
@@ -276,9 +276,9 @@ export default defineComponent({
       for (const lexiconItem of this.passedLexiconItems) {
         download.push(lexiconItem);
       }
-      const datasample = { data: download };
+      const data = { data: download };
       api
-        .exportLexiconTSV(this.projectName as string, datasample)
+        .exportLexiconTSV(data)
         .then((response) => {
           const url = window.URL.createObjectURL(new Blob([response.data], { type: 'text/tab-separated-values' }));
           const link = document.createElement('a');
@@ -302,9 +302,9 @@ export default defineComponent({
       for (const lexiconItem of this.passedLexiconItems) {
         download.push(lexiconItem);
       }
-      const datasample = { data: download };
+      const data = { data: download };
       api
-        .exportLexiconJSON(this.projectName as string, datasample)
+        .exportLexiconJSON(data)
         .then((response) => {
           const url = window.URL.createObjectURL(new Blob([response.data], { type: 'application/json' }));
           const link = document.createElement('a');

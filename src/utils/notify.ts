@@ -42,7 +42,7 @@ export function notifyError(ArboratorGrewError: ArboratorGrewError_t) {
       message: ArboratorGrewError.error,
       type: 'negative',
       icon: 'warning',
-      position: 'top', 
+      position: 'top',
       closeBtn: 'X',
       timeout,
     });
@@ -63,6 +63,7 @@ export function notifyError(ArboratorGrewError: ArboratorGrewError_t) {
       } else if (error.response.status === 415) {
         msg = error.response.data ? error.response.data.message : i18n.global.t('error415');
       } else {
+        console.log(error.response)
         msg = error.response.data ? error.response.data.message : `${error.response.statusText} error ${error.response.status}`;
       }
     }

@@ -25,12 +25,13 @@
   </q-card>
 </template>
 <script lang="ts">
-import api from '../../api/backend-api';
 import { mapState } from 'pinia';
 import { useUserStore } from 'src/pinia/modules/user';
 import { notifyError, notifyMessage } from 'src/utils/notify';
+import { PropType, defineComponent } from 'vue';
 
-import { defineComponent, PropType } from 'vue';
+import api from '../../api/backend-api';
+
 export default defineComponent({
   name: 'GithubPullRequestDialog',
   emits: ['created'],
@@ -104,4 +105,3 @@ export default defineComponent({
   },
 });
 </script>
-<style></style>

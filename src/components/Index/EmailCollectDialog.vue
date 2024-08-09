@@ -42,7 +42,6 @@
   </q-dialog>
 </template>
 <script lang="ts">
-import api from '../../api/backend-api';
 
 import { mapActions, mapState } from 'pinia';
 import { useUserStore } from 'src/pinia/modules/user';
@@ -70,7 +69,7 @@ export default defineComponent({
     },
     emailRules() {
       if (!this.notShareEmail) {
-        return this.email.length > 0 || this.$t('homepage.inputErrorText[0]'), this.isValidEmail(this.email) || this.$t('homepage.inputErrorText[1]');
+        return [this.email.length > 0 || this.$t('homepage.inputErrorText[0]'), this.isValidEmail(this.email) || this.$t('homepage.inputErrorText[1]')];
       }
     },
     chooseNotShareEmail() {
@@ -79,10 +78,10 @@ export default defineComponent({
     },
     onSubmitEmail() {
       this.emailCollectDialog = false;
-      const data = { email: this.email, not_share_email: this.notShareEmail };
+      const data = { email: this.email, notShareEmail: this.notShareEmail };
       this.updateUserInformation(data);
     },
   },
 });
 </script>
-<style></style>
+

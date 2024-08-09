@@ -59,15 +59,14 @@
 </template>
 
 <script lang="ts">
-import api from '../../api/backend-api';
 
+import api from '../../api/backend-api';
 import { sample_t } from 'src/api/backend-types';
 import { mapState } from 'pinia';
-import { useUserStore } from 'src/pinia/modules/user';
 import { useProjectStore } from 'src/pinia/modules/project';
+import { useUserStore } from 'src/pinia/modules/user';
 import { notifyError } from 'src/utils/notify';
-
-import { defineComponent, PropType } from 'vue';
+import { PropType, defineComponent } from 'vue';
 
 export default defineComponent({
   name: 'ExportDialog',
@@ -90,6 +89,18 @@ export default defineComponent({
   computed: {
     ...mapState(useUserStore, ['username']),
     ...mapState(useProjectStore, ['canSaveTreeInProject', 'canSeeOtherUsersTrees']),
+    otherUsers() {
+      let otherUsers: string[] = [];
+      for (const sample of this.samples) {
+        const sampleTreesFrom = sample.treesFrom;
+        for (const userId of sampleTreesFrom) {
+          if (!otherUsers.includes(userId) && userId !== 'validated') {
+            otherUsers.push(userId);
+          }
+        }
+      }
+      return otherUsers.filter((user) => user != this.username);
+    },
     usersTreesFrom() {
       return [...new Set(this.samples.map((sample) => sample.treesFrom).reduce((a: string[], b: string[]) => [...a, ...b], []))];
     },
@@ -115,7 +126,7 @@ export default defineComponent({
       if (this.validated) {
         usersToExport.push('validated');
       }
-      const data = { sampleNames: this.samples.map(sample => sample.sample_name), users: usersToExport };
+      const data = { sampleNames: this.samples.map(sample => sample.sampleName), users: usersToExport };
       api
         .exportSamplesZip(this.projectName as string, data)
         .then((response) => {

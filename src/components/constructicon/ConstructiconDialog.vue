@@ -70,7 +70,7 @@
               <div>
                 <div class="text-h6 q-mb-xs">{{ $t('constructicon.grewQuery') }}</div>
                 <!-- Replace the following line with your CodeMirror component -->
-                <GrewCodeMirror v-model:value="activeEntry.grew_query" :disabled="editMode === false"></GrewCodeMirror>
+                <GrewCodeMirror v-model:value="activeEntry.grewQuery" :disabled="editMode === false"></GrewCodeMirror>
               </div>
 
               <!-- QChip for tags -->
@@ -92,7 +92,7 @@
                   </q-btn>
                   <q-btn v-if="canSaveTreeInProject" no-caps outline color="primary" @click="deleteItem">{{ $t('constructicon.deleteBtn') }}</q-btn>
                 </div>
-                <q-btn :disabled="editMode" color="secondary" @click="grewSearch(activeEntry.grew_query)"> {{ $t('constructicon.search') }} </q-btn>
+                <q-btn :disabled="editMode" color="secondary" @click="grewSearch(activeEntry.grewQuery)"> {{ $t('constructicon.search') }} </q-btn>
               </q-toolbar>
             </div>
           </div>

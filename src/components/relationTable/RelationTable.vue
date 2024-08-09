@@ -47,6 +47,7 @@
           </q-toolbar>
           <q-table
             flat
+            bordered
             ref="relationTable"
             v-model:pagination="pagination"
             class="rounded-borders"

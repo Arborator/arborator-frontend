@@ -4,9 +4,9 @@
       <div class="text-h6">Remove user trees from the selected samples</div>
     </q-card-section>
     <q-card-section class="q-gutter-md">
-      <q-select filled v-model="user" label="Select user" :options="getTreesFrom" />
+      <q-select outlined v-model="user" label="Select user" :options="getTreesFrom" />
       <div class="row justify-center">
-        <q-btn color="primary" @click="triggerConfirm(removeUserTrees)" label="Remove Trees" />
+        <q-btn :disable="user === ''" color="primary" @click="triggerConfirm(removeUserTrees)" label="Remove Trees" />
       </div>
     </q-card-section>
   </q-card>
@@ -62,6 +62,9 @@ export default defineComponent({
       }
     },
     triggerConfirm(method: CallableFunction) {
+      if (this.getTreesFrom.length === 1) {
+        notifyMessage({ message: `If you delete the trees of ${this.user}, you will have an empty sample`, type: 'warning', position: 'top' });
+      }
       this.confirmActionCallback = method;
       this.confirmActionDial = true;
     },

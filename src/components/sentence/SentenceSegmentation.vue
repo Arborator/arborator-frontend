@@ -478,19 +478,20 @@ export default defineComponent({
         mergedSentence.treeJson.nodesJson[`${newId}`] = {
           ...token,
           ID: `${newId}`,
-          HEAD: token.HEAD > 0 ? token.HEAD + length : 0,
+          HEAD: token.HEAD > 0 ? token.HEAD + length : token.HEAD,
         };
       });
       mergedSentence.metaJson = {
         ...firstSentenceJson.metaJson,
         ...secondSentenceJson.metaJson,
-        text: firstSentenceJson.metaJson.text + ' ' + secondSentenceJson.metaJson.text,
-        timestamp:
-          firstSentenceJson.metaJson.timestamp > secondSentenceJson.metaJson.timestamp
-            ? firstSentenceJson.metaJson.timestamp
-            : secondSentenceJson.metaJson.timestamp,
-        sent_id: this.proposeMergedSentId(firstSentenceJson.metaJson.sent_id as string, secondSentenceJson.metaJson.sent_id as string),
+        timestamp: firstSentenceJson.metaJson.timestamp > secondSentenceJson.metaJson.timestamp ? firstSentenceJson.metaJson.timestamp: secondSentenceJson.metaJson.timestamp,
+        sent_id: this.proposeMergedSentId(firstSentenceJson.metaJson.sent_id as  string, secondSentenceJson.metaJson.sent_id as string),
       };
+      for (const key of Object.keys(firstSentenceJson.metaJson).filter(key => key.includes('text'))) {
+        if (Object.keys(secondSentenceJson.metaJson).includes(key)) {
+         mergedSentence.metaJson[key] = `${firstSentenceJson.metaJson[key]} ${secondSentenceJson.metaJson[key]}`
+        } 
+      }
       return mergedSentence;
     },
     proposeMergedSentId(firstSentId: string, secondSentId: string) {

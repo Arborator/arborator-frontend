@@ -41,6 +41,9 @@ export interface project_extended_t {
   freezed: boolean;
   config: string;
   language: string;
+  syncGithub: string;
+  owner: string;
+  contactOwner: string;
   users: string[];
   ownerAvatarUrl: string;
   admins: string[];
@@ -66,7 +69,6 @@ export interface annotationFeatures_t {
   FEATS: { name: string; values: string[] }[];
   MISC: { name: string; values: string[] | string }[];
   DEPREL: { name: string; values: string[]; join: string }[];
-  DEPS: { name: string; values: string[]; join: string }[];
 }
 
 export interface project_access_t {

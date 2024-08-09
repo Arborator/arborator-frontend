@@ -116,15 +116,12 @@ export default defineComponent({
         });
     },
     triggerConfirmAction(method: CallableFunction) {
-      if (this.canDeleteFromGithub) this.triggerWarning();
-      this.confirmActionCallback = method;
-      this.confirmActionDial = true;
-    },
-    triggerWarning() {
       if (this.canDeleteFromGithub) {
         notifyMessage({ message: 'These files will be also deleted from your synchronized Github repository', type: 'warning', position: 'top' });
       }
-    },
+      this.confirmActionCallback = method;
+      this.confirmActionDial = true;
+    }, 
     exportEvaluation() {
       const projectName = this.name;
       const sampleName = this.selectedSamples[0].sampleName;

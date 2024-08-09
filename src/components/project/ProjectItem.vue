@@ -6,11 +6,12 @@
       </q-avatar>
     </q-item-section>
     <q-item-section>
-      <q-item-label lines="1">
+      <q-item-label class="q-gutter-x-md" lines="1">
         <span class="text-weight-bold">{{ project.projectName }}</span>
+        <ProjectVisibility :visibility="project.visibility" :blindAnnotationMode="project.blindAnnotationMode" />
       </q-item-label>
       <q-item-label class="text-caption text-grey-9 text-weight-medium" style="text-decoration: underline" lines="2">
-        {{ project.admins[0] }}
+        {{ project.owner }}
       </q-item-label>
       <q-item-label caption lines="3">
         {{ $t('projectHub.lastAccess') }} {{ timeAgo(project.lastAccess) }}.{{ $t('projectHub.lastWriteAccess') }}
@@ -66,9 +67,10 @@ import { PropType, defineComponent } from 'vue';
 
 import ConfirmAction from '../shared/ConfirmAction.vue';
 import RenameProjectDialog from './RenameProjectDialog.vue';
+import ProjectVisibility from '../shared/ProjectVisibility.vue';
 
 export default defineComponent({
-  components: { ConfirmAction, RenameProjectDialog },
+  components: { ConfirmAction, RenameProjectDialog, ProjectVisibility },
   props: {
     project: {
       type: Object as PropType<project_extended_t>,
@@ -95,12 +97,6 @@ export default defineComponent({
     ...mapState(useUserStore, ['isSuperAdmin', 'username']),
     isProjectAdmin() {
       return this.project.admins.includes(this.username) || this.isSuperAdmin;
-    },
-    displayedAdmins() {
-      return this.project.admins.slice(0, 2);
-    },
-    moreAdmins() {
-      return this.project.admins.filter((admin) => !this.displayedAdmins.includes(admin));
     },
   },
   methods: {

@@ -41,8 +41,11 @@
           </q-btn>
         </div>
       </div>
+      <div class="row">
+        <ProjectVisibility :visibility="project.visibility" :blindAnnotationMode="project.blindAnnotationMode" />
+      </div>
       <q-card-actions vertical class="clickable" @click="goTo()">
-        <div class="text-caption text-grey-9 text-weight-medium" style="text-decoration: underline">
+        <div class="text-caption text-grey-9 text-weight-medium" style="text-decoration: underline;">
           {{ project.admins[0] }}
         </div>
         <div class="text-caption">{{ $t('projectHub.lastAccess') }} {{ timeAgo(project.lastAccess) }}</div>
@@ -83,9 +86,10 @@ import { PropType, defineComponent } from 'vue';
 
 import ConfirmAction from '../shared/ConfirmAction.vue';
 import RenameProjectDialog from './RenameProjectDialog.vue';
+import ProjectVisibility from '../shared/ProjectVisibility.vue';
 
 export default defineComponent({
-  components: { ConfirmAction, RenameProjectDialog },
+  components: { ConfirmAction, RenameProjectDialog, ProjectVisibility },
   props: {
     project: {
       type: Object as PropType<project_extended_t>,
@@ -137,7 +141,7 @@ export default defineComponent({
 <style scoped>
 .clickable:hover {
   cursor: pointer;
-  text-decoration: none;
+  text-decoration: none!important;
 }
 .grid-style-transition {
   transition: transform 0.28s, background-color 0.28s;

@@ -59,7 +59,6 @@ export const useTreesStore = defineStore('trees', {
             this.sortedSentIds = response.data.sent_ids;
             this.applyFilterTrees();
             this.loading = false;
-            notifyMessage({ message: `Loaded ${Object.keys(this.trees).length} trees` });
             resolve(JSON.parse(JSON.stringify(Object.values(this.trees))));
           })
           .catch((error) => {

@@ -97,7 +97,7 @@
               <q-item-label caption>{{ $t('projectSettings.freezeProjectCaption') }}</q-item-label>
             </q-item-section>
             <q-item-section avatar>
-              <q-toggle v-model="freezed" color="primary" checked-icon="check" unchecked-icon="clear" />
+              <q-toggle v-model="freezedLocal" color="primary" checked-icon="check" unchecked-icon="clear" />
             </q-item-section>
           </q-item>
           <q-item v-if="collaborativeMode">
@@ -171,7 +171,7 @@
     </q-card-section>
     <q-card-section class="q-pa-sm row items-start">
       <q-card bordered flat class="col col-sm-12">
-        <q-toolbar class="bg-primary text-white q-ma-none shadow-2">
+        <q-toolbar class="bg-primary text-white q-ma-none shadow-2 fixed-header">
           <div class="text-h6 text-center">
             {{ $t('projectSettings.annotationSettingsInput') }}
           </div>
@@ -213,22 +213,17 @@
             {{ annotationFeaturesComment }}
           </q-chip>
         </q-toolbar>
-        <Codemirror v-model:value="annotationFeaturesJson" :options="cmOption" @input="checkAnnotationFeatures"></Codemirror>
+        <CodemirrorVueWrapper v-model:value="annotationFeaturesJson" :options="cmOption" @input="checkAnnotationFeatures"></CodemirrorVueWrapper>
       </q-card>
     </q-card-section>
   </q-card>
 </template>
 
 <script lang="ts">
-import Codemirror from 'codemirror-editor-vue3';
-// plugin-style
+import CodemirrorVueWrapper from 'codemirror-editor-vue3';
 import 'codemirror-editor-vue3/dist/style.css';
-import 'codemirror/addon/fold/brace-fold';
-import 'codemirror/addon/fold/foldcode';
-import 'codemirror/addon/fold/foldgutter';
-import 'codemirror/addon/fold/foldgutter.css';
-import 'codemirror/lib/codemirror.css';
-import 'codemirror/mode/javascript/javascript.js';
+import 'codemirror/theme/dracula.css';
+
 import { mapActions, mapState, mapWritableState } from 'pinia';
 import { sample_t } from 'src/api/backend-types';
 import { useProjectStore } from 'src/pinia/modules/project';
@@ -242,7 +237,7 @@ import ProjectVisibility from '../shared/ProjectVisibility.vue';
 export default defineComponent({
   name: 'ProjectSettingsView',
   components: {
-    Codemirror,
+    CodemirrorVueWrapper,
     UserSelect,
     LanguageSelect,
     ProjectVisibility,
@@ -268,15 +263,9 @@ export default defineComponent({
       selectedLanguage: '',
       newProjectName: this.projectName,
       cmOption: {
-        tabSize: 8,
-        styleActiveLine: true,
+        mode: 'application/json', // Use JSON mode
+        theme: 'default', // Material theme or any JSON-like theme
         lineNumbers: true,
-        lineWrapping: true,
-        line: true,
-        mode: 'javascript',
-        theme: 'default',
-        foldGutter: true,
-        gutters: ['CodeMirror-linenumbers', 'CodeMirror-foldgutter'],
       },
     };
   },
@@ -305,6 +294,7 @@ export default defineComponent({
       'language',
       'languagesList',
       'collaborativeMode',
+      'freezed'
     ]),
 
     blindAnnotationModeLocal: {
@@ -315,7 +305,7 @@ export default defineComponent({
         this.updateProjectSettings(this.projectName, { blindAnnotationMode: value });
       },
     },
-    freezed: {
+    freezedLocal: {
       get(): boolean {
         return this.freezed || false;
       },
@@ -464,5 +454,10 @@ export default defineComponent({
 .full {
   width: 90vw;
   min-width: 90vw;
+}
+.fixed-header {
+  position: sticky;
+  top: 0;
+  z-index: 1;
 }
 </style>

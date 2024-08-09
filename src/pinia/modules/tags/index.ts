@@ -51,7 +51,6 @@ export const useTagsStore = defineStore('tags', {
       api
         .removeTag(useProjectStore().name, sampleName, data)
         .then((response) => {
-          notifyMessage({ message: 'The tag is removed' });
           sentenceBus.emit('tree-update:tags', {
             sentenceJson: {
               metaJson: response.data,

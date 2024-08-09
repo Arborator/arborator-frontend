@@ -1,7 +1,7 @@
 <template>
-  <q-chip outline color="primary" size="sm" v-show="visibility === 0" label="Private"></q-chip>
-  <q-chip outline color="primary" size="sm" v-show="visibility === 1" label="Open"></q-chip>
-  <q-chip outline color="primary" size="sm" v-show="visibility === 2" label="Public"></q-chip>
+  <q-chip outline color="red-6" size="sm" v-show="visibility === 0" label="Private"></q-chip>
+  <q-chip outline color="yellow-9" size="sm" v-show="visibility === 1" label="Open"></q-chip>
+  <q-chip outline color="light-green-8" size="sm" v-show="visibility === 2" label="Public"></q-chip>
   <q-chip outline color="primary" size="sm" v-show="blindAnnotationMode" label="Blind annotation"></q-chip>
 </template>
 

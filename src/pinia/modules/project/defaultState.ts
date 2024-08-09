@@ -21,6 +21,7 @@ interface configState {
   diffUserId: string;
   collaborativeMode: boolean;
   reloadProjects: boolean;
+  reloadSamples: boolean;
   shownFeatures: string[];
   shownMeta: string[];
   annotationFeatures: annotationFeatures_t;
@@ -48,12 +49,13 @@ export default function defaultState(): configState {
     diffUserId: '',
     collaborativeMode: true,
     reloadProjects: false,
+    reloadSamples: false,
     shownFeatures: ['FORM', 'UPOS', 'LEMMA', 'MISC.Gloss'],
     shownMeta: ['text_en'],
     languagesList: languages,
     annotationFeatures: {
       META: ['sent_id', 'text', 'text_en', 'text_ortho', 'speaker_id', 'sound_url'],
-      UPOS: ['ADJ', 'ADP', 'ADV', 'AUX', 'CCONJ', 'DET', 'INTJ', 'NOUN', 'NUM', 'PART', 'PRON', 'PROPN', 'PUNCT', 'SCONJ', 'VERB', 'X'],
+      UPOS: ['ADJ', 'ADP', 'ADV', 'AUX', 'CCONJ', 'DET', 'INTJ', 'NOUN', 'NUM', 'PART', 'PRON', 'PROPN', 'PUNCT', 'SCONJ', 'SYM', 'VERB', 'X'],
       XPOS: [],
       FEATS: [
         { name: 'Abbr', values: ['Yes'] },
@@ -101,19 +103,22 @@ export default function defaultState(): configState {
         { name: 'Evident', values: ['Fh', 'Nfh'] },
         {
           name: 'ExtPos',
-          values: ['ADJ', 'ADP', 'ADV', 'AUX', 'CCONJ', 'DET', 'INTJ', 'NOUN', 'NUM', 'PART', 'PRON', 'PROPN', 'PUNCT', 'SCONJ', 'VERB', 'X'],
+          values: ['ADJ', 'ADP', 'ADV', 'AUX', 'CCONJ', 'DET', 'INTJ', 'NOUN', 'NUM', 'PART', 'PRON', 'PROPN', 'PUNCT', 'SCONJ', 'SYM', 'VERB', 'X'],
         },
         { name: 'Foreign', values: ['Yes'] },
         { name: 'Gender', values: ['Com', 'Fem', 'Masc', 'Neut'] },
         { name: 'Mood', values: ['Adm', 'Cnd', 'Des', 'Imp', 'Ind', 'Jus', 'Nec', 'Opt', 'Pot', 'Prp', 'Qot', 'Sub'] },
         { name: 'NumType', values: ['Card', 'Dist', 'Frac', 'Mult', 'Ord', 'Range', 'Sets'] },
         { name: 'Number', values: ['Coll', 'Count', 'Dual', 'Grpa', 'Grpl', 'Inv', 'Pauc', 'Plur', 'Ptan', 'Sing', 'Tri'] },
+        { name: 'Number[psor]', values: ['Coll', 'Count', 'Dual', 'Grpa', 'Grpl', 'Inv', 'Pauc', 'Plur', 'Ptan', 'Sing', 'Tri'] },
         { name: 'Person', values: ['0', '1', '2', '3', '4'] },
+        { name: 'Person[psor]', values: ['0', '1', '2', '3', '4'] },
         { name: 'Polarity', values: ['Neg', 'Pos'] },
         { name: 'Polite', values: ['Elev', 'Form', 'Humb', 'Infm'] },
         { name: 'Poss', values: ['Yes'] },
         { name: 'PronType', values: ['Art', 'Dem', 'Emp', 'Exc', 'Ind', 'Int', 'Neg', 'Prs', 'Rcp', 'Rel', 'Tot'] },
         { name: 'Reflex', values: ['Yes'] },
+        { name: 'Shared', values: ['Yes', 'No'] },
         { name: 'Tense', values: ['Fut', 'Imp', 'Past', 'Pqp', 'Pres'] },
         { name: 'VerbForm', values: ['Conv', 'Fin', 'Gdv', 'Ger', 'Inf', 'Part', 'Sup', 'Vnoun'] },
         { name: 'Voice', values: ['Act', 'Antip', 'Cau', 'Dir', 'Inv', 'Mid', 'Pass', 'Rcp'] },
@@ -124,7 +129,7 @@ export default function defaultState(): configState {
         { name: 'Gloss', values: 'String' },
         { name: 'Idiom', values: ['Yes'] },
         { name: 'InIdiom', values: ['Yes'] },
-        { name: 'SpaceAfter', values: ['Yes'] },
+        { name: 'SpaceAfter', values: ['No', 'Yes'] },
         { name: 'Subject', values: ['Instanciated', 'Generic', 'NoRaising', 'ObjRaising', 'OblRaising', 'SubjRaising'] },
       ],
       DEPREL: [
@@ -179,12 +184,11 @@ export default function defaultState(): configState {
           join: ':',
         },
         { name: 'deep', values: ['', 'agent', 'expl', 'fixed', 'foreign', 'lvc', 'm', 'name', 'num', 'relcl', 'scrap'], join: '@' },
-      ],
-      DEPS: [{ name: 'deep', values: ['comp', 'mod', 'subj'], join: '' }],
+      ]
     },
     annotationFeaturesUD: {
       META: ['sent_id', 'text', 'text_en', 'text_ortho', 'speaker_id', 'sound_url'],
-      UPOS: ['ADJ', 'ADP', 'ADV', 'AUX', 'CCONJ', 'DET', 'INTJ', 'NOUN', 'NUM', 'PART', 'PRON', 'PROPN', 'PUNCT', 'SCONJ', 'VERB', 'X'],
+      UPOS: ['ADJ', 'ADP', 'ADV', 'AUX', 'CCONJ', 'DET', 'INTJ', 'NOUN', 'NUM', 'PART', 'PRON', 'PROPN', 'PUNCT', 'SCONJ', 'SYM', 'VERB', 'X'],
       XPOS: [],
       FEATS: [
         { name: 'Abbr', values: ['Yes'] },
@@ -232,19 +236,22 @@ export default function defaultState(): configState {
         { name: 'Evident', values: ['Fh', 'Nfh'] },
         {
           name: 'ExtPos',
-          values: ['ADJ', 'ADP', 'ADV', 'AUX', 'CCONJ', 'DET', 'INTJ', 'NOUN', 'NUM', 'PART', 'PRON', 'PROPN', 'PUNCT', 'SCONJ', 'VERB', 'X'],
+          values: ['ADJ', 'ADP', 'ADV', 'AUX', 'CCONJ', 'DET', 'INTJ', 'NOUN', 'NUM', 'PART', 'PRON', 'PROPN', 'PUNCT', 'SCONJ', 'SYM', 'VERB', 'X'],
         },
         { name: 'Foreign', values: ['Yes'] },
         { name: 'Gender', values: ['Com', 'Fem', 'Masc', 'Neut'] },
         { name: 'Mood', values: ['Adm', 'Cnd', 'Des', 'Imp', 'Ind', 'Jus', 'Nec', 'Opt', 'Pot', 'Prp', 'Qot', 'Sub'] },
         { name: 'NumType', values: ['Card', 'Dist', 'Frac', 'Mult', 'Ord', 'Range', 'Sets'] },
         { name: 'Number', values: ['Coll', 'Count', 'Dual', 'Grpa', 'Grpl', 'Inv', 'Pauc', 'Plur', 'Ptan', 'Sing', 'Tri'] },
+        { name: 'Number[psor]', values: ['Coll', 'Count', 'Dual', 'Grpa', 'Grpl', 'Inv', 'Pauc', 'Plur', 'Ptan', 'Sing', 'Tri'] },
         { name: 'Person', values: ['0', '1', '2', '3', '4'] },
+        { name: 'Person[psor]', values: ['0', '1', '2', '3', '4'] },
         { name: 'Polarity', values: ['Neg', 'Pos'] },
         { name: 'Polite', values: ['Elev', 'Form', 'Humb', 'Infm'] },
         { name: 'Poss', values: ['Yes'] },
         { name: 'PronType', values: ['Art', 'Dem', 'Emp', 'Exc', 'Ind', 'Int', 'Neg', 'Prs', 'Rcp', 'Rel', 'Tot'] },
         { name: 'Reflex', values: ['Yes'] },
+        { name: 'Shared', values: ['Yes', 'No'] },
         { name: 'Tense', values: ['Fut', 'Imp', 'Past', 'Pqp', 'Pres'] },
         { name: 'VerbForm', values: ['Conv', 'Fin', 'Gdv', 'Ger', 'Inf', 'Part', 'Sup', 'Vnoun'] },
         { name: 'Voice', values: ['Act', 'Antip', 'Cau', 'Dir', 'Inv', 'Mid', 'Pass', 'Rcp'] },
@@ -256,7 +263,7 @@ export default function defaultState(): configState {
         { name: 'MGloss', values: 'String' },
         { name: 'Idiom', values: ['Yes'] },
         { name: 'InIdiom', values: ['Yes'] },
-        { name: 'SpaceAfter', values: ['Yes'] },
+        { name: 'SpaceAfter', values: ['No', 'Yes'] },
         { name: 'Subject', values: ['Instanciated', 'Generic', 'NoRaising', 'ObjRaising', 'OblRaising', 'SubjRaising'] },
       ],
       DEPREL: [
@@ -332,8 +339,7 @@ export default function defaultState(): configState {
           ],
           join: ':',
         },
-      ],
-      DEPS: [],
+      ]
     },
     invalidProjectError: false,
   };

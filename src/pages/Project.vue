@@ -77,10 +77,10 @@
             <q-tab name="constructicon" :label="$t('projectView.projectTabs[5]')" />
           </q-tabs>
           <q-tab-panels keep-alive v-model="tab">
-            <q-tab-panel class="q-pa-none" name="samples">
+            <q-tab-panel class="q-gutter-md" name="samples">
               <ProjectOptions
                 :selected-samples="selectedSamples"
-                :canDeleteFromGithub="isAllowdedToSync && syncGithubRepo !== ''"
+                :canDeleteFromGithub="isAllowdedToSync && syncGithubRepo === ''"
                 @unselect="unselectSamples = true"
                 @reload="loadProjectData"
               ></ProjectOptions>
@@ -192,7 +192,12 @@ export default defineComponent({
       'isAdmin',
       'isValidator',
       'isAllowdedToSync',
+      'canExportTrees',
+      'language',
+      'reloadSamples', 
+      'invalidProjectError'
     ]),
+    ...mapWritableState(useProjectStore, ['freezed', 'reloadSamples']),
     ...mapState(useGithubStore, ['reloadCommits']),
     ...mapWritableState(useGrewSearchStore, ['grewDialog']),
     projectName(): string {
@@ -208,12 +213,9 @@ export default defineComponent({
     reloadCommits(newVal) {
       if (newVal > 0) this.loadProjectData();
     },
-    grewDialog(newVal) {
-      if (newVal) {
-        this.tab = 'grew';
-        this.grewDialog = false;
-      }
-    },
+    reloadSamples(newVal) {
+      if (newVal > 0) this.loadProjectData();
+    }
   },
   methods: {
     loadProjectData() {
@@ -228,7 +230,8 @@ export default defineComponent({
     getProjectSamples() {
       api.getProjectSamples(this.projectName).then((response) => {
         this.samples = response.data;
-        this.sampleNames = this.samples.map((sample) => sample.sampleName);
+        this.sampleNames = this.samples.map(sample => sample.sampleName);
+        this.reloadSamples = false;
       });
     },
     getSelectedSamples(value: any) {

@@ -70,6 +70,9 @@ export default {
   getProjects() {
     return API.get<getProjects_RV>('projects');
   },
+  getMismatchProjects() {
+    return API.get('projects/mismatch-projects');
+  },
   createProject(data: createProject_ED) {
     return API.post('projects/', data);
   },
@@ -159,6 +162,9 @@ export default {
   },
   mergeTrees(projectName: string, sampleName: string, data: any) {
     return API.post(`/projects/${projectName}/samples/${sampleName}/trees/merge`, data);
+  },
+  saveAllTrees(projectName: string, sampleName: string, data: any) {
+    return API.post(`/projects/${projectName}/samples/${sampleName}/trees/all`, data);
   },
   // ----------------------------------------------------- //
   // ---------------          Grew         --------------- //

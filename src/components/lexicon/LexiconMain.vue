@@ -1,6 +1,6 @@
 <template>
-  <q-card bordered flat>
-    <q-card-section v-if="isShowLexiconFeatures">
+  <q-card style="height: 80vh" bordered flat>
+    <q-card-section>
       <div class="text-h6 q-mb-md">{{ $t('lexicon.lexiconTitle') }}</div>
       <div class="row q-gutter-md">
         <div class="col-3">
@@ -174,7 +174,6 @@ export default defineComponent({
       features,
       selectedSamples,
       isShowLexiconTable: false,
-      isShowLexiconFeatures: true,
     };
   },
   computed: {
@@ -203,9 +202,8 @@ export default defineComponent({
       }
       const data = { samplenames: this.selectedSamples, lexiconType: lexiconType, features: this.features, prune: prune };
       this.fetchLexicon(this.name, data);
-      this.lexiconType = lexiconType;
-      this.isShowLexiconFeatures = false;
       this.isShowLexiconTable = true;
+      this.lexiconType = lexiconType;
     },
     displayMessage() {
       let message = 'We search all lexicon entries that have the same ';

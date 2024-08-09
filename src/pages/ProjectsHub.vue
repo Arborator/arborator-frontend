@@ -260,7 +260,7 @@ export default defineComponent({
             .map((language, i) => ({ index: i + 1, name: language }));
           this.sortProjects();
           this.initLoading = false;
-        })
+                  })
         .catch((error) => {
           notifyError({ error });
         });

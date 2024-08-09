@@ -92,6 +92,7 @@ export default defineComponent({
   computed: {
     ...mapState(useProjectStore, ['diffUserId', 'shownFeatures', 'isStudent']),
     ...mapState(useUserStore, ['username', 'isLoggedIn']),
+    ...mapState(useGrewSearchStore, ['pendingModifications']),
   },
   watch: {
     diffMode() {
@@ -100,6 +101,15 @@ export default defineComponent({
     diffUserId() {
       this.handleDiffPlugging();
     },
+    'pendingModifications.size': {
+      handler: function (newVal) {
+       if (newVal === 0) {
+        this.history_saveIndex = this.sentenceCaretaker.currentStateIndex;
+        this.statusChangeHandler();
+       }
+      },
+      deep: true,
+    }
   },
   mounted() {
     // attach so this vue comp become an observer of the reactive sent
@@ -204,7 +214,7 @@ export default defineComponent({
     this.statusChangeHandler();
   },
   methods: {
-    ...mapActions(useGrewSearchStore, ['addPendingModification']),
+    ...mapActions(useGrewSearchStore, ['addPendingModification', 'removePendingModification']),
     svgClickHandler(e: svgClickEvent_t) {
       const clickedId = e.detail.clicked;
       const clickedToken = { ...this.sentenceSVG.treeJson.nodesJson[clickedId] };
@@ -270,7 +280,15 @@ export default defineComponent({
       const statusObj = statusStr ? JSON.parse(statusStr as string) : {};
       let card = statusObj[this.cardId];
       this.hasPendingChanges[this.treeUserId] = needSave;
-      if (needSave) this.addPendingModification(this.reactiveSentencesObj[this.treeUserId].state.metaJson.sent_id);
+      if (needSave) this.addPendingModification(
+        `${ this.reactiveSentencesObj[this.treeUserId].state.metaJson.sent_id }_${this.reactiveSentencesObj[this.treeUserId].state.metaJson.user_id }`,
+        this.reactiveSentencesObj[this.treeUserId].exportConll()
+      );
+      else {
+        this.removePendingModification(`${ 
+          this.reactiveSentencesObj[this.treeUserId].state.metaJson.sent_id }_${this.reactiveSentencesObj[this.treeUserId].state.metaJson.user_id }`
+        );
+      }
 
       this.$emit('statusChanged', {
         canUndo,
@@ -296,7 +314,7 @@ export default defineComponent({
             if (card[userIds[j]] === true) {
               window.onbeforeunload = function () {
                 return `You have some unsaved changes left,
-               please save them before you leave this page`;
+                please save them before you leave this page`;
               };
               return;
             }

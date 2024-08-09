@@ -57,7 +57,7 @@
           style="padding-bottom: 0; padding-top: 0"
         >
           <q-card flat>
-            <q-card-section :class="($q.dark.isActive ? '' : '') + ' scrollable'">
+            <q-card-section :class="($q.dark.isActive ? '' : '') + ' scrollable'" :id="'tab_' + user" @scroll="synchronizeScroll">
               <VueDepTree
                 v-if="reactiveSentencesObj"
                 :card-id="index"
@@ -151,6 +151,7 @@ import VueDepTree from './VueDepTree.vue';
 import XposDialog from './XposDialog.vue';
 import RelationDialog from './RelationDialog.vue';
 import SentenceToolBar from './SentenceToolBar.vue';
+import { useGrewSearchStore } from 'src/pinia/modules/grewSearch';
 
 function sentenceBusFactory(): sentence_bus_t {
   let sentenceBus: Emitter<sentence_bus_events_t> = mitt<sentence_bus_events_t>();
@@ -195,6 +196,7 @@ export default defineComponent({
   data() {
     const hasPendingChanges: { [key: string]: boolean } = {};
     const reactiveSentencesObj: reactive_sentences_obj_t = {};
+    const horizontalScrollPos: number = 0;
     return {
       sentenceBus: sentenceBusFactory(),
       exportedConll: '',
@@ -206,10 +208,10 @@ export default defineComponent({
       canSave: true,
       hasPendingChanges,
       tags: [],
+      horizontalScrollPos,
       sentenceText: '',
     };
   },
-
   computed: {
     ...mapWritableState(useProjectStore, ['diffMode', 'diffUserId']),
     ...mapWritableState(useGithubStore, ['reloadCommits']),
@@ -266,9 +268,63 @@ export default defineComponent({
   },
   methods: {
     ...mapActions(useTagsStore, ['removeTag']),
+    ...mapActions(useGrewSearchStore, ['removePendingModification']),
     handleStatusChange(event: { canUndo: boolean; canRedo: boolean }) {
       this.canUndo = event.canUndo;
       this.canRedo = event.canRedo;
+    },
+    save(mode: string) {
+      const openedTreeUser = this.openTabUser;
+      let changedConllUser = this.username;
+      if (mode) changedConllUser = mode;
+
+      const metaToReplace = {
+        user_id: changedConllUser,
+        timestamp: Math.round(Date.now()),
+      };
+
+      const exportedConll = this.reactiveSentencesObj[openedTreeUser].exportConllWithModifiedMeta(metaToReplace);
+
+      const data = {
+        sent_id: this.sentence.sent_id,
+        conll: exportedConll,
+        user_id: changedConllUser,
+      };
+      if (!this.sentence.sample_name) {
+        return;
+      }
+      api
+        .updateTree(this.$route.params.projectname as string, this.sentence.sample_name, data)
+        .then((response) => {
+          if (response.status === 200) {
+            this.sentenceBus.emit('action:saved', {
+              userId: this.openTabUser,
+            });
+            this.removePendingModification(`${this.sentence.sent_id}_${this.openTabUser}`);
+            this.reloadCommits += 1;
+            if (this.sentenceData.conlls[changedConllUser]) {
+              // the user already had a tree
+              this.hasPendingChanges[changedConllUser] = false;
+              this.sentenceData.conlls[changedConllUser] = exportedConll;
+              this.reactiveSentencesObj[changedConllUser].fromSentenceConll(exportedConll);
+            } else {
+              // user still don't have a tree for this sentence, creating it.
+              this.sentenceData.conlls[changedConllUser] = exportedConll;
+              this.reactiveSentencesObj[changedConllUser] = new ReactiveSentence();
+            }
+
+            if (this.openTabUser !== changedConllUser) {
+              this.reactiveSentencesObj[this.openTabUser].fromSentenceConll(this.sentenceData.conlls[this.openTabUser]);
+              this.sentenceText = this.reactiveSentencesObj[this.openTabUser].state.metaJson.text as string;
+              this.openTabUser = changedConllUser;
+              this.exportedConll = exportedConll;
+            }
+            notifyMessage({ position: 'top', message: 'Saved on the server', icon: 'save' });
+          }
+        })
+        .catch((error) => {
+          notifyError({ error });
+        });
     },
     transitioned() {
       if (this.exportedConll) {
@@ -292,12 +348,6 @@ export default defineComponent({
         this.diffUserId = this.openTabUser;
       }
     },
-    leftClickHandler(user: string) {
-      if (this.openTabUser === user) {
-        this.openTabUser = '';
-      }
-    },
-    
     rightClickHandler(e: MouseEvent, user: string) {
       e.preventDefault();
       if (!this.diffMode) {
@@ -328,56 +378,16 @@ export default defineComponent({
       }
       return orderedConlls;
     },
+    leftClickHandler(user: string) {
+      if (this.openTabUser === user) {
+        this.openTabUser = '';
+      }
+    },
+    synchronizeScroll(event: Event) {
+      this.horizontalScrollPos = (event.target as HTMLElement).scrollLeft;
+    },
     removeUserTag(tag: string) {
       this.removeTag(this.sentenceData, tag, this.sentenceBus, this.openTabUser);
-    },
-    save(mode: string) {
-      const openedTreeUser = this.openTabUser;
-      let changedConllUser = this.username;
-      if (mode) changedConllUser = mode;
-
-      const metaToReplace = {
-        user_id: changedConllUser,
-        timestamp: Math.round(Date.now()),
-      };
-
-      const exportedConll = this.reactiveSentencesObj[openedTreeUser].exportConllWithModifiedMeta(metaToReplace);
-
-      const data = {
-        sent_id: this.sentenceData.sent_id,
-        conll: exportedConll,
-        user_id: changedConllUser,
-      };
-  
-      api
-        .updateTree(this.$route.params.projectname as string, this.sentenceData.sample_name as string, data)
-        .then((response) => {
-          if (response.status === 200) {
-            this.sentenceBus.emit('action:saved', {
-              userId: this.openTabUser,
-            });
-            this.reloadCommits += 1;
-            if (this.sentenceData.conlls[changedConllUser]) {
-              // the user already had a tree
-              this.$emit('pendingChanges');
-              this.sentenceData.conlls[changedConllUser] = exportedConll;
-              this.reactiveSentencesObj[changedConllUser].fromSentenceConll(exportedConll);
-            } else {
-              // user still don't have a tree for this sentence, creating it.
-              this.sentenceData.conlls[changedConllUser] = exportedConll;
-              this.reactiveSentencesObj[changedConllUser] = new ReactiveSentence();
-            }
-
-            if (this.openTabUser !== changedConllUser) {
-              this.reactiveSentencesObj[this.openTabUser].fromSentenceConll(this.sentenceData.conlls[this.openTabUser]);
-              this.$emit('newTree', { openTabUser: changedConllUser, exportedConll: exportedConll})
-            }
-            notifyMessage({ position: 'top', message: 'Saved on the server', icon: 'save' });
-          }
-        })
-        .catch((error) => {
-          notifyError({ error });
-        });
     },
   },
 });

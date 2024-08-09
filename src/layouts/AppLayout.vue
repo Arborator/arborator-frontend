@@ -9,9 +9,6 @@
           </div>
         </q-btn>
         <div>
-          <q-btn v-if="!isLoggedIn" no-caps flat size="md" color="primary">
-            About us
-          </q-btn>
           <q-btn
             no-caps
             flat 
@@ -78,12 +75,6 @@
                         <q-icon name="settings" />
                       </q-item-section>
                       <q-item-section> {{ $t('settings') }} </q-item-section>
-                    </q-item>
-                    <q-item v-show="superAdmin" v-ripple clickable to="/admin">
-                      <q-item-section avatar>
-                        <q-icon name="vpn_key" />
-                      </q-item-section>
-                      <q-item-section> {{ $t('admin') }} </q-item-section>
                     </q-item>
                   </q-list>
                 </div>

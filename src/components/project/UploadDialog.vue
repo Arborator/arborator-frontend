@@ -50,18 +50,66 @@
             <q-input outlined v-model="sampleName" :label="$t('uploadSample.sampleName')" />
           </q-tab-panel>
         </q-tab-panels>
-        <div class="row q-px-md">
-          <q-input
-            class="col"
-            outlined
-            v-model="customUserId"
-            :label="$t('uploadSample.customUsername')"
-            :rules="[
-              (val) => reservedUserId !== val.toLowerCase() || `${val} ` + $t('uploadSample.reservedUsernameError'),
-              (val) => (val && val.length > 0) || $t('uploadSample.emptyUsernameError'),
-            ]"
-          />
+        <q-separator />
+        <div class="q-px-md">
+          <div class="text-h6">
+            {{ $t('uploadSample.userIdConfig') }}
+          </div>
+          <q-list>
+            <q-item>
+              <q-item-section avatar>
+                <q-radio v-model="userId" val="username" />
+              </q-item-section>
+              <q-item-section>
+                <q-item-label>
+                  {{ $t('uploadSample.userIdOptions[0]') }}
+                </q-item-label>
+              </q-item-section>
+            </q-item>
+            <q-item>
+              <q-item-section avatar>
+                <q-radio v-model="userId" val="validated" />
+              </q-item-section>
+              <q-item-section>
+                <q-item-label>
+                  {{ $t('uploadSample.userIdOptions[1]') }}
+                </q-item-label>
+              </q-item-section>
+            </q-item>
+            <q-item v-if="blindAnnotationMode">
+              <q-item-section avatar>
+                <q-radio v-model="userId" val="base_tree" />
+              </q-item-section>
+              <q-item-section>
+                <q-item-label>
+                  {{ $t('uploadSample.userIdOptions[2]') }}
+                </q-item-label>
+              </q-item-section>
+            </q-item>
+            <q-item>
+              <q-item-section avatar>
+                <q-radio v-model="userId" class="row" val="other" />
+              </q-item-section>
+              <q-item-section>
+                <q-item-label>
+                  {{ $t('uploadSample.userIdOptions[3]') }}
+                </q-item-label>
+              </q-item-section>
+            </q-item>
+          </q-list>
         </div>
+        <q-input
+          v-if="userId === 'other'"
+          class="col"
+          outlined
+          v-model="customUserId"
+          :label="$t('uploadSample.customUsername')"
+          :rules="[
+            (val) => !reservedUserIds.includes(val.toLowerCase()) || `${val} ` + $t('uploadSample.reservedUsernameError'),
+            (val) => (val && val.length > 0) || $t('uploadSample.emptyUsernameError'),
+          ]"
+        />
+        <q-separator />
         <q-item>
           <q-item-section side top>
             <q-checkbox v-model="rtl" />
@@ -82,7 +130,7 @@
             icon="cloud_upload"
             label="Upload sample"
             :loading="uploadSample.submitting"
-            :disable="disableUploadBtn || customUserId === ''"
+            :disable="disableUploadBtn"
             @click="uploadSamples()"
             >
             <q-tooltip v-if="uploadSample.attachment.file.length == 0" content-class="text-white bg-primary">
@@ -168,12 +216,12 @@ export default defineComponent({
       generateNewSentIds: false,
       samplesWithoutSentIds,
       rtl: false,
+      userId: 'username',
     };
   },
 
   computed: {
-    ...mapState(useUserStore, { userid: 'id' }),
-    ...mapState(useUserStore, ['username', 'reservedUserId']),
+    ...mapState(useUserStore, ['username', 'reservedUserIds']),
     ...mapState(useProjectStore, ['blindAnnotationMode', 'collaborativeMode']),
     disableTokenizeBtn() {
       if (this.option.value == 'plainText') {
@@ -186,14 +234,14 @@ export default defineComponent({
       let disable = true;
       if (this.samplesWithoutSentIds.length > 0) {
         disable = !this.generateNewSentIds;
-      } else if (this.uploadSample.attachment.file.length > 0) {
+      } else if (this.uploadSample.attachment.file.length > 0 && this.userId !== 'other') {
+        disable = false;
+      }
+      else if (this.uploadSample.attachment.file.length > 0 && this.userId === 'other' && this.customUserId !== '') {
         disable = false;
       }
       return disable;
     },
-  },
-  mounted() {
-    this.customUserId = this.username;
   },
   methods: {
     async preprocess() {
@@ -267,7 +315,7 @@ export default defineComponent({
       for (const file of this.uploadSample.attachment.file) {
         form.append('files', file);
       }
-      form.append('userId', this.customUserId);
+      form.append('userId', this.selectedUserId());
       form.append('rtl', JSON.stringify(this.rtl))
       if (this.generateNewSentIds) {
         form.append('samplesWithoutSentIds', JSON.stringify(this.samplesWithoutSentIds));
@@ -294,7 +342,7 @@ export default defineComponent({
     tokenizeSample() {
       if (!this.collaborativeMode) this.customUserId = 'validated';
       const data = {
-        username: this.customUserId,
+        username: this.selectedUserId(),
         text: this.text.normalize('NFC'),
         option: this.option.value,
         lang: this.lang.value,
@@ -311,6 +359,17 @@ export default defineComponent({
         .catch(() => {
           notifyError({ error: 'Invalid request' });
         });
+    },
+    selectedUserId() {
+      if (this.userId === 'username') {
+         return this.username;
+      }
+      else if (this.userId === 'other')  {
+        return this.customUserId;
+      }
+      else {
+         return this.userId;
+      }
     },
     closeDialog() {
       this.uploadDialModel = false;

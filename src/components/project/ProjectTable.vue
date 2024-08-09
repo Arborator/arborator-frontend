@@ -40,7 +40,7 @@
         </q-td>
         <q-td key="samplename" :props="props">
           <q-btn
-            :disable="freezed && isOwner"
+            :disable="freezed && !isOwner"
             outline
             color="white"
             :text-color="$q.dark.isActive ? 'white' : 'black'"

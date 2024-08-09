@@ -45,8 +45,8 @@
               </q-tabs>
             </q-tab-panel>
           </q-tab-panels>
-          <div v-if="isLoggedIn" class="q-pa-md justify-center">
-            <q-btn flat :label="$t('grewHistory.historyBtn')" color="primary" icon="history" @click="isShowHistory = true" />
+          <div v-if="isLoggedIn" class="q-pa-md row justify-center">
+            <q-btn outline :label="$t('grewHistory.historyBtn')" color="primary" icon="history" @click="isShowHistory = true" />
           </div>
         </div>
         <div class="col-8">
@@ -81,7 +81,7 @@
 </template>
 
 <script lang="ts">
-import 'codemirror/theme/gruvbox-dark.css';
+
 import GrewCodeMirror from 'components/codemirrors/GrewCodeMirror.vue';
 import { mapActions, mapState } from 'pinia';
 import { sample_t } from 'src/api/backend-types';

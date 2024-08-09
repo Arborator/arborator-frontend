@@ -15,6 +15,7 @@ CodeMirror.defineMode('grew', () => {
     pattern: 'builtin',
     commands: 'builtin',
     without: 'builtin',
+    with: 'builtin',
     rule: 'builtin',
   };
   function tokenBase(stream: any, state: any) {
@@ -32,8 +33,12 @@ CodeMirror.defineMode('grew', () => {
       }
     }
     if (ch === '-') {
-      const nextCh = stream.next();
-      if (nextCh === '[' || nextCh === '>') {
+      const next_ch = stream.next();
+      if (next_ch === '[') {
+        return 'quote';
+      }
+      if (next_ch === ">") {
+        stream.eat(">");
         return 'quote';
       }
     }
@@ -53,7 +58,7 @@ CodeMirror.defineMode('grew', () => {
       return 'operator';
     }
     stream.eatWhile(/\w/);
-    const cur = stream.current() as 'global' | 'pattern' | 'commands' | 'without';
+    const cur = stream.current() as 'global' | 'pattern' | 'commands' | 'without' | 'with' ;
     return words[cur] || 'variable';
   }
 

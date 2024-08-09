@@ -11,7 +11,7 @@
     </q-card-section>
     <q-card-section class="q-gutter-md">
       <q-list bordered>
-        <q-item v-if="canSeeOtherUsersTrees" tag="label" v-ripple>
+        <q-item v-if="canSeeOtherUsersTrees && usersTreesFrom.includes('validated')" tag="label" v-ripple>
           <q-item-section side top>
             <q-checkbox v-model="validated" />
           </q-item-section>
@@ -19,7 +19,7 @@
             <q-item-label>{{ $t('exportSamples.exportValidatedTrees') }}</q-item-label>
           </q-item-section>
         </q-item>
-        <q-item v-if="canSaveTreeInProject" tag="label" v-ripple>
+        <q-item v-if="canSaveTreeInProject && usersTreesFrom.includes(username)" tag="label" v-ripple>
           <q-item-section side top>
             <q-checkbox v-model="user" />
           </q-item-section>
@@ -35,7 +35,11 @@
             <q-item-label>{{ $t('exportSamples.exportRecentTrees') }}</q-item-label>
           </q-item-section>
         </q-item>
-        <q-item v-if="otherUsers.length > 0 && canSeeOtherUsersTrees" tag="label" v-ripple>
+        <q-item 
+          v-if="usersTreesFrom.filter((user) => user !== username && user !== 'validated').length > 0 && canSeeOtherUsersTrees" 
+          tag="label" 
+          v-ripple
+        >
           <q-item-section side top>
             <q-checkbox v-model="other" />
           </q-item-section>
@@ -55,14 +59,14 @@
 </template>
 
 <script lang="ts">
-import { mapState } from 'pinia';
-import { sample_t } from 'src/api/backend-types';
-import { useProjectStore } from 'src/pinia/modules/project';
-import { useUserStore } from 'src/pinia/modules/user';
-import { notifyError, notifyMessage } from 'src/utils/notify';
-import { PropType, defineComponent } from 'vue';
 
 import api from '../../api/backend-api';
+import { sample_t } from 'src/api/backend-types';
+import { mapState } from 'pinia';
+import { useProjectStore } from 'src/pinia/modules/project';
+import { useUserStore } from 'src/pinia/modules/user';
+import { notifyError } from 'src/utils/notify';
+import { PropType, defineComponent } from 'vue';
 
 export default defineComponent({
   name: 'ExportDialog',
@@ -97,6 +101,9 @@ export default defineComponent({
       }
       return otherUsers.filter((user) => user != this.username);
     },
+    usersTreesFrom() {
+      return [...new Set(this.samples.map((sample) => sample.treesFrom).reduce((a: string[], b: string[]) => [...a, ...b], []))];
+    },
     projectName() {
       return this.$route.params.projectname;
     },
@@ -106,7 +113,6 @@ export default defineComponent({
   },
   methods: {
     exportSamplesZip() {
-      const sampleNames: string[] = [];
       let usersToExport: string[] = [];
       if (this.user) {
         usersToExport.push(this.username);
@@ -120,11 +126,7 @@ export default defineComponent({
       if (this.validated) {
         usersToExport.push('validated');
       }
-
-      for (const sample of this.samples) {
-        sampleNames.push(sample.sampleName);
-      }
-      const data = { sampleNames: sampleNames, users: usersToExport };
+      const data = { sampleNames: this.samples.map(sample => sample.sampleName), users: usersToExport };
       api
         .exportSamplesZip(this.projectName as string, data)
         .then((response) => {
@@ -135,7 +137,6 @@ export default defineComponent({
           document.body.appendChild(link);
           link.click();
           document.body.removeChild(link);
-          notifyMessage({ message: 'Files downloaded' });
           return [];
         })
         .catch((error) => {
@@ -146,3 +147,4 @@ export default defineComponent({
   },
 });
 </script>
+

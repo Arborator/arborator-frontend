@@ -14,7 +14,7 @@ export interface UserStateInterface {
   pictureUrl: string | null;
   superAdmin: boolean;
   username: string;
-  reservedUserId: string;
+  reservedUserIds: string[];
 }
 
 // default user state
@@ -35,6 +35,6 @@ export default function defaultState(): UserStateInterface {
     pictureUrl: '',
     superAdmin: false,
     username: '',
-    reservedUserId: 'base_tree',
+    reservedUserIds: ['base_tree', 'validated'],
   };
 }

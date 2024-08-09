@@ -1,7 +1,7 @@
 <template>
   <q-splitter v-model="splitterModel" horizontal :limits="[0, 100]" :style="{ height: `${splitterHeight}px` }" emit-immediately>
     <template v-slot:before>
-      <AdvancedFilter />
+      <AdvancedFilter @trees-saved="getTrees()"  />
     </template>
     <template v-slot:after>
       <div class="custom-frame1">
@@ -100,6 +100,7 @@ export default defineComponent({
   },
   mounted() {
     document.title = `${this.projectname}/${this.samplename}`;
+    this.emptyPendingModification();
     this.getTrees();
     this.calculateHeight();
   },

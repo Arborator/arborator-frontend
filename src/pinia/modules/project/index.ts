@@ -5,6 +5,7 @@ import { notifyError, notifyMessage } from 'src/utils/notify';
 import api from '../../../api/backend-api';
 import { useUserStore } from '../user';
 import defaultState from './defaultState';
+import { error } from 'console';
 
 export const useProjectStore = defineStore('project', {
   state: () => {
@@ -157,8 +158,9 @@ export const useProjectStore = defineStore('project', {
               notifyError({ error });
             });
         })
-        .catch(() => {
+        .catch((error) => {
           this.invalidProjectError = true;
+          notifyError({ error: error });
         });
     },
     

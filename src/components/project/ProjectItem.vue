@@ -22,6 +22,9 @@
       <q-item-label lines="1">
         <q-avatar color="primary" size="1.2rem" text-color="white">
           <img :src="project.ownerAvatarUrl" alt="owner" />
+          <q-tooltip>
+            {{ project.owner }}
+          </q-tooltip>
         </q-avatar>
       </q-item-label>
       <q-item-label caption lines="2">

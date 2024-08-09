@@ -13,6 +13,16 @@
             no-caps
             flat 
             size="md" 
+            label="Projects" 
+            color="primary" 
+            to="/projects" 
+          >
+            <q-tooltip content-class="text-white bg-primary">Projects page</q-tooltip>
+          </q-btn>
+          <q-btn
+            no-caps
+            flat 
+            size="md" 
             label="Documentation" 
             color="primary" 
             href="https://arborator.github.io/arborator-documentation/#/" 
@@ -92,7 +102,6 @@
               </div>
             </q-menu>
           </q-btn>
-          
           <q-select rounded v-model="lang" :options="langOptions" dense outlined options-dense map-options emit-value>
             <q-tooltip> {{ $t('switchLanguage') }} </q-tooltip>
           </q-select>
@@ -118,47 +127,12 @@ export default defineComponent({
   data() {
     return {
       storage: useStorage(),
-      drawerLeft: false,
-      menuList: [
-        {
-          icon: 'house',
-          label: this.$t('navhome'),
-          separator: false,
-          public: true,
-          to: '/#',
-          bottom: false,
-        },
-        {
-          icon: 'library_books',
-          label: this.$t('navprojects'),
-          separator: true,
-          public: true,
-          to: '/projects',
-          bottom: false,
-        },
-        {
-          icon: 'settings',
-          label: this.$t('navsettings'),
-          separator: false,
-          public: false,
-          to: '/settings',
-          bottom: true,
-        },
-        {
-          icon: 'music_note',
-          label: this.$t('navklang'),
-          separator: false,
-          public: true,
-          to: '/klang',
-          bottom: false,
-        },
-      ],
       lang: this.$i18n.locale,
       langOptions: [
         { value: 'en', label: 'EN' },
         { value: 'fr', label: 'FR' },
       ],
-      darkMode: false,
+      darkMode:false,
     };
   },
   computed: {
@@ -193,6 +167,7 @@ export default defineComponent({
       this.$q.dark.set(isActive);
       this.storage.setStorageSync('dm', isActive);
       setThemeModeForDepTrees(isActive ? 'DARK' : 'LIGHT', true);
+      this.darkMode = isActive;
     },
     tologin(url: string) {
       window.location.assign(url);

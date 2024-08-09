@@ -5,7 +5,7 @@
         <TreesTypeSelect :grew-option="'relation_table'" :samples="samples" @selected-value="getSelectedValues"></TreesTypeSelect>
       </div>
       <div class="col">
-        <q-btn no-caps color="primary" :label="$t('relationTable.generateTable')" @click="getRelationTable()" />
+        <q-btn :disable="!isOwner && freezed" no-caps color="primary" :label="$t('relationTable.generateTable')" @click="getRelationTable()" />
       </div>
     </q-card-section>
     <q-card-section>
@@ -128,7 +128,7 @@ export default defineComponent({
     };
   },
   computed: {
-    ...mapState(useProjectStore, ['name']),
+    ...mapState(useProjectStore, ['name', 'freezed', 'isOwner']),
   },
   mounted() {
     setTimeout(() => {

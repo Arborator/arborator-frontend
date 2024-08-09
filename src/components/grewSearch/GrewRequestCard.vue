@@ -58,7 +58,7 @@
       <div class="row q-pa-md">
         <q-btn
           v-if="searchReplaceTab === 'SEARCH'"
-          :disable="disableBtn"
+          :disable="disableBtn || (freezed && !isOwner)"
           color="primary"
           :label="$t('grewSearch.search')"
           no-caps
@@ -68,10 +68,16 @@
           <q-tooltip v-if="disableBtn">
             {{ $t('grewSearch.btnDisabledTooltip') }}
           </q-tooltip>
+          <q-tooltip v-else-if="freezed && !isOwner">
+            The project is freezed
+          </q-tooltip>
         </q-btn>
-        <q-btn v-else :disable="disableBtn" color="primary" :label="$t('grewSearch.tryRules')" no-caps icon="autorenew" @click="tryRules">
+        <q-btn v-else :disable="disableBtn || (freezed && !isOwner)" color="primary" :label="$t('grewSearch.tryRules')" no-caps icon="autorenew" @click="tryRules">
           <q-tooltip v-if="disableBtn">
             {{ $t('grewSearch.btnDisabledTooltip') }}
+          </q-tooltip>
+          <q-tooltip v-else-if="freezed && !isOwner">
+            The project is freezed
           </q-tooltip>
         </q-btn>
       </div>
@@ -87,6 +93,7 @@ import { mapActions, mapState } from 'pinia';
 import { sample_t } from 'src/api/backend-types';
 import { useGrewSearchStore } from 'src/pinia/modules/grewSearch';
 import { useUserStore } from 'src/pinia/modules/user';
+import { useProjectStore } from 'src/pinia/modules/project';
 import { PropType, defineComponent } from 'vue';
 
 import grewTemplates from '../../assets/grew-templates.json';
@@ -127,6 +134,7 @@ export default defineComponent({
   computed: {
     ...mapState(useGrewSearchStore, ['lastQuery', 'canRewriteRule']),
     ...mapState(useUserStore, ['isLoggedIn']),
+    ...mapState(useProjectStore, ['freezed', 'isOwner']),
     disableBtn() {
       return this.data.treeType === 'others' && !this.data.otherUser;
     },

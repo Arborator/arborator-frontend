@@ -197,7 +197,7 @@ export default defineComponent({
       'reloadSamples', 
       'invalidProjectError'
     ]),
-    ...mapWritableState(useProjectStore, ['freezed', 'reloadSamples']),
+    ...mapWritableState(useProjectStore, ['reloadSamples']),
     ...mapState(useGithubStore, ['reloadCommits']),
     ...mapWritableState(useGrewSearchStore, ['grewDialog']),
     projectName(): string {
@@ -228,11 +228,16 @@ export default defineComponent({
       this.syncGithubDial = false;
     },
     getProjectSamples() {
-      api.getProjectSamples(this.projectName).then((response) => {
-        this.samples = response.data;
-        this.sampleNames = this.samples.map(sample => sample.sampleName);
-        this.reloadSamples = false;
-      });
+      api
+        .getProjectSamples(this.projectName)
+        .then((response) => {
+          this.samples = response.data;
+          this.sampleNames = this.samples.map(sample => sample.sampleName);
+          this.reloadSamples = false;
+        })
+        .catch((error) => {
+          notifyError({ error: error });
+        });
     },
     getSelectedSamples(value: any) {
       this.selectedSamples = value;

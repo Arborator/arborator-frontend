@@ -43,7 +43,7 @@
                 text-color="primary"
               >
                 <q-avatar color="primary" text-color="white">
-                  <img :src="scope.opt.avatar" />
+                  <img :src="scope.opt.avatar" alt="avatar" />
                 </q-avatar>
                 {{ scope.opt.username }}
               </q-chip>
@@ -52,7 +52,7 @@
               <q-item v-close-popup v-bind="scope.itemProps">
                 <q-item-section avatar>
                   <q-avatar size="1.2rem">
-                    <img :src="scope.opt.avatar" />
+                    <img :src="scope.opt.avatar" alt="avatar" />
                   </q-avatar>
                 </q-item-section>
                 <q-item-section>
@@ -88,7 +88,7 @@
           <q-item class="item">
             <q-item-section top avatar>
               <q-avatar rounded>
-                <img :src="member.avatar" />
+                <img :src="member.avatar" alt="avatar" />
               </q-avatar>
             </q-item-section>
 

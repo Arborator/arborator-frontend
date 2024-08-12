@@ -1,6 +1,7 @@
 import { route } from 'quasar/wrappers';
 import { useKlangStore } from 'src/pinia/modules/klang';
 import { useProjectStore } from 'src/pinia/modules/project';
+import { cookies } from 'src/boot/vue-cookies';
 import { createMemoryHistory, createRouter, createWebHashHistory, createWebHistory } from 'vue-router';
 
 import routes from './routes';
@@ -18,6 +19,17 @@ export default route(() => {
     scrollBehavior: () => ({ left: 0, top: 0 }),
     routes,
   });
+  
+  Router.beforeEach((to, from, next) => {
+    const session = cookies.get('session');
+    if (to.path === '/' && session !== null) {
+      next('/projects');
+    }
+    else {
+      next();
+    }
+  });
+
   Router.afterEach((to, from) => {
     const configStore = useProjectStore();
     const klangStore = useKlangStore();

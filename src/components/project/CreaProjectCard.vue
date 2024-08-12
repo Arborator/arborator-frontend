@@ -159,7 +159,7 @@
         <q-btn @click="(isShowGithubSyncPanel = true), (progress = 0.8)" :label="$t('github.synchronizeBtn')" color="primary" class="items-center" />
       </q-card-section>
       <q-card-section v-if="canSyncWithGithub">
-        <div class="row justify-center q-gutter-md clickable" v-close-popup>{{ $t('github.skipSync') }}</div>
+        <div class="row justify-center q-gutter-md clickable" @click="goToCreatedProject()">{{ $t('github.skipSync') }}</div>
       </q-card-section>
       <GithubSyncDialog v-if="isShowGithubSyncPanel" :projectName="project.projectName" @created="reloadAfterSync" />
     </q-card>
@@ -170,7 +170,7 @@
 import { mapActions, mapState } from 'pinia';
 import { useProjectStore } from 'src/pinia/modules/project';
 import { useUserStore } from 'src/pinia/modules/user';
-import { notifyError, notifyMessage } from 'src/utils/notify';
+import { notifyError } from 'src/utils/notify';
 import { PropType, defineComponent } from 'vue';
 
 import api from 'src/api/backend-api';
@@ -247,17 +247,23 @@ export default defineComponent({
           if (this.loggedWithGithub && !this.project.blindAnnotationMode) {
             this.progress = 0.4;
             this.isShowSyncBtn = true;
-          } else {
-            this.closeDialog();
+          } 
+          else { 
+            this.goToCreatedProject();
           }
-          notifyMessage({
-            message: `${this.project.projectName} ${this.$t('createProjectCard.createMessage')}`,
-          });
         })
         .catch((error) => {
           notifyError({ error });
           this.submitting = false;
         });
+    },
+    goToCreatedProject() {
+      this.$router.push({
+        name: 'project',
+        params: {
+          projectname: this.project.projectName,
+        },
+      });
     },
     reloadAfterSync() {
       this.progress = 1;
@@ -265,7 +271,6 @@ export default defineComponent({
       this.parentGetProjects();
       this.$emit('created');
     },
-
     closeDialog() {
       this.creatDialog = false;
       this.$emit('created');

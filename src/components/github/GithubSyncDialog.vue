@@ -210,6 +210,12 @@ export default defineComponent({
         .then(() => {
           notifyMessage({ message: `"${this.projectName}" ${this.$t('github.synchronizeMessage')} "${repoName}"` });
           this.loading = false;
+          this.$router.push({
+            name: 'project',
+            params: {
+              projectname: this.projectName,
+            },
+          });
           this.$emit('created');
           clearTimeout(interval);
         })

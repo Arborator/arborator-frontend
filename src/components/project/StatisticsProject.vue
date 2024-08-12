@@ -147,10 +147,14 @@ export default defineComponent({
       lastRead: { lastRead: 0, lastReadUsername: '' },
       lastWrite: { lastWrite: 0, lastWriteUsername: '' },
     };
+    const topUserProgress: number = 0;
+    const topUserProgressLabel: string = '';
     const projectUsedTags: string[] = [];
     return {
       projectStat,
       projectUsedTags,
+      topUserProgress,
+      topUserProgressLabel,
     }
   },
   props: {
@@ -167,14 +171,6 @@ export default defineComponent({
     this.getStatistics();
     this.getProjectTags();
   },
-  computed: {
-    topUserProgress() {
-      return this.projectStat.topUser.treesNumber / this.projectStat.treesNumber;
-    },
-    topUserProgressLabel() {
-      return (this.projectStat.topUser.treesNumber / this.projectStat.treesNumber * 100).toFixed(2) + '%';
-    }
-  },
   methods: {
     timeAgo(secsAgo: number) {
       return timeAgo(secsAgo);
@@ -184,6 +180,8 @@ export default defineComponent({
         .getStats(this.projectName)
         .then((response) => {
           this.projectStat = { ...response.data };
+          this.topUserProgress = this.projectStat.topUser.treesNumber / this.projectStat.treesNumber;
+          this.topUserProgressLabel =  `${(this.projectStat.topUser.treesNumber / this.projectStat.treesNumber * 100).toFixed(2)} %`;
         })
         .catch((error) => {
           notifyError({ error: `Error while loading project statistics ${error}` });

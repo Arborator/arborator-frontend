@@ -5,7 +5,6 @@ import { notifyError, notifyMessage } from 'src/utils/notify';
 import api from '../../../api/backend-api';
 import { useUserStore } from '../user';
 import defaultState from './defaultState';
-import { error } from 'console';
 
 export const useProjectStore = defineStore('project', {
   state: () => {
@@ -43,7 +42,7 @@ export const useProjectStore = defineStore('project', {
       if (this.isGuest) {
         return false;
       }
-      if (!this.collaborativeMode) {
+      if (!this.collaborativeMode && !this.isValidator) {
         return false;
       }
       if (this.isValidator && this.blindAnnotationMode) {

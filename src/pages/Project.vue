@@ -10,7 +10,7 @@
                 <span>
                   <ProjectVisibility :visibility="visibility" :blindAnnotationMode="blindAnnotationMode"></ProjectVisibility>
                 </span>
-                <span v-if="syncGithubRepo">
+                <span v-if="syncGithubRepo && !blindAnnotationMode">
                   <q-chip outline color="secondary" size="sm">Synchronized with {{ syncGithubRepo }}</q-chip>
                 </span>
               </div>

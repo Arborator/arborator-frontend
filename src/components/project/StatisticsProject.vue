@@ -180,8 +180,10 @@ export default defineComponent({
         .getStats(this.projectName)
         .then((response) => {
           this.projectStat = { ...response.data };
-          this.topUserProgress = this.projectStat.topUser.treesNumber / this.projectStat.treesNumber;
-          this.topUserProgressLabel =  `${(this.projectStat.topUser.treesNumber / this.projectStat.treesNumber * 100).toFixed(2)} %`;
+          if (this.projectStat.topUser) {
+            this.topUserProgress = this.projectStat.topUser.treesNumber / this.projectStat.treesNumber;
+            this.topUserProgressLabel =  `${(this.projectStat.topUser.treesNumber / this.projectStat.treesNumber * 100).toFixed(2)} %`;
+          }
         })
         .catch((error) => {
           notifyError({ error: `Error while loading project statistics ${error}` });

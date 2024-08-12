@@ -36,7 +36,7 @@
             size="md" 
             label="Discussion"
             color="primary"
-            ref="https://github.com/Arborator/arborator-frontend/issues" 
+            href="https://github.com/Arborator/arborator-frontend/issues" 
             target="_blank"
           >
             <q-tooltip content-class="text-white bg-primary">{{ $t('feedback') }}</q-tooltip>

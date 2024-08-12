@@ -112,8 +112,8 @@ export default {
     myOldProjects: 'My Project Purgatory',
     otherProjects: 'Other Projects',
     otherOldProjects: 'The Project Purgatory',
-    lastAccess: 'last access',
-    lastWriteAccess: 'last modification',
+    lastAccess: 'Last access',
+    lastWriteAccess: 'Last modification',
   },
   renameProject: {
     title: 'Rename the project',

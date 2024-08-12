@@ -14,7 +14,7 @@
         {{ project.owner }}
       </q-item-label>
       <q-item-label caption lines="3">
-        {{ $t('projectHub.lastAccess') }} {{ timeAgo(project.lastAccess) }}.{{ $t('projectHub.lastWriteAccess') }}
+        {{ $t('projectHub.lastAccess') }} {{ timeAgo(project.lastAccess) }} | {{ $t('projectHub.lastWriteAccess') }}
         {{ timeAgo(project.lastWriteAccess) }}
       </q-item-label>
     </q-item-section>

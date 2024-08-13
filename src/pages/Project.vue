@@ -6,7 +6,7 @@
           <div class="row q-pa-md justify-between flex flex-center">
             <div class="col-4 justify-center">
               <div class="text-h5 text-weight-bold">
-                {{ $t('projectView.project') }} {{ name }}
+                {{ $t('projectView.project') }} "{{ name }}"
                 <span>
                   <ProjectVisibility :visibility="visibility" :blindAnnotationMode="blindAnnotationMode"></ProjectVisibility>
                 </span>
@@ -80,7 +80,7 @@
             <q-tab-panel class="q-gutter-md" name="samples">
               <ProjectOptions
                 :selected-samples="selectedSamples"
-                :canDeleteFromGithub="isAllowdedToSync && syncGithubRepo !== ''"
+                :canDeleteFromGithub="isAllowdedToSync && syncGithubRepo !== undefined"
                 @unselect="unselectSamples = true"
                 @reload="loadProjectData"
               ></ProjectOptions>

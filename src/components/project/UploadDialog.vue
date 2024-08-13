@@ -51,7 +51,7 @@
           </q-tab-panel>
         </q-tab-panels>
         <q-separator />
-        <div class="q-px-md">
+        <div v-if="collaborativeMode" class="q-px-md">
           <div class="text-h6">
             {{ $t('uploadSample.userIdConfig') }}
           </div>
@@ -97,19 +97,19 @@
               </q-item-section>
             </q-item>
           </q-list>
+          <q-input
+            v-if="userId === 'other'"
+            class="col"
+            outlined
+            v-model="customUserId"
+            :label="$t('uploadSample.customUsername')"
+            :rules="[
+              (val) => !reservedUserIds.includes(val.toLowerCase()) || `${val} ` + $t('uploadSample.reservedUsernameError'),
+              (val) => (val && val.length > 0) || $t('uploadSample.emptyUsernameError'),
+            ]"
+          />
+          <q-separator />
         </div>
-        <q-input
-          v-if="userId === 'other'"
-          class="col"
-          outlined
-          v-model="customUserId"
-          :label="$t('uploadSample.customUsername')"
-          :rules="[
-            (val) => !reservedUserIds.includes(val.toLowerCase()) || `${val} ` + $t('uploadSample.reservedUsernameError'),
-            (val) => (val && val.length > 0) || $t('uploadSample.emptyUsernameError'),
-          ]"
-        />
-        <q-separator />
         <q-item>
           <q-item-section side top>
             <q-checkbox v-model="rtl" />
@@ -340,7 +340,6 @@ export default defineComponent({
         });
     },
     tokenizeSample() {
-      if (!this.collaborativeMode) this.customUserId = 'validated';
       const data = {
         username: this.selectedUserId(),
         text: this.text.normalize('NFC'),
@@ -361,14 +360,17 @@ export default defineComponent({
         });
     },
     selectedUserId() {
-      if (this.userId === 'username') {
-         return this.username;
+      if (!this.collaborativeMode) {
+        return 'validated';
+      }
+      else if (this.userId === 'username') {
+        return this.username;
       }
       else if (this.userId === 'other')  {
         return this.customUserId;
       }
       else {
-         return this.userId;
+        return this.userId;
       }
     },
     closeDialog() {

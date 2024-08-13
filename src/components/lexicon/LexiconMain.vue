@@ -1,5 +1,5 @@
 <template>
-  <q-card style="height: 80vh" bordered flat>
+  <q-card style="min-height: 80vh" bordered flat>
     <q-card-section>
       <div class="text-h6 q-mb-md">{{ $t('lexicon.lexiconTitle') }}</div>
       <div class="row q-gutter-md">

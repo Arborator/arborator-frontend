@@ -69,7 +69,7 @@
               </q-item>
             </q-list>
           </q-btn-dropdown>
-          <q-btn v-else outline color="primary">
+          <q-btn v-else rounded outline color="primary">
             <q-icon :name="loggedWithGithub ? 'fab fa-github' : 'fab fa-google'" class="q-mr-md" />
             <q-tooltip> {{ $t('userInformation') }} {{ loggedWithGithub ? ' Github' : 'Gmail' }} </q-tooltip>
             <q-icon v-if="pictureUrl === ''" name="account_circle" />

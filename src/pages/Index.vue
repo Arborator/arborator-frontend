@@ -136,7 +136,7 @@
               {{ $t('homepage.toolsCard.title') }}
             </div>
           </q-card-section>
-          <q-card-section class="row q-gutter-x-md justify-center">
+          <q-card-section class="row q-gutter-md justify-center">
             <q-card 
               bordered 
               :class="hoverDraft ? 'shadow-12' : ''" 

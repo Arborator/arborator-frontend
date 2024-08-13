@@ -80,7 +80,7 @@
             <q-tab-panel class="q-gutter-md" name="samples">
               <ProjectOptions
                 :selected-samples="selectedSamples"
-                :canDeleteFromGithub="isAllowdedToSync && syncGithubRepo === ''"
+                :canDeleteFromGithub="isAllowdedToSync && syncGithubRepo !== ''"
                 @unselect="unselectSamples = true"
                 @reload="loadProjectData"
               ></ProjectOptions>

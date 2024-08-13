@@ -94,7 +94,7 @@ export default defineComponent({
       { value: 'base_tree', label: this.$t('grewSearch.baseTree'), icon: 'linear_scale' },
       { value: 'others', label: this.$t('grewSearch.otherTree'), icon: 'group' },
     ];
-    const treeType = treeTypes[0];
+    const treeType = this.collaborativeMode ?  treeTypes[0] : treeTypes[2];
     const selectedSamples: sample_t[] = [];
     return {
       selectedSamples,
@@ -127,8 +127,9 @@ export default defineComponent({
     },
   },
   mounted() {
-    if (!this.collaborativeMode) this.treeType = this.treeTypes.filter((option) => option.value === 'validated')[0];
-    this.treeType = this.lastQuery !== null ? this.treeTypes.filter((option) => option.value === this.lastQuery?.userType)[0] : this.treeTypes[0];
+    if (this.collaborativeMode) {
+      this.treeType = this.lastQuery !== null ? this.treeTypes.filter((option) => option.value === this.lastQuery?.userType)[0] : this.treeTypes[0];
+    }
   },
   methods: {
     emitSelectedValues() {

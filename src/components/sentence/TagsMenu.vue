@@ -180,7 +180,6 @@ export default defineComponent({
       api
         .deleteUserTag(this.name, this.username, tag)
         .then(() => {
-          notifyMessage({ message: `${tag} is successfully removed` });
           this.userTags.splice(this.userTags.map(tag => tag.value).indexOf(tag), 1)
           this.filterTags('', () => {})
         })

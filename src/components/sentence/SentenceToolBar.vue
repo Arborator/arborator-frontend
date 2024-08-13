@@ -50,7 +50,7 @@
         <q-tooltip>Save as Emmett</q-tooltip>
       </q-btn>
 
-      <q-btn v-if="canSaveTreeInProject" flat round dense icon="save" :disable="openTabUser === ''" @click="saveTree('')">
+      <q-btn v-if="canSaveTreeInProject && collaborativeMode" flat round dense icon="save" :disable="openTabUser === ''" @click="saveTree('')">
         <q-tooltip>
           {{ $t('sentenceCard.saveTree[0]') }} {{ openTabUser }} {{ $t('sentenceCard.saveTree[1]') }}
           <b> {{ username }} </b>
@@ -179,6 +179,7 @@
       :sentence-bus="sentenceBus"
       :reactive-sentences-obj="reactiveSentencesObj"
       :user-id="openTabUser"
+      :sample-name="(sentenceData.sample_name as string)"
       @closed="showSentSegmentationDial = false"
     />
   </template>
@@ -256,6 +257,7 @@ export default defineComponent({
       'canSaveTreeInProject', 
       'diffMode',
       'diffUserId',
+      'collaborativeMode'
     ]),
     ...mapState(useUserStore, ['username', 'isLoggedIn']),
     isBernardCaron() {

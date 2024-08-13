@@ -273,6 +273,9 @@ export default defineComponent({
       this.canUndo = event.canUndo;
       this.canRedo = event.canRedo;
     },
+    removeSentenceTag(tag: string) {
+      this.removeTag(this.sentenceData, tag, this.sentenceBus, this.openTabUser);
+    },
     save(mode: string) {
       const openedTreeUser = this.openTabUser;
       let changedConllUser = this.username;

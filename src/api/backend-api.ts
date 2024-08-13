@@ -41,16 +41,6 @@ export const API = axios.create({
 
 export default {
   // -------------------------------------------------- //
-  // ---------------        AUTH       ---------------- //
-  // -------------------------------------------------- //
-  auth(provider: string) {
-    return API.get(provider);
-  },
-  logout() {
-    return API.get<logout_RV>('/logout');
-  },
-
-  // -------------------------------------------------- //
   // ---------------        User       --------------- //
   // -------------------------------------------------- //
 
@@ -62,6 +52,9 @@ export default {
   },
   updateUser(data: updateUser_ED) {
     return API.put<whoIAm_RV>('users/me', data);
+  },
+  logout() {
+    return API.get('users/logout');
   },
 
   // ---------------------------------------------------- //

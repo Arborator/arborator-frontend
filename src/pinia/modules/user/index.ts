@@ -60,8 +60,7 @@ export const useUserStore = defineStore('user', {
         console.log(`logging out user: ${this.username}`);
         api
           .logout()
-          .then((response) => {
-            console.log(response);
+          .then(() => {
             this.loginSuccess = false;
             this.$patch(defaultState());
           })

@@ -136,7 +136,7 @@ export default defineComponent({
     };
   },
   computed: {
-    ...mapState(useMainStore, ['isProjectAdmin', 'source']),
+    ...mapState(useMainStore, ['source']),
     ...mapState(useUserStore, [ 'pictureUrl', 'avatarKey', 'isLoggedIn', 'loggedWithGithub', 'superAdmin', 'username']),
     notHome() {
       return this.$route.fullPath !== '/';

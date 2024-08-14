@@ -55,6 +55,8 @@ export function notifyError(ArboratorGrewError: ArboratorGrewError_t) {
     if (error.response) {
       if (error.response.status === 403) {
         msg = error.response.data ? error.response.data.message : i18n.global.t('error403');
+      } else if (error.response.status === 404) {
+        msg = error.response.data ? error.response.data.message.split('.')[0] : i18n.global.t('error404');
       } else if (error.response.status === 401) {
         msg = error.response.data ? error.response.data.message : i18n.global.t('error401');
       } else if (error.response.status === 406) {
@@ -63,7 +65,6 @@ export function notifyError(ArboratorGrewError: ArboratorGrewError_t) {
       } else if (error.response.status === 415) {
         msg = error.response.data ? error.response.data.message : i18n.global.t('error415');
       } else {
-        console.log(error.response)
         msg = error.response.data ? error.response.data.message : `${error.response.statusText} error ${error.response.status}`;
       }
     }

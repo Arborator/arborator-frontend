@@ -1,6 +1,6 @@
 <template>
   <div class="row q-pa-md q-gutter-x-md">
-    <div class="col-6">
+    <div class="col-5">
       <q-input 
         v-model="textFilter" 
         :label="$t('advancedFilter.textFilter')" 
@@ -10,7 +10,7 @@
         @keyup.enter="applyAdvancedFilter()"
       ></q-input>
     </div>
-    <div class="col-3 q-px-md q-gutter-md">
+    <div class="col-1 q-px-md q-gutter-md">
       <q-select
         outlined
         dense
@@ -30,6 +30,16 @@
           <q-separator />
         </template>
       </q-select>
+    </div>
+    <div class="col-2 q-px-md q-gutter-md">
+      <q-select
+        outlined
+        dense
+        v-model="order"
+        :options="orderOptions"
+        label="Order sentences"
+        @update:model-value="orderFilteredTrees(order)"
+       />
     </div>
     <q-btn @click="applyAdvancedFilter" color="primary">{{ $t('advancedFilter.applyFilter') }}</q-btn>
     <q-separator vertical />
@@ -140,6 +150,8 @@ export default defineComponent({
       filterChoices,
       filterOperators,
       listFilters,
+      order: 'initial',
+      orderOptions: ['initial', 'ascending', 'descending'],
     };
   },
   computed: {
@@ -162,7 +174,7 @@ export default defineComponent({
     this.clearAll();
   },
   methods: {
-    ...mapActions(useTreesStore, ['applyFilterTrees', 'getUsersTags']),
+    ...mapActions(useTreesStore, ['applyFilterTrees', 'getUsersTags', 'orderFilteredTrees']),
     ...mapActions(useGrewSearchStore, ['emptyPendingModification']),
     applyAdvancedFilter() {
       this.initializeFilters();

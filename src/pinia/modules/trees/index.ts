@@ -79,6 +79,17 @@ export const useTreesStore = defineStore('trees', {
         useTagsStore().getUserTags(username as string);
       }
     },
+    orderFilteredTrees(order: string) {
+      if (order === 'descending') {
+        this.filteredTrees = this.filteredTrees.sort((a, b) => b.sentence.length - a.sentence.length)
+      }
+      else if (order === 'ascending') {
+        this.filteredTrees = this.filteredTrees.sort((a, b) => a.sentence.length - b.sentence.length)
+      }
+      else {
+        this.applyFilterTrees();
+      }
+    },
     applyFilterTrees() {
       this.filteredTrees = this.sortedSentIds.map(
         (sentId) => Object.values(this.trees).find((tree) => tree.sent_id == sentId) as grewSearchResultSentence_t

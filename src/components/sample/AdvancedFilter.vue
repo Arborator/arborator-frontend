@@ -115,7 +115,6 @@ import { mapActions, mapState, mapWritableState } from 'pinia';
 import { useProjectStore } from 'src/pinia/modules/project';
 import { useTagsStore } from 'src/pinia/modules/tags';
 import { useTreesStore } from 'src/pinia/modules/trees';
-import { useGrewSearchStore } from 'src/pinia/modules/grewSearch';
 import { notifyError, notifyMessage } from 'src/utils/notify';
 
 import { defineComponent } from 'vue';
@@ -167,15 +166,14 @@ export default defineComponent({
       'featuresSetForDiffs',
       'featuresSetForNotDiffs',
       'selectedTags',
+      'pendingModifications'
     ]),
-    ...mapState(useGrewSearchStore, ['pendingModifications']),
   },
   mounted() {
     this.clearAll();
   },
   methods: {
-    ...mapActions(useTreesStore, ['applyFilterTrees', 'getUsersTags', 'orderFilteredTrees']),
-    ...mapActions(useGrewSearchStore, ['emptyPendingModification']),
+    ...mapActions(useTreesStore, ['applyFilterTrees', 'getUsersTags', 'orderFilteredTrees', 'emptyPendingModification']),
     applyAdvancedFilter() {
       this.initializeFilters();
       for (const filter of this.listFilters) {

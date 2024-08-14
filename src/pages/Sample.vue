@@ -37,9 +37,8 @@
 
 <script lang="ts">
 import { mapActions, mapState, mapWritableState } from 'pinia';
-import { LocalStorage, QVirtualScroll } from 'quasar';
+import { QVirtualScroll } from 'quasar';
 import AdvancedFilter from 'src/components/sample/AdvancedFilter.vue';
-import { useGrewSearchStore } from 'src/pinia/modules/grewSearch';
 import { useTreesStore } from 'src/pinia/modules/trees';
 import { PropType, defineComponent } from 'vue';
 
@@ -86,8 +85,15 @@ export default defineComponent({
     };
   },
   computed: {
-    ...mapState(useGrewSearchStore, ['pendingModifications']),
-    ...mapState(useTreesStore, ['trees', 'filteredTrees', 'loading', 'numberOfTrees', 'userIds', 'blindAnnotationLevel']),
+    ...mapState(useTreesStore, [
+      'trees', 
+      'filteredTrees', 
+      'loading', 
+      'numberOfTrees', 
+      'userIds', 
+      'blindAnnotationLevel',
+      'pendingModifications'
+    ]),
     ...mapWritableState(useTreesStore, ['reloadTrees']),
   },
   created() {
@@ -108,7 +114,7 @@ export default defineComponent({
     window.removeEventListener('resize', this.calculateHeight);
   },
   methods: {
-    ...mapActions(useGrewSearchStore, ['emptyPendingModification']),
+    ...mapActions(useTreesStore, ['emptyPendingModification']),
     ...mapActions(useTreesStore, ['getSampleTrees', 'applyFilterTrees', 'getUsersTags']),
     getTrees() {
       this.getSampleTrees({ projectName: this.projectname, sampleName: this.samplename }).then(() => {

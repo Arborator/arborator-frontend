@@ -133,6 +133,7 @@ import { useProjectStore } from 'src/pinia/modules/project';
 import { useTagsStore } from 'src/pinia/modules/tags';
 import { useUserStore } from 'src/pinia/modules/user';
 import { useGithubStore } from 'src/pinia/modules/github';
+import { useTreesStore } from 'src/pinia/modules/trees';
 import { grewSearchResultSentence_t, matches_t } from 'src/api/backend-types';
 import { reactive_sentences_obj_t, sentence_bus_events_t, sentence_bus_t } from 'src/types/main_types';
 import { notifyError, notifyMessage } from 'src/utils/notify';
@@ -151,7 +152,7 @@ import VueDepTree from './VueDepTree.vue';
 import XposDialog from './XposDialog.vue';
 import RelationDialog from './RelationDialog.vue';
 import SentenceToolBar from './SentenceToolBar.vue';
-import { useGrewSearchStore } from 'src/pinia/modules/grewSearch';
+
 
 function sentenceBusFactory(): sentence_bus_t {
   let sentenceBus: Emitter<sentence_bus_events_t> = mitt<sentence_bus_events_t>();
@@ -268,7 +269,7 @@ export default defineComponent({
   },
   methods: {
     ...mapActions(useTagsStore, ['removeTag']),
-    ...mapActions(useGrewSearchStore, ['removePendingModification']),
+    ...mapActions(useTreesStore, ['removePendingModification']),
     handleStatusChange(event: { canUndo: boolean; canRedo: boolean }) {
       this.canUndo = event.canUndo;
       this.canRedo = event.canRedo;

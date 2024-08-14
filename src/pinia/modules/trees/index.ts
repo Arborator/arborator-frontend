@@ -23,6 +23,7 @@ export const useTreesStore = defineStore('trees', {
       featuresSetForNotDiffs: [] as string[],
       selectedTags: [] as string[],
       reloadTrees: false as boolean,
+      pendingModifications: new Map(), 
     };
   },
   getters: {
@@ -48,6 +49,15 @@ export const useTreesStore = defineStore('trees', {
     },
   },
   actions: {
+    addPendingModification(sentId: string, conll: string) {
+      this.pendingModifications.set(sentId, conll);
+    },
+    removePendingModification(pendingModification: any) {
+      this.pendingModifications.delete(pendingModification);
+    },
+    emptyPendingModification() {
+      this.pendingModifications.clear();
+    },
     getSampleTrees({ projectName, sampleName }: { projectName: string; sampleName: string }) {
       return new Promise((resolve, reject) => {
         this.loading = true;

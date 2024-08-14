@@ -7,7 +7,6 @@ export const useGrewSearchStore = defineStore('grewSearch', {
     return {
       grewDialog: false,
       lastQuery: null as null | { text: string; type: 'REWRITE' | 'SEARCH'; userType: string },
-      pendingModifications: new Map(), // set of sentence ids
       treeTypes: ['user', 'user_recent', 'recent', 'validated', 'pending', 'base_tree', 'all', 'others'],
     };
   },
@@ -43,15 +42,6 @@ export const useGrewSearchStore = defineStore('grewSearch', {
     },
     changeLastGrewQuery(query: null | { text: string; type: 'REWRITE' | 'SEARCH'; userType: string }) {
       this.lastQuery = query;
-    },
-    addPendingModification(sentId: string, conll: string) {
-      this.pendingModifications.set(sentId, conll);
-    },
-    removePendingModification(pendingModification: any) {
-      this.pendingModifications.delete(pendingModification);
-    },
-    emptyPendingModification() {
-      this.pendingModifications.clear();
     },
   },
 });

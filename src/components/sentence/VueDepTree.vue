@@ -13,7 +13,7 @@ import { SentenceCaretaker, ReactiveSentence } from 'dependencytreejs/src/Reacti
 import { reactive_sentences_obj_t, sentence_bus_events_t, sentence_bus_t } from 'src/types/main_types';
 import { mapState, mapActions } from 'pinia';
 import { useProjectStore } from 'src/pinia/modules/project';
-import { useGrewSearchStore } from 'src/pinia/modules/grewSearch'
+import { useTreesStore } from 'src/pinia/modules/trees';
 import { useUserStore } from 'src/pinia/modules/user';
 import { emptyTokenJson, tokenJson_T } from 'conllup/lib/conll';
 import { notifyMessage } from 'src/utils/notify';
@@ -92,7 +92,7 @@ export default defineComponent({
   computed: {
     ...mapState(useProjectStore, ['diffUserId', 'shownFeatures', 'isStudent']),
     ...mapState(useUserStore, ['username', 'isLoggedIn']),
-    ...mapState(useGrewSearchStore, ['pendingModifications']),
+    ...mapState(useTreesStore, ['pendingModifications']),
   },
   watch: {
     diffMode() {
@@ -214,7 +214,7 @@ export default defineComponent({
     this.statusChangeHandler();
   },
   methods: {
-    ...mapActions(useGrewSearchStore, ['addPendingModification', 'removePendingModification']),
+    ...mapActions(useTreesStore, ['addPendingModification', 'removePendingModification']),
     svgClickHandler(e: svgClickEvent_t) {
       const clickedId = e.detail.clicked;
       const clickedToken = { ...this.sentenceSVG.treeJson.nodesJson[clickedId] };

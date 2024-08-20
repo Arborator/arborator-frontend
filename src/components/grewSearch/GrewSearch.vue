@@ -1,7 +1,14 @@
 <template>
-  <GrewRequestCard :parentOnSearch="onSearch" :parentOnTryRules="onTryRules" :samples="samples"></GrewRequestCard>
+  <GrewRequestCard :parentOnSearch="onSearch" :parentOnTryRules="onTryRules" :samples="samples" />
   <q-dialog v-model="resultSearchDialog" maximized transition-show="fade" transition-hide="fade">
-    <ResultView :searchResults="resultSearch" :query-type="queryType" :query="query" :userType="userType"></ResultView>
+    <ResultView 
+      :searchResults="resultSearch" 
+      :query-type="queryType" 
+      :query="query" 
+      :userType="userType" 
+      @reload-results="reloadResults" 
+      @closed="resultSearchDialog = false"
+      />
   </q-dialog>
 </template>
 
@@ -56,10 +63,6 @@ export default defineComponent({
   },
   methods: {
     ...mapActions(useGrewHistoryStore, ['saveHistory']),
-    onShowTable(resultSearchDialog: any) {
-      this.resultSearchDialog = resultSearchDialog;
-      if (this.queryType == 'REWRITE') this.$emit('reload');
-    },
     onSearch(searchPattern: string, treeType: string, otherUser: string, selectedSamples: string[]) {
       const data = { pattern: searchPattern, userType: treeType, sampleIds: selectedSamples, otherUser: otherUser };
       this.queryType = 'SEARCH';
@@ -91,6 +94,9 @@ export default defineComponent({
             error: error.response.data.message,
           });
         });
+    },
+    reloadResults() {
+     
     },
     saveSearchRequest(query: string) {
       const historyRecord = {

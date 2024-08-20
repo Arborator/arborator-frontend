@@ -5,10 +5,11 @@
       <q-space />
       <div class="text-weight-bold">{{ sentenceCount }} <span v-if="sentenceCount === 1">result</span><span v-else>results</span></div>
       <q-space />
-      <q-btn v-close-popup flat dense icon="close" />
+      <q-btn flat dense icon="close" @click="closeDial()" />
     </q-bar>
-    <div v-if="showFilterResults" class="q-pa-md custom-frame1">
+    <div class="q-pa-md row q-gutter-md custom-frame1">
       <q-select
+        class="col-9"
         outlined
         dense
         v-model="selectedSample"
@@ -33,6 +34,11 @@
           </q-item>
         </template>
       </q-select>
+      <q-btn class="col-2" outline :disable="pendingModifications.size === 0" color="primary" label="Save pending trees" @click="saveAllTrees()">
+        <q-badge v-if="pendingModifications.size > 0" color="red" floating>
+          {{ pendingModifications.size }}
+        </q-badge>
+      </q-btn>
     </div>
     <div>
       <template v-if="samplesFrozen.list.length > 0">
@@ -88,7 +94,8 @@ import { useGrewHistoryStore } from 'src/pinia/modules/grewHistory';
 import { useGrewSearchStore } from 'src/pinia/modules/grewSearch';
 import { useProjectStore } from 'src/pinia/modules/project';
 import { useUserStore } from 'src/pinia/modules/user';
-import { notifyMessage } from 'src/utils/notify';
+import { useTreesStore } from 'src/pinia/modules/trees';
+import { notifyMessage, notifyError } from 'src/utils/notify';
 import { PropType, defineComponent } from 'vue';
 
 import api from '../../api/backend-api';
@@ -116,7 +123,7 @@ export default defineComponent({
   },
 
   data() {
-    const searchresultsCopy: grewSearchResult_t = {};
+    const searchResultsCopy: grewSearchResult_t = {};
     const samples: sample_t[] = [];
     const samplesFrozen: {
       list: string[][];
@@ -126,7 +133,7 @@ export default defineComponent({
     } = { list: [], indexes: {}, samples: [], selected: {} };
     const filteredSamples: string[] = [];
     return {
-      searchresultsCopy,
+      searchResultsCopy,
       samplesFrozen,
       filteredSamples,
       loading: false,
@@ -138,9 +145,10 @@ export default defineComponent({
     };
   },
   computed: {
-    ...mapState(useProjectStore, ['canSaveTreeInProject', 'isValidator']),
+    ...mapState(useProjectStore, ['name', 'canSaveTreeInProject', 'isValidator']),
     ...mapState(useGrewSearchStore, ['canRewriteRule']),
     ...mapState(useUserStore, ['username']),
+    ...mapState(useTreesStore, ['pendingModifications']),
     ...mapWritableState(useGithubStore, ['reloadCommits']),
     projectName(): string {
       return this.$route.params.projectname as string;
@@ -152,9 +160,6 @@ export default defineComponent({
     },
     atLeastOneSelected() {
       return Object.values(this.samplesFrozen.selected).some((index) => index);
-    },
-    showFilterResults() {
-      return this.samplesFrozen.list.length > 0 && !this.$route.params.samplename;
     },
     samplesNames() {
       return Object.keys(this.searchResults);
@@ -181,19 +186,20 @@ export default defineComponent({
   },
   methods: {
     ...mapActions(useGrewHistoryStore, ['saveHistory']),
+    ...mapActions(useTreesStore, ['emptyPendingModification']),
     freezeSamples() {
       const listIds = []; // list: [["WAZA_10_Bluetooth-Lifestory_MG","WAZA_10_Bluetooth-Lifestory_MG__86"],["WAZA_10_Bluetooth-Lifestory_MG","WAZA_10_Bluetooth-Lifestory_MG__79"], ...
       let index = 0;
       const index2Ids: { [key: number]: string[] } = {}; // object: {"0":["WAZA_10_Bluetooth-Lifestory_MG","WAZA_10_Bluetooth-Lifestory_MG__86"],"1":["WAZA_10_Bluetooth-Lifestory_MG","WAZA_10_Bluetooth-Lifestory_MG__79"], ...
       const selectedIndex: { [key: number]: boolean } = {};
-      this.searchresultsCopy = this.searchResults;
+      this.searchResultsCopy = this.searchResults;
       // this is sent to the sentenceCard: searchresults[item[0]][item[1]], items from this.samplesFrozen.list
       for (const sampleId of Object.keys(this.searchResults).sort()) {
         for (const sentId in this.searchResults[sampleId]) {
           listIds.push([sampleId, sentId]);
           index2Ids[index] = [sampleId, sentId];
           selectedIndex[index] = false;
-          this.searchresultsCopy[sampleId][sentId].sample_name = sampleId;
+          this.searchResultsCopy[sampleId][sentId].sample_name = sampleId;
           index += 1;
         }
       }
@@ -228,11 +234,12 @@ export default defineComponent({
     applyRules() {
       this.preprocessResults();
       if (this.toSaveCounter >= 1) {
-        const datasample = { data: this.searchresultsCopy };
-        api.applyRule(this.$route.params.projectname as string, datasample).then(() => {
+        const datasample = { data: this.searchResultsCopy };
+        api.applyRule(this.projectName, datasample).then(() => {
           this.reloadCommits += 1;
           this.saveAppliedRule();
           notifyMessage({ message: `Rule applied (user "${this.username}" rewrote and saved "${this.toSaveCounter}" at once)` });
+          this.$emit('closed');
         });
       } else {
         notifyMessage({
@@ -244,7 +251,7 @@ export default defineComponent({
 
     preprocessResults() {
       let selectedResults = this.getSelectedResults();
-      this.searchresultsCopy = selectedResults;
+      this.searchResultsCopy = selectedResults;
       for (const sample in selectedResults) {
         for (const sentId in selectedResults[sample]) {
           if (!this.isValidator || this.userType !== 'validated') {
@@ -257,11 +264,11 @@ export default defineComponent({
             const sentenceJson = sentenceConllToJson(toSaveConll);
             sentenceJson.metaJson.user_id = this.username;
             sentenceJson.metaJson.timestamp = Math.round(Date.now());
-            this.searchresultsCopy[sample][sentId].conlls[this.username] = sentenceJsonToConll(sentenceJson);
+            this.searchResultsCopy[sample][sentId].conlls[this.username] = sentenceJsonToConll(sentenceJson);
           }
-          for (const userId in this.searchresultsCopy[sample][sentId].conlls) {
+          for (const userId in this.searchResultsCopy[sample][sentId].conlls) {
             if (!this.isValidator || this.userType !== 'validated') {
-              if (userId !== this.username) delete this.searchresultsCopy[sample][sentId].conlls[userId];
+              if (userId !== this.username) delete this.searchResultsCopy[sample][sentId].conlls[userId];
             }
           }
           this.toSaveCounter += 1;
@@ -290,6 +297,56 @@ export default defineComponent({
       };
       this.saveHistory(historyRecord);
     },
+
+    saveAllTrees() {
+      const groupedConlls = [...this.pendingModifications.values()].reduce((groupedConlls, sentence) => {
+        const group = (groupedConlls[sentence.sampleName] || []);
+        group.push(sentence.conll)
+        groupedConlls[sentence.sampleName] = group
+        return groupedConlls;
+      }, {});
+      for (const [sampleName, conlls] of Object.entries(groupedConlls)) {
+        const data = { conllGraph: (conlls as string[]).join('\n\n') };
+        api
+          .saveAllTrees(this.name, sampleName, data)
+          .then(() => {
+            notifyMessage({ position: 'top', message: 'Saved on the server', icon: 'save' });
+            this.emptyPendingModification();
+            this.$emit('reload-results');
+          })
+          .catch((error) => {
+            notifyError({ error: `Error happened while saving trees ${error}` });
+          });
+      }
+    },
+
+    closeDial() {
+      if (this.pendingModifications.size > 0) {
+        this.$q.notify({
+        message: `You have ${this.pendingModifications.size} changes non saved, don't forget to save them!`,
+        position: 'top',
+        color: 'warning',
+        timeout: 5000,
+        closeBtn: 'X',
+        actions: [
+          {
+            label: 'Save All',
+            handler: () => {
+              this.saveAllTrees();
+              this.$emit('closed')
+            },
+          },
+          {
+            label: 'Dismiss',
+            handler: () => {
+              this.emptyPendingModification();
+              this.$emit('closed');
+            },
+          },
+        ],
+      });
+      }
+    }
   },
 });
 </script>

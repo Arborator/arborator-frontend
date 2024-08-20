@@ -230,7 +230,6 @@ export default defineComponent({
         .then(() => {
           notifyMessage({ position: 'top', message: 'Saved on the server', icon: 'save' });
           this.emptyPendingModification();
-          console.log(this.pendingModifications.size)
           this.$emit('trees-saved');
         })
         .catch((error) => {

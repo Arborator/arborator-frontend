@@ -76,6 +76,10 @@ export default defineComponent({
     interactive: {
       type: Boolean as PropType<boolean>,
       default: true,
+    },
+    sampleName: {
+      type: String as PropType<string>,
+      default: '',
     }
   },
   data() {
@@ -282,7 +286,7 @@ export default defineComponent({
       this.hasPendingChanges[this.treeUserId] = needSave;
       if (needSave) this.addPendingModification(
         `${ this.reactiveSentencesObj[this.treeUserId].state.metaJson.sent_id }_${this.reactiveSentencesObj[this.treeUserId].state.metaJson.user_id }`,
-        this.reactiveSentencesObj[this.treeUserId].exportConll()
+        this.reactiveSentencesObj[this.treeUserId].exportConll(), this.sampleName
       );
       else {
         this.removePendingModification(`${ 

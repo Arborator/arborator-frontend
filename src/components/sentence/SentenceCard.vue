@@ -73,6 +73,7 @@
                 "
                 :packages="sentence.packages ? (sentence.packages[user] ? sentence.packages[user] : {}) : {}"
                 @statusChanged="handleStatusChange"
+                :sample-name="sentence.sample_name"
               >
               </VueDepTree>
             </q-card-section>

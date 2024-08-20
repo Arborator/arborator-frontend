@@ -1,7 +1,7 @@
 import { sentenceConllToJson, sentenceJson_T } from 'conllup/lib/conll';
 import { defineStore } from 'pinia';
 import { grewSearchResultSentence_t } from 'src/api/backend-types';
-import { notifyError, notifyMessage } from 'src/utils/notify';
+import { notifyError } from 'src/utils/notify';
 
 import api from '../../../api/backend-api';
 import { useTagsStore } from '../tags';
@@ -34,7 +34,7 @@ export const useTreesStore = defineStore('trees', {
       const counter: { [key: string]: number } = {};
       const treesConlls = state.filteredTrees.map((sentence) => sentence.conlls);
       for (const user of this.userIds) {
-        counter[user as string] = treesConlls.filter((conll) => (user as string) in conll).length;
+        counter[user] = treesConlls.filter((conll) => user in conll).length;
       }
       return counter;
     },
@@ -49,8 +49,8 @@ export const useTreesStore = defineStore('trees', {
     },
   },
   actions: {
-    addPendingModification(sentId: string, conll: string) {
-      this.pendingModifications.set(sentId, conll);
+    addPendingModification(sentId: string, conll: string, sampleName: string) {
+      this.pendingModifications.set(sentId, { conll: conll, sampleName: sampleName});
     },
     removePendingModification(pendingModification: any) {
       this.pendingModifications.delete(pendingModification);
@@ -91,10 +91,10 @@ export const useTreesStore = defineStore('trees', {
     },
     orderFilteredTrees(order: string) {
       if (order === 'descending') {
-        this.filteredTrees = this.filteredTrees.sort((a, b) => b.sentence.length - a.sentence.length)
+        this.filteredTrees = this.filteredTrees.sort((a, b) => b.sentence.length - a.sentence.length);
       }
       else if (order === 'ascending') {
-        this.filteredTrees = this.filteredTrees.sort((a, b) => a.sentence.length - b.sentence.length)
+        this.filteredTrees = this.filteredTrees.sort((a, b) => a.sentence.length - b.sentence.length);
       }
       else {
         this.applyFilterTrees();

@@ -89,6 +89,10 @@ export default defineComponent({
   },
   computed: {
     ...mapState(useProjectStore, ['name', 'visibility', 'blindAnnotationMode', 'isAdmin', 'isValidator', 'isGuest', 'canExportTrees']),
+    hasValidatedTrees() {
+      const treesFrom = this.selectedSamples.map((sample) => sample.treesFrom).reduce((a: string[], b: string[]) => [...a, ...b], []);
+      return [...new Set(treesFrom)].includes('validated');
+    }
   },
   methods: {
     deleteSamples() {
@@ -97,7 +101,7 @@ export default defineComponent({
         .deleteSamples(this.name, data)
         .then(() => {
           notifyMessage({ message: 'Delete success' });
-          if (this.canDeleteFromGithub) this.deleteSamplesFromGithub();
+          if (this.canDeleteFromGithub && this.hasValidatedTrees) this.deleteSamplesFromGithub();
           this.$emit('reload');
         })
         .catch((error) => {
@@ -116,7 +120,7 @@ export default defineComponent({
         });
     },
     triggerConfirmAction(method: CallableFunction) {
-      if (this.canDeleteFromGithub) {
+      if (this.canDeleteFromGithub && this.hasValidatedTrees) {
         notifyMessage({ message: 'These files will be also deleted from your synchronized Github repository', type: 'warning', position: 'top' });
       }
       this.confirmActionCallback = method;

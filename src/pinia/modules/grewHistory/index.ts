@@ -29,7 +29,6 @@ export const useGrewHistoryStore = defineStore('grewHistory', {
         .getGrewHistory(useProjectStore().name)
         .then((response) => {
           this.grewHistory = response.data.reverse();
-          notifyMessage({ message: 'Grew history loaded' });
         })
         .catch(() => {
           notifyError({ error: 'Error happend while getting the history' });

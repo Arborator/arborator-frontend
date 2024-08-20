@@ -323,28 +323,31 @@ export default defineComponent({
     closeDial() {
       if (this.pendingModifications.size > 0) {
         this.$q.notify({
-        message: `You have ${this.pendingModifications.size} changes non saved, don't forget to save them!`,
-        position: 'top',
-        color: 'warning',
-        timeout: 5000,
-        closeBtn: 'X',
-        actions: [
-          {
-            label: 'Save All',
-            handler: () => {
-              this.saveAllTrees();
-              this.$emit('closed')
+          message: `You have ${this.pendingModifications.size} changes non saved, don't forget to save them!`,
+          position: 'top',
+          color: 'warning',
+          timeout: 5000,
+          closeBtn: 'X',
+          actions: [
+            {
+              label: 'Save All',
+              handler: () => {
+                this.saveAllTrees();
+                this.$emit('closed')
+              },
             },
-          },
-          {
-            label: 'Dismiss',
-            handler: () => {
-              this.emptyPendingModification();
-              this.$emit('closed');
+            {
+              label: 'Dismiss',
+              handler: () => {
+                this.emptyPendingModification();
+                this.$emit('closed');
+              },
             },
-          },
-        ],
-      });
+          ],
+        });
+      }
+      else {
+        this.$emit('closed');
       }
     }
   },

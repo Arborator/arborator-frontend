@@ -36,7 +36,7 @@
           </q-item-section>
         </q-item>
         <q-item 
-          v-if="usersTreesFrom.filter((user) => user !== username && user !== 'validated').length > 0 && canSeeOtherUsersTrees" 
+          v-if="otherUsers.length > 0 && canSeeOtherUsersTrees" 
           tag="label" 
           v-ripple
         >
@@ -49,7 +49,15 @@
         </q-item>
       </q-list>
       <div v-if="other">
-        <q-select multiple dense outlined use-chips v-model="users" :options="otherUsers" :label="$t('exportSamples.selectOtherUsers')" />
+        <q-select 
+          multiple 
+          dense 
+          outlined 
+          use-chips 
+          v-model="users" 
+          :options="otherUsers" 
+          :label="$t('exportSamples.selectOtherUsers')" 
+          />
       </div>
     </q-card-section>
     <q-card-actions align="around">
@@ -89,20 +97,11 @@ export default defineComponent({
   computed: {
     ...mapState(useUserStore, ['username']),
     ...mapState(useProjectStore, ['canSaveTreeInProject', 'canSeeOtherUsersTrees']),
-    otherUsers() {
-      let otherUsers: string[] = [];
-      for (const sample of this.samples) {
-        const sampleTreesFrom = sample.treesFrom;
-        for (const userId of sampleTreesFrom) {
-          if (!otherUsers.includes(userId) && userId !== 'validated') {
-            otherUsers.push(userId);
-          }
-        }
-      }
-      return otherUsers.filter((user) => user != this.username);
-    },
     usersTreesFrom() {
       return [...new Set(this.samples.map((sample) => sample.treesFrom).reduce((a: string[], b: string[]) => [...a, ...b], []))];
+    },
+    otherUsers() {
+      return this.usersTreesFrom.filter((user) => user !== this.username && user !== 'validated')
     },
     projectName() {
       return this.$route.params.projectname;

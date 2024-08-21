@@ -217,7 +217,7 @@ export default defineComponent({
   computed: {
     ...mapWritableState(useProjectStore, ['diffMode', 'diffUserId']),
     ...mapWritableState(useGithubStore, ['reloadCommits']),
-    ...mapState(useProjectStore, ['isAdmin', 'isValidator', 'blindAnnotationMode', 'shownMeta']),
+    ...mapState(useProjectStore, ['isValidator', 'blindAnnotationMode', 'shownMeta']),
     ...mapState(useUserStore, ['username']),
     ...mapState(useTagsStore, ['defaultTags']),
     lastModifiedTime() {
@@ -252,7 +252,7 @@ export default defineComponent({
     },
     filteredConlls() {
       let filteredConlls = this.sentenceData.conlls;
-      if (this.blindAnnotationLevel !== 1 && !this.isAdmin && this.blindAnnotationMode) {
+      if (this.blindAnnotationLevel !== 1 && !this.isValidator && this.blindAnnotationMode) {
         return Object.fromEntries(Object.entries(filteredConlls).filter(([user]) => user !== 'validated'));
       }
       return this.orderConlls(filteredConlls);

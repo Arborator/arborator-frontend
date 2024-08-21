@@ -18,7 +18,7 @@ export const useGrewSearchStore = defineStore('grewSearch', {
         if (useProjectStore().canSaveTreeInProject) {
           return this.treeTypes.filter((element) => element == 'user');
         } else {
-          return this.treeTypes.filter((element) => ['validated', 'base_tree', 'all'].includes(element));
+          return this.treeTypes.filter((element) => ['validated', 'base_tree', 'all', 'recent'].includes(element));
         }
       } else {
         if (!useProjectStore().canSaveTreeInProject) {

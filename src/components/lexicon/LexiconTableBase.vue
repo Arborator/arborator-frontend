@@ -80,7 +80,7 @@
     </q-table>
     <q-card-section>
       <q-dialog v-model="visuTreeDial" maximized transition-show="fade" transition-hide="fade">
-        <ResultView :searchResults="resultSearch"></ResultView>
+        <ResultView :searchResults="resultSearch" @closed="visuTreeDial = false" />
       </q-dialog>
     </q-card-section>
   </q-card>
@@ -90,6 +90,7 @@
 import { mapActions, mapState } from 'pinia';
 import { grewSearchResult_t } from 'src/api/backend-types';
 import { useGrewSearchStore } from 'src/pinia/modules/grewSearch';
+import { useProjectStore } from 'src/pinia/modules/project';
 import { lexiconItem_FE_t, useLexiconStore } from 'src/pinia/modules/lexicon';
 import { table_t } from 'src/types/main_types';
 import { notifyError, notifyMessage } from 'src/utils/notify';
@@ -164,17 +165,13 @@ export default defineComponent({
   },
   computed: {
     ...mapState(useLexiconStore, ['lexiconItems']),
-
+    ...mapState(useProjectStore, ['name']),
     getLexiconData() {
       this.lexiconData = [];
       for (const lexiconItem of this.passedLexiconItems) {
         this.lexiconData.push({ ...lexiconItem.feats, key: lexiconItem.key, frequency: lexiconItem.freq });
       }
       return this.lexiconData;
-    },
-
-    projectName() {
-      return this.$route.params.projectname;
     },
   },
   methods: {
@@ -283,7 +280,7 @@ export default defineComponent({
           const url = window.URL.createObjectURL(new Blob([response.data], { type: 'text/tab-separated-values' }));
           const link = document.createElement('a');
           link.href = url;
-          link.setAttribute('download', `lexicon_${this.projectName}.tsv`);
+          link.setAttribute('download', `lexicon_${this.name}.tsv`);
           document.body.appendChild(link);
           link.click();
           document.body.removeChild(link);
@@ -309,7 +306,7 @@ export default defineComponent({
           const url = window.URL.createObjectURL(new Blob([response.data], { type: 'application/json' }));
           const link = document.createElement('a');
           link.href = url;
-          link.setAttribute('download', `lexicon_${this.projectName}.json`);
+          link.setAttribute('download', `lexicon_${this.name}.json`);
           document.body.appendChild(link);
           link.click();
           document.body.removeChild(link);
@@ -327,7 +324,7 @@ export default defineComponent({
     onSearch(searchPattern: string) {
       const data = { pattern: searchPattern, userType: this.lexiconType, sampleIds: this.sampleIds };
       api
-        .searchRequest(this.projectName as string, data)
+        .searchRequest(this.name as string, data)
         .then((response) => {
           this.resultSearch = response.data;
           this.visuTreeDial = true;

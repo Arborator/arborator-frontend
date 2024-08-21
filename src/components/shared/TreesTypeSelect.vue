@@ -6,12 +6,30 @@
         outlined
         :label="$t('grewSearch.selectSample')"
         v-model="selectedSamples"
-        :options="samples.map(sample => sample.sampleName)"
+        :options="samples"
         multiple
         use-chips
         option-label="sample_name"
         @update:model-value="emitSelectedValues"
       >
+        <template v-slot:selected-item="scope">
+          <q-chip
+            removable
+            @remove="scope.removeAtIndex(scope.index)"
+            :tabindex="scope.tabindex"
+            dense
+            text-color="primary"
+          >
+            {{ scope.opt.sampleName }}
+          </q-chip>
+        </template>
+        <template v-slot:option="scope">
+          <q-item v-close-popup v-bind="scope.itemProps">
+            <q-item-section>
+              <q-item-label>{{ scope.opt.sampleName }}</q-item-label>
+            </q-item-section>
+          </q-item>
+        </template>
       </q-select>
     </div>
     <div class="col">
@@ -94,7 +112,7 @@ export default defineComponent({
       { value: 'base_tree', label: this.$t('grewSearch.baseTree'), icon: 'linear_scale' },
       { value: 'others', label: this.$t('grewSearch.otherTree'), icon: 'group' },
     ];
-    const treeType = this.collaborativeMode ?  treeTypes[0] : treeTypes[2];
+    const treeType = this.collaborativeMode ?  this.treeOptions()[0] : treeTypes[2];
     const selectedSamples: sample_t[] = [];
     return {
       selectedSamples,
@@ -107,8 +125,8 @@ export default defineComponent({
     ...mapState(useUserStore, ['avatar']),
     ...mapState(useGrewSearchStore, ['grewTreeTypes', 'lastQuery']),
     ...mapState(useProjectStore, ['collaborativeMode']),
-    treeOptions() {
-      if (this.grewOption == 'SEARCH') {
+    treeOptions(): any[] {
+      if (this.grewOption != 'REWRITE') {
         return this.treeTypes.filter((element) => this.grewTreeTypes.includes(element.value));
       } else {
         return this.treeTypes.filter((element) => this.grewTreeTypes.includes(element.value) && !['all', 'pending'].includes(element.value));
@@ -128,7 +146,7 @@ export default defineComponent({
   },
   mounted() {
     if (this.collaborativeMode) {
-      this.treeType = this.lastQuery !== null ? this.treeTypes.filter((option) => option.value === this.lastQuery?.userType)[0] : this.treeTypes[0];
+      this.treeType = this.lastQuery !== null ? this.treeTypes.filter((option) => option.value === this.lastQuery?.userType)[0] : this.treeOptions[0];
     }
   },
   methods: {

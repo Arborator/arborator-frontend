@@ -78,7 +78,7 @@
       </div>
     </q-card-section>
     <q-dialog v-model="visuTreeDial" maximized transition-show="fade" transition-hide="fade">
-      <ResultView :searchResults="resultSearch"></ResultView>
+      <ResultView :searchResults="resultSearch" @closed="visuTreeDial = false"  />
     </q-dialog>
   </q-card>
 </template>
@@ -223,9 +223,6 @@ export default defineComponent({
       if (props.key != '∑' && props.key != '_') searchPattern += ` GOV [upos="${props.key}"]; `;
       searchPattern += '}';
       this.onSearch(searchPattern);
-    },
-    onShowTable(resultSearchDialog: any) {
-      console.log(resultSearchDialog);
     },
     onSearch(searchPattern: string) {
       const data = { pattern: searchPattern, userType: this.data.treeType, sampleIds: this.data.selectedSamples };

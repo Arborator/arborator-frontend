@@ -49,7 +49,15 @@
         </q-item>
       </q-list>
       <div v-if="other">
-        <q-select multiple dense outlined use-chips v-model="users" :options="otherUsers" :label="$t('exportSamples.selectOtherUsers')" />
+        <q-select 
+          multiple 
+          dense 
+          outlined 
+          use-chips 
+          v-model="users" 
+          :options="usersTreesFrom.filter((user) => user !== username && user !== 'validated')" 
+          :label="$t('exportSamples.selectOtherUsers')" 
+          />
       </div>
     </q-card-section>
     <q-card-actions align="around">

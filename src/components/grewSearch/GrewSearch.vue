@@ -7,7 +7,7 @@
       :query="query" 
       :userType="userType" 
       @reload-results="reloadResults" 
-      @closed="resultSearchDialog = false"
+      @closed="closeDialog"
       />
   </q-dialog>
 </template>
@@ -94,6 +94,10 @@ export default defineComponent({
             error: error.response.data.message,
           });
         });
+    },
+    closeDialog() {
+      this.resultSearchDialog = false;
+      this.$emit('reload');
     },
     reloadResults() {
      

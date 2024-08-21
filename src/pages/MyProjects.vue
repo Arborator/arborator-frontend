@@ -26,7 +26,19 @@
         </q-card-section>
         <q-separator />
         <q-card-section>
-          <div class="row" style="justify-content: right;">
+          <div class="row q-gutter-x-md" style="justify-content: right;">
+            <q-btn
+              no-caps
+              color="primary"
+              :label="$t('projectHub.newProject')"
+              icon="add"
+              size="md"
+              @click="creaProjectDial = true"
+            >
+              <q-tooltip :delay="300" class-content="text-white bg-primary">
+                {{ $t('projectHub.tooltipCreaProject[1]') }}
+              </q-tooltip>
+            </q-btn>
             <q-input  dense outlined v-model="search" label="search project" @update:model-value="searchProject(search)">
               <template #append>
                 <q-icon name="search" />
@@ -47,6 +59,7 @@
           </div>
         </q-card-section>
         <q-separator />
+        <CreaProjectCard v-if="creaProjectDial" :parent-get-projects="getUserProjects" @created="creaProjectDial = false"></CreaProjectCard>
       </q-card>
     </div>
   </q-page>
@@ -61,11 +74,13 @@ import { defineComponent } from 'vue';
 
 import api from 'src/api/backend-api';
 import ProjectCard from 'src/components/project/ProjectCard.vue';
+import CreaProjectCard from 'src/components/project/CreaProjectCard.vue';
 
 export default defineComponent({
   name: 'MyProjects',
   components: {
     ProjectCard,
+    CreaProjectCard,
   },
   data() {
     const myProjects: project_extended_t[] = [];
@@ -77,6 +92,7 @@ export default defineComponent({
       totalItemPerWindow: 0,
       pageIndex: 1,
       currentPage: 1,
+      creaProjectDial: false,
     }
   },
   computed: {

@@ -78,7 +78,7 @@ export default {
         'Édition graphique rapide de fichiers CoNLL',
       ],
     },
-    footertextmadewith: "Créé avec beaucoup d'",
+    footertextmadewith: "Créé en France avec beaucoup d'",
     textGetUserEmailDialog: [
       'Pour la bonne gestion du service, nous pourrions avoir besoin de vous contacter, notamment pour la suppression de projects inutilisés. Votre email ne sera utilisé que pour des communications concernant ArboratorGrew et ne sera pas communiqué à des tiers.',
       'Vous pouvez vous opposer à la communication de votre mail mais, dans ce cas, nous nous réservons le droit de supprimer vos projets sans préavis.',
@@ -123,7 +123,7 @@ export default {
   // page when you enter a project ( samples info, etc)
   projectView: {
     project: 'Projet',
-    createdBy: 'Créé par',
+    createdBy: 'Projet créé par',
     settings: 'Paramètres',
     tooltipSettings: 'Modifier les paramètres du projet',
     newSample: 'Nouvel échantillon',

@@ -6,7 +6,7 @@
           <div class="row q-pa-md justify-between flex flex-center">
             <div class="col-4 justify-center">
               <div class="text-h5 text-weight-bold">
-                {{ $t('projectView.project') }} "{{ name }}"
+                "{{ name }}"
                 <span>
                   <ProjectVisibility :visibility="visibility" :blindAnnotationMode="blindAnnotationMode"></ProjectVisibility>
                 </span>
@@ -18,8 +18,7 @@
                 {{ description }}
               </div>
               <div class="text-caption text-weight-medium" :class="$q.dark.isActive ? 'white' : 'grey-8'">
-                {{ $t('projectView.createdBy') }}
-                <span style="text-decoration: underline">{{ admins[0] }}</span>
+                {{ $t('projectView.createdBy') }} "{{ admins[0] }}"
               </div>
             </div>
             <div v-if="!$q.platform.is.mobile" class="col-4" style="display: flex; justify-content: flex-end">

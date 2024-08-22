@@ -35,7 +35,7 @@ export default {
 
   // first page (the index)
   homepage: {
-    title: 'A collaborative annotation tool for the treebank developpement.',
+    title: 'A collaborative annotation tool for treebank developpement.',
     subtitle: 'ArboratorGrew opens up new paths of collectively creating, updating, maintaining, and curating syntactic treebanks.',
     accessTreebankBtn: 'Access Treebanks',
     popularProjects: 'Popular projects',
@@ -81,7 +81,7 @@ export default {
         'For quick graphical modification of a CoNLL file',
       ],
     },
-    footertextmadewith: 'Made with',
+    footertextmadewith: 'Made in France with',
     textGetUserEmailDialog: [
       'For the proper management of the service, we may need to contact you, especially for the removal of unused projects. Your email will only be used for communications regarding ArboratorGrew and will not be shared with third parties.',
       'You may refuse to the communication of your email, but if you do, we reserve the right to delete your projects without notice.',
@@ -126,7 +126,7 @@ export default {
   // page when you enter a project ( samples info, etc)
   projectView: {
     project: 'Project',
-    createdBy: 'Created by',
+    createdBy: 'Project created by',
     settings: 'Settings',
     tooltipSettings: 'Modify project settings',
     newSample: 'New Sample',

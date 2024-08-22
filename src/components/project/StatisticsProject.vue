@@ -1,9 +1,6 @@
 <template>
   <div class="row text-h6">
     {{ $t('projectView.projectOverview') }}
-    <span>
-      <q-icon name="trending_up"></q-icon>
-    </span>
   </div>
   <div class="row justify-between q-gutter-md">
     <q-card flat bordered class="col">
@@ -22,7 +19,7 @@
     <q-card flat bordered class="col">
       <q-item>
         <q-item-section avatar>
-          <q-avatar color="secondary" text-color="white" icon="subject" />
+          <q-avatar color="secondary" text-color="white" icon="article" />
         </q-item-section>
         <q-item-section>
           <q-item-label class="text-h6"> {{ projectStat.samplesNumber }}</q-item-label>
@@ -35,7 +32,7 @@
     <q-card flat bordered class="col">
       <q-item>
         <q-item-section avatar>
-          <q-avatar color="indigo-8" text-color="white" icon="account_tree" />
+          <q-avatar color="indigo-8" text-color="white" icon="forest" />
         </q-item-section>
         <q-item-section>
           <q-item-label class="text-h6">{{ projectStat.treesNumber }}</q-item-label>
@@ -61,9 +58,6 @@
   </div>
   <div class="row text-h6">
     {{ $t('projectStats.activityOverview') }}
-    <span>
-      <q-icon name="trending_up"></q-icon>
-    </span>
   </div>
   <div class="row justify-between q-gutter-md">
     <q-card v-if="projectStat.topUser" flat bordered class="col">

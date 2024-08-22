@@ -40,6 +40,9 @@
                   <LanguageSelect :multiple="true" :languages-list="projectsLanguages" @selected-value="getSelectedLanguages" />
                 </div>
               </q-menu>
+              <q-tooltip>
+                Filter projects by language
+              </q-tooltip>
             </q-btn>
           </template>
         </q-input>
@@ -54,14 +57,12 @@
             class="float-right"
             :label="$t('projectHub.projectCategory')"
           />
-          <q-btn :color="listMode ? 'primary' : ''" round flat icon="fas fa-list" @click="toggleProjectView()">
-            <q-tooltip>
-              {{ $t('projectHub.tooltipListView') }}
-            </q-tooltip>
-          </q-btn>
-          <q-btn :color="!listMode ? 'primary' : ''" round flat icon="grid_view" @click="toggleProjectView()">
-            <q-tooltip>
+          <q-btn round flat :icon="listMode ? 'grid_view' : 'fas fa-list'" @click="toggleProjectView()">
+            <q-tooltip v-if="listMode">
               {{ $t('projectHub.tooltipGridView') }}
+            </q-tooltip>
+            <q-tooltip v-else>
+              {{ $t('projectHub.tooltipListView') }} 
             </q-tooltip>
           </q-btn>
         </div>
@@ -94,7 +95,7 @@
             <ProjectCard :key="item.id" style="max-width: 80vw" :project="item" :parent-delete-project="deleteProject"></ProjectCard>
           </template>
         </q-virtual-scroll>
-        <div v-if="!$q.platform.is.mobile" class="q-pa-md row items-start q-gutter-md">
+        <div v-if="!$q.platform.is.mobile" class="q-pa-md row q-gutter-md">
           <ProjectCard
             v-for="project in filteredProjects"
             :key="project.id"

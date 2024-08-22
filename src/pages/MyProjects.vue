@@ -45,7 +45,7 @@
               </template>
             </q-input>
           </div>
-          <div class="q-pa-md row items-start q-gutter-md">
+          <div class="q-pa-md row q-gutter-md">
             <ProjectCard
               v-for="project in paginatedProjects"
               :key="project.id"

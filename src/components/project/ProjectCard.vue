@@ -17,7 +17,7 @@
     <q-separator />
     <q-card-section>
       <div class="row text-h6">
-        <div class="col">
+        <div style=" word-break: break-all;" class="col">
           {{ project.projectName }}
         </div>
         <div v-if="isProjectAdmin">

@@ -120,8 +120,8 @@
           {{ $t('projectStats.usedTags') }}
         </div>
         <q-separator />
-        <div v-for="tag in projectUsedTags">
-          <q-chip outline color="primary" size="sm" :label="tag"/>
+        <div class="row q-gutter-x-md">
+          <q-chip  v-for="tag in projectUsedTags" outline color="primary" size="sm" :label="tag"/>
         </div>
       </q-card-section>
     </q-card>

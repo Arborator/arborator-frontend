@@ -15,9 +15,9 @@
 </template>
 
 <script lang="ts">
-import RelationTable from './RelationTable.vue';
+import { PropType, defineComponent } from 'vue';
 
-import { defineComponent, PropType } from 'vue';
+import RelationTable from './RelationTable.vue';
 
 export default defineComponent({
   components: {

@@ -80,23 +80,24 @@
     </q-table>
     <q-card-section>
       <q-dialog v-model="visuTreeDial" maximized transition-show="fade" transition-hide="fade">
-        <ResultView :searchresults="resultSearch" :searchscope="projectName"></ResultView>
+        <ResultView :searchResults="resultSearch" @closed="visuTreeDial = false" />
       </q-dialog>
     </q-card-section>
   </q-card>
 </template>
 
 <script lang="ts">
-import api from '../../api/backend-api';
-import { computed } from 'vue';
 import { mapActions, mapState } from 'pinia';
-import ResultView from '../grewSearch/ResultView.vue';
-import { lexiconItem_FE_t, useLexiconStore } from 'src/pinia/modules/lexicon';
+import { grewSearchResult_t } from 'src/api/backend-types';
 import { useGrewSearchStore } from 'src/pinia/modules/grewSearch';
+import { useProjectStore } from 'src/pinia/modules/project';
+import { lexiconItem_FE_t, useLexiconStore } from 'src/pinia/modules/lexicon';
 import { table_t } from 'src/types/main_types';
 import { notifyError, notifyMessage } from 'src/utils/notify';
-import { defineComponent, PropType } from 'vue';
-import { grewSearchResult_t } from 'src/api/backend-types';
+import { PropType, computed, defineComponent } from 'vue';
+
+import api from '../../api/backend-api';
+import ResultView from '../grewSearch/ResultView.vue';
 
 export default defineComponent({
   name: 'LexiconTable',
@@ -164,17 +165,13 @@ export default defineComponent({
   },
   computed: {
     ...mapState(useLexiconStore, ['lexiconItems']),
-
+    ...mapState(useProjectStore, ['name']),
     getLexiconData() {
       this.lexiconData = [];
       for (const lexiconItem of this.passedLexiconItems) {
         this.lexiconData.push({ ...lexiconItem.feats, key: lexiconItem.key, frequency: lexiconItem.freq });
       }
       return this.lexiconData;
-    },
-
-    projectName() {
-      return this.$route.params.projectname;
     },
   },
   methods: {
@@ -241,7 +238,7 @@ export default defineComponent({
       let pattern = 'pattern { N[';
       for (const [feat, value] of Object.entries(lex_item.feats)) {
         if (feat && value) {
-          pattern += `${feat} = \"${value}\", `;
+          pattern += `${feat} = "${value}", `;
         } else {
           pattern += `!${feat}, `;
         }
@@ -256,8 +253,8 @@ export default defineComponent({
       for (const feat in before.feats) {
         if (before.feats[feat] != after[feat]) {
           if (after[feat]) {
-            withouts += `\nwithout { N.${feat} = \"${after[feat]}\" }`;
-            commands += `N.${feat} = \"${after[feat]}\"; `;
+            withouts += `\nwithout { N.${feat} = "${after[feat]}" }`;
+            commands += `N.${feat} = "${after[feat]}"; `;
           } else {
             commands += `del_feat N.${feat}; `;
           }
@@ -276,14 +273,14 @@ export default defineComponent({
       for (const lexiconItem of this.passedLexiconItems) {
         download.push(lexiconItem);
       }
-      const datasample = { data: download };
+      const data = { data: download };
       api
-        .exportLexiconTSV(this.projectName as string, datasample)
+        .exportLexiconTSV(data)
         .then((response) => {
           const url = window.URL.createObjectURL(new Blob([response.data], { type: 'text/tab-separated-values' }));
           const link = document.createElement('a');
           link.href = url;
-          link.setAttribute('download', `lexicon_${this.projectName}.tsv`);
+          link.setAttribute('download', `lexicon_${this.name}.tsv`);
           document.body.appendChild(link);
           link.click();
           document.body.removeChild(link);
@@ -302,14 +299,14 @@ export default defineComponent({
       for (const lexiconItem of this.passedLexiconItems) {
         download.push(lexiconItem);
       }
-      const datasample = { data: download };
+      const data = { data: download };
       api
-        .exportLexiconJSON(this.projectName as string, datasample)
+        .exportLexiconJSON(data)
         .then((response) => {
           const url = window.URL.createObjectURL(new Blob([response.data], { type: 'application/json' }));
           const link = document.createElement('a');
           link.href = url;
-          link.setAttribute('download', `lexicon_${this.projectName}.json`);
+          link.setAttribute('download', `lexicon_${this.name}.json`);
           document.body.appendChild(link);
           link.click();
           document.body.removeChild(link);
@@ -327,7 +324,7 @@ export default defineComponent({
     onSearch(searchPattern: string) {
       const data = { pattern: searchPattern, userType: this.lexiconType, sampleIds: this.sampleIds };
       api
-        .searchRequest(this.projectName as string, data)
+        .searchRequest(this.name as string, data)
         .then((response) => {
           this.resultSearch = response.data;
           this.visuTreeDial = true;

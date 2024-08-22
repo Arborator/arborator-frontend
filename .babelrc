@@ -8,9 +8,7 @@
           // "module-resolver",
           "dynamic-import-node",
           {
-            "root": [
-              "./src"
-            ],
+            "root": ["./src"],
             "alias": {
               // "^@/(.*)$": "<rootDir>/$1",
               "@": "<rootDir>/src",
@@ -37,7 +35,6 @@
     }
   }
 }
-
 
 // env": {
 //   "test": {

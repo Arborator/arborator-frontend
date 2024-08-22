@@ -1,10 +1,10 @@
-// updated by https://github.com/emmettstr
 export default {
   failed: 'Action failed',
   success: 'Action successful',
   oops: 'Something went wrong: ',
   error403: 'Hey you! You do not have the permissions for this action. Please contact the administrator.',
   error401: 'Hey you! Please log in to do any further actions of that type.',
+  error404: 'There is no such resource in ArboratorGrew backend',
   error404page: "Doh! There's nothing here...",
   error415: 'Hey you! Only CONLL files with UTF-8 encoding format are supported.',
   welcomeback: 'Welcome back to Arborator!',
@@ -35,17 +35,12 @@ export default {
 
   // first page (the index)
   homepage: {
+    title: 'A collaborative annotation tool for the treebank developpement.',
+    subtitle: 'ArboratorGrew opens up new paths of collectively creating, updating, maintaining, and curating syntactic treebanks.',
     accessTreebankBtn: 'Access Treebanks',
-    slogan: 'Treebank Annotation for Human Beings',
-    features: [
-      'Annotate and Share your Treebanks',
-      'Query and Search using State-of-the-art Grammars',
-      'Free and Open Source',
-      'Team up and Manage Access to your Projects',
-    ],
-    scroll: 'Scroll down to see more',
-    arboheadline: "Arborator's Collaborative Annotation",
-    grewheadline: "Grew's Graph Grammar",
+    popularProjects: 'Popular projects',
+    aboutAg: 'About ArboratorGrew',
+    aboutUs: 'About us',
     descriptionCard: {
       title: 'A collaborative annotation tool for treebank development',
       subtitle: "An easy to use graphic annotation interface makes it annotation the best part of a linguist's day.",
@@ -65,16 +60,6 @@ export default {
       ],
       tooltipGrew: 'The grew graph grammar',
     },
-    collaborativeCard: {
-      title: 'Together with others you can build beautiful treebanks',
-      subtitle: 'Social login makes Arborator-Grew a hazzle free tool',
-      content: [
-        'You control who accesses your annotation projetct, and no annotator can destroy other trees than their owns.',
-        'Push the CoNLL data onto your GitHub project and share your beautiful trees from there.',
-        'Try it all out on our',
-      ],
-      playgroundBtn: 'Playground',
-    },
     sourceCard: {
       title: 'Source code',
       content: [
@@ -82,17 +67,8 @@ export default {
         'to have a look and grab the code.',
         'Get involved and give us feedback on the',
         'issue page of this Arborator front-end',
-        'A guide to install Arborator-Grew on your own server will be provided here shortly...',
       ],
       tooltipGit: 'our GitHub page',
-    },
-    storyCard: {
-      title: 'Our story',
-      subtitle: 'Arborator-Grew combines the features of two preexisting tools: Arborator and Grew.',
-      content: [
-        'Arborator is a widely used collaborative graphical online dependency treebank annotation tool. Grew is a tool for graph querying and rewriting specialized in structures needed in NLP, i.e. syntactic and semantic dependency trees and graphs. Grew also has an online version,',
-        ", where all Universal Dependencies treebanks in their classical, deep and surface-syntactic flavors can be queried. Arborator-Grew is a complete redevelopment and modernization of Arborator, replacing its own internal database storage by a new Grew API, which adds a powerful query tool to Arborator's existing treebank creation and correction features. This includes complex access control for parallel expert and crowd-sourced annotation, tree comparison visualization, and various blind annotation modes for teaching and training of annotators. Arborator-Grew opens up new paths of collectively creating, updating, maintaining, and curating syntactic treebanks and semantic graph banks.",
-      ],
     },
     citeCard: {
       title: 'Cite us',
@@ -100,17 +76,12 @@ export default {
     toolsCard: {
       title: 'Other Arborator tools',
       content: [
-        'If you just want to look at a CoNLL file quickly, check out this:',
-        'No login!',
-        'Fast CoNLL files viewer',
-        'For quick graphical modification of a CoNLL file:',
-        'CoNLL files graphical editor',
+        'If you just want to look at a CoNLL file quickly, check out this',
         'The legacy Arborator is still running here',
-        'ArboratorGrew LICENSE',
+        'For quick graphical modification of a CoNLL file',
       ],
     },
     footertextmadewith: 'Made with',
-    footertextin: 'in', // reaaallllll basic one, not good enough but still buggy using span and html parse
     textGetUserEmailDialog: [
       'For the proper management of the service, we may need to contact you, especially for the removal of unused projects. Your email will only be used for communications regarding ArboratorGrew and will not be shared with third parties.',
       'You may refuse to the communication of your email, but if you do, we reserve the right to delete your projects without notice.',
@@ -119,39 +90,31 @@ export default {
     checkboxEmailDialog: [
       'I understand that my email will be stored on the ArboratorGrew server located in Europe.',
       'I refuse to share my email.',
-      'I subscribe to the newsletter that will be sent to keep me informed of new features or incidents on the platform (no more than a few emails per month).',
     ],
-    submitMessage: 'Your choices are updated',
     inputErrorText: ['Please type something', 'Please type valid email'],
-    tootltipBtnSumbitUserEmail: 'Please check the box if you would like to receive Emails',
     submitEmailBtn: 'Soumettre',
   },
 
   // list of projects page
   projectHub: {
     tooltipCreaProject: ['Login your account to create new project', 'Create a new project'],
-    tooltipChangeView: 'Change view',
-    tooltipRightClickDelete: 'Right click to delete',
+    tooltipListView: 'Show list view',
+    tooltipGridView: 'Show grid view',
+    newProject: 'New project',
     title: 'Projects',
     sample: 'sample',
     samples: 'samples',
-    rightClickSettings: 'Settings',
     rightClickDelete: 'Delete',
     rightClickRename: 'Rename',
     emptySearch: 'Search for project',
     projectCategory: 'Category',
     allProjects: 'All the projects',
     myProjects: 'My Projects',
-    myProjectsTooltip: 'Projects I own and those I am working on',
     myOldProjects: 'My Project Purgatory',
-    myOldProjectInfo:
-      'These old projects have not been used for a long time. We might delete them anytime. Use them or download the data and erase the project (right click).',
     otherProjects: 'Other Projects',
     otherOldProjects: 'The Project Purgatory',
-    otherOldProjectInfo: 'These old projects have not been used for a long time. We may delete them at any time. Use them or notify the creators.',
-    lastAccess: 'last access',
-    lastWriteAccess: 'last modification',
-    longtime: 'a long time ago',
+    lastAccess: 'Last access',
+    lastWriteAccess: 'Last modification',
   },
   renameProject: {
     title: 'Rename the project',
@@ -163,51 +126,34 @@ export default {
   // page when you enter a project ( samples info, etc)
   projectView: {
     project: 'Project',
+    createdBy: 'Created by',
+    settings: 'Settings',
     tooltipSettings: 'Modify project settings',
-    tooltipViewAdmin: 'View administrator information',
+    newSample: 'New Sample',
     tooltipAddSample: 'Add new samples',
-    tooltipExportSample: ['Select the samples you want to export', 'Export selected samples'],
-    tooltipDeleteSample: ['Select the samples you want to delete', 'Delete selected samples'],
-    tooltipExportEvaluation: 'Export evaluations of the students (only works if only one sample is selected)',
-    tooltipCreateLexicon: ['Select the samples to create a lexicon', 'Create lexicon from selected samples'],
-    tooltipParsingPanel: ['Open parsing panel', 'Close parsing panel'],
-    tooltipParser: [
-      'Select samples to train a parser',
-      'train with the selected samples',
-      'Click to set the parameters for parser',
-      'Click to interrupt parsing',
-    ],
-    tootlipConstructiconPanel: 'See the constructicon',
-    tooltipSynchronize: 'Synchronize with github',
-    tooltipMore: 'More options',
-    tooltipConstructicon: 'See constructicon',
+    projectOverview: 'Project Overview',
     tooltipSyncGit: 'Synchronize with Github',
     tooltipSynchronizedProject: 'This project is synchronized with',
-    tooltipSearch: 'Search a sample',
-    tooltipSelectVisible: 'Select visible columns',
-    tooltipFullscreen: 'Fullscreen table',
-    tooltipFabGrew: 'Search with Grew',
-    tooltipFabGrewValidated: 'Validated trees',
-    tooltipFabGrewPending: 'Pending trees',
-    tooltipFabGrewUser: 'Only my trees',
-    tooltipFabGrewUserRecent: 'My trees, filled up with the most recent trees',
-    tooltipFabGrewRecent: 'Most recent trees',
-    tooltipFabGrewOther: 'Trees of specific user',
-    tooltipFabGrewAll: 'All trees',
-    tooltipFabGrewBaseTree: 'Base trees',
-    tooltipRelationTable: 'Get Relation Tables',
-    tooltipWindows: ['Minimize', 'Maximize', 'Close'],
-    search: 'Search',
-    uploadSelectDial: 'Select one or multiple conll files',
-    tableFields: ['Name', 'Nb Sentences', 'Nb Tokens', 'Trees From', 'Blind annotation level'],
-    projectInfoDial: {
-      title: 'Project Information',
-      ifAdmin: 'Contact these project administrators if you need access or further information:',
-      else: 'Contact the project administrator if you need access or further information:',
-    },
-    freezeProject: ['Freeze this project', 'Unfreeze this project', 'This project is freezed'],
-    removeUserTrees: ["Remove user's trees", 'Select samples'],
+    projectTabs: ['Samples', 'Grew', 'Relation table', 'Lexicon', 'Parser', 'Constructicon'],
   },
+
+  // project table that contains samples informations
+  projectTable: {
+    tooltipSearch: 'Search a sample',
+    search: 'Search',
+    users: 'User',
+    tableFields: ['Name', 'Nb sentences', 'Nb tokens', 'Trees from', 'Blind annotation level'],
+  },
+
+  // Component project options
+  projectOptions: {
+    sample: ['Sample', 'Samples'],
+    tooltipDeleteSample: 'Remove selected samples',
+    tooltipExportSample: 'Export selected samples',
+    tooltipExportEvaluation: 'Export evaluations from selected samples',
+    removeUserTrees: 'Remove user trees',
+  },
+
   // dialog window which displays create project card
   createProjectCard: {
     title: 'Create New Project',
@@ -224,6 +170,10 @@ export default {
     annotMode: 'Annotation mode',
     blindAnnot: 'Blind annotation',
     blindAnnotCaption: "In this case the annotators will not be able to see others' trees.",
+    collaborativeMode: 'Collaborative Mode',
+    collaborativeAnnot: 'Collaborative Annotation',
+    collaborativeAnnotCaption:
+      'If you uncheck this option, you will be the only user to maintain this project, and only validated trees will be used. This action is irreversible, so please make sure you really want to uncheck this option.',
   },
 
   exportSamples: {
@@ -237,30 +187,39 @@ export default {
   },
 
   grewSearch: {
+    selectSample: 'Select sample, keep it empty if you want to select all samples',
     treesType: 'Search in',
+    recentTree: 'Recent trees',
+    userTree: 'My trees',
+    validatedTree: 'Validated trees',
+    pendingTree: "Pending trees (Trees of sentence that's not validated yet)",
+    allTree: 'All trees',
+    baseTree: 'Base trees',
+    otherTree: 'Tress of specific user',
     search: 'Search',
     rewrite: 'Rewrite',
     tryRules: 'Try rules',
     grewSearchTooltip: 'Examples of Grew search statements',
     grewRewriteTooltip: 'Examples of Grew search and replacement statements',
-    grewBtnTooltip: 'You have to select trees type first',
-    showDiffTitle: 'Select the set of features  and users for which you look for differences',
-    showDiffUsersSelect: 'Select the set of users',
-    showDiffUsersTooltip: 'You have to select at least two users',
     showDiffFaturesSelect: 'Select the set of features',
     showDiffFeaturesTooltip: 'if empty and at least two diff users are selected, all features will be taken into account for diff',
-    showDiffBtn: 'Show differences',
     applyRule: 'Apply rule',
     applyRuleTooltip: 'Select at least one tree to which you wish to apply the rule',
     selectAllTooltip: 'Select All',
     btnDisabledTooltip: 'You need to select first the username',
     selectUser: 'Select username',
   },
+
+  relationTable: {
+    generateTable: 'Generate relations table',
+    selectEdge: 'Select a relation',
+    filterRelations: 'Filter dependency relations',
+  },
+
   // window which displays project settings
   projectSettings: {
     title: 'Settings',
     windowClose: 'Close',
-    descriptionSave: 'Save description',
     toggleVisibility: 'Visibility',
     toggleVisibilityCaption:
       'Private projects limit access and annotation, visible projects limit annotation and open projects allow anyone to view and contribute',
@@ -269,8 +228,6 @@ export default {
       'Visible projects restrain only annotation.',
       'Open projects allow anyone to view and contribute their annotation.',
     ],
-    toggleAllVisible: 'All trees visible',
-    toggleAllVisibleCaption: "If true, annotators will be able to see others' trees",
     toggleBlindAnnotationMode: 'Blind annotation mode',
     toggleBlindAnnotationModeCaption: 'if true, the project has blind annotation mode properties',
     toggleDiffMode: 'Diff mode',
@@ -278,8 +235,6 @@ export default {
     chooseUserDiff: 'Diff user',
     chooseUserDiffCaption: 'user that will be used as reference for the comparaison',
     selectDiffUser: 'Select diff user',
-    toggleOpenProject: 'Open project',
-    toggleOpenProjectCaption: 'If true, anyone can edit samples',
     projectLanguage: 'Language',
     projectLanguageCaption: 'The project language is: ',
     shownFeaturesPanel: 'Shown Features',
@@ -290,6 +245,8 @@ export default {
     checkAnnotation: 'This looks like reasonable Json',
     resetUD: 'reset to UD',
     resetSUD: 'reset to SUD',
+    freezeProject: 'Freeze project',
+    freezeProjectCaption: 'Only the owner can freeze this project',
   },
   settingsPage: {
     title: 'Personal information',
@@ -365,7 +322,9 @@ export default {
     tokenReplaceDial: ['Replacing', 'by', 'Changing tokens breaks the comparability of different annotations of the same sentence', 'Replacement'],
   },
   constructicon: {
+    uploadBtn: 'Upload constructicon',
     uploadTooltip: 'Upload existing constructicon',
+    downloadBtn: 'Download constructicon',
     downloadTooltip: 'Download existing constructicon',
     searchLabel: 'Search items ...',
     addNewItem: 'Add new item',
@@ -472,6 +431,7 @@ export default {
     all: 'All',
   },
   lexicon: {
+    selectSample: 'Select sample, keep it empty if you want to select all samples',
     lexiconOptions: [
       'Get the lexicon of my trees',
       'Get the lexicon of my recent trees',
@@ -480,7 +440,7 @@ export default {
       'Get the lexicon of validated trees',
     ],
     lexiconTitle: 'Select one or multiple features for the Lexicon',
-    similarFeatures: 'Similar features', 
+    similarFeatures: 'Similar features',
     ambiguousFeatures: 'Ambiguous features',
     selectTreeType: 'Select the tree type',
     tooltipExportLexicon: ['export to tsv', 'export to json'],
@@ -500,8 +460,8 @@ export default {
       'This sent_id is already used, choose another one',
       'The sent_id is the same sent_id used in the second sentence',
       'The sent_id is the same sent_id used in the first sentence',
-    ], 
-    selectMergeLabel: 'Select the sent_id of the phrase you wish to merge with the current phrase'
+    ],
+    selectMergeLabel: 'Select the sent_id of the phrase you wish to merge with the current phrase',
   },
   grewHistory: {
     historyBtn: 'History',
@@ -516,6 +476,18 @@ export default {
     favoriteTooltip: ['Add this request to the favorites', 'Remove this request from the favorites'],
     copyTooltip: 'Copy this request',
     deleteTooltip: 'Delete all the history',
+  },
+  projectStats: {
+    users: 'Users',
+    samples: 'Samples',
+    trees: 'Trees',
+    tokens: 'Tokens',
+    activityOverview: 'Activity overview',
+    topContributor: 'Top contributor',
+    annotationProgress: 'Annotation Progress',
+    lastAccess: 'Last Access',
+    by: 'by',
+    usedTags: 'Used tags',
   },
   conllDial: {
     title: 'Conll Dialog',

@@ -4,30 +4,24 @@
  * @author                  Gerdes
  * @createdBy               Khoa
  */
-
-import { mount, createLocalVue } from '@vue/test-utils';
-import Storage from 'vue-ls';
-import Vue from 'vue';
-import Vuex from 'vuex';
-import * as All from 'quasar';
 import { qLayoutInjections } from '@quasar/quasar-app-extension-testing-unit-jest';
+import { createLocalVue, mount } from '@vue/test-utils';
 import MockAdapter from 'axios-mock-adapter';
-
-// Thease are to import source components
-import ProjectsHub from 'src/pages/ProjectsHub.vue';
-import ProjectCard from 'src/components/ProjectCard.vue';
-
-// This is to import store
-import store from 'src/store/index.js';
-
-// This is to import mock data
-import mocks from 'test/jest/__mocks__/ProjectsHub.json';
-
-// This is to import some utility functions
-import * as util from 'test/jest/utils';
-
+import * as All from 'quasar';
 // This is the axios instance which we are gonna mock
 import { API } from 'src/boot/axios-adapters/axios-api';
+import ProjectCard from 'src/components/ProjectCard.vue';
+// Thease are to import source components
+import ProjectsHub from 'src/pages/ProjectsHub.vue';
+// This is to import store
+import store from 'src/store/index.js';
+// This is to import mock data
+import mocks from 'test/jest/__mocks__/ProjectsHub.json';
+// This is to import some utility functions
+import * as util from 'test/jest/utils';
+import Vue from 'vue';
+import Storage from 'vue-ls';
+import Vuex from 'vuex';
 
 // These are to import all Quasar Components
 const { Quasar, Notify, Cookies, Dialog } = All;

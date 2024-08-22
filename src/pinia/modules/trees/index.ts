@@ -1,9 +1,9 @@
-import { defineStore } from 'pinia';
-
-import { notifyMessage, notifyError } from 'src/utils/notify';
-import api from '../../../api/backend-api';
-import { grewSearchResultSentence_t } from 'src/api/backend-types';
 import { sentenceConllToJson, sentenceJson_T } from 'conllup/lib/conll';
+import { defineStore } from 'pinia';
+import { grewSearchResultSentence_t } from 'src/api/backend-types';
+import { notifyError } from 'src/utils/notify';
+
+import api from '../../../api/backend-api';
 import { useTagsStore } from '../tags';
 
 export const useTreesStore = defineStore('trees', {
@@ -23,6 +23,7 @@ export const useTreesStore = defineStore('trees', {
       featuresSetForNotDiffs: [] as string[],
       selectedTags: [] as string[],
       reloadTrees: false as boolean,
+      pendingModifications: new Map(), 
     };
   },
   getters: {
@@ -33,7 +34,7 @@ export const useTreesStore = defineStore('trees', {
       const counter: { [key: string]: number } = {};
       const treesConlls = state.filteredTrees.map((sentence) => sentence.conlls);
       for (const user of this.userIds) {
-        counter[user as string] = treesConlls.filter((conll) => (user as string) in conll).length;
+        counter[user] = treesConlls.filter((conll) => user in conll).length;
       }
       return counter;
     },
@@ -48,6 +49,15 @@ export const useTreesStore = defineStore('trees', {
     },
   },
   actions: {
+    addPendingModification(sentId: string, conll: string, sampleName: string) {
+      this.pendingModifications.set(sentId, { conll: conll, sampleName: sampleName});
+    },
+    removePendingModification(pendingModification: any) {
+      this.pendingModifications.delete(pendingModification);
+    },
+    emptyPendingModification() {
+      this.pendingModifications.clear();
+    },
     getSampleTrees({ projectName, sampleName }: { projectName: string; sampleName: string }) {
       return new Promise((resolve, reject) => {
         this.loading = true;
@@ -79,9 +89,20 @@ export const useTreesStore = defineStore('trees', {
         useTagsStore().getUserTags(username as string);
       }
     },
+    orderFilteredTrees(order: string) {
+      if (order === 'descending') {
+        this.filteredTrees = this.filteredTrees.sort((a, b) => b.sentence.length - a.sentence.length);
+      }
+      else if (order === 'ascending') {
+        this.filteredTrees = this.filteredTrees.sort((a, b) => a.sentence.length - b.sentence.length);
+      }
+      else {
+        this.applyFilterTrees();
+      }
+    },
     applyFilterTrees() {
-      this.filteredTrees = this.sortedSentIds.map((sentId) => 
-        Object.values(this.trees).find((tree) => tree.sent_id == sentId) as grewSearchResultSentence_t
+      this.filteredTrees = this.sortedSentIds.map(
+        (sentId) => Object.values(this.trees).find((tree) => tree.sent_id == sentId) as grewSearchResultSentence_t
       );
       if (this.textFilter !== '') {
         this.filteredTrees = Object.values(this.trees).filter((tree) => {

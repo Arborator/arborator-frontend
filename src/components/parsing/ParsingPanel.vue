@@ -1,15 +1,15 @@
 <template>
-  <q-card flat bordered>
+  <q-card bordered flat>
     <!-- pretrained Models -->
     <q-card-section v-if="isShowModels">
       <div class="row">
         <div class="col q-gutter-md">
-          <q-btn 
-            :disable="disableUI || !parserData.param.canRemoveParser" 
-            outline 
-            color="primary" 
-            no-caps 
-            :label="$t('parser.removeModel')" 
+          <q-btn
+            :disable="disableUI || !parserData.param.canRemoveParser"
+            outline
+            color="primary"
+            no-caps
+            :label="$t('parser.removeModel')"
             icon="delete"
             @click="triggerConfirm(removeModel)"
           >
@@ -20,23 +20,18 @@
               {{ $t('parser.disableRemoveBtnTooltip[1]') }}
             </q-tooltip>
           </q-btn>
+          <q-btn :disable="disableUI" no-caps outline color="primary" :label="$t('parser.trainBtn')" icon="add" @click="onclickTrain()" />
           <q-btn
-            :disable="disableUI" 
-            no-caps 
-            outline 
-            color="primary" 
-            :label="$t('parser.trainBtn')" 
-            icon="add" 
-            @click="onclickTrain()" 
-            />
-          <q-btn 
             :disable="disableUI || !modelsTable.selected.length"
-            no-caps 
-            outline 
-            color="primary" 
-            :label="$t('parser.parseBtn')" 
-            icon="edit_note" 
-            @click="parserData.param.pipelineChoice = 'PARSE_ONLY'; isShowModels = false;"
+            no-caps
+            outline
+            color="primary"
+            :label="$t('parser.parseBtn')"
+            icon="edit_note"
+            @click="
+              parserData.param.pipelineChoice = 'PARSE_ONLY';
+              isShowModels = false;
+            "
           >
             <q-tooltip v-if="!modelsTable.selected.length">
               {{ $t('parser.disableRemoveBtnTooltip[0]') }}
@@ -51,17 +46,17 @@
           </q-input>
         </div>
       </div>
-      <q-table 
-        flat 
+      <q-table
+        flat
         :columns="modelsTable.fields"
         :rows="parserData.param.availableModels"
-        :filter="modelsTable.filter" 
-        :filter-method="filterModels" 
+        :filter="modelsTable.filter"
+        :filter-method="filterModels"
         hide-no-data
         row-key="modelId"
         selection="single"
         v-model:selected="modelsTable.selected"
-      > 
+      >
       </q-table>
     </q-card-section>
     <q-card-section v-if="!isShowModels" class="q-gutter-md">
@@ -89,27 +84,24 @@
           </div>
           <div v-if="!parserData.param.trainAll" class="col-4 q-pr-md">
             <q-select
-              dense 
-              outlined 
-              v-model="parserData.param.trainSamplesNames" 
-              :options="allSamplesNames"  
+              dense
+              outlined
+              v-model="parserData.param.trainSamplesNames"
+              :options="allSamplesNames"
               :label="$t('parser.filesToTrain')"
-              use-chips 
-              multiple 
+              use-chips
+              multiple
               stack-label
-              />
+            />
           </div>
           <div class="col">
-            <q-toggle 
-              v-model="parserData.param.isCustomTrainingUser" 
-              :label="$t('parser.customUser')"
-              />
+            <q-toggle v-model="parserData.param.isCustomTrainingUser" :label="$t('parser.customUser')" />
           </div>
           <div v-if="parserData.param.isCustomTrainingUser" class="col-4">
-            <q-select 
-              dense 
-              outlined 
-              v-model="parserData.param.trainingUser" 
+            <q-select
+              dense
+              outlined
+              v-model="parserData.param.trainingUser"
               :options="trainingTreesFrom"
               :label="$t('parser.trainingUser')"
               stack-label
@@ -125,7 +117,7 @@
               type="number"
               label="epochs"
               min="3"
-              max="300" 
+              max="300"
               :rules="[(val) => (val >= 3 && val <= 300) || 'Please use 3 to 300 epochs']"
             />
           </div>
@@ -135,8 +127,8 @@
               no-caps
               toggle-color="primary"
               :options="[
-                {label: $t('parser.parserChoices[0]'), value: 'TRAIN_AND_PARSE'},
-                {label: $t('parser.parserChoices[1]'), value: 'TRAIN_ONLY'},
+                { label: $t('parser.parserChoices[0]'), value: 'TRAIN_AND_PARSE' },
+                { label: $t('parser.parserChoices[1]'), value: 'TRAIN_ONLY' },
               ]"
             />
           </div>
@@ -152,44 +144,45 @@
             <q-toggle v-model="parserData.param.parseAll" :label="$t('parser.parseAllFiles')" />
           </div>
           <div v-if="!parserData.param.parseAll" class="col-4 q-pr-md">
-            <q-select 
+            <q-select
               dense
               outlined
-              v-model="parserData.param.parseSamplesNames" 
+              v-model="parserData.param.parseSamplesNames"
               :options="allSamplesNames"
               :label="$t('parser.filesToParse')"
-              use-chips 
-              multiple 
+              use-chips
+              multiple
               stack-label
-             />
+            />
           </div>
           <div class="col">
             <q-toggle v-model="parserData.param.isCustomParsingUser" :label="$t('parser.customParserUser')" />
           </div>
           <div v-if="parserData.param.isCustomParsingUser" class="col-4">
-            <q-select
-              v-model="parserData.param.parsingUser"
-              dense
-              outlined
-              :options="parsingTreesFrom"
-              :label="$t('parser.parseUser')"
-              stack-label
-            />
+            <q-select v-model="parserData.param.parsingUser" dense outlined :options="parsingTreesFrom" :label="$t('parser.parseUser')" stack-label />
           </div>
         </div>
         <div class="row">
           <div class="col q-pr-md">
-            <q-input 
+            <q-input
               dense
               outlined
-              v-model="parserData.param.parserSuffix" 
+              v-model="parserData.param.parserSuffix"
               :label="$t('parser.parseSuffix')"
-              :hint="$t('parser.parseHint') + parserData.param.parserSuffix + '`'" 
+              :hint="$t('parser.parseHint') + parserData.param.parserSuffix + '`'"
               stack-label
-              />
+            />
           </div>
           <div class="col">
-            <q-select dense outlined v-model="parserData.param.columnsToKeep" :options="conllColumns" multiple use-chips :label="$t('parser.columnsToKeep')" />
+            <q-select
+              dense
+              outlined
+              v-model="parserData.param.columnsToKeep"
+              :options="conllColumns"
+              multiple
+              use-chips
+              :label="$t('parser.columnsToKeep')"
+            />
           </div>
         </div>
       </div>
@@ -227,9 +220,9 @@
           </div>
         </div>
         <div class="row" style="justify-content: right">
-          <q-btn 
+          <q-btn
             :disable="paramError || parserData.isHealthy === false"
-            color="primary" 
+            color="primary"
             :label="$t('parser.startBtn')"
             :loading="parserData.taskStatus !== null"
             push
@@ -244,21 +237,22 @@
   </q-dialog>
 </template>
 <script lang="ts">
-import ConfirmAction from '../ConfirmAction.vue';
-import api from 'src/api/backend-api';
 import { mapState } from 'pinia';
+import api from 'src/api/backend-api';
+import { ModelInfo_t, ParsingSettings_t, sample_t } from 'src/api/backend-types';
 import { useProjectStore } from 'src/pinia/modules/project';
 import { useUserStore } from 'src/pinia/modules/user';
-import { notifyMessage, notifyError } from 'src/utils/notify';
 import { table_t } from 'src/types/main_types';
-import { ModelInfo_t, sample_t, ParsingSettings_t } from 'src/api/backend-types';
-import { defineComponent, PropType } from 'vue';
+import { notifyError, notifyMessage } from 'src/utils/notify';
+import { PropType, defineComponent } from 'vue';
+
+import ConfirmAction from '../shared/ConfirmAction.vue';
 
 const kirParserSentPerSecSpeed: number = 140;
 const TIMEOUT_TASK_STATUS_CHECKER = 1000 * 60 * 60 * 3; // 3 hours
 const REFRESH_RATE_TASK_STATUS_CHECKER = 1000 * 10; // 10 seconds
 
-type pipelineChoice_t = '' | 'TRAIN_AND_PARSE' | 'TRAIN_ONLY' | 'PARSE_ONLY' ;
+type pipelineChoice_t = '' | 'TRAIN_AND_PARSE' | 'TRAIN_ONLY' | 'PARSE_ONLY';
 
 type taskType_t = 'ASK_TRAINING' | 'TRAINING' | 'ASK_PARSING' | 'PARSING';
 
@@ -284,9 +278,9 @@ interface parser_t {
   isHealthy: boolean;
   param: {
     pipelineChoice: pipelineChoice_t;
-    availableModels: any[],
+    availableModels: any[];
     baseModel: ModelInfo_t | null;
-    columnsToKeep: string[],
+    columnsToKeep: string[];
     isCustomTrainingUser: boolean;
     isCustomParsingUser: boolean;
     trainingUser: string;
@@ -297,13 +291,13 @@ interface parser_t {
     parseSamplesNames: string[];
     maxEpoch: number;
     parserSuffix: string;
-    canRemoveParser: boolean,
+    canRemoveParser: boolean;
   };
 }
 export default defineComponent({
   name: 'Parsing',
   components: {
-    ConfirmAction
+    ConfirmAction,
   },
   props: {
     samples: {
@@ -366,7 +360,7 @@ export default defineComponent({
         rowsPerPage: 10,
       },
       loadingDelete: false,
-      exporting: false
+      exporting: false,
     };
     const parserData: parser_t = {
       progress: 'bootstrap parsing',
@@ -407,20 +401,20 @@ export default defineComponent({
     ...mapState(useProjectStore, ['name']),
     ...mapState(useUserStore, ['isSuperAdmin', 'username']),
     allSamplesNames() {
-      return this.samples.map((sample) => sample.sample_name).sort(this.caseUnsensitiveCompare);
+      return this.samples.map((sample) => sample.sampleName).sort(this.caseUnsensitiveCompare);
     },
     trainingSamplesSelected() {
       if (this.parserData.param.trainAll) {
         return this.samples;
       } else {
-        return this.samples.filter((sample) => this.parserData.param.trainSamplesNames.includes(sample.sample_name));
+        return this.samples.filter((sample) => this.parserData.param.trainSamplesNames.includes(sample.sampleName));
       }
     },
     parsingSamplesSelected() {
       if (this.parserData.param.parseAll) {
         return this.samples;
       } else {
-        return this.samples.filter((sample) => this.parserData.param.parseSamplesNames.includes(sample.sample_name));
+        return this.samples.filter((sample) => this.parserData.param.parseSamplesNames.includes(sample.sampleName));
       }
     },
     allTreesFrom() {
@@ -461,10 +455,18 @@ export default defineComponent({
       return Math.ceil(totalEstimatedTime_s / 60);
     },
     noTrainFileSelectedError() {
-      return this.parserData.param.pipelineChoice !== 'PARSE_ONLY' && this.parserData.param.trainAll === false && this.parserData.param.trainSamplesNames.length === 0;
+      return (
+        this.parserData.param.pipelineChoice !== 'PARSE_ONLY' &&
+        this.parserData.param.trainAll === false &&
+        this.parserData.param.trainSamplesNames.length === 0
+      );
     },
     noParseFileSelectedError() {
-      return this.parserData.param.pipelineChoice !== 'TRAIN_ONLY' && this.parserData.param.parseAll === false && this.parserData.param.parseSamplesNames.length === 0;
+      return (
+        this.parserData.param.pipelineChoice !== 'TRAIN_ONLY' &&
+        this.parserData.param.parseAll === false &&
+        this.parserData.param.parseSamplesNames.length === 0
+      );
     },
     paramError() {
       if (this.noTrainFileSelectedError) {
@@ -478,21 +480,20 @@ export default defineComponent({
     disableUI() {
       return !!this.parserData.taskStatus || this.parserData.isHealthy === false;
     },
-  }, 
+  },
   watch: {
     'modelsTable.selected': {
       handler: function (selected) {
         if (selected.length) {
           if (selected[0].admins.includes(this.username) || this.isSuperAdmin) {
             this.parserData.param.canRemoveParser = true;
-          }
-          else {
+          } else {
             this.parserData.param.canRemoveParser = false;
           }
         }
       },
       deep: true,
-    }
+    },
   },
   mounted() {
     this.fetchBaseModelsAvailables();
@@ -506,15 +507,15 @@ export default defineComponent({
       return a.toLowerCase().localeCompare(b.toLowerCase());
     },
     onclickTrain() {
-      this.parserData.param.pipelineChoice = 'TRAIN_AND_PARSE'; 
-      this.isShowModels= false;
+      this.parserData.param.pipelineChoice = 'TRAIN_AND_PARSE';
+      this.isShowModels = false;
       if (this.parserData.param.availableModels.map((model) => model.projectName).some((project) => project === this.name)) {
-        this.$q.notify({
-          message: 'There is already model trained with the samples of this project, if you want to train new model please remove unused models of this projects',
+        notifyMessage({
+          message:
+            'There is already model trained with the samples of this project, if you want to train new model please remove unused models of this projects',
           position: 'top',
           color: 'warning',
           timeout: 0,
-          closeBtn: 'X',
         });
       }
     },
@@ -553,29 +554,28 @@ export default defineComponent({
                 modelId: pretrainedModel.model_info.model_id,
                 language: pretrainedModel.language,
                 admins: pretrainedModel.admins,
-                sentencesNumber: pretrainedModel.scores_best.training_diagnostics.data_description.n_train_sents +
-                pretrainedModel.scores_best.training_diagnostics.data_description.n_test_sents,
+                sentencesNumber:
+                  pretrainedModel.scores_best.training_diagnostics.data_description.n_train_sents +
+                  pretrainedModel.scores_best.training_diagnostics.data_description.n_test_sents,
                 epoch: pretrainedModel.scores_best.training_diagnostics.epoch,
                 bestLAS: pretrainedModel.scores_best.LAS_epoch.toFixed(4),
-              }
+              };
             });
           }
         })
         .catch((error) => {
           notifyError({ error: error.response.data.message });
-        });   
+        });
     },
     parserPipelineStart() {
       if (this.parserData.param.pipelineChoice === 'TRAIN_AND_PARSE' || this.parserData.param.pipelineChoice === 'TRAIN_ONLY') {
         this.parserTrainStart();
-      } else {
-        if (this.modelsTable.selected.length) {
-          this.parserData.param.baseModel = { 
-            project_name: this.modelsTable.selected[0].projectName,
-            model_id: this.modelsTable.selected[0].modelId,
-          };
-          this.parserParseStart((this.parserData.param.baseModel as any) as ModelInfo_t);
-        }
+      } else if (this.modelsTable.selected.length) {
+        this.parserData.param.baseModel = {
+          project_name: this.modelsTable.selected[0].projectName,
+          model_id: this.modelsTable.selected[0].modelId,
+        };
+        this.parserParseStart(this.parserData.param.baseModel as any as ModelInfo_t);
       }
     },
     parserTrainStart() {
@@ -646,7 +646,11 @@ export default defineComponent({
                 const last_epoch = response.data.data.scores_history[response.data.data.scores_history.length - 1];
                 const best_epoch = response.data.data.scores_best;
                 if (best_epoch) {
-                  this.parserData.taskStatus.taskAdditionalMessage = `epoch ${last_epoch.training_diagnostics.epoch} ; LAS=${last_epoch.LAS_chuliu_epoch.toFixed(4)} (best: epoch ${best_epoch.training_diagnostics.epoch} ; LAS=${best_epoch.LAS_chuliu_epoch.toFixed(4)})`;
+                  this.parserData.taskStatus.taskAdditionalMessage = `epoch ${
+                    last_epoch.training_diagnostics.epoch
+                  } ; LAS=${last_epoch.LAS_chuliu_epoch.toFixed(4)} (best: epoch ${
+                    best_epoch.training_diagnostics.epoch
+                  } ; LAS=${best_epoch.LAS_chuliu_epoch.toFixed(4)})`;
                 }
               }
             }
@@ -729,6 +733,6 @@ export default defineComponent({
         this.parserData.taskStatus = null;
       }
     },
-  }
+  },
 });
 </script>

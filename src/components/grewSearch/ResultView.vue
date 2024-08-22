@@ -3,16 +3,13 @@
     <q-bar class="bg-primary text-white sticky-bar">
       <q-icon name="img:/svg/grew.svg" size="7rem" />
       <q-space />
-      <div class="text-weight-bold">
-        {{ sentenceCount }} <span v-if="sentenceCount === 1">result</span><span v-else>results</span> of the
-        {{ totalsents }}
-        <span v-if="totalsents === 1">sentence</span><span v-else>sentences</span> in the {{ searchscope }}
-      </div>
+      <div class="text-weight-bold">{{ sentenceCount }} <span v-if="sentenceCount === 1">result</span><span v-else>results</span></div>
       <q-space />
-      <q-btn v-close-popup flat dense icon="close" />
+      <q-btn flat dense icon="close" @click="closeDial()" />
     </q-bar>
-    <div v-if="showFilterResults" class="q-pa-md custom-frame1">
+    <div class="q-pa-md row q-gutter-md custom-frame1">
       <q-select
+        class="col-9"
         outlined
         dense
         v-model="selectedSample"
@@ -37,6 +34,11 @@
           </q-item>
         </template>
       </q-select>
+      <q-btn class="col-2" outline :disable="pendingModifications.size === 0" color="primary" label="Save pending trees" @click="saveAllTrees()">
+        <q-badge v-if="pendingModifications.size > 0" color="red" floating>
+          {{ pendingModifications.size }}
+        </q-badge>
+      </q-btn>
     </div>
     <div>
       <template v-if="samplesFrozen.list.length > 0">
@@ -54,9 +56,9 @@
             <div style="flex-grow: 1; overflow: auto">
               <SentenceCard
                 :key="index"
-                :sentence="searchresults[item[0]][item[1]]"
+                :sentence="searchResults[item[0]][item[1]]"
                 :index="index"
-                :matches="searchresults[item[0]][item[1]]"
+                :matches="searchResults[item[0]][item[1]]"
                 :blind-annotation-level="4"
               ></SentenceCard>
             </div>
@@ -85,30 +87,25 @@
 
 <script lang="ts">
 import { sentenceConllToJson, sentenceJsonToConll } from 'conllup/lib/conll';
-import { mapState, mapActions } from 'pinia';
+import { mapActions, mapState, mapWritableState } from 'pinia';
 import { grewSearchResult_t, sample_t } from 'src/api/backend-types';
+import { useGithubStore } from 'src/pinia/modules/github';
+import { useGrewHistoryStore } from 'src/pinia/modules/grewHistory';
 import { useGrewSearchStore } from 'src/pinia/modules/grewSearch';
 import { useProjectStore } from 'src/pinia/modules/project';
 import { useUserStore } from 'src/pinia/modules/user';
-import { useGrewHistoryStore } from 'src/pinia/modules/grewHistory';
-import { notifyMessage } from 'src/utils/notify';
+import { useTreesStore } from 'src/pinia/modules/trees';
+import { notifyMessage, notifyError } from 'src/utils/notify';
 import { PropType, defineComponent } from 'vue';
+
 import api from '../../api/backend-api';
 import SentenceCard from '../sentence/SentenceCard.vue';
 
 export default defineComponent({
   components: { SentenceCard },
   props: {
-    searchresults: {
+    searchResults: {
       type: Object as PropType<grewSearchResult_t>,
-      required: true,
-    },
-    totalsents: {
-      type: Number as PropType<number>,
-      required: true,
-    },
-    searchscope: {
-      type: String as PropType<string>,
       required: true,
     },
     queryType: {
@@ -123,14 +120,10 @@ export default defineComponent({
       type: String as PropType<string>,
       required: false,
     },
-    parentOnShowTable: {
-      type: Function as PropType<CallableFunction>,
-      required: true,
-    },
   },
 
   data() {
-    const searchresultsCopy: grewSearchResult_t = {};
+    const searchResultsCopy: grewSearchResult_t = {};
     const samples: sample_t[] = [];
     const samplesFrozen: {
       list: string[][];
@@ -140,8 +133,7 @@ export default defineComponent({
     } = { list: [], indexes: {}, samples: [], selected: {} };
     const filteredSamples: string[] = [];
     return {
-      searchresultsCopy,
-      resultSearchDialog: true,
+      searchResultsCopy,
       samplesFrozen,
       filteredSamples,
       loading: false,
@@ -153,25 +145,24 @@ export default defineComponent({
     };
   },
   computed: {
-    ...mapState(useProjectStore, ['canSaveTreeInProject', 'isValidator']),
+    ...mapState(useProjectStore, ['name', 'canSaveTreeInProject', 'isValidator']),
     ...mapState(useGrewSearchStore, ['canRewriteRule']),
     ...mapState(useUserStore, ['username']),
+    ...mapState(useTreesStore, ['pendingModifications']),
+    ...mapWritableState(useGithubStore, ['reloadCommits']),
     projectName(): string {
       return this.$route.params.projectname as string;
     },
     sentenceCount() {
-      return Object.keys(this.searchresults)
-        .map((sa) => Object.keys(this.searchresults[sa]))
+      return Object.keys(this.searchResults)
+        .map((sa) => Object.keys(this.searchResults[sa]))
         .flat().length;
     },
     atLeastOneSelected() {
-      return Object.values(this.samplesFrozen.selected).some((index) => index == true);
-    },
-    showFilterResults() {
-      return this.samplesFrozen.list.length > 0 && !this.$route.params.samplename;
+      return Object.values(this.samplesFrozen.selected).some((index) => index);
     },
     samplesNames() {
-      return Object.keys(this.searchresults);
+      return Object.keys(this.searchResults);
     },
     filteredResults() {
       if (!this.selectedSample) {
@@ -183,7 +174,7 @@ export default defineComponent({
   watch: {
     'samplesFrozen.selected': {
       handler: function (newVal) {
-        if (Object.values(newVal).some((element) => element == false)) {
+        if (Object.values(newVal).some((element) => !element)) {
           this.all = false;
         }
       },
@@ -195,19 +186,20 @@ export default defineComponent({
   },
   methods: {
     ...mapActions(useGrewHistoryStore, ['saveHistory']),
+    ...mapActions(useTreesStore, ['emptyPendingModification']),
     freezeSamples() {
       const listIds = []; // list: [["WAZA_10_Bluetooth-Lifestory_MG","WAZA_10_Bluetooth-Lifestory_MG__86"],["WAZA_10_Bluetooth-Lifestory_MG","WAZA_10_Bluetooth-Lifestory_MG__79"], ...
       let index = 0;
       const index2Ids: { [key: number]: string[] } = {}; // object: {"0":["WAZA_10_Bluetooth-Lifestory_MG","WAZA_10_Bluetooth-Lifestory_MG__86"],"1":["WAZA_10_Bluetooth-Lifestory_MG","WAZA_10_Bluetooth-Lifestory_MG__79"], ...
       const selectedIndex: { [key: number]: boolean } = {};
-      this.searchresultsCopy = this.searchresults;
+      this.searchResultsCopy = this.searchResults;
       // this is sent to the sentenceCard: searchresults[item[0]][item[1]], items from this.samplesFrozen.list
-      for (const sampleId of Object.keys(this.searchresults).sort()) {
-        for (const sentId in this.searchresults[sampleId]) {
+      for (const sampleId of Object.keys(this.searchResults).sort()) {
+        for (const sentId in this.searchResults[sampleId]) {
           listIds.push([sampleId, sentId]);
           index2Ids[index] = [sampleId, sentId];
           selectedIndex[index] = false;
-          this.searchresultsCopy[sampleId][sentId].sample_name = sampleId;
+          this.searchResultsCopy[sampleId][sentId].sample_name = sampleId;
           index += 1;
         }
       }
@@ -235,19 +227,19 @@ export default defineComponent({
 
     selectAllSentences() {
       for (const item in this.filteredResults) {
-        this.all ? (this.samplesFrozen.selected[item] = true) : (this.samplesFrozen.selected[item] = false);
+        this.samplesFrozen.selected[item] = this.all;
       }
     },
 
     applyRules() {
       this.preprocessResults();
       if (this.toSaveCounter >= 1) {
-        const datasample = { data: this.searchresultsCopy };
-        api.applyRule(this.$route.params.projectname as string, datasample).then(() => {
-          this.resultSearchDialog = false;
-          this.parentOnShowTable(this.resultSearchDialog);
+        const datasample = { data: this.searchResultsCopy };
+        api.applyRule(this.projectName, datasample).then(() => {
+          this.reloadCommits += 1;
           this.saveAppliedRule();
           notifyMessage({ message: `Rule applied (user "${this.username}" rewrote and saved "${this.toSaveCounter}" at once)` });
+          this.$emit('closed');
         });
       } else {
         notifyMessage({
@@ -259,7 +251,7 @@ export default defineComponent({
 
     preprocessResults() {
       let selectedResults = this.getSelectedResults();
-      this.searchresultsCopy = selectedResults;
+      this.searchResultsCopy = selectedResults;
       for (const sample in selectedResults) {
         for (const sentId in selectedResults[sample]) {
           if (!this.isValidator || this.userType !== 'validated') {
@@ -272,11 +264,11 @@ export default defineComponent({
             const sentenceJson = sentenceConllToJson(toSaveConll);
             sentenceJson.metaJson.user_id = this.username;
             sentenceJson.metaJson.timestamp = Math.round(Date.now());
-            this.searchresultsCopy[sample][sentId].conlls[this.username] = sentenceJsonToConll(sentenceJson);
+            this.searchResultsCopy[sample][sentId].conlls[this.username] = sentenceJsonToConll(sentenceJson);
           }
-          for (const userId in this.searchresultsCopy[sample][sentId].conlls) {
+          for (const userId in this.searchResultsCopy[sample][sentId].conlls) {
             if (!this.isValidator || this.userType !== 'validated') {
-              if (userId !== this.username) delete this.searchresultsCopy[sample][sentId].conlls[userId];
+              if (userId !== this.username) delete this.searchResultsCopy[sample][sentId].conlls[userId];
             }
           }
           this.toSaveCounter += 1;
@@ -291,7 +283,7 @@ export default defineComponent({
           const sampleId = this.filteredResults[item][0];
           const sentId = this.filteredResults[item][1];
           if (!selectedResults[sampleId]) selectedResults[sampleId] = {};
-          selectedResults[sampleId][sentId] = this.searchresults[sampleId][sentId];
+          selectedResults[sampleId][sentId] = this.searchResults[sampleId][sentId];
         }
       }
       return selectedResults;
@@ -301,11 +293,63 @@ export default defineComponent({
       const historyRecord = {
         type: 'rewrite',
         request: this.query,
-        modifiedSentences: this.toSaveCounter
+        modifiedSentences: this.toSaveCounter,
       };
       this.saveHistory(historyRecord);
+    },
+
+    saveAllTrees() {
+      const groupedConlls = [...this.pendingModifications.values()].reduce((groupedConlls, sentence) => {
+        const group = (groupedConlls[sentence.sampleName] || []);
+        group.push(sentence.conll)
+        groupedConlls[sentence.sampleName] = group
+        return groupedConlls;
+      }, {});
+      for (const [sampleName, conlls] of Object.entries(groupedConlls)) {
+        const data = { conllGraph: (conlls as string[]).join('\n\n') };
+        api
+          .saveAllTrees(this.name, sampleName, data)
+          .then(() => {
+            notifyMessage({ position: 'top', message: 'Saved on the server', icon: 'save' });
+            this.emptyPendingModification();
+            this.$emit('reload-results');
+          })
+          .catch((error) => {
+            notifyError({ error: `Error happened while saving trees ${error}` });
+          });
+      }
+    },
+
+    closeDial() {
+      if (this.pendingModifications.size > 0) {
+        this.$q.notify({
+          message: `You have ${this.pendingModifications.size} changes non saved, don't forget to save them!`,
+          position: 'top',
+          color: 'warning',
+          timeout: 5000,
+          closeBtn: 'X',
+          actions: [
+            {
+              label: 'Save All',
+              handler: () => {
+                this.saveAllTrees();
+                this.$emit('closed')
+              },
+            },
+            {
+              label: 'Dismiss',
+              handler: () => {
+                this.emptyPendingModification();
+                this.$emit('closed');
+              },
+            },
+          ],
+        });
+      }
+      else {
+        this.$emit('closed');
+      }
     }
-  
   },
 });
 </script>

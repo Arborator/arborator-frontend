@@ -51,7 +51,7 @@
           </q-tab-panel>
         </q-tab-panels>
         <q-separator />
-        <div class="q-px-md">
+        <div v-if="collaborativeMode" class="q-px-md">
           <div class="text-h6">
             {{ $t('uploadSample.userIdConfig') }}
           </div>
@@ -97,19 +97,19 @@
               </q-item-section>
             </q-item>
           </q-list>
+          <q-input
+            v-if="userId === 'other'"
+            class="col"
+            outlined
+            v-model="customUserId"
+            :label="$t('uploadSample.customUsername')"
+            :rules="[
+              (val) => !reservedUserIds.includes(val.toLowerCase()) || `${val} ` + $t('uploadSample.reservedUsernameError'),
+              (val) => (val && val.length > 0) || $t('uploadSample.emptyUsernameError'),
+            ]"
+          />
+          <q-separator />
         </div>
-        <q-input
-          v-if="userId === 'other'"
-          class="col"
-          outlined
-          v-model="customUserId"
-          :label="$t('uploadSample.customUsername')"
-          :rules="[
-            (val) => !reservedUserIds.includes(val.toLowerCase()) || `${val} ` + $t('uploadSample.reservedUsernameError'),
-            (val) => (val && val.length > 0) || $t('uploadSample.emptyUsernameError'),
-          ]"
-        />
-        <q-separator />
         <q-item>
           <q-item-section side top>
             <q-checkbox v-model="rtl" />
@@ -154,15 +154,16 @@
 </template>
 
 <script lang="ts">
-import { notifyError, notifyMessage } from 'src/utils/notify';
-import api from '../../api/backend-api';
-import { sample_t } from 'src/api/backend-types';
-import { useModelWrapper } from '../../composables/modelWrapper.js';
-import { defineComponent, PropType } from 'vue';
-import { mapState } from 'pinia';
-import { useUserStore } from 'src/pinia/modules/user';
-import { useProjectStore } from 'src/pinia/modules/project';
 import { sentenceConllToJson } from 'conllup/lib/conll';
+import { mapState } from 'pinia';
+import { sample_t } from 'src/api/backend-types';
+import { useProjectStore } from 'src/pinia/modules/project';
+import { useUserStore } from 'src/pinia/modules/user';
+import { notifyError, notifyMessage } from 'src/utils/notify';
+import { PropType, defineComponent } from 'vue';
+
+import api from '../../api/backend-api';
+import { useModelWrapper } from '../../composables/modelWrapper.js';
 
 export default defineComponent({
   props: {
@@ -221,7 +222,7 @@ export default defineComponent({
 
   computed: {
     ...mapState(useUserStore, ['username', 'reservedUserIds']),
-    ...mapState(useProjectStore, ['blindAnnotationMode']),
+    ...mapState(useProjectStore, ['blindAnnotationMode', 'collaborativeMode']),
     disableTokenizeBtn() {
       if (this.option.value == 'plainText') {
         return this.text && this.sampleName && this.lang.value;
@@ -309,6 +310,7 @@ export default defineComponent({
     },
     uploadSamples() {
       const form = new FormData();
+      if (!this.collaborativeMode) this.customUserId = 'validated';
       this.uploadSample.submitting = true;
       for (const file of this.uploadSample.attachment.file) {
         form.append('files', file);
@@ -358,14 +360,17 @@ export default defineComponent({
         });
     },
     selectedUserId() {
-      if (this.userId === 'username') {
-         return this.username;
+      if (!this.collaborativeMode) {
+        return 'validated';
+      }
+      else if (this.userId === 'username') {
+        return this.username;
       }
       else if (this.userId === 'other')  {
         return this.customUserId;
       }
       else {
-         return this.userId;
+        return this.userId;
       }
     },
     closeDialog() {

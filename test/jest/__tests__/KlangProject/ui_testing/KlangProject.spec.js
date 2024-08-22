@@ -5,21 +5,17 @@
  * @createdBy                Khoa
  * @since                    06-12-2020
  */
-
-import { createLocalVue, mount } from '@vue/test-utils';
-import Storage from 'vue-ls';
-import Vue from 'vue';
-import Vuex from 'vuex';
-import VueRouter from 'vue-router';
-import MockAdapter from 'axios-mock-adapter';
-
 import { qLayoutInjections } from '@quasar/quasar-app-extension-testing-unit-jest';
-
-import KlangProject from 'src/pages/KlangProject.vue';
+import { createLocalVue, mount } from '@vue/test-utils';
+import MockAdapter from 'axios-mock-adapter';
 import { API } from 'src/boot/axios-adapters/axios-api';
-
+import KlangProject from 'src/pages/KlangProject.vue';
 import mocks from 'test/jest/__mocks__/KlangProject.json';
 import * as util from 'test/jest/utils';
+import Vue from 'vue';
+import Storage from 'vue-ls';
+import VueRouter from 'vue-router';
+import Vuex from 'vuex';
 
 // This is to mock up axios get response
 const projectname = 'khoaProject';

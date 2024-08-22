@@ -1,5 +1,5 @@
 .FORM {
-  font: 18px "DejaVu Sans";
+  font: 18px 'DejaVu Sans';
   fill: black;
   /* 	font-family:sans-serif; */
   --wordDistance: 55;
@@ -25,7 +25,7 @@
 }
 
 .LEMMA {
-  font: 15px "DejaVu Sans";
+  font: 15px 'DejaVu Sans';
   fill: black;
   font-family: sans-serif;
   text-align: center;
@@ -35,7 +35,7 @@
 }
 
 .dark .LEMMA {
-  font: 15px "DejaVu Sans";
+  font: 15px 'DejaVu Sans';
   fill: rgb(238, 232, 232);
   font-family: sans-serif;
   text-align: center;

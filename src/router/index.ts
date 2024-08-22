@@ -1,9 +1,10 @@
-import { createRouter, createMemoryHistory, createWebHistory, createWebHashHistory } from 'vue-router';
 import { route } from 'quasar/wrappers';
+import { useKlangStore } from 'src/pinia/modules/klang';
+import { useProjectStore } from 'src/pinia/modules/project';
+import { cookies } from 'src/boot/vue-cookies';
+import { createMemoryHistory, createRouter, createWebHashHistory, createWebHistory } from 'vue-router';
 
 import routes from './routes';
-import { useProjectStore } from 'src/pinia/modules/project';
-import { useKlangStore } from 'src/pinia/modules/klang';
 
 export default route(() => {
   const createHistory = process.env.SERVER
@@ -18,11 +19,22 @@ export default route(() => {
     scrollBehavior: () => ({ left: 0, top: 0 }),
     routes,
   });
+  
+  Router.beforeEach((to, from, next) => {
+    const session = cookies.get('session');
+    if (to.path === '/' && session !== null) {
+      next('/projects');
+    }
+    else {
+      next();
+    }
+  });
+
   Router.afterEach((to, from) => {
     const configStore = useProjectStore();
     const klangStore = useKlangStore();
     if (to.params.projectname && to.params.projectname !== from.params.projectname) {
-      configStore.fetchProjectSettings({ projectname: to.params.projectname } as { projectname: string });
+      configStore.fetchProjectSettings({ projectName: to.params.projectname } as { projectName: string });
       configStore.reloadSamples = true;
     }
     if (to.params.kprojectname) {

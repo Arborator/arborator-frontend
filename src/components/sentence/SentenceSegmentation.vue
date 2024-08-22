@@ -11,16 +11,16 @@
           {{ $t('sentenceSegmentation.title') }}
         </div>
         <div class="col">
-          <q-select 
-            dense 
-            outlined 
-            v-model="option" 
+          <q-select
+            dense
+            outlined
+            v-model="option"
             :label="$t('sentenceSegmentation.selectOptionLabel')"
             option-label="label"
             option-value="value"
             :options="segmentOptions"
             @update:model-value="showResults = false"
-            >
+          >
           </q-select>
         </div>
       </q-card-section>
@@ -179,7 +179,7 @@
               outlined
               v-model="mergedSentId"
               :label="$t('sentenceSegmentation.selectMergeLabel')"
-              :options="sortedSentIds.filter(sent => sent !== sentId)"
+              :options="sortedSentIds.filter((sent) => sent !== sentId)"
               @update:model-value="MergeSentences()"
             >
             </q-select>
@@ -234,14 +234,14 @@
             />
           </div>
           <div>
-            <q-btn 
-              :disable="sortedSentIds.includes(mergedReactiveSentence[userId].state.metaJson.sent_id as string)" 
-              outline 
-              color="primary" 
-              icon="save" 
-              :label="$t('sentenceSegmentation.saveResults')" 
+            <q-btn
+              :disable="sortedSentIds.includes(mergedReactiveSentence[userId].state.metaJson.sent_id as string)"
+              outline
+              color="primary"
+              icon="save"
+              :label="$t('sentenceSegmentation.saveResults')"
               @click="saveMergeResults()"
-              />
+            />
           </div>
         </div>
       </q-card-section>
@@ -249,17 +249,17 @@
   </q-dialog>
 </template>
 <script lang="ts">
-import VueDepTree from './VueDepTree.vue';
-import api from 'src/api/backend-api';
-
-import { emptySentenceJson, sentenceConllToJson, sentenceJsonToConll, sentenceJson_T, treeJson_T, metaJson_T } from 'conllup/lib/conll';
+import { emptySentenceJson, metaJson_T, sentenceConllToJson, sentenceJsonToConll, sentenceJson_T, treeJson_T } from 'conllup/lib/conll';
 import { ReactiveSentence } from 'dependencytreejs/src/ReactiveSentence';
 import { mapState, mapWritableState } from 'pinia';
-import { notifyError, notifyMessage } from 'src/utils/notify';
-import { useTreesStore } from 'src/pinia/modules/trees';
+import api from 'src/api/backend-api';
 import { useProjectStore } from 'src/pinia/modules/project';
+import { useTreesStore } from 'src/pinia/modules/trees';
 import { reactive_sentences_obj_t, sentence_bus_t } from 'src/types/main_types';
+import { notifyError, notifyMessage } from 'src/utils/notify';
 import { PropType, defineComponent } from 'vue';
+
+import VueDepTree from './VueDepTree.vue';
 
 interface sentence_t {
   [key: string]: sentenceJson_T;
@@ -292,7 +292,7 @@ export default defineComponent({
     const segmentOptions = [
       { value: 'split', label: this.$t('sentenceSegmentation.segmentOptions[0]') },
       { value: 'merge', label: this.$t('sentenceSegmentation.segmentOptions[1]') },
-    ]
+    ];
     const hasPendingChanges: { [key: string]: boolean } = {};
     const firstSentences: sentence_t = {};
     const secondSentences: sentence_t = {};
@@ -368,7 +368,7 @@ export default defineComponent({
           let newToken = {
             ...token,
             ID: `${newId}`,
-            HEAD: token.HEAD < indexSplit ? 0 : token.HEAD + 1 - indexSplit,
+            HEAD: token.HEAD < indexSplit ? token.HEAD : token.HEAD + 1 - indexSplit,
           };
           this.secondSentences[userId].treeJson.nodesJson[`${newId}`] = { ...newToken };
         }
@@ -396,11 +396,10 @@ export default defineComponent({
       } else {
         this.createReactiveSentence(this.mergedSentences, this.mergedReactiveSentence as reactive_sentences_obj_t);
         if (this.mergeWarningMessage) {
-          this.$q.notify({
+          notifyMessage({
             message: this.mergeWarningMessage,
             color: 'warning',
             position: 'top',
-            closeBtn: 'X',
             timeout: 0,
           });
         }
@@ -451,8 +450,7 @@ export default defineComponent({
           const firstSentenceConll = reactiveSentence.exportConll();
           const secondSentenceConll = secondSentenceConlls[userId];
           this.mergedSentences[userId] = this.mergeConlls(firstSentenceConll, secondSentenceConll);
-        }
-        else {
+        } else {
           usersDiff.push(userId);
           this.mergedSentences[userId] = reactiveSentence.state;
         }
@@ -503,8 +501,7 @@ export default defineComponent({
       const secondSentSuffix = secondSentIdParts.pop();
       if (JSON.stringify(firstSentIdParts) === JSON.stringify(secondSentIdParts)) {
         return firstSentId + '_' + secondSentSuffix;
-      }
-      else {
+      } else {
         return firstSentId + '_' + secondSentId;
       }
     },

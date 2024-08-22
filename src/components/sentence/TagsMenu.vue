@@ -57,18 +57,16 @@
   </q-menu>
 </template>
 <script lang="ts">
-import api from '../../api/backend-api';
-
-import { notifyError, notifyMessage } from 'src/utils/notify';
-import { reactive_sentences_obj_t, sentence_bus_t } from 'src/types/main_types';
+import { mapActions, mapState, mapWritableState } from 'pinia';
 import { grewSearchResultSentence_t } from 'src/api/backend-types';
-import { mapState, mapActions, mapWritableState } from 'pinia';
 import { useUserStore } from 'src/pinia/modules/user';
-import { useTagsStore, tag_t } from 'src/pinia/modules/tags';
+import { reactive_sentences_obj_t, sentence_bus_t } from 'src/types/main_types';
+import { notifyError, notifyMessage } from 'src/utils/notify';
+import { PropType, defineComponent } from 'vue';
 import { useProjectStore } from 'src/pinia/modules/project';
+import { tag_t, useTagsStore } from 'src/pinia/modules/tags';
 
-import { defineComponent, PropType } from 'vue';
-import { error } from 'console';
+import api from '../../api/backend-api';
 
 export default defineComponent({
   name: 'TagsMenu',
@@ -182,7 +180,6 @@ export default defineComponent({
       api
         .deleteUserTag(this.name, this.username, tag)
         .then(() => {
-          notifyMessage({ message: `${tag} is successfully removed` });
           this.userTags.splice(this.userTags.map(tag => tag.value).indexOf(tag), 1)
           this.filterTags('', () => {})
         })
@@ -193,4 +190,3 @@ export default defineComponent({
   },
 });
 </script>
-<style lang="stylus"></style>

@@ -14,7 +14,7 @@
             <q-item v-for="user in githubOwners" @click="getRepositoriesPerOwner(user.a)" clickable v-close-popup>
               <q-item-section avatar>
                 <q-avatar size="1.2rem">
-                  <img :src="user.v" />
+                  <img :src="user.v" alt="avatar" />
                 </q-avatar>
               </q-item-section>
               <q-item-section>
@@ -72,7 +72,7 @@
     <div :class="$q.dark.isActive ? 'text-white' : 'text-blue-grey-10'" class="q-pa-sm">
       <q-radio dense size="md" v-model="branchSyn" val="default" /> {{ $t('github.defaultBranch') }}
     </div>
-    <div :class="$q.dark.isActive ? 'text-white' : 'text-blue-grey-10'" class=" row q-pa-sm">
+    <div :class="$q.dark.isActive ? 'text-white' : 'text-blue-grey-10'" class="row q-pa-sm">
       <div class="col">
         <q-radio dense size="md" v-model="branchSyn" val="new" />
         {{ $t('github.arboratorgrewBranch') }}
@@ -82,10 +82,10 @@
       </div>
     </div>
     <div class="row q-gutter-md justify-center">
-      <q-btn 
-        :loading="loading" 
-        :disable="disableSyncBtn" 
-        color="primary" 
+      <q-btn
+        :loading="loading"
+        :disable="disableSyncBtn"
+        color="primary"
         @click="synchronizeWithGitRepo(selectedRepository, branch, branchSyn)"
         :label="$t('github.synchronize')"
       >
@@ -93,18 +93,19 @@
           <q-spinner color="grey-11" size="xs" />
         </template>
         <q-tooltip v-if="disableSyncBtn">
-          {{  $t('github.syncBtnTooltip') }}
+          {{ $t('github.syncBtnTooltip') }}
         </q-tooltip>
       </q-btn>
     </div>
   </q-card-section>
 </template>
 <script lang="ts">
+import { notifyError, notifyMessage } from 'src/utils/notify';
+import { PropType, defineComponent } from 'vue';
+
 import api from '../../api/backend-api';
 import { githubRepository_t } from '../../api/backend-types';
-import { notifyError, notifyMessage } from 'src/utils/notify';
 
-import { defineComponent, PropType } from 'vue';
 export default defineComponent({
   name: 'GithubSyncDialog',
   emits: ['created'],
@@ -150,7 +151,7 @@ export default defineComponent({
     },
     disableSyncBtn() {
       return this.branchSyn === 'new' && this.branchToUse === '';
-    }, 
+    },
   },
   mounted() {
     this.getGithubRepositories();
@@ -164,7 +165,7 @@ export default defineComponent({
           if (this.repositories.length == 0) this.noRepositories = true;
         })
         .catch(() => {
-          notifyError({ error: 'Error while getting Github repositories'});
+          notifyError({ error: 'Error while getting Github repositories' });
         });
     },
     getRepositoriesPerOwner(owner: string) {
@@ -177,12 +178,12 @@ export default defineComponent({
       });
     },
     getRepoBranches(repoName: string) {
-      this.selectedRepository = repoName; 
+      this.selectedRepository = repoName;
       api
         .getGithubRepoBranches(this.selectedRepository)
         .then((response) => {
           this.listBranches = response.data;
-          this.branchToUse = this.listBranches.includes('arboratorgrew') ? '' : 'arboratorgrew'
+          this.branchToUse = this.listBranches.includes('arboratorgrew') ? '' : 'arboratorgrew';
           this.branch = this.listBranches[0];
         })
         .catch((error) => {
@@ -196,19 +197,25 @@ export default defineComponent({
         branchSync: branchSyn === 'default' ? branch : this.branchToUse,
       };
       this.loading = true;
-      var interval = setTimeout(() => {
-        this.$q.notify({
+      let interval = setTimeout(() => {
+        notifyMessage({
           message: this.$t('github.syncWarningMessage'),
           color: 'warning',
           position: 'top',
           timeout: 5000,
-        });
+        })
       }, 10000);
       api
         .synchronizeWithGithubRepo(this.projectName as string, data)
         .then(() => {
           notifyMessage({ message: `"${this.projectName}" ${this.$t('github.synchronizeMessage')} "${repoName}"` });
           this.loading = false;
+          this.$router.push({
+            name: 'project',
+            params: {
+              projectname: this.projectName,
+            },
+          });
           this.$emit('created');
           clearTimeout(interval);
         })
@@ -227,4 +234,3 @@ export default defineComponent({
   },
 });
 </script>
-<style></style>

@@ -1,11 +1,11 @@
-import defaultState from './defaultState';
-
-import { cookies } from '../../../boot/vue-cookies';
-import { i18n } from 'src/boot/i18n';
-import api from '../../../api/backend-api';
 import { defineStore } from 'pinia';
-import { notifyError, notifyMessage } from 'src/utils/notify';
 import { user_t } from 'src/api/backend-types';
+import { i18n } from 'src/boot/i18n';
+import { notifyError, notifyMessage } from 'src/utils/notify';
+
+import api from '../../../api/backend-api';
+import { cookies } from '../../../boot/vue-cookies';
+import defaultState from './defaultState';
 
 export const useUserStore = defineStore('user', {
   state: () => {
@@ -13,17 +13,17 @@ export const useUserStore = defineStore('user', {
   },
   getters: {
     getUserInfos: (state) => state,
-    isSuperAdmin: (state) => state.super_admin,
+    isSuperAdmin: (state) => state.superAdmin,
     isLoggedIn: (state) => state.loginSuccess,
     hasLoginErrored: (state) => state.loginError,
     getFailedAccess: (state) => state.failedAccess,
-    loggedWithGithub: (state) => state.auth_provider === '4',
+    loggedWithGithub: (state) => state.authProvider === '4',
     avatar: (state) => {
-      if (state.picture_url) return state.picture_url;
+      if (state.pictureUrl) return state.pictureUrl;
       return 'perm_identity';
     },
     shareEmail(state): boolean {
-      return !state.not_share_email && this.loggedWithGithub && state.email == null;
+      return !state.notShareEmail && this.loggedWithGithub && state.email == null;
     },
 
     /**
@@ -36,9 +36,7 @@ export const useUserStore = defineStore('user', {
   actions: {
     checkSession() {
       return new Promise<void>((resolve, reject) => {
-        // var token = VueCookies.get("authomatic");
         const session = cookies.get('session');
-        // if (token !== null) console.log("token", token);
         if (session !== null) {
           api
             .whoAmI()
@@ -62,8 +60,7 @@ export const useUserStore = defineStore('user', {
         console.log(`logging out user: ${this.username}`);
         api
           .logout()
-          .then((response) => {
-            console.log(response);
+          .then(() => {
             this.loginSuccess = false;
             this.$patch(defaultState());
           })

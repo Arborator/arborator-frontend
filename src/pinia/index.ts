@@ -1,10 +1,9 @@
-import { useProjectStore } from './modules/project';
-import { useUserStore } from './modules/user';
-import { useKlangStore } from './modules/klang';
-
+import { defineStore } from 'pinia';
 import { useRoute } from 'vue-router';
 
-import { defineStore } from 'pinia';
+import { useKlangStore } from './modules/klang';
+import { useProjectStore } from './modules/project';
+import { useUserStore } from './modules/user';
 
 export const useMainStore = defineStore('main', {
   state: () => {

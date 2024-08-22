@@ -1,186 +1,17 @@
 <template>
-  <div :id="index" class="custom-bottom-border">
+  <div class="custom-bottom-border">
+    <SentenceToolBar
+      :sentence-bus="sentenceBus"
+      :reactive-sentences-obj="(reactiveSentencesObj as reactive_sentences_obj_t)"
+      :index="index"
+      :blind-annotation-level="blindAnnotationLevel"
+      :open-tab-user="openTabUser"
+      :sentence-data="sentenceData"
+      :parent-on-save="save"
+      :can-undo="canUndo"
+      :can-redo="canRedo"
+    ></SentenceToolBar>
     <div>
-      <q-bar class="row items-center custom-frame1">
-        <span class="text-grey" style="padding-left: 10px">{{ index + 1 }}</span>
-        <q-chip class="text-center" :color="$q.dark.isActive ? 'grey' : ''" dense> {{ sentence.sent_id }} </q-chip>&nbsp;&nbsp;&nbsp;
-        <q-input
-          v-model="sentenceText"
-          :style="openTabUser === '' ? 'width: 100%' : 'width: 65%'"
-          class="row items-center justify-center"
-          v-bind="$attrs"
-          readonly
-          borderless
-          @select="editTokens"
-        >
-          <q-tooltip v-if="openTabUser !== ''" anchor="bottom middle" self="center middle" :offset="[10, 10]">
-            {{ $t('sentenceCard.selectTooltip') }}
-          </q-tooltip>
-        </q-input>
-        <q-space />
-
-        <template v-if="openTabUser !== ''">
-          <q-btn
-            v-if="isLoggedIn && blindAnnotationLevel <= 3 && !isValidator"
-            flat
-            round
-            dense
-            icon="assessment"
-            :disable="openTabUser === ''"
-            @click="openStatisticsDialog"
-          >
-            <q-tooltip>{{ $t('sentenceCard.annotationErrors') }}</q-tooltip>
-          </q-btn>
-
-          
-
-          <q-btn v-if="isValidator" flat round dense icon="verified" :disable="openTabUser === ''" @click="save('validated')">
-            <q-tooltip>{{ $t('sentenceCard.validateTree') }}</q-tooltip>
-          </q-btn>
-
-          <q-btn
-            v-if="isValidator && blindAnnotationMode"
-            flat
-            round
-            dense
-            icon="linear_scale"
-            :disable="openTabUser === ''"
-            @click="save('base_tree')"
-          >
-            <q-tooltip>{{ $t('sentenceCard.saveBaseTree') }}</q-tooltip>
-          </q-btn>
-
-          <q-btn v-if="isBernardCaron" flat round dense icon="face" :disable="openTabUser === ''" @click="save(EMMETT)">
-            <q-tooltip>Save as Emmett</q-tooltip>
-          </q-btn>
-
-          <q-btn v-if="canSaveTreeInProject" flat round dense icon="save" :disable="openTabUser === '' || !canSave" @click="save('')">
-            <q-tooltip>
-              {{ $t('sentenceCard.saveTree[0]') }} {{ openTabUser }} {{ $t('sentenceCard.saveTree[1]') }}
-              <b> {{ username }} </b>
-            </q-tooltip>
-          </q-btn>
-
-          <q-btn
-            v-if="canSaveTreeInProject && (openTabUser === username || isValidator)"
-            flat
-            round
-            dense
-            icon="bookmark"
-            :disable="openTabUser === ''"
-          >
-            <TagsMenu
-              :sampleName="(sentenceData.sample_name as string)"
-              :reactive-sentences-obj="reactiveSentencesObj"
-              :sentence-bus="sentenceBus"
-              :open-tab-user="openTabUser"
-              :sentence="sentenceData"
-            />
-            <q-tooltip>{{ $t('sentenceCard.addTag') }}</q-tooltip>
-          </q-btn>
-
-          <q-btn
-            v-if="isValidator && blindAnnotationMode"
-            flat
-            round
-            dense
-            icon="filter_9_plus"
-            :disable="openTabUser === ''"
-            @click="openMultiEditDialog"
-          >
-            <q-tooltip>{{ $t('sentenceCard.multiEditDial') }}</q-tooltip>
-          </q-btn>
-
-          <q-btn-dropdown :disable="openTabUser === ''" icon="more_vert" flat dense>
-            <q-list>
-              <q-item v-if="canSaveTreeInProject" v-close-popup clickable @click="openMetaDialog()">
-                <q-item-section avatar>
-                  <q-avatar icon="edit" color="primary" text-color="white" />
-                </q-item-section>
-                <q-item-section>
-                  <q-item-label>
-                    {{ $t('sentenceCard.editMetadata') }}
-                  </q-item-label>
-                </q-item-section>
-              </q-item>
-
-              <q-item v-close-popup clickable @click="openConllDialog()">
-                <q-item-section avatar>
-                  <q-avatar icon="format_list_numbered" color="primary" text-color="white" />
-                </q-item-section>
-                <q-item-section>
-                  <q-item-label>{{ $t('sentenceCard.treeConll') }}</q-item-label>
-                </q-item-section>
-              </q-item>
-    
-              <q-item v-if="!blindAnnotationMode" v-close-popup clickable @click="toggleDiffMode()">
-                <q-item-section avatar>
-                  <q-avatar icon="ion-git-network" color="primary" text-color="white" />
-                </q-item-section>
-                <q-item-section>
-                  <q-item-label
-                    >{{ diffMode ? $t('sentenceCard.diffMode[1]') : $t('sentenceCard.diffMode[0]') }}
-                    {{ $t('sentenceCard.diffMode[2]') }}
-                  </q-item-label>
-                </q-item-section>
-              </q-item>
-
-              <q-item v-if="isValidator" v-close-popup clickable @click="showSentSegmentationDial = true">
-                <q-item-section avatar>
-                  <q-avatar icon="content_cut" color="primary" text-color="white" />
-                </q-item-section>
-                <q-item-section>
-                  <q-item-label>
-                    Sentence segmentation
-                  </q-item-label>
-                </q-item-section>
-              </q-item>
-
-
-              <q-item v-close-popup clickable @click="exportSVG()">
-                <q-item-section avatar>
-                  <q-avatar icon="ion-md-color-palette" color="primary" text-color="white" />
-                </q-item-section>
-                <q-item-section>
-                  <q-item-label>{{ $t('sentenceCard.treeSVG') }}</q-item-label>
-                </q-item-section>
-              </q-item>
-
-              <q-item v-close-popup clickable @click="exportPNG()">
-                <q-item-section avatar>
-                  <q-avatar icon="image" color="primary" text-color="white" />
-                </q-item-section>
-                <q-item-section>
-                  <q-item-label>{{ $t('sentenceCard.treePNG') }}</q-item-label>
-                </q-item-section>
-              </q-item>
-            </q-list>
-          </q-btn-dropdown>
-          <q-btn
-            v-if="canSaveTreeInProject"
-            flat
-            round
-            dense
-            icon="undo"
-            :disable="openTabUser === '' || !canUndo"
-            :class="'undo-button'"
-            @click="undo()"
-          >
-          </q-btn>
-          <q-btn
-            v-if="canSaveTreeInProject"
-            flat
-            round
-            dense
-            icon="ion-redo"
-            :disable="openTabUser === '' || !canRedo"
-            :class="'redo-button'"
-            @click="redo()"
-          >
-          </q-btn>
-        </template>
-      </q-bar>
-
       <q-tabs
         v-model="openTabUser"
         class="custom-frame1"
@@ -190,7 +21,6 @@
         :active-bg-color="$q.dark.isActive ? '' : 'grey-2'"
         style="transition: unset"
       >
-
         <q-tab
           v-for="(tree, user) in filteredConlls"
           :key="`${reactiveSentencesObj[user].state.metaJson.timestamp}-${user}`"
@@ -225,7 +55,6 @@
           :props="tree"
           :name="user"
           style="padding-bottom: 0; padding-top: 0"
-          @focus="activateFocus(sentence.sent_id)"
         >
           <q-card flat>
             <q-card-section :class="($q.dark.isActive ? '' : '') + ' scrollable'" :id="'tab_' + user" @scroll="synchronizeScroll">
@@ -244,6 +73,7 @@
                 "
                 :packages="sentence.packages ? (sentence.packages[user] ? sentence.packages[user] : {}) : {}"
                 @statusChanged="handleStatusChange"
+                :sample-name="sentence.sample_name"
               >
               </VueDepTree>
             </q-card-section>
@@ -270,60 +100,60 @@
         </div>
       </div>
     </div>
-
     <template>
-      <SentenceSegmentation 
-        v-if="showSentSegmentationDial" 
-        :sentence-bus="sentenceBus" 
-        :reactive-sentences-obj="reactiveSentencesObj"
-        :user-id="openTabUser"
-        :sample-name="(sentence.sample_name as string)"
-        @closed="showSentSegmentationDial = false"
-        />
       <RelationDialog :sentence-bus="sentenceBus" />
       <UposDialog :sentence-bus="sentenceBus" />
       <XposDialog :sentence-bus="sentenceBus" />
       <FeaturesDialog :sentence-bus="sentenceBus" @changed:meta-text="changeText()" />
       <MetaDialog :sentence-bus="sentenceBus" />
       <ConlluDialog :sentence-bus="sentenceBus" />
-      <ExportSVG :sentence-bus="sentenceBus" :reactive-sentences-obj="reactiveSentencesObj" />
-      <TokensReplaceDialog :sentence-bus="sentenceBus" :reactive-sentences-obj="reactiveSentencesObj" @changed:meta-text="changeText()" />
-      <MultiEditDialog :sentence-bus="sentenceBus" :reactive-sentences-obj="reactiveSentencesObj" />
+      <ExportSVG 
+        :sentence-bus="sentenceBus" 
+        :reactive-sentences-obj="(reactiveSentencesObj as reactive_sentences_obj_t)" 
+        />
+      <TokensReplaceDialog 
+        :sentence-bus="sentenceBus" 
+        :reactive-sentences-obj="(reactiveSentencesObj as reactive_sentences_obj_t)" 
+        @changed:meta-text="changeText()" 
+        />
+      <MultiEditDialog 
+        :sentence-bus="sentenceBus" 
+        :reactive-sentences-obj="(reactiveSentencesObj as reactive_sentences_obj_t)" 
+        />
       <StatisticsDialog :sentence-bus="sentenceBus" :conlls="sentenceData.conlls" />
     </template>
   </div>
 </template>
 
 <script lang="ts">
-import mitt, { Emitter } from 'mitt';
-
 import { ReactiveSentence } from 'dependencytreejs/src/ReactiveSentence';
 import { constructTextFromTreeJson } from 'conllup/lib/conll';
-import api from '../../api/backend-api';
+import mitt, { Emitter } from 'mitt';
+import { mapActions, mapState, mapWritableState } from 'pinia';
+import { useProjectStore } from 'src/pinia/modules/project';
+import { useTagsStore } from 'src/pinia/modules/tags';
+import { useUserStore } from 'src/pinia/modules/user';
+import { useGithubStore } from 'src/pinia/modules/github';
+import { useTreesStore } from 'src/pinia/modules/trees';
+import { grewSearchResultSentence_t, matches_t } from 'src/api/backend-types';
+import { reactive_sentences_obj_t, sentence_bus_events_t, sentence_bus_t } from 'src/types/main_types';
+import { notifyError, notifyMessage } from 'src/utils/notify';
+import { PropType, defineComponent } from 'vue';
 
-import VueDepTree from './VueDepTree.vue';
-import RelationDialog from './RelationDialog.vue';
-import UposDialog from './UposDialog.vue';
-import XposDialog from './XposDialog.vue';
-import FeaturesDialog from './FeaturesDialog.vue';
-import MetaDialog from './MetaDialog.vue';
+import  api  from 'src/api/backend-api';
 import ConlluDialog from './ConlluDialog.vue';
 import ExportSVG from './ExportSVG.vue';
-import TokensReplaceDialog from './TokensReplaceDialog.vue';
-import StatisticsDialog from './StatisticsDialog.vue';
+import FeaturesDialog from './FeaturesDialog.vue';
+import MetaDialog from './MetaDialog.vue';
 import MultiEditDialog from './MultiEditDialog.vue';
-import TagsMenu from './TagsMenu.vue';
-import SentenceSegmentation from './SentenceSegmentation.vue';
-import { reactive_sentences_obj_t, sentence_bus_events_t, sentence_bus_t } from 'src/types/main_types';
-import { grewSearchResultSentence_t, matches_t } from 'src/api/backend-types';
-import { mapActions, mapState, mapWritableState } from 'pinia';
-import { notifyError, notifyMessage } from 'src/utils/notify';
-import { useProjectStore } from 'src/pinia/modules/project';
-import { useGithubStore } from 'src/pinia/modules/github';
-import { useUserStore } from 'src/pinia/modules/user';
-import { useTagsStore } from 'src/pinia/modules/tags';
-import { useGrewSearchStore } from 'src/pinia/modules/grewSearch';
-import { PropType, defineComponent } from 'vue';
+import StatisticsDialog from './StatisticsDialog.vue';
+import TokensReplaceDialog from './TokensReplaceDialog.vue';
+import UposDialog from './UposDialog.vue';
+import VueDepTree from './VueDepTree.vue';
+import XposDialog from './XposDialog.vue';
+import RelationDialog from './RelationDialog.vue';
+import SentenceToolBar from './SentenceToolBar.vue';
+
 
 function sentenceBusFactory(): sentence_bus_t {
   let sentenceBus: Emitter<sentence_bus_events_t> = mitt<sentence_bus_events_t>();
@@ -331,12 +161,10 @@ function sentenceBusFactory(): sentence_bus_t {
   return sentenceBus as sentence_bus_t;
 }
 
-
 export default defineComponent({
   name: 'SentenceCard',
   components: {
     VueDepTree,
-    RelationDialog,
     UposDialog,
     XposDialog,
     FeaturesDialog,
@@ -346,8 +174,8 @@ export default defineComponent({
     TokensReplaceDialog,
     StatisticsDialog,
     MultiEditDialog,
-    TagsMenu,
-    SentenceSegmentation,
+    SentenceToolBar,
+    RelationDialog,
   },
   props: {
     index: {
@@ -366,9 +194,6 @@ export default defineComponent({
       default: () => [] as matches_t[],
       type: Object as PropType<matches_t>,
     },
-    isFocused: {
-      type: Boolean as PropType<boolean>,
-    },
   },
   data() {
     const hasPendingChanges: { [key: string]: boolean } = {};
@@ -380,24 +205,21 @@ export default defineComponent({
       reactiveSentencesObj,
       openTabUser: '',
       sentenceData: this.$props.sentence,
-      sentenceText: this.$props.sentence.sentence,
-      EMMETT: 'emmett.strickland',
       canUndo: false,
       canRedo: false,
       canSave: true,
-      focused: false,
-      showSentSegmentationDial: false,
       hasPendingChanges,
       tags: [],
       horizontalScrollPos,
+      sentenceText: '',
     };
   },
-
   computed: {
     ...mapWritableState(useProjectStore, ['diffMode', 'diffUserId']),
     ...mapWritableState(useGithubStore, ['reloadCommits']),
-    ...mapState(useProjectStore, ['isAdmin', 'isValidator', 'blindAnnotationMode', 'getProjectConfig', 'canSaveTreeInProject', 'shownMeta']),
-    ...mapState(useUserStore, ['isLoggedIn', 'username']),
+    ...mapState(useProjectStore, ['isValidator', 'blindAnnotationMode', 'shownMeta']),
+    ...mapState(useUserStore, ['username']),
+    ...mapState(useTagsStore, ['defaultTags']),
     lastModifiedTime() {
       const lastModifiedTime: { [key: string]: string } = {};
       for (const user of Object.keys(this.reactiveSentencesObj)) {
@@ -430,14 +252,12 @@ export default defineComponent({
     },
     filteredConlls() {
       let filteredConlls = this.sentenceData.conlls;
-      if (this.blindAnnotationLevel !== 1 && !this.isAdmin && this.blindAnnotationMode) {
+      if (this.blindAnnotationLevel !== 1 && !this.isValidator && this.blindAnnotationMode) {
         return Object.fromEntries(Object.entries(filteredConlls).filter(([user]) => user !== 'validated'));
       }
       return this.orderConlls(filteredConlls);
     },
-    isBernardCaron() {
-      return this.username === 'bernard.l.caron' || this.username === 'kirianguiller';
-    },
+    
   },
   created() {
     for (const [userId, conll] of Object.entries(this.sentence.conlls)) {
@@ -446,65 +266,17 @@ export default defineComponent({
       this.reactiveSentencesObj[userId] = reactiveSentence;
       this.hasPendingChanges[userId] = false;
     }
-
     this.diffMode = !!this.diffMode;
   },
-  mounted() {
-    this.focused = this.isFocused as boolean;
-  },
   methods: {
-    ...mapActions(useGrewSearchStore, ['removePendingModification']),
     ...mapActions(useTagsStore, ['removeTag']),
-    openStatisticsDialog() {
-      this.sentenceBus.emit('open:statisticsDialog', {
-        userId: this.openTabUser,
-      });
-    },
-    openConllDialog() {
-      this.sentenceBus.emit('open:conlluDialog', { userId: this.openTabUser });
-    },
-    openMultiEditDialog() {
-      this.sentenceBus.emit('open:openMultiEditDialog', {
-        userId: this.openTabUser,
-      });
-    },
-    exportSVG() {
-      this.sentenceBus.emit('export:SVG', { userId: this.openTabUser });
-    },
-    exportPNG() {
-      this.sentenceBus.emit('export:PNG', { userId: this.openTabUser });
-    },
-    editTokens(event: Event) {
-      if (this.openTabUser !== '' && this.isAdmin) {
-        this.sentenceBus.emit('open:tokensReplaceDialog', {
-          userId: this.openTabUser,
-          event,
-        });
-      }
-      event.stopPropagation();
-    },
-    undo() {
-      if (this.openTabUser !== '') {
-        this.sentenceBus.emit('action:undo', {
-          userId: this.openTabUser,
-        });
-        this.sentenceText = this.reactiveSentencesObj[this.openTabUser].getSentenceText();
-      }
-    },
-    redo() {
-      if (this.openTabUser !== '') {
-        this.sentenceBus.emit('action:redo', {
-          userId: this.openTabUser,
-        });
-        this.sentenceText = this.reactiveSentencesObj[this.openTabUser].getSentenceText();
-      }
-    },
-    removeSentenceTag(tag: string) {
-      this.removeTag(this.sentenceData, tag, this.sentenceBus, this.openTabUser);
-    },
+    ...mapActions(useTreesStore, ['removePendingModification']),
     handleStatusChange(event: { canUndo: boolean; canRedo: boolean }) {
       this.canUndo = event.canUndo;
       this.canRedo = event.canRedo;
+    },
+    removeSentenceTag(tag: string) {
+      this.removeTag(this.sentenceData, tag, this.sentenceBus, this.openTabUser);
     },
     save(mode: string) {
       const openedTreeUser = this.openTabUser;
@@ -574,19 +346,26 @@ export default defineComponent({
       else {
         this.sentenceText = this.sentenceData.sentence;
       }
-      document.getElementById(`tab_${this.openTabUser}`)?.scrollTo({ left: this.horizontalScrollPos });
-    },
-    openMetaDialog() {
-      this.sentenceBus.emit('open:metaDialog', { userId: this.openTabUser });
-    },
-    changeText() {
-      this.sentenceText = this.reactiveSentencesObj[this.openTabUser].getSentenceText();
     },
     toggleDiffMode() {
       this.diffMode = !this.diffMode;
       if (!this.diffUserId) {
         this.diffUserId = this.openTabUser;
       }
+    },
+    rightClickHandler(e: MouseEvent, user: string) {
+      e.preventDefault();
+      if (!this.diffMode) {
+        this.toggleDiffMode();
+        this.diffUserId = user;
+      } else if (user == this.diffUserId) {
+        this.toggleDiffMode();
+      } else {
+        this.diffUserId = user;
+      }
+    },
+    changeText() {
+      this.sentenceData.sentence = this.reactiveSentencesObj[this.openTabUser].getSentenceText();
     },
     orderConlls(filteredConlls: { [key: string]: string }) {
       const userAndTimestamps = [];
@@ -609,41 +388,15 @@ export default defineComponent({
         this.openTabUser = '';
       }
     },
-    /**
-     * When user right click on one of the tabs icon, if diffMode is on, it will change
-     * the current diffUser for current session
-     * @param e
-     * @param user
-     */
-    rightClickHandler(e: MouseEvent, user: string) {
-      e.preventDefault();
-      if (!this.diffMode) {
-        // if user right click on one of the tab icon while diffMode was
-        // disabled, it enable it and set to this tab user the diffUser
-        this.toggleDiffMode();
-        this.diffUserId = user;
-        return;
-      } else {
-        // we are alrady in diffmode
-        if (user == this.diffUserId) {
-          // clicked on the current diff user, we enable diffmode
-          this.toggleDiffMode();
-        } else {
-          this.diffUserId = user;
-        }
-      }
-    },
-    activateFocus(sentId: string) {
-      this.focused = true;
-      this.$emit('focused-sent', sentId);
-    },
     synchronizeScroll(event: Event) {
       this.horizontalScrollPos = (event.target as HTMLElement).scrollLeft;
-    }
+    },
+    removeUserTag(tag: string) {
+      this.removeTag(this.sentenceData, tag, this.sentenceBus, this.openTabUser);
+    },
   },
 });
 </script>
-
 <style>
 .scrollable {
   overflow-x: auto;

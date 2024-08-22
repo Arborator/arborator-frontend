@@ -15,10 +15,10 @@
   </q-card>
 </template>
 <script lang="ts">
-import api from '../../api/backend-api';
 import { notifyError, notifyMessage } from 'src/utils/notify';
+import { PropType, defineComponent } from 'vue';
 
-import { defineComponent, PropType } from 'vue';
+import api from '../../api/backend-api';
 
 export default defineComponent({
   name: 'GithubCommitDialog',
@@ -40,7 +40,7 @@ export default defineComponent({
   methods: {
     commitChanges() {
       const githubMessage = this.message + ': committed by ArboratorGrew';
-      const data = { commitMessage: githubMessage, };
+      const data = { commitMessage: githubMessage };
       api
         .commitChanges(this.projectName, data)
         .then(() => {
@@ -54,4 +54,3 @@ export default defineComponent({
   },
 });
 </script>
-<style></style>

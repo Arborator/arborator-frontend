@@ -41,7 +41,9 @@
             <q-item>
               <q-item-section top avatar>
                 <q-item-label caption> {{ formatDate(record.date) }}</q-item-label>
-                <q-item-label v-if="record.type === 'rewrite'" caption> {{ record.modified_sentences }} {{ $t('grewHistory.modifiedSentences')}} </q-item-label>
+                <q-item-label v-if="record.type === 'rewrite'" caption>
+                  {{ record.modifiedSentences }} {{ $t('grewHistory.modifiedSentences') }}
+                </q-item-label>
                 <q-item-label v-else caption> {{ $t('grewHistory.noModifiedSentences') }} </q-item-label>
                 <div>
                   <q-btn flat icon="delete" color="primary" @click="deleteHistory(record)">
@@ -73,22 +75,22 @@
       </q-card-section>
       <q-card-section v-else> {{ $t('grewHistory.noSearchResults') }} </q-card-section>
       <q-dialog v-model="confirmDelete">
-        <ConfirmAction :parent-action="confirmActionCallback" :target-name="name" ></ConfirmAction>
+        <ConfirmAction :parent-action="confirmActionCallback" :target-name="name"></ConfirmAction>
       </q-dialog>
     </q-card>
   </q-dialog>
 </template>
 
 <script lang="ts">
-import GrewCodeMirror from '../codemirrors/GrewCodeMirror.vue';
-import ConfirmAction from '../ConfirmAction.vue';
-
 import { mapActions, mapState } from 'pinia';
+import { grewHistoryRecord_t } from 'src/api/backend-types';
 import { useGrewHistoryStore } from 'src/pinia/modules/grewHistory';
 import { useProjectStore } from 'src/pinia/modules/project';
-import { grewHistoryRecord_t } from 'src/api/backend-types';
+
 import { defineComponent } from 'vue';
 
+import ConfirmAction from '../shared/ConfirmAction.vue';
+import GrewCodeMirror from '../codemirrors/GrewCodeMirror.vue';
 
 export default defineComponent({
   components: {
@@ -116,7 +118,7 @@ export default defineComponent({
   computed: {
     ...mapState(useGrewHistoryStore, ['grewHistory', 'rewriteHistory', 'searchHistory', 'favoriteHistory']),
     ...mapState(useProjectStore, ['name']),
-    filteredHistory(): grewHistoryRecord_t[]  {
+    filteredHistory(): grewHistoryRecord_t[] {
       if (this.historyType.value == 'search') {
         return this.searchInHistory(this.searchHistory);
       }
@@ -127,7 +129,7 @@ export default defineComponent({
         return this.searchInHistory(this.favoriteHistory);
       }
       return this.searchInHistory(this.grewHistory);
-    }
+    },
   },
   mounted() {
     this.getHistory();

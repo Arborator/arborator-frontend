@@ -1,60 +1,22 @@
 <template>
-  <q-card style="max-width: 100vw">
-    <q-bar class="bg-primary text-white sticky-bar">
-      <q-space />
-      <div class="text-weight-bold">RelationTables</div>
-      <q-space />
-      <q-btn v-close-popup flat dense icon="close" />
-    </q-bar>
-
-    <q-card-section>
-      <div class="row q-gutter-md">
-        <div class="col-6">
-          <q-select dense outlined v-model="treeType" :options="treeOptions" :label="$t('grewSearch.treesType')">
-            <template v-slot:selected-item="scope">
-              <q-chip v-if="scope.opt.value == 'user' || scope.opt.value == 'user_recent'" dense square color="white" text-color="primary" size="md">
-                <q-avatar>
-                  <img :src="avatar" alt="avatar" />
-                  <q-badge v-if="scope.opt.value == 'user_recent'" floating transparent>+</q-badge>
-                </q-avatar>
-                {{ scope.opt.label }}
-              </q-chip>
-              <q-chip v-else dense square color="white" text-color="primary" size="md" :label="scope.opt.label" :icon="scope.opt.icon" />
-            </template>
-
-            <template v-slot:option="scope">
-              <q-item v-bind="scope.itemProps">
-                <q-item-section avatar>
-                  <q-avatar v-if="scope.opt.value == 'user' || scope.opt.value == 'user_recent'" size="1.2rem">
-                    <img :src="avatar" alt="avatar" />
-                    <q-badge v-if="scope.opt.value == 'user_recent'" floating transparent color="principal">+</q-badge>
-                  </q-avatar>
-                  <q-icon v-else :name="scope.opt.icon" />
-                </q-item-section>
-                <q-item-section>
-                  <q-item-label>{{ scope.opt.label }}</q-item-label>
-                </q-item-section>
-              </q-item>
-            </template>
-          </q-select>
-        </div>
-        <div class="col-3">
-          <q-select v-if="treeType.value === 'others'" v-model="otherUser" outlined dense :options="treesFrom" :label="$t('grewSearch.selectUser')"> </q-select>
-        </div>
-        <div class="col-2">
-          <q-btn :disable="disableBtn" color="primary" @click="getRelationTable()" label="Get relation table" />
-        </div>
-    </div>
+  <q-card flat bordered>
+    <q-card-section class="q-gutter-md row">
+      <div class="col-8">
+        <TreesTypeSelect :grew-option="'relation_table'" :samples="samples" @selected-value="getSelectedValues"></TreesTypeSelect>
+      </div>
+      <div class="col">
+        <q-btn :disable="!isOwner && freezed" no-caps color="primary" :label="$t('relationTable.generateTable')" @click="getRelationTable()" />
+      </div>
     </q-card-section>
     <q-card-section>
-      <div class="row q-gutter-lg" style="height: 80vh; width: 90vw">
+      <div class="row q-gutter-lg">
         <div class="col-2">
           <q-toolbar class="text-center">
             <q-toolbar-title>
-              <span class="text-primary text-bold">Select an edge</span>
+              <span class="text-primary text-bold">{{ $t('relationTable.selectEdge') }}</span>
             </q-toolbar-title>
           </q-toolbar>
-          <q-input outlined dense ref="filter" v-model="filter" label="filter dependency relations">
+          <q-input outlined dense ref="filter" v-model="filter" :label="$t('relationTable.filterRelations')">
             <template #append>
               <q-icon v-if="filter !== ''" name="clear" class="cursor-pointer" @click="resetFilter" />
             </template>
@@ -78,13 +40,14 @@
         <div v-show="currentEdge.length > 0" class="col-9" :data="displayTable">
           <q-toolbar class="text-center">
             <q-toolbar-title>
-              <span class="text-primary text-bold">{{
-                'Relation Table for "' + currentEdge + '" containing a total of ' + relationsTotal[currentEdge] + ' occurrences'
-              }}</span>
+              <span class="text-primary text-bold">
+                {{ 'Relation Table for "' + currentEdge + '" containing a total of ' + relationsTotal[currentEdge] + ' occurrences' }}
+              </span>
             </q-toolbar-title>
           </q-toolbar>
           <q-table
             flat
+            bordered
             ref="relationTable"
             v-model:pagination="pagination"
             class="rounded-borders"
@@ -115,51 +78,35 @@
       </div>
     </q-card-section>
     <q-dialog v-model="visuTreeDial" maximized transition-show="fade" transition-hide="fade">
-      <result-view
-        :searchresults="resultSearch"
-        :totalsents="relationsTotal[currentEdge]"
-        :searchscope="tableName"
-        :parent-on-show-table="onShowTable"
-      ></result-view>
+      <ResultView :searchResults="resultSearch" @closed="visuTreeDial = false"  />
     </q-dialog>
   </q-card>
 </template>
 
 <script lang="ts">
-import ResultView from '../grewSearch/ResultView.vue';
 import { mapState } from 'pinia';
+import { grewSearchResult_t, sample_t } from 'src/api/backend-types';
 import { useProjectStore } from 'src/pinia/modules/project';
-import { useUserStore } from 'src/pinia/modules/user';
+import { notifyError } from 'src/utils/notify';
+import { PropType, defineComponent } from 'vue';
 
 import api from '../../api/backend-api';
-import { notifyError } from 'src/utils/notify';
-
-import { defineComponent, PropType } from 'vue';
-import { grewSearchResult_t } from 'src/api/backend-types';
+import ResultView from '../grewSearch/ResultView.vue';
+import TreesTypeSelect from '../shared/TreesTypeSelect.vue';
 
 export default defineComponent({
-  components: { ResultView },
+  components: { ResultView, TreesTypeSelect },
   props: {
-    sampleNames: {
-      type: Object as PropType<string[]>,
-      default: [],
+    samples: {
+      type: Object as PropType<sample_t[]>,
+      required: true,
     },
-    treesFrom: {
-      type: Object as PropType<string[]>,
-      default: [],
-    }
+   
   },
   data() {
     const resultSearch: grewSearchResult_t = {};
     const relationTree: { label: string; icon: string; children: string[] }[] = [];
-    const treeTypes = [
-      { value: 'user', label: this.$t('projectView.tooltipFabGrewUser') },
-      { value: 'user_recent', label: this.$t('projectView.tooltipFabGrewUserRecent') },
-      { value: 'recent', label: this.$t('projectView.tooltipFabGrewRecent'), icon: 'schedule' },
-      { value: 'all', label: this.$t('projectView.tooltipFabGrewAll'), icon: 'groups' },
-      { value: 'others', label: this.$t('projectView.tooltipFabGrewOther'), icon: 'group' },
-    ];
-    const treeType = treeTypes[0];
+    const data: { selectedSamples: string[]; treeType: string; otherUser: string } = { selectedSamples: [], treeType: 'recent', otherUser: '' };
     return {
       currentEdge: '',
       visuTreeDial: false,
@@ -177,23 +124,11 @@ export default defineComponent({
         descending: false,
       },
       resultSearch,
-      treeTypes,
-      treeType,
-      otherUser: '',
+      data,
     };
   },
   computed: {
-    ...mapState(useProjectStore, ['getProjectConfig', 'canSaveTreeInProject']),
-    ...mapState(useUserStore, ['avatar']),
-    treeOptions() {
-      if (!this.canSaveTreeInProject) {
-        return this.treeTypes.slice(2);
-      }
-      return this.treeTypes;
-    },
-    disableBtn() {
-      return this.treeType.value === 'others' && !this.otherUser;
-    }
+    ...mapState(useProjectStore, ['name', 'freezed', 'isOwner']),
   },
   mounted() {
     setTimeout(() => {
@@ -202,12 +137,15 @@ export default defineComponent({
     }, 500);
   },
   methods: {
+    getSelectedValues(val: any) {
+      this.data = val;
+    },
     getRelationTable() {
       let edgesList = [];
       this.relationTree = [];
-      const data = { sampleIds: this.sampleNames, tableType: this.treeType.value, otherUser: this.otherUser };
+      const data = { sampleIds: this.data.selectedSamples, tableType: this.data.treeType };
       api
-        .getRelationTable(this.$route.params.projectname as string, data)
+        .getRelationTable(this.name, data)
         .then((response) => {
           this.relationTableInfos = response.data;
           edgesList = Object.keys(this.relationTableInfos).sort();
@@ -252,7 +190,7 @@ export default defineComponent({
         let rowSum = 0;
 
         for (const dep of keySet) {
-          let num = (currentEdges[gov as string] ?? {})[dep as string] || 0;
+          let num = (currentEdges[gov as string] || {})[dep as string] || 0;
           row[dep as string] = num;
           rowSum += num;
           (colSum as any)[dep as string] = (colSum as any)[dep as string] + num || num;
@@ -286,11 +224,8 @@ export default defineComponent({
       searchPattern += '}';
       this.onSearch(searchPattern);
     },
-    onShowTable(resultSearchDialog: any) {
-      console.log(resultSearchDialog);
-    },
     onSearch(searchPattern: string) {
-      const data = { pattern: searchPattern, userType: this.treeType.value, sampleIds: this.sampleNames, otherUser: this.otherUser };
+      const data = { pattern: searchPattern, userType: this.data.treeType, sampleIds: this.data.selectedSamples };
       api
         .searchRequest(this.$route.params.projectname as string, data)
         .then((response) => {

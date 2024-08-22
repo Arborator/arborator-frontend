@@ -50,7 +50,8 @@
         </q-item-section>
         <q-item-section>
           <q-item-label> {{ $t('github.removeSync[0]') }} </q-item-label>
-          <q-item-label caption  @click.native.stop> {{ $t('github.removeSync[1]') }} 
+          <q-item-label caption @click.native.stop>
+            {{ $t('github.removeSync[1]') }}
             <a :href="repositoryLink" target="_blank"> {{ repositoryName }}</a>
           </q-item-label>
         </q-item-section>
@@ -68,16 +69,18 @@
   </q-dialog>
 </template>
 <script lang="ts">
-import GithubCommitDialog from './GithubCommitDialog.vue';
-import GithubPullRequestDialog from './GithubPullRequestDialog.vue';
-import ConfirmAction from 'src/components/ConfirmAction.vue';
-import api from '../../api/backend-api';
 import { mapState } from 'pinia';
+
+import { useProjectStore } from 'src/pinia/modules/project';
 import { useUserStore } from 'src/pinia/modules/user';
 import { notifyError, notifyMessage } from 'src/utils/notify';
+import { PropType, defineComponent } from 'vue';
 
-import { defineComponent, PropType } from 'vue';
-import { useProjectStore } from 'src/pinia/modules/project';
+import api from '../../api/backend-api';
+import GithubCommitDialog from './GithubCommitDialog.vue';
+import GithubPullRequestDialog from './GithubPullRequestDialog.vue';
+import ConfirmAction from '../shared/ConfirmAction.vue';
+
 export default defineComponent({
   components: {
     GithubCommitDialog,
@@ -112,7 +115,7 @@ export default defineComponent({
     ...mapState(useProjectStore, ['isOwner']),
     repositoryLink() {
       return `https://github.com/${this.repositoryName}`;
-    }
+    },
   },
   mounted() {
     this.getChanges();
@@ -156,7 +159,6 @@ export default defineComponent({
       this.getChanges();
     },
     pullChanges() {
-      const data = { repositoryName: this.repositoryName };
       api
         .pullChanges(this.projectName)
         .then(() => {

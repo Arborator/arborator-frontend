@@ -36,7 +36,7 @@
           </q-item-section>
         </q-item>
         <q-item 
-          v-if="usersTreesFrom.filter((user) => user !== username && user !== 'validated').length > 0 && canSeeOtherUsersTrees" 
+          v-if="otherUsers.length > 0 && canSeeOtherUsersTrees" 
           tag="label" 
           v-ripple
         >
@@ -55,7 +55,7 @@
           outlined 
           use-chips 
           v-model="users" 
-          :options="usersTreesFrom.filter((user) => user !== username && user !== 'validated')" 
+          :options="otherUsers" 
           :label="$t('exportSamples.selectOtherUsers')" 
           />
       </div>
@@ -67,15 +67,14 @@
 </template>
 
 <script lang="ts">
-import api from '../../api/backend-api';
 
+import api from '../../api/backend-api';
 import { sample_t } from 'src/api/backend-types';
 import { mapState } from 'pinia';
-import { useUserStore } from 'src/pinia/modules/user';
 import { useProjectStore } from 'src/pinia/modules/project';
+import { useUserStore } from 'src/pinia/modules/user';
 import { notifyError } from 'src/utils/notify';
-
-import { defineComponent, PropType } from 'vue';
+import { PropType, defineComponent } from 'vue';
 
 export default defineComponent({
   name: 'ExportDialog',
@@ -101,6 +100,9 @@ export default defineComponent({
     usersTreesFrom() {
       return [...new Set(this.samples.map((sample) => sample.treesFrom).reduce((a: string[], b: string[]) => [...a, ...b], []))];
     },
+    otherUsers() {
+      return this.usersTreesFrom.filter((user) => user !== this.username && user !== 'validated')
+    },
     projectName() {
       return this.$route.params.projectname;
     },
@@ -123,7 +125,7 @@ export default defineComponent({
       if (this.validated) {
         usersToExport.push('validated');
       }
-      const data = { sampleNames: this.samples.map(sample => sample.sample_name), users: usersToExport };
+      const data = { sampleNames: this.samples.map(sample => sample.sampleName), users: usersToExport };
       api
         .exportSamplesZip(this.projectName as string, data)
         .then((response) => {

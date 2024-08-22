@@ -3,12 +3,11 @@
 </template>
 
 <script lang="ts">
-import 'codemirror/theme/dracula.css';
 import CodeMirror from 'codemirror';
 import CodemirrorVueWrapper from 'codemirror-editor-vue3';
 import 'codemirror-editor-vue3/dist/style.css';
-
-import { defineComponent, PropType } from 'vue';
+import 'codemirror/theme/dracula.css';
+import { PropType, defineComponent } from 'vue';
 
 CodeMirror.defineMode('grew', () => {
   const words = {

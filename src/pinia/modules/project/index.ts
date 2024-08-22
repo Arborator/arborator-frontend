@@ -1,11 +1,10 @@
-import api from '../../../api/backend-api';
-
-import defaultState from './defaultState';
-import { useUserStore } from '../user';
-
 import { defineStore } from 'pinia';
-import { notifyMessage, notifyError } from 'src/utils/notify';
-import { annotationFeatures_t, project_extended_t, project_with_diff_t } from 'src/api/backend-types';
+import { annotationFeatures_t, project_extended_t, project_t } from 'src/api/backend-types';
+import { notifyError, notifyMessage } from 'src/utils/notify';
+
+import api from '../../../api/backend-api';
+import { useUserStore } from '../user';
+import defaultState from './defaultState';
 
 export const useProjectStore = defineStore('project', {
   state: () => {
@@ -17,15 +16,15 @@ export const useProjectStore = defineStore('project', {
       return state.admins[0] === useUserStore().username;
     },
     isAdmin(state): boolean {
-      return state.admins.includes(useUserStore().username) || useUserStore().super_admin;
+      return state.admins.includes(useUserStore().username) || useUserStore().superAdmin;
     },
     isValidator(state): boolean {
       return state.validators.includes(useUserStore().username) || this.isAdmin;
     },
     isAnnotator(state): boolean {
-      return state.annotators.includes(useUserStore().username) && !useUserStore().super_admin;
+      return state.annotators.includes(useUserStore().username) && !useUserStore().superAdmin;
     },
-    isGuest: (state) => state.guests.includes(useUserStore().username) && !useUserStore().super_admin,
+    isGuest: (state) => state.guests.includes(useUserStore().username) && !useUserStore().superAdmin,
     isStudent(state): boolean {
       return !this.isValidator && state.blindAnnotationMode;
     },
@@ -43,7 +42,7 @@ export const useProjectStore = defineStore('project', {
       if (this.isGuest) {
         return false;
       }
-      if (this.isGuest) {
+      if (!this.collaborativeMode && !this.isValidator) {
         return false;
       }
       if (this.isValidator && this.blindAnnotationMode) {
@@ -78,17 +77,10 @@ export const useProjectStore = defineStore('project', {
       return false;
     },
     canExportTrees(state): boolean {
-      if (state.blindAnnotationMode && (!useUserStore().isLoggedIn || this.isGuest)) {
-        return false;
-      }
-      return true;
+      return !state.blindAnnotationMode || (useUserStore().isLoggedIn && !this.isGuest);
     },
-    getAnnotationSetting(state): string {
-      if (this.config === 'ud') {
-        return JSON.stringify(state.annotationFeaturesUD, null, 4);
-      } else {
-        return JSON.stringify(state.annotationFeatures, null, 4);
-      }
+    getAnnotationSetting(): string {
+      return this.config === 'ud' ? this.getUDAnnofJson : this.getSUDAnnofJson;
     },
     getSUDAnnofJson: (state) => JSON.stringify(state.annotationFeatures, null, 4),
     getUDAnnofJson: (state) => JSON.stringify(state.annotationFeaturesUD, null, 4),
@@ -107,15 +99,23 @@ export const useProjectStore = defineStore('project', {
     },
   },
   actions: {
-    /*
-     * For now, `configShown` regroup information about `shownMeta` and `shownFeatures`
-     * while `configConllu` regroup the information about `annotationfeatures`
-     * both of these config are saved on different servers (resp arborator-flask and grew_server)
-     * so we need to keep separate the logic in Vuex, API calls and so on
-     */
-    fetchProjectSettings({ projectname }: { projectname: string }) {
+    isMyProject(project: project_extended_t) {
+      const projectMember = [...project.admins, ...project.annotators, ...project.validators, ...project.guests];
+      return projectMember.includes(useUserStore().username) || project.users.includes(useUserStore().username);
+    },
+    isOldProject(project: project_extended_t) {
+      const ayear = -3600 * 24 * 365;
+      return project.lastAccess < ayear || (project.numberSamples < 1 && project.lastAccess < -3600);
+    },
+    resetAnnotationFeatures(): void {
+      this.annotationFeatures = defaultState().annotationFeatures;
+    },
+    resetAnnotationFeaturesUD(): void {
+      this.annotationFeatures = defaultState().annotationFeaturesUD;
+    },
+    fetchProjectSettings({ projectName }: { projectName: string }) {
       api
-        .getProject(projectname)
+        .getProject(projectName)
         .then((response) => {
           this.invalidProjectError = false;
           this.name = response.data.projectName;
@@ -123,25 +123,28 @@ export const useProjectStore = defineStore('project', {
           this.diffMode = response.data.diffMode;
           this.diffUserId = response.data.diffUserId;
           this.visibility = response.data.visibility;
-          this.image = response.data.image;
           this.description = response.data.description;
           this.freezed = response.data.freezed;
           this.config = response.data.config;
           this.language = response.data.language;
+          this.collaborativeMode = response.data.collaborativeMode;
         })
         .then(() => {
-          api.getProjectUsersAccess(projectname).then((response) => {
+          api.getProjectImage(projectName).then((response) => {
+            this.image = response.data;
+          });
+          api.getProjectUsersAccess(projectName).then((response) => {
             this.admins = response.data.admins;
             this.validators = response.data.validators;
             this.annotators = response.data.annotators;
             this.guests = response.data.guests;
           });
-          api.getProjectFeatures(projectname).then((response) => {
+          api.getProjectFeatures(projectName).then((response) => {
             this.shownMeta = response.data.shownMeta;
             this.shownFeatures = response.data.shownFeatures;
           });
           api
-            .getProjectConlluSchema(projectname)
+            .getProjectConlluSchema(projectName)
             .then((response) => {
               let fetchedAnnotationFeatures = response.data.annotationFeatures;
               // check if there is a json in proper format, otherwise use default ConfigConllu
@@ -154,12 +157,13 @@ export const useProjectStore = defineStore('project', {
               notifyError({ error });
             });
         })
-        .catch(() => {
+        .catch((error) => {
           this.invalidProjectError = true;
+          notifyError({ error: error });
         });
     },
     
-    updateProjectSettings(projectName: string, toUpdateObject: Partial<project_extended_t | project_with_diff_t>) {
+    updateProjectSettings(projectName: string, toUpdateObject: Partial<project_extended_t | project_t>) {
       return new Promise((resolve, reject) => {
         api
           .updateProject(projectName, toUpdateObject)
@@ -177,10 +181,10 @@ export const useProjectStore = defineStore('project', {
           });
       });
     },
-    updateProjectshownFeatures({ projectname, toUpdateObject }: { projectname: string; toUpdateObject: any }) {
+    updateProjectshownFeatures({ projectName, toUpdateObject }: { projectName: string; toUpdateObject: any }) {
       return new Promise((resolve, reject) => {
         api
-          .updateProjectFeatures(projectname, toUpdateObject)
+          .updateProjectFeatures(projectName, toUpdateObject)
           .then((response) => {
             this.$patch(toUpdateObject);
             notifyMessage({ message: 'New project features saved on the server', icon: 'save' });
@@ -192,14 +196,14 @@ export const useProjectStore = defineStore('project', {
           });
       });
     },
-    postImage(newImage: string) {
+    postImage(newImage: any) {
       return new Promise((resolve, reject) => {
         const form = new FormData();
         form.append('files', newImage);
         api
           .uploadProjectImage(this.name, form)
           .then((response) => {
-            this.$patch({ ...response.data });
+            notifyMessage({ message: 'New image is uploaded to the project' });
             resolve(response);
           })
           .catch((error) => {
@@ -207,27 +211,10 @@ export const useProjectStore = defineStore('project', {
           });
       });
     },
-    getImage(projectName: string) {
-      const treeImage = '/images/niko-photos-tGTVxeOr_Rs-unsplash.jpg';
-      api
-        .getProjectImage(projectName)
-        .then((response) => {
-          if (Object.keys(response.data).length > 0) {
-            const imageData = response.data.image_data;
-            const imageExt = response.data.image_ext;
-            this.imageSrc = `data:image/${imageExt};base64,${imageData}`;
-          } else {
-            this.imageSrc = treeImage;
-          }
-        })
-        .catch((error) => {
-          notifyError(error);
-        });
-    },
-    updateProjectConlluSchema(projectname: string, annotationFeatures: annotationFeatures_t) {
+    updateProjectConlluSchema(projectName: string, annotationFeatures: annotationFeatures_t) {
       return new Promise((resolve, reject) => {
         api
-          .updateProjectConlluSchema(projectname, {
+          .updateProjectConlluSchema(projectName, {
             config: annotationFeatures,
           })
           .then((response) => {
@@ -238,14 +225,6 @@ export const useProjectStore = defineStore('project', {
             reject(new Error(error));
           });
       });
-    },
-
-    /// / for now, AnnotationFeatures is the same thing as configConllu. We need to find an appropriate short name
-    resetAnnotationFeatures(): void {
-      this.annotationFeatures = defaultState().annotationFeatures;
-    },
-    resetAnnotationFeaturesUD(): void {
-      this.annotationFeatures = defaultState().annotationFeaturesUD;
     },
   },
 });

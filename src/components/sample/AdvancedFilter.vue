@@ -1,6 +1,6 @@
 <template>
   <div class="row q-pa-md q-gutter-x-md">
-    <div class="col-6">
+    <div class="col-5">
       <q-input 
         v-model="textFilter" 
         :label="$t('advancedFilter.textFilter')" 
@@ -10,7 +10,7 @@
         @keyup.enter="applyAdvancedFilter()"
       ></q-input>
     </div>
-    <div class="col-3 q-px-md q-gutter-md">
+    <div class="col-1 q-px-md q-gutter-md">
       <q-select
         outlined
         dense
@@ -30,6 +30,16 @@
           <q-separator />
         </template>
       </q-select>
+    </div>
+    <div class="col-2 q-px-md q-gutter-md">
+      <q-select
+        outlined
+        dense
+        v-model="order"
+        :options="orderOptions"
+        label="Order sentences"
+        @update:model-value="orderFilteredTrees(order)"
+       />
     </div>
     <q-btn @click="applyAdvancedFilter" color="primary">{{ $t('advancedFilter.applyFilter') }}</q-btn>
     <q-separator vertical />
@@ -105,7 +115,6 @@ import { mapActions, mapState, mapWritableState } from 'pinia';
 import { useProjectStore } from 'src/pinia/modules/project';
 import { useTagsStore } from 'src/pinia/modules/tags';
 import { useTreesStore } from 'src/pinia/modules/trees';
-import { useGrewSearchStore } from 'src/pinia/modules/grewSearch';
 import { notifyError, notifyMessage } from 'src/utils/notify';
 
 import { defineComponent } from 'vue';
@@ -140,6 +149,8 @@ export default defineComponent({
       filterChoices,
       filterOperators,
       listFilters,
+      order: 'initial',
+      orderOptions: ['initial', 'ascending', 'descending'],
     };
   },
   computed: {
@@ -155,15 +166,14 @@ export default defineComponent({
       'featuresSetForDiffs',
       'featuresSetForNotDiffs',
       'selectedTags',
+      'pendingModifications'
     ]),
-    ...mapState(useGrewSearchStore, ['pendingModifications']),
   },
   mounted() {
     this.clearAll();
   },
   methods: {
-    ...mapActions(useTreesStore, ['applyFilterTrees', 'getUsersTags']),
-    ...mapActions(useGrewSearchStore, ['emptyPendingModification']),
+    ...mapActions(useTreesStore, ['applyFilterTrees', 'getUsersTags', 'orderFilteredTrees', 'emptyPendingModification']),
     applyAdvancedFilter() {
       this.initializeFilters();
       for (const filter of this.listFilters) {
@@ -220,7 +230,6 @@ export default defineComponent({
         .then(() => {
           notifyMessage({ position: 'top', message: 'Saved on the server', icon: 'save' });
           this.emptyPendingModification();
-          console.log(this.pendingModifications.size)
           this.$emit('trees-saved');
         })
         .catch((error) => {

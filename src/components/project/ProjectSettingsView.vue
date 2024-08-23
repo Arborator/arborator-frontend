@@ -417,7 +417,7 @@ export default defineComponent({
       this.$router.push({
         name: 'project',
         params: {
-          projectName: this.newProjectName,
+          projectname: this.newProjectName,
         },
       });
     },

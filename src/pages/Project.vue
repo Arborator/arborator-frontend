@@ -48,7 +48,7 @@
             </q-btn>
             <div v-if="isAllowdedToSync && syncGithubRepo">
               <GithubOptions
-                :projectName="name"
+                :projectName="projectName"
                 :repositoryName="syncGithubRepo"
                 :key="reload"
                 @pulled="loadProjectData"
@@ -91,7 +91,7 @@
               ></ProjectTable>
             </q-tab-panel>
             <q-tab-panel class="q-pa-none" name="grew">
-              <GrewSearch :search-scope="name" :samples="samples" @reload="loadProjectData" />
+              <GrewSearch :search-scope="projectName" :samples="samples" @reload="loadProjectData" />
             </q-tab-panel>
             <q-tab-panel class="q-pa-none" name="parser">
               <ParsingPanel :samples="samples" :parentGetProjectSamples="getProjectSamples"></ParsingPanel>
@@ -110,11 +110,11 @@
       </q-card>
       <q-dialog v-model="syncGithubDial">
         <q-card style="min-width: 50vw">
-          <GithubSyncDialog :projectName="name" @created="loadAfterGithubSync()" />
+          <GithubSyncDialog :projectName="projectName" @created="loadAfterGithubSync()" />
         </q-card>
       </q-dialog>
       <q-dialog v-model="projectSettingsDial">
-        <ProjectSettingsView :projectName="name" :samples="samples" />
+        <ProjectSettingsView :projectName="projectName" :samples="samples" />
       </q-dialog>
       <UploadDialog v-model:uploadDial="uploadDial" :samples="samples" @uploaded:sample="loadProjectData()" />
     </div>

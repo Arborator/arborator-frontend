@@ -14,16 +14,20 @@
         v-model="newProjectName"
         :label="$t('renameProject.inputLabel')"
         lazy-rules
-        :rules="[(val) => (val && val.length > 0) || $t('renameProject.inputError')]"
+        :rules="[
+          (val) => (val && val.length > 0) || $t('renameProject.inputError'), 
+          (val) => (val && !val.endsWith(' ')) || $t('createProjectCard.inputWarning[1]'),
+        ]"
       />
       <div class="flex flex-center">
-        <q-btn v-close-popup :disable="newProjectName === ''" color="primary" :label="$t('renameProject.renameBtn')" @click="renameProject()" />
+        <q-btn v-close-popup :disable="disableBtn" color="primary" :label="$t('renameProject.renameBtn')" @click="renameProject()" />
       </div>
     </q-card-section>
   </q-card>
 </template>
 <script lang="ts">
 import { mapActions } from 'pinia';
+import { cpuUsage } from 'process';
 import { useProjectStore } from 'src/pinia/modules/project';
 import { PropType, defineComponent } from 'vue';
 
@@ -39,6 +43,11 @@ export default defineComponent({
     return {
       newProjectName: this.projectName,
     };
+  },
+  computed: {
+    disableBtn() {
+      return this.newProjectName === '' || this.newProjectName.endsWith(' ');
+    }
   },
   methods: {
     ...mapActions(useProjectStore, ['updateProjectSettings']),

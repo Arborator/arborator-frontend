@@ -162,7 +162,7 @@ export default {
     blindAnnotationMode: 'blind annotation mode',
     create: 'Create',
     createMessage: 'is created',
-    inputWarning: 'Please type something',
+    inputWarning: ['Please type something', "Project name shouldn't ends with white space" ],
     selectWarning: 'Please select something',
     corpusConfig: 'Corpus configuration',
     enterLanguage: 'Enter language',

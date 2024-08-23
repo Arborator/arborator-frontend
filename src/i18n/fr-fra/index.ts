@@ -159,7 +159,7 @@ export default {
     blindAnnotationMode: 'Mode annotation aveugle',
     create: 'Créer',
     createMessage: 'est créé',
-    inputWarning: 'Veuillez taper quelque chose',
+    inputWarning: ['Veuillez taper quelque chose', 'Le nom du project ne deverait pas se terminer par un espace'],
     selectWarning: 'Veuillez choisir quelque chose',
     corpusConfig: 'La configuration du corpus',
     enterLanguage: 'Saisir la langue du projet',

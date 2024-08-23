@@ -19,7 +19,10 @@
             v-model="project.projectName"
             :label="$t('createProjectCard.projectName') + ' *'"
             lazy-rules
-            :rules="[(val) => (val && val.length > 0) || $t('createProjectCard.inputWarning')]"
+            :rules="[
+              (val) => (val && val.length > 0) || $t('createProjectCard.inputWarning[0]'),
+              (val) => (val && !val.endsWith(' ')) || $t('createProjectCard.inputWarning[1]'),
+            ]"
           />
           <q-input outlined dense v-model="project.description" label="Description" />
           <q-separator />
@@ -223,7 +226,7 @@ export default defineComponent({
       return this.loggedWithGithub && this.isShowSyncBtn && !this.isShowGithubSyncPanel;
     },
     disableSubmitBtn() {
-      return this.project.projectName === '' || this.project.language === '' || this.project.config === '';
+      return this.project.projectName === '' || this.project.language === '' || this.project.config === '' || this.project.projectName.endsWith(' ');
     },
   },
   methods: {

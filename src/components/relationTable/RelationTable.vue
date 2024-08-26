@@ -218,7 +218,13 @@ export default defineComponent({
     },
     showTrees(props: any) {
       this.tableName = `${this.currentEdge} relation table`;
-      let searchPattern = `pattern { GOV -[${this.currentEdge}]-> DEP; `;
+      let searchPattern = ''
+      if (this.currentEdge === '_') {
+        searchPattern = `pattern { e: GOV -> DEP;  e.label = "_"; `
+      }
+      else {
+        searchPattern = `pattern { GOV -[${this.currentEdge}]-> DEP; `;
+      }
       if (props.col.name != 'sum') searchPattern += `DEP [ExtPos="${props.col.name}"/upos="${props.col.name}"]; `;
       if (props.key != '∑' && props.key != '_') searchPattern += ` GOV [upos="${props.key}"]; `;
       searchPattern += '}';

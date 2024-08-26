@@ -1,4 +1,7 @@
 <template>
+  <div class="row q-px-md">
+    <Breadcrumbs :height="30" :font-size="16" />
+  </div>
   <div class="row q-pa-md q-gutter-x-md">
     <div class="col-5">
       <q-input 
@@ -119,6 +122,7 @@ import { notifyError, notifyMessage } from 'src/utils/notify';
 
 import { defineComponent } from 'vue';
 import { api } from 'src/boot/axios';
+import Breadcrumbs from 'src/layouts/Breadcrumbs.vue';
 
 interface filter_t {
   setUsers: string[];
@@ -134,6 +138,9 @@ interface element_t {
 export default defineComponent({
   name: 'AdvancedFilter',
   emits: ['trees-saved'],
+  components: {
+    Breadcrumbs,
+  },
   data() {
     const filterOperators: element_t[] = [
       { val: 'have', label: this.$t('advancedFilter.filterOperators[0]') },

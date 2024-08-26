@@ -27,7 +27,6 @@
 </template>
 <script lang="ts">
 import { mapActions } from 'pinia';
-import { cpuUsage } from 'process';
 import { useProjectStore } from 'src/pinia/modules/project';
 import { PropType, defineComponent } from 'vue';
 

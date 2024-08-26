@@ -3,6 +3,9 @@
     <div class="q-pa-md">
       <q-card flat style="max-width: 100%">
         <q-card-section>
+          <Breadcrumbs :height="40" :font-size="20" />
+        </q-card-section>
+        <q-card-section>
           <div class="row q-pa-md justify-between flex flex-center">
             <div class="col-4 justify-center">
               <div class="text-h5 text-weight-bold">
@@ -144,6 +147,7 @@ import ProjectTable from 'src/components/project/ProjectTable.vue';
 import RelationTable from 'src/components/relationTable/RelationTable.vue';
 import ProjectVisibility from 'src/components/shared/ProjectVisibility.vue';
 import StatisticsProject from 'src/components/project/StatisticsProject.vue';
+import Breadcrumbs from 'src/layouts/Breadcrumbs.vue';
 
 export default defineComponent({
   components: {
@@ -160,6 +164,7 @@ export default defineComponent({
     GithubSyncDialog,
     GithubOptions,
     StatisticsProject,
+    Breadcrumbs,
   },
   data() {
     const samples: sample_t[] = [];

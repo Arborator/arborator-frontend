@@ -42,15 +42,11 @@ import AdvancedFilter from 'src/components/sample/AdvancedFilter.vue';
 import { useTreesStore } from 'src/pinia/modules/trees';
 import { PropType, defineComponent } from 'vue';
 
-import GrewSearch from '../components/grewSearch/GrewSearch.vue';
-import RelationTableMain from '../components/relationTable/RelationTableMain.vue';
 import SentenceCard from '../components/sentence/SentenceCard.vue';
 
 export default defineComponent({
   components: {
     SentenceCard,
-    GrewSearch,
-    RelationTableMain,
     AdvancedFilter,
   },
   beforeRouteLeave(to, from, next) {
@@ -77,7 +73,7 @@ export default defineComponent({
     },
   },
   data() {
-    const splitterModel: number = 10;
+    const splitterModel: number = 12;
     const splitterHeight: number = 0;
     return {
       splitterModel,

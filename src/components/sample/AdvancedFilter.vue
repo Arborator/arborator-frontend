@@ -34,19 +34,19 @@
         </template>
       </q-select>
     </div>
+    <q-btn @click="applyAdvancedFilter" color="primary">{{ $t('advancedFilter.applyFilter') }}</q-btn>
     <div class="col-2 q-px-md q-gutter-md">
       <q-select
         outlined
         dense
         v-model="order"
         :options="orderOptions"
-        label="Order sentences"
+        label="Order sentences by length"
         @update:model-value="orderFilteredTrees(order)"
        />
     </div>
-    <q-btn @click="applyAdvancedFilter" color="primary">{{ $t('advancedFilter.applyFilter') }}</q-btn>
     <q-separator vertical />
-    <q-btn outline :disable="pendingModifications.size === 0" color="primary" label="Save pending trees" @click="saveAllTrees()">
+    <q-btn v-if="isLoggedIn" outline :disable="pendingModifications.size === 0" color="primary" label="Save pending trees" @click="saveAllTrees()">
       <q-badge v-if="pendingModifications.size > 0" color="red" floating>
         {{ pendingModifications.size }}
       </q-badge>
@@ -118,6 +118,7 @@ import { mapActions, mapState, mapWritableState } from 'pinia';
 import { useProjectStore } from 'src/pinia/modules/project';
 import { useTagsStore } from 'src/pinia/modules/tags';
 import { useTreesStore } from 'src/pinia/modules/trees';
+import { useUserStore } from 'src/pinia/modules/user';
 import { notifyError, notifyMessage } from 'src/utils/notify';
 
 import { defineComponent } from 'vue';
@@ -175,6 +176,7 @@ export default defineComponent({
       'selectedTags',
       'pendingModifications'
     ]),
+    ...mapState(useUserStore, ['isLoggedIn']),
   },
   mounted() {
     this.clearAll();

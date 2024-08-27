@@ -9,7 +9,7 @@
           size="sm"
           color="primary"
           icon="question_mark"
-          href="https://arborator.github.io/arborator-documentation/#/?id=collaborating-in-projects"
+          href="https://arborator.github.io/arborator-documentation/#/collaborating"
           target="_blank"
         >
           <q-tooltip content-class="text-white bg-primary"> Assistance </q-tooltip>

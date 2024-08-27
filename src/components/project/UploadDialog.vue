@@ -4,7 +4,7 @@
       <q-bar class="bg-primary text-white">
         <q-space />
         <q-btn v-close-popup="10" dense flat icon="close" @click="closeDialog()">
-          <q-tooltip content-class="bg-white text-primary">{{ $t('projectView.tooltipWindows[2]') }}</q-tooltip>
+          <q-tooltip content-class="bg-white text-primary">close</q-tooltip>
         </q-btn>
       </q-bar>
       <q-card-section class="q-gutter-y-md">

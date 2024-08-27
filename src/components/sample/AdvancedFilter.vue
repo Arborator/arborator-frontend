@@ -229,7 +229,7 @@ export default defineComponent({
     },
     saveAllTrees() {
       const data = {
-        conllGraph: [...this.pendingModifications.values()].join('\n\n')
+        conllGraph: [...this.pendingModifications.values()].map((sentence) => sentence.conll).join('\n\n')
       };
       const sampleName = this.$route.params.samplename as string;
       api

@@ -43,7 +43,7 @@
         <div>
           <q-tooltip content-class="bg-white text-primary">{{ $t('lexicon.selectTreeType') }}</q-tooltip>
           <q-btn-dropdown
-            :disable="!principalFeatures.length || !selectedSamples.length"
+            :disable="!principalFeatures.length"
             class="float-right"
             size="md"
             outline

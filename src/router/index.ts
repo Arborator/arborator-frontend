@@ -22,6 +22,16 @@ export default route(() => {
   
   Router.beforeEach((to, from, next) => {
     const session = cookies.get('session');
+    if (to.matched.some((record) => record.meta.requiresAuth) && session === null) {
+      next('/');
+    }
+    else {
+      next();
+    }
+  })
+
+  Router.beforeEach((to, from, next) => {
+    const session = cookies.get('session');
     if (to.path === '/' && session !== null) {
       next('/projects');
     }

@@ -37,9 +37,6 @@ export const useGrewSearchStore = defineStore('grewSearch', {
     },
   },
   actions: {
-    switchGrewDialog(newDialogState: boolean) {
-      this.grewDialog = newDialogState;
-    },
     changeLastGrewQuery(query: null | { text: string; type: 'REWRITE' | 'SEARCH'; userType: string }) {
       this.lastQuery = query;
     },

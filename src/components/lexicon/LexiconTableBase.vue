@@ -87,7 +87,7 @@
 </template>
 
 <script lang="ts">
-import { mapActions, mapState } from 'pinia';
+import { mapActions, mapState, mapWritableState } from 'pinia';
 import { grewSearchResult_t } from 'src/api/backend-types';
 import { useGrewSearchStore } from 'src/pinia/modules/grewSearch';
 import { useProjectStore } from 'src/pinia/modules/project';
@@ -166,6 +166,7 @@ export default defineComponent({
   computed: {
     ...mapState(useLexiconStore, ['lexiconItems']),
     ...mapState(useProjectStore, ['name']),
+    ...mapWritableState(useProjectStore, ['tab']),
     getLexiconData() {
       this.lexiconData = [];
       for (const lexiconItem of this.passedLexiconItems) {
@@ -176,8 +177,7 @@ export default defineComponent({
   },
   methods: {
     ...mapActions(useLexiconStore, ['setLexiconModificationItem', 'removeCoupleLexiconItemBeforeAfter']),
-    ...mapActions(useGrewSearchStore, ['switchGrewDialog', 'changeLastGrewQuery']),
-
+    ...mapActions(useGrewSearchStore, ['changeLastGrewQuery']),
     createTableFieldsAndColumns() {
       for (const feature of this.features) {
         this.table.fields.push({
@@ -231,7 +231,7 @@ export default defineComponent({
         counter = counter + 1;
       }
       this.changeLastGrewQuery({ text: grewRuleConcatenated, type: 'REWRITE', userType: this.lexiconType });
-      this.switchGrewDialog(true);
+      this.tab = 'grew';
     },
 
     grewPatternFromLexiconItem(lex_item: lexiconItem_FE_t) {

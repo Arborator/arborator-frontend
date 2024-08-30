@@ -28,6 +28,7 @@ interface configState {
   annotationFeaturesUD: annotationFeatures_t;
   languagesList: { index: number; name: string }[];
   invalidProjectError: boolean,
+  tab: string,
 }
 
 export default function defaultState(): configState {
@@ -342,5 +343,6 @@ export default function defaultState(): configState {
       ]
     },
     invalidProjectError: false,
+    tab: 'samples',
   };
 }

@@ -181,7 +181,6 @@ export default defineComponent({
       unselectSamples: false,
       syncGithubRepo: '',
       reload: 0,
-      tab: 'samples',
     };
   },
   computed: {
@@ -201,7 +200,7 @@ export default defineComponent({
       'reloadSamples', 
       'invalidProjectError'
     ]),
-    ...mapWritableState(useProjectStore, ['reloadSamples']),
+    ...mapWritableState(useProjectStore, ['reloadSamples', 'tab']),
     ...mapState(useGithubStore, ['reloadCommits']),
     ...mapWritableState(useGrewSearchStore, ['grewDialog']),
     projectName(): string {

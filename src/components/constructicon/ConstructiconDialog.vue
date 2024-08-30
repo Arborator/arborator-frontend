@@ -104,7 +104,7 @@
 
 <script lang="ts">
 import GrewCodeMirror from 'components/codemirrors/GrewCodeMirror.vue';
-import { mapActions, mapState } from 'pinia';
+import { mapActions, mapState, mapWritableState } from 'pinia';
 import { ConstructiconEntry_t } from 'src/api/backend-types';
 import { useGrewSearchStore } from 'src/pinia/modules/grewSearch';
 import { useProjectStore } from 'src/pinia/modules/project';
@@ -147,6 +147,7 @@ export default defineComponent({
       return api;
     },
     ...mapState(useProjectStore, ['name', 'canSaveTreeInProject']),
+    ...mapWritableState(useProjectStore, ['tab']),
     // filter the items based on the search term
     filteredEntries(): ConstructiconEntry_t[] {
       return this.constructiconEntries.filter(
@@ -159,7 +160,7 @@ export default defineComponent({
     this.loadConstructiconEntries();
   },
   methods: {
-    ...mapActions(useGrewSearchStore, ['switchGrewDialog', 'changeLastGrewQuery']),
+    ...mapActions(useGrewSearchStore, ['changeLastGrewQuery']),
     setActiveItem(entry: ConstructiconEntry_t) {
       this.activeEntry = entry;
     },
@@ -216,8 +217,7 @@ export default defineComponent({
         });
     },
     grewSearch(query: string) {
-      console.log(query);
-      this.switchGrewDialog(true);
+      this.tab = 'grew';
       this.changeLastGrewQuery({ text: query, type: 'SEARCH', userType: 'user' });
     },
     changeEditMode() {

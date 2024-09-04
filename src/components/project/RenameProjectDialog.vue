@@ -17,6 +17,7 @@
         :rules="[
           (val) => (val && val.length > 0) || $t('renameProject.inputError'), 
           (val) => (val && !val.endsWith(' ')) || $t('createProjectCard.inputWarning[1]'),
+          (val) => (val && !val.includes('\\') && !val.includes('/')) || $t('createProjectCard.inputWarning[2]'),
         ]"
       />
       <div class="flex flex-center">
@@ -45,7 +46,7 @@ export default defineComponent({
   },
   computed: {
     disableBtn() {
-      return this.newProjectName === '' || this.newProjectName.endsWith(' ');
+      return this.newProjectName === '' || this.newProjectName.endsWith(' ') || this.newProjectName.includes('/') || this.newProjectName.includes('\\');
     }
   },
   methods: {

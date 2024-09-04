@@ -22,6 +22,7 @@
             :rules="[
               (val) => (val && val.length > 0) || $t('createProjectCard.inputWarning[0]'),
               (val) => (val && !val.endsWith(' ')) || $t('createProjectCard.inputWarning[1]'),
+              (val) => (val && !val.includes('\\') && !val.includes('/')) || $t('createProjectCard.inputWarning[2]'),
             ]"
           />
           <q-input outlined dense v-model="project.description" label="Description" />
@@ -225,8 +226,11 @@ export default defineComponent({
     canSyncWithGithub() {
       return this.loggedWithGithub && this.isShowSyncBtn && !this.isShowGithubSyncPanel;
     },
+    invalidProjectName() {
+      return this.project.projectName === '' || this.project.projectName.endsWith(' ') || this.project.projectName.includes('/') || this.project.projectName.includes('\\');
+    },
     disableSubmitBtn() {
-      return this.project.projectName === '' || this.project.language === '' || this.project.config === '' || this.project.projectName.endsWith(' ');
+      return  this.invalidProjectName || this.project.language === '' || this.project.config === '';
     },
   },
   methods: {

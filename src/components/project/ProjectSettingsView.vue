@@ -36,9 +36,18 @@
               />
             </template>
           </q-file>
-          <q-input outlined v-model="newProjectName" :label="$t('renameProject.title')">
+          <q-input 
+            outlined 
+            v-model="newProjectName" 
+            :label="$t('renameProject.title')"
+            :rules="[
+              (val) => (val && val.length > 0) || $t('createProjectCard.inputWarning[0]'),
+              (val) => (val && !val.endsWith(' ')) || $t('createProjectCard.inputWarning[1]'),
+              (val) => (val && !val.includes('\\') && !val.includes('/')) || $t('createProjectCard.inputWarning[2]'),
+            ]"
+          >
             <template #append>
-              <q-btn flat color="primary" icon="save" @click="renameProject()" />
+              <q-btn :disable="disableRenameProjectBtn" flat color="primary" icon="save" @click="renameProject()" />
             </template>
           </q-input>
           <q-input v-model="projectDescription" label="Description" outlined type="textarea">
@@ -364,6 +373,9 @@ export default defineComponent({
       const treesFrom = this.samples.map((sample) => sample.treesFrom).reduce((a: string[], b: string[]) => [...a, ...b], []);
       return [...new Set(treesFrom)];
     },
+    disableRenameProjectBtn() {
+      return this.newProjectName === '' || this.newProjectName.endsWith(' ') || this.newProjectName.includes('/') || this.newProjectName.includes('\\');
+    }
   },
   mounted() {
     this.annotationFeaturesJson = this.getAnnotationSetting;

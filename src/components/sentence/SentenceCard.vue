@@ -45,7 +45,7 @@
           <q-tooltip v-else>
             {{ $t('sentenceCard.automaticParsing') }}
           </q-tooltip>
-          <!--<q-badge 
+          <q-badge 
             v-if="!hasPendingChanges[user] && udValidationStatut[user] !== ''" 
             :color="udValidationStatut[user]"
             rounded 
@@ -55,7 +55,6 @@
             @click="showUdValidation = true"
           >
           </q-badge>
-          -->
         </q-tab>
       </q-tabs>
       <q-tab-panels v-model="openTabUser" keep-alive class="custom-frame1" @transition="transitioned">
@@ -370,7 +369,7 @@ export default defineComponent({
               this.exportedConll = exportedConll;
             }
             notifyMessage({ position: 'top', message: 'Saved on the server', icon: 'save' });
-            //this.validateUdTree(exportedConll);
+            this.validateUdTree(exportedConll);
           }
         })
         .catch((error) => {

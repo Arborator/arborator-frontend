@@ -263,6 +263,9 @@ export default defineComponent({
     isBernardCaron() {
       return this.username === 'bernard.l.caron' || this.username === 'kirianguiller';
     },
+    sampleName() {
+      return this.$route.params.samplename as string;
+    }
   },
   methods: {
     editTokens(event: Event) {

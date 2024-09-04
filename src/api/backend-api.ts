@@ -17,7 +17,6 @@ import {
   getProjects_RV,
   getUsers_RV,
   grewSearch_RV,
-  logout_RV,
   parserList_RV,
   parserParseStatus_RV,
   parserTrainStatus_RV,
@@ -62,6 +61,9 @@ export default {
   // ---------------------------------------------------- //
   getProjects() {
     return API.get<getProjects_RV>('projects');
+  },
+  getUserProjects() {
+    return API.get<getProjects_RV>('projects/user-projects');
   },
   getMismatchProjects() {
     return API.get('projects/mismatch-projects');
@@ -158,6 +160,9 @@ export default {
   },
   saveAllTrees(projectName: string, sampleName: string, data: any) {
     return API.post(`/projects/${projectName}/samples/${sampleName}/trees/all`, data);
+  },
+  validateTree(projectName: string, data: any) {
+    return API.post(`/projects/${projectName}/tree/validate`, data);
   },
   // ----------------------------------------------------- //
   // ---------------          Grew         --------------- //

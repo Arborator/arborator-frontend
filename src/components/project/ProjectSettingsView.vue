@@ -401,11 +401,13 @@ export default defineComponent({
     resetAnnotationFeaturesWrapper() {
       this.resetAnnotationFeatures();
       this.annotationFeaturesJson = this.getSUDAnnofJson;
+      this.updateProjectSettings(this.projectName, { config: 'sud' });
     },
 
     resetAnnotationFeaturesUDWrapper() {
       this.resetAnnotationFeaturesUD();
       this.annotationFeaturesJson = this.getUDAnnofJson;
+      this.updateProjectSettings(this.projectName, { config: 'ud' });
     },
 
     saveDescription() {

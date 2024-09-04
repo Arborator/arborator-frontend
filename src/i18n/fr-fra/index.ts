@@ -302,6 +302,9 @@ export default {
     automaticParsing: 'Parsing automatique',
     conllText: 'Texte Conll',
     statisticDial: "Statistiques de l'arbre ouvert",
+    udValidation: "Problèmes de validation d'UD",
+    notDetectedLang: ["La langue du projet n'a pas été trouvée dans la liste des langues d'UD ", "(La liste des langues d'UD)"],
+    noValidationIssues: 'Votre annotation est valide',
   },
   tagsMenu: {
     enterTags: 'Saisir les tags',

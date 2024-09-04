@@ -45,6 +45,16 @@
           <q-tooltip v-else>
             {{ $t('sentenceCard.automaticParsing') }}
           </q-tooltip>
+          <q-badge 
+            v-if="!hasPendingChanges[user] && udValidationStatut[user] !== ''" 
+            :color="udValidationStatut[user]"
+            rounded 
+            floating 
+            class="clickable" 
+            @click.native.stop 
+            @click="showUdValidation = true"
+          >
+          </q-badge>
         </q-tab>
       </q-tabs>
       <q-tab-panels v-model="openTabUser" keep-alive class="custom-frame1" @transition="transitioned">
@@ -122,6 +132,32 @@
         />
       <StatisticsDialog :sentence-bus="sentenceBus" :conlls="sentenceData.conlls" />
     </template>
+    <q-dialog v-model="showUdValidation">
+      <q-card style="width: 800px;max-width: 90vw;">
+        <q-card-section>
+          <div class="row text-h6">
+            {{ $t('sentenceCard.udValidation') }} 
+            <span>
+              <q-icon name="bug_report" />
+            </span>
+          </div>
+          <div class="row">
+            <span v-if="!languageDetected">
+              {{ $t('sentenceCard.notDetectedLang[0]') }} 
+              <a href="https://quest.ms.mff.cuni.cz/udvalidator/cgi-bin/unidep/langspec/specify_feature.pl" target="_blank">
+                {{ $t('sentenceCard.notDetectedLang[1]') }} 
+              </a>
+            </span>
+          </div>
+        </q-card-section>
+        <q-card-section v-if="udValidationMsg[openTabUser] !== ''" class="row">
+          <pre>{{ udValidationMsg[openTabUser] }}</pre>
+        </q-card-section>
+        <q-card-section v-else class="row">
+          {{ $t('sentenceCard.noValidationIssues') }} 
+        </q-card-section>
+      </q-card>
+    </q-dialog>
   </div>
 </template>
 
@@ -198,6 +234,9 @@ export default defineComponent({
   data() {
     const hasPendingChanges: { [key: string]: boolean } = {};
     const reactiveSentencesObj: reactive_sentences_obj_t = {};
+    const udValidationPassed: { [key: string]: boolean } = {};
+    const udValidationMsg: { [key: string]: string } = {};
+    const udValidationStatut: { [key: string]: string } = {};
     const horizontalScrollPos: number = 0;
     return {
       sentenceBus: sentenceBusFactory(),
@@ -212,10 +251,15 @@ export default defineComponent({
       tags: [],
       horizontalScrollPos,
       sentenceText: '',
+      udValidationPassed,
+      udValidationMsg,
+      udValidationStatut,
+      showUdValidation: false,
+      languageDetected: false,
     };
   },
   computed: {
-    ...mapWritableState(useProjectStore, ['diffMode', 'diffUserId']),
+    ...mapWritableState(useProjectStore, ['diffMode', 'diffUserId', 'name']),
     ...mapWritableState(useGithubStore, ['reloadCommits']),
     ...mapState(useProjectStore, ['isValidator', 'blindAnnotationMode', 'shownMeta']),
     ...mapState(useUserStore, ['username']),
@@ -257,7 +301,6 @@ export default defineComponent({
       }
       return this.orderConlls(filteredConlls);
     },
-    
   },
   created() {
     for (const [userId, conll] of Object.entries(this.sentence.conlls)) {
@@ -265,6 +308,7 @@ export default defineComponent({
       reactiveSentence.fromSentenceConll(conll);
       this.reactiveSentencesObj[userId] = reactiveSentence;
       this.hasPendingChanges[userId] = false;
+      this.udValidationStatut[userId] = '';
     }
     this.diffMode = !!this.diffMode;
   },
@@ -325,11 +369,33 @@ export default defineComponent({
               this.exportedConll = exportedConll;
             }
             notifyMessage({ position: 'top', message: 'Saved on the server', icon: 'save' });
+            this.validateUdTree(exportedConll);
           }
         })
         .catch((error) => {
           notifyError({ error });
         });
+    },
+    validateUdTree(conll: string) {
+      const data = { conll: conll };
+      api
+        .validateTree(this.name, data)
+        .then((response) => {
+          if (response.data) {
+            if (response.data.passed) {
+              this.udValidationStatut[this.openTabUser] = response.data.message !== '' ? 'warning' : 'positive';
+            }
+            else {
+              this.udValidationStatut[this.openTabUser] = 'negative';
+            }
+            this.udValidationMsg[this.openTabUser] = response.data.message;
+            this.udValidationPassed[this.openTabUser] = response.data.passed;
+            this.languageDetected = response.data.detected;
+          }
+        })
+        .catch((error) => {
+          notifyError({ error: `Error happened while validating ${error}` });
+        })
     },
     transitioned() {
       if (this.exportedConll) {
@@ -397,8 +463,11 @@ export default defineComponent({
   },
 });
 </script>
-<style>
+<style scoped>
 .scrollable {
   overflow-x: auto;
+}
+.clickable:hover {
+  cursor: pointer;
 }
 </style>

@@ -363,7 +363,7 @@ export default defineComponent({
       },
       set(value: string[]) {
         this.updateProjectshownFeatures({
-          projectName: this.$props.projectName,
+          projectName: this.projectName,
           toUpdateObject: { shownMeta: value },
         });
       },

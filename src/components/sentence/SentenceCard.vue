@@ -50,9 +50,9 @@
             :color="udValidationStatut[user]"
             rounded 
             floating 
-            class="clickable" 
+            :class="user === openTabUser ? 'clickable' : ''" 
             @click.native.stop 
-            @click="showUdValidation = true"
+            @click="showUdValidation[user] = true"
           >
           </q-badge>
         </q-tab>
@@ -132,7 +132,7 @@
         />
       <StatisticsDialog :sentence-bus="sentenceBus" :conlls="sentenceData.conlls" />
     </template>
-    <q-dialog v-model="showUdValidation">
+    <q-dialog v-model="showUdValidation[openTabUser]">
       <q-card style="width: 800px;max-width: 90vw;">
         <q-card-section>
           <div class="row text-h6">
@@ -237,6 +237,7 @@ export default defineComponent({
     const udValidationPassed: { [key: string]: boolean } = {};
     const udValidationMsg: { [key: string]: string } = {};
     const udValidationStatut: { [key: string]: string } = {};
+    const showUdValidation: { [key: string]: boolean } = {};
     const horizontalScrollPos: number = 0;
     return {
       sentenceBus: sentenceBusFactory(),
@@ -254,8 +255,8 @@ export default defineComponent({
       udValidationPassed,
       udValidationMsg,
       udValidationStatut,
-      showUdValidation: false,
       languageDetected: false,
+      showUdValidation,
     };
   },
   computed: {
@@ -309,6 +310,7 @@ export default defineComponent({
       this.reactiveSentencesObj[userId] = reactiveSentence;
       this.hasPendingChanges[userId] = false;
       this.udValidationStatut[userId] = '';
+      this.showUdValidation[userId] = false;
     }
     this.diffMode = !!this.diffMode;
   },

@@ -65,9 +65,8 @@
   </q-page>
 </template>
 <script lang="ts">
-import { mapState, mapActions } from 'pinia';
+import { mapState } from 'pinia';
 import { useUserStore } from 'src/pinia/modules/user';
-import { useProjectStore } from 'src/pinia/modules/project';
 import { notifyError, notifyMessage } from 'src/utils/notify';
 import { project_extended_t } from 'src/api/backend-types';
 import { defineComponent } from 'vue';
@@ -112,14 +111,11 @@ export default defineComponent({
     });
   },
   methods: {
-    ...mapActions(useProjectStore, ['isMyProject']),
     getUserProjects() {
       api
-        .getProjects()
+        .getUserProjects()
         .then((response) => {
-          this.myProjects = response.data.filter((project) => {
-            return this.isMyProject(project)
-          });
+          this.myProjects = response.data;
           this.filteredProjects = this.myProjects; 
         })
         .catch((error) => {

@@ -25,6 +25,7 @@ interface configState {
   shownFeatures: string[];
   shownMeta: string[];
   annotationFeatures: annotationFeatures_t;
+  annotationFeaturesSUD: annotationFeatures_t;
   annotationFeaturesUD: annotationFeatures_t;
   languagesList: { index: number; name: string }[];
   invalidProjectError: boolean,
@@ -54,7 +55,8 @@ export default function defaultState(): configState {
     shownFeatures: ['FORM', 'UPOS', 'LEMMA', 'MISC.Gloss'],
     shownMeta: ['text_en'],
     languagesList: languages,
-    annotationFeatures: {
+    annotationFeatures: {} as annotationFeatures_t,
+    annotationFeaturesSUD: {
       META: ['sent_id', 'text', 'text_en', 'text_ortho', 'speaker_id', 'sound_url'],
       UPOS: ['ADJ', 'ADP', 'ADV', 'AUX', 'CCONJ', 'DET', 'INTJ', 'NOUN', 'NUM', 'PART', 'PRON', 'PROPN', 'PUNCT', 'SCONJ', 'SYM', 'VERB', 'X'],
       XPOS: [],

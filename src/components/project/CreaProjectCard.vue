@@ -234,7 +234,7 @@ export default defineComponent({
     },
   },
   methods: {
-    ...mapActions(useProjectStore, ['resetAnnotationFeatures']),
+    ...mapActions(useProjectStore, ['resetAnnotationFeaturesSUD', 'resetAnnotationFeaturesUD']),
     getSelectedLanguage(value: any) {
       if (value) {
         this.project.language = value;
@@ -242,7 +242,11 @@ export default defineComponent({
     },
     onSubmit() {
       this.submitting = true;
-      this.resetAnnotationFeatures();
+      if (this.project.config === 'ud') {
+        this.resetAnnotationFeaturesUD();
+      } else {
+        this.resetAnnotationFeaturesSUD();
+      }
       const data = {
         ...this.project,
       };

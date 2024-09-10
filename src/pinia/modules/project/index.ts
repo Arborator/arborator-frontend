@@ -82,7 +82,7 @@ export const useProjectStore = defineStore('project', {
     getAnnotationSetting(): string {
       return this.config === 'ud' ? this.getUDAnnofJson : this.getSUDAnnofJson;
     },
-    getSUDAnnofJson: (state) => JSON.stringify(state.annotationFeatures, null, 4),
+    getSUDAnnofJson: (state) => JSON.stringify(state.annotationFeaturesSUD, null, 4),
     getUDAnnofJson: (state) => JSON.stringify(state.annotationFeaturesUD, null, 4),
     shownMetaChoices: (state) => state.annotationFeatures.META,
     shownFeaturesChoices: (state) =>
@@ -107,8 +107,8 @@ export const useProjectStore = defineStore('project', {
       const ayear = -3600 * 24 * 365;
       return project.lastAccess < ayear || (project.numberSamples < 1 && project.lastAccess < -3600);
     },
-    resetAnnotationFeatures(): void {
-      this.annotationFeatures = defaultState().annotationFeatures;
+    resetAnnotationFeaturesSUD(): void {
+      this.annotationFeatures = defaultState().annotationFeaturesSUD;
     },
     resetAnnotationFeaturesUD(): void {
       this.annotationFeatures = defaultState().annotationFeaturesUD;
@@ -147,11 +147,12 @@ export const useProjectStore = defineStore('project', {
             .getProjectConlluSchema(projectName)
             .then((response) => {
               let fetchedAnnotationFeatures = response.data.annotationFeatures;
-              // check if there is a json in proper format, otherwise use default ConfigConllu
               if (typeof fetchedAnnotationFeatures !== 'object' || fetchedAnnotationFeatures === null) {
-                fetchedAnnotationFeatures = this.annotationFeatures;
+                this.annotationFeatures = this.config === 'ud' ? this.annotationFeaturesUD : this.annotationFeaturesSUD
               }
-              this.annotationFeatures = fetchedAnnotationFeatures;
+              else {
+                this.annotationFeatures = fetchedAnnotationFeatures;
+              }
             })
             .catch((error) => {
               notifyError({ error });

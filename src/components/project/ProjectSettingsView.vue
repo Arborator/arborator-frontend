@@ -222,17 +222,17 @@
             {{ annotationFeaturesComment }}
           </q-chip>
         </q-toolbar>
-        <CodemirrorVueWrapper v-model:value="annotationFeaturesJson" :options="cmOption" @input="checkAnnotationFeatures"></CodemirrorVueWrapper>
+        <JsonEditorVue 
+          v-model="annotationFeaturesJson" 
+          v-bind="params"
+        ></JsonEditorVue>
       </q-card>
     </q-card-section>
   </q-card>
 </template>
 
 <script lang="ts">
-import CodemirrorVueWrapper from 'codemirror-editor-vue3';
-import 'codemirror-editor-vue3/dist/style.css';
-import 'codemirror/theme/dracula.css';
-
+import JsonEditorVue from 'json-editor-vue';
 import { mapActions, mapState, mapWritableState } from 'pinia';
 import { sample_t } from 'src/api/backend-types';
 import { useProjectStore } from 'src/pinia/modules/project';
@@ -246,10 +246,10 @@ import ProjectVisibility from '../shared/ProjectVisibility.vue';
 export default defineComponent({
   name: 'ProjectSettingsView',
   components: {
-    CodemirrorVueWrapper,
     UserSelect,
     LanguageSelect,
     ProjectVisibility,
+    JsonEditorVue
   },
   props: {
     projectName: {
@@ -271,11 +271,12 @@ export default defineComponent({
       projectDescription: '',
       selectedLanguage: '',
       newProjectName: this.projectName,
-      cmOption: {
-        mode: 'application/json', // Use JSON mode
-        theme: 'default', // Material theme or any JSON-like theme
-        lineNumbers: true,
-      },
+      params: {
+        mainMenuBar: false,
+        mode: 'text',
+        tabSize: 4,
+        indentation: 4,
+      }
     };
   },
   computed: {
@@ -298,7 +299,7 @@ export default defineComponent({
       'shownMetaChoices',
       'getSUDAnnofJson',
       'getUDAnnofJson',
-      'getAnnotationSetting',
+      'annotationFeatures',
       'image',
       'language',
       'languagesList',
@@ -378,21 +379,26 @@ export default defineComponent({
     }
   },
   mounted() {
-    this.annotationFeaturesJson = this.getAnnotationSetting;
+    this.annotationFeaturesJson = JSON.stringify(this.annotationFeatures, null, 4);
+  },
+  watch: {
+    annotationFeaturesJson(newValue) {
+      this.checkAnnotationFeatures(newValue);
+    }
   },
 
   methods: {
     ...mapActions(useProjectStore, [
       'updateProjectConlluSchema',
-      'resetAnnotationFeatures',
+      'resetAnnotationFeaturesSUD',
       'resetAnnotationFeaturesUD',
       'updateProjectSettings',
       'postImage',
       'updateProjectshownFeatures',
     ]),
-    checkAnnotationFeatures() {
+    checkAnnotationFeatures(annotation: string) {
       try {
-        JSON.parse(this.annotationFeaturesJson);
+        JSON.parse(annotation);
         this.annotationFeaturesOk = true;
         this.annotationFeaturesComment = this.$t('projectSettings.checkAnnotation');
       } catch (e) {
@@ -411,7 +417,7 @@ export default defineComponent({
     },
 
     resetAnnotationFeaturesWrapper() {
-      this.resetAnnotationFeatures();
+      this.resetAnnotationFeaturesSUD();
       this.annotationFeaturesJson = this.getSUDAnnofJson;
       this.updateProjectSettings(this.projectName, { config: 'sud' });
     },

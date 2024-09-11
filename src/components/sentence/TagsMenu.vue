@@ -61,7 +61,7 @@ import { mapActions, mapState, mapWritableState } from 'pinia';
 import { grewSearchResultSentence_t } from 'src/api/backend-types';
 import { useUserStore } from 'src/pinia/modules/user';
 import { reactive_sentences_obj_t, sentence_bus_t } from 'src/types/main_types';
-import { notifyError, notifyMessage } from 'src/utils/notify';
+import { notifyError } from 'src/utils/notify';
 import { PropType, defineComponent } from 'vue';
 import { useProjectStore } from 'src/pinia/modules/project';
 import { tag_t, useTagsStore } from 'src/pinia/modules/tags';
@@ -117,11 +117,7 @@ export default defineComponent({
   methods: {
     ...mapActions(useTagsStore, ['getUserTags']),
     addNewTag() {
-      const metaToReplace = {
-        timestamp: Math.round(Date.now()),
-      };
-      const conll = this.reactiveSentencesObj[this.openTabUser].exportConllWithModifiedMeta(metaToReplace);
-      const data = { tags: this.tags, tree: conll };
+      const data = { tags: this.tags, tree: this.sentence.conlls[this.openTabUser] };
       api
         .addTags(this.name, this.sampleName, data)
         .then((response) => {

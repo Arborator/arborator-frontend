@@ -80,9 +80,11 @@
           </q-tabs>
           <q-tab-panels keep-alive v-model="tab">
             <q-tab-panel class="q-gutter-md" name="samples">
+              
               <ProjectOptions
                 :selected-samples="selectedSamples"
                 :canDeleteFromGithub="isAllowdedToSync && syncGithubRepo !== undefined"
+                :samples-length="samples.length"
                 @unselect="unselectSamples = true"
                 @reload="loadProjectData"
               ></ProjectOptions>

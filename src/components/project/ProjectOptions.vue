@@ -5,6 +5,10 @@
       {{ selectedSamples.length }}
       <span v-if="selectedSamples.length === 1">{{ $t('projectOptions.sample[0]') }}</span>
       <span v-else>{{ $t('projectOptions.sample[1]') }}</span>
+      / 
+      {{ samplesLength }}
+      <span v-if="samplesLength === 1">{{ $t('projectOptions.sample[0]') }}</span>
+      <span v-else>{{ $t('projectOptions.sample[1]') }}</span>
     </div>
     <q-btn v-if="isAdmin" flat icon="delete" @click="triggerConfirmAction(deleteSamples)">
       <q-tooltip>
@@ -70,6 +74,10 @@ export default defineComponent({
     DeleteUserTreesDial,
   },
   props: {
+    samplesLength: {
+      type: Object as PropType<number>,
+      required: true,
+    },
     selectedSamples: {
       type: Object as PropType<sample_t[]>,
       required: true,

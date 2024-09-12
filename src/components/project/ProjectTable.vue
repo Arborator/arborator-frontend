@@ -16,7 +16,6 @@
     selection="multiple"
     :table-header-class="$q.dark.isActive ? 'text-white' : 'text-primary'"
     virtual-scroll
-    table-style="max-height:80vh"
     row-key="sampleName"
     hide-no-data
     :pagination="table.pagination"
@@ -148,7 +147,7 @@ export default defineComponent({
         sortBy: 'samplename',
         descending: true,
         page: 1,
-        rowsPerPage: 10,
+        rowsPerPage: 50,
       },
       loadingDelete: false,
       exporting: false,

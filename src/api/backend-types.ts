@@ -87,6 +87,7 @@ export interface sample_t {
   tokens: number;
   blindAnnotationLevel: number;
   treeByUser: { [key: string]: number };
+  tags: { [key: string]: number };
 }
 
 //// GREW

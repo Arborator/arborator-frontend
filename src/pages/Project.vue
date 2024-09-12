@@ -36,7 +36,7 @@
           <q-separator />
         </q-card-section>
         <q-card-section class="q-gutter-md">
-          <StatisticsProject v-if="sampleNames.length" :project-name="projectName" :sample-names="sampleNames"></StatisticsProject>
+          <StatisticsProject v-if="sampleNames.length" :project-name="projectName" :samples="samples"></StatisticsProject>
         </q-card-section>
         <q-card-section>
           <div class="row q-gutter-md" style="justify-content: right">

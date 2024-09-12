@@ -108,14 +108,14 @@
     </q-card>
   </div>
   <div class="row justify-between q-gutter-md">
-    <q-card v-if="projectUsedTags.length" flat bordered class="col">
+    <q-card v-if="projectTags.length" flat bordered class="col">
       <q-card-section class="q-gutter-md">
         <div class="text-h6">
           {{ $t('projectStats.usedTags') }}
         </div>
         <q-separator />
         <div class="row q-gutter-x-md">
-          <q-chip  v-for="tag in projectUsedTags" outline color="primary" size="sm" :label="tag"/>
+          <q-chip  v-for="tag in projectTags" outline color="primary" size="sm" :label="tag"/>
         </div>
       </q-card-section>
     </q-card>
@@ -123,7 +123,7 @@
   <q-separator />
 </template>
 <script lang="ts">
-import { statProject_t } from 'src/api/backend-types';
+import { statProject_t, sample_t } from 'src/api/backend-types';
 import { notifyError } from 'src/utils/notify';
 import { timeAgo } from 'src/utils/timeAgoUtils';
 import { defineComponent, PropType } from 'vue';
@@ -143,10 +143,8 @@ export default defineComponent({
     };
     const topUserProgress: number = 0;
     const topUserProgressLabel: string = '';
-    const projectUsedTags: string[] = [];
     return {
       projectStat,
-      projectUsedTags,
       topUserProgress,
       topUserProgressLabel,
     }
@@ -156,14 +154,18 @@ export default defineComponent({
       type: String as PropType<string>,
       required: true,
     },
-    sampleNames: {
-      type: Array as PropType<string[]>,
+    samples: {
+      type: Array as PropType<sample_t[]>,
       required: true,
     }
   },
   mounted() {
     this.getStatistics();
-    this.getProjectTags();
+  },
+  computed: {
+    projectTags() {
+      return this.samples.map((sample) => Object.keys(sample.tags)).reduce((a: string[], b: string[]) => [...a, ...b], []);
+    }
   },
   methods: {
     timeAgo(secsAgo: number) {
@@ -183,19 +185,7 @@ export default defineComponent({
           notifyError({ error: `Error while loading project statistics ${error}` });
         });
     },
-    getProjectTags() {
-      const data = { sampleNames: this.sampleNames}
-      api
-        .getProjectTags(this.projectName, data)
-        .then((response) => {
-          this.projectUsedTags = response.data;
-        })
-        .catch((error) => {
-          notifyError({ error: `Error happened while loading project tags: ${error}` });
-        })
-    }
   }
-
-})
+});
 
 </script>

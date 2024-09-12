@@ -245,7 +245,7 @@ export default defineComponent({
     this.getProjects();
   },
   methods: {
-    ...mapActions(useProjectStore, ['isMyProject', 'isOldProject']),
+    ...mapActions(useProjectStore, ['isMyProject', 'isOldProject', 'sortProjects']),
     toggleProjectView() {
       this.listMode = !this.listMode;
       LocalStorage.set('project_view', this.listMode);
@@ -259,15 +259,12 @@ export default defineComponent({
           this.projectsLanguages = [...new Set(this.projects.map((project) => project.language))]
             .filter((language) => language !== '' && language !== null)
             .map((language, i) => ({ index: i + 1, name: language }));
-          this.sortProjects();
+          this.sortProjects(this.visibleProjects)
           this.initLoading = false;
                   })
         .catch((error) => {
           notifyError({ error });
         });
-    },
-    sortProjects() {
-      this.visibleProjects.sort((a, b) => b.lastAccess - a.lastAccess);
     },
     deleteProject(projectName: string) {
       api

@@ -107,6 +107,9 @@ export const useProjectStore = defineStore('project', {
       const ayear = -3600 * 24 * 365;
       return project.lastAccess < ayear || (project.numberSamples < 1 && project.lastAccess < -3600);
     },
+    sortProjects(projects: project_extended_t[]) {
+      projects.sort((a, b) => b.lastAccess - a.lastAccess);
+    },
     resetAnnotationFeaturesSUD(): void {
       this.annotationFeatures = defaultState().annotationFeaturesSUD;
     },

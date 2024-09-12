@@ -65,8 +65,9 @@
   </q-page>
 </template>
 <script lang="ts">
-import { mapState } from 'pinia';
+import { mapState, mapActions } from 'pinia';
 import { useUserStore } from 'src/pinia/modules/user';
+import { useProjectStore } from 'src/pinia/modules/project';
 import { notifyError, notifyMessage } from 'src/utils/notify';
 import { project_extended_t } from 'src/api/backend-types';
 import { defineComponent } from 'vue';
@@ -74,6 +75,7 @@ import { defineComponent } from 'vue';
 import api from 'src/api/backend-api';
 import ProjectCard from 'src/components/project/ProjectCard.vue';
 import CreaProjectCard from 'src/components/project/CreaProjectCard.vue';
+
 
 export default defineComponent({
   name: 'MyProjects',
@@ -111,12 +113,14 @@ export default defineComponent({
     });
   },
   methods: {
+    ...mapActions(useProjectStore, ['sortProjects']),
     getUserProjects() {
       api
         .getUserProjects()
         .then((response) => {
           this.myProjects = response.data;
           this.filteredProjects = this.myProjects; 
+          this.sortProjects(this.filteredProjects);
         })
         .catch((error) => {
           notifyError({ error: `Error happened while loading user projects ${error} `});

@@ -75,8 +75,8 @@
                   toggle-color="primary"
                   :options="[
                     { label: 'Private', value: 0 },
-                    { label: 'Visible', value: 1 },
-                    { label: 'Open', value: 2 },
+                    { label: 'Open', value: 1 },
+                    { label: 'Public', value: 2 },
                   ]"
                 />
               </div>

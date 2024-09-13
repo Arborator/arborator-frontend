@@ -59,8 +59,12 @@
               />
               <q-tooltip content-class="text-white bg-primary"> {{ $t('projectView.tooltipSynchronizedProject') }} {{ syncGithubRepo }} </q-tooltip>
             </div>
-            <q-btn v-if="isAdmin" no-caps outline color="primary" :label="$t('projectView.settings')" icon="tune" @click="projectSettingsDial = true">
-              <q-tooltip>
+            <q-btn :disable="!isAdmin" no-caps outline color="primary" :label="$t('projectView.settings')" icon="tune" @click="projectSettingsDial = true">
+              <q-tooltip v-if="!isAdmin">
+                If you want to change the configuration of your project please contact one of the admins of your project: 
+                {{ admins.join(',') }}
+              </q-tooltip>
+              <q-tooltip v-else>
                 {{ $t('projectView.tooltipSettings') }}
               </q-tooltip>
             </q-btn>
@@ -80,7 +84,6 @@
           </q-tabs>
           <q-tab-panels keep-alive v-model="tab">
             <q-tab-panel class="q-gutter-md" name="samples">
-              
               <ProjectOptions
                 :selected-samples="selectedSamples"
                 :canDeleteFromGithub="isAllowdedToSync && syncGithubRepo !== undefined"

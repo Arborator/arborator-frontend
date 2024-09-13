@@ -75,7 +75,7 @@ export default defineComponent({
   },
   props: {
     samplesLength: {
-      type: Object as PropType<number>,
+      type: Number as PropType<number>,
       required: true,
     },
     selectedSamples: {

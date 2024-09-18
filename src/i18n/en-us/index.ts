@@ -420,6 +420,10 @@ export default {
     usersSelect: 'Select set of users',
     filterOperators: ['Have', 'Not Have'],
     filterChoices: ['Trees', 'Differences'],
+    orderLength: 'Ordonner les phrases par taille',
+    validateAllTrees: 'Validate all trees',
+    validateAllTreesTooltip: "Appliquer le script de validation d'UD sur l'ensemble des arbres d'échantillon",
+    savePendingTrees: 'Save pending trees',
   },
   tokenReplaceDialog: {
     merge: 'Merge',

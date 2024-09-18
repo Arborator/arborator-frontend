@@ -230,6 +230,10 @@ export default defineComponent({
       default: () => [] as matches_t[],
       type: Object as PropType<matches_t>,
     },
+    udValidation: {
+      type: Object as PropType<any>,
+      required: false,
+    },
   },
   data() {
     const hasPendingChanges: { [key: string]: boolean } = {};
@@ -255,14 +259,13 @@ export default defineComponent({
       udValidationPassed,
       udValidationMsg,
       udValidationStatut,
-      languageDetected: false,
       showUdValidation,
     };
   },
   computed: {
     ...mapWritableState(useProjectStore, ['diffMode', 'diffUserId', 'name']),
     ...mapWritableState(useGithubStore, ['reloadCommits']),
-    ...mapState(useProjectStore, ['isValidator', 'blindAnnotationMode', 'shownMeta']),
+    ...mapState(useProjectStore, ['isValidator', 'blindAnnotationMode', 'shownMeta', 'languageDetected']),
     ...mapState(useUserStore, ['username']),
     ...mapState(useTagsStore, ['defaultTags']),
     lastModifiedTime() {
@@ -313,6 +316,23 @@ export default defineComponent({
       this.showUdValidation[userId] = false;
     }
     this.diffMode = !!this.diffMode;
+  },
+  watch: {
+    'udValidation': {
+      handler: function (newVal) {
+        for (const user of Object.keys(this.sentence.conlls)) {
+          if(newVal[user]) {
+            this.udValidationMsg[user] = newVal[user].message;
+            this.udValidationStatut[user] = 'negative'
+          }
+          else {
+            this.udValidationMsg[user] = '';
+            this.udValidationStatut[user] = 'positive';
+          }
+        } 
+      },
+      deep: true,
+    },
   },
   methods: {
     ...mapActions(useTagsStore, ['removeTag']),
@@ -392,12 +412,11 @@ export default defineComponent({
             }
             this.udValidationMsg[this.openTabUser] = response.data.message;
             this.udValidationPassed[this.openTabUser] = response.data.passed;
-            this.languageDetected = response.data.detected;
           }
         })
         .catch((error) => {
           notifyError({ error: `Error happened while validating ${error}` });
-        })
+        });
     },
     transitioned() {
       if (this.exportedConll) {

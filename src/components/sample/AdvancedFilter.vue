@@ -41,12 +41,24 @@
         dense
         v-model="order"
         :options="orderOptions"
-        label="Order sentences by length"
+        :label="$t('advancedFilter.orderLength')"
         @update:model-value="orderFilteredTrees(order)"
        />
     </div>
     <q-separator vertical />
-    <q-btn v-if="isLoggedIn" outline :disable="pendingModifications.size === 0" color="primary" label="Save pending trees" @click="saveAllTrees()">
+    <q-btn no-caps v-if="config === 'ud' && !blindAnnotationMode" color="primary" :label="$t('advancedFilter.validateAllTrees')" @click="validateAllTrees()">
+      <q-tooltip>
+        {{ $t('advancedFilter.validateAllTreesTooltip') }}
+      </q-tooltip>
+    </q-btn>
+    <q-btn 
+      v-if="isLoggedIn" 
+      outline 
+      :disable="pendingModifications.size === 0" 
+      color="primary" 
+      :label="$t('advancedFilter.savePendingTrees')" 
+      @click="saveAllTrees()"
+    >
       <q-badge v-if="pendingModifications.size > 0" color="red" floating>
         {{ pendingModifications.size }}
       </q-badge>
@@ -121,7 +133,7 @@ import { useTreesStore } from 'src/pinia/modules/trees';
 import { useUserStore } from 'src/pinia/modules/user';
 import { notifyError, notifyMessage } from 'src/utils/notify';
 
-import { defineComponent } from 'vue';
+import { defineComponent, PropType } from 'vue';
 import { api } from 'src/boot/axios';
 import Breadcrumbs from 'src/layouts/Breadcrumbs.vue';
 
@@ -142,6 +154,12 @@ export default defineComponent({
   components: {
     Breadcrumbs,
   },
+  props: {
+    parentOnValidate: {
+      type: Function as PropType<CallableFunction>,
+      required: true,
+    }
+  },
   data() {
     const filterOperators: element_t[] = [
       { val: 'have', label: this.$t('advancedFilter.filterOperators[0]') },
@@ -152,6 +170,7 @@ export default defineComponent({
       { val: 'diff', label: this.$t('advancedFilter.filterChoices[1]') },
     ];
     const listFilters: filter_t[] = [];
+   
     return {
       selectedUsers: [],
       filterChoices,
@@ -162,8 +181,8 @@ export default defineComponent({
     };
   },
   computed: {
-    ...mapState(useProjectStore, ['featuresSet', 'name']),
-    ...mapState(useTreesStore, ['trees', 'filteredTrees', 'numberOfTreesPerUser', 'numberOfTrees', 'userIds']),
+    ...mapState(useProjectStore, ['featuresSet', 'name', 'config', 'blindAnnotationMode']),
+    ...mapState(useTreesStore, ['trees', 'filteredTrees', 'numberOfTreesPerUser', 'numberOfTrees', 'userIds', 'sortedSentIds']),
     ...mapState(useTagsStore, ['userTags']),
     ...mapWritableState(useTreesStore, [
       'textFilter',
@@ -177,6 +196,9 @@ export default defineComponent({
       'pendingModifications'
     ]),
     ...mapState(useUserStore, ['isLoggedIn']),
+    sampleName() {
+      return this.$route.params.samplename as string;
+    },
   },
   mounted() {
     this.clearAll();
@@ -233,9 +255,8 @@ export default defineComponent({
       const data = {
         conllGraph: [...this.pendingModifications.values()].map((sentence) => sentence.conll).join('\n\n')
       };
-      const sampleName = this.$route.params.samplename as string;
       api
-        .saveAllTrees(this.name, sampleName, data)
+        .saveAllTrees(this.name, this.sampleName, data)
         .then(() => {
           notifyMessage({ position: 'top', message: 'Saved on the server', icon: 'save' });
           this.emptyPendingModification();
@@ -244,6 +265,9 @@ export default defineComponent({
         .catch((error) => {
           notifyError({ error: `Error happened while saving trees ${error}` });
         });
+    },
+    validateAllTrees() {
+      this.parentOnValidate();
     }
   },
 });

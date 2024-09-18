@@ -422,6 +422,10 @@ export default {
     usersSelect: 'Sélectionner la liste des utilisateurs',
     filterOperators: ['ont', "n'ont pas"],
     filterChoices: ['Arbres', 'Differences'],
+    orderLength: 'Ordonner les phrases par taille',
+    validateAllTrees: 'Valider tous les arbres',
+    validateAllTreesTooltip: "Appliquer le script de validation d'UD sur l'ensemble des arbres d'échantillon",
+    savePendingTrees: 'Sauvegarder tous les arbres',
   },
   tokenReplaceDialog: {
     merge: 'Fusionner',

@@ -1,7 +1,7 @@
 <template>
   <q-splitter v-model="splitterModel" horizontal :limits="[0, 100]" :style="{ height: `${splitterHeight}px` }" emit-immediately>
     <template v-slot:before>
-      <AdvancedFilter @trees-saved="getTrees()"  />
+      <AdvancedFilter @trees-saved="getTrees()" :parent-on-validate="validateAllTrees"  />
     </template>
     <template v-slot:after>
       <div class="custom-frame1">
@@ -20,6 +20,7 @@
                 :sentence="item"
                 :index="index"
                 :blind-annotation-level="blindAnnotationLevel"
+                :ud-validation="udValidationPassed[item.sent_id] || {}"
               >
               </SentenceCard>
             </template>
@@ -36,13 +37,16 @@
 </template>
 
 <script lang="ts">
-import { mapActions, mapState, mapWritableState } from 'pinia';
-import { QVirtualScroll } from 'quasar';
+import api from 'src/api/backend-api';
 import AdvancedFilter from 'src/components/sample/AdvancedFilter.vue';
-import { useTreesStore } from 'src/pinia/modules/trees';
-import { PropType, defineComponent } from 'vue';
-
 import SentenceCard from '../components/sentence/SentenceCard.vue';
+import { QVirtualScroll } from 'quasar';
+
+import { mapActions, mapState, mapWritableState } from 'pinia';
+import { notifyError } from 'src/utils/notify';
+import { useTreesStore } from 'src/pinia/modules/trees';
+import { useProjectStore } from 'src/pinia/modules/project';
+import { PropType, defineComponent } from 'vue';
 
 export default defineComponent({
   components: {
@@ -75,9 +79,12 @@ export default defineComponent({
   data() {
     const splitterModel: number = 12;
     const splitterHeight: number = 0;
+    const udValidationPassed: { [sentId: string]: { [userId: string]: { message: string, passed: boolean } } } = {};
     return {
       splitterModel,
       splitterHeight,
+      udValidationPassed,
+      languageDetected: false,
     };
   },
   computed: {
@@ -88,9 +95,14 @@ export default defineComponent({
       'numberOfTrees', 
       'userIds', 
       'blindAnnotationLevel',
-      'pendingModifications'
+      'pendingModifications',
+      'sortedSentIds'
     ]),
+    ...mapState(useProjectStore, ['name']),
     ...mapWritableState(useTreesStore, ['reloadTrees']),
+    sampleName() {
+      return this.$route.params.samplename as string;
+    }
   },
   created() {
     window.addEventListener('resize', this.calculateHeight);
@@ -136,6 +148,25 @@ export default defineComponent({
         this.splitterHeight = window.innerHeight - 35;
       }
     },
+    validateAllTrees() {
+      api
+        .validateAllTrees(this.name, this.sampleName)
+        .then((response) => {
+          const validationResults = response.data.message;
+          for (const userId of Object.keys(validationResults)) {
+            for (const sentId of Object.keys(validationResults[userId])) {
+              if (!Object.keys(this.udValidationPassed).includes(sentId)) {
+                this.udValidationPassed[sentId] = {};
+              }
+              let userTreeValidation = { message: validationResults[userId][sentId], passed: false };
+              this.udValidationPassed[sentId][userId] = userTreeValidation;
+            }
+          }
+        })
+        .catch((error) => {
+          notifyError({ error: error });
+        });
+    }
   },
 });
 </script>

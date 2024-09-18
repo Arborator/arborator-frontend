@@ -146,6 +146,9 @@ export const useProjectStore = defineStore('project', {
             this.shownMeta = response.data.shownMeta;
             this.shownFeatures = response.data.shownFeatures;
           });
+          api.checkProjectLanguageDetected(projectName).then((response) => {
+            this.languageDetected = response.data;
+          });
           api
             .getProjectConlluSchema(projectName)
             .then((response) => {

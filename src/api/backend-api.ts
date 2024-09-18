@@ -86,6 +86,9 @@ export default {
   getProjectImage(projectName: string) {
     return API.get(`projects/${projectName}/image`);
   },
+  checkProjectLanguageDetected(projectName: string) {
+    return API.get(`projects/${projectName}/language-detected`);
+  },
   getProjectFeatures(projectName: string) {
     return API.get<getProjectFeatures_RV>(`projects/${projectName}/features`);
   },
@@ -160,6 +163,9 @@ export default {
   },
   saveAllTrees(projectName: string, sampleName: string, data: any) {
     return API.post(`/projects/${projectName}/samples/${sampleName}/trees/all`, data);
+  },
+  validateAllTrees(projectName: string, sampleName: string) {
+    return API.post(`/projects/${projectName}/samples/${sampleName}/validate`);
   },
   validateTree(projectName: string, data: any) {
     return API.post(`/projects/${projectName}/tree/validate`, data);
@@ -379,7 +385,4 @@ export default {
   getStats(projectName: string) {
     return API.get<getStatProject_RV>(`projects/${projectName}/statistics`);
   },
-  getProjectTags(projectName: string, data: any) {
-    return API.post(`projects/${projectName}/tags`, data);
-  }
 };

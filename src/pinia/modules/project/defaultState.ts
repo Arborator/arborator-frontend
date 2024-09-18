@@ -17,6 +17,7 @@ interface configState {
   freezed: boolean;
   config: string;
   language: string;
+  languageDetected: boolean;
   diffMode: boolean;
   diffUserId: string;
   collaborativeMode: boolean;
@@ -47,6 +48,7 @@ export default function defaultState(): configState {
     freezed: false,
     config: '',
     language: '',
+    languageDetected: false,
     diffMode: false,
     diffUserId: '',
     collaborativeMode: true,

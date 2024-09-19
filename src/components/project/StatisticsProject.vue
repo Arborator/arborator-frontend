@@ -137,6 +137,7 @@ export default defineComponent({
       samplesNumber: 0,
       treesNumber: 0,
       tokensNumber: 0,
+      sentencesNumber: 0,
       topUser: { username: '', treesNumber: 0, userAvatar: '' },
       lastRead: { lastRead: 0, lastReadUsername: '' },
       lastWrite: { lastWrite: 0, lastWriteUsername: '' },
@@ -177,8 +178,8 @@ export default defineComponent({
         .then((response) => {
           this.projectStat = { ...response.data };
           if (this.projectStat.topUser) {
-            this.topUserProgress = this.projectStat.topUser.treesNumber / this.projectStat.treesNumber;
-            this.topUserProgressLabel =  `${(this.projectStat.topUser.treesNumber / this.projectStat.treesNumber * 100).toFixed(2)} %`;
+            this.topUserProgress = this.projectStat.topUser.treesNumber / this.projectStat.sentencesNumber;
+            this.topUserProgressLabel =  `${(this.projectStat.topUser.treesNumber / this.projectStat.sentencesNumber * 100).toFixed(2)} %`;
           }
         })
         .catch((error) => {

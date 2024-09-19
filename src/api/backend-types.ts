@@ -242,6 +242,7 @@ export interface statProject_t {
   samplesNumber: number,
   treesNumber: number,
   tokensNumber: number,
+  sentencesNumber: number,
   topUser: topUser_t,
   lastRead: lastRead_t,
   lastWrite: lastWrite_t,

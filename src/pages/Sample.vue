@@ -99,7 +99,7 @@ export default defineComponent({
       'sortedSentIds'
     ]),
     ...mapState(useProjectStore, ['name']),
-    ...mapWritableState(useTreesStore, ['reloadTrees']),
+    ...mapWritableState(useTreesStore, ['reloadTrees', 'reloadValidation']),
     sampleName() {
       return this.$route.params.samplename as string;
     }
@@ -117,6 +117,7 @@ export default defineComponent({
     this.emptyPendingModification();
     this.getTrees();
     this.calculateHeight();
+    this.reloadValidation = false;
   },
   beforeUnmount() {
     window.removeEventListener('resize', this.calculateHeight);
@@ -162,6 +163,7 @@ export default defineComponent({
               this.udValidationPassed[sentId][userId] = userTreeValidation;
             }
           }
+          this.reloadValidation = true;
         })
         .catch((error) => {
           notifyError({ error: error });

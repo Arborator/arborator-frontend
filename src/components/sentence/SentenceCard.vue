@@ -265,6 +265,7 @@ export default defineComponent({
   computed: {
     ...mapWritableState(useProjectStore, ['diffMode', 'diffUserId', 'name']),
     ...mapWritableState(useGithubStore, ['reloadCommits']),
+    ...mapState(useTreesStore, ['reloadValidation']),
     ...mapState(useProjectStore, ['isValidator', 'blindAnnotationMode', 'shownMeta', 'languageDetected']),
     ...mapState(useUserStore, ['username']),
     ...mapState(useTagsStore, ['defaultTags']),
@@ -320,16 +321,18 @@ export default defineComponent({
   watch: {
     'udValidation': {
       handler: function (newVal) {
-        for (const user of Object.keys(this.sentence.conlls)) {
-          if(newVal[user]) {
-            this.udValidationMsg[user] = newVal[user].message;
-            this.udValidationStatut[user] = 'negative'
+        if (this.reloadValidation) {
+          for (const user of Object.keys(this.sentence.conlls)) {
+            if(newVal[user]) {
+              this.udValidationMsg[user] = newVal[user].message;
+              this.udValidationStatut[user] = 'negative'
+            }
+            else {
+              this.udValidationMsg[user] = '';
+              this.udValidationStatut[user] = 'positive';
+            }
           }
-          else {
-            this.udValidationMsg[user] = '';
-            this.udValidationStatut[user] = 'positive';
-          }
-        } 
+        }
       },
       deep: true,
     },

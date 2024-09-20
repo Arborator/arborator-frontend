@@ -23,6 +23,7 @@ export const useTreesStore = defineStore('trees', {
       featuresSetForNotDiffs: [] as string[],
       selectedTags: [] as string[],
       reloadTrees: false as boolean,
+      reloadValidation: false as boolean,
       pendingModifications: new Map(), 
     };
   },

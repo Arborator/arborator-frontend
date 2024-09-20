@@ -48,6 +48,7 @@
         :passed-lexicon-items="lexiconItemsModified"
         :lexicon-loading="false"
         :features="features"
+        :key="lexiconItemsModified.length + 1"
         :lexicon-type="data.treeType"
         :sample-ids="sampleNames"
       ></LexiconTableBase>

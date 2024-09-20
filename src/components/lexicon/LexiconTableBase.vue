@@ -167,6 +167,7 @@ export default defineComponent({
     ...mapState(useLexiconStore, ['lexiconItems']),
     ...mapState(useProjectStore, ['name']),
     ...mapWritableState(useProjectStore, ['tab']),
+    ...mapWritableState(useGrewSearchStore, ['reloadGrew']),
     getLexiconData() {
       this.lexiconData = [];
       for (const lexiconItem of this.passedLexiconItems) {
@@ -223,14 +224,15 @@ export default defineComponent({
     get() {
       let grewRuleConcatenated = '';
       let counter = 1;
-
       for (const after of this.table.selected) {
+      
         const before = this.findOriginalLexiconItem(after);
         const thisRule = this.grewRuleFromLexiconItemPair(before, after);
         grewRuleConcatenated += `rule r${counter} {\n${thisRule}\n}\n`;
         counter = counter + 1;
       }
       this.changeLastGrewQuery({ text: grewRuleConcatenated, type: 'REWRITE', userType: this.lexiconType });
+      this.reloadGrew += 1;
       this.tab = 'grew';
     },
 

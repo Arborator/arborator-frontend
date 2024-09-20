@@ -99,7 +99,7 @@
               ></ProjectTable>
             </q-tab-panel>
             <q-tab-panel class="q-pa-none" name="grew">
-              <GrewSearch :search-scope="projectName" :samples="samples" @reload="loadProjectData" />
+              <GrewSearch :search-scope="projectName" :samples="samples" @reload="loadProjectData" :key="reloadGrew" />
             </q-tab-panel>
             <q-tab-panel class="q-pa-none" name="parser">
               <ParsingPanel :samples="samples" :parentGetProjectSamples="getProjectSamples"></ParsingPanel>
@@ -207,7 +207,7 @@ export default defineComponent({
     ]),
     ...mapWritableState(useProjectStore, ['reloadSamples', 'tab']),
     ...mapState(useGithubStore, ['reloadCommits']),
-    ...mapWritableState(useGrewSearchStore, ['grewDialog']),
+    ...mapWritableState(useGrewSearchStore, ['reloadGrew']),
     projectName(): string {
       return this.$route.params.projectname as string;
     },

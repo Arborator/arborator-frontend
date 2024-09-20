@@ -3,19 +3,7 @@
     <q-card-section>
       <div class="text-h6 q-mb-md">{{ $t('lexicon.lexiconTitle') }}</div>
       <div class="row q-gutter-md">
-        <div class="col-3">
-          <q-select
-            dense
-            v-model="selectedSamples"
-            outlined
-            multiple
-            :options="sampleIds"
-            use-chips
-            stack-label
-            :label="$t('lexicon.selectSample')"
-          />
-        </div>
-        <div class="col-3">
+        <div class="col">
           <q-select
             dense
             v-model="principalFeatures"
@@ -27,7 +15,7 @@
             :label="$t('lexicon.similarFeatures')"
           />
         </div>
-        <div class="col-3">
+        <div class="col">
           <q-select
             dense
             :disable="!principalFeatures.length"
@@ -40,82 +28,18 @@
             :label="$t('lexicon.ambiguousFeatures')"
           />
         </div>
-        <div>
-          <q-tooltip content-class="bg-white text-primary">{{ $t('lexicon.selectTreeType') }}</q-tooltip>
-          <q-btn-dropdown
-            :disable="!principalFeatures.length"
-            class="float-right"
-            size="md"
-            outline
-            color="primary"
-            label=" get Lexicon"
-          >
-            <q-list>
-              <q-item v-if="canSaveTreeInProject && collaborativeMode" v-close-popup clickable @click="fetchLexicon_('user')">
-                <q-item-section avatar>
-                  <q-avatar v-if="isLoggedIn" size="1.2rem">
-                    <img :src="avatar" alt="avatar" />
-                  </q-avatar>
-                  <q-icon v-else name="account_circle" />
-                </q-item-section>
-                <q-item-section>
-                  <q-item-label>{{ $t('lexicon.lexiconOptions[0]') }}</q-item-label>
-                </q-item-section>
-              </q-item>
-
-              <q-item
-                v-close-popup
-                v-if="canSeeOtherUsersTrees && canSaveTreeInProject && collaborativeMode"
-                clickable
-                @click="fetchLexicon_('user_recent')"
-              >
-                <q-item-section avatar>
-                  <q-avatar v-if="isLoggedIn" size="1.2rem">
-                    <img :src="avatar" alt="avatar" />
-                    <q-badge floating transparent color="principal">+</q-badge>
-                  </q-avatar>
-                  <q-icon v-else name="account_circle" />
-                </q-item-section>
-                <q-item-section>
-                  <q-item-label>{{ $t('lexicon.lexiconOptions[1]') }}</q-item-label>
-                </q-item-section>
-              </q-item>
-
-              <q-item v-if="canSeeOtherUsersTrees && collaborativeMode" v-close-popup clickable @click="fetchLexicon_('all')">
-                <q-item-section avatar>
-                  <q-icon name="groups" />
-                </q-item-section>
-                <q-item-section>
-                  <q-item-label>{{ $t('lexicon.lexiconOptions[2]') }}</q-item-label>
-                </q-item-section>
-              </q-item>
-
-              <q-item v-if="canSeeOtherUsersTrees && collaborativeMode" v-close-popup clickable @click="fetchLexicon_('recent')">
-                <q-item-section avatar>
-                  <q-icon name="schedule" />
-                </q-item-section>
-                <q-item-section>
-                  <q-item-label>{{ $t('lexicon.lexiconOptions[3]') }}</q-item-label>
-                </q-item-section>
-              </q-item>
-
-              <q-item v-if="canSeeOtherUsersTrees" v-close-popup clickable @click="fetchLexicon_('validated')">
-                <q-item-section avatar>
-                  <q-icon name="verified" />
-                </q-item-section>
-                <q-item-section>
-                  <q-item-label>{{ $t('lexicon.lexiconOptions[4]') }}</q-item-label>
-                </q-item-section>
-              </q-item>
-            </q-list>
-          </q-btn-dropdown>
+        <div class="col-6">
+          <TreesTypeSelect grew-option="REWRITE" :samples="samples" @selected-value="getSelectedValues" />
+        </div>
+        <div class="col">
+          <q-btn :disable="!principalFeatures.length" color="primary" label="Generate lexicon" @click="fetchLexicon_"></q-btn>
         </div>
       </div>
     </q-card-section>
     <q-card-section v-if="isShowLexiconTable" class="q-gutter-md">
       <LexiconModificationDialog :features="features" v-if="lexiconItems.length >= 1" />
       <div v-if="lexiconItemsModified.length >= 1">
-        <q-btn outline color="primary" icon="refresh" @click="fetchLexicon_(lexiconType)"> reload</q-btn>
+        <q-btn outline color="primary" icon="refresh" @click="fetchLexicon_()">reload</q-btn>
       </div>
       <LexiconTableBase
         v-show="lexiconItemsModified.length >= 1"
@@ -124,9 +48,8 @@
         :passed-lexicon-items="lexiconItemsModified"
         :lexicon-loading="false"
         :features="features"
-        :key="lexiconItemsModified.length"
-        :lexicon-type="lexiconType"
-        :sample-ids="sampleIds"
+        :lexicon-type="data.treeType"
+        :sample-ids="sampleNames"
       ></LexiconTableBase>
       <LexiconTableBase
         title="Lexicon"
@@ -135,8 +58,8 @@
         :lexicon-loading="lexiconLoading"
         :features="features"
         :key="features.length"
-        :lexicon-type="lexiconType"
-        :sample-ids="sampleIds"
+        :lexicon-type="data.treeType"
+        :sample-ids="sampleNames"
       >
       </LexiconTableBase>
     </q-card-section>
@@ -144,41 +67,41 @@
 </template>
 
 <script lang="ts">
+import LexiconModificationDialog from './LexiconModificationDialog.vue';
+import LexiconTableBase from './LexiconTableBase.vue';
+import TreesTypeSelect from '../shared/TreesTypeSelect.vue';
+
 import { mapActions, mapState, mapWritableState } from 'pinia';
 import { useLexiconStore } from 'src/pinia/modules/lexicon';
 import { useProjectStore } from 'src/pinia/modules/project';
-import { useUserStore } from 'src/pinia/modules/user';
 import { PropType, defineComponent } from 'vue';
-
-import LexiconModificationDialog from './LexiconModificationDialog.vue';
-import LexiconTableBase from './LexiconTableBase.vue';
+import { sample_t } from 'src/api/backend-types';
 import { notifyMessage } from 'src/utils/notify';
 
 export default defineComponent({
   name: 'LexiconMain',
   props: {
-    sampleIds: {
-      type: Object as PropType<string[]>,
+    samples: {
+      type: Object as PropType<sample_t[]>,
       default: [],
     },
   },
   components: {
     LexiconTableBase,
     LexiconModificationDialog,
+    TreesTypeSelect,
   },
   data() {
     const features: string[] = [];
-    const selectedSamples: string[] = [];
+    const data: { selectedSamples: string[]; treeType: string; otherUser: string } = { selectedSamples: [], treeType: 'recent', otherUser: '' };
     return {
-      lexiconType: '',
       features,
-      selectedSamples,
       isShowLexiconTable: false,
+      data,
     };
   },
   computed: {
-    ...mapState(useProjectStore, ['name', 'annotationFeatures', 'canSeeOtherUsersTrees', 'canSaveTreeInProject', 'collaborativeMode']),
-    ...mapState(useUserStore, ['isLoggedIn', 'isSuperAdmin', 'avatar']),
+    ...mapState(useProjectStore, ['name', 'annotationFeatures']),
     ...mapState(useLexiconStore, ['lexiconItems', 'lexiconLoading', 'lexiconItemsModified', 'principalFeatures', 'secondaryFeatures']),
     ...mapWritableState(useLexiconStore, ['principalFeatures', 'secondaryFeatures']),
     principalFeatureOptions() {
@@ -187,10 +110,13 @@ export default defineComponent({
     secondaryFeatureOptions() {
       return this.principalFeatureOptions.filter((value) => !this.principalFeatures.includes(value));
     },
+    sampleNames() {
+      return this.samples.map((sample) => sample.sampleName);
+    }
   },
   methods: {
     ...mapActions(useLexiconStore, ['fetchLexicon']),
-    fetchLexicon_(lexiconType: string) {
+    fetchLexicon_() {
       let prune: number;
 
       this.features = this.principalFeatures.concat(this.secondaryFeatures);
@@ -200,10 +126,18 @@ export default defineComponent({
       } else {
         prune = 0;
       }
-      const data = { samplenames: this.selectedSamples, lexiconType: lexiconType, features: this.features, prune: prune };
+      const data = { 
+        sampleNames: this.data.selectedSamples, 
+        lexiconType: this.data.treeType,
+        otherUser: this.data.otherUser, 
+        features: this.features, 
+        prune: prune 
+      };
       this.fetchLexicon(this.name, data);
       this.isShowLexiconTable = true;
-      this.lexiconType = lexiconType;
+    },
+    getSelectedValues(val: any) {
+      this.data = val;
     },
     displayMessage() {
       let message = 'We search all lexicon entries that have the same ';

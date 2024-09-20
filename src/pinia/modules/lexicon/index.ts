@@ -32,11 +32,11 @@ export const useLexiconStore = defineStore('lexicon', {
       this.isShowLexiconModification = false;
       this.couplesLexiconItemsBeforeAfter = [];
     },
-    fetchLexicon(projectname: string, data: any) {
+    fetchLexicon(projectName: string, data: any) {
       this.lexiconLoading = true;
       this.purgeCurrentState();
       api
-        .getLexicon(projectname, data)
+        .getLexicon(projectName, data)
         .then((response) => {
           this.lexiconLoading = false;
           const lexiconItems = [];

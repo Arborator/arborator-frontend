@@ -105,7 +105,7 @@
               <ParsingPanel :samples="samples" :parentGetProjectSamples="getProjectSamples"></ParsingPanel>
             </q-tab-panel>
             <q-tab-panel class="q-pa-none" name="lexicon">
-              <LexiconMain :sample-ids="sampleNames"></LexiconMain>
+              <LexiconMain :samples="samples"></LexiconMain>
             </q-tab-panel>
             <q-tab-panel class="q-pa-none" name="relation_table">
               <RelationTable :samples="samples"></RelationTable>

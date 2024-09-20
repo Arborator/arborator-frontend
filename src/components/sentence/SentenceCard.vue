@@ -347,8 +347,12 @@ export default defineComponent({
     save(mode: string) {
       const openedTreeUser = this.openTabUser;
       let changedConllUser = this.username;
+      let updateCommit = true;
       if (mode) changedConllUser = mode;
-
+      
+      if (this.reactiveSentencesObj[this.openTabUser].exportConll() === this.sentenceData.conlls[this.openTabUser]) {
+        updateCommit = false;
+      } 
       const metaToReplace = {
         user_id: changedConllUser,
         timestamp: Math.round(Date.now()),
@@ -360,6 +364,7 @@ export default defineComponent({
         sent_id: this.sentence.sent_id,
         conll: exportedConll,
         user_id: changedConllUser,
+        update_commit: updateCommit,
       };
       if (!this.sentence.sample_name) {
         return;

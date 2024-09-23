@@ -222,7 +222,7 @@ export default defineComponent({
   },
   computed: {
     ...mapState(useUserStore, ['username', 'loggedWithGithub']),
-    ...mapState(useProjectStore, ['languagesList']),
+    ...mapState(useProjectStore, ['languagesList', 'annotationFeaturesSUD', 'annotationFeaturesUD']),
     canSyncWithGithub() {
       return this.loggedWithGithub && this.isShowSyncBtn && !this.isShowGithubSyncPanel;
     },
@@ -234,7 +234,7 @@ export default defineComponent({
     },
   },
   methods: {
-    ...mapActions(useProjectStore, ['resetAnnotationFeaturesSUD', 'resetAnnotationFeaturesUD']),
+    ...mapActions(useProjectStore, ['updateProjectConlluSchema']),
     getSelectedLanguage(value: any) {
       if (value) {
         this.project.language = value;
@@ -242,11 +242,6 @@ export default defineComponent({
     },
     onSubmit() {
       this.submitting = true;
-      if (this.project.config === 'ud') {
-        this.resetAnnotationFeaturesUD();
-      } else {
-        this.resetAnnotationFeaturesSUD();
-      }
       const data = {
         ...this.project,
       };
@@ -255,6 +250,11 @@ export default defineComponent({
         .then(() => {
           this.parentGetProjects();
           this.submitting = false;
+          if (this.project.config === 'ud') {
+            this.updateProjectConlluSchema(this.project.projectName, this.annotationFeaturesUD);
+          } else {
+            this.updateProjectConlluSchema(this.project.projectName, this.annotationFeaturesSUD);
+          }
           if (this.loggedWithGithub && !this.project.blindAnnotationMode) {
             this.progress = 0.4;
             this.isShowSyncBtn = true;

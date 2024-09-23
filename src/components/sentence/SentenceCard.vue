@@ -353,7 +353,7 @@ export default defineComponent({
       let updateCommit = true;
       if (mode) changedConllUser = mode;
       
-      if (this.reactiveSentencesObj[this.openTabUser].exportConll() === this.sentenceData.conlls[this.openTabUser]) {
+      if (this.reactiveSentencesObj[this.openTabUser].exportConll() === this.sentenceData.conlls[this.openTabUser].trim()) {
         updateCommit = false;
       } 
       const metaToReplace = {

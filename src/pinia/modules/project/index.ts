@@ -218,11 +218,12 @@ export const useProjectStore = defineStore('project', {
           });
       });
     },
-    updateProjectConlluSchema(projectName: string, annotationFeatures: annotationFeatures_t) {
+    updateProjectConlluSchema(projectName: string, annotationFeatures: annotationFeatures_t, updateCommit: boolean) {
       return new Promise((resolve, reject) => {
         api
           .updateProjectConlluSchema(projectName, {
             config: annotationFeatures,
+            updateCommit: updateCommit
           })
           .then((response) => {
             this.annotationFeatures = annotationFeatures;

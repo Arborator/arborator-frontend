@@ -98,7 +98,7 @@ export default {
   getProjectConlluSchema(projectName: string) {
     return API.get<getProjectConlluSchema_RV>(`projects/${projectName}/conll-schema`);
   },
-  updateProjectConlluSchema(projectName: string, data: updateProjectConlluSchema_ED) {
+  updateProjectConlluSchema(projectName: string, data: any) {
     return API.put(`projects/${projectName}/conll-schema`, data);
   },
   getProjectUsersAccess(projectName: string) {

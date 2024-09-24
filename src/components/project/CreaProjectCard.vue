@@ -251,9 +251,9 @@ export default defineComponent({
           this.parentGetProjects();
           this.submitting = false;
           if (this.project.config === 'ud') {
-            this.updateProjectConlluSchema(this.project.projectName, this.annotationFeaturesUD);
+            this.updateProjectConlluSchema(this.project.projectName, this.annotationFeaturesUD, false);
           } else {
-            this.updateProjectConlluSchema(this.project.projectName, this.annotationFeaturesSUD);
+            this.updateProjectConlluSchema(this.project.projectName, this.annotationFeaturesSUD, false);
           }
           if (this.loggedWithGithub && !this.project.blindAnnotationMode) {
             this.progress = 0.4;

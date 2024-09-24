@@ -234,7 +234,7 @@
 <script lang="ts">
 import JsonEditorVue from 'json-editor-vue';
 import { mapActions, mapState, mapWritableState } from 'pinia';
-import { sample_t } from 'src/api/backend-types';
+import { sample_t, annotationFeatures_t } from 'src/api/backend-types';
 import { useProjectStore } from 'src/pinia/modules/project';
 import { notifyError, notifyMessage } from 'src/utils/notify';
 import { PropType, defineComponent } from 'vue';
@@ -276,7 +276,8 @@ export default defineComponent({
         mode: 'text',
         tabSize: 4,
         indentation: 4,
-      }
+      },
+      currentFeatures: {} as annotationFeatures_t,
     };
   },
   computed: {
@@ -380,6 +381,7 @@ export default defineComponent({
   },
   mounted() {
     this.annotationFeaturesJson = JSON.stringify(this.annotationFeatures, null, 4);
+    this.currentFeatures = this.annotationFeatures;
   },
   watch: {
     annotationFeaturesJson(newValue) {
@@ -407,13 +409,21 @@ export default defineComponent({
       }
     },
     saveAnnotationSettings() {
-      this.updateProjectConlluSchema(this.projectName, JSON.parse(this.annotationFeaturesJson))
+      const parsedAnnotFeatures = JSON.parse(this.annotationFeaturesJson);
+      const featsChanged = JSON.stringify(parsedAnnotFeatures.FEATS) !== JSON.stringify(this.currentFeatures.FEATS);
+      const miscChanged = JSON.stringify(parsedAnnotFeatures.MISC) !== JSON.stringify(this.currentFeatures.MISC);
+
+      const updateCommits = featsChanged || miscChanged // if the feats or misc changed the data in grew will be modified in this case we need to count it as change to commit
+      
+      this.updateProjectConlluSchema(this.projectName, parsedAnnotFeatures, updateCommits)
         .then(() => {
           notifyMessage({ message: 'New annotation settings saved on the server', icon: 'save' });
         })
         .catch((error) => {
           notifyError({ error });
         });
+        
+      this.$emit('reload');
     },
 
     resetAnnotationFeaturesWrapper() {

@@ -122,7 +122,7 @@
         </q-card>
       </q-dialog>
       <q-dialog v-model="projectSettingsDial">
-        <ProjectSettingsView :projectName="projectName" :samples="samples" />
+        <ProjectSettingsView :projectName="projectName" :samples="samples" @reload="loadProjectData()" />
       </q-dialog>
       <UploadDialog v-model:uploadDial="uploadDial" :samples="samples" @uploaded:sample="loadProjectData()" />
     </div>

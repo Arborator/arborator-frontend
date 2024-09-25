@@ -144,8 +144,8 @@ export default defineComponent({
         this.startIndex = (event.target as HTMLInputElement).selectionStart || 0;
         this.endIndex = (event.target as HTMLInputElement).selectionEnd || 0;
         this.sentence = (event.target as HTMLInputElement).value;
-        if ((this.sentence[this.startIndex - 1] == ' ' || this.startIndex == 0) && this.sentence[this.endIndex] == ' ') {
-          this.selection = (event.target as HTMLInputElement).value.substring(this.startIndex, this.endIndex);
+        if ((this.sentence[this.startIndex - 1] == ' ' || this.startIndex == 0) && (this.sentence[this.endIndex] == ' ' || this.endIndex === this.sentence.length)) {
+          this.selection = (event.target as HTMLInputElement).value.substring(this.startIndex, this.endIndex)
           this.tokensReplaceDialogOpened = !this.selection.includes(' ')
         }
       }

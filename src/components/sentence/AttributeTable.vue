@@ -66,6 +66,15 @@
               @input-value="onInput()"
             />
             <q-select
+              v-else-if="computeValueOptions(props.row) !== undefined && computeValueOptions(props.row).length ===1"
+              v-model="computeValueOptions(props.row)[0]"
+              dense
+              filled
+              readonly
+              hide-dropdown-icon
+            >
+            </q-select>
+            <q-select
               v-else
               :key="key"
               v-model="props.row.v"

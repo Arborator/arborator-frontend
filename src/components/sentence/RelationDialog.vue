@@ -58,10 +58,8 @@ import { sentence_bus_t } from 'src/types/main_types';
 import { notifyMessage } from 'src/utils/notify';
 import { PropType, defineComponent } from 'vue';
 
-import AttributeTable from './AttributeTable.vue';
 
 export default defineComponent({
-  components: { AttributeTable },
   props: {
     sentenceBus: {
       type: Object as PropType<sentence_bus_t>,

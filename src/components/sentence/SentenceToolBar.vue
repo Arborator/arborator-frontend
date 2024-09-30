@@ -3,7 +3,7 @@
     <span class="text-grey" style="padding-left: 10px">{{ index + 1 }}</span>
     <q-chip class="text-center" :color="$q.dark.isActive ? 'grey' : ''" dense> {{ sentenceData.sent_id }} </q-chip>&nbsp;&nbsp;&nbsp;
     <q-input
-      v-model="sentenceData.sentence"
+      v-model="recentTreeText"
       :style="openTabUser === '' ? 'width: 100%' : 'width: 65%'"
       class="row items-center justify-center"
       v-bind="$attrs"
@@ -265,6 +265,14 @@ export default defineComponent({
     },
     sampleName() {
       return this.$route.params.samplename as string;
+    },
+    recentTreeText() {
+      if (this.openTabUser === '') {
+        return this.sentenceData.sentence;
+      }
+      else {
+        return this.reactiveSentencesObj[this.openTabUser].state.metaJson.text;
+      }
     }
   },
   methods: {

@@ -77,7 +77,7 @@ export default defineComponent({
     },
   },
   data() {
-    const splitterModel: number = 12;
+    const splitterModel: number = 13;
     const splitterHeight: number = 0;
     const udValidationPassed: { [sentId: string]: { [userId: string]: { message: string, passed: boolean } } } = {};
     return {

@@ -1,5 +1,5 @@
 <template>
-  <div class="row q-px-md">
+  <div class="row q-pa-md">
     <Breadcrumbs :height="30" :font-size="16" />
   </div>
   <div class="row q-pa-md q-gutter-x-md">

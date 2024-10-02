@@ -145,7 +145,7 @@ export default defineComponent({
         this.tokensForms = [this.token.FORM + tokens[`${id +1 }`].FORM];
         this.tokensIndexes = [id, id + 1];
       } else if (option == 'merge_left') {
-        this.tokensForms = [tokens[id - 2].FORM + this.token.FORM];
+        this.tokensForms = [tokens[id - 1].FORM + this.token.FORM];
         this.tokensIndexes = [id - 1, id];
       } else if (option == 'insert_before') {
         this.tokensForms = ['_', this.token.FORM];

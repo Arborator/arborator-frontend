@@ -276,6 +276,7 @@ export default defineComponent({
   },
   methods: {
     getConllTable() {
+      this.conllTable = [];
       this.conllContent = this.sentenceBus.sentenceSVGs[this.userId].exportConll();
       this.nodesJson = this.sentenceBus.sentenceSVGs[this.userId].treeJson.nodesJson;
       this.groupsJson = this.sentenceBus.sentenceSVGs[this.userId].treeJson.groupsJson;
@@ -299,9 +300,6 @@ export default defineComponent({
           MISC: this.formatTableEntry(node.MISC, '='),
         });
       }
-      this.conllColumnsToCheck.forEach((column) => {
-        this.formatErrorTable[column] = { error: false, message: '' };
-      });
     },
     formatTableEntry(entry: any, linkOperator: string ) {
       return Object.entries(entry)

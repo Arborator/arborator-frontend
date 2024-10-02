@@ -35,13 +35,14 @@
                   </q-td>
                   <q-td key="LEMMA" :props="props">
                     {{ props.row.LEMMA }}
-                    <q-popup-edit v-model="props.row.LEMMA" auto-save v-slot="scope" >
+                    <q-popup-edit v-if="!props.row.ID.includes('-')" v-model="props.row.LEMMA" auto-save v-slot="scope" >
                       <q-input v-model="scope.value" dense autofocus />
                     </q-popup-edit>
                   </q-td>
                   <q-td key="UPOS" :props="props">
                     {{ props.row.UPOS }}
                     <q-popup-edit
+                      v-if="!props.row.ID.includes('-')"
                       v-model="props.row.UPOS"
                       buttons
                       label-set="Save"
@@ -61,13 +62,14 @@
                   </q-td>
                   <q-td key="XPOS">
                     {{ props.row.XPOS }}
-                    <q-popup-edit v-model="props.row.XPOS" auto-save v-slot="scope" >
+                    <q-popup-edit v-if="!props.row.ID.includes('-')" v-model="props.row.XPOS" auto-save v-slot="scope" >
                       <q-input v-model="scope.value" dense autofocus />
                     </q-popup-edit>
                   </q-td>
                   <q-td key="FEATS" :props="props">
                     {{ props.row.FEATS }}
                     <q-popup-edit
+                      v-if="!props.row.ID.includes('-')"
                       v-model="props.row.FEATS"
                       buttons
                       label-set="Save"
@@ -88,6 +90,7 @@
                   <q-td key="HEAD" :props="props">
                     {{ props.row.HEAD }}
                     <q-popup-edit
+                      v-if="!props.row.ID.includes('-')"
                       v-model.number="props.row.HEAD"
                       buttons
                       label-set="Save"
@@ -109,6 +112,7 @@
                   <q-td key="DEPREL" :props="props">
                     {{ props.row.DEPREL }}
                     <q-popup-edit
+                      v-if="!props.row.ID.includes('-')"
                       v-model="props.row.DEPREL"
                       buttons
                       label-set="Save"
@@ -128,7 +132,7 @@
                   </q-td>
                   <q-td key="DEPS">
                     {{ props.row.DEPS }}
-                    <q-popup-edit v-model="props.row.DEPS" auto-save v-slot="scope" >
+                    <q-popup-edit v-if="!props.row.ID.includes('-')" v-model="props.row.DEPS" auto-save v-slot="scope" >
                       <q-input v-model="scope.value" dense autofocus />
                     </q-popup-edit>
                   </q-td>
@@ -138,6 +142,18 @@
                       <q-input v-model="scope.value" dense autofocus />
                     </q-popup-edit>
                   </q-td>
+                  <q-menu
+                    touch-position
+                    context-menu
+                  >
+                    <TokensReplaceDialog 
+                      :sentence-bus="sentenceBus" 
+                      :reactive-sentences-obj="reactiveSentencesObj" 
+                      :user-id="userId" 
+                      :token="props.row"
+                      @reload="getConllTable()"
+                    />
+                  </q-menu>
                 </q-tr>
               </template>
             </q-table>
@@ -157,52 +173,18 @@
 </template>
 
 <script lang="ts">
-import CodeMirror2 from 'codemirror';
 import Codemirror from 'codemirror-editor-vue3';
+import TokensReplaceDialog from './TokensReplaceDialog.vue';
 
 import { copyToClipboard } from 'quasar';
-import { tokenJson_T, _featuresConllToJson, _depsConllToJson, nodesJson_T } from 'conllup/lib/conll';
+import { tokenJson_T, _featuresConllToJson, _depsConllToJson, nodesJson_T, groupsJson_T } from 'conllup/lib/conll';
 import { mapState } from 'pinia';
 import { useProjectStore } from 'src/pinia/modules/project';
 import { useUserStore } from 'src/pinia/modules/user';
-import { sentence_bus_t, table_t } from 'src/types/main_types';
+import { sentence_bus_t, table_t, reactive_sentences_obj_t } from 'src/types/main_types';
 import { notifyMessage } from 'src/utils/notify';
 import { PropType, defineComponent } from 'vue';
 
-CodeMirror2.defineMode('tsv', () => {
-  function tokenBase(stream: any) {
-    if (stream.string.match(/^#.+/)) {
-      stream.skipToEnd();
-      return 'comment';
-    }
-
-    const ch = stream.next();
-
-    if (/\d/.test(ch)) {
-      stream.eatWhile(/[\d]/);
-      if (stream.eat('.')) {
-        stream.eatWhile(/[\d]/);
-      }
-      return 'number';
-    }
-    if (/[+\-*&%=<>!?|:]/.test(ch)) {
-      return 'operator';
-    }
-    stream.eatWhile(/\w/);
-    return 'variable';
-  }
-
-  return {
-    startState() {
-      return { tokenize: tokenBase, commentLevel: 0 };
-    },
-    token(stream: any, state: any) {
-      if (stream.eatSpace()) return null;
-      return state.tokenize(stream, state);
-    },
-    lineComment: '#',
-  };
-}); 
 interface formatError_t {
   [key: string]: {
     error: boolean, 
@@ -210,10 +192,14 @@ interface formatError_t {
   }
 }
 export default defineComponent({
-  components: { Codemirror },
+  components: { Codemirror, TokensReplaceDialog },
   props: {
     sentenceBus: {
       type: Object as PropType<sentence_bus_t>,
+      required: true,
+    },
+    reactiveSentencesObj: {
+      type: Object as PropType<reactive_sentences_obj_t>,
       required: true,
     },
   },
@@ -222,6 +208,7 @@ export default defineComponent({
     const conllColumns = ['ID', 'FORM', 'LEMMA', 'UPOS', 'XPOS', 'FEATS', 'HEAD', 'DEPREL', 'DEPS', 'MISC'];
     const conllColumnsToCheck = ['UPOS', 'FEATS', 'HEAD', 'DEPREL'];
     const nodesJson: nodesJson_T = {};
+    const groupsJson: groupsJson_T = {};
     const table: table_t<tokenJson_T> = {
       fields: [],
       visibleColumns: [],
@@ -259,6 +246,7 @@ export default defineComponent({
         readOnly: true,
       },
       formatErrorTable,
+      groupsJson,
     };
   },
   computed: {
@@ -279,8 +267,6 @@ export default defineComponent({
       this.userId = userId;
       this.conlluDialogOpened = true;
       this.currentConllContent = this.sentenceBus.sentenceSVGs[this.userId].exportConll();
-      this.conllContent = this.sentenceBus.sentenceSVGs[this.userId].exportConll();
-      this.nodesJson = this.sentenceBus.sentenceSVGs[this.userId].treeJson.nodesJson;
       this.getConllTable();
     });
     this.createTableFields();
@@ -290,8 +276,21 @@ export default defineComponent({
   },
   methods: {
     getConllTable() {
-      this.conllTable = [];
+      this.conllContent = this.sentenceBus.sentenceSVGs[this.userId].exportConll();
+      this.nodesJson = this.sentenceBus.sentenceSVGs[this.userId].treeJson.nodesJson;
+      this.groupsJson = this.sentenceBus.sentenceSVGs[this.userId].treeJson.groupsJson;
       for (const node of Object.values(this.nodesJson)) {
+        const multiWordId = `${node.ID}-${parseInt(node.ID) +1}`;
+        const multiWordNode = this.groupsJson[multiWordId]
+        if (multiWordNode) {
+          this.conllTable.push({
+            ...multiWordNode,
+            HEAD: multiWordNode.HEAD === -1 ? '_' : multiWordNode.HEAD,
+            FEATS: this.formatTableEntry(multiWordNode.FEATS, '='),
+            DEPS: this.formatTableEntry(multiWordNode.DEPS, ':'),
+            MISC: this.formatTableEntry(multiWordNode.MISC, '='),
+          });
+        }
         this.conllTable.push({
           ...node,
           HEAD: node.HEAD === -1 ? '_' : node.HEAD,
@@ -300,6 +299,9 @@ export default defineComponent({
           MISC: this.formatTableEntry(node.MISC, '='),
         });
       }
+      this.conllColumnsToCheck.forEach((column) => {
+        this.formatErrorTable[column] = { error: false, message: '' };
+      });
     },
     formatTableEntry(entry: any, linkOperator: string ) {
       return Object.entries(entry)
@@ -335,14 +337,24 @@ export default defineComponent({
     },
     generateConllFromTable() {
       this.conllTable.forEach((row, index) => {
-        this.nodesJson[`${index + 1}`] = {
-          ...row,
-          FEATS: row.FEATS ? _featuresConllToJson(row.FEATS) : {},
-          MISC: row.MISC ? _featuresConllToJson(row.MISC) : {},
-          DEPS: row.DEPS ? _depsConllToJson(row.DEPS) : {},
-        };
+        if (!row.ID.includes('-')) {
+          this.nodesJson[`${index + 1}`] = {
+            ...row,
+            FEATS: row.FEATS ? _featuresConllToJson(row.FEATS) : {},
+            MISC: row.MISC ? _featuresConllToJson(row.MISC) : {},
+            DEPS: row.DEPS ? _depsConllToJson(row.DEPS) : {},
+          };
+        }
+        else {
+          this.groupsJson[row.ID] = {
+            ...row,
+            FEATS: row.FEATS ? _featuresConllToJson(row.FEATS) : {},
+            MISC: row.MISC ? _featuresConllToJson(row.MISC) : {},
+          }
+        }
       });
       this.sentenceBus.sentenceSVGs[this.userId].treeJson.nodesJson = { ...this.nodesJson };
+      this.sentenceBus.sentenceSVGs[this.userId].treeJson.groupsJson = { ...this.groupsJson };
     },
     copyConll() {
       copyToClipboard(this.currentConllContent).then(() => {

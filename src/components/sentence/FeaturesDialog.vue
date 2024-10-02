@@ -31,6 +31,23 @@
           :isModifiable="true"
           title="Miscellaneous Features"
         ></AttributeTable>
+        <q-separator />
+      </q-card-section>
+
+      <q-card-section>
+        <q-expansion-item
+          expand-separator
+          label="Edit tokens"
+        >
+          <TokensReplaceDialog
+            :sentence-bus="sentenceBus"
+            :reactive-sentences-obj="reactiveSentencesObj"
+            :token="token"
+            :user-id="userId"
+            @reload="featuresDialogOpened = false"
+          >
+          </TokensReplaceDialog>
+        </q-expansion-item>
       </q-card-section>
 
       <q-card-actions class="sticky-card-actions" align="around">
@@ -44,20 +61,26 @@
 import conllup from 'conllup';
 import { mapState } from 'pinia';
 import { useProjectStore } from 'src/pinia/modules/project';
-import { sentence_bus_t } from 'src/types/main_types';
+import { sentence_bus_t, reactive_sentences_obj_t } from 'src/types/main_types';
 import { PropType, defineComponent } from 'vue';
 
 import AttributeTable from './AttributeTable.vue';
+import TokensReplaceDialog from './TokensReplaceDialog.vue';
 
 const emptyTokenJson = conllup.emptyTokenJson;
 
 export default defineComponent({
   components: {
     AttributeTable,
+    TokensReplaceDialog,
   },
   props: {
     sentenceBus: {
       type: Object as PropType<sentence_bus_t>,
+      required: true,
+    },
+    reactiveSentencesObj: {
+      type: Object as PropType<reactive_sentences_obj_t>,
       required: true,
     },
   },

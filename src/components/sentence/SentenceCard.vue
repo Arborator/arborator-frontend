@@ -114,18 +114,18 @@
       <RelationDialog :sentence-bus="sentenceBus" />
       <UposDialog :sentence-bus="sentenceBus" />
       <XposDialog :sentence-bus="sentenceBus" />
-      <FeaturesDialog :sentence-bus="sentenceBus" @changed:meta-text="changeText()" />
-      <MetaDialog :sentence-bus="sentenceBus" />
-      <ConlluDialog :sentence-bus="sentenceBus" />
-      <ExportSVG 
-        :sentence-bus="sentenceBus" 
-        :reactive-sentences-obj="(reactiveSentencesObj as reactive_sentences_obj_t)" 
-        />
-      <TokensReplaceDialog 
+      <FeaturesDialog 
         :sentence-bus="sentenceBus" 
         :reactive-sentences-obj="(reactiveSentencesObj as reactive_sentences_obj_t)" 
         @changed:meta-text="changeText()" 
         />
+      <MetaDialog :sentence-bus="sentenceBus" />
+      <ConlluDialog :sentence-bus="sentenceBus" :reactive-sentences-obj="(reactiveSentencesObj as reactive_sentences_obj_t)" />
+      <ExportSVG 
+        :sentence-bus="sentenceBus" 
+        :reactive-sentences-obj="(reactiveSentencesObj as reactive_sentences_obj_t)" 
+        />
+      
       <MultiEditDialog 
         :sentence-bus="sentenceBus" 
         :reactive-sentences-obj="(reactiveSentencesObj as reactive_sentences_obj_t)" 

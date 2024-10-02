@@ -9,7 +9,7 @@
       v-bind="$attrs"
       readonly
       borderless
-      @select="editTokens"
+      @select="notifyNewFeature"
     >
       <q-tooltip v-if="openTabUser !== ''" anchor="bottom middle" self="center middle" :offset="[10, 10]">
         {{ $t('sentenceCard.selectTooltip') }}
@@ -197,6 +197,7 @@ import { defineComponent, PropType } from 'vue';
 
 import TagsMenu from './TagsMenu.vue';
 import SentenceSegmentation from './SentenceSegmentation.vue';
+import { notifyMessage } from 'src/utils/notify';
 
 export default defineComponent({
   name: 'sentenceToolBar',
@@ -276,13 +277,14 @@ export default defineComponent({
     }
   },
   methods: {
-    editTokens(event: Event) {
-      if (this.openTabUser !== '' && this.isAdmin) {
-        this.sentenceBus.emit('open:tokensReplaceDialog', {
-          userId: this.openTabUser,
-          event,
-        });
-      }
+    notifyNewFeature(event: Event) {
+      const docLink = "Doc link".link('https://arborator.github.io/arborator-documentation/#/annotation?id=tokens-editing-options')
+      notifyMessage({ 
+        message: `This feature has been changed if you want to change tokens segmentation check this link ${docLink}`,
+        position: 'top',
+        timeout: 3000,
+      });
+      event.stopPropagation();
     },
     openStatisticsDialog() {
       this.sentenceBus.emit('open:statisticsDialog', {

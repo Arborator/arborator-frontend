@@ -148,6 +148,7 @@ export default defineComponent({
     if (this.collaborativeMode) {
       this.treeType = this.lastQuery !== null ? this.treeTypes.filter((option) => option.value === this.lastQuery?.userType)[0] : this.treeOptions[0];
     }
+    this.emitSelectedValues();
   },
   methods: {
     emitSelectedValues() {

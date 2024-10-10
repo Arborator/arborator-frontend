@@ -36,7 +36,7 @@
           <q-separator />
         </q-card-section>
         <q-card-section class="q-gutter-md">
-          <StatisticsProject v-if="sampleNames.length" :project-name="projectName" :samples="samples"></StatisticsProject>
+          <StatisticsProject :key="reload" v-if="sampleNames.length" :project-name="projectName" :samples="samples"></StatisticsProject>
         </q-card-section>
         <q-card-section>
           <div class="row q-gutter-md" style="justify-content: right">
@@ -242,6 +242,7 @@ export default defineComponent({
           this.samples = response.data;
           this.sampleNames = this.samples.map(sample => sample.sampleName);
           this.reloadSamples = false;
+          this.reload += 1;
         })
         .catch((error) => {
           notifyError({ error: error });

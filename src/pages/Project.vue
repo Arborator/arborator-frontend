@@ -88,13 +88,11 @@
                 :selected-samples="selectedSamples"
                 :canDeleteFromGithub="isAllowdedToSync && syncGithubRepo !== undefined"
                 :samples-length="samples.length"
-                @unselect="unselectSamples = true"
                 @reload="loadProjectData"
               ></ProjectOptions>
               <ProjectTable
                 :key="reload"
                 :samples="samples"
-                :parent-unselect-samples="unselectSamples"
                 @selected-samples="getSelectedSamples"
               ></ProjectTable>
             </q-tab-panel>

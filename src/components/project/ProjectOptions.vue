@@ -1,6 +1,5 @@
 <template>
-  <div v-if="selectedSamples.length" class="row rounded-borders items-center custom-frame1">
-    <q-btn round flat icon="close" @click="unselectSamples()" />
+  <div class="row q-pa-md rounded-borders items-center custom-frame1">
     <div>
       {{ selectedSamples.length }}
       <span v-if="selectedSamples.length === 1">{{ $t('projectOptions.sample[0]') }}</span>
@@ -156,9 +155,6 @@ export default defineComponent({
       document.body.appendChild(fileLink);
 
       fileLink.click();
-    },
-    unselectSamples() {
-      this.$emit('unselect');
     },
   },
 });

@@ -94,10 +94,6 @@ export default defineComponent({
   name: 'ProjectTable',
   emits: ['selected-samples'],
   props: {
-    parentUnselectSamples: {
-      type: Boolean as PropType<boolean>,
-      required: true,
-    },
     samples: {
       type: Array as PropType<sample_t[]>,
       required: true,
@@ -180,12 +176,6 @@ export default defineComponent({
     ...mapState(useProjectStore, ['name', 'isAdmin', 'freezed', 'isOwner', 'blindAnnotationMode']),
   },
   watch: {
-    parentUnselectSamples(newVal) {
-      if (newVal) {
-        this.table.selected = [];
-        this.getSelectedSamples();
-      }
-    },
     samples(newVal, oldVal) {
       if (newVal !== oldVal) {
         this.getSelectedSamples();
@@ -197,7 +187,7 @@ export default defineComponent({
       this.$emit('selected-samples', this.table.selected);
     },
     searchSamples(rows: sample_t[], terms: any) {
-      return rows.filter((row) => row.sampleName.toLowerCase().indexOf(terms.toLowerCase) !== -1);
+      return rows.filter((row) => row.sampleName.toLowerCase().indexOf(terms.toLowerCase()) !== -1);
     },
     updateBlindAnnotationLevel(sample: sample_t) {
       setTimeout(() => {

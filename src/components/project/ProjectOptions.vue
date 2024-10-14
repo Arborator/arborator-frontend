@@ -9,12 +9,12 @@
       <span v-if="samplesLength === 1">{{ $t('projectOptions.sample[0]') }}</span>
       <span v-else>{{ $t('projectOptions.sample[1]') }}</span>
     </div>
-    <q-btn v-if="isAdmin" flat icon="delete" @click="triggerConfirmAction(deleteSamples)">
+    <q-btn v-if="isAdmin" flat icon="delete" @click="triggerConfirmAction(deleteSamples)" :disable="selectedSamples.length === 0">
       <q-tooltip>
         {{ $t('projectOptions.tooltipDeleteSample') }}
       </q-tooltip>
     </q-btn>
-    <q-btn v-if="canExportTrees" flat icon="download" @click="isShowExportDial = true">
+    <q-btn v-if="canExportTrees" flat icon="download" @click="isShowExportDial = true" :disable="selectedSamples.length === 0">
       <q-tooltip>
         {{ $t('projectOptions.tooltipExportSample') }}
       </q-tooltip>

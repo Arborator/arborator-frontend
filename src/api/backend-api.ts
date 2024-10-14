@@ -122,6 +122,9 @@ export default {
   deleteSamples(projectName: string, data: any) {
     return API.patch(`/projects/${projectName}/samples`, data);
   },
+  renameSample(projectName: string, sampleName: string, data: any) {
+    return API.post(`/projects/${projectName}/samples/${sampleName}/sample-name`, data);
+  },
   tokenizeSample(projectName: string, data: any) {
     return API.post(`/projects/${projectName}/samples/tokenize`, data, { timeout: 400000 });
   },

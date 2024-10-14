@@ -220,7 +220,7 @@ export default defineComponent({
       if (newVal > 0) this.loadProjectData();
     },
     reloadSamples(newVal) {
-      if (newVal > 0) this.loadProjectData();
+      if (newVal) this.loadProjectData();
     }
   },
   methods: {

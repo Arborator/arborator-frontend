@@ -48,6 +48,19 @@
             no-caps
           >
             {{ props.row.sampleName }}
+            <q-menu
+              context-menu
+              touch-position
+            > 
+              <q-list>
+                <q-item v-close-popup clickable @click="showRenameSampleDial(props.row.sampleName)">
+                  <q-item-section>Rename sample</q-item-section>
+                  <q-item-section side>
+                    <q-icon name="edit" />
+                  </q-item-section>
+                </q-item>
+              </q-list>
+            </q-menu>
           </q-btn>
         </q-td>
         <q-td key="sentences" :props="props">{{ props.row.sentences }}</q-td>
@@ -79,19 +92,26 @@
       </q-tr>
     </template>
   </q-table>
+  <q-dialog v-model="isShowRenameDial">
+   <RenameSample :sample-name="selectedSample" /> 
+  </q-dialog>
 </template>
 <script lang="ts">
+import api from 'src/api/backend-api';
+import { sample_t } from 'src/api/backend-types';
+import { table_t } from 'src/types/main_types';
+import RenameSample from 'src/components/project/RenameSample.vue';
+
 import { mapState } from 'pinia';
 import { useProjectStore } from 'src/pinia/modules/project';
 import { notifyError, notifyMessage } from 'src/utils/notify';
 import { PropType, defineComponent } from 'vue';
 
-import api from '../../api/backend-api';
-import { sample_t } from '../../api/backend-types';
-import { table_t } from '../../types/main_types';
-
 export default defineComponent({
   name: 'ProjectTable',
+  components: {
+    RenameSample,
+  },
   emits: ['selected-samples'],
   props: {
     samples: {
@@ -170,6 +190,8 @@ export default defineComponent({
           value: 4,
         },
       ],
+      isShowRenameDial: false,
+      selectedSample: '',
     };
   },
   computed: {
@@ -203,6 +225,10 @@ export default defineComponent({
           });
       }, 0);
     },
+    showRenameSampleDial(sampleName: string) {
+      this.isShowRenameDial = true;
+      this.selectedSample = sampleName;
+    }
   },
 });
 </script>

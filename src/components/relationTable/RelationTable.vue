@@ -223,7 +223,7 @@ export default defineComponent({
         searchPattern = `pattern { e: GOV -> DEP;  e.label = "_"; `
       }
       else {
-        searchPattern = `pattern { GOV -[${this.currentEdge}]-> DEP; `;
+        searchPattern = `pattern { GOV -["${this.currentEdge}"]-> DEP; `;
       }
       if (props.col.name != 'sum') searchPattern += `DEP [ExtPos="${props.col.name}"/upos="${props.col.name}"]; `;
       if (props.key != '∑' && props.key != '_') searchPattern += ` GOV [upos="${props.key}"]; `;

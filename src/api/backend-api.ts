@@ -188,6 +188,11 @@ export default {
   getRelationTable(projectName: string, data: any) {
     return API.post(`projects/${projectName}/relation-table`, data);
   },
+  exportGrewResults(projectName: string, data: any) {
+    return API.post(`/projects/${projectName}/export-results`, data, {
+      responseType: 'arraybuffer',
+    });
+  },
   // -------------------------------------------------------- //
   // ---------------       Constructicon      --------------- //
   // -------------------------------------------------------- //

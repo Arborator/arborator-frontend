@@ -9,7 +9,7 @@
     </q-bar>
     <div class="q-pa-md row q-gutter-md custom-frame1">
       <q-select
-        class="col-9"
+        class="col-7"
         outlined
         dense
         v-model="selectedSample"
@@ -39,6 +39,7 @@
           {{ pendingModifications.size }}
         </q-badge>
       </q-btn>
+      <q-btn class="col-2" color="primary" label="Export results" @click="exportResults()" />
     </div>
     <div>
       <template v-if="samplesFrozen.list.length > 0">
@@ -142,6 +143,7 @@ export default defineComponent({
       samples,
       all: false,
       toSaveCounter: 0,
+      users: new Set(),
     };
   },
   computed: {
@@ -201,6 +203,9 @@ export default defineComponent({
           selectedIndex[index] = false;
           this.searchResultsCopy[sampleId][sentId].sample_name = sampleId;
           index += 1;
+          for (const user in this.searchResults[sampleId][sentId].conlls) {
+            this.users.add(user);
+          }
         }
       }
       Object.freeze(listIds);
@@ -287,6 +292,25 @@ export default defineComponent({
         }
       }
       return selectedResults;
+    },
+
+    exportResults() {
+      const data = { searchResults: this.searchResults, users: [...this.users] };
+      api
+        .exportGrewResults(this.name, data)
+        .then((response) => {
+          const url = window.URL.createObjectURL(new Blob([response.data], { type: 'application/zip' }));
+          const link = document.createElement('a');
+          link.href = url;
+          link.setAttribute('download', `dump_${this.projectName}.zip`);
+          document.body.appendChild(link);
+          link.click();
+          document.body.removeChild(link);
+          notifyMessage({ message: 'Grew results are exported' });
+        })
+        .catch((error) => {
+          notifyError({ error: error });
+        })
     },
 
     saveAppliedRule() {

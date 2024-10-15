@@ -70,8 +70,8 @@ export type getProjectSamples_RV = sample_t[];
 
 //// TREES
 export interface updateTree_ED {
-  sent_id: string;
-  user_id: string;
+  sentId: string;
+  userId: string;
   conll: string;
 }
 

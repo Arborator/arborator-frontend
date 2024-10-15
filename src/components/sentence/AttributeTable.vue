@@ -39,14 +39,8 @@
           </q-td>
 
           <q-td key="v" :props="props">
-            <div v-if="props.row.a === 'timestamp'" class="meta-data">
-              {{ getData(props.row.v) }}
-            </div>
-            <div v-else-if="metadata.includes(props.row.a)" class="meta-data">
-              {{ props.row.v }}
-            </div>
             <q-input
-              v-else-if="computeValueType(props.row) === 'String'"
+              v-if="computeValueType(props.row) === 'String'"
               v-model="props.row.v"
               filled
               dense
@@ -85,7 +79,7 @@
             >
             </q-select>
           </q-td>
-          <q-td v-if="isModifiable === true && !metadata.includes(props.row.a)" key="actions" :props="props">
+          <q-td v-if="isModifiable" key="actions" :props="props">
             <q-btn dense round flat color="grey" icon="delete" @click="deleteFeature(props.row)">
               <q-tooltip :delay="300"> {{ $t('attributeTable.eraseFeature') }} {{ props.row.a }}</q-tooltip>
             </q-btn>
@@ -97,7 +91,6 @@
 </template>
 
 <script lang="ts">
-import { date } from 'quasar';
 import { PropType, defineComponent } from 'vue';
 
 interface actual_feat_t {
@@ -143,7 +136,6 @@ export default defineComponent({
         rowsPerPage: 0,
       },
       key: 0,
-      metadata: ['timestamp', 'user_id', 'sent_id'], // workaround...
     };
   },
   methods: {
@@ -152,20 +144,6 @@ export default defineComponent({
     },
     deleteFeature(row: any) {
       this.featActualData.splice(this.featActualData.map((e) => e.a).indexOf(row.a), 1);
-    },
-    getData(timestamp: string) {
-      const currentDate = Date.now();
-      const parsedTimestamp = parseInt(timestamp, 10);
-      const diffTime = date.getDateDiff(currentDate, parsedTimestamp, 'days');
-      let diffTimestr = '';
-      if (diffTime === 0) {
-        diffTimestr = `${date.getDateDiff(currentDate, parsedTimestamp, 'hours')} hours ago: `;
-      } else if (diffTime > 365) {
-        diffTimestr = 'a long time ago: ';
-      } else {
-        diffTimestr = `${diffTime} days ago: `;
-      }
-      return diffTimestr + date.formatDate(parsedTimestamp, 'YYYY-MM-DD HH:mm:ss');
     },
     computeAttributeOptions() {
       return this.featPossibleOptions.map(({ name }) => name).filter((n) => !this.featActualData.map(({ a }) => a).includes(n));
@@ -184,8 +162,3 @@ export default defineComponent({
   },
 });
 </script>
-<style>
-.meta-data {
-  text-align: left;
-}
-</style>

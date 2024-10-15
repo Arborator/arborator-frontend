@@ -163,7 +163,7 @@
 
 <script lang="ts">
 import { ReactiveSentence } from 'dependencytreejs/src/ReactiveSentence';
-import { constructTextFromTreeJson } from 'conllup/lib/conll';
+import { constructTextFromTreeJson, sentenceConllToJson } from 'conllup/lib/conll';
 import mitt, { Emitter } from 'mitt';
 import { mapActions, mapState, mapWritableState } from 'pinia';
 import { useProjectStore } from 'src/pinia/modules/project';
@@ -265,6 +265,7 @@ export default defineComponent({
   computed: {
     ...mapWritableState(useProjectStore, ['diffMode', 'diffUserId', 'name']),
     ...mapWritableState(useGithubStore, ['reloadCommits']),
+    ...mapWritableState(useTreesStore, ['reloadTrees']),
     ...mapState(useTreesStore, ['reloadValidation']),
     ...mapState(useProjectStore, ['isValidator', 'blindAnnotationMode', 'shownMeta', 'languageDetected']),
     ...mapState(useUserStore, ['username']),
@@ -364,10 +365,10 @@ export default defineComponent({
       const exportedConll = this.reactiveSentencesObj[openedTreeUser].exportConllWithModifiedMeta(metaToReplace);
 
       const data = {
-        sent_id: this.sentence.sent_id,
         conll: exportedConll,
-        user_id: changedConllUser,
-        update_commit: updateCommit,
+        userId: changedConllUser,
+        updateCommit: updateCommit,
+        sentId: this.sentenceData.sent_id,
       };
       if (!this.sentence.sample_name) {
         return;
@@ -397,6 +398,9 @@ export default defineComponent({
               this.sentenceText = this.reactiveSentencesObj[this.openTabUser].state.metaJson.text as string;
               this.openTabUser = changedConllUser;
               this.exportedConll = exportedConll;
+            }
+            if (this.sentenceData.sent_id !== sentenceConllToJson(exportedConll).metaJson.sent_id ) {
+              this.reloadTrees = true;
             }
             notifyMessage({ position: 'top', message: 'Saved on the server', icon: 'save' });
             this.validateUdTree(exportedConll);

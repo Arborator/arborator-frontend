@@ -46,7 +46,7 @@
             {{ $t('sentenceCard.automaticParsing') }}
           </q-tooltip>
           <q-badge 
-            v-if="!hasPendingChanges[user] && udValidationStatut[user] !== ''" 
+            v-if="!hasPendingChanges[user] && udValidationStatut[user] !== '' && udValidationStatut[user]" 
             :color="udValidationStatut[user]"
             rounded 
             floating 

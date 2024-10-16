@@ -253,15 +253,6 @@ export default defineComponent({
     ...mapState(useProjectStore, ['annotationFeatures']),
     ...mapState(useUserStore, ['isLoggedIn']),
   },
-  watch: {
-    conllTable: {
-      handler() {
-        this.generateConllFromTable();
-        this.currentConllContent = this.sentenceBus.sentenceSVGs[this.userId].exportConll();
-      },
-      deep: true,
-    },
-  },
   mounted() {
     this.sentenceBus.on('open:conlluDialog', ({ userId }) => {
       this.userId = userId;
@@ -278,8 +269,8 @@ export default defineComponent({
     getConllTable() {
       this.conllTable = [];
       this.conllContent = this.sentenceBus.sentenceSVGs[this.userId].exportConll();
-      this.nodesJson = this.sentenceBus.sentenceSVGs[this.userId].treeJson.nodesJson;
-      this.groupsJson = this.sentenceBus.sentenceSVGs[this.userId].treeJson.groupsJson;
+      this.nodesJson = { ...this.sentenceBus.sentenceSVGs[this.userId].treeJson.nodesJson };
+      this.groupsJson = { ...this.sentenceBus.sentenceSVGs[this.userId].treeJson.groupsJson };
       for (const node of Object.values(this.nodesJson)) {
         const multiWordId = `${node.ID}-${parseInt(node.ID) +1}`;
         const multiWordNode = this.groupsJson[multiWordId]
@@ -318,6 +309,7 @@ export default defineComponent({
       });
     },
     onConllDialogOk() {
+      this.generateConllFromTable();
       if (this.currentConllContent !== this.conllContent) {
         this.sentenceBus.emit('tree-update:sentence', {
           sentenceJson: {
@@ -334,9 +326,11 @@ export default defineComponent({
       }
     },
     generateConllFromTable() {
-      this.conllTable.forEach((row, index) => {
+      const newNodesJson: nodesJson_T = {};
+      const newGroupsJson: groupsJson_T = {};
+      this.conllTable.forEach((row) => {
         if (!row.ID.includes('-')) {
-          this.nodesJson[`${index + 1}`] = {
+          newNodesJson[row.ID] = {
             ...row,
             FEATS: row.FEATS ? _featuresConllToJson(row.FEATS) : {},
             MISC: row.MISC ? _featuresConllToJson(row.MISC) : {},
@@ -344,15 +338,16 @@ export default defineComponent({
           };
         }
         else {
-          this.groupsJson[row.ID] = {
+          newGroupsJson[row.ID] = {
             ...row,
             FEATS: row.FEATS ? _featuresConllToJson(row.FEATS) : {},
             MISC: row.MISC ? _featuresConllToJson(row.MISC) : {},
           }
         }
       });
-      this.sentenceBus.sentenceSVGs[this.userId].treeJson.nodesJson = { ...this.nodesJson };
-      this.sentenceBus.sentenceSVGs[this.userId].treeJson.groupsJson = { ...this.groupsJson };
+      this.sentenceBus.sentenceSVGs[this.userId].treeJson.nodesJson = { ...newNodesJson};
+      this.sentenceBus.sentenceSVGs[this.userId].treeJson.groupsJson = { ...newGroupsJson };
+      this.currentConllContent = this.sentenceBus.sentenceSVGs[this.userId].exportConll();
     },
     copyConll() {
       copyToClipboard(this.currentConllContent).then(() => {

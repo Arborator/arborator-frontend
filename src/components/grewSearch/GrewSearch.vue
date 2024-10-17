@@ -6,6 +6,7 @@
       :query-type="queryType" 
       :query="query" 
       :userType="userType" 
+      :treeLabel="treeLabel"
       @reload-results="reloadResults" 
       @closed="closeDialog"
       />
@@ -49,12 +50,14 @@ export default defineComponent({
       queryType: string;
       query: string;
       userType: string;
+      treeLabel: string;
     } = {
       resultSearchDialog: false,
       resultSearch: {},
       queryType: '',
       query: '',
       userType: '',
+      treeLabel: '',
     };
     return result;
   },
@@ -63,10 +66,12 @@ export default defineComponent({
   },
   methods: {
     ...mapActions(useGrewHistoryStore, ['saveHistory']),
-    onSearch(searchPattern: string, treeType: string, otherUser: string, selectedSamples: string[]) {
+    onSearch(searchPattern: string, treeType: string, treeLabel: string, otherUser: string, selectedSamples: string[]) {
       const data = { pattern: searchPattern, userType: treeType, sampleIds: selectedSamples, otherUser: otherUser };
       this.queryType = 'SEARCH';
       this.userType = treeType;
+      this.treeLabel = treeLabel;
+      console.log(this.treeLabel)
       api
         .searchRequest(this.name, data)
         .then((response) => {
@@ -78,11 +83,12 @@ export default defineComponent({
           notifyError({ error });
         });
     },
-    onTryRules(query: string, userType: string, otherUser: string, selectedSamples: string[]) {
+    onTryRules(query: string, userType: string, treeLabel: string, otherUser: string, selectedSamples: string[]) {
       const data = { query: query, userType: userType, sampleIds: selectedSamples, otherUser: otherUser };
       this.queryType = 'REWRITE';
       this.query = query;
       this.userType = userType;
+      this.treeLabel = treeLabel;
       api
         .tryPackage(this.name, data)
         .then((response) => {

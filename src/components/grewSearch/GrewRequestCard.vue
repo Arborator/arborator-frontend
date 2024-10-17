@@ -119,7 +119,8 @@ export default defineComponent({
   },
   data() {
     const currentQueryType: 'SEARCH' | 'REWRITE' = grewTemplates.searchQueries[0].type as 'SEARCH' | 'REWRITE';
-    const data: { selectedSamples: string[]; treeType: string; otherUser: string } = { selectedSamples: [], treeType: 'recent', otherUser: '' };
+    const data: { selectedSamples: string[]; treeType: string; otherUser: string; treeTypeLabel: string } 
+    = { selectedSamples: [], treeType: 'recent', otherUser: '', treeTypeLabel: this.$t('grewSearch.recentTree') };
     return {
       searchReplaceTab: grewTemplates.searchQueries[0].type,
       searchQueryTab: grewTemplates.searchQueries[0].type,
@@ -152,11 +153,11 @@ export default defineComponent({
       this.data = val;
     },
     onSearch() {
-      this.parentOnSearch(this.currentQuery.normalize('NFC'), this.data.treeType, this.data.otherUser, this.data.selectedSamples);
+      this.parentOnSearch(this.currentQuery.normalize('NFC'), this.data.treeType, this.data.treeTypeLabel,  this.data.otherUser, this.data.selectedSamples);
       this.changeLastGrewQuery({ text: this.currentQuery.normalize('NFC'), type: this.currentQueryType, userType: this.data.treeType });
     },
     tryRules() {
-      this.parentOnTryRules(this.currentQuery.normalize('NFC'), this.data.treeType, this.data.otherUser, this.data.selectedSamples);
+      this.parentOnTryRules(this.currentQuery.normalize('NFC'), this.data.treeType, this.data.treeTypeLabel, this.data.otherUser, this.data.selectedSamples);
       this.changeLastGrewQuery({ text: this.currentQuery.normalize('NFC'), type: this.currentQueryType, userType: this.data.treeType });
     },
     changeQuery(query: string, type: 'SEARCH' | 'REWRITE') {

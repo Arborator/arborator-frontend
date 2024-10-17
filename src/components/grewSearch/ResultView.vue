@@ -82,6 +82,9 @@
           <q-tooltip v-if="!atLeastOneSelected">{{ $t('grewSearch.applyRuleTooltip') }}</q-tooltip>
         </q-btn>
       </div>
+      <div>
+        {{ treeLabel }}
+      </div>
     </q-bar>
   </div>
 </template>
@@ -121,6 +124,10 @@ export default defineComponent({
       type: String as PropType<string>,
       required: false,
     },
+    treeLabel: {
+      type: String as PropType<string>,
+      required: false,
+    }
   },
 
   data() {

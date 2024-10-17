@@ -155,6 +155,7 @@ export default defineComponent({
       const data = {
         selectedSamples: this.selectedSamples.map((sample) => sample.sampleName),
         treeType: this.treeType.value,
+        treeTypeLabel: this.treeType.label,
         otherUser: this.otherUser,
       };
       this.$emit('selected-value', data);

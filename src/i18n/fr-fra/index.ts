@@ -329,6 +329,7 @@ export default {
       "Le changement de tokens perturbe la comparabilité des différentes annotations d'une même phrase.",
       'Remplacement',
     ],
+    proposedMetadata: 'Les métadonnées proposées',
   },
   constructicon: {
     uploadBtn: 'Importer un constructicon',

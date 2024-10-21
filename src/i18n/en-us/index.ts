@@ -473,6 +473,7 @@ export default {
       'The sent_id is the same sent_id used in the first sentence',
     ],
     selectMergeLabel: 'Select the sent_id of the phrase you wish to merge with the current phrase',
+    proposedMetadata: 'Proposed Metadata',
   },
   grewHistory: {
     historyBtn: 'History',

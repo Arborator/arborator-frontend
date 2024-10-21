@@ -216,9 +216,12 @@
             </VueDepTree>
           </div>
           <div class="q-gutter-md q-py-md">
+            <div class="row text-h6">
+              {{ $t('sentenceSegmentation.proposedMetadata') }}
+            </div>
             <q-input 
               class="row"
-              v-for="meta in Object.keys(mergedReactiveSentence[userId].state.metaJson).filter((key) => key.includes('text'))" 
+              v-for="meta in Object.keys(mergedReactiveSentence[userId].state.metaJson).filter((key) => !unchangedMetaData.includes(key))" 
               dense 
               outlined 
               v-model="mergedReactiveSentence[userId].state.metaJson[meta]" 
@@ -319,6 +322,7 @@ export default defineComponent({
       forceRender: 0,
       mergedSentId: '',
       mergeWarningMessage: '',
+      unchangedMetaData: ['sent_id', 'user_id', 'timestamp']
     };
   },
   computed: {
@@ -487,7 +491,7 @@ export default defineComponent({
         timestamp: firstSentenceJson.metaJson.timestamp > secondSentenceJson.metaJson.timestamp ? firstSentenceJson.metaJson.timestamp: secondSentenceJson.metaJson.timestamp,
         sent_id: this.proposeMergedSentId(firstSentenceJson.metaJson.sent_id as  string, secondSentenceJson.metaJson.sent_id as string),
       };
-      for (const key of Object.keys(firstSentenceJson.metaJson).filter(key => key.includes('text'))) {
+      for (const key of Object.keys(firstSentenceJson.metaJson)) {
         if (Object.keys(secondSentenceJson.metaJson).includes(key)) {
          mergedSentence.metaJson[key] = `${firstSentenceJson.metaJson[key]} ${secondSentenceJson.metaJson[key]}`
         } 

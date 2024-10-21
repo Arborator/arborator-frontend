@@ -112,8 +112,8 @@
     </div>
     <template>
       <RelationDialog :sentence-bus="sentenceBus" />
-      <UposDialog :sentence-bus="sentenceBus" />
-      <XposDialog :sentence-bus="sentenceBus" />
+      <UposDialog :sentence-bus="sentenceBus" :upos-options="annotationFeatures.UPOS"/>
+      <XposDialog :sentence-bus="sentenceBus" :xpos-options="annotationFeatures.XPOS" />
       <FeaturesDialog 
         :sentence-bus="sentenceBus" 
         :reactive-sentences-obj="(reactiveSentencesObj as reactive_sentences_obj_t)" 
@@ -267,7 +267,7 @@ export default defineComponent({
     ...mapWritableState(useGithubStore, ['reloadCommits']),
     ...mapWritableState(useTreesStore, ['reloadTrees']),
     ...mapState(useTreesStore, ['reloadValidation']),
-    ...mapState(useProjectStore, ['isValidator', 'blindAnnotationMode', 'shownMeta', 'languageDetected']),
+    ...mapState(useProjectStore, ['isValidator', 'blindAnnotationMode', 'shownMeta', 'languageDetected', 'annotationFeatures']),
     ...mapState(useUserStore, ['username']),
     ...mapState(useTagsStore, ['defaultTags']),
     lastModifiedTime() {

@@ -1,10 +1,8 @@
 <template>
-  <PosDialog :sentence-bus="sentenceBus" :title="'UPOS'" :pos-options="annotationFeatures.UPOS" :event-name="'open:uposDialog'" />
+  <PosDialog :sentence-bus="sentenceBus" :title="'UPOS'" :pos-options="uposOptions" :event-name="'open:uposDialog'" />
 </template>
 
 <script lang="ts">
-import { mapState } from 'pinia';
-import { useProjectStore } from 'src/pinia/modules/project';
 import { sentence_bus_t } from 'src/types/main_types';
 import { PropType, defineComponent } from 'vue';
 
@@ -20,9 +18,11 @@ export default defineComponent({
       type: Object as PropType<sentence_bus_t>,
       required: true,
     },
+    uposOptions: {
+      type: Object as PropType<string[]>,
+      required: true,
+    },
   },
-  computed: {
-    ...mapState(useProjectStore, ['annotationFeatures']),
-  },
+ 
 });
 </script>

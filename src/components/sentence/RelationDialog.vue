@@ -103,12 +103,10 @@ export default defineComponent({
       return newDeprel;
     },
   },
-  created() {
-    this.deprels = this.annotationFeatures.DEPREL;
-    this.splitRegex = new RegExp(`[${this.deprels.map(({ join }) => join).join('')}]`, 'g');
-  },
   mounted() {
     this.sentenceBus.on('open:relationDialog', ({ dep, gov, userId }) => {
+      this.deprels = this.annotationFeatures.DEPREL;
+      this.splitRegex = new RegExp(`[${this.deprels.map(({ join }) => join).join('')}]`, 'g');
       this.dep = dep;
       this.gov = gov;
       this.userId = userId;

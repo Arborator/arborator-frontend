@@ -500,6 +500,7 @@ export default {
     lastAccess: 'Last Access',
     by: 'by',
     usedTags: 'Used tags',
+    progressTooltip: 'Percentage of annotated sentences',
   },
   conllDial: {
     title: 'Conll Dialog',

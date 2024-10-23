@@ -1,15 +1,12 @@
 <template>
-  <div class="row text-h6">
-    {{ $t('projectView.projectOverview') }}
-  </div>
-  <div class="row justify-between q-gutter-md">
+  <div class="row q-pa-md justify-between q-gutter-md">
     <q-card flat bordered class="col">
       <q-item>
         <q-item-section avatar>
           <q-avatar color="primary" text-color="white" icon="group" />
         </q-item-section>
         <q-item-section>
-          <q-item-label class="text-h6">{{ projectStat.users.length }}</q-item-label>
+          <q-item-label class="text-h6">{{ projectStats.users.length }}</q-item-label>
           <q-item-label caption>
             {{ $t('projectStats.users') }}
           </q-item-label>
@@ -22,7 +19,7 @@
           <q-avatar color="secondary" text-color="white" icon="article" />
         </q-item-section>
         <q-item-section>
-          <q-item-label class="text-h6"> {{ projectStat.samplesNumber }}</q-item-label>
+          <q-item-label class="text-h6"> {{ projectStats.samplesNumber }}</q-item-label>
           <q-item-label caption>
             {{ $t('projectStats.samples') }}
           </q-item-label>
@@ -35,7 +32,7 @@
           <q-avatar color="indigo-8" text-color="white" icon="forest" />
         </q-item-section>
         <q-item-section>
-          <q-item-label class="text-h6">{{ projectStat.treesNumber }}</q-item-label>
+          <q-item-label class="text-h6">{{ projectStats.treesNumber }}</q-item-label>
           <q-item-label caption>
             {{ $t('projectStats.trees') }}
           </q-item-label>
@@ -48,7 +45,7 @@
           <q-avatar color="cyan-8" text-color="white" icon="title" />
         </q-item-section>
         <q-item-section>
-          <q-item-label class="text-h6">{{ projectStat.tokensNumber }}</q-item-label>
+          <q-item-label class="text-h6">{{ projectStats.tokensNumber }}</q-item-label>
           <q-item-label caption>
             {{ $t('projectStats.tokens') }}
           </q-item-label>
@@ -56,21 +53,18 @@
       </q-item>
     </q-card>
   </div>
-  <div class="row text-h6">
-    {{ $t('projectStats.activityOverview') }}
-  </div>
-  <div class="row justify-between q-gutter-md">
-    <q-card v-if="projectStat.topUser" flat bordered class="col">
+  <div class="row q-pa-md justify-between q-gutter-md">
+    <q-card v-if="projectStats.topUser" flat bordered class="col">
       <q-item>
         <q-item-section avatar>
           <q-avatar>
-            <img :src="projectStat.topUser.userAvatar" alt="avatar" />
+            <img :src="projectStats.topUser.userAvatar" alt="avatar" />
           </q-avatar>
         </q-item-section>
         <q-item-section>
           <q-item-label class="text-h6">{{ $t('projectStats.topContributor') }}</q-item-label>
           <q-item-label caption>
-            {{ projectStat.topUser.username }}
+            {{ projectStats.topUser.username }}
           </q-item-label>
         </q-item-section>
         <q-separator /> 
@@ -83,6 +77,9 @@
             <div class="absolute-full flex flex-center">
               <q-badge color="white" text-color="secondary" :label="topUserProgressLabel" />
             </div>
+            <q-tooltip>
+              {{ $t('projectStats.progressTooltip') }}
+            </q-tooltip>
           </q-linear-progress>
         </q-item-section>
       </q-item>
@@ -96,13 +93,13 @@
       <q-separator />
       <q-card-section horizontal>
         <q-card-section class="col">
-          <div class="text-h6 text-primary"> {{ $t('projectHub.lastWriteAccess') }} {{ timeAgo(projectStat.lastWrite.lastWrite) }}</div>
-          <div class="text-caption">{{ $t('projectStats.by') }} {{ projectStat.lastWrite.lastWriteUsername }}</div>
+          <div class="text-h6 text-primary"> {{ $t('projectHub.lastWriteAccess') }} {{ timeAgo(projectStats.lastWrite.lastWrite) }}</div>
+          <div class="text-caption">{{ $t('projectStats.by') }} {{ projectStats.lastWrite.lastWriteUsername }}</div>
         </q-card-section>
         <q-separator vertical />
         <q-card-section class="col">
-          <div class="text-h6 text-primary"> {{ $t('projectHub.lastAccess') }} {{ timeAgo(projectStat.lastRead.lastRead) }}</div>
-          <div class="text-caption"> {{ $t('projectStats.by') }} {{ projectStat.lastRead.lastReadUsername }}</div>
+          <div class="text-h6 text-primary"> {{ $t('projectHub.lastAccess') }} {{ timeAgo(projectStats.lastRead.lastRead) }}</div>
+          <div class="text-caption"> {{ $t('projectStats.by') }} {{ projectStats.lastRead.lastReadUsername }}</div>
         </q-card-section>
       </q-card-section>
     </q-card>
@@ -120,36 +117,17 @@
       </q-card-section>
     </q-card>
   </div>
-  <q-separator />
 </template>
 <script lang="ts">
-import { statProject_t, sample_t } from 'src/api/backend-types';
-import { notifyError } from 'src/utils/notify';
+import { sample_t } from 'src/api/backend-types';
+import { mapState } from 'pinia';
+import { useStatisticStore } from 'src/pinia/modules/stats';
+
 import { timeAgo } from 'src/utils/timeAgoUtils';
 import { defineComponent, PropType } from 'vue';
-import api from 'src/api/backend-api';
 
 export default defineComponent({
   name: 'StatisticsProject',
-  data() {
-    const projectStat: statProject_t = {
-      users: [],
-      samplesNumber: 0,
-      treesNumber: 0,
-      tokensNumber: 0,
-      sentencesNumber: 0,
-      topUser: { username: '', treesNumber: 0, userAvatar: '' },
-      lastRead: { lastRead: 0, lastReadUsername: '' },
-      lastWrite: { lastWrite: 0, lastWriteUsername: '' },
-    };
-    const topUserProgress: number = 0;
-    const topUserProgressLabel: string = '';
-    return {
-      projectStat,
-      topUserProgress,
-      topUserProgressLabel,
-    }
-  },
   props: {
     projectName: {
       type: String as PropType<string>,
@@ -160,10 +138,8 @@ export default defineComponent({
       required: true,
     }
   },
-  mounted() {
-    this.getStatistics();
-  },
   computed: {
+    ...mapState(useStatisticStore, ['projectStats', 'topUserProgress', 'topUserProgressLabel']),
     projectTags() {
       return this.samples.map((sample) => Object.keys(sample.tags)).reduce((a: string[], b: string[]) => [...a, ...b], []);
     }
@@ -171,20 +147,6 @@ export default defineComponent({
   methods: {
     timeAgo(secsAgo: number) {
       return timeAgo(secsAgo);
-    },
-    getStatistics() {
-      api
-        .getStats(this.projectName)
-        .then((response) => {
-          this.projectStat = { ...response.data };
-          if (this.projectStat.topUser) {
-            this.topUserProgress = this.projectStat.topUser.treesNumber / this.projectStat.sentencesNumber;
-            this.topUserProgressLabel =  `${(this.projectStat.topUser.treesNumber / this.projectStat.sentencesNumber * 100).toFixed(2)} %`;
-          }
-        })
-        .catch((error) => {
-          notifyError({ error: `Error while loading project statistics ${error}` });
-        });
     },
   }
 });

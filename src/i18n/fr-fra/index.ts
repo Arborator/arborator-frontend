@@ -502,6 +502,7 @@ export default {
     lastAccess: 'Dernier accès',
     by: 'par',
     usedTags: 'Tags utilisés',
+    progressTooltip: 'Pourcentage des phrases annotées',
   },
   conllDial: {
     title: 'Conll Dialog',

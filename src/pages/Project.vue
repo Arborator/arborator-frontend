@@ -36,7 +36,16 @@
           <q-separator />
         </q-card-section>
         <q-card-section class="q-gutter-md">
-          <StatisticsProject :key="reload" v-if="sampleNames.length" :project-name="projectName" :samples="samples"></StatisticsProject>
+          <div class="row">
+            <div class="col text-h6">
+              Project statistics
+            </div>
+            <q-btn flat :icon="!showStats ? 'arrow_drop_down' : 'arrow_drop_up'" color="primary" @click="showStats = !showStats" />
+          </div>
+          <div v-if="showStats">
+            <StatisticsProject :key="reload" v-if="sampleNames.length" :project-name="projectName" :samples="samples"></StatisticsProject>
+          </div>
+          <q-separator />
         </q-card-section>
         <q-card-section>
           <div class="row q-gutter-md" style="justify-content: right">
@@ -128,7 +137,7 @@
 </template>
 
 <script lang="ts">
-import { mapState, mapWritableState } from 'pinia';
+import { mapState, mapWritableState, mapActions } from 'pinia';
 import { sample_t } from 'src/api/backend-types';
 import { useGithubStore } from 'src/pinia/modules/github';
 import { useGrewSearchStore } from 'src/pinia/modules/grewSearch';
@@ -151,6 +160,7 @@ import RelationTable from 'src/components/relationTable/RelationTable.vue';
 import ProjectVisibility from 'src/components/shared/ProjectVisibility.vue';
 import StatisticsProject from 'src/components/project/StatisticsProject.vue';
 import Breadcrumbs from 'src/layouts/Breadcrumbs.vue';
+import { useStatisticStore } from 'src/pinia/modules/stats';
 
 export default defineComponent({
   components: {
@@ -182,6 +192,7 @@ export default defineComponent({
       syncGithubDial: false,
       isDeleteSync: false,
       unselectSamples: false,
+      showStats: false,
       syncGithubRepo: '',
       reload: 0,
     };
@@ -214,6 +225,7 @@ export default defineComponent({
     document.title = `ArboratorGrew: ${this.projectName}`;
     this.loadProjectData();
     this.getSynchronizedGithubRepo();
+    this.getStatistics(this.projectName);
   },
   watch: {
     reloadCommits(newVal) {
@@ -224,6 +236,7 @@ export default defineComponent({
     }
   },
   methods: {
+    ...mapActions(useStatisticStore, ['getStatistics']),
     loadProjectData() {
       this.getProjectSamples();
       this.reload += 1;

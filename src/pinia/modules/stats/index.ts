@@ -1,5 +1,4 @@
 import { defineStore } from "pinia";
-import { useProjectStore } from "../project";
 import { statProject_t } from "src/api/backend-types";
 import { notifyError } from "src/utils/notify";
 

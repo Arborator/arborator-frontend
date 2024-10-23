@@ -314,7 +314,7 @@ export default defineComponent({
     },
     getPopularProjects() {
       api
-        .getProjects()
+        .getPopularProjects()
         .then((response) => {
           response.data.sort((a, b) => b.users.length - a.users.length);
           this.popularProjects = response.data.slice(0, 6);

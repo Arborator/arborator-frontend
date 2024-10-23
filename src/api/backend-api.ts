@@ -68,6 +68,9 @@ export default {
   getMismatchProjects() {
     return API.get('projects/mismatch-projects');
   },
+  getPopularProjects() {
+    return API.get<getProjects_RV>('projects/popular-projects');
+  },
   createProject(data: createProject_ED) {
     return API.post('projects/', data);
   },

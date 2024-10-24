@@ -79,10 +79,11 @@
       </q-bar>
       <q-card-section>
         <div class="q-gutter-md">
-          <q-input v-model="selectedToken" filled :label="$t('tokenReplaceDialog.multiWord')" />
-          <q-input v-model="firstToken" filled :label="$t('tokenReplaceDialog.firstToken')" />
-          <q-input v-model="secondToken" filled :label="$t('tokenReplaceDialog.secondToken')" />
-          <q-checkbox v-model="multiword" :label="$t('tokenReplaceDialog.multiWordToken')"></q-checkbox>
+          <q-input dense outlined readonly v-model="selectedToken" :label="$t('tokenReplaceDialog.selectedToken')" />
+          <q-input dense outlined v-model="firstToken" :label="$t('tokenReplaceDialog.firstToken')" />
+          <q-input dense outlined v-model="secondToken" :label="$t('tokenReplaceDialog.secondToken')" />
+          <q-checkbox v-model="isMultiword" :label="$t('tokenReplaceDialog.multiWordToken')"></q-checkbox>
+          <q-input dense outlined v-if="isMultiword" v-model="multiWordToken" :label="$t('tokenReplaceDialog.multiWord')" />
           <div class="row q-gutter-md justify-center">
             <q-btn :disable="!firstToken && !secondToken" v-close-popup label="Split" color="primary" @click="tokenReplaceOptions('split')" />
           </div>
@@ -126,9 +127,10 @@ export default defineComponent({
       tokensIndexes,
       isShowFusion: false,
       selectedToken: this.token.FORM,
+      multiWordToken: this.token.FORM,
       secondToken: '',
       firstToken: '',
-      multiword: false,
+      isMultiword: false,
     };
   },
   computed: {
@@ -168,12 +170,12 @@ export default defineComponent({
       const tokensIndexes = this.tokensIndexes;
       const newTokensForm = this.tokensForms;
       const newTree = replaceArrayOfTokens(oldTree, tokensIndexes, newTokensForm, true);
-      if (this.multiword) {
+      if (this.isMultiword) {
         const newGroupJson = {
           DEPREL: '_',
           DEPS: {},
           FEATS: {},
-          FORM: this.selectedToken,
+          FORM: this.multiWordToken,
           HEAD: -1,
           ID: String(tokensIndexes[0]) + '-' + String(tokensIndexes[0] + 1),
           LEMMA: '_',

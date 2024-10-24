@@ -435,9 +435,10 @@ export default {
     insertOptions: ['Insérer avant', 'Insérer après'],
     split: 'diviser token',
     delete: 'Supprimer token',
-    multiWord: 'Multiword',
+    multiWord: 'Multiword token',
     firstToken: 'Premier token',
     secondToken: 'Deuxième token',
+    selectedToken: 'Token sélectionné',
     multiWordToken: 'Ajouter multiword token',
   },
   multiEditDialog: {

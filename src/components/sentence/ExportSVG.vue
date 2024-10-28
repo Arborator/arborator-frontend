@@ -41,13 +41,13 @@ export default defineComponent({
   methods: {
     getSVG() {
       const sentenceSVG = this.sentenceBus.sentenceSVGs[this.userId];
-      const title = `${this.reactiveSentencesObj[this.userId].getUndescoredText()}.${this.userId}.svg`;
+      const title = `sentence_${this.reactiveSentencesObj[this.userId].state.metaJson.sent_id}.${this.userId}.svg`;
       exportSVG(sentenceSVG, title);
       notifyMessage({ message: 'Files downloaded' });
     },
     getPNG() {
       const sentenceSVG = this.sentenceBus.sentenceSVGs[this.userId];
-      const title = `${this.reactiveSentencesObj[this.userId].getUndescoredText()}.${this.userId}.png`;
+      const title = `sentence_${this.reactiveSentencesObj[this.userId].state.metaJson.sent_id}.${this.userId}.png`;
       exportPNG(sentenceSVG, title);
       notifyMessage({ message: 'Files downloaded' });
     },

@@ -180,6 +180,7 @@ import { PropType, defineComponent } from 'vue';
 import api from 'src/api/backend-api';
 import GithubSyncDialog from '../github/GithubSyncDialog.vue';
 import LanguageSelect from '../shared/LanguageSelect.vue';
+import { annotationFeatures_t } from 'src/api/backend-types';
 
 export default defineComponent({
   components: {
@@ -251,9 +252,9 @@ export default defineComponent({
           this.parentGetProjects();
           this.submitting = false;
           if (this.project.config === 'ud') {
-            this.updateProjectConlluSchema(this.project.projectName, this.annotationFeaturesUD, false);
+            this.updateProjectConlluSchema(this.project.projectName, this.annotationFeaturesUD, {} as annotationFeatures_t);
           } else {
-            this.updateProjectConlluSchema(this.project.projectName, this.annotationFeaturesSUD, false);
+            this.updateProjectConlluSchema(this.project.projectName, this.annotationFeaturesSUD, {} as annotationFeatures_t);
           }
           if (this.loggedWithGithub && !this.project.blindAnnotationMode) {
             this.progress = 0.4;

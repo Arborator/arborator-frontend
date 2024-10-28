@@ -509,6 +509,11 @@ export default {
     conllView: 'Conll View',
     copyConll: 'Copy Conll',
   },
+  detectedTagSet: {
+    title: 'Tags detected in downloaded files',
+    description: "Here's a list of the different tags that have been detected when uploading new files. Select the list of tags you wish to add automatically to your annotation scheme.",
+    
+  },
   cancel: 'Cancel',
   delete: 'Delete',
   confirm: 'Confirm',

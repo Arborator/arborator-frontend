@@ -511,6 +511,10 @@ export default {
     conllView: 'Conll',
     copyConll: 'Copier Conll',
   },
+  detectedTagSet: {
+    title: 'Traits détectés dans les fichiers importés',
+    description: "Voici une liste des différentes traits qui ont été détectés lors du téléchargement de nouveaux fichiers. Sélectionnez la liste des traits que vous souhaitez ajouter automatiquement à votre schéma d'annotation.",
+  },
   cancel: 'Annuler',
   delete: 'Supprimer',
   confirm: 'Confirmer',

@@ -151,6 +151,9 @@
       </q-card-section>
     </q-card>
   </q-dialog>
+  <q-dialog v-model="hasNewFeatures">
+    <DetectedTagSetDial :new-feats="newFeatsList" :new-pos="newPosList" :new-rel="newRelationsList" @reload-tags-list="reloadDetectedTagsList" />
+  </q-dialog>
 </template>
 
 <script lang="ts">
@@ -164,8 +167,13 @@ import { PropType, defineComponent } from 'vue';
 
 import api from '../../api/backend-api';
 import { useModelWrapper } from '../../composables/modelWrapper.js';
+import DetectedTagSetDial from './DetectedTagSetDial.vue';
 
 export default defineComponent({
+  components: {
+    DetectedTagSetDial,
+  },
+  emits: ['uploaded:sample', 'update:uploadDial'],
   props: {
     uploadDial: {
       type: Boolean as PropType<boolean>,
@@ -217,12 +225,18 @@ export default defineComponent({
       samplesWithoutSentIds,
       rtl: false,
       userId: 'username',
+      featsList: [] as string[], 
+      posList: [] as string[],
+      relationsList: [] as string[],
+      newFeatsList: [] as string[],
+      newPosList: [] as string[],
+      newRelationsList: [] as string[],
     };
   },
 
   computed: {
     ...mapState(useUserStore, ['username', 'reservedUserIds']),
-    ...mapState(useProjectStore, ['blindAnnotationMode', 'collaborativeMode']),
+    ...mapState(useProjectStore, ['blindAnnotationMode', 'collaborativeMode', 'annotationFeatures']),
     disableTokenizeBtn() {
       if (this.option.value == 'plainText') {
         return this.text && this.sampleName && this.lang.value;
@@ -242,6 +256,9 @@ export default defineComponent({
       }
       return disable;
     },
+    hasNewFeatures() {
+      return this.newFeatsList.length >  0 || this.newPosList.length > 0 || this.newRelationsList.length > 0;
+    }
   },
   methods: {
     async preprocess() {
@@ -322,11 +339,15 @@ export default defineComponent({
       }
       api
         .uploadSample(this.$route.params.projectname as string, form)
-        .then(() => {
+        .then((response) => {
           this.uploadSample.attachment.file = [];
           this.$emit('uploaded:sample'); // tell to the parent that a new sample was uploaded and to fetch all samples
           this.uploadDialModel = false;
           this.uploadSample.submitting = false;
+          this.featsList = response.data.data.feats;
+          this.posList = response.data.data.pos;
+          this.relationsList = response.data.data.relations;
+          this.checkNewFeats();
           notifyMessage({ message: 'upload success' });
         })
         .catch((error) => {
@@ -338,6 +359,24 @@ export default defineComponent({
           this.uploadSample.submitting = false;
           this.uploadDialModel = false;
         });
+    },
+    checkNewFeats() {
+      const annotationUpos = this.annotationFeatures.UPOS;
+      const annotationFeats = Object.values(this.annotationFeatures.FEATS).map(feat => feat.name);
+      const annotationMisc = Object.values(this.annotationFeatures.MISC).map(misc => misc.name);
+      const deprels = this.annotationFeatures.DEPREL;
+      const splitRegex = new RegExp(`[${deprels.map(({ join }) => join).join('')}]`, 'g');
+
+      this.newPosList = this.posList.filter(pos => !annotationUpos.includes(pos));
+      this.newFeatsList = this.featsList.filter(feat => !annotationFeats.includes(feat) && !annotationMisc.includes(feat));
+      
+      for (const relation of this.relationsList) {
+        const splittedRel = relation.split(splitRegex);
+        for (const subRel of splittedRel) {
+          const found = deprels.some(({ values, join }) => values.includes(subRel) && relation.includes(join + subRel));
+          if (!found) this.newRelationsList.push(subRel);
+        }
+      }
     },
     tokenizeSample() {
       const data = {
@@ -376,6 +415,11 @@ export default defineComponent({
     closeDialog() {
       this.uploadDialModel = false;
       this.uploadSample.attachment.file = [];
+    },
+    reloadDetectedTagsList() {
+      this.newFeatsList = [];
+      this.newPosList = [];
+      this.newRelationsList = [];
     }
   },
 });

@@ -410,19 +410,7 @@ export default defineComponent({
     },
     saveAnnotationSettings() {
       const parsedAnnotFeatures = JSON.parse(this.annotationFeaturesJson);
-      const featsChanged = JSON.stringify(parsedAnnotFeatures.FEATS) !== JSON.stringify(this.currentFeatures.FEATS);
-      const miscChanged = JSON.stringify(parsedAnnotFeatures.MISC) !== JSON.stringify(this.currentFeatures.MISC);
-
-      const updateCommits = featsChanged || miscChanged // if the feats or misc changed the data in grew will be modified in this case we need to count it as change to commit
-      
-      this.updateProjectConlluSchema(this.projectName, parsedAnnotFeatures, updateCommits)
-        .then(() => {
-          notifyMessage({ message: 'New annotation settings saved on the server', icon: 'save' });
-        })
-        .catch((error) => {
-          notifyError({ error });
-        });
-        
+      this.updateProjectConlluSchema(this.projectName, parsedAnnotFeatures, this.currentFeatures) 
       this.$emit('reload');
     },
 

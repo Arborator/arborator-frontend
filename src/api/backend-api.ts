@@ -120,7 +120,7 @@ export default {
     return API.get<getProjectSamples_RV>(`/projects/${projectName}/samples`);
   },
   uploadSample(projectName: string, data: any) {
-    return API.post<{ status: 'OK' }>(`/projects/${projectName}/samples`, data, { timeout: 400000 });
+    return API.post(`/projects/${projectName}/samples`, data, { timeout: 400000 });
   },
   deleteSamples(projectName: string, data: any) {
     return API.patch(`/projects/${projectName}/samples`, data);

@@ -218,15 +218,21 @@ export const useProjectStore = defineStore('project', {
           });
       });
     },
-    updateProjectConlluSchema(projectName: string, annotationFeatures: annotationFeatures_t, updateCommit: boolean) {
+    updateProjectConlluSchema(projectName: string, newAnnotationFeatures: annotationFeatures_t, currentAnnotationFeatures: annotationFeatures_t) {
+      
+      const featsChanged = JSON.stringify(newAnnotationFeatures.FEATS) !== JSON.stringify(currentAnnotationFeatures.FEATS);
+      const miscChanged = JSON.stringify(newAnnotationFeatures.MISC) !== JSON.stringify(currentAnnotationFeatures.MISC);
+      const updateCommits = featsChanged || miscChanged // if the feats or misc changed the data in grew will be modified in this case we need to count it as change to commit
+      
       return new Promise((resolve, reject) => {
         api
           .updateProjectConlluSchema(projectName, {
-            config: annotationFeatures,
-            updateCommit: updateCommit
+            config: newAnnotationFeatures,
+            updateCommit: updateCommits
           })
           .then((response) => {
-            this.annotationFeatures = annotationFeatures;
+            this.annotationFeatures = newAnnotationFeatures;
+            notifyMessage({ message: 'New annotation settings saved on the server', icon: 'save' });
             resolve(response);
           })
           .catch((error) => {

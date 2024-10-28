@@ -121,7 +121,7 @@
             </q-item-section>
           </q-item>
 
-          <q-item v-if="isValidator" v-close-popup clickable @click="showSentSegmentationDial = true">
+          <q-item v-if="isValidator && canChangeSegmentation" v-close-popup clickable @click="showSentSegmentationDial = true">
             <q-item-section avatar>
               <q-avatar icon="content_cut" color="primary" text-color="white" />
             </q-item-section>
@@ -274,6 +274,9 @@ export default defineComponent({
       else {
         return this.reactiveSentencesObj[this.openTabUser].state.metaJson.text;
       }
+    },
+    canChangeSegmentation() {
+      return this.$route.params.samplename !== undefined // sentence segmentation option is available only in the sample view
     }
   },
   methods: {

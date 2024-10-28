@@ -492,7 +492,10 @@ export default defineComponent({
         sent_id: this.proposeMergedSentId(firstSentenceJson.metaJson.sent_id as  string, secondSentenceJson.metaJson.sent_id as string),
       };
       for (const key of Object.keys(firstSentenceJson.metaJson)) {
-        if (Object.keys(secondSentenceJson.metaJson).includes(key)) {
+        if (Object.keys(secondSentenceJson.metaJson).includes(key) 
+          && !this.unchangedMetaData.includes(key) 
+          && secondSentenceJson.metaJson[key] !== firstSentenceJson.metaJson[key]
+        ) {
          mergedSentence.metaJson[key] = `${firstSentenceJson.metaJson[key]} ${secondSentenceJson.metaJson[key]}`
         } 
       }

@@ -372,8 +372,8 @@ export default defineComponent({
           let newToken = {
             ...token,
             ID: `${newId}`,
-            HEAD: token.HEAD < indexSplit ? -1 : token.HEAD + 1 - indexSplit,
-            DEPREL: token.HEAD < indexSplit ? '_' : token.DEPREL
+            HEAD: token.HEAD < indexSplit ? (token.HEAD === 0 ? 0 : -1 ) : token.HEAD + 1 - indexSplit,
+            DEPREL: token.HEAD < indexSplit  && token.HEAD !== 0 ? '_' : token.DEPREL
           };
           this.secondSentences[userId].treeJson.nodesJson[`${newId}`] = { ...newToken };
         }

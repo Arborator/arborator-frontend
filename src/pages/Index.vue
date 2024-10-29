@@ -1,8 +1,8 @@
 <template>
   <q-page :class="$q.dark.isActive ? 'bg-dark' : 'bg-white'">
     <div class="q-py-md q-gutter-sm">
-      <section class="sectionsize">
-        <q-card flat class="fixed-center" style="width: 100%;">
+      <section style="min-height: 30vh;" class="q-py-xl">
+        <q-card flat style="width: 100%;">
           <q-card-section horizontal>
             <q-card-section vertical class="col-12 col-md-6">
               <q-card-section>
@@ -33,7 +33,7 @@
           </q-card-section>
         </q-card>
       </section>
-      <section class="row q-ma-none sectionsize">
+      <section class="row q-ma-none" :class="!$q.platform.is.mobile ? 'sectionsize': ''">
         <q-card flat class="col" style="width: 100%;">
           <q-card-section class="row justify-center text-h4 text-primary text-bold">
             {{ $t('homepage.popularProjects') }}
@@ -42,7 +42,20 @@
             </span>
           </q-card-section>
           <q-card-section>
-            <div class="q-pa-md row justify-center q-gutter-md" style="overflow-x: auto;">
+            <div v-if="$q.platform.is.mobile" class="q-pa-md row justify-center q-gutter-md">
+              <q-virtual-scroll
+                :items="popularProjects"
+                :virtual-scroll-slice-size="30"
+                :virtual-scroll-item-size="200"
+              >
+                <template #default="{ item }">
+                  <div class="q-pa-md row q-gutter-md">
+                    <ProjectCard :key="item.id" style="max-width: 80vw" :project="item" :parent-delete-project="deleteProject"></ProjectCard>
+                  </div>
+                </template>
+              </q-virtual-scroll>
+            </div>
+            <div v-else class="q-pa-md row justify-center q-gutter-md" style="overflow-x: auto;">
               <ProjectCard 
                 v-for="project in popularProjects" 
                 :key="project.id"

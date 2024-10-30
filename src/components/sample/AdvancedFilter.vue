@@ -2,8 +2,8 @@
   <div class="row q-pa-md">
     <Breadcrumbs :height="30" :font-size="16" />
   </div>
-  <div class="row q-pa-md q-gutter-x-md">
-    <div class="col-5">
+  <div class="row q-pa-md q-gutter-md">
+    <div class="col-4">
       <q-input 
         v-model="textFilter" 
         :label="$t('advancedFilter.textFilter')" 
@@ -13,7 +13,7 @@
         @keyup.enter="applyAdvancedFilter()"
       ></q-input>
     </div>
-    <div class="col-1 q-px-md q-gutter-md">
+    <div class="col-1">
       <q-select
         outlined
         dense
@@ -34,8 +34,10 @@
         </template>
       </q-select>
     </div>
-    <q-btn @click="applyAdvancedFilter" color="primary">{{ $t('advancedFilter.applyFilter') }}</q-btn>
-    <div class="col-2 q-px-md q-gutter-md">
+    <div class="col-1">
+      <q-btn @click="applyAdvancedFilter" color="primary">{{ $t('advancedFilter.applyFilter') }}</q-btn>
+    </div>
+    <div class="col-2">
       <q-select
         outlined
         dense
@@ -45,24 +47,26 @@
         @update:model-value="orderFilteredTrees(order)"
        />
     </div>
-    <q-separator vertical />
-    <q-btn no-caps v-if="config === 'ud' && !blindAnnotationMode" color="primary" :label="$t('advancedFilter.validateAllTrees')" @click="validateAllTrees()">
-      <q-tooltip>
-        {{ $t('advancedFilter.validateAllTreesTooltip') }}
-      </q-tooltip>
-    </q-btn>
-    <q-btn 
-      v-if="isLoggedIn" 
-      outline 
-      :disable="pendingModifications.size === 0" 
-      color="primary" 
-      :label="$t('advancedFilter.savePendingTrees')" 
-      @click="saveAllTrees()"
-    >
-      <q-badge v-if="pendingModifications.size > 0" color="red" floating>
-        {{ pendingModifications.size }}
-      </q-badge>
-    </q-btn>
+    <div class="col-2">
+      <q-separator vertical />
+      <q-btn no-caps v-if="config === 'ud' && !blindAnnotationMode" color="primary" :label="$t('advancedFilter.validateAllTrees')" @click="validateAllTrees()">
+        <q-tooltip>
+          {{ $t('advancedFilter.validateAllTreesTooltip') }}
+        </q-tooltip>
+      </q-btn>
+      <q-btn 
+        v-if="isLoggedIn" 
+        outline 
+        :disable="pendingModifications.size === 0" 
+        color="primary" 
+        :label="$t('advancedFilter.savePendingTrees')" 
+        @click="saveAllTrees()"
+      >
+        <q-badge v-if="pendingModifications.size > 0" color="red" floating>
+          {{ pendingModifications.size }}
+        </q-badge>
+      </q-btn>
+    </div>
   </div>
   <div class="q-pa-md">
     <div class="row text-h6">

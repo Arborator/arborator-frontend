@@ -4,9 +4,11 @@
     <q-card flat class="full">
       <q-card-section class="q-pa-md row items-start q-gutter-md">
         <q-toolbar class="q-gutter-md">
-          <q-toolbar-title :class="($q.dark.isActive ? '' : 'text-primary') + ' text-bold'">
-            {{ $t('projectHub.title') }}
-          </q-toolbar-title>
+          <div :class="$q.platform.is.mobile ? 'row': ''">
+            <q-toolbar-title :class="($q.dark.isActive ? '' : 'text-primary') + ' text-bold'">
+              {{ $t('projectHub.title') }}
+            </q-toolbar-title>
+          </div>
           <q-btn
             no-caps
             :disable="!isLoggedIn"
@@ -87,12 +89,13 @@
         <q-virtual-scroll
           v-if="$q.platform.is.mobile"
           :items="filteredProjects"
-          style="max-height: 60vh; width: 80vw"
           :virtual-scroll-slice-size="30"
           :virtual-scroll-item-size="200"
         >
           <template #default="{ item }">
-            <ProjectCard :key="item.id" style="max-width: 80vw" :project="item" :parent-delete-project="deleteProject"></ProjectCard>
+            <div class="q-pa-md row q-gutter-md">
+              <ProjectCard :key="item.id" style="max-width: 80vw" :project="item" :parent-delete-project="deleteProject"></ProjectCard>
+            </div>
           </template>
         </q-virtual-scroll>
         <div v-if="!$q.platform.is.mobile" class="q-pa-md row q-gutter-md">

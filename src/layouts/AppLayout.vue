@@ -1,6 +1,6 @@
 <template>
   <q-layout view="hHh Lpr fFf">
-    <q-header style="height: 3vw" :class="`${$q.dark.isActive ? 'bg-dark' : 'bg-white'}`"  class="q-pa-md" id="main-header">
+    <q-header style="height: 5vh" :class="`${$q.dark.isActive ? 'bg-dark' : 'bg-white'}`"  class="q-pa-md" id="main-header">
       <q-bar :class="$q.dark.isActive ? 'bg-dark' : 'bg-white text-black'" class="row justify-evenly">
         <q-btn flat to="/projects" :ripple="false" type="a">
           <div class="q-btn__content text-center col items-center q-anchor--skip row">
@@ -8,7 +8,44 @@
             <img v-else alt="Arborator" src="/svg/arborator.grew.svg" style="height: 2.3vw" />
           </div>
         </q-btn>
-        <div>
+        <div v-if="$q.platform.is.mobile">
+          <q-btn-dropdown flat label="More">
+            <q-list>
+              <q-item 
+                v-close-popup 
+                clickable 
+                to="/projects"
+              >
+                <q-item-section>
+                  <q-item-label>Projects page</q-item-label>
+                </q-item-section> 
+              </q-item>
+              <q-item 
+                v-close-popup 
+                clickable 
+                href="https://arborator.github.io/arborator-documentation/#/" 
+                target="_blank"
+              >
+                <q-item-section>
+                  <q-item-label>Documentation</q-item-label>
+                </q-item-section>
+                <q-tooltip content-class="text-white bg-primary">{{ $t('documentation') }}</q-tooltip>
+              </q-item>
+              <q-item 
+                v-close-popup 
+                clickable 
+                href="https://github.com/Arborator/arborator-frontend/issues"  
+                target="_blank"
+              >
+                <q-item-section>
+                  <q-item-label>Discussion</q-item-label>
+                </q-item-section>
+                <q-tooltip content-class="text-white bg-primary">{{ $t('feedback') }}</q-tooltip>
+              </q-item>
+            </q-list>
+          </q-btn-dropdown>
+        </div>
+        <div v-else>
           <q-btn
             no-caps
             flat 
@@ -42,7 +79,7 @@
             <q-tooltip content-class="text-white bg-primary">{{ $t('feedback') }}</q-tooltip>
           </q-btn>
         </div>
-        <div class="row justify-start q-gutter-md">
+        <div :class="!$q.platform.is.mobile ? 'row justify-start q-gutter-md' : ''">
           <q-toggle 
             v-model="darkMode"
             checked-icon="dark_mode"
@@ -70,7 +107,7 @@
             </q-list>
           </q-btn-dropdown>
           <q-btn v-else rounded outline color="primary">
-            <q-icon :name="loggedWithGithub ? 'fab fa-github' : 'fab fa-google'" class="q-mr-md" />
+            <q-icon v-if="!$q.platform.is.mobile" :name="loggedWithGithub ? 'fab fa-github' : 'fab fa-google'" class="q-mr-md" />
             <q-tooltip> {{ $t('userInformation') }} {{ loggedWithGithub ? ' Github' : 'Gmail' }} </q-tooltip>
             <q-icon v-if="pictureUrl === ''" name="account_circle" />
             <q-avatar v-else :key="avatarKey" color="default" text-color="white" size="xs">
@@ -102,7 +139,7 @@
               </div>
             </q-menu>
           </q-btn>
-          <q-select rounded v-model="lang" :options="langOptions" dense outlined options-dense map-options emit-value>
+          <q-select :style="$q.platform.is.mobile ? 'width: 60px;': ''" v-model="lang" :options="langOptions" dense outlined options-dense map-options emit-value>
             <q-tooltip> {{ $t('switchLanguage') }} </q-tooltip>
           </q-select>
         </div>

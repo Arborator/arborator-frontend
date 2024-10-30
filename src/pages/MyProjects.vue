@@ -26,7 +26,7 @@
         </q-card-section>
         <q-separator />
         <q-card-section>
-          <div class="row q-gutter-x-md" style="justify-content: right;">
+          <div class="row q-gutter-md" style="justify-content: right;">
             <q-btn
               no-caps
               color="primary"

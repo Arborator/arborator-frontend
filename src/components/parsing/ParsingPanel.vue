@@ -626,6 +626,7 @@ export default defineComponent({
         .parserTrainStatus(modelInfo, trainTaskId)
         .then((response) => {
           if (response.data.status === 'failure') {
+            notifyError({ error: response.data.error });
             this.clearCurrentTask();
           } else if (response.data.data.ready) {
             const scores_best = response.data.data.scores_best;

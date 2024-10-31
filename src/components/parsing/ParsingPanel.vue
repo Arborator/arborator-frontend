@@ -711,6 +711,7 @@ export default defineComponent({
         .parserParseStatus(projectName, modelInfo, parseTaskId, parserSuffix)
         .then((response) => {
           if (response.data.status === 'failure') {
+            notifyError({ error: response.data.error });
             this.clearCurrentTask();
           } else if (response.data.data.ready) {
             this.clearCurrentTask();

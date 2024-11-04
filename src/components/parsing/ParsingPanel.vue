@@ -208,6 +208,9 @@
           </q-item>
           <q-separator />
           <div v-if="parserData.taskStatus !== null">
+            <div v-if="parserData.taskStatus.taskType === 'ASK_TRAINING' || parserData.taskStatus.taskType === 'TRAINING'" class="text-subtitle5 q-mb-xs">
+              The training will continue even if you close the window
+            </div>
             <div class="text-subtitle5 q-mb-xs">{{ $t('parser.currentTask') }}: {{ parserData.taskStatus.taskType }}</div>
             <div v-if="parserData.taskStatus.taskAdditionalMessage" class="text-subtitle5 q-mb-xs">
               {{ parserData.taskStatus.taskAdditionalMessage }}
@@ -237,7 +240,7 @@
   </q-dialog>
 </template>
 <script lang="ts">
-import { mapState } from 'pinia';
+import { mapState, mapWritableState } from 'pinia';
 import api from 'src/api/backend-api';
 import { ModelInfo_t, ParsingSettings_t, sample_t } from 'src/api/backend-types';
 import { useProjectStore } from 'src/pinia/modules/project';
@@ -298,6 +301,18 @@ export default defineComponent({
   name: 'Parsing',
   components: {
     ConfirmAction,
+  },
+  beforeRouteLeave(to, from, next) {
+    if (this.parserData.taskStatus?.taskType == 'PARSING') {
+      const answer = window.confirm('Do you really want to leave? you have already stared parsing, the new trees will not be saved');
+      if (answer) {
+        next();
+      } else {
+        next(false);
+      }
+    } else {
+      next();
+    }
   },
   props: {
     samples: {
@@ -398,6 +413,7 @@ export default defineComponent({
     };
   },
   computed: {
+    ...mapWritableState(useProjectStore, ['tab']),
     ...mapState(useProjectStore, ['name']),
     ...mapState(useUserStore, ['isSuperAdmin', 'username']),
     allSamplesNames() {
@@ -717,9 +733,16 @@ export default defineComponent({
             this.clearCurrentTask();
             this.parentGetProjectSamples();
             notifyMessage({ message: 'Sentences parsing ended!', timeout: 0, });
-          } else if (this.parserData.taskStatus && Date.now() - this.parserData.taskStatus.taskTimeStarted > TIMEOUT_TASK_STATUS_CHECKER) {
+            this.tab = 'samples';
+          }
+          else if (this.parserData.taskStatus && Date.now() - this.parserData.taskStatus.taskTimeStarted > TIMEOUT_TASK_STATUS_CHECKER) {
             // 3 hours
             this.clearCurrentTask();
+          }
+          else if (this.parserData.taskStatus) {
+            window.onbeforeunload = function () {
+              return 'You have already started parsing, if you leave the page the changes will not be saved';
+            }
           }
         })
         .catch((error) => {

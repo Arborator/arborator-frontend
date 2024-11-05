@@ -731,6 +731,7 @@ export default defineComponent({
             this.clearCurrentTask();
           } else if (response.data.data.ready) {
             this.clearCurrentTask();
+            this.$emit('parsing-status', '');
             this.parentGetProjectSamples();
             notifyMessage({ message: 'Sentences parsing ended!', timeout: 0, });
             this.tab = 'samples';
@@ -739,7 +740,8 @@ export default defineComponent({
             // 3 hours
             this.clearCurrentTask();
           }
-          else if (this.parserData.taskStatus) {
+          else if (this.parserData.taskStatus?.taskType === 'PARSING') {
+            this.$emit('parsing-status', this.parserData.taskStatus.taskType);
             window.onbeforeunload = function () {
               return 'You have already started parsing, if you leave the page the changes will not be saved';
             }

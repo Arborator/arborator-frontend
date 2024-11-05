@@ -109,7 +109,7 @@
               <GrewSearch :search-scope="projectName" :samples="samples" @reload="loadProjectData" :key="reloadGrew" />
             </q-tab-panel>
             <q-tab-panel class="q-pa-none" name="parser">
-              <ParsingPanel :samples="samples" :parentGetProjectSamples="getProjectSamples"></ParsingPanel>
+              <ParsingPanel :samples="samples" :parentGetProjectSamples="getProjectSamples" @parsing-status="getParsingStatus"></ParsingPanel>
             </q-tab-panel>
             <q-tab-panel class="q-pa-none" name="lexicon">
               <LexiconMain :samples="samples"></LexiconMain>
@@ -179,6 +179,19 @@ export default defineComponent({
     StatisticsProject,
     Breadcrumbs,
   },
+  beforeRouteLeave(to, from, next) {
+    if (this.parsingStatus == 'PARSING') {
+      const answer = window.confirm('Do you really want to leave? you have already stared parsing, the new trees will not be saved');
+      if (answer) {
+        this.parsingStatus = '';
+        next();
+      } else {
+        next(false);
+      }
+    } else {
+      next();
+    }
+  },
   data() {
     const samples: sample_t[] = [];
     const selectedSamples: sample_t[] = [];
@@ -195,6 +208,7 @@ export default defineComponent({
       showStats: false,
       syncGithubRepo: '',
       reload: 0,
+      parsingStatus: '',
     };
   },
   computed: {
@@ -273,6 +287,9 @@ export default defineComponent({
           notifyError({ error });
         });
     },
+    getParsingStatus(value: any) {
+      this.parsingStatus = value as string;
+    }
   },
 });
 </script>

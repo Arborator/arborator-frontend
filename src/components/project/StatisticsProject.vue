@@ -117,8 +117,24 @@
       </q-card-section>
     </q-card>
   </div>
+  <div class="row q-pa-md justify-between q-gutter-md">
+    <q-card v-if="labels.length && values.length" flat bordered class="col">
+      <q-card-section class="text-center text-h6">
+        Users' contributions
+      </q-card-section>
+      <q-card-section>
+        <PieChart :labels="labels" :values="values"></PieChart>
+      </q-card-section>
+     
+    </q-card>
+    <q-card flat bordered class="col">
+
+    </q-card>
+  </div>
 </template>
 <script lang="ts">
+import PieChart from 'src/components/charts/PieChart.vue';
+
 import { sample_t } from 'src/api/backend-types';
 import { mapState } from 'pinia';
 import { useStatisticStore } from 'src/pinia/modules/stats';
@@ -128,6 +144,9 @@ import { defineComponent, PropType } from 'vue';
 
 export default defineComponent({
   name: 'StatisticsProject',
+  components: {
+    PieChart,
+  },
   props: {
     projectName: {
       type: String as PropType<string>,
@@ -138,15 +157,34 @@ export default defineComponent({
       required: true,
     }
   },
+  data() {
+    return {
+      labels: [] as string[],
+      values: [] as number[],
+    }
+  },
   computed: {
     ...mapState(useStatisticStore, ['projectStats', 'topUserProgress', 'topUserProgressLabel']),
     projectTags() {
       return this.samples.map((sample) => Object.keys(sample.tags)).reduce((a: string[], b: string[]) => [...a, ...b], []);
     }
   },
+  mounted() {
+    this.getTotalTreesByUser();
+  },
   methods: {
     timeAgo(secsAgo: number) {
       return timeAgo(secsAgo);
+    },
+    getTotalTreesByUser() {
+      const totalTreesByUser = this.samples.map(sample => sample.treeByUser).reduce((total, sampleTrees) => {
+        for (const user in sampleTrees) {
+          total[user] = (total[user] || 0) + sampleTrees[user];
+        }
+        return total
+      }, {});
+      this.labels = Object.keys(totalTreesByUser);
+      this.values = Object.values(totalTreesByUser);
     },
   }
 });

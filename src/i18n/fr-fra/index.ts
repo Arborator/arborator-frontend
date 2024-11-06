@@ -504,6 +504,10 @@ export default {
     by: 'par',
     usedTags: 'Tags utilisés',
     progressTooltip: 'Pourcentage des phrases annotées',
+    userContributionTitle: "Les contributions des utilisateurs",
+    userContributionCaption: "Nombre total d'arbres d'utilisateurs dans le projet", 
+    tokensDistributionTitle: 'Distribution des tokens',
+    tokenDistributionCaption: 'Distribution des tokens par échantillon dans le projet',
   },
   conllDial: {
     title: 'Conll Dialog',

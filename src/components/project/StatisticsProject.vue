@@ -104,7 +104,7 @@
       </q-card-section>
     </q-card>
   </div>
-  <div class="row justify-between q-gutter-md">
+  <div class="row q-pa-md justify-between q-gutter-md">
     <q-card v-if="projectTags.length" flat bordered class="col">
       <q-card-section class="q-gutter-md">
         <div class="text-h6">
@@ -118,17 +118,31 @@
     </q-card>
   </div>
   <div class="row q-pa-md justify-between q-gutter-md">
-    <q-card v-if="labels.length && values.length" flat bordered class="col">
-      <q-card-section class="text-center text-h6">
-        Users' contributions
+    <q-card v-if="userLabels.length && userTreesValues.length" flat bordered class="col">
+      <q-card-section>
+        <div class="text-center text-h6">
+          {{ $t('projectStats.userContributionTitle') }}
+        </div>
+        <div class="text-center text-caption">
+          {{ $t('projectStats.userContributionCaption') }}
+        </div>
       </q-card-section>
       <q-card-section>
-        <PieChart :labels="labels" :values="values"></PieChart>
+        <PieChart :labels="userLabels" :values="userTreesValues"></PieChart>
       </q-card-section>
-     
     </q-card>
     <q-card flat bordered class="col">
-
+      <q-card-section>
+        <div class="text-center text-h6">
+          {{ $t('projectStats.tokensDistributionTitle') }}
+        </div>
+        <div class="text-center text-caption">
+          {{ $t('projectStats.tokenDistributionCaption') }}
+        </div>
+      </q-card-section>
+      <q-card-section>
+        <PieChart :labels="samplesNames" :values="tokensNumberList"></PieChart>
+      </q-card-section>
     </q-card>
   </div>
 </template>
@@ -159,14 +173,20 @@ export default defineComponent({
   },
   data() {
     return {
-      labels: [] as string[],
-      values: [] as number[],
+      userLabels: [] as string[],
+      userTreesValues: [] as number[],
     }
   },
   computed: {
     ...mapState(useStatisticStore, ['projectStats', 'topUserProgress', 'topUserProgressLabel']),
     projectTags() {
       return this.samples.map((sample) => Object.keys(sample.tags)).reduce((a: string[], b: string[]) => [...a, ...b], []);
+    },
+    samplesNames() {
+      return this.samples.map((sample) => sample.sampleName);
+    },
+    tokensNumberList() {
+      return this.samples.map((sample) => sample.tokens);
     }
   },
   mounted() {
@@ -183,8 +203,8 @@ export default defineComponent({
         }
         return total
       }, {});
-      this.labels = Object.keys(totalTreesByUser);
-      this.values = Object.values(totalTreesByUser);
+      this.userLabels = Object.keys(totalTreesByUser);
+      this.userTreesValues = Object.values(totalTreesByUser);
     },
   }
 });

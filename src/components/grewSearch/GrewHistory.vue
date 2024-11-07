@@ -139,9 +139,6 @@ export default defineComponent({
     formatDate(timestamp: number) {
       return new Date(timestamp).toLocaleString('en-GB', { hour12: false });
     },
-    closeDial() {
-      this.$emit('closed');
-    },
     updateHistoryFavorites(historyRecord: grewHistoryRecord_t) {
       this.updateHistory(historyRecord.uuid, { favorite: historyRecord.favorite });
     },
@@ -153,6 +150,10 @@ export default defineComponent({
     },
     copyRequest(record: grewHistoryRecord_t) {
       this.$emit('copied-request', record);
+      this.closeDial();
+    },
+    closeDial() {
+      this.$emit('closed');
     },
     triggerConfirm(method: CallableFunction) {
       this.confirmDelete = true;

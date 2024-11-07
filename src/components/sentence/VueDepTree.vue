@@ -80,6 +80,10 @@ export default defineComponent({
     sampleName: {
       type: String as PropType<string>,
       default: '',
+    },
+    isSplitDial: {
+      type: Boolean as PropType<boolean>,
+      default: false,
     }
   },
   data() {
@@ -223,8 +227,7 @@ export default defineComponent({
       const clickedId = e.detail.clicked;
       const clickedToken = { ...this.sentenceSVG.treeJson.nodesJson[clickedId] };
       const targetLabel = e.detail.targetLabel;
-
-      if (targetLabel === 'DEPREL') {
+      if (targetLabel === 'DEPREL' && !this.isSplitDial) {
         const dep = clickedToken;
         const gov =
           { ...this.sentenceSVG.treeJson.nodesJson[dep.HEAD] } ||
@@ -236,6 +239,10 @@ export default defineComponent({
           gov,
           dep,
           userId: this.treeUserId,
+        });
+      } else if (targetLabel === 'FORM' && this.isSplitDial) {
+        this.sentenceBus.emit('open:splitDialog', {
+          token: clickedToken,
         });
       } else if (targetLabel === 'FORM' || ['MISC.', 'FEATS', 'LEMMA'].includes(targetLabel.slice(0, 5))) {
         this.sentenceBus.emit('open:featuresDialog', {
@@ -265,7 +272,7 @@ export default defineComponent({
         dep = { ...this.sentenceSVG.treeJson.nodesJson[hoveredId] };
       }
       // emit only if dep is defined. If the token is being dragged on nothing, nothing will happen
-      if (dep?.ID) {
+      if (dep?.ID && !this.isSplitDial) {
         this.sentenceBus.emit('open:relationDialog', {
           gov,
           dep,

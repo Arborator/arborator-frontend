@@ -121,12 +121,30 @@
             </q-item-section>
           </q-item>
 
-          <q-item v-if="isValidator && canChangeSegmentation" v-close-popup clickable @click="showSentSegmentationDial = true">
+          <q-item v-if="isValidator && canChangeSegmentation" v-close-popup clickable @click="chooseSegmentationOption('MERGE_BEFORE')">
+            <q-item-section avatar>
+              <q-avatar icon="arrow_back" color="primary" text-color="white" />
+            </q-item-section>
+            <q-item-section>
+              <q-item-label> Merge before </q-item-label>
+            </q-item-section>
+          </q-item>
+
+          <q-item v-if="isValidator && canChangeSegmentation" v-close-popup clickable @click="chooseSegmentationOption('MERGE_AFTER')">
+            <q-item-section avatar>
+              <q-avatar icon="arrow_forward" color="primary" text-color="white" />
+            </q-item-section>
+            <q-item-section>
+              <q-item-label> Merge After </q-item-label>
+            </q-item-section>
+          </q-item>
+
+          <q-item v-if="isValidator && canChangeSegmentation" v-close-popup clickable @click="chooseSegmentationOption('SPLIT')">
             <q-item-section avatar>
               <q-avatar icon="content_cut" color="primary" text-color="white" />
             </q-item-section>
             <q-item-section>
-              <q-item-label> Sentence segmentation </q-item-label>
+              <q-item-label> Split sentence </q-item-label>
             </q-item-section>
           </q-item>
 
@@ -180,6 +198,7 @@
       :reactive-sentences-obj="reactiveSentencesObj"
       :user-id="openTabUser"
       :sample-name="(sentenceData.sample_name as string)"
+      :segmentation-option="sentenceSegmentationOption"
       @closed="showSentSegmentationDial = false"
     />
   </template>
@@ -247,6 +266,7 @@ export default defineComponent({
     return {
       EMMETT: 'emmett.strickland',
       showSentSegmentationDial: false,
+      sentenceSegmentationOption: '',
     }
   },
   computed: {
@@ -333,6 +353,10 @@ export default defineComponent({
     },
     saveTree(mode: string) {
       this.parentOnSave(mode);
+    },
+    chooseSegmentationOption(option: string) {
+      this.showSentSegmentationDial = true;
+      this.sentenceSegmentationOption = option;
     }
   }
 });

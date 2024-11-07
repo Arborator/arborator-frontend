@@ -47,6 +47,7 @@ export type sentence_bus_events_t = {
   'open:featuresDialog': { userId: string; token: tokenJson_T };
   'open:uposDialog': { userId: string; token: tokenJson_T };
   'open:xposDialog': { userId: string; token: tokenJson_T };
+  'open:splitDialog': { token: tokenJson_T };
   'action:saved': { userId: string };
   'export:SVG': { userId: string };
   'export:PNG': { userId: string };

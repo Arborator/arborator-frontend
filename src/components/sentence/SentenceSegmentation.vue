@@ -5,28 +5,17 @@
         <q-space />
         <q-btn v-close-popup flat dense icon="close" @click="closeDialog" />
       </q-bar>
-
-      <q-card-section class="row">
-        <div class="col text-h6">
+      <q-card-section>
+        <div class="row text-h6">
           {{ $t('sentenceSegmentation.title') }}
         </div>
-        <div class="col">
-          <q-select
-            dense
-            outlined
-            v-model="option"
-            :label="$t('sentenceSegmentation.selectOptionLabel')"
-            option-label="label"
-            option-value="value"
-            :options="segmentOptions"
-            @update:model-value="showResults = false"
-          >
-          </q-select>
+        <div class="row text-caption">
+          {{ $t('sentenceSegmentation.splitSentenceHint') }}
         </div>
       </q-card-section>
-
+      
       <!-- split sentences -->
-      <q-card-section v-if="option.value === 'split'">
+      <q-card-section v-if="segmentationOption === 'SPLIT'">
         <div class="row">
           <q-chip class="text-center" :color="$q.dark.isActive ? 'grey' : ''" dense> {{ sentId }} </q-chip>
           {{ sentence }}
@@ -41,36 +30,10 @@
             :sentence-bus="sentenceBus"
             :tree-user-id="userId"
             :has-pending-changes="hasPendingChanges"
+            :is-split-dial="true"
           >
           </VueDepTree>
         </div>
-        <div class="row q-py-md q-gutter-md">
-          <div class="col">
-            <q-select
-              dense
-              outlined
-              v-model="token"
-              option-label="form"
-              :label="$t('sentenceSegmentation.selectSplitLabel')"
-              :options="getSentenceForms"
-              @update:model-value="splitSentence(token.index)"
-            >
-              <template v-slot:selected-item="scope">
-                {{ scope.opt.form }}
-              </template>
-            </q-select>
-          </div>
-          <div class="col">
-            <q-btn
-              :disable="token.form == ''"
-              flat
-              color="primary"
-              :label="$t('sentenceSegmentation.showResultBtn')"
-              @click="showReactiveSentences()"
-            />
-          </div>
-        </div>
-
         <!-- Show split results -->
         <div v-if="showResults">
           <div class="row q-gutter-md">
@@ -90,6 +53,7 @@
                   :sentence-bus="sentenceBus"
                   :tree-user-id="userId"
                   :has-pending-changes="hasPendingChanges"
+                  :interactive="false"
                 >
                 </VueDepTree>
               </div>
@@ -110,6 +74,7 @@
                   :sentence-bus="sentenceBus"
                   :tree-user-id="userId"
                   :has-pending-changes="hasPendingChanges"
+                  :interactive="false"
                 >
                 </VueDepTree>
               </div>
@@ -172,28 +137,6 @@
       </q-card-section>
       <!-- Merge sentences -->
       <q-card-section v-else>
-        <div class="row q-py-md q-gutter-md">
-          <div class="col">
-            <q-select
-              dense
-              outlined
-              v-model="mergedSentId"
-              :label="$t('sentenceSegmentation.selectMergeLabel')"
-              :options="sortedSentIds.filter((sent) => sent !== sentId)"
-              @update:model-value="MergeSentences()"
-            >
-            </q-select>
-          </div>
-          <div class="col">
-            <q-btn
-              :disable="mergedSentId == ''"
-              flat
-              color="primary"
-              :label="$t('sentenceSegmentation.showResultBtn')"
-              @click="showReactiveSentences()"
-            />
-          </div>
-        </div>
         <div v-if="showResults">
           <div class="row">
             <q-chip class="text-center" :color="$q.dark.isActive ? 'grey' : ''" dense>
@@ -212,6 +155,7 @@
               :sentence-bus="sentenceBus"
               :tree-user-id="userId"
               :has-pending-changes="hasPendingChanges"
+              :interactive="false"
             >
             </VueDepTree>
           </div>
@@ -252,7 +196,7 @@
   </q-dialog>
 </template>
 <script lang="ts">
-import { emptySentenceJson, metaJson_T, sentenceConllToJson, sentenceJsonToConll, sentenceJson_T, treeJson_T } from 'conllup/lib/conll';
+import { emptySentenceJson, metaJson_T, sentenceConllToJson, sentenceJsonToConll, sentenceJson_T, tokenJson_T, treeJson_T } from 'conllup/lib/conll';
 import { ReactiveSentence } from 'dependencytreejs/src/ReactiveSentence';
 import { mapState, mapWritableState } from 'pinia';
 import api from 'src/api/backend-api';
@@ -289,13 +233,13 @@ export default defineComponent({
     sampleName: {
       type: String as PropType<string>,
       required: true,
-    }
+    },
+    segmentationOption: {
+      type: String as PropType<'MERGE_BEFORE' | 'MERGE_AFTER' | 'SPLIT'>,
+      required: true,
+    },
   },
   data() {
-    const segmentOptions = [
-      { value: 'split', label: this.$t('sentenceSegmentation.segmentOptions[0]') },
-      { value: 'merge', label: this.$t('sentenceSegmentation.segmentOptions[1]') },
-    ];
     const hasPendingChanges: { [key: string]: boolean } = {};
     const firstSentences: sentence_t = {};
     const secondSentences: sentence_t = {};
@@ -303,15 +247,11 @@ export default defineComponent({
     const firstReactiveSentence: reactive_sentences_obj_t = {};
     const secondReactiveSentence: reactive_sentences_obj_t = {};
     const mergedReactiveSentence: reactive_sentences_obj_t = {};
-    const token: { form: string, index: number } = { form: '', index: 0 };
     return {
       showDial: true,
-      segmentOptions,
-      option: segmentOptions[0],
       hasPendingChanges,
       sentence: '',
       sentId: '',
-      token,
       firstSentences,
       secondSentences,
       firstReactiveSentence,
@@ -329,12 +269,6 @@ export default defineComponent({
     ...mapState(useTreesStore, ['sortedSentIds', 'filteredTrees']),
     ...mapWritableState(useTreesStore, ['reloadTrees']),
     ...mapState(useProjectStore, ['name']),
-    getSentenceForms(): any[] {
-      return Object.values(this.reactiveSentencesObj[this.userId].state.treeJson.nodesJson).map((token) => ({
-        index: parseInt(token.ID),
-        form: token.FORM,
-      }));
-    },
     disableSaveResultBtn(): boolean {
       const firstSentId = this.firstReactiveSentence[this.userId].state.metaJson.sent_id as string;
       const sencondSentId = this.secondReactiveSentence[this.userId].state.metaJson.sent_id as string;
@@ -345,6 +279,16 @@ export default defineComponent({
     this.hasPendingChanges[this.userId] = false;
     this.sentence = this.reactiveSentencesObj[this.userId].state.metaJson.text as string;
     this.sentId = this.reactiveSentencesObj[this.userId].state.metaJson.sent_id as string;
+    if (this.segmentationOption !== 'SPLIT') {
+      this.MergeSentences();
+      this.showReactiveSentences();
+    }
+    else {
+      this.sentenceBus.on('open:splitDialog', ({token}) => {
+        this.splitSentence(parseInt(token.ID));
+        this.showReactiveSentences();
+      })
+    }
   },
   methods: {
     closeDialog() {
@@ -395,7 +339,7 @@ export default defineComponent({
     showReactiveSentences() {
       this.forceRender += 1;
       this.showResults = true;
-      if (this.option.value === 'split') {
+      if (this.segmentationOption === 'SPLIT') {
         this.createReactiveSentence(this.firstSentences, this.firstReactiveSentence as reactive_sentences_obj_t);
         this.createReactiveSentence(this.secondSentences, this.secondReactiveSentence as reactive_sentences_obj_t);
       } else {
@@ -449,13 +393,19 @@ export default defineComponent({
     MergeSentences() {
       const usersDiff = [];
       this.mergeWarningMessage = '';
-      const secondSentenceConlls = this.filteredTrees[this.sortedSentIds.indexOf(this.mergedSentId)].conlls;
+
+      const sentIdIndex =  this.sortedSentIds.indexOf(this.sentId)
+      const secondSentId = this.segmentationOption === 'MERGE_BEFORE' ? sentIdIndex - 1 : sentIdIndex + 1;
+      const secondSentenceConlls = this.filteredTrees[secondSentId].conlls;
+ 
       for (const [userId, reactiveSentence] of Object.entries(this.reactiveSentencesObj)) {
         if (Object.keys(secondSentenceConlls).includes(userId)) {
           const firstSentenceConll = reactiveSentence.exportConll();
           const secondSentenceConll = secondSentenceConlls[userId];
-          this.mergedSentences[userId] = this.mergeConlls(firstSentenceConll, secondSentenceConll);
-        } else {
+          this.mergedSentences[userId] =  this.segmentationOption === 'MERGE_BEFORE' ?
+            this.mergeConlls(secondSentenceConll, firstSentenceConll) : this.mergeConlls(firstSentenceConll, secondSentenceConll);
+        } 
+        else {
           usersDiff.push(userId);
           this.mergedSentences[userId] = reactiveSentence.state;
         }
@@ -486,12 +436,14 @@ export default defineComponent({
           HEAD: token.HEAD > 0 ? token.HEAD + length : token.HEAD,
         };
       });
+
       mergedSentence.metaJson = {
         ...firstSentenceJson.metaJson,
         ...secondSentenceJson.metaJson,
         timestamp: firstSentenceJson.metaJson.timestamp > secondSentenceJson.metaJson.timestamp ? firstSentenceJson.metaJson.timestamp: secondSentenceJson.metaJson.timestamp,
         sent_id: this.proposeMergedSentId(firstSentenceJson.metaJson.sent_id as  string, secondSentenceJson.metaJson.sent_id as string),
       };
+      
       for (const key of Object.keys(firstSentenceJson.metaJson)) {
         if (Object.keys(secondSentenceJson.metaJson).includes(key) 
           && !this.unchangedMetaData.includes(key) 

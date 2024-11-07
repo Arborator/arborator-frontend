@@ -465,10 +465,7 @@ export default {
   },
   sentenceSegmentation: {
     title: 'Segmentation de la phrase',
-    selectOptionLabel: 'Sélectionnez un choix de segmentation',
-    segmentOptions: ['Diviser', 'Fusionner'],
-    selectSplitLabel: 'Sélectionnez le token à partir duquel la deuxième phrase commencera.',
-    showResultBtn: 'Afficher le résultat',
+    splitSentenceHint: "Pour diviser les phrases, cliquez sur le token à partir duquel la deuxième phrase commencera.",
     editGeneratedMeta: 'Editer les métadonnées générées',
     saveResults: 'Sauvegarder le résultat',
     sentIdWarningMsg: [

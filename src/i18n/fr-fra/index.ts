@@ -330,6 +330,9 @@ export default {
       'Remplacement',
     ],
     proposedMetadata: 'Les métadonnées proposées',
+    form: "La valeur de la forme ne doit pas être vide. Si la forme n'a pas une valeur utiliser le trait de soulignement.",
+    lemma: "La valeur du lemme ne doit pas être vide. Si le lemme n'a pas une valeur utiliser le trait de soulignement.",
+    feat: "N'oubliez pas d'introduire la valeur de cette feat",
   },
   constructicon: {
     uploadBtn: 'Importer un constructicon',

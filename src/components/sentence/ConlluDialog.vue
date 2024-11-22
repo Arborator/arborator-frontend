@@ -29,14 +29,41 @@
                   </q-td>
                   <q-td key="FORM" :props="props">
                     {{ props.row.FORM }}
-                    <q-popup-edit v-model="props.row.FORM" auto-save v-slot="scope" >
-                      <q-input v-model="scope.value" dense autofocus />
+                    <q-popup-edit 
+                      v-model="props.row.FORM" 
+                      buttons
+                      label-set="Save"
+                      label-cancel="Close"
+                      :validate="checkForm" 
+                      v-slot="scope"
+                    >
+                      <q-input 
+                        v-model="scope.value" 
+                        dense 
+                        autofocus
+                        :error="formatErrorTable.FORM.error"
+                        :error-message="formatErrorTable.FORM.message" 
+                      />
                     </q-popup-edit>
                   </q-td>
                   <q-td key="LEMMA" :props="props">
                     {{ props.row.LEMMA }}
-                    <q-popup-edit v-if="!props.row.ID.includes('-')" v-model="props.row.LEMMA" auto-save v-slot="scope" >
-                      <q-input v-model="scope.value" dense autofocus />
+                    <q-popup-edit 
+                      v-if="!props.row.ID.includes('-')" 
+                      v-model="props.row.LEMMA" 
+                      buttons
+                      label-set="Save"
+                      label-cancel="Close"
+                      :validate="checkLemma" 
+                      v-slot="scope" 
+                    >
+                      <q-input 
+                        v-model="scope.value" 
+                        dense 
+                        autofocus 
+                        :error="formatErrorTable.LEMMA.error"
+                        :error-message="formatErrorTable.LEMMA.message" 
+                      />
                     </q-popup-edit>
                   </q-td>
                   <q-td key="UPOS" :props="props">
@@ -206,7 +233,7 @@ export default defineComponent({
   data() {
     const conllTable: any[] = [];
     const conllColumns = ['ID', 'FORM', 'LEMMA', 'UPOS', 'XPOS', 'FEATS', 'HEAD', 'DEPREL', 'DEPS', 'MISC'];
-    const conllColumnsToCheck = ['UPOS', 'FEATS', 'HEAD', 'DEPREL'];
+    const conllColumnsToCheck = ['FORM', 'LEMMA', 'UPOS', 'FEATS', 'HEAD', 'DEPREL'];
     const nodesJson: nodesJson_T = {};
     const groupsJson: groupsJson_T = {};
     const table: table_t<tokenJson_T> = {
@@ -286,9 +313,9 @@ export default defineComponent({
         this.conllTable.push({
           ...node,
           HEAD: node.HEAD === -1 ? '_' : node.HEAD,
-          FEATS: this.formatTableEntry(node.FEATS, '='),
-          DEPS: this.formatTableEntry(node.DEPS, ':'),
-          MISC: this.formatTableEntry(node.MISC, '='),
+          FEATS: node.FEATS.length ? this.formatTableEntry(node.FEATS, '=') : '_',
+          DEPS: node.DEPS.length ? this.formatTableEntry(node.DEPS, ':') : '_',
+          MISC: node.MISC.length ? this.formatTableEntry(node.MISC, '='): '_',
         });
       }
     },
@@ -354,6 +381,18 @@ export default defineComponent({
         notifyMessage({ message: 'Conll Copied!' });
       });
     },
+    checkLemma(val: string) {
+      if (val === '') {
+        return this.setError('LEMMA', true, 'Lemma must not be empty');
+      }
+      return this.setError('LEMMA', false, '');
+    },
+    checkForm(val: string) {
+      if (val === '') {
+        return this.setError('FORM', true, 'Form must not be empty');
+      }
+      return this.setError('FORM', false, '');
+    },
     checkUPOS(val: string) {
       if(!this.annotationFeatures.UPOS.includes(val) && val !== '_') {
         return this.setError('UPOS', true, 'This UPOS does not exist in your annotation config');
@@ -361,7 +400,7 @@ export default defineComponent({
       return this.setError('UPOS', false, '');
     }, 
     checkHEAD(val: number) {
-      if (val !== -1 && (val < 0 || val > this.conllTable.length)) {
+      if ((val !== -1 && (val < 0 || val > this.conllTable.length)) || String(val) === "") {
         return this.setError('HEAD', true, 'HEAD value must be either -1 or 0 or < sentence length');
       }
       return this.setError('HEAD', false, '');

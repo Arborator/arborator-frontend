@@ -8,8 +8,18 @@
       </q-bar>
 
       <q-card-section class="q-gutter-md">
-        <q-input outlined v-model="form" label="FORM" />
-        <q-input outlined v-model="lemma" label="LEMMA" />
+        <q-input 
+          outlined 
+          v-model="form" 
+          label="FORM" 
+          :rules="[(val) => (val && val.length > 0) || $t('attributeTable.form')]"
+          />
+        <q-input 
+          outlined 
+          v-model="lemma" 
+          label="LEMMA" 
+          :rules="[(val) => (val && val.length > 0) || $t('attributeTable.lemma')]"
+          />
         <q-separator />
       </q-card-section>
 
@@ -51,8 +61,21 @@
       </q-card-section>
 
       <q-card-actions class="sticky-card-actions" align="around">
-        <q-btn v-close-popup outline color="primary" :label="$t('cancel')" style="width: 45%; margin-left: auto; margin-right: auto" />
-        <q-btn v-close-popup color="primary" label="Ok" style="width: 45%; margin-left: auto; margin-right: auto" @click="onFeatureDialogOk()" />
+        <q-btn 
+          v-close-popup 
+          outline 
+          color="primary" 
+          :label="$t('cancel')" 
+          style="width: 45%; margin-left: auto; margin-right: auto"
+        />
+        <q-btn 
+          v-close-popup 
+          color="primary" 
+          label="Ok" 
+          style="width: 45%; margin-left: auto; margin-right: auto" 
+          @click="onFeatureDialogOk()" 
+          :disable="disableBtn"
+          />
       </q-card-actions>
     </q-card>
   </q-dialog>
@@ -125,6 +148,9 @@ export default defineComponent({
   },
   computed: {
     ...mapState(useProjectStore, ['annotationFeatures']),
+    disableBtn() {
+      return this.form === '' || this.lemma === '';
+    },
   },
   mounted() {
     this.sentenceBus.on('open:featuresDialog', ({ token, userId }) => {

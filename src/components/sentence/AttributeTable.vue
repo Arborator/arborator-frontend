@@ -76,6 +76,7 @@
               dense
               :options="computeValueOptions(props.row)"
               @input-value="onInput()"
+              :rules="[(val) => (val && val.length > 0) || $t('attributeTable.feat')]"
             >
             </q-select>
           </q-td>

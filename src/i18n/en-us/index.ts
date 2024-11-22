@@ -327,6 +327,9 @@ export default {
     metadata: 'Metadata of this sentence',
     relation: ['Select a relation going from', 'to', 'current'],
     tokenReplaceDial: ['Replacing', 'by', 'Changing tokens breaks the comparability of different annotations of the same sentence', 'Replacement'],
+    form: 'The form value must not be empty. If the form has no value, use the underscore',
+    lemma: 'The lemma value must not be empty. If the lemma has no value; use the underscore',
+    feat: 'Do not forget to fill the feature value',
   },
   constructicon: {
     uploadBtn: 'Upload constructicon',

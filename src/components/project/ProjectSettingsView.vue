@@ -100,8 +100,8 @@
               <q-toggle v-model="diffModeLocal" color="primary" checked-icon="check" unchecked-icon="clear" />
             </q-item-section>
           </q-item>
-          <q-item>
-            <q-item-section v-if="isOwner">
+          <q-item v-if="isOwner">
+            <q-item-section>
               <q-item-label>{{ $t('projectSettings.freezeProject') }}</q-item-label>
               <q-item-label caption>{{ $t('projectSettings.freezeProjectCaption') }}</q-item-label>
             </q-item-section>

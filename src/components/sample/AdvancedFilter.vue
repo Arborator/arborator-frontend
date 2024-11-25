@@ -55,7 +55,7 @@
         </q-tooltip>
       </q-btn>
       <q-btn 
-        v-if="isLoggedIn" 
+        v-if="isLoggedIn && !blindAnnotationMode" 
         outline 
         :disable="pendingModifications.size === 0" 
         color="primary" 

@@ -35,7 +35,7 @@
               :options-sanitize="true"
               @input-value="onInput()"
             />
-            <q-select v-else v-model="props.row.a" dense ble borderless :options="computeAttributeOptions()" />
+            <q-select v-else v-model="props.row.a" dense borderless :options="computeAttributeOptions()" @update:model-value="computeValue(props.row)" />
           </q-td>
 
           <q-td key="v" :props="props">
@@ -61,7 +61,7 @@
             />
             <q-select
               v-else-if="computeValueOptions(props.row) !== undefined && computeValueOptions(props.row).length ===1"
-              v-model="computeValueOptions(props.row)[0]"
+              v-model="props.row.v"
               dense
               filled
               readonly
@@ -151,6 +151,11 @@ export default defineComponent({
     },
     computeValueOptions(row: any) {
       return (this.featPossibleOptions.filter((x) => x.name === row.a)[0] || {}).values;
+    },
+    computeValue(row: any) {
+      if (this.computeValueOptions(row).length === 1) {
+        row.v = this.computeValueOptions(row)[0];
+      }
     },
     computeValueType(row: any) {
       const possibleValue = (this.featPossibleOptions.filter((x) => x.name === row.a)[0] || {}).values;

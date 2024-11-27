@@ -313,9 +313,9 @@ export default defineComponent({
         this.conllTable.push({
           ...node,
           HEAD: node.HEAD === -1 ? '_' : node.HEAD,
-          FEATS: node.FEATS.length ? this.formatTableEntry(node.FEATS, '=') : '_',
-          DEPS: node.DEPS.length ? this.formatTableEntry(node.DEPS, ':') : '_',
-          MISC: node.MISC.length ? this.formatTableEntry(node.MISC, '='): '_',
+          FEATS: Object.keys(node.FEATS).length ? this.formatTableEntry(node.FEATS, '=') : '_',
+          DEPS: Object.keys(node.DEPS).length ? this.formatTableEntry(node.DEPS, ':') : '_',
+          MISC: Object.keys(node.MISC).length ? this.formatTableEntry(node.MISC, '='): '_',
         });
       }
     },

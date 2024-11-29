@@ -156,7 +156,7 @@ export default defineComponent({
   computed: {
     ...mapState(useProjectStore, ['name', 'canSaveTreeInProject', 'isValidator']),
     ...mapState(useGrewSearchStore, ['canRewriteRule']),
-    ...mapState(useUserStore, ['username']),
+    ...mapState(useUserStore, ['username', 'isLoggedIn']),
     ...mapState(useTreesStore, ['pendingModifications']),
     ...mapWritableState(useGithubStore, ['reloadCommits']),
     projectName(): string {
@@ -249,7 +249,7 @@ export default defineComponent({
         const datasample = { data: this.searchResultsCopy };
         api.applyRule(this.projectName, datasample).then(() => {
           this.reloadCommits += 1;
-          this.saveAppliedRule();
+          if (this.isLoggedIn) this.saveAppliedRule();
           notifyMessage({ message: `Rule applied (user "${this.username}" rewrote and saved "${this.toSaveCounter}" at once)` });
           this.$emit('closed');
         });

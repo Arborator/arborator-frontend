@@ -18,6 +18,7 @@ import { mapActions, mapState } from 'pinia';
 import { grewSearchResult_t, sample_t } from 'src/api/backend-types';
 import { useGrewHistoryStore } from 'src/pinia/modules/grewHistory';
 import { useProjectStore } from 'src/pinia/modules/project';
+import { useUserStore } from 'src/pinia/modules/user';
 import { notifyError } from 'src/utils/notify';
 import { PropType, defineComponent } from 'vue';
 
@@ -63,6 +64,7 @@ export default defineComponent({
   },
   computed: {
     ...mapState(useProjectStore, ['name']),
+    ...mapState(useUserStore, ['isLoggedIn']),
   },
   methods: {
     ...mapActions(useGrewHistoryStore, ['saveHistory']),
@@ -76,7 +78,7 @@ export default defineComponent({
         .searchRequest(this.name, data)
         .then((response) => {
           this.resultSearch = response.data;
-          this.saveSearchRequest(searchPattern);
+          if (this.isLoggedIn) this.saveSearchRequest(searchPattern);
           this.resultSearchDialog = true;
         })
         .catch((error) => {

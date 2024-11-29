@@ -97,6 +97,9 @@
             {{ reactiveSentencesObj[openTabUser].state.metaJson[meta] }}
           </q-item>
         </q-list>
+        <div v-if="lastValidator" class="row">
+          <div class="text-overline">Last validator: {{ lastValidator }}</div>
+        </div>
         <div class="row">
           <div class="text-overline">Tags:</div>
           <div v-for="tag in userTags">
@@ -307,6 +310,9 @@ export default defineComponent({
       }
       return this.orderConlls(filteredConlls);
     },
+    lastValidator() {
+      return this.reactiveSentencesObj[this.openTabUser].state.metaJson['validated_by']
+    }
   },
   created() {
     for (const [userId, conll] of Object.entries(this.sentence.conlls)) {
@@ -380,16 +386,17 @@ export default defineComponent({
             this.sentenceBus.emit('action:saved', {
               userId: this.openTabUser,
             });
+            const newConll = response.data.new_conll;
             this.removePendingModification(`${this.sentence.sent_id}_${this.openTabUser}`);
             this.reloadCommits += 1;
             if (this.sentenceData.conlls[changedConllUser]) {
               // the user already had a tree
               this.hasPendingChanges[changedConllUser] = false;
-              this.sentenceData.conlls[changedConllUser] = exportedConll;
-              this.reactiveSentencesObj[changedConllUser].fromSentenceConll(exportedConll);
+              this.sentenceData.conlls[changedConllUser] = newConll;
+              this.reactiveSentencesObj[changedConllUser].fromSentenceConll(newConll);
             } else {
               // user still don't have a tree for this sentence, creating it.
-              this.sentenceData.conlls[changedConllUser] = exportedConll;
+              this.sentenceData.conlls[changedConllUser] = newConll;
               this.reactiveSentencesObj[changedConllUser] = new ReactiveSentence();
             }
 
@@ -397,13 +404,13 @@ export default defineComponent({
               this.reactiveSentencesObj[this.openTabUser].fromSentenceConll(this.sentenceData.conlls[this.openTabUser]);
               this.sentenceText = this.reactiveSentencesObj[this.openTabUser].state.metaJson.text as string;
               this.openTabUser = changedConllUser;
-              this.exportedConll = exportedConll;
+              this.exportedConll = newConll;
             }
-            if (this.sentenceData.sent_id !== sentenceConllToJson(exportedConll).metaJson.sent_id ) {
+            if (this.sentenceData.sent_id !== sentenceConllToJson(newConll).metaJson.sent_id ) {
               this.reloadTrees = true;
             }
             notifyMessage({ position: 'top', message: 'Saved on the server', icon: 'save' });
-            this.validateUdTree(exportedConll);
+            this.validateUdTree(newConll);
           }
         })
         .catch((error) => {

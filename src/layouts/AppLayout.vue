@@ -12,6 +12,16 @@
           <q-btn-dropdown flat label="More">
             <q-list>
               <q-item 
+                v-if="isLoggedIn"
+                v-close-popup 
+                clickable 
+                to="/home"
+              >
+                <q-item-section>
+                  <q-item-label>Home</q-item-label>
+                </q-item-section> 
+              </q-item>
+              <q-item 
                 v-close-popup 
                 clickable 
                 to="/projects"
@@ -46,6 +56,16 @@
           </q-btn-dropdown>
         </div>
         <div v-else>
+          <q-btn
+            v-if="isLoggedIn"
+            no-caps
+            flat 
+            size="md" 
+            label="Home" 
+            color="primary" 
+            to="/home" 
+          >
+          </q-btn>
           <q-btn
             no-caps
             flat 

@@ -397,6 +397,7 @@ export default defineComponent({
       const sentIdIndex =  this.sortedSentIds.indexOf(this.sentId)
       const secondSentId = this.segmentationOption === 'MERGE_BEFORE' ? sentIdIndex - 1 : sentIdIndex + 1;
       const secondSentenceConlls = this.filteredTrees[secondSentId].conlls;
+      this.mergedSentId = this.sortedSentIds[secondSentId]
  
       for (const [userId, reactiveSentence] of Object.entries(this.reactiveSentencesObj)) {
         if (Object.keys(secondSentenceConlls).includes(userId)) {

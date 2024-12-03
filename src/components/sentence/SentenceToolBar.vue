@@ -120,8 +120,7 @@
               </q-item-label>
             </q-item-section>
           </q-item>
-
-          <q-item v-if="isValidator && canChangeSegmentation" v-close-popup clickable @click="chooseSegmentationOption('MERGE_BEFORE')">
+          <q-item v-if="canChangeSegmentation && !isFirstSentence" v-close-popup clickable @click="chooseSegmentationOption('MERGE_BEFORE')">
             <q-item-section avatar>
               <q-avatar icon="arrow_back" color="primary" text-color="white" />
             </q-item-section>
@@ -129,8 +128,7 @@
               <q-item-label> Merge before </q-item-label>
             </q-item-section>
           </q-item>
-
-          <q-item v-if="isValidator && canChangeSegmentation" v-close-popup clickable @click="chooseSegmentationOption('MERGE_AFTER')">
+          <q-item v-if="canChangeSegmentation && !isLastSentence" v-close-popup clickable @click="chooseSegmentationOption('MERGE_AFTER')">
             <q-item-section avatar>
               <q-avatar icon="arrow_forward" color="primary" text-color="white" />
             </q-item-section>
@@ -139,7 +137,7 @@
             </q-item-section>
           </q-item>
 
-          <q-item v-if="isValidator && canChangeSegmentation" v-close-popup clickable @click="chooseSegmentationOption('SPLIT')">
+          <q-item v-if="canChangeSegmentation" v-close-popup clickable @click="chooseSegmentationOption('SPLIT')">
             <q-item-section avatar>
               <q-avatar icon="content_cut" color="primary" text-color="white" />
             </q-item-section>
@@ -217,6 +215,7 @@ import { defineComponent, PropType } from 'vue';
 import TagsMenu from './TagsMenu.vue';
 import SentenceSegmentation from './SentenceSegmentation.vue';
 import { notifyMessage } from 'src/utils/notify';
+import { useTreesStore } from 'src/pinia/modules/trees';
 
 export default defineComponent({
   name: 'sentenceToolBar',
@@ -281,6 +280,7 @@ export default defineComponent({
       'collaborativeMode'
     ]),
     ...mapState(useUserStore, ['username', 'isLoggedIn']),
+    ...mapState(useTreesStore, ['sortedSentIds']),
     isBernardCaron() {
       return this.username === 'bernard.l.caron' || this.username === 'kirianguiller';
     },
@@ -296,7 +296,13 @@ export default defineComponent({
       }
     },
     canChangeSegmentation() {
-      return this.$route.params.samplename !== undefined // sentence segmentation option is available only in the sample view
+      return this.isValidator && this.$route.params.samplename !== undefined // sentence segmentation option is available only in the sample view and only for validator
+    },
+    isFirstSentence() {
+      return this.sortedSentIds[0] === this.sentenceData.sent_id;
+    },
+    isLastSentence() {
+      return this.sortedSentIds[this.sortedSentIds.length - 1] === this.sentenceData.sent_id;
     }
   },
   methods: {

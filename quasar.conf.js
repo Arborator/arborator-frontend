@@ -132,7 +132,7 @@ module.exports = configure((ctx) => ({
       : {
           // and on build (production):
           // API: JSON.stringify("https://arboratorgrew.elizia.net:8888"),
-          API: 'https://arboratorgrew.elizia.net',
+          API: 'https://arborator.grew.fr',
         },
     scopeHoisting: true,
     devtool: 'source-map',

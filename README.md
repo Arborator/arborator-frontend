@@ -1,6 +1,6 @@
 # arborator (arborator-frontend)
 
-Here is the running application: https://arboratorgrew.elizia.net/
+Here is the running application: https://arborator.grew.fr/
 
 Don't hesitate to create an account to try it out.
 

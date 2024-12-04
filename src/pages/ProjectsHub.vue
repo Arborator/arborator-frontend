@@ -100,12 +100,15 @@
         </q-virtual-scroll>
         <div v-if="!$q.platform.is.mobile" class="q-pa-md row q-gutter-md">
           <ProjectCard
-            v-for="project in filteredProjects"
+            v-for="project in paginatedProjects"
             :key="project.id"
-            style="max-width: 270px"
+            :style="`max-width: ${projectCardWidth}px;`" 
             :project="project"
             :parent-delete-project="deleteProject"
           ></ProjectCard>
+        </div>
+        <div class="q-pa-lg flex flex-center">
+          <q-pagination v-model="pageIndex" :min="currentPage" :max="Math.ceil(filteredProjects.length / totalItemPerPageCardView)" :input="true" />
         </div>
       </q-card-section>
       <!-- Here starts the list view -->
@@ -123,7 +126,7 @@
           </q-virtual-scroll>
         </q-list>
         <div class="q-pa-lg flex flex-center">
-          <q-pagination v-model="pageIndex" :min="currentPage" :max="Math.ceil(filteredProjects.length / totalItemPerPage)" :input="true" />
+          <q-pagination v-model="pageIndex" :min="currentPage" :max="Math.ceil(filteredProjects.length / totalItemPerPageListView)" :input="true" />
         </div>
       </q-card-section>
     </q-card>
@@ -179,7 +182,9 @@ export default defineComponent({
       ayear: -3600 * 24 * 365,
       currentPage: 1,
       pageIndex: 1,
-      totalItemPerPage: 10,
+      totalItemPerPageListView: 10,
+      totalItemPerPageCardView: 24,
+      projectCardWidth: 0,
       selectedLanguagesForFilter: [],
       projectsLanguages,
     };
@@ -221,9 +226,10 @@ export default defineComponent({
       }
     },
     paginatedProjects(): project_extended_t[] {
+      const totalItemPerPage = this.listMode ? this.totalItemPerPageListView : this.totalItemPerPageCardView;
       return this.filteredProjects.slice(
-        (this.pageIndex - 1) * this.totalItemPerPage,
-        (this.pageIndex - 1) * this.totalItemPerPage + this.totalItemPerPage
+        (this.pageIndex - 1) * totalItemPerPage,
+        (this.pageIndex - 1) * totalItemPerPage + totalItemPerPage
       );
     },
   },
@@ -246,6 +252,7 @@ export default defineComponent({
     this.initLoading = true;
     this.listMode = LocalStorage.getItem('project_view') || false;
     this.getProjects();
+    this.projectCardWidth = Math.trunc(window.innerWidth / 7);
   },
   methods: {
     ...mapActions(useProjectStore, ['isMyProject', 'isOldProject', 'sortProjects']),

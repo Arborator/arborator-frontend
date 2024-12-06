@@ -309,7 +309,7 @@ export default {
     automaticParsing: 'Automatic parsing',
     conllText: 'Text Conll',
     statisticDial: 'Stastistics of the current opened tree',
-    udValidation: 'UD validation Issues',
+    validation: 'Validation Issues',
     notDetectedLang: ["The project language wasn't detected in UD languages list", '(UD Languages list)'],
     noValidationIssues: 'Your annotation has no issues',
   },

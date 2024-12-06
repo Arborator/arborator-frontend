@@ -139,7 +139,7 @@
       <q-card style="width: 800px;max-width: 90vw;">
         <q-card-section>
           <div class="row text-h6">
-            {{ $t('sentenceCard.udValidation') }} 
+            {{ $t('sentenceCard.validation') }} 
             <span>
               <q-icon name="bug_report" />
             </span>

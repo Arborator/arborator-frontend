@@ -254,6 +254,7 @@ export default defineComponent({
     loadProjectData() {
       this.getProjectSamples();
       this.reload += 1;
+      this.selectedSamples = [];
     },
     loadAfterGithubSync() {
       this.loadProjectData();

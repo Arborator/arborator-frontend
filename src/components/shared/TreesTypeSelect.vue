@@ -107,7 +107,6 @@ export default defineComponent({
       { value: 'recent', label: this.$t('grewSearch.recentTree'), icon: 'schedule' },
       { value: 'user', label: this.$t('grewSearch.userTree') },
       { value: 'validated', label: this.$t('grewSearch.validatedTree'), icon: 'verified' },
-      { value: 'pending', label: this.$t('grewSearch.pendingTree'), icon: 'pending' },
       { value: 'all', label: this.$t('grewSearch.allTree'), icon: 'groups' },
       { value: 'base_tree', label: this.$t('grewSearch.baseTree'), icon: 'linear_scale' },
       { value: 'others', label: this.$t('grewSearch.otherTree'), icon: 'group' },
@@ -129,7 +128,7 @@ export default defineComponent({
       if (this.grewOption != 'REWRITE') {
         return this.treeTypes.filter((element) => this.grewTreeTypes.includes(element.value));
       } else {
-        return this.treeTypes.filter((element) => this.grewTreeTypes.includes(element.value) && !['all', 'pending'].includes(element.value));
+        return this.treeTypes.filter((element) => this.grewTreeTypes.includes(element.value) && 'all' !== element.value);
       }
     },
     treesFrom() {

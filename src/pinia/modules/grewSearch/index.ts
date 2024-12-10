@@ -7,7 +7,7 @@ export const useGrewSearchStore = defineStore('grewSearch', {
     return {
       reloadGrew: 0,
       lastQuery: null as null | { text: string; type: 'REWRITE' | 'SEARCH'; userType: string },
-      treeTypes: ['user', 'user_recent', 'recent', 'validated', 'pending', 'base_tree', 'all', 'others'],
+      treeTypes: ['user', 'user_recent', 'recent', 'validated', 'base_tree', 'all', 'others'],
     };
   },
   getters: {

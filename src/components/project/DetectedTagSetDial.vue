@@ -14,20 +14,36 @@
     </q-card-section>
     <q-card-section v-if="selectedPos.length">
       <div class="text-h6">UPOS</div>
-      <q-checkbox class="row q-gutter-md q-pa-md" v-for="(upos, index) in newPos" v-model="selectedPos[index]" :label="upos" />
+      <q-checkbox 
+        class="row q-gutter-md q-pa-md" 
+        v-for="(upos, index) in newPos" 
+        v-model="selectedPos[index]" 
+        :label="upos" 
+      />
     </q-card-section>
     <q-card-section v-if="selectedFeats.length">
       <div class="text-h6">Features</div>
-      <div class="row q-gutter-md q-pa-md" v-for="(feat, index) in newFeats">
-        <q-checkbox class="col" v-model="selectedFeats[index].select" :label="feat" />
-        <q-select class="col" dense outlined v-model="selectedFeats[index].option" :options="featsOptions" label="Choose the type of the feature" />
-      </div>
+      <q-checkbox 
+        class="row q-gutter-md q-pa-md" 
+        v-for="(feat, index) in newFeats" 
+        v-model="selectedFeats[index]" 
+        :label="feat"
+      /> 
+    </q-card-section>
+    <q-card-section v-if="selectedMisc.length">
+      <div class="text-h6">misc</div>
+      <q-checkbox 
+        class="row q-gutter-md q-pa-md" 
+        v-for="(feat, index) in newMisc" 
+        v-model="selectedMisc[index]" 
+        :label="feat"
+      /> 
     </q-card-section>
     <q-card-section v-if="selectedRelations.length">
       <div class="text-h6">Relations</div>
       <div class="row q-gutter-md q-pa-md" v-for="(rel, index) in newRel">
-        <q-checkbox class="col" v-model="selectedRelations[index].select" :label="rel" />
-        <q-select class="col" dense outlined v-model="selectedRelations[index].option" :options="deprelOptions" label="Choose the type of the dependency relation"></q-select>
+        <q-checkbox class="col" v-model="selectedRelations[index]" :label="rel.value" />
+        <q-input class="col" dense outlined readonly v-model="annotationFeatures.DEPREL[rel.index].name"  />
       </div>
     </q-card-section>  
     <q-card-actions align="around">
@@ -49,21 +65,25 @@ export default defineComponent({
       type: Object as PropType<string[]>,
       required: true,
     },
+    newMisc: {
+      type: Object as PropType<string[]>,
+      required: true,
+    },
     newPos: {
       type: Object as PropType<string[]>,
       required: true,
     },
     newRel: {
-      type: Object as PropType<string[]>,
+      type: Object as PropType<any[]>,
       required: true,
     }
   },
   data() {
     return {
       selectedPos: [] as boolean[],
-      selectedFeats: [] as { select: boolean, option: string }[],
-      selectedRelations: [] as { select: boolean, option: string } [],
-      featsOptions: ['FEATS', 'MISC'],
+      selectedFeats: [] as boolean[],
+      selectedMisc: [] as boolean[],
+      selectedRelations: [] as boolean[],
       deprelOptions: [] as string[],
       currentAnnotationSchema: {} as annotationFeatures_t,
     }
@@ -73,8 +93,9 @@ export default defineComponent({
   },
   mounted() {
     this.selectedPos = this.newPos.map(() => false);
-    this.selectedFeats = this.newFeats.map(() => ({ select: false, option: 'FEATS' }))
-    this.selectedRelations = this.newRel.map(() => ({ select: false, option: this.annotationFeatures.DEPREL[0].name }))
+    this.selectedFeats = this.newFeats.map(() => false);
+    this.selectedMisc = this.newMisc.map(() => false);
+    this.selectedRelations = this.newRel.map(() => false);
     this.deprelOptions = this.annotationFeatures.DEPREL.map((deprel) => deprel.name);
   },
   methods: {
@@ -86,19 +107,19 @@ export default defineComponent({
         }
       }
       for (const feat in this.selectedFeats) {
-        if (this.selectedFeats[feat].select) {
-          if (this.selectedFeats[feat].option === 'FEATS') {
-            this.annotationFeatures.FEATS.push({ name: this.newFeats[feat], values: []});
-          }
-          else {
-            this.annotationFeatures.MISC.push({ name: this.newFeats[feat], values: [] });
-          }
+        if (this.selectedFeats[feat]) {
+          this.annotationFeatures.FEATS.push({ name: this.newFeats[feat], values: [] });
+        } 
+      }
+      for (const misc in this.selectedMisc) {
+        if (this.selectedMisc[misc]) {
+          this.annotationFeatures.MISC.push({ name: this.newMisc[misc], values: [] });
         }
       }
       for (const deprel in this.selectedRelations) {
-        if (this.selectedRelations[deprel].select) {
-          const index = this.annotationFeatures.DEPREL.map(deprel => deprel.name).indexOf(this.selectedRelations[deprel].option)
-          this.annotationFeatures.DEPREL[index].values.push(this.newRel[deprel]);
+        if (this.selectedRelations[deprel]) {
+          const index = this.newRel[deprel].index;
+          this.annotationFeatures.DEPREL[index].values.push(this.newRel[deprel].value);
         }
       }
       this.updateProjectConlluSchema(this.name, this.annotationFeatures, this.currentAnnotationSchema); 

@@ -152,7 +152,13 @@
     </q-card>
   </q-dialog>
   <q-dialog v-model="hasNewFeatures">
-    <DetectedTagSetDial :new-feats="newFeatsList" :new-pos="newPosList" :new-rel="newRelationsList" @reload-tags-list="reloadDetectedTagsList" />
+    <DetectedTagSetDial 
+      :new-feats="newFeatsList" 
+      :new-pos="newPosList" 
+      :new-rel="newRelationsList" 
+      :new-misc="newMiscList"
+      @reload-tags-list="reloadDetectedTagsList" 
+    />
   </q-dialog>
 </template>
 
@@ -226,11 +232,13 @@ export default defineComponent({
       rtl: false,
       userId: 'username',
       featsList: [] as string[], 
+      miscList: [] as string[],
       posList: [] as string[],
       relationsList: [] as string[],
       newFeatsList: [] as string[],
+      newMiscList: [] as string[],
       newPosList: [] as string[],
-      newRelationsList: [] as string[],
+      newRelationsList: [] as { value: string, index: number }[],
     };
   },
 
@@ -257,7 +265,7 @@ export default defineComponent({
       return disable;
     },
     hasNewFeatures() {
-      return this.newFeatsList.length >  0 || this.newPosList.length > 0 || this.newRelationsList.length > 0;
+      return this.newFeatsList.length >  0 || this.newPosList.length > 0 || this.newRelationsList.length > 0 || this.newMiscList.length > 0;
     }
   },
   methods: {
@@ -345,6 +353,7 @@ export default defineComponent({
           this.uploadDialModel = false;
           this.uploadSample.submitting = false;
           this.featsList = response.data.data.feats;
+          this.miscList = response.data.data.misc;
           this.posList = response.data.data.pos;
           this.relationsList = response.data.data.relations;
           this.checkNewFeats();
@@ -368,13 +377,16 @@ export default defineComponent({
       const splitRegex = new RegExp(`[${deprels.map(({ join }) => join).join('')}]`, 'g');
 
       this.newPosList = this.posList.filter(pos => !annotationUpos.includes(pos));
-      this.newFeatsList = this.featsList.filter(feat => !annotationFeats.includes(feat) && !annotationMisc.includes(feat));
+      this.newFeatsList = this.featsList.filter(feat => !annotationFeats.includes(feat));
+      this.newMiscList = this.miscList.filter(misc => !annotationMisc.includes(misc));
       
       for (const relation of this.relationsList) {
         const splittedRel = relation.split(splitRegex);
+        let index = 0;
         for (const subRel of splittedRel) {
           const found = deprels.some(({ values, join }) => values.includes(subRel) && relation.includes(join + subRel));
-          if (!found) this.newRelationsList.push(subRel);
+          index += 1;
+          if (!found) this.newRelationsList.push({ value: subRel, index: index });
         }
       }
     },
@@ -420,6 +432,7 @@ export default defineComponent({
       this.newFeatsList = [];
       this.newPosList = [];
       this.newRelationsList = [];
+      this.newMiscList = [];
     }
   },
 });

@@ -195,26 +195,31 @@ export default defineComponent({
     replaceNewMetaText() {
       const newMetaJson = this.reactiveSentencesObj[this.userId].state.metaJson;
       const newTree = this.reactiveSentencesObj[this.userId].state.treeJson;
-      const groupsJson = newTree.groupsJson;
-      const nodesJson = newTree.nodesJson;
-      const newForms = Object.values(nodesJson).map((node) => ({ form: node.FORM, spaceAfter: !node.MISC.SpaceAfter }));
+
+      const groupsFromFirstID = Object.fromEntries(
+        Object.entries(newTree.groupsJson).map(([key, value]) => {
+          const ids = key.split("-")
+          const newKey = ids[0]
+          const newValue = { 'end': Number(ids[1]), 'form': value.FORM, noSpaceAfter: value.MISC.SpaceAfter}
+          return [newKey, newValue];
+        })
+      );
       let newMetaText = '';
-      let i = 0;
-      while (i < newForms.length) {
-        if (groupsJson[`${i + 1}-${i + 2}`]) {
-          newMetaText += groupsJson[`${i + 1}-${i + 2}`].FORM;
-          if (newForms[i + 2].spaceAfter) {
-            newMetaText += ' ';
-          }
-          i += 2;
+
+      let skip = -1;
+      let separator = "";
+      Object.entries(newTree.nodesJson).forEach(([key, node]) => {
+        if (key in groupsFromFirstID) {
+          newMetaText += separator + groupsFromFirstID[key].form;
+          separator = (groupsFromFirstID[key].noSpaceAfter) ? "" : " ";
+          skip = groupsFromFirstID[key].end;
         } else {
-          newMetaText += newForms[i].form;
-          if (newForms[i].spaceAfter) {
-            newMetaText += ' ';
+          if (Number(key) > skip) {
+            newMetaText += separator + node.FORM;
+            separator = (node.MISC.SpaceAfter === "No") ? "" : " ";
           }
-          i += 1;
         }
-      }
+      });
       newMetaJson.text = newMetaText;
       this.sentenceBus.emit('tree-update:sentence', {
         sentenceJson: {

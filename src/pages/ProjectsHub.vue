@@ -136,7 +136,7 @@
 </template>
 
 <script lang="ts">
-import { mapState, mapWritableState, mapActions } from 'pinia';
+import { mapState, mapWritableState } from 'pinia';
 import { LocalStorage } from 'quasar';
 import { project_extended_t } from 'src/api/backend-types';
 import { useProjectStore } from 'src/pinia/modules/project';
@@ -217,7 +217,6 @@ export default defineComponent({
     this.projectCardWidth = Math.trunc(window.innerWidth / 7);
   },
   methods: {
-    ...mapActions(useProjectStore, ['sortProjects']),
     toggleProjectView() {
       this.listMode = !this.listMode;
       LocalStorage.set('project_view', this.listMode);
@@ -240,7 +239,6 @@ export default defineComponent({
           this.projects = response.data.projects as project_extended_t[];
           this.visibleProjects = this.projects;
           this.totalPages = response.data.totalPages;
-          this.sortProjects(this.projects);
           this.initLoading = false;
         })
         .catch((error) => {

@@ -29,7 +29,7 @@
         </q-toolbar>
       </q-card-section>
       <q-card-section>
-        <q-input outlined v-model="search" bottom-slots :label="$t('projectHub.emptySearch')" type="text" @update:model-value="searchProject(search)">
+        <q-input outlined v-model="search" bottom-slots :label="$t('projectHub.emptySearch')" type="text" @update:model-value="getProjects()">
           <template #append>
             <div v-for="val in selectedLanguagesForFilter">
               <q-chip removable size="sm" @remove="removeFilter(val)">{{ val }}</q-chip>
@@ -203,7 +203,7 @@ export default defineComponent({
     },
     selectedLanguagesForFilter: {
       handler() {
-        this.searchProject(this.search);
+        this.getProjects();
       },
       deep: true,
     },
@@ -213,6 +213,7 @@ export default defineComponent({
     this.initLoading = true;
     this.listMode = LocalStorage.getItem('project_view') || false;
     this.getProjects();
+    this.getProjectsLanguages();
     this.projectCardWidth = Math.trunc(window.innerWidth / 7);
   },
   methods: {
@@ -221,17 +222,25 @@ export default defineComponent({
       this.listMode = !this.listMode;
       LocalStorage.set('project_view', this.listMode);
     },
-    getProjects() {
+    getProjectsLanguages() {
       api
-        .getProjects(this.pageIndex, this.projectType.value)
+        .getProjectsLanguages()
+        .then((response) => {
+          this.projectsLanguages = response.data.map((lang: string, index: number) => ({ index: index + 1, name: lang }));
+        })
+        .catch((error) => {
+          notifyError({ error });
+        });
+    },
+    getProjects() {
+      const languagesToFilter = this.selectedLanguagesForFilter.map((lang) => lang as string);
+      api
+        .getProjects(this.pageIndex, this.projectType.value, this.search, languagesToFilter)
         .then((response) => {
           this.projects = response.data.projects as project_extended_t[];
           this.visibleProjects = this.projects;
           this.totalPages = response.data.totalPages;
-          this.projectsLanguages = [...new Set(this.projects.map((project) => project.language))]
-            .filter((language) => language !== '' && language !== null)
-            .map((language, i) => ({ index: i + 1, name: language }));
-          this.sortProjects(this.projects)
+          this.sortProjects(this.projects);
           this.initLoading = false;
         })
         .catch((error) => {
@@ -248,15 +257,6 @@ export default defineComponent({
         .catch((error) => {
           notifyError({ error });
         });
-    },
-    searchProject(pattern: string) {
-      const lowercasePattern = pattern.toLowerCase();
-      this.visibleProjects = this.projects.filter((project) => {
-        const projectNameIncludesPattern = project.projectName.toLowerCase().includes(lowercasePattern);
-        const projectMatchesLangFilter =
-          this.selectedLanguagesForFilter.length === 0 || this.selectedLanguagesForFilter.map((lang) => lang as string).includes(project.language);
-        return projectNameIncludesPattern && projectMatchesLangFilter;
-      });
     },
     getSelectedLanguages(value: any) {
       this.selectedLanguagesForFilter = value;

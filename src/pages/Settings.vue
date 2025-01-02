@@ -413,7 +413,7 @@ export default defineComponent({
     },
     getProjects() {
       api
-        .getProjects(this.page, this.projectsType)
+        .getProjects(this.page, this.projectsType, '', [])
         .then((response) => {
           this.totalPages = response.data.totalPages;
           for (const project of response.data.projects) {

@@ -59,9 +59,12 @@ export default {
   // ---------------------------------------------------- //
   // ---------------        Project       --------------- //
   // ---------------------------------------------------- //
-  getProjects(page: number, projectType: string) {
-    return API.get(`projects?page=${page}&type=${projectType}`);
+  getProjects(page: number, projectType: string, name: string, languages: string[]) {
+    return API.get(`projects?name=${name}&languages=${languages}&page=${page}&type=${projectType}`);
   },
+  getProjectsLanguages() {
+    return API.get('projects/languages');
+   },
   getUserProjects() {
     return API.get<getProjects_RV>('projects/user-projects');
   },

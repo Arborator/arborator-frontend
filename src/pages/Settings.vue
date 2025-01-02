@@ -82,6 +82,8 @@
           hide-no-data
           selection="single"
           v-model:selected="table.selected"
+          v-model:pagination="table.pagination"
+          hide-pagination
         >
           <template #top>
             <div class="row q-gutter-md">
@@ -111,6 +113,13 @@
             </q-td>
           </template>
         </q-table>
+        <div class="row justify-center q-mt-md">
+          <q-pagination
+            v-model="table.pagination.page"
+            :max="totalPages"
+            size="sm"
+          />
+        </div>
       </q-card-section>
       <q-card-section class="row q-gutter-x-md" v-if="superAdmin">
         <q-card flat bordered class="col">
@@ -280,7 +289,7 @@ export default defineComponent({
         sortBy: 'projectName',
         descending: true,
         page: 1,
-        rowsPerPage: 10,
+        rowsPerPage: 4,
       },
       loadingDelete: false,
       exporting: false,
@@ -295,7 +304,9 @@ export default defineComponent({
       table,
       projects,
       languages,
-      projectsType: 'All',
+      projectsType: 'all_projects',
+      page: 1,
+      totalPages: 1,
     }
   },
   computed: {
@@ -309,6 +320,12 @@ export default defineComponent({
         return this.projects;
       }
     }
+  },
+  watch: {
+    'table.pagination.page'() {
+      this.page = this.table.pagination.page;
+      this.getProjects();
+    },
   },
   mounted() {
     this.getUsers();
@@ -396,20 +413,21 @@ export default defineComponent({
     },
     getProjects() {
       api
-        .getProjects()
+        .getProjects(this.page, this.projectsType)
         .then((response) => {
-          for (const project of response.data) {
+          this.totalPages = response.data.totalPages;
+          for (const project of response.data.projects) {
             this.projects.push({
               projectName: project.projectName,
               visibility: project.visibility,
-              language: project.language ? project.language : 'Not specified',
+              language: project.language,
               owner: project.owner,
-              contact: project.contactOwner ? project.contactOwner : 'Not specified',
+              contact: project.contactOwner,
               samplesNumber: project.numberSamples,
               lastAccess: project.lastAccess,
               lastWriteAccess: project.lastWriteAccess,
-              syncRepo: project.syncGithub ? project.syncGithub: 'Not synchronized',
-              config: project.config ? project.config: 'Not specified',
+              syncRepo: project.syncGithub,
+              config: project.config,
               isOld: this.isOld(project),
               blindAnnotationMode: project.blindAnnotationMode,
             });

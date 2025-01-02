@@ -58,6 +58,7 @@
             :options="projectTypeOptions"
             class="float-right"
             :label="$t('projectHub.projectCategory')"
+            @update:model-value="getProjects"
           />
           <q-btn round flat :icon="listMode ? 'grid_view' : 'fas fa-list'" @click="toggleProjectView()">
             <q-tooltip v-if="listMode">
@@ -88,7 +89,7 @@
       <q-card-section v-if="!listMode">
         <q-virtual-scroll
           v-if="$q.platform.is.mobile"
-          :items="filteredProjects"
+          :items="visibleProjects"
           :virtual-scroll-slice-size="30"
           :virtual-scroll-item-size="200"
         >
@@ -100,7 +101,7 @@
         </q-virtual-scroll>
         <div v-if="!$q.platform.is.mobile" class="q-pa-md row q-gutter-md">
           <ProjectCard
-            v-for="project in paginatedProjects"
+            v-for="project in visibleProjects"
             :key="project.id"
             :style="`max-width: ${projectCardWidth}px;`" 
             :project="project"
@@ -108,25 +109,25 @@
           ></ProjectCard>
         </div>
         <div class="q-pa-lg flex flex-center">
-          <q-pagination v-model="pageIndex" :min="currentPage" :max="Math.ceil(filteredProjects.length / totalItemPerPageCardView)" :input="true" />
+          <q-pagination v-model="pageIndex" :min="currentPage" :max="totalPages" :input="true" />
         </div>
       </q-card-section>
       <!-- Here starts the list view -->
       <q-card-section v-else>
         <q-list style="width: 100%">
           <q-virtual-scroll
-            :items="paginatedProjects"
+            :items="visibleProjects"
             style="max-height: 100vh; width: 100%"
             :virtual-scroll-slice-size="30"
             :virtual-scroll-item-size="200"
           >
             <template #default="{ item }">
-              <ProjectItem v-if="isLoggedIn || !isOldProject(item)" :key="item.id" :project="item" :parent-delete-project="deleteProject"></ProjectItem>
+              <ProjectItem :key="item.id" :project="item" :parent-delete-project="deleteProject"></ProjectItem>
             </template>
           </q-virtual-scroll>
         </q-list>
         <div class="q-pa-lg flex flex-center">
-          <q-pagination v-model="pageIndex" :min="currentPage" :max="Math.ceil(filteredProjects.length / totalItemPerPageListView)" :input="true" />
+          <q-pagination v-model="pageIndex" :min="currentPage" :max="totalPages" :input="true" />
         </div>
       </q-card-section>
     </q-card>
@@ -167,73 +168,33 @@ export default defineComponent({
       projects,
       visibleProjects,
       projectTypeOptions: [
-        this.$t('projectHub.allProjects'),
-        this.$t('projectHub.myProjects'),
-        this.$t('projectHub.otherProjects'),
-        this.$t('projectHub.myOldProjects'),
-        this.$t('projectHub.otherOldProjects'),
+        { value: 'all_projects', label: this.$t('projectHub.allProjects') },
+        { value: 'my_projects', label: this.$t('projectHub.myProjects') },
+        { value: 'other_projects', label: this.$t('projectHub.otherProjects') },
+        { value: 'my_old_projects', label: this.$t('projectHub.myOldProjects') },
       ],
-      projectType: '',
+      projectType: { value: 'all_projects', label: this.$t('projectHub.allProjects') },
       search: '',
       listMode: true,
       creaProjectDial: false,
       initLoading: false,
       skelNumber: [...Array(5).keys()],
-      ayear: -3600 * 24 * 365,
       currentPage: 1,
       pageIndex: 1,
-      totalItemPerPageListView: 10,
-      totalItemPerPageCardView: 24,
       projectCardWidth: 0,
       selectedLanguagesForFilter: [],
       projectsLanguages,
+      totalPages: 1,
     };
   },
   computed: {
     ...mapState(useUserStore, ['isLoggedIn', 'username', 'shareEmail']),
     ...mapWritableState(useProjectStore, ['reloadProjects']),
-    myProjects(): project_extended_t[] {
-      return this.visibleProjects.filter((project) => {
-        return this.isMyProject(project) && !this.isOldProject(project);
-      });
-    },
-    myOldProjects(): project_extended_t[] {
-      return this.visibleProjects.filter((project) => {
-        return this.isMyProject(project) && this.isOldProject(project);
-      });
-    },
-    otherProjects(): project_extended_t[] {
-      return this.visibleProjects.filter((project) => {
-        return !this.isMyProject(project) && !this.isOldProject(project);
-      });
-    },
-    otherOldProjects(): project_extended_t[] {
-      return this.visibleProjects.filter((project) => {
-        return !this.isMyProject(project) && this.isOldProject(project);
-      });
-    },
-    filteredProjects(): project_extended_t[] {
-      if (this.projectType === '' || this.projectType === this.$t('projectHub.allProjects')) {
-        return this.visibleProjects;
-      } else if (this.projectType === this.$t('projectHub.myProjects')) {
-        return this.myProjects;
-      } else if (this.projectType === this.$t('projectHub.otherProjects')) {
-        return this.otherProjects;
-      } else if (this.projectType === this.$t('projectHub.myOldProjects')) {
-        return this.myOldProjects;
-      } else {
-        return this.otherOldProjects;
-      }
-    },
-    paginatedProjects(): project_extended_t[] {
-      const totalItemPerPage = this.listMode ? this.totalItemPerPageListView : this.totalItemPerPageCardView;
-      return this.filteredProjects.slice(
-        (this.pageIndex - 1) * totalItemPerPage,
-        (this.pageIndex - 1) * totalItemPerPage + totalItemPerPage
-      );
-    },
   },
   watch: {
+    pageIndex() {
+      this.getProjects();
+    },
     reloadProjects(newVal) {
       if (newVal) {
         this.getProjects();
@@ -255,23 +216,24 @@ export default defineComponent({
     this.projectCardWidth = Math.trunc(window.innerWidth / 7);
   },
   methods: {
-    ...mapActions(useProjectStore, ['isMyProject', 'isOldProject', 'sortProjects']),
+    ...mapActions(useProjectStore, ['sortProjects']),
     toggleProjectView() {
       this.listMode = !this.listMode;
       LocalStorage.set('project_view', this.listMode);
     },
     getProjects() {
       api
-        .getProjects()
+        .getProjects(this.pageIndex, this.projectType.value)
         .then((response) => {
-          this.projects = response.data as project_extended_t[];
-          this.visibleProjects = response.data as project_extended_t[];
+          this.projects = response.data.projects as project_extended_t[];
+          this.visibleProjects = this.projects;
+          this.totalPages = response.data.totalPages;
           this.projectsLanguages = [...new Set(this.projects.map((project) => project.language))]
             .filter((language) => language !== '' && language !== null)
             .map((language, i) => ({ index: i + 1, name: language }));
-          this.sortProjects(this.visibleProjects)
+          this.sortProjects(this.projects)
           this.initLoading = false;
-                  })
+        })
         .catch((error) => {
           notifyError({ error });
         });

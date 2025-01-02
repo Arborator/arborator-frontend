@@ -59,8 +59,8 @@ export default {
   // ---------------------------------------------------- //
   // ---------------        Project       --------------- //
   // ---------------------------------------------------- //
-  getProjects() {
-    return API.get<getProjects_RV>('projects');
+  getProjects(page: number, projectType: string) {
+    return API.get(`projects?page=${page}&type=${projectType}`);
   },
   getUserProjects() {
     return API.get<getProjects_RV>('projects/user-projects');

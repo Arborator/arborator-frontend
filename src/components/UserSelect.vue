@@ -260,11 +260,14 @@ export default defineComponent({
         .updateManyProjectUserAccess(this.projectName, data)
         .then((response) => {
           notifyMessage({ message: 'New members saved on the server', icon: 'save' });
-          this.selectedUsers = [];
           this.admins = response.data.admins;
           this.guests = response.data.guests;
           this.annotators = response.data.annotators;
           this.validators = response.data.validators;
+          for (const user of data.selectedUsers) {
+            this.sendEmail(user, data.targetRole);
+          }
+          this.selectedUsers = [];
         })
         .catch((error) => {
           notifyError({ error });
@@ -280,6 +283,21 @@ export default defineComponent({
           this.annotators = response.data.annotators;
           this.validators = response.data.validators;
           this.getUsers();
+        })
+        .catch((error) => {
+          notifyError({ error });
+        });
+    },
+    sendEmail(username: string, role: string) {
+      const data = {
+        projectName: this.projectName,
+        username: username,
+        role: role
+      }
+      api
+        .sendEmail(data)
+        .then(() => {
+          notifyMessage({ message: 'Email sent to users' });
         })
         .catch((error) => {
           notifyError({ error });

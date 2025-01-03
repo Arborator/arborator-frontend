@@ -22,7 +22,6 @@ import {
   parserTrainStatus_RV,
   saveConstructiconEntry_RV,
   updateManyProjectUserAccess_RV,
-  updateProjectConlluSchema_ED,
   updateProjectFeatures_ED,
   updateProject_ED,
   updateProject_RV,
@@ -55,8 +54,10 @@ export default {
   logout() {
     return API.get('users/logout');
   },
-
-  // ---------------------------------------------------- //
+  sendEmail(data: any) {
+    return API.post('users/send-email', data);
+  },
+    // ---------------------------------------------------- //
   // ---------------        Project       --------------- //
   // ---------------------------------------------------- //
   getProjects(page: number, projectType: string, name: string, languages: string[]) {

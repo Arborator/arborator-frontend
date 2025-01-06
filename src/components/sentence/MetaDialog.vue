@@ -7,16 +7,9 @@
         <q-btn v-close-popup flat dense icon="close" />
       </q-bar>
       <q-card-section class="q-gutter-md">
-        <q-input outlined v-model="metaJson.user_id" label="user_id" readonly />
+        <q-input outlined v-model="userId" label="user_id" readonly />
         <q-input outlined v-model="timestamp" label="timestamp" readonly />
-        <q-input 
-          outlined 
-          v-model="metaJson.text" 
-          label="text" 
-          :rules="[
-            (val) => (val && val.length > 0) || 'text must not be empty'
-          ]"
-          />
+        <q-input outlined v-model="text" label="text" readonly />
         <q-input 
           outlined 
           v-model="metaJson.sent_id" 
@@ -72,6 +65,8 @@ export default defineComponent({
     return {
       metaDialogOpened: false,
       userId: '',
+      timestamp: '',
+      text: '',
       metaList,
       metaJson,
       featTable: {
@@ -100,7 +95,6 @@ export default defineComponent({
         ],
       },
       basicMetadata: ['timestamp', 'user_id', 'sent_id', 'text'],
-      timestamp: '',
       currentSentId: '',
     };
   },
@@ -127,6 +121,7 @@ export default defineComponent({
     this.sentenceBus.on('open:metaDialog', ({ userId }: { userId: string }) => {
       this.userId = userId;
       this.metaJson = { ...this.sentenceBus.sentenceSVGs[userId].metaJson };
+
       this.metaDialogOpened = true;
       this.metaList = [];
       for (const a in this.metaJson) {
@@ -135,6 +130,7 @@ export default defineComponent({
         }
       }
       this.timestamp = this.getTime(this.metaJson.timestamp as string); 
+      this.text = this.metaJson.text as string;
       this.currentSentId = this.metaJson.sent_id as string;
     });
   },
@@ -162,8 +158,12 @@ export default defineComponent({
         notifyError({ error: 'You can not save empty Meta !' });
         return;
       }
+
       newMetaJson['sent_id'] = this.metaJson.sent_id;
-      newMetaJson['text'] = this.metaJson.text;
+      newMetaJson['timestamp'] = this.metaJson.timestamp;
+      newMetaJson['text'] = this.text;
+      newMetaJson['user_id'] = this.userId;
+      
       this.metaList.forEach((meta) => {
         newMetaJson[meta.a] = meta.v;
       });

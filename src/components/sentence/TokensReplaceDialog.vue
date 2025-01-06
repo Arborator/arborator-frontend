@@ -98,6 +98,8 @@ import { replaceArrayOfTokens, tokenJson_T } from 'conllup/lib/conll';
 import { reactive_sentences_obj_t, sentence_bus_t } from 'src/types/main_types';
 import { PropType, defineComponent } from 'vue';
 
+import { replaceNewMetaText } from 'src/components/sentence/sentenceUtils';
+
 export default defineComponent({
   name: 'TokensReplaceDialog',
   emits: ['reload'],
@@ -190,44 +192,8 @@ export default defineComponent({
         userId: this.userId,
       });
       this.$emit('reload');
-      this.replaceNewMetaText();
-    },
-    replaceNewMetaText() {
-      const newMetaJson = this.reactiveSentencesObj[this.userId].state.metaJson;
-      const newTree = this.reactiveSentencesObj[this.userId].state.treeJson;
-
-      const groupsFromFirstID = Object.fromEntries(
-        Object.entries(newTree.groupsJson).map(([key, value]) => {
-          const ids = key.split("-")
-          const newKey = ids[0]
-          const newValue = { 'end': Number(ids[1]), 'form': value.FORM, noSpaceAfter: value.MISC.SpaceAfter}
-          return [newKey, newValue];
-        })
-      );
-      let newMetaText = '';
-
-      let skip = -1;
-      let separator = "";
-      Object.entries(newTree.nodesJson).forEach(([key, node]) => {
-        if (key in groupsFromFirstID) {
-          newMetaText += separator + groupsFromFirstID[key].form;
-          separator = (groupsFromFirstID[key].noSpaceAfter) ? "" : " ";
-          skip = groupsFromFirstID[key].end;
-        } else {
-          if (Number(key) > skip) {
-            newMetaText += separator + node.FORM;
-            separator = (node.MISC.SpaceAfter === "No") ? "" : " ";
-          }
-        }
-      });
-      newMetaJson.text = newMetaText;
-      this.sentenceBus.emit('tree-update:sentence', {
-        sentenceJson: {
-          metaJson: newMetaJson,
-          treeJson: this.sentenceBus.sentenceSVGs[this.userId].treeJson,
-        },
-        userId: this.userId,
-      });
+      // this.replaceNewMetaText();
+      replaceNewMetaText(this);
     },
   },
 });

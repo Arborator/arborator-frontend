@@ -83,8 +83,9 @@
 <script lang="ts">
 import conllup from 'conllup';
 import { mapState } from 'pinia';
+import { replaceNewMetaText } from 'src/components/sentence/sentenceUtils';
 import { useProjectStore } from 'src/pinia/modules/project';
-import { sentence_bus_t, reactive_sentences_obj_t } from 'src/types/main_types';
+import { reactive_sentences_obj_t, sentence_bus_t } from 'src/types/main_types';
 import { PropType, defineComponent } from 'vue';
 
 import AttributeTable from './AttributeTable.vue';
@@ -177,8 +178,6 @@ export default defineComponent({
   },
   methods: {
     onFeatureDialogOk() {
-      const newMetaJson = this.sentenceBus.sentenceSVGs[this.userId].metaJson;
-      let oldText = this.sentenceBus.sentenceSVGs[this.userId].metaJson.text as string;
       const oldForm = this.token.FORM;
 
       this.token.FEATS = this.featTable.feat.reduce((obj, r) => {
@@ -196,14 +195,7 @@ export default defineComponent({
         userId: this.userId,
       });
       if (oldForm !== this.token.FORM) {
-        newMetaJson.text = oldText.replace(oldForm, this.token.FORM);
-        this.sentenceBus.emit('tree-update:sentence', {
-          sentenceJson: {
-            metaJson: newMetaJson,
-            treeJson: this.sentenceBus.sentenceSVGs[this.userId].treeJson,
-          },
-          userId: this.userId,
-        });
+        replaceNewMetaText(this);
       }
     },
   },

@@ -98,6 +98,8 @@ import { replaceArrayOfTokens, tokenJson_T } from 'conllup/lib/conll';
 import { reactive_sentences_obj_t, sentence_bus_t } from 'src/types/main_types';
 import { PropType, defineComponent } from 'vue';
 
+import { replaceNewMetaText } from 'src/components/sentence/sentenceUtils';
+
 export default defineComponent({
   name: 'TokensReplaceDialog',
   emits: ['reload'],
@@ -190,39 +192,8 @@ export default defineComponent({
         userId: this.userId,
       });
       this.$emit('reload');
-      this.replaceNewMetaText();
-    },
-    replaceNewMetaText() {
-      const newMetaJson = this.reactiveSentencesObj[this.userId].state.metaJson;
-      const newTree = this.reactiveSentencesObj[this.userId].state.treeJson;
-      const groupsJson = newTree.groupsJson;
-      const nodesJson = newTree.nodesJson;
-      const newForms = Object.values(nodesJson).map((node) => ({ form: node.FORM, spaceAfter: !node.MISC.SpaceAfter }));
-      let newMetaText = '';
-      let i = 0;
-      while (i < newForms.length) {
-        if (groupsJson[`${i + 1}-${i + 2}`]) {
-          newMetaText += groupsJson[`${i + 1}-${i + 2}`].FORM;
-          if (newForms[i + 2].spaceAfter) {
-            newMetaText += ' ';
-          }
-          i += 2;
-        } else {
-          newMetaText += newForms[i].form;
-          if (newForms[i].spaceAfter) {
-            newMetaText += ' ';
-          }
-          i += 1;
-        }
-      }
-      newMetaJson.text = newMetaText;
-      this.sentenceBus.emit('tree-update:sentence', {
-        sentenceJson: {
-          metaJson: newMetaJson,
-          treeJson: this.sentenceBus.sentenceSVGs[this.userId].treeJson,
-        },
-        userId: this.userId,
-      });
+      // this.replaceNewMetaText();
+      replaceNewMetaText(this);
     },
   },
 });

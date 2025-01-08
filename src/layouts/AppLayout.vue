@@ -2,7 +2,7 @@
   <q-layout view="hHh Lpr fFf">
     <q-header style="height: 5vh" :class="`${$q.dark.isActive ? 'bg-dark' : 'bg-white'}`"  class="q-pa-md" id="main-header">
       <q-bar :class="$q.dark.isActive ? 'bg-dark' : 'bg-white text-black'" class="row justify-evenly">
-        <q-btn flat to="/projects" :ripple="false" type="a">
+        <q-btn flat :to="isLoggedIn ? '/projects': '/'" :ripple="false" type="a">
           <div class="q-btn__content text-center col items-center q-anchor--skip row">
             <img v-if="$q.dark.isActive" alt="Arborator" src="/svg/arborator.grew.white.svg" style="height: 2.3vw" />
             <img v-else alt="Arborator" src="/svg/arborator.grew.svg" style="height: 2.3vw" />

@@ -59,7 +59,7 @@
     </q-list>
   </q-btn-dropdown>
   <q-dialog v-model="isShowCommitDialog">
-    <GithubCommitDialog :projectName="projectName" :repositoryName="repositoryName" @committed="reloadAfterCommit" />
+    <GithubCommitDialog :projectName="projectName" :modifiedSamples="modifiedSamples" :repositoryName="repositoryName" @committed="reloadAfterCommit" />
   </q-dialog>
   <q-dialog v-model="isShowPullRequestDialog" persistent>
     <GithubPullRequestDialog :projectName="projectName" :repositoryName="repositoryName" @created="isShowPullRequestDialog = false" />
@@ -101,6 +101,7 @@ export default defineComponent({
   },
   data() {
     const confirmActionCallback = null as unknown as CallableFunction;
+    const modifiedSamples = [] as any[];
     return {
       isShowCommitDialog: false,
       isShowPullRequestDialog: false,
@@ -108,6 +109,7 @@ export default defineComponent({
       confirmActionCallback,
       checkPulls: false,
       changesNumber: 0,
+      modifiedSamples,
     };
   },
   computed: {
@@ -125,7 +127,8 @@ export default defineComponent({
       api
         .getChanges(this.projectName)
         .then((response) => {
-          this.changesNumber = response.data;
+          this.modifiedSamples = response.data;
+          this.changesNumber = this.modifiedSamples.map((sample) => sample.changes_number).reduce((a, b) => a + b, 0);
         })
         .catch((error) => {
           notifyError({ error });

@@ -87,10 +87,25 @@
             <div style="position: absolute; bottom: 0; left: 0; right: 0">
               <q-toolbar class="q-pa-md q-gutter-md" style="display: flex; justify-content: space-between">
                 <div class="q-gutter-md" style="display: flex; justify-content: space-between">
-                  <q-btn v-if="canSaveTreeInProject" no-caps color="primary" @click="changeEditMode">
+                  <q-btn 
+                    v-if="canSaveTreeInProject" 
+                    no-caps 
+                    color="primary" 
+                    :disable="activeEntry.title ===''"
+                    @click="changeEditMode"
+                  >
                     {{ editMode ? $t('constructicon.saveBtn') : $t('constructicon.editBtn') }}
                   </q-btn>
-                  <q-btn v-if="canSaveTreeInProject" no-caps outline color="primary" @click="deleteItem">{{ $t('constructicon.deleteBtn') }}</q-btn>
+                  <q-btn 
+                    v-if="canSaveTreeInProject" 
+                    :disable="activeEntry.title ===''"
+                    no-caps 
+                    outline 
+                    color="primary" 
+                    @click="deleteItem"
+                  >
+                    {{ $t('constructicon.deleteBtn') }}
+                  </q-btn>
                 </div>
                 <q-btn :disabled="editMode" color="secondary" @click="grewSearch(activeEntry.grewQuery)"> {{ $t('constructicon.search') }} </q-btn>
               </q-toolbar>
@@ -173,7 +188,6 @@ export default defineComponent({
         description: '',
         tags: [],
       };
-      this.constructiconEntries.push(newEntry);
       this.activeEntry = newEntry;
     },
     deleteItem() {
@@ -230,6 +244,7 @@ export default defineComponent({
           .saveConstructiconEntry(this.name, this.activeEntry)
           .then(() => {
             this.editMode = false;
+            this.loadConstructiconEntries();
             notifyMessage({ message: 'Changes saved' });
           })
           .catch((err) => {

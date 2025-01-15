@@ -15,6 +15,7 @@ export interface UserStateInterface {
   superAdmin: boolean;
   username: string;
   reservedUserIds: string[];
+  canToggleSuperAdmin: boolean;
 }
 
 // default user state
@@ -36,5 +37,6 @@ export default function defaultState(): UserStateInterface {
     superAdmin: false,
     username: '',
     reservedUserIds: ['base_tree', 'validated'],
+    canToggleSuperAdmin: false,
   };
 }

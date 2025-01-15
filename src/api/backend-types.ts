@@ -13,6 +13,7 @@ export interface user_t {
   superAdmin: boolean;
   createdDate: number;
   lastSeen: number;
+  canToogleSuperAdmin: boolean;
 }
 
 //// PROJECT ////

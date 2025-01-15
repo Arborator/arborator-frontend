@@ -17,6 +17,9 @@
             <div class="row">
               <div :class="'col text-center '+($q.dark.isActive ? '' : 'text-blue-grey-8')">@{{ username }}</div>
             </div>
+            <div v-if="canToggleSuperAdmin" class="row">
+              <q-toggle label="Switch super admin mode (don't forget to save the modifications)" class="col justify-center text-blue-grey-8" v-model="superAdmin" />
+            </div>
             <div v-show="superAdmin" class="row">
               <div :class="'col text-center '+ ($q.dark.isActive ? '' : 'text-blue-grey-8')">Super Admin</div>
             </div>
@@ -310,8 +313,8 @@ export default defineComponent({
     }
   },
   computed: {
-    ...mapWritableState(useUserStore, ['email', 'firstName', 'familyName']),
-    ...mapState(useUserStore, ['avatarKey', 'pictureUrl', 'superAdmin', 'username']),
+    ...mapWritableState(useUserStore, ['email', 'firstName', 'familyName', 'superAdmin']),
+    ...mapState(useUserStore, ['avatarKey', 'pictureUrl', 'username', 'canToggleSuperAdmin']),
     filteredListProject(): any[] {
       if (this.projectsType === 'Old') {
         return this.projects.filter((project: any) => project.isOld)
@@ -342,6 +345,7 @@ export default defineComponent({
         email: this.email || '',
         firstName: this.firstName  || '',
         familyName: this.familyName || '',
+        superAdmin: this.superAdmin
       };
       this.updateUserInformation(data);
     },

@@ -133,6 +133,8 @@ export default defineComponent({
       secondToken: '',
       firstToken: '',
       isMultiword: false,
+      saveLemma: false, // TODO: when we insert tokens before or after replaceArrayTokens update of the selected token with it's form so in order to fix this we use this variable
+      tokenId: 0,
     };
   },
   computed: {
@@ -154,9 +156,13 @@ export default defineComponent({
       } else if (option == 'insert_before') {
         this.tokensForms = ['_', this.token.FORM];
         this.tokensIndexes = [id];
+        this.saveLemma = true;
+        this.tokenId = id + 1;
       } else if (option == 'insert_after') {
         this.tokensForms = [this.token.FORM, '_'];
         this.tokensIndexes = [id];
+        this.saveLemma = true;
+        this.tokenId = id;
       } else if (option == 'delete') {
         this.tokensIndexes = [id];
         this.tokensForms = [];
@@ -172,6 +178,9 @@ export default defineComponent({
       const tokensIndexes = this.tokensIndexes;
       const newTokensForm = this.tokensForms;
       const newTree = replaceArrayOfTokens(oldTree, tokensIndexes, newTokensForm, true);
+      if (this.saveLemma) {
+        newTree['nodesJson'][`${this.tokenId}`]['LEMMA'] = this.token.LEMMA;
+      }
       if (this.isMultiword) {
         const newGroupJson = {
           DEPREL: '_',

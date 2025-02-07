@@ -209,6 +209,7 @@ import { mapState } from 'pinia';
 import { useProjectStore } from 'src/pinia/modules/project';
 import { useUserStore } from 'src/pinia/modules/user';
 import { sentence_bus_t, table_t, reactive_sentences_obj_t } from 'src/types/main_types';
+import  { replaceNewMetaText } from 'src/components/sentence/sentenceUtils';
 import { notifyMessage } from 'src/utils/notify';
 import { PropType, defineComponent } from 'vue';
 
@@ -345,6 +346,8 @@ export default defineComponent({
           },
           userId: this.userId,
         });
+        const data = { userId: this.userId, sentenceBus: this.sentenceBus };
+        replaceNewMetaText(data);
         notifyMessage({
           message: "Conllu changed locally, don't forget to save !",
           type: 'warning',

@@ -196,28 +196,18 @@
             @click="saveAnnotationSettings()"
           >
           </q-btn>
-          <q-btn
-            color="bg-primary"
-            :label="$t('projectSettings.resetSUD')"
-            icon="replay"
-            dense
+          <q-select
+            class="q-pa-md"
+            outlined
             flat
-            :disabled="!annotationFeaturesOk"
-            no-caps
-            @click="resetAnnotationFeaturesWrapper()"
-          >
-          </q-btn>
-          <q-btn
-            color="bg-primary"
-            :label="$t('projectSettings.resetUD')"
-            icon="replay"
-            dense
-            flat
-            :disabled="!annotationFeaturesOk"
-            no-caps
-            @click="resetAnnotationFeaturesUDWrapper()"
-          >
-          </q-btn>
+            v-model="configType"
+            label="Select standard config"
+            :options="configTypes"
+            emit-value
+            bg-color="white"
+            style="width: 300px"
+            @update:model-value="updateConlluSchema"
+            />
           <q-chip :icon="annotationFeaturesOk ? 'sentiment_satisfied_alt' : 'sentiment_very_dissatisfied'">
             {{ annotationFeaturesComment }}
           </q-chip>
@@ -233,6 +223,7 @@
 
 <script lang="ts">
 import JsonEditorVue from 'json-editor-vue';
+
 import { mapActions, mapState, mapWritableState } from 'pinia';
 import { sample_t, annotationFeatures_t } from 'src/api/backend-types';
 import { useProjectStore } from 'src/pinia/modules/project';
@@ -278,6 +269,11 @@ export default defineComponent({
         indentation: 4,
       },
       currentFeatures: {} as annotationFeatures_t,
+      configType: '',
+      configTypes: [
+        { label: 'UD standard configuration', value: 'ud' },
+        { label: 'SUD standard configuration', value: 'sud' },
+      ]
     };
   },
   computed: {
@@ -298,9 +294,9 @@ export default defineComponent({
       'isOwner',
       'shownFeaturesChoices',
       'shownMetaChoices',
-      'getSUDAnnofJson',
-      'getUDAnnofJson',
       'annotationFeatures',
+      'getSudConfig',
+      'getUdConfig',
       'image',
       'language',
       'languagesList',
@@ -392,8 +388,6 @@ export default defineComponent({
   methods: {
     ...mapActions(useProjectStore, [
       'updateProjectConlluSchema',
-      'resetAnnotationFeaturesSUD',
-      'resetAnnotationFeaturesUD',
       'updateProjectSettings',
       'postImage',
       'updateProjectshownFeatures',
@@ -412,18 +406,6 @@ export default defineComponent({
       const parsedAnnotFeatures = JSON.parse(this.annotationFeaturesJson);
       this.updateProjectConlluSchema(this.projectName, parsedAnnotFeatures, this.currentFeatures) 
       this.$emit('reload');
-    },
-
-    resetAnnotationFeaturesWrapper() {
-      this.resetAnnotationFeaturesSUD();
-      this.annotationFeaturesJson = this.getSUDAnnofJson;
-      this.updateProjectSettings(this.projectName, { config: 'sud' });
-    },
-
-    resetAnnotationFeaturesUDWrapper() {
-      this.resetAnnotationFeaturesUD();
-      this.annotationFeaturesJson = this.getUDAnnofJson;
-      this.updateProjectSettings(this.projectName, { config: 'ud' });
     },
 
     saveDescription() {
@@ -464,6 +446,10 @@ export default defineComponent({
     updateProjectLanguage() {
       this.updateProjectSettings(this.projectName, { language: this.selectedLanguage });
     },
+    updateConlluSchema() {
+      this.annotationFeaturesJson = this.configType === 'ud' ? this.getUdConfig : this.getSudConfig;
+      notifyMessage({ message: "Your annotation config has been modified don't forget to save it ", type: 'warning' });
+    }
   },
 });
 </script>

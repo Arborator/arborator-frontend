@@ -5,6 +5,8 @@ import { notifyError, notifyMessage } from 'src/utils/notify';
 import api from '../../../api/backend-api';
 import { useUserStore } from '../user';
 import defaultState from './defaultState';
+import sudConfig from 'assets/configs/sud-config.json';
+import udConfig from 'assets/configs/ud-config.json';
 
 export const useProjectStore = defineStore('project', {
   state: () => {
@@ -79,11 +81,12 @@ export const useProjectStore = defineStore('project', {
     canExportTrees(state): boolean {
       return !state.blindAnnotationMode || (useUserStore().isLoggedIn && !this.isGuest);
     },
-    getAnnotationSetting(): string {
-      return this.config === 'ud' ? this.getUDAnnofJson : this.getSUDAnnofJson;
+    getSudConfig() {
+      return JSON.stringify(sudConfig, null, 4);
     },
-    getSUDAnnofJson: (state) => JSON.stringify(state.annotationFeaturesSUD, null, 4),
-    getUDAnnofJson: (state) => JSON.stringify(state.annotationFeaturesUD, null, 4),
+    getUdConfig() {
+      return JSON.stringify(udConfig, null, 4)
+    },
     shownMetaChoices: (state) => state.annotationFeatures.META,
     shownFeaturesChoices: (state) =>
       ['FORM', 'UPOS', 'LEMMA', 'XPOS'].concat(
@@ -101,12 +104,6 @@ export const useProjectStore = defineStore('project', {
   actions: {
     sortProjects(projects: project_extended_t[]) {
       projects.sort((a, b) => b.lastAccess - a.lastAccess);
-    },
-    resetAnnotationFeaturesSUD(): void {
-      this.annotationFeatures = defaultState().annotationFeaturesSUD;
-    },
-    resetAnnotationFeaturesUD(): void {
-      this.annotationFeatures = defaultState().annotationFeaturesUD;
     },
     fetchProjectSettings({ projectName }: { projectName: string }) {
       api
@@ -146,7 +143,7 @@ export const useProjectStore = defineStore('project', {
             .then((response) => {
               let fetchedAnnotationFeatures = response.data.annotationFeatures;
               if (typeof fetchedAnnotationFeatures !== 'object' || fetchedAnnotationFeatures === null) {
-                this.annotationFeatures = this.config === 'ud' ? this.annotationFeaturesUD : this.annotationFeaturesSUD
+                this.annotationFeatures = this.config === 'ud' ? JSON.parse(this.getUdConfig): JSON.parse(this.getSudConfig);
               }
               else {
                 this.annotationFeatures = fetchedAnnotationFeatures;

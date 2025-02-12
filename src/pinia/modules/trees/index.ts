@@ -50,6 +50,38 @@ export const useTreesStore = defineStore('trees', {
     },
   },
   actions: {
+    generateNewMetaText(sentenceJson: sentenceJson_T) {
+      const newMetaJson = sentenceJson.metaJson;
+      const newTree =  sentenceJson.treeJson;
+
+      const groupsFromFirstID = Object.fromEntries(
+        Object.entries(newTree.groupsJson).map(([key, value]) => {
+          const ids = key.split('-')
+          const newKey = ids[0]
+          const newValue = { 'end': Number(ids[1]), 'form': value.FORM, noSpaceAfter: value.MISC.SpaceAfter}
+          return [newKey, newValue];
+        })
+      );
+
+      let newMetaText = '';
+      let skip = -1;        // set the upper bound of MWT, used to ignore inside regular tokens
+      let separator = '';   // store the separator for the next concatenation (avoid trailing whitespace)
+
+      Object.entries(newTree.nodesJson).forEach(([key, node]) => {
+        if (key in groupsFromFirstID) {
+          newMetaText += separator + groupsFromFirstID[key].form;
+          separator = (groupsFromFirstID[key].noSpaceAfter) ? '' : ' ';
+          skip = groupsFromFirstID[key].end;
+        } else {
+          if (Number(key) > skip) {
+            newMetaText += separator + node.FORM;
+            separator = (node.MISC.SpaceAfter === 'No') ? '' : ' ';
+          }
+        }
+      });
+      newMetaJson.text = newMetaText;
+      return newMetaJson;
+    }, 
     addPendingModification(sentId: string, conll: string, sampleName: string) {
       this.pendingModifications.set(sentId, { conll: conll, sampleName: sampleName});
     },

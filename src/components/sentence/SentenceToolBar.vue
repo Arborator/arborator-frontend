@@ -9,7 +9,6 @@
       v-bind="$attrs"
       readonly
       borderless
-      @select="notifyNewFeature"
     >
       <q-tooltip v-if="openTabUser !== ''" anchor="bottom middle" self="center middle" :offset="[10, 10]">
         {{ $t('sentenceCard.selectTooltip') }}
@@ -203,19 +202,21 @@
 </template>
 
 <script lang="ts">
-import { mapState, mapWritableState } from 'pinia';
+import TagsMenu from './TagsMenu.vue';
+import SentenceSegmentation from './SentenceSegmentation.vue';
+
+import  { sentenceConllToJson } from 'conllup/lib/conll';
+
+import { mapState, mapWritableState, mapActions } from 'pinia';
 import { grewSearchResultSentence_t } from 'src/api/backend-types';
 import { useProjectStore } from 'src/pinia/modules/project';
 import { useUserStore } from 'src/pinia/modules/user';
 import { useGithubStore } from 'src/pinia/modules/github';
+import { useTreesStore } from 'src/pinia/modules/trees';
 
 import { reactive_sentences_obj_t, sentence_bus_t } from 'src/types/main_types';
 import { defineComponent, PropType } from 'vue';
 
-import TagsMenu from './TagsMenu.vue';
-import SentenceSegmentation from './SentenceSegmentation.vue';
-import { notifyMessage } from 'src/utils/notify';
-import { useTreesStore } from 'src/pinia/modules/trees';
 
 export default defineComponent({
   name: 'sentenceToolBar',
@@ -292,7 +293,8 @@ export default defineComponent({
         return this.sentenceData.sentence;
       }
       else {
-        return this.reactiveSentencesObj[this.openTabUser].state.metaJson.text;
+        const sentenceJson = sentenceConllToJson(this.reactiveSentencesObj[this.openTabUser].exportConll());
+        return this.generateNewMetaText(sentenceJson).text;
       }
     },
     canChangeSegmentation() {
@@ -304,17 +306,9 @@ export default defineComponent({
     isLastSentence() {
       return this.sortedSentIds[this.sortedSentIds.length - 1] === this.sentenceData.sent_id;
     }
-  },
+  }, 
   methods: {
-    notifyNewFeature(event: Event) {
-      const docLink = "Doc link".link('https://arborator.github.io/arborator-documentation/#/annotation?id=tokens-editing-options')
-      notifyMessage({ 
-        message: `This feature has been changed if you want to change tokens segmentation check this link ${docLink}`,
-        position: 'top',
-        timeout: 3000,
-      });
-      event.stopPropagation();
-    },
+    ...mapActions(useTreesStore, ['generateNewMetaText']),
     openStatisticsDialog() {
       this.sentenceBus.emit('open:statisticsDialog', {
         userId: this.openTabUser,

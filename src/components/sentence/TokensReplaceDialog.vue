@@ -94,11 +94,12 @@
 </template>
 
 <script lang="ts">
-import { replaceArrayOfTokens, tokenJson_T } from 'conllup/lib/conll';
+import { replaceArrayOfTokens, sentenceConllToJson, tokenJson_T } from 'conllup/lib/conll';
+import { mapActions } from 'pinia';
+import { useTreesStore } from 'src/pinia/modules/trees';
+
 import { reactive_sentences_obj_t, sentence_bus_t } from 'src/types/main_types';
 import { PropType, defineComponent } from 'vue';
-
-import { replaceNewMetaText } from 'src/components/sentence/sentenceUtils';
 
 export default defineComponent({
   name: 'TokensReplaceDialog',
@@ -143,6 +144,7 @@ export default defineComponent({
     }
   },
   methods: {
+    ...mapActions(useTreesStore, ['generateNewMetaText']),
     tokenReplaceOptions(option: string) {
       const { treeJson } = this.sentenceBus.sentenceSVGs[this.userId];
       const tokens = treeJson.nodesJson;
@@ -201,8 +203,15 @@ export default defineComponent({
         userId: this.userId,
       });
       this.$emit('reload');
-      // this.replaceNewMetaText();
-      replaceNewMetaText(this);
+      const sentenceJson = sentenceConllToJson(this.reactiveSentencesObj[this.userId].exportConll());
+      const newMetaJson = this.generateNewMetaText(sentenceJson);
+      this.sentenceBus.emit('tree-update:sentence', {
+        sentenceJson: {
+          metaJson: newMetaJson,
+          treeJson: this.sentenceBus.sentenceSVGs[this.userId].treeJson,
+        },
+        userId: this.userId,
+      });
     },
   },
 });

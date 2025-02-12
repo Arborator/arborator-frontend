@@ -123,7 +123,11 @@
         @changed:meta-text="changeText()" 
         />
       <MetaDialog :sentence-bus="sentenceBus" />
-      <ConlluDialog :sentence-bus="sentenceBus" :reactive-sentences-obj="(reactiveSentencesObj as reactive_sentences_obj_t)" />
+      <ConlluDialog 
+        :sentence-bus="sentenceBus" 
+        :reactive-sentences-obj="(reactiveSentencesObj as reactive_sentences_obj_t)" 
+        :sentence-data="sentenceData"
+      />
       <ExportSVG 
         :sentence-bus="sentenceBus" 
         :reactive-sentences-obj="(reactiveSentencesObj as reactive_sentences_obj_t)" 

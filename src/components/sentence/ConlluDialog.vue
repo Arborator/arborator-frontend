@@ -204,14 +204,16 @@ import Codemirror from 'codemirror-editor-vue3';
 import TokensReplaceDialog from './TokensReplaceDialog.vue';
 
 import { copyToClipboard } from 'quasar';
-import { tokenJson_T, _featuresConllToJson, _depsConllToJson, nodesJson_T, groupsJson_T } from 'conllup/lib/conll';
-import { mapState } from 'pinia';
+import { tokenJson_T, _featuresConllToJson, _depsConllToJson, nodesJson_T, groupsJson_T, sentenceConllToJson } from 'conllup/lib/conll';
+import { mapState, mapActions } from 'pinia';
 import { useProjectStore } from 'src/pinia/modules/project';
 import { useUserStore } from 'src/pinia/modules/user';
+import { useTreesStore } from 'src/pinia/modules/trees';
 import { sentence_bus_t, table_t, reactive_sentences_obj_t } from 'src/types/main_types';
-import  { replaceNewMetaText } from 'src/components/sentence/sentenceUtils';
+
 import { notifyMessage } from 'src/utils/notify';
 import { PropType, defineComponent } from 'vue';
+import { grewSearchResultSentence_t } from 'src/api/backend-types';
 
 interface formatError_t {
   [key: string]: {
@@ -230,6 +232,10 @@ export default defineComponent({
       type: Object as PropType<reactive_sentences_obj_t>,
       required: true,
     },
+    sentenceData: {
+      type: Object as PropType<grewSearchResultSentence_t>,
+      required: true,
+    }
   },
   data() {
     const conllTable: any[] = [];
@@ -285,7 +291,7 @@ export default defineComponent({
     this.sentenceBus.on('open:conlluDialog', ({ userId }) => {
       this.userId = userId;
       this.conlluDialogOpened = true;
-      this.currentConllContent = this.sentenceBus.sentenceSVGs[this.userId].exportConll();
+      this.currentConllContent = this.sentenceData.conlls[this.userId];
       this.getConllTable();
     });
     this.createTableFields();
@@ -294,6 +300,7 @@ export default defineComponent({
     });
   },
   methods: {
+    ...mapActions(useTreesStore, ['generateNewMetaText']),
     getConllTable() {
       this.conllTable = [];
       this.conllContent = this.sentenceBus.sentenceSVGs[this.userId].exportConll();
@@ -346,8 +353,15 @@ export default defineComponent({
           },
           userId: this.userId,
         });
-        const data = { userId: this.userId, sentenceBus: this.sentenceBus };
-        replaceNewMetaText(data);
+        const sentenceJson = sentenceConllToJson(this.reactiveSentencesObj[this.userId].exportConll());
+        const newMetaJson = this.generateNewMetaText(sentenceJson);
+        this.sentenceBus.emit('tree-update:sentence', {
+          sentenceJson: {
+            metaJson: newMetaJson,
+            treeJson: this.sentenceBus.sentenceSVGs[this.userId].treeJson,
+          },
+          userId: this.userId,
+        });
         notifyMessage({
           message: "Conllu changed locally, don't forget to save !",
           type: 'warning',

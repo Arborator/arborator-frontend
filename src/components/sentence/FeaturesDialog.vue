@@ -81,17 +81,16 @@
   </q-dialog>
 </template>
 <script lang="ts">
-import conllup from 'conllup';
-import { mapState } from 'pinia';
-import { replaceNewMetaText } from 'src/components/sentence/sentenceUtils';
+import { emptyTokenJson, sentenceConllToJson } from 'conllup/lib/conll';
+import { mapState, mapActions } from 'pinia';
 import { useProjectStore } from 'src/pinia/modules/project';
+import { useTreesStore } from 'src/pinia/modules/trees';
+
 import { reactive_sentences_obj_t, sentence_bus_t } from 'src/types/main_types';
 import { PropType, defineComponent } from 'vue';
 
 import AttributeTable from './AttributeTable.vue';
 import TokensReplaceDialog from './TokensReplaceDialog.vue';
-
-const emptyTokenJson = conllup.emptyTokenJson;
 
 export default defineComponent({
   components: {
@@ -177,6 +176,7 @@ export default defineComponent({
     this.sentenceBus.off('open:featuresDialog');
   },
   methods: {
+    ...mapActions(useTreesStore, ['generateNewMetaText']),
     onFeatureDialogOk() {
       const oldForm = this.token.FORM;
 
@@ -195,7 +195,15 @@ export default defineComponent({
         userId: this.userId,
       });
       if (oldForm !== this.token.FORM) {
-        replaceNewMetaText(this);
+        const sentenceJson = sentenceConllToJson(this.reactiveSentencesObj[this.userId].exportConll());
+        const newMetaJson = this.generateNewMetaText(sentenceJson);
+        this.sentenceBus.emit('tree-update:sentence', {
+          sentenceJson: {
+            metaJson: newMetaJson,
+            treeJson: this.sentenceBus.sentenceSVGs[this.userId].treeJson,
+          },
+          userId: this.userId,
+        });
       }
     },
   },

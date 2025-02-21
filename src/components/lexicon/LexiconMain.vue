@@ -106,7 +106,7 @@ export default defineComponent({
     ...mapState(useLexiconStore, ['lexiconItems', 'lexiconLoading', 'lexiconItemsModified', 'principalFeatures', 'secondaryFeatures']),
     ...mapWritableState(useLexiconStore, ['principalFeatures', 'secondaryFeatures']),
     principalFeatureOptions() {
-      return ['form', 'lemma', 'upos', 'Gloss'].concat(Object.values(this.annotationFeatures.FEATS).map((value) => value.name));
+      return ['form', 'lemma', 'upos', 'Gloss', 'RX'].concat(Object.values(this.annotationFeatures.FEATS).map((value) => value.name));
     },
     secondaryFeatureOptions() {
       return this.principalFeatureOptions.filter((value) => !this.principalFeatures.includes(value));

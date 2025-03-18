@@ -35,7 +35,7 @@ export default {
 
   // first page (the index)
   homepage: {
-    title: 'A collaborative annotation tool for treebank developpement.',
+    title: 'A collaborative annotation tool for treebank development.',
     subtitle: 'ArboratorGrew opens up new paths of collectively creating, updating, maintaining, and curating syntactic treebanks.',
     accessTreebankBtn: 'Access Treebanks',
     popularProjects: 'Popular projects',

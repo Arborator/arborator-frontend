@@ -32,8 +32,8 @@ export default {
 
   // first page (the index)
   homepage: {
-    title: "Un outil d'annotation collaboratif pour le développement des treebanks.",
-    subtitle: "ArboratorGrew ouvre de nouvelles voies pour la création, la mise à jour, la maintenance et la conservation collectives d'arbres syntaxiques.",
+    title: "Un outil d'annotation collaboratif pour le développement de treebanks.",
+    subtitle: "ArboratorGrew ouvre de nouvelles voies pour la création, la mise à jour, la gestion collectives d'arbres syntaxiques.",
     accessTreebankBtn: 'Accéder aux corpus arborés',
     popularProjects: 'Projets populaires',
     aboutAg: "A propos d'ArboratorGrew",

@@ -119,29 +119,20 @@
               </q-item-label>
             </q-item-section>
           </q-item>
-          <q-item v-if="canChangeSegmentation && !isFirstSentence" v-close-popup clickable @click="chooseSegmentationOption('MERGE_BEFORE')">
+          <q-item v-if="canChangeSegmentation" v-close-popup clickable @click="chooseSegmentationOption('MERGE')">
             <q-item-section avatar>
-              <q-avatar icon="arrow_back" color="primary" text-color="white" />
+              <q-avatar icon="merge_type" color="primary" text-color="white" />
             </q-item-section>
             <q-item-section>
-              <q-item-label> Merge before </q-item-label>
+              <q-item-label>  {{ $t('sentenceSegmentation.segmentationOptions[1]') }}</q-item-label>
             </q-item-section>
           </q-item>
-          <q-item v-if="canChangeSegmentation && !isLastSentence" v-close-popup clickable @click="chooseSegmentationOption('MERGE_AFTER')">
-            <q-item-section avatar>
-              <q-avatar icon="arrow_forward" color="primary" text-color="white" />
-            </q-item-section>
-            <q-item-section>
-              <q-item-label> Merge After </q-item-label>
-            </q-item-section>
-          </q-item>
-
           <q-item v-if="canChangeSegmentation" v-close-popup clickable @click="chooseSegmentationOption('SPLIT')">
             <q-item-section avatar>
               <q-avatar icon="content_cut" color="primary" text-color="white" />
             </q-item-section>
             <q-item-section>
-              <q-item-label> Split sentence </q-item-label>
+              <q-item-label> {{ $t('sentenceSegmentation.segmentationOptions[0]') }} </q-item-label>
             </q-item-section>
           </q-item>
 
@@ -300,12 +291,6 @@ export default defineComponent({
     canChangeSegmentation() {
       return this.isValidator && this.$route.params.samplename !== undefined // sentence segmentation option is available only in the sample view and only for validator
     },
-    isFirstSentence() {
-      return this.sortedSentIds[0] === this.sentenceData.sent_id;
-    },
-    isLastSentence() {
-      return this.sortedSentIds[this.sortedSentIds.length - 1] === this.sentenceData.sent_id;
-    }
   }, 
   methods: {
     ...mapActions(useTreesStore, ['generateNewMetaText']),

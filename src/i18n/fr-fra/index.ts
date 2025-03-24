@@ -467,6 +467,7 @@ export default {
     replaceEntry: "Remplacer l'élement",
   },
   sentenceSegmentation: {
+    segmentationOptions: ['Segmenter les phrases', 'Fusionner en une seule phrase'],
     title: 'Segmentation de la phrase',
     splitSentenceHint: "Pour diviser les phrases, cliquez sur le token à partir duquel la deuxième phrase commencera.",
     editGeneratedMeta: 'Editer les métadonnées générées',
@@ -477,6 +478,7 @@ export default {
       'Ce sent_id est le même sent_id utilisé dans la première phrase',
     ],
     selectMergeLabel: 'Sélectionnez le sent_id de la phrase que vous souhaitez fusionner avec la phrase actuelle',
+    showResults: 'Afficher les résultats',
   },
   grewHistory: {
     historyBtn: 'Historique',

@@ -464,6 +464,7 @@ export default {
     replaceEntry: 'Replace entry',
   },
   sentenceSegmentation: {
+    segmentationOptions: ['Split sentences', 'Merge in one sentence'],
     title: 'sentence Segmentation',
     splitSentenceHint: 'To split sentences click on the token from which the second sentence will start',
     editGeneratedMeta: 'Edit the generated metadata',
@@ -475,6 +476,7 @@ export default {
     ],
     selectMergeLabel: 'Select the sent_id of the phrase you wish to merge with the current phrase',
     proposedMetadata: 'Proposed Metadata',
+    showResultBtn: 'Show results',
   },
   grewHistory: {
     historyBtn: 'History',

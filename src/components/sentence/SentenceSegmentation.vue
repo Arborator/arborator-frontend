@@ -137,6 +137,28 @@
       </q-card-section>
       <!-- Merge sentences -->
       <q-card-section v-else>
+        <div v-if="segmentationOption === 'MERGE'" class="row q-py-md q-gutter-md">
+          <div class="col">
+            <q-select
+              dense
+              outlined
+              v-model="mergedSentId"
+              :label="$t('sentenceSegmentation.selectMergeLabel')"
+              :options="sortedSentIds.filter((sent) => sent !== sentId)"
+              @update:model-value="MergeSentences()"
+            >
+            </q-select>
+          </div>
+          <div class="col">
+            <q-btn
+              :disable="mergedSentId == ''"
+              flat
+              color="primary"
+              :label="$t('sentenceSegmentation.showResultBtn')"
+              @click="showReactiveSentences()"
+            />
+          </div>
+        </div>
         <div v-if="showResults">
           <div class="row">
             <q-chip class="text-center" :color="$q.dark.isActive ? 'grey' : ''" dense>
@@ -196,7 +218,7 @@
   </q-dialog>
 </template>
 <script lang="ts">
-import { emptySentenceJson, metaJson_T, sentenceConllToJson, sentenceJsonToConll, sentenceJson_T, tokenJson_T, treeJson_T } from 'conllup/lib/conll';
+import { emptySentenceJson, metaJson_T, sentenceConllToJson, sentenceJsonToConll, sentenceJson_T, treeJson_T } from 'conllup/lib/conll';
 import { ReactiveSentence } from 'dependencytreejs/src/ReactiveSentence';
 import { mapState, mapWritableState } from 'pinia';
 import api from 'src/api/backend-api';
@@ -235,7 +257,7 @@ export default defineComponent({
       required: true,
     },
     segmentationOption: {
-      type: String as PropType<'MERGE_BEFORE' | 'MERGE_AFTER' | 'SPLIT'>,
+      type: String as PropType<'SPLIT' | 'MERGE'>,
       required: true,
     },
   },
@@ -279,7 +301,7 @@ export default defineComponent({
     this.hasPendingChanges[this.userId] = false;
     this.sentence = this.reactiveSentencesObj[this.userId].state.metaJson.text as string;
     this.sentId = this.reactiveSentencesObj[this.userId].state.metaJson.sent_id as string;
-    if (this.segmentationOption !== 'SPLIT') {
+    if (this.segmentationOption !== 'SPLIT' && this.segmentationOption !== 'MERGE') {
       this.MergeSentences();
       this.showReactiveSentences();
     }
@@ -394,17 +416,15 @@ export default defineComponent({
       const usersDiff = [];
       this.mergeWarningMessage = '';
 
-      const sentIdIndex =  this.sortedSentIds.indexOf(this.sentId)
-      const secondSentId = this.segmentationOption === 'MERGE_BEFORE' ? sentIdIndex - 1 : sentIdIndex + 1;
-      const secondSentenceConlls = this.filteredTrees[secondSentId].conlls;
-      this.mergedSentId = this.sortedSentIds[secondSentId]
+      const secondSentIdIndex =  this.sortedSentIds.indexOf(this.mergedSentId)
+      const secondSentenceConlls = this.filteredTrees[secondSentIdIndex].conlls;
+    
  
       for (const [userId, reactiveSentence] of Object.entries(this.reactiveSentencesObj)) {
         if (Object.keys(secondSentenceConlls).includes(userId)) {
           const firstSentenceConll = reactiveSentence.exportConll();
           const secondSentenceConll = secondSentenceConlls[userId];
-          this.mergedSentences[userId] =  this.segmentationOption === 'MERGE_BEFORE' ?
-            this.mergeConlls(secondSentenceConll, firstSentenceConll) : this.mergeConlls(firstSentenceConll, secondSentenceConll);
+          this.mergedSentences[userId] = this.mergeConlls(firstSentenceConll, secondSentenceConll) ;
         } 
         else {
           usersDiff.push(userId);

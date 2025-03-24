@@ -288,7 +288,7 @@ export default defineComponent({
     };
   },
   computed: {
-    ...mapState(useTreesStore, ['sortedSentIds', 'filteredTrees']),
+    ...mapState(useTreesStore, ['sortedSentIds', 'filteredTrees', 'trees']),
     ...mapWritableState(useTreesStore, ['reloadTrees']),
     ...mapState(useProjectStore, ['name']),
     disableSaveResultBtn(): boolean {
@@ -415,11 +415,8 @@ export default defineComponent({
     MergeSentences() {
       const usersDiff = [];
       this.mergeWarningMessage = '';
-
-      const secondSentIdIndex =  this.sortedSentIds.indexOf(this.mergedSentId)
-      const secondSentenceConlls = this.filteredTrees[secondSentIdIndex].conlls;
+      const secondSentenceConlls = this.trees[this.mergedSentId].conlls;
     
- 
       for (const [userId, reactiveSentence] of Object.entries(this.reactiveSentencesObj)) {
         if (Object.keys(secondSentenceConlls).includes(userId)) {
           const firstSentenceConll = reactiveSentence.exportConll();

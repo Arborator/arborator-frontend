@@ -135,7 +135,7 @@ export const useTreesStore = defineStore('trees', {
       }
     },
     applyFilterTrees() {
-      console.log(Object.values(this.trees));
+      
       this.filteredTrees = this.sortedSentIds.map(
         (sentId) => Object.values(this.trees).find((tree) => tree.sent_id == sentId) as grewSearchResultSentence_t
       );

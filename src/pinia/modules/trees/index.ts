@@ -15,6 +15,7 @@ export const useTreesStore = defineStore('trees', {
       blindAnnotationLevel: 0 as number,
       sortedSentIds: [] as string[],
       textFilter: '' as string,
+      sentIdFilter: '' as string,
       usersToHaveTree: [] as string[],
       usersToNotHaveTree: [] as string[],
       usersToHaveDiffs: [] as string[],
@@ -134,9 +135,16 @@ export const useTreesStore = defineStore('trees', {
       }
     },
     applyFilterTrees() {
+      console.log(Object.values(this.trees));
       this.filteredTrees = this.sortedSentIds.map(
         (sentId) => Object.values(this.trees).find((tree) => tree.sent_id == sentId) as grewSearchResultSentence_t
       );
+      if (this.sentIdFilter !== '') {
+        this.filteredTrees = Object.values(this.trees).filter((tree) => {
+          return tree.sent_id === this.sentIdFilter;
+        });
+      }
+
       if (this.textFilter !== '') {
         this.filteredTrees = Object.values(this.trees).filter((tree) => {
           return tree.sentence.toLowerCase().includes(this.textFilter.toLowerCase());

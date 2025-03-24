@@ -14,6 +14,9 @@
       ></q-input>
     </div>
     <div class="col-1">
+      <q-input v-model="sentIdFilter" outlined dense :label="$t('advancedFilter.sentIdFilter')" @keyup.enter="applyAdvancedFilter()" />
+    </div>
+    <div class="col-1">
       <q-select
         outlined
         dense
@@ -190,6 +193,7 @@ export default defineComponent({
     ...mapState(useTagsStore, ['userTags']),
     ...mapWritableState(useTreesStore, [
       'textFilter',
+      'sentIdFilter',
       'usersToHaveTree',
       'usersToNotHaveTree',
       'usersToHaveDiffs',

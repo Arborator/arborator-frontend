@@ -417,6 +417,7 @@ export default {
   },
   advancedFilter: {
     textFilter: 'Text filter',
+    sentIdFilter: 'Sent_id filter',
     applyFilter: 'Apply filter',
     advancedFilter: 'Advanced Filter',
     clearAll: 'Clear All',

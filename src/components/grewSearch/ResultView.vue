@@ -3,7 +3,7 @@
     <q-bar class="bg-primary text-white sticky-bar">
       <q-icon name="img:/svg/grew.svg" size="7rem" />
       <q-space />
-      <div class="text-weight-bold">{{ sentenceCount }} <span v-if="sentenceCount === 1">result</span><span v-else>results</span></div>
+      <div class="text-weight-bold">{{ occurrencesCount }} </div>
       <q-space />
       <q-btn flat dense icon="close" @click="closeDial()" />
     </q-bar>
@@ -162,10 +162,24 @@ export default defineComponent({
     projectName(): string {
       return this.$route.params.projectname as string;
     },
-    sentenceCount() {
-      return Object.keys(this.searchResults)
-        .map((sa) => Object.keys(this.searchResults[sa]))
-        .flat().length;
+    occurrencesCount() {
+      const users = new Set(); // set of users (to report how many ≠ users)
+      let nb_occ = 0;
+      let nb_sent = 0;
+      for (let sample_id in this.searchResults) { 
+        for (let sent_id in this.searchResults[sample_id]) {
+          nb_sent += 1;
+          let sent_data = this.searchResults[sample_id][sent_id];
+          if ("matches" in sent_data) {
+            for (let user_id in sent_data["matches"]) {
+              users.add (user_id);
+              nb_occ += sent_data["matches"][user_id].length    
+            }
+          }
+        }
+      }
+      const nb_user = users.size
+      return `${nb_occ} occurence${nb_occ > 1 ? "s" : ""} in ${nb_sent} sentence${nb_sent > 1 ? "s" : ""} (for ${nb_user} user${nb_user > 1 ? "s" : ""})`
     },
     atLeastOneSelected() {
       return Object.values(this.samplesFrozen.selected).some((index) => index);

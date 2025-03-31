@@ -204,7 +204,7 @@ import Codemirror from 'codemirror-editor-vue3';
 import TokensReplaceDialog from './TokensReplaceDialog.vue';
 
 import { copyToClipboard } from 'quasar';
-import { tokenJson_T, _featuresConllToJson, _depsConllToJson, nodesJson_T, groupsJson_T, sentenceConllToJson } from 'conllup/lib/conll';
+import { tokenJson_T, _featuresConllToJson, _depsConllToJson, nodesJson_T, groupsJson_T, enhancedNodesJson_T, sentenceConllToJson } from 'conllup/lib/conll';
 import { mapState, mapActions } from 'pinia';
 import { useProjectStore } from 'src/pinia/modules/project';
 import { useUserStore } from 'src/pinia/modules/user';
@@ -243,6 +243,7 @@ export default defineComponent({
     const conllColumnsToCheck = ['FORM', 'LEMMA', 'UPOS', 'FEATS', 'HEAD', 'DEPREL'];
     const nodesJson: nodesJson_T = {};
     const groupsJson: groupsJson_T = {};
+    const enhancedNodesJson: enhancedNodesJson_T = {};
     const table: table_t<tokenJson_T> = {
       fields: [],
       visibleColumns: [],
@@ -264,6 +265,8 @@ export default defineComponent({
       conllColumns,
       conllColumnsToCheck,
       nodesJson,
+      groupsJson,
+      enhancedNodesJson,
       table,
       userId: '',
       conlluDialogOpened: false,
@@ -280,7 +283,6 @@ export default defineComponent({
         readOnly: true,
       },
       formatErrorTable,
-      groupsJson,
     };
   },
   computed: {
@@ -304,29 +306,40 @@ export default defineComponent({
     getConllTable() {
       this.conllTable = [];
       this.conllContent = this.sentenceBus.sentenceSVGs[this.userId].exportConll();
-      this.nodesJson = { ...this.sentenceBus.sentenceSVGs[this.userId].treeJson.nodesJson };
-      this.groupsJson = { ...this.sentenceBus.sentenceSVGs[this.userId].treeJson.groupsJson };
-      for (const node of Object.values(this.nodesJson)) {
-        const multiWordId = `${node.ID}-${parseInt(node.ID) +1}`;
-        const multiWordNode = this.groupsJson[multiWordId]
-        if (multiWordNode) {
-          this.conllTable.push({
-            ...multiWordNode,
-            HEAD: multiWordNode.HEAD === -1 ? '_' : multiWordNode.HEAD,
-            FEATS: this.formatTableEntry(multiWordNode.FEATS, '='),
-            DEPS: this.formatTableEntry(multiWordNode.DEPS, ':'),
-            MISC: this.formatTableEntry(multiWordNode.MISC, '='),
-          });
-        }
-        this.conllTable.push({
-          ...node,
-          HEAD: node.HEAD === -1 ? '_' : node.HEAD,
-          FEATS: Object.keys(node.FEATS).length ? this.formatTableEntry(node.FEATS, '=') : '_',
-          DEPS: Object.keys(node.DEPS).length ? this.formatTableEntry(node.DEPS, ':') : '_',
-          MISC: Object.keys(node.MISC).length ? this.formatTableEntry(node.MISC, '='): '_',
-        });
+      const { nodesJson, groupsJson, enhancedNodesJson } = this.sentenceBus.sentenceSVGs[this.userId].treeJson;
+
+      this.nodesJson = { ...nodesJson };
+      this.groupsJson = { ...groupsJson };
+      this.enhancedNodesJson = { ...enhancedNodesJson };
+
+      Object.values(this.nodesJson).forEach((node) => {
+      const multiWordId = `${node.ID}-${parseInt(node.ID) + 1}`;
+      const multiWordNode = this.groupsJson[multiWordId];
+      const enhancedNodeId= Object.keys(this.enhancedNodesJson).find(id => id.startsWith(node.ID));
+      const emptyNode = this.enhancedNodesJson[enhancedNodeId!];
+
+      if (emptyNode) {
+        this.addConllRow(emptyNode);
       }
+
+      if (multiWordNode) {
+        this.addConllRow(multiWordNode);
+      }
+
+      this.addConllRow(node);
+      });
     },
+
+    addConllRow(node: any) {
+      this.conllTable.push({
+      ...node,
+      HEAD: node.HEAD === -1 ? '_' : node.HEAD,
+      FEATS: this.formatTableEntry(node.FEATS, '=') || '_',
+      DEPS: this.formatTableEntry(node.DEPS, ':') || '_',
+      MISC: this.formatTableEntry(node.MISC, '=') || '_',
+      });
+    },
+  
     formatTableEntry(entry: any, linkOperator: string ) {
       return Object.entries(entry)
         .map(([key, value]) => `${key}${linkOperator}${value}`)
@@ -372,9 +385,17 @@ export default defineComponent({
     generateConllFromTable() {
       const newNodesJson: nodesJson_T = {};
       const newGroupsJson: groupsJson_T = {};
+      const newEnhancedNodesJson: enhancedNodesJson_T = {};
       this.conllTable.forEach((row) => {
-        if (!row.ID.includes('-')) {
-          newNodesJson[row.ID] = {
+        if (row.ID.includes('-')) {
+          newGroupsJson[row.ID] = {
+            ...row,
+            FEATS: row.FEATS ? _featuresConllToJson(row.FEATS) : {},
+            MISC: row.MISC ? _featuresConllToJson(row.MISC) : {},
+          }
+        }
+        else if (row.ID.includes('.')) {
+          newEnhancedNodesJson[row.ID] = {
             ...row,
             FEATS: row.FEATS ? _featuresConllToJson(row.FEATS) : {},
             MISC: row.MISC ? _featuresConllToJson(row.MISC) : {},
@@ -382,15 +403,18 @@ export default defineComponent({
           };
         }
         else {
-          newGroupsJson[row.ID] = {
+          newNodesJson[row.ID] = {
             ...row,
             FEATS: row.FEATS ? _featuresConllToJson(row.FEATS) : {},
             MISC: row.MISC ? _featuresConllToJson(row.MISC) : {},
-          }
+            DEPS: row.DEPS ? _depsConllToJson(row.DEPS) : {},
+          }; 
         }
       });
       this.sentenceBus.sentenceSVGs[this.userId].treeJson.nodesJson = { ...newNodesJson};
       this.sentenceBus.sentenceSVGs[this.userId].treeJson.groupsJson = { ...newGroupsJson };
+      this.sentenceBus.sentenceSVGs[this.userId].treeJson.enhancedNodesJson = { ...newEnhancedNodesJson };
+      console.log(this.sentenceBus.sentenceSVGs[this.userId].treeJson);
       this.currentConllContent = this.sentenceBus.sentenceSVGs[this.userId].exportConll();
     },
     copyConll() {

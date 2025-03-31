@@ -199,7 +199,7 @@ export default {
     pendingTree: "Pending trees (Trees of sentence that's not validated yet)",
     allTree: 'All trees',
     baseTree: 'Base trees',
-    otherTree: 'Tress of specific user',
+    otherTree: 'Trees of a subset of users',
     search: 'Search',
     rewrite: 'Rewrite',
     tryRules: 'Try rules',

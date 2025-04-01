@@ -165,7 +165,9 @@ export default defineComponent({
       this.currentQueryType = type;
     },
     switchGrewMode() {
-      const pattern = this.currentQuery.match(/pattern((.|\n)*?)}/);
+      const regex = new RegExp(`pattern(.*?)(?=commands|$)`, "s"); 
+      const pattern = this.currentQuery.match(regex);
+      
       if (this.searchReplaceTab === 'REWRITE' && this.currentQueryType === 'SEARCH') {
         if (pattern) {
           this.currentQuery = `rule r {\n \t${pattern[0]} \n \tcommands { \n \t% add the pattern you want to have to replace … \n }\n}`;

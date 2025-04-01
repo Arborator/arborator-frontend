@@ -178,33 +178,39 @@ export default defineComponent({
   methods: {
     ...mapActions(useTreesStore, ['generateNewMetaText']),
     onFeatureDialogOk() {
-      const oldForm = this.token.FORM;
+      const newToken = emptyTokenJson();
 
-      this.token.FEATS = this.featTable.feat.reduce((obj, r) => {
+      newToken.FORM = this.form.normalize('NFC');
+      newToken.LEMMA = this.lemma.normalize('NFC');
+
+      newToken.FEATS = this.featTable.feat.reduce((obj, r) => {
         if (r.v) (obj as { [key: string]: string })[r.a] = r.v;
         return obj;
       }, {});
-      this.token.MISC = this.featTable.misc.reduce((obj, r) => {
+
+      newToken.MISC = this.featTable.misc.reduce((obj, r) => {
         if (r.v) (obj as { [key: string]: string })[r.a] = r.v;
         return obj;
       }, {});
-      this.token.FORM = this.form.normalize('NFC');
-      this.token.LEMMA = this.lemma.normalize('NFC');
-      this.sentenceBus.emit('tree-update:token', {
-        token: this.token,
+
+      newToken.ID = this.token.ID;
+      newToken.HEAD = this.token.HEAD;  
+      newToken.DEPREL = this.token.DEPREL;
+      newToken.DEPS = this.token.DEPS;
+      newToken.XPOS = this.token.XPOS;
+      newToken.UPOS = this.token.UPOS;
+
+      this.reactiveSentencesObj[this.userId].state.treeJson.nodesJson[newToken.ID] = { ...newToken };
+      const sentenceJson = sentenceConllToJson(this.reactiveSentencesObj[this.userId].exportConll());
+      const newMetaJson = this.generateNewMetaText(sentenceJson);
+
+      this.sentenceBus.emit('tree-update:sentence', {
+        sentenceJson: {
+          metaJson: newMetaJson,
+          treeJson: this.reactiveSentencesObj[this.userId].state.treeJson,
+        },
         userId: this.userId,
       });
-      if (oldForm !== this.token.FORM) {
-        const sentenceJson = sentenceConllToJson(this.reactiveSentencesObj[this.userId].exportConll());
-        const newMetaJson = this.generateNewMetaText(sentenceJson);
-        this.sentenceBus.emit('tree-update:sentence', {
-          sentenceJson: {
-            metaJson: newMetaJson,
-            treeJson: this.sentenceBus.sentenceSVGs[this.userId].treeJson,
-          },
-          userId: this.userId,
-        });
-      }
     },
   },
 });

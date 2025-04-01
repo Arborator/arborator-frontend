@@ -204,7 +204,7 @@ import Codemirror from 'codemirror-editor-vue3';
 import TokensReplaceDialog from './TokensReplaceDialog.vue';
 
 import { copyToClipboard } from 'quasar';
-import { tokenJson_T, _featuresConllToJson, _depsConllToJson, nodesJson_T, groupsJson_T, enhancedNodesJson_T, sentenceConllToJson } from 'conllup/lib/conll';
+import { tokenJson_T, _featuresConllToJson, _depsConllToJson, nodesJson_T, groupsJson_T, enhancedNodesJson_T, sentenceConllToJson, sentenceJsonToConll } from 'conllup/lib/conll';
 import { mapState, mapActions } from 'pinia';
 import { useProjectStore } from 'src/pinia/modules/project';
 import { useUserStore } from 'src/pinia/modules/user';
@@ -313,21 +313,21 @@ export default defineComponent({
       this.enhancedNodesJson = { ...enhancedNodesJson };
 
       Object.values(this.nodesJson).forEach((node) => {
-      const multiWordId = `${node.ID}-${parseInt(node.ID) + 1}`;
-      const multiWordNode = this.groupsJson[multiWordId];
-      const enhancedNodeId= Object.keys(this.enhancedNodesJson).find(id => id.startsWith(node.ID));
-      const emptyNode = this.enhancedNodesJson[enhancedNodeId!];
+        const multiWordId = `${node.ID}-${parseInt(node.ID) + 1}`;
+        const multiWordNode = this.groupsJson[multiWordId];
+        const enhancedNodeId= Object.keys(this.enhancedNodesJson).find(id => Number(id.split('.')[0]) === Number(node.ID));
+        const emptyNode = this.enhancedNodesJson[enhancedNodeId!];
+    
+        if (emptyNode) {
+          this.addConllRow(emptyNode);
+        }
 
-      if (emptyNode) {
-        this.addConllRow(emptyNode);
-      }
+        if (multiWordNode) {
+          this.addConllRow(multiWordNode);
+        }
 
-      if (multiWordNode) {
-        this.addConllRow(multiWordNode);
-      }
-
-      this.addConllRow(node);
-      });
+        this.addConllRow(node);
+        });
     },
 
     addConllRow(node: any) {
@@ -392,6 +392,7 @@ export default defineComponent({
             ...row,
             FEATS: row.FEATS ? _featuresConllToJson(row.FEATS) : {},
             MISC: row.MISC ? _featuresConllToJson(row.MISC) : {},
+            DEPS: row.DEPS ? _depsConllToJson(row.DEPS) : {},
           }
         }
         else if (row.ID.includes('.')) {
@@ -414,7 +415,6 @@ export default defineComponent({
       this.sentenceBus.sentenceSVGs[this.userId].treeJson.nodesJson = { ...newNodesJson};
       this.sentenceBus.sentenceSVGs[this.userId].treeJson.groupsJson = { ...newGroupsJson };
       this.sentenceBus.sentenceSVGs[this.userId].treeJson.enhancedNodesJson = { ...newEnhancedNodesJson };
-      console.log(this.sentenceBus.sentenceSVGs[this.userId].treeJson);
       this.currentConllContent = this.sentenceBus.sentenceSVGs[this.userId].exportConll();
     },
     copyConll() {

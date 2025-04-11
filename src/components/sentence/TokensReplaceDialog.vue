@@ -60,6 +60,14 @@
       </q-item-section>
       <q-item-section>{{ $t('tokenReplaceDialog.split') }}</q-item-section>
     </q-item>
+    <q-item clickable @click="onlyMultiword = true">
+      <q-item-section>
+        <q-avatar>
+          <q-icon name="control_point_duplicate" />
+        </q-avatar>
+      </q-item-section>
+      <q-item-section>Add multiWordToken</q-item-section>
+    </q-item>
     <q-item clickable v-close-popup @click="tokenReplaceOptions('delete')">
       <q-item-section avatar>
         <q-avatar>
@@ -86,6 +94,24 @@
           <q-input dense outlined v-if="isMultiword" v-model="multiWordToken" :label="$t('tokenReplaceDialog.multiWord')" />
           <div class="row q-gutter-md justify-center">
             <q-btn :disable="!firstToken && !secondToken" v-close-popup label="Split" color="primary" @click="tokenReplaceOptions('split')" />
+          </div>
+        </div>
+      </q-card-section>
+    </q-card>
+  </q-dialog>
+  <q-dialog v-model="onlyMultiword">
+    <q-card style="max-width: 100vw; min-width: 40vw">
+      <q-bar class="bg-primary text-white">
+        <q-space />
+        <div class="text-weight-bold">Add multiword token</div>
+        <q-space />
+        <q-btn v-close-popup flat dense icon="close" />
+      </q-bar>
+      <q-card-section>
+        <div class="q-gutter-md">
+          <q-input dense outlined v-model="multiWordToken" :label="$t('tokenReplaceDialog.multiWord')" />
+          <div class="row q-gutter-md justify-center">
+            <q-btn :disable="multiWordToken == ''" v-close-popup label="Add multiword" color="primary" @click="addMultitoken()" />
           </div>
         </div>
       </q-card-section>
@@ -129,6 +155,7 @@ export default defineComponent({
       tokensForms,
       tokensIndexes,
       isShowFusion: false,
+      onlyMultiword: false,
       selectedToken: this.token.FORM,
       multiWordToken: this.token.FORM,
       secondToken: '',
@@ -145,6 +172,29 @@ export default defineComponent({
   },
   methods: {
     ...mapActions(useTreesStore, ['generateNewMetaText']),
+    addMultitoken() {
+      const newTreeJson = this.sentenceBus.sentenceSVGs[this.userId].treeJson;
+      const id = parseInt(this.token.ID);
+      const newGroupJson = {
+        DEPREL: '_',
+        DEPS: {},
+        FEATS: {},
+        FORM: this.multiWordToken,
+        HEAD: -1,
+        ID: String(id) + '-' + String(id + 1),
+        LEMMA: '_',
+        MISC: {},
+        UPOS: '_',
+        XPOS: '_',
+      };
+      newTreeJson.groupsJson[newGroupJson.ID] = newGroupJson;
+      this.onlyMultiword = false;
+      this.sentenceBus.emit('tree-update:tree', {
+        tree: newTreeJson,
+        userId: this.userId,
+      });
+      this.$emit('reload');
+    },
     tokenReplaceOptions(option: string) {
       const { treeJson } = this.sentenceBus.sentenceSVGs[this.userId];
       const tokens = treeJson.nodesJson;

@@ -128,6 +128,24 @@
           </q-item>
           <q-item>
             <q-item-section>
+              <q-item-label>{{ $t('projectSettings.configProject') }}</q-item-label>
+              <q-item-label caption>{{ $t('projectSettings.configProjectCaption') }}  {{ configLocal }}</q-item-label>
+            </q-item-section>
+            <q-item-section>
+              <q-select
+                outlined
+                dense
+                v-model="configLocal"
+                :label="$t('projectSettings.configProjectSelect')"
+                color="primary"
+                :options="annotationConfigOptions"
+                stack-label
+                emit-value
+              />
+            </q-item-section>
+          </q-item>
+          <q-item>
+            <q-item-section>
               <q-item-label>{{ $t('projectSettings.projectLanguage') }}</q-item-label>
               <q-item-label caption>{{ $t('projectSettings.projectLanguageCaption') }} {{ language }}</q-item-label>
             </q-item-section>
@@ -254,6 +272,11 @@ export default defineComponent({
   },
   data() {
     const uploadImage: { image: File | null; submitting: boolean } = { image: null, submitting: false };
+    const annotationConfigOptions = [
+      { value: 'sud', label: 'SUD' },
+      { value: 'ud', label: 'UD' },
+      { value: 'other', label: 'Other' },
+    ];
     return {
       uploadImage,
       annotationFeaturesJson: '',
@@ -262,6 +285,7 @@ export default defineComponent({
       projectDescription: '',
       selectedLanguage: '',
       newProjectName: this.projectName,
+      annotationConfigOptions,
       params: {
         mainMenuBar: false,
         mode: 'text',
@@ -289,6 +313,7 @@ export default defineComponent({
       'imageTree',
       'language',
       'freezed',
+      'config'
     ]),
     ...mapState(useProjectStore, [
       'isOwner',
@@ -301,7 +326,8 @@ export default defineComponent({
       'language',
       'languagesList',
       'collaborativeMode',
-      'freezed'
+      'freezed', 
+      'config'
     ]),
 
     blindAnnotationModeLocal: {
@@ -364,6 +390,14 @@ export default defineComponent({
           projectName: this.projectName,
           toUpdateObject: { shownMeta: value },
         });
+      },
+    },
+    configLocal: {
+      get() {
+        return this.config;
+      },
+      set(value: string) {
+        this.updateProjectSettings(this.projectName, { config: value });
       },
     },
 

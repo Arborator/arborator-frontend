@@ -3,7 +3,7 @@
     <Breadcrumbs :height="30" :font-size="16" />
   </div>
   <div class="row q-pa-md q-gutter-md">
-    <div class="col-4">
+    <div class="col-3">
       <q-input 
         v-model="textFilter" 
         :label="$t('advancedFilter.textFilter')" 
@@ -40,7 +40,7 @@
     <div class="col-1">
       <q-btn @click="applyAdvancedFilter" color="primary">{{ $t('advancedFilter.applyFilter') }}</q-btn>
     </div>
-    <div class="col-2">
+    <div class="col-1">
       <q-select
         outlined
         dense
@@ -50,13 +50,15 @@
         @update:model-value="orderFilteredTrees(order)"
        />
     </div>
-    <div class="col-2">
+    <div class="col-1">
       <q-separator vertical />
       <q-btn no-caps v-if="config === 'ud' && !blindAnnotationMode" color="primary" :label="$t('advancedFilter.validateAllTrees')" @click="validateAllTrees()">
         <q-tooltip>
           {{ $t('advancedFilter.validateAllTreesTooltip') }}
         </q-tooltip>
       </q-btn>
+    </div>
+    <div class="col-2">
       <q-btn 
         v-if="isLoggedIn && !blindAnnotationMode" 
         outline 

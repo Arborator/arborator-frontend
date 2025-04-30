@@ -20,3 +20,4 @@ jobs:
       run: |
         rm -rf /home/arboratorgrew/arborator-frontend-test
         cp -r dist/spa /home/arboratorgrew/arborator-frontend-test
+

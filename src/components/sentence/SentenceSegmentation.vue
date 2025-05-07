@@ -199,7 +199,7 @@
               outlined
               v-model="mergedReactiveSentence[userId].state.metaJson.sent_id"
               label="sent_id"
-              :rules="[(val) => !sortedSentIds.includes(val) || $t('sentenceSegmentation.sentIdWarningMsg[0]')]"
+              :rules="[(val) => !sortedSentIds.filter((val) => val !== sentId && val !== mergedSentId ).includes(val) || $t('sentenceSegmentation.sentIdWarningMsg[0]')]"
             />
           </div>
           <div>

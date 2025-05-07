@@ -364,9 +364,10 @@ export default defineComponent({
       let updateCommit = true;
       if (mode) changedConllUser = mode;
       
-      if (this.reactiveSentencesObj[this.openTabUser].exportConll() === this.sentenceData.conlls[this.openTabUser].trim()) {
+      if (!mode && this.reactiveSentencesObj[this.openTabUser].exportConll() === this.sentenceData.conlls[this.openTabUser].trim()) {
         updateCommit = false;
       } 
+
       const metaToReplace = {
         user_id: changedConllUser,
         timestamp: Math.round(Date.now()),

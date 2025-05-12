@@ -323,6 +323,7 @@ export default defineComponent({
         this.firstSentences[userId] = emptySentenceJson();
         this.secondSentences[userId] = emptySentenceJson();
         this.splitSentenceTree(indexSplit, userId, sentenceTree);
+        this.splitSentenceGroups(indexSplit, userId, sentenceTree);
         this.splitSentenceMeta(this.firstSentences[userId], 'split1', sentenceMeta);
         this.splitSentenceMeta(this.secondSentences[userId], 'split2', sentenceMeta);
       }
@@ -342,6 +343,17 @@ export default defineComponent({
             DEPREL: token.HEAD < indexSplit  && token.HEAD !== 0 ? '_' : token.DEPREL
           };
           this.secondSentences[userId].treeJson.nodesJson[`${newId}`] = { ...newToken };
+        }
+      });
+    },
+    splitSentenceGroups(indexSplit: number, userId: string, sentenceTree: treeJson_T) {
+      Object.values(sentenceTree.groupsJson).forEach((group) => {
+        let groupId = parseInt(group.ID.split('-')[0]);
+        if (groupId < indexSplit) {
+          this.firstSentences[userId].treeJson.groupsJson[group.ID] = { ...group };
+        } else {
+          let newGroupId = `${groupId + 1 - indexSplit}-${groupId + 2 - indexSplit}`;
+          this.secondSentences[userId].treeJson.groupsJson[newGroupId] = { ...group, ID: newGroupId };
         }
       });
     },
@@ -442,19 +454,48 @@ export default defineComponent({
       const mergedSentence = emptySentenceJson();
       const firstSentenceJson = sentenceConllToJson(firstSentenceConll);
       const secondSentenceJson = sentenceConllToJson(secondSentenceConll);
+
+      this.mergeNodes(firstSentenceJson, secondSentenceJson, mergedSentence);
+      this.mergeGroups(firstSentenceJson, secondSentenceJson, mergedSentence);
+      this.mergeMeta(firstSentenceJson, secondSentenceJson, mergedSentence);
+     
+      return mergedSentence;
+    },
+    mergeNodes(firstSentenceJson: sentenceJson_T, secondSentenceJson: sentenceJson_T, mergedSentence: sentenceJson_T) {
+      const length = Object.keys(firstSentenceJson.treeJson.nodesJson).length;
+
       Object.values(firstSentenceJson.treeJson.nodesJson).forEach((token, index) => {
         mergedSentence.treeJson.nodesJson[`${index + 1}`] = { ...token };
       });
-      let length = Object.values(mergedSentence.treeJson.nodesJson).length;
+
       Object.values(secondSentenceJson.treeJson.nodesJson).forEach((token, index) => {
-        let newId = index + length + 1;
+        const newId = index + length + 1;
         mergedSentence.treeJson.nodesJson[`${newId}`] = {
           ...token,
           ID: `${newId}`,
           HEAD: token.HEAD > 0 ? token.HEAD + length : token.HEAD,
         };
       });
+    },
+    mergeGroups(firstSentenceJson: sentenceJson_T, secondSentenceJson: sentenceJson_T, mergedSentence: sentenceJson_T) {
+      const length = Object.keys(firstSentenceJson.treeJson.nodesJson).length;
 
+      Object.values(firstSentenceJson.treeJson.groupsJson).forEach((group) => {
+        mergedSentence.treeJson.groupsJson[group.ID] = { ...group };
+      });
+
+      Object.values(secondSentenceJson.treeJson.groupsJson).forEach((group) => {
+        const newId = parseInt(group.ID.split('-')[0]) + length;
+        const newGroupId  = `${newId}-${newId + 1}`;
+
+        mergedSentence.treeJson.groupsJson[newGroupId] = {
+          ...group,
+          ID: newGroupId,
+        };
+      });
+      
+    },
+    mergeMeta(firstSentenceJson: sentenceJson_T, secondSentenceJson: sentenceJson_T, mergedSentence: sentenceJson_T) {
       mergedSentence.metaJson = {
         ...firstSentenceJson.metaJson,
         ...secondSentenceJson.metaJson,
@@ -470,7 +511,6 @@ export default defineComponent({
          mergedSentence.metaJson[key] = `${firstSentenceJson.metaJson[key]} ${secondSentenceJson.metaJson[key]}`
         } 
       }
-      return mergedSentence;
     },
     proposeMergedSentId(firstSentId: string, secondSentId: string) {
       const firstSentIdParts = firstSentId.split('_');

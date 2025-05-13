@@ -1,5 +1,5 @@
 <template>
-  <q-dialog v-model="metaDialogOpened">
+  <q-dialog v-model="metaDialogOpened" persistent>
     <q-card style="width: 110vh">
       <q-bar class="bg-primary text-white sticky-bar">
         <div class="text-weight-bold">{{ $t('attributeTable.metadata') }}</div>

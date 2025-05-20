@@ -42,7 +42,8 @@
                         dense 
                         autofocus
                         :error="formatErrorTable.FORM.error"
-                        :error-message="formatErrorTable.FORM.message" 
+                        :error-message="formatErrorTable.FORM.message"
+                        @keyup.enter="scope.set" 
                       />
                     </q-popup-edit>
                   </q-td>
@@ -63,6 +64,7 @@
                         autofocus 
                         :error="formatErrorTable.LEMMA.error"
                         :error-message="formatErrorTable.LEMMA.message" 
+                        @keyup.enter="scope.set"
                       />
                     </q-popup-edit>
                   </q-td>
@@ -160,13 +162,13 @@
                   <q-td key="DEPS">
                     {{ props.row.DEPS }}
                     <q-popup-edit v-if="!props.row.ID.includes('-')" v-model="props.row.DEPS" auto-save v-slot="scope" >
-                      <q-input v-model="scope.value" dense autofocus />
+                      <q-input v-model="scope.value" dense autofocus @keyup.enter="scope.set" />
                     </q-popup-edit>
                   </q-td>
                   <q-td key="MISC">
                     {{ props.row.MISC }}
                     <q-popup-edit v-model="props.row.MISC" auto-save v-slot="scope" >
-                      <q-input v-model="scope.value" dense autofocus />
+                      <q-input v-model="scope.value" dense autofocus  @keyup.enter="scope.set" />
                     </q-popup-edit>
                   </q-td>
                   <q-menu

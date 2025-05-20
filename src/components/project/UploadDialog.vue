@@ -274,6 +274,18 @@ export default defineComponent({
       this.samplesWithoutSentIds = [];
 
       for (const file of this.uploadSample.attachment.file) {
+        if (file.name.split('.').pop() !== 'conllu') {
+          this.warningMessage += `${file.name} is not a conllu file.\n`;
+          this.uploadSample.attachment.file = [];
+          this.$q.notify({
+            message: this.warningMessage,
+            position: 'top',
+            color: 'warning',
+            timeout: 5000,
+            closeBtn: 'X',
+          });
+          return;
+        }
         const content = await this.readFileContent(file);
         const sampleName = file.name.split('.conllu')[0];
         this.checkSentIdsErrors(content as string, sampleName);

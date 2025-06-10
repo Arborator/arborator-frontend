@@ -60,7 +60,7 @@
               @input-value="onInput()"
             />
             <q-select
-              v-else-if="computeValueOptions(props.row) !== undefined && computeValueOptions(props.row).length ===1"
+              v-else-if="computeValueOptions(props.row) !== undefined && computeValueOptions(props.row).length === 1"
               v-model="props.row.v"
               dense
               filled
@@ -159,7 +159,7 @@ export default defineComponent({
     },
     computeValueType(row: any) {
       const possibleValue = (this.featPossibleOptions.filter((x) => x.name === row.a)[0] || {}).values;
-      if (possibleValue && possibleValue instanceof Array) return possibleValue;
+      if (possibleValue && possibleValue.length > 0 && possibleValue instanceof Array) return possibleValue;
       return 'String';
     },
     onInput() {

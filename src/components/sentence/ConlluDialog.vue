@@ -302,6 +302,7 @@ export default defineComponent({
     this.conllColumnsToCheck.forEach((column) => {
       this.formatErrorTable[column] = { error: false, message: '' };
     });
+    this.view = this.isLoggedIn ? 'table' : 'conll';
   },
   methods: {
     ...mapActions(useTreesStore, ['generateNewMetaText']),

@@ -1,3 +1,4 @@
+import { AxiosError } from 'axios';
 import { Notify } from 'quasar';
 import { i18n } from 'src/boot/i18n';
 
@@ -29,7 +30,7 @@ export function notifyMessage(arboratorMessage: ArboratorMessage_t) {
 }
 
 interface ArboratorGrewError_t {
-  error: string | any;
+  error: string | AxiosError;
   timeout?: number; // in milliseconds
 }
 
@@ -50,23 +51,21 @@ export function notifyError(ArboratorGrewError: ArboratorGrewError_t) {
   }
 
   let msg;
-  const error = ArboratorGrewError.error;
-  if (error !== undefined) {
-    if (error.response) {
-      if (error.response.status === 403) {
-        msg = error.response.data ? error.response.data.message : i18n.global.t('error403');
-      } else if (error.response.status === 404) {
-        msg = error.response.data ? error.response.data.message.split('.')[0] : i18n.global.t('error404');
-      } else if (error.response.status === 401) {
-        msg = error.response.data ? error.response.data.message : i18n.global.t('error401');
-      } else if (error.response.status === 406) {
-        const grewErrorMessage = error.response.data.message || 'Unknown error, please contact the administrators';
-        msg = `Grew internal error : ${grewErrorMessage}`;
-      } else if (error.response.status === 415) {
-        msg = error.response.data ? error.response.data.message : i18n.global.t('error415');
-      } else {
-        msg = error.response.data ? error.response.data.message : `${error.response.statusText} error ${error.response.status}`;
-      }
+  const error = ArboratorGrewError.error as AxiosError;
+  if (error.response) {
+    if (error.response.status === 403) {
+      msg = error.response.data ? error.response.data.message : i18n.global.t('error403');
+    } else if (error.response.status === 404) {
+      msg = error.response.data ? error.response.data.message.split('.')[0] : i18n.global.t('error404');
+    } else if (error.response.status === 401) {
+      msg = error.response.data ? error.response.data.message : i18n.global.t('error401');
+    } else if (error.response.status === 406) {
+      const grewErrorMessage = error.response.data.message || 'Unknown error, please contact the administrators';
+      msg = `Grew internal error : ${grewErrorMessage}`;
+    } else if (error.response.status === 415) {
+      msg = error.response.data ? error.response.data.message : i18n.global.t('error415');
+    } else {
+      msg = error.response.data ? error.response.data.message : `${error.response.statusText} error ${error.response.status}`;
     }
   } else if (error.message !== undefined) {
     msg = error.message;

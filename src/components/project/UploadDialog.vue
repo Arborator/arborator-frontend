@@ -418,8 +418,8 @@ export default defineComponent({
           this.$emit('uploaded:sample');
           this.uploadDialModel = false;
         })
-        .catch(() => {
-          notifyError({ error: 'Invalid request' });
+        .catch((error) => {
+          notifyError({ error, caller: 'tokenizeSample' });
         });
     },
     selectedUserId() {

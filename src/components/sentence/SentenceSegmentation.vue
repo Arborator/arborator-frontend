@@ -412,8 +412,8 @@ export default defineComponent({
           this.reloadTrees = true;
           this.closeDialog();
         })
-        .catch(() => {
-          notifyError({ error: 'Error while splitting the sentence' });
+        .catch((error) => {
+          notifyError({ error, caller: 'splitTree' });
         });
     },
     updateChangedMetadata(targetSentences: sentence_t, targetReactiveSentence: reactive_sentences_obj_t) {

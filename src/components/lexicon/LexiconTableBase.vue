@@ -291,7 +291,7 @@ export default defineComponent({
           return [];
         })
         .catch((error) => {
-          notifyError({ error });
+          notifyError({ error, caller: 'exportLexiconTSV' });
           return [];
         });
     },
@@ -317,7 +317,7 @@ export default defineComponent({
           return [];
         })
         .catch((error) => {
-          notifyError({ error });
+          notifyError({ error, caller: 'exportLexiconJSON' });
           return [];
         });
       this.download = [];
@@ -332,7 +332,7 @@ export default defineComponent({
           this.visuTreeDial = true;
         })
         .catch((error) => {
-          notifyError({ error });
+          notifyError({ error, caller: 'onSearch' });
         });
     },
   },

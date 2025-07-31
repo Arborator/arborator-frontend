@@ -465,7 +465,7 @@ export default defineComponent({
             notifyMessage({ message: 'Uploaded image saved!' });
           })
           .catch((error) => {
-            notifyError({ error });
+            notifyError({ error, caller: 'uploadProjectImage' });
             this.uploadImage.submitting = false;
           });
       } else {

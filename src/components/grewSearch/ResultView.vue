@@ -330,7 +330,7 @@ export default defineComponent({
           notifyMessage({ message: 'Grew results are exported' });
         })
         .catch((error) => {
-          notifyError({ error: error });
+          notifyError({ error, caller: 'exportResults' });
         })
     },
 
@@ -360,7 +360,7 @@ export default defineComponent({
             this.$emit('reload-results');
           })
           .catch((error) => {
-            notifyError({ error: `Error happened while saving trees ${error}` });
+            notifyError({ error, caller: 'saveAllTrees' });
           });
       }
     },

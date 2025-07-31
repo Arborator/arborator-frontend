@@ -166,7 +166,7 @@ export default defineComponent({
           this.reloadValidation = true;
         })
         .catch((error) => {
-          notifyError({ error: error });
+          notifyError({ error, caller: 'validateAllTrees' });
         });
     }
   },

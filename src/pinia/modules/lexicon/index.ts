@@ -54,7 +54,7 @@ export const useLexiconStore = defineStore('lexicon', {
           } else if (error.response.data.status === 204) {
             error = error.response.data.message;
           }
-          notifyError({ error });
+          notifyError({ error, caller: 'fetchLexicon' });
         });
     },
     switchModal() {

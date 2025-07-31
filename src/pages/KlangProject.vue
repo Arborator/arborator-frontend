@@ -153,7 +153,7 @@ export default defineComponent({
           this.samples = response.data;
         })
         .catch((error) => {
-          notifyError({ error });
+          notifyError({ error, caller: 'getProjectSamples' });
         });
     },
     getProjectAccessible() {
@@ -163,7 +163,7 @@ export default defineComponent({
           this.projectAccessible = response.data;
         })
         .catch((error) => {
-          notifyError({ error });
+          notifyError({ error, caller: 'getProjectAccessible' });
         });
     },
     sampleTranscribers() {
@@ -173,7 +173,7 @@ export default defineComponent({
           [this.sample2transcribers, this.transcribers, this.tableColumns] = response.data;
         })
         .catch((error) => {
-          notifyError({ error });
+          notifyError({ error, caller: 'sampleTranscribers' });
         });
     },
 
@@ -207,9 +207,7 @@ export default defineComponent({
       const status = exportFile('table-export.csv', content, 'text/csv');
 
       if (status !== true) {
-        notifyError({
-          error: 'Browser denied file download...',
-        });
+        notifyError({ error: 'Browser denied file download...' });
       }
     },
 
@@ -233,7 +231,7 @@ export default defineComponent({
           });
         })
         .catch((error) => {
-          notifyError({ error });
+          notifyError({ error, caller: 'getAllUsers' });
         });
     },
     /**
@@ -265,7 +263,7 @@ export default defineComponent({
           });
         })
         .catch((error) => {
-          notifyError({ error });
+          notifyError({ error, caller: 'selectAdmins' });
         });
     },
   },

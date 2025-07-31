@@ -63,7 +63,7 @@ export default defineComponent({
           this.reloadSamples = true;
         })
         .catch((error) => {
-          notifyError({ error: error });
+          notifyError({ error, caller: 'renameSample' });
         });
     },
   }

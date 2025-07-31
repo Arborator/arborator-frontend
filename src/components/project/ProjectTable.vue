@@ -221,7 +221,7 @@ export default defineComponent({
             notifyMessage({ message: 'The new blind annotation level was correctly saved in the server' });
           })
           .catch((error) => {
-            notifyError({ error });
+            notifyError({ error, caller: 'updateBlindAnnotationLevel' });
           });
       }, 0);
     },

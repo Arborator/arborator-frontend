@@ -112,7 +112,7 @@ export default defineComponent({
           this.$emit('reload');
         })
         .catch((error) => {
-          notifyError({ error });
+          notifyError({ error, caller: 'deleteSamples' });
         });
     },
     deleteSamplesFromGithub() {
@@ -123,7 +123,7 @@ export default defineComponent({
           notifyMessage({ message: 'Delete from Github' });
         })
         .catch((error) => {
-          notifyError({ error });
+          notifyError({ error, caller: 'deleteSamplesFromGithub' });
         });
     },
     triggerConfirmAction(method: CallableFunction) {
@@ -143,7 +143,7 @@ export default defineComponent({
           this.downloadFileAttachement(response.data, fileName);
         })
         .catch((error) => {
-          notifyError({ error });
+          notifyError({ error, caller: 'exportEvaluation' });
         });
     },
     downloadFileAttachement(data: any, fileName: string): void {

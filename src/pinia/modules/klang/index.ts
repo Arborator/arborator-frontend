@@ -22,7 +22,7 @@ export const useKlangStore = defineStore('klang', {
           this.admins = response.data;
         })
         .catch((error) => {
-          notifyError({ error });
+          notifyError({ error, caller: 'fetchKlangProjectSettings' });
         });
     },
   },

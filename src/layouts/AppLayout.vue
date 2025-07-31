@@ -234,11 +234,11 @@ export default defineComponent({
       this.logout()
         .then(() => {
           this.$router.push('/').catch((error) => {
-            notifyError({ error });
+            notifyError({ error, caller: 'push' });
           });
         })
         .catch((error) => {
-          notifyError({ error });
+          notifyError({ error, caller: 'logout_' });
         });
     },
     setStartingLanguage() {

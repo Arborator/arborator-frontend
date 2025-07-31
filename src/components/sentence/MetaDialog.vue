@@ -155,7 +155,7 @@ export default defineComponent({
     onMetaDialogOk() {
       const newMetaJson: metaJson_T = {};
       if (this.metaList.some((meta) => meta.a === '' || meta.v === '')) {
-        notifyError({ error: 'You can not save empty Meta !' });
+        notifyError({ error: 'You can not save empty Meta!' });
         return;
       }
 

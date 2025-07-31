@@ -271,7 +271,7 @@ export default defineComponent({
           this.reload += 1;
         })
         .catch((error) => {
-          notifyError({ error: error });
+          notifyError({ error, caller: 'getProjectSamples' });
         });
     },
     getSelectedSamples(value: any) {
@@ -285,7 +285,7 @@ export default defineComponent({
           this.syncGithubRepo = response.data.repositoryName;
         })
         .catch((error) => {
-          notifyError({ error });
+          notifyError({ error, caller: 'getSynchronizedGithubRepo' });
         });
     },
     getParsingStatus(value: any) {

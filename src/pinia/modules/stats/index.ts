@@ -24,7 +24,7 @@ export const useStatisticStore = defineStore('stats', {
           }
         })
         .catch((error) => {
-          notifyError({ error: `Error while loading project statistics ${error}` });
+          notifyError({ error, caller: 'getStatistics' });
         })
     }
   }

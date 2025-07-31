@@ -56,7 +56,7 @@ export default defineComponent({
           this.projects = response.data;
         })
         .catch((error) => {
-          notifyError({ error });
+          notifyError({ error, caller: 'getProjects' });
         });
     },
   },

@@ -248,7 +248,7 @@ export default defineComponent({
           }, []);
         })
         .catch((error) => {
-          notifyError({ error });
+          notifyError({ error, caller: 'getUsers' });
         });
     },
     updateUserAccess() {
@@ -270,7 +270,7 @@ export default defineComponent({
           this.selectedUsers = [];
         })
         .catch((error) => {
-          notifyError({ error });
+          notifyError({ error, caller: 'updateUserAccess' });
         });
     },
     revokeUserAccess(username: string) {
@@ -285,7 +285,7 @@ export default defineComponent({
           this.getUsers();
         })
         .catch((error) => {
-          notifyError({ error });
+          notifyError({ error, caller: 'revokeUserAccess' });
         });
     },
     sendEmail(username: string, role: string) {
@@ -300,7 +300,7 @@ export default defineComponent({
           notifyMessage({ message: 'Email sent to users' });
         })
         .catch((error) => {
-          notifyError({ error });
+          notifyError({ error, caller: 'sendEmail' });
         });
     },
     updateExistingUserAccess(member: userOption_t, targetRole: string) {

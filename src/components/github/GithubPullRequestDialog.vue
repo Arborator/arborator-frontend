@@ -75,7 +75,7 @@ export default defineComponent({
           this.synchronizedBranch = response.data.branch;
         })
         .catch((error) => {
-          notifyError({ error });
+          notifyError({ error, caller: 'getSynchronizedGithubRepo' });
         });
     },
     getRepoBranches() {
@@ -85,7 +85,7 @@ export default defineComponent({
           this.branches = response.data;
         })
         .catch((error) => {
-          notifyError(error);
+          notifyError({ error, caller: 'getRepoBranches' });
         });
     },
     openPullRequest() {
@@ -98,8 +98,7 @@ export default defineComponent({
           this.$emit('created');
         })
         .catch((error) => {
-          const errorMessage = error.response.data.message;
-          notifyError({ error: `${errorMessage}` });
+          notifyError({ error, caller: 'openPullRequest' });
         });
     },
   },

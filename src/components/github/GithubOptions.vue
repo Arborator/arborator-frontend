@@ -131,7 +131,7 @@ export default defineComponent({
           this.changesNumber = this.modifiedSamples.map((sample) => sample.changes_number).reduce((a, b) => a + b, 0);
         })
         .catch((error) => {
-          notifyError({ error });
+          notifyError({ error, caller: 'GithubOptions.getChanges' });
         });
     },
     getPulls() {
@@ -144,7 +144,7 @@ export default defineComponent({
           }
         })
         .catch((error) => {
-          notifyError({ error: 'Error while checking changes to pull' });
+          notifyError({ error, caller: 'getPulls' });
         });
     },
     deleteSynchronization() {
@@ -154,7 +154,7 @@ export default defineComponent({
           this.$emit('remove');
         })
         .catch((error) => {
-          notifyError({ error });
+          notifyError({ error, caller: 'deleteSynchronization' });
         });
     },
     reloadAfterCommit() {
@@ -169,7 +169,7 @@ export default defineComponent({
           this.$emit('pulled');
         })
         .catch((error) => {
-          notifyError({ error });
+          notifyError({ error, caller: 'pullChanges' });
         });
     },
 

@@ -133,7 +133,7 @@ export default defineComponent({
           this.sentence.conlls[this.openTabUser] = exportedConll;
         })
         .catch((error) => {
-          notifyError({ error: error });
+          notifyError({ error, caller: 'addNewTag' });
         });
     },
     filterTags(val: string, update: (callback: () => void) => void) {
@@ -162,8 +162,9 @@ export default defineComponent({
         if (!this.userTags.map((tag) => tag.value).includes(val)) {
           this.userTags.push({ value: val, color: 'grey-4' });
           const data = { tags: val };
-          api.createUserTags(this.name, this.username, data).catch((error) => {
-            notifyError(error);
+          api.createUserTags(this.name, this.username, data)
+          .catch((error) => {
+            notifyError({ error, caller: 'createUserTag' });
           });
         }
         done(val, 'toggle');
@@ -173,15 +174,14 @@ export default defineComponent({
       return val.trim().length === 0 || val.includes(',');
     },
     removeUserTag(tag: string) {
-      api
-        .deleteUserTag(this.name, this.username, tag)
-        .then(() => {
-          this.userTags.splice(this.userTags.map(tag => tag.value).indexOf(tag), 1)
-          this.filterTags('', () => {})
-        })
-        .catch(() => {
-          notifyError({ error: `Error appeared while deleting tag`});
-        })
+      api.deleteUserTag(this.name, this.username, tag)
+      .then(() => {
+        this.userTags.splice(this.userTags.map(tag => tag.value).indexOf(tag), 1)
+        this.filterTags('', () => {})
+      })
+      .catch((error) => {
+        notifyError({ error, caller: 'removeUserTag' });
+      });
     }
   },
 });

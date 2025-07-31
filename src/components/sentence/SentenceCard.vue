@@ -419,7 +419,7 @@ export default defineComponent({
           }
         })
         .catch((error) => {
-          notifyError({ error });
+          notifyError({ error, caller: 'SentenceCard.save' });
         });
     },
     validateUdTree(conll: string) {
@@ -439,7 +439,7 @@ export default defineComponent({
           }
         })
         .catch((error) => {
-          notifyError({ error: `Error happened while validating ${error}` });
+          notifyError({ error, caller: 'validateTree' });
         });
     },
     transitioned() {

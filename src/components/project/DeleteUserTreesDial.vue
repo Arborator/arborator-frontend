@@ -57,7 +57,7 @@ export default defineComponent({
             notifyMessage({ message: `${this.user} trees are removed successfully` });
           })
           .catch((error) => {
-            notifyError({ error });
+            notifyError({ error, caller: 'removeUserTrees' });
           });
       }
     },

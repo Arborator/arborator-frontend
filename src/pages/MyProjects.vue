@@ -123,7 +123,7 @@ export default defineComponent({
           this.sortProjects(this.filteredProjects);
         })
         .catch((error) => {
-          notifyError({ error: `Error happened while loading user projects ${error} `});
+          notifyError({ error, caller: 'getUserProjects' });
         });
     },
     searchProject(term: string) {
@@ -139,7 +139,7 @@ export default defineComponent({
           this.getUserProjects();
         })
         .catch((error) => {
-          notifyError({ error });
+          notifyError({ error, caller: 'deleteProject' });
         });
     }
   }

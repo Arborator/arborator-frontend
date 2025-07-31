@@ -187,7 +187,7 @@ export default defineComponent({
           this.branch = this.listBranches[0];
         })
         .catch((error) => {
-          notifyError(error);
+          notifyError({ error, caller: 'getRepoBranches' });
         });
     },
     async synchronizeWithGitRepo(repoName: string, branch: string, branchSyn: string) {

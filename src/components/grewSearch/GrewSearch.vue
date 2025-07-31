@@ -82,7 +82,7 @@ export default defineComponent({
           this.resultSearchDialog = true;
         })
         .catch((error) => {
-          notifyError({ error });
+          notifyError({ error, caller: 'onSearch' });
         });
     },
     onTryRules(query: string, userType: string, treeLabel: string, otherUser: string, selectedSamples: string[]) {
@@ -98,9 +98,8 @@ export default defineComponent({
           this.resultSearch = response.data;
         })
         .catch((error) => {
-          notifyError({
-            error: error.response.data.message,
-          });
+          notifyError({ error, caller: 'onTryRules' });
+
         });
     },
     closeDialog() {

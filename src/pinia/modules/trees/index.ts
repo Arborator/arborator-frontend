@@ -106,7 +106,7 @@ export const useTreesStore = defineStore('trees', {
             resolve(JSON.parse(JSON.stringify(Object.values(this.trees))));
           })
           .catch((error) => {
-            notifyError({ error });
+            notifyError({ error, caller: 'getSampleTrees' });
             this.loading = false;
             reject(error);
           });

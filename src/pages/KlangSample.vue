@@ -813,7 +813,7 @@ export default defineComponent({
           }
         })
         .catch((error) => {
-          notifyError({ error });
+          notifyError({ error, caller: 'exportConll' });
         });
     },
     exportTextTable() {
@@ -917,7 +917,7 @@ export default defineComponent({
                   this.setMetaInfo();
                 })
                 .catch((error) => {
-                  notifyError({ error });
+                  notifyError({ error, caller: 'getTranscription' });
                   this.isLoading = false;
                 });
             } else {
@@ -931,7 +931,7 @@ export default defineComponent({
                   this.setMetaInfo();
                 })
                 .catch((error) => {
-                  notifyError({ error });
+                  notifyError({ error, caller: 'getAllTranscription' });
                   this.isLoading = false;
                 });
             }
@@ -940,7 +940,7 @@ export default defineComponent({
         })
 
         .catch((error) => {
-          notifyError({ error });
+          notifyError({ error, caller: 'getSampleData' });
         });
     },
 

@@ -31,6 +31,7 @@ export function notifyMessage(arboratorMessage: ArboratorMessage_t) {
 
 interface ArboratorGrewError_t {
   error: string | AxiosError;
+  caller?: string; // Name of the function which calls the API, for better error reporting
   timeout?: number; // in milliseconds
 }
 
@@ -71,6 +72,9 @@ export function notifyError(ArboratorGrewError: ArboratorGrewError_t) {
     msg = error.message;
   } else {
     msg = `Oops, an unexpected error occured, please contact the administrators`;
+  }
+  if (ArboratorGrewError.caller) {
+    msg = `[${ArboratorGrewError.caller}] ${msg}`;
   }
   Notify.create({
     message: msg,

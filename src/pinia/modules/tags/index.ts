@@ -39,7 +39,7 @@ export const useTagsStore = defineStore('tags', {
           }
         })
         .catch((error) => {
-          notifyError({ error });
+          notifyError({ error, caller: 'getUserTags' });
         });
     },
     removeTag(sentence: grewSearchResultSentence_t, tag: string, sentenceBus: sentence_bus_t, username: string) {
@@ -62,7 +62,7 @@ export const useTagsStore = defineStore('tags', {
           sentence.conlls[username] = exportedConll;
         })
         .catch((error) => {
-          notifyError({ error });
+          notifyError({ error, caller: 'removeTag' });
         });
     },
   },

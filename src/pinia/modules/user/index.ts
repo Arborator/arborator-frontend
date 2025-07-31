@@ -46,7 +46,7 @@ export const useUserStore = defineStore('user', {
               resolve();
             })
             .catch((error) => {
-              notifyError({ error });
+              notifyError({ error, caller: 'checkSession' });
               console.log(error);
               reject();
             });
@@ -84,7 +84,7 @@ export const useUserStore = defineStore('user', {
             resolve(response);
           })
           .catch((error) => {
-            notifyError({ error });
+            notifyError({ error, caller: 'updateUserInformation' });
             reject(error);
           });
       });

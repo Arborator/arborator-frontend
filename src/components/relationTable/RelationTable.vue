@@ -156,7 +156,7 @@ export default defineComponent({
           }
         })
         .catch((error) => {
-          notifyError({ error });
+          notifyError({ error, caller: 'getRelationTable' });
         });
     },
     displayTable() {
@@ -239,7 +239,7 @@ export default defineComponent({
           this.visuTreeDial = true;
         })
         .catch((error) => {
-          notifyError({ error });
+          notifyError({ error, caller: 'onSearch' });
         });
     },
   },

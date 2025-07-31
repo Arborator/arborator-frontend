@@ -139,7 +139,7 @@ export default defineComponent({
           return [];
         })
         .catch((error) => {
-          notifyError({ error });
+          notifyError({ error, caller: 'ExportDialog.exportSamplesZip' });
           return [];
         });
     },

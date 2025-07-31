@@ -228,7 +228,7 @@ export default defineComponent({
           this.projectsLanguages = response.data.map((lang: string, index: number) => ({ index: index + 1, name: lang }));
         })
         .catch((error) => {
-          notifyError({ error });
+          notifyError({ error, caller: 'getProjectsLanguages' });
         });
     },
     getProjects() {
@@ -242,7 +242,7 @@ export default defineComponent({
           this.initLoading = false;
         })
         .catch((error) => {
-          notifyError({ error });
+          notifyError({ error, caller: 'getProjects' });
         });
     },
     deleteProject(projectName: string) {
@@ -253,7 +253,7 @@ export default defineComponent({
           this.getProjects();
         })
         .catch((error) => {
-          notifyError({ error });
+          notifyError({ error, caller: 'deleteProject' });
         });
     },
     getSelectedLanguages(value: any) {

@@ -150,12 +150,13 @@ export const useProjectStore = defineStore('project', {
               }
             })
             .catch((error) => {
-              notifyError({ error });
+              notifyError({ error, caller: 'getProjectConlluSchema' });
+
             });
         })
         .catch((error) => {
           this.invalidProjectError = true;
-          notifyError({ error: error });
+          notifyError({ error, caller: 'fetchProjectSettings' });
         });
     },
     
@@ -170,9 +171,7 @@ export const useProjectStore = defineStore('project', {
             notifyMessage({ message: 'New project settings saved on the server', icon: 'save' });
           })
           .catch((error) => {
-            notifyError({
-              error: error,
-            });
+            notifyError({ error, caller: 'updateProjectSettings' });
             reject(new Error(error));
           });
       });
@@ -187,7 +186,7 @@ export const useProjectStore = defineStore('project', {
             resolve(response);
           })
           .catch((error) => {
-            notifyError({ error });
+            notifyError({ error, caller: 'updateProjectshownFeatures' });
             reject(new Error(error));
           });
       });

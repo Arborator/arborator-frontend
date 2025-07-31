@@ -195,6 +195,7 @@ import { notifyError, notifyMessage } from 'src/utils/notify';
 import { defineComponent } from 'vue';
 
 import ProjectVisibility from 'src/components/shared/ProjectVisibility.vue';
+import { AxiosError } from 'axios';
 
 interface userOption_t {
   username: string;
@@ -445,7 +446,7 @@ export default defineComponent({
           }
         })
         .catch((error) => {
-          notifyError({ error: `Error while loading projects list ${error}`});
+          notifyError({ error, caller: 'getProjects' });
         });
     },
     searchProject(rows: any[], terms: any) {

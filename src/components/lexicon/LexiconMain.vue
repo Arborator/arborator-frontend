@@ -50,7 +50,7 @@
         :features="features"
         :key="lexiconItemsModified.length + 1"
         :lexicon-type="data.treeType"
-        :sample-ids="sampleNames"
+        :sample-ids="data.selectedSamples"
       ></LexiconTableBase>
       <LexiconTableBase
         title="Lexicon"
@@ -60,7 +60,7 @@
         :features="features"
         :key="features.length"
         :lexicon-type="data.treeType"
-        :sample-ids="sampleNames"
+        :sample-ids="data.selectedSamples"
       >
       </LexiconTableBase>
     </q-card-section>
@@ -111,9 +111,6 @@ export default defineComponent({
     secondaryFeatureOptions() {
       return this.principalFeatureOptions.filter((value) => !this.principalFeatures.includes(value));
     },
-    sampleNames() {
-      return this.samples.map((sample) => sample.sampleName);
-    }
   },
   methods: {
     ...mapActions(useLexiconStore, ['fetchLexicon']),

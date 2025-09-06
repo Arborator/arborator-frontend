@@ -124,6 +124,7 @@ export default {
   projectView: {
     project: 'Projet',
     createdBy: 'Projet créé par',
+    synchronizedWith: 'Synchronisé avec',
     settings: 'Paramètres',
     tooltipSettings: 'Modifier les paramètres du projet',
     newSample: 'Nouvel échantillon',

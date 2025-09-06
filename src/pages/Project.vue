@@ -7,21 +7,26 @@
         </q-card-section>
         <q-card-section>
           <div class="row q-pa-md justify-between flex flex-center">
-            <div class="col-4 justify-center">
+            <div class="col-8 justify-center">
               <div class="text-h5 text-weight-bold">
                 {{ name }}
                 <span>
                   <ProjectVisibility :visibility="visibility" :blindAnnotationMode="blindAnnotationMode"></ProjectVisibility>
                 </span>
-                <span v-if="syncGithubRepo && !blindAnnotationMode">
-                  <q-chip outline color="secondary" size="sm">Synchronized with {{ syncGithubRepo }}</q-chip>
-                </span>
               </div>
-              <div class="text-body2">
+              <div>
                 {{ description }}
               </div>
-              <div class="text-caption text-weight-medium" :class="$q.dark.isActive ? 'white' : 'grey-8'">
-                {{ $t('projectView.createdBy') }} {{ admins[0] }}
+              <div class="text-caption text-weight-medium">
+                <span v-if="syncGithubRepo && !blindAnnotationMode">
+                  {{ $t('projectView.synchronizedWith') }}:
+                  <q-chip outline color="secondary" size="sm"> {{ syncGithubRepo }}</q-chip>
+                  @
+                  <q-chip outline color="secondary" size="sm"> {{ syncGithubBranch }}</q-chip>
+                </span>
+              </div>
+              <div class="text-caption text-weight-medium">
+                {{ $t('projectView.createdBy') }}: <q-chip outline color="secondary" size="sm"> {{ admins[0] }}</q-chip>
               </div>
             </div>
             <div v-if="!$q.platform.is.mobile" class="col-4" style="display: flex; justify-content: flex-end">
@@ -207,6 +212,7 @@ export default defineComponent({
       unselectSamples: false,
       showStats: false,
       syncGithubRepo: '',
+      syncGithubBranch: '',
       reload: 0,
       parsingStatus: '',
     };
@@ -283,6 +289,7 @@ export default defineComponent({
         .getSynchronizedGithubRepository(this.projectName)
         .then((response) => {
           this.syncGithubRepo = response.data.repositoryName;
+          this.syncGithubBranch = response.data.branch;
         })
         .catch((error) => {
           notifyError({ error, caller: 'getSynchronizedGithubRepo' });

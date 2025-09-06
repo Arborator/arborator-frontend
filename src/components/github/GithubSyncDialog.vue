@@ -164,8 +164,8 @@ export default defineComponent({
           this.repositories = response.data;
           if (this.repositories.length == 0) this.noRepositories = true;
         })
-        .catch(() => {
-          notifyError({ error: 'Error while getting Github repositories' });
+        .catch((error) => {
+          notifyError({ error, caller: 'getGithubRepositories' });
         });
     },
     getRepositoriesPerOwner(owner: string) {

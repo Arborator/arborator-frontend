@@ -57,7 +57,6 @@
                 </q-item-section>
                 <q-item-section>
                   <q-item-label>{{ scope.opt.username }}</q-item-label>
-                  <q-item-label caption>{{ scope.opt.email }}</q-item-label>
                 </q-item-section>
               </q-item>
             </template>
@@ -94,9 +93,6 @@
 
             <q-item-section>
               <q-item-label>{{ member.username }}</q-item-label>
-              <q-item-label caption>
-                {{ member.email }}
-              </q-item-label>
             </q-item-section>
             <q-item-section v-if="admins[0] === member.username" side>
               <q-btn outline flat :disable="true" color="primary" :label="$t('userSelect.owner')" />

@@ -24,6 +24,10 @@ export default {
   navsettings: 'Settings',
   navklang: 'Klang',
 
+  invalidChar: 'Invalid character',
+  invalidName: 'Invalid name',
+  trailingWhitespace: 'Trailing whitespace',
+
   // confirm action dialog
   confirmAction: {
     title: 'Are you sure?',
@@ -163,11 +167,6 @@ export default {
     blindAnnotationMode: 'blind annotation mode',
     create: 'Create',
     createMessage: 'is created',
-    inputWarning: [
-      'Please type something', 
-      "Project name shouldn't ends with white space",
-      "Project name shouldn't have slash or backslash",
-    ],
     selectWarning: 'Please select something',
     corpusConfig: 'Corpus configuration',
     enterLanguage: 'Enter language',

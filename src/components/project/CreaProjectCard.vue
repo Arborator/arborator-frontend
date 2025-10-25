@@ -19,11 +19,7 @@
             v-model="project.projectName"
             :label="$t('createProjectCard.projectName') + ' *'"
             lazy-rules
-            :rules="[
-              (val) => (val && val.length > 0) || $t('createProjectCard.inputWarning[0]'),
-              (val) => (val && !val.endsWith(' ')) || $t('createProjectCard.inputWarning[1]'),
-              (val) => (val && !val.includes('\\') && !val.includes('/')) || $t('createProjectCard.inputWarning[2]'),
-            ]"
+            :rules="[value => !checkFilename(value) || checkFilename(value)]"
           />
           <q-input outlined dense v-model="project.description" label="Description" />
           <q-separator />
@@ -81,7 +77,6 @@
                 :multiple="false"
                 :languages-list="languagesList"
                 :label="' *'"
-                :rules="[(val) => (val && val.length > 0) || $t('createProjectCard.inputWarning')]"
                 @selected-value="getSelectedLanguage"
               />
             </div>
@@ -181,7 +176,7 @@ import api from 'src/api/backend-api';
 import GithubSyncDialog from '../github/GithubSyncDialog.vue';
 import LanguageSelect from '../shared/LanguageSelect.vue';
 import { annotationFeatures_t } from 'src/api/backend-types';
-
+import { checkFilename } from 'src/utils/misc';
 
 export default defineComponent({
   components: {
@@ -220,6 +215,7 @@ export default defineComponent({
       synchronized: '',
       annotationConfigOptions,
       selectedLanguage: [],
+      checkFilename: checkFilename,
     };
   },
   computed: {
@@ -228,11 +224,8 @@ export default defineComponent({
     canSyncWithGithub() {
       return this.loggedWithGithub && this.isShowSyncBtn && !this.isShowGithubSyncPanel;
     },
-    invalidProjectName() {
-      return this.project.projectName === '' || this.project.projectName.endsWith(' ') || this.project.projectName.includes('/') || this.project.projectName.includes('\\');
-    },
     disableSubmitBtn() {
-      return  this.invalidProjectName || this.project.language === '' || this.project.config === '';
+      return checkFilename(this.project.projectName) !== '' || this.project.language === '' || this.project.config === '';
     },
   },
   methods: {

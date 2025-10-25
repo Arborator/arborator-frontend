@@ -21,6 +21,10 @@ export default {
   navprojects: 'Projets',
   navsettings: 'Paramètres',
 
+  invalidChar: 'Caratère non autorisé',
+  invalidName: 'Nom non autorisé',
+  trailingWhitespace: 'Espace périphérique interdit',
+
   // confirm action dialog
   confirmAction: {
     title: 'En êtes-vous certain?',
@@ -160,11 +164,6 @@ export default {
     blindAnnotationMode: 'Mode annotation aveugle',
     create: 'Créer',
     createMessage: 'est créé',
-    inputWarning: [
-      'Veuillez taper quelque chose', 
-      'Le nom du projet ne deverait pas se terminer par un espace',
-      'Le nom du projet ne deverait pas avoir un slash ou un anti-slash',
-    ],
     selectWarning: 'Veuillez choisir quelque chose',
     corpusConfig: 'La configuration du corpus',
     enterLanguage: 'Saisir la langue du projet',

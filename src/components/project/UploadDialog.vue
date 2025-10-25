@@ -47,7 +47,13 @@
               </div>
             </div>
             <q-input outlined v-model="text" type="textarea" :label="$t('uploadSample.text')" />
-            <q-input outlined v-model="sampleName" :label="$t('uploadSample.sampleName')" />
+            <q-input 
+              outlined
+              v-model="sampleName" 
+              :label="$t('uploadSample.sampleName')"
+              lazy-rules
+              :rules="[value => !checkFilename(value) || checkFilename(value)]"
+            />
           </q-tab-panel>
         </q-tab-panels>
         <q-separator />
@@ -174,6 +180,7 @@ import { PropType, defineComponent } from 'vue';
 import api from '../../api/backend-api';
 import { useModelWrapper } from '../../composables/modelWrapper.js';
 import DetectedTagSetDial from './DetectedTagSetDial.vue';
+import { checkFilename } from 'src/utils/misc';
 
 export default defineComponent({
   components: {
@@ -239,6 +246,7 @@ export default defineComponent({
       newMiscList: [] as string[],
       newPosList: [] as string[],
       newRelationsList: [] as { value: string, index: number }[],
+      checkFilename: checkFilename,
     };
   },
 
@@ -247,9 +255,9 @@ export default defineComponent({
     ...mapState(useProjectStore, ['blindAnnotationMode', 'collaborativeMode', 'annotationFeatures']),
     disableTokenizeBtn() {
       if (this.option.value == 'plainText') {
-        return this.text && this.sampleName && this.lang.value;
+        return this.text && !checkFilename(this.sampleName) && this.lang.value;
       } else {
-        return this.text && this.sampleName;
+        return this.text && !checkFilename(this.sampleName);
       }
     },
     disableUploadBtn() {

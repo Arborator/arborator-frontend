@@ -12,15 +12,17 @@
       <q-input
         outlined
         v-model="newSampleName"
-        label="Rename sample"
-        lazy-rules
-        :rules="[
-          (val) => (val && val.length > 0) || 'Sample name must not be empty',
-          (val) => (val && !val.endsWith(' ')) || 'Sample must not end with white space',
-        ]"
+        label="New sample name"
+        :rules="[value => !checkFilename(value) || checkFilename(value)]"
       />
       <div class="flex flex-center">
-        <q-btn v-close-popup :disable="disableBtn" color="primary" label="Rename sample" @click="renameSample()" />
+        <q-btn 
+          v-close-popup 
+          color="primary"
+          :disable="checkFilename(newSampleName) !== ''"
+          label="Submit" type="submit" 
+          @click="renameSample()"
+        />
       </div>
     </q-card-section>
   </q-card>
@@ -31,6 +33,7 @@ import { mapWritableState, mapState } from 'pinia';
 import { useProjectStore } from 'src/pinia/modules/project';
 import { notifyError, notifyMessage } from 'src/utils/notify';
 import { defineComponent, PropType } from 'vue';
+import { checkFilename } from 'src/utils/misc';
 
 export default defineComponent({
   name: 'RenameSample',
@@ -43,15 +46,12 @@ export default defineComponent({
   data() {
     return {
       newSampleName: '',
-
+      checkFilename: checkFilename,
     }
   },
   computed: {
     ...mapState(useProjectStore, ['name']), 
     ...mapWritableState(useProjectStore, ['reloadSamples']),
-    disableBtn() {
-      return this.newSampleName === '' && this.newSampleName.endsWith(' ');
-    }
   },
   methods: {
     renameSample() {

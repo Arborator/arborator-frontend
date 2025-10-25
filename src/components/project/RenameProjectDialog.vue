@@ -14,14 +14,16 @@
         v-model="newProjectName"
         :label="$t('renameProject.inputLabel')"
         lazy-rules
-        :rules="[
-          (val) => (val && val.length > 0) || $t('renameProject.inputError'), 
-          (val) => (val && !val.endsWith(' ')) || $t('createProjectCard.inputWarning[1]'),
-          (val) => (val && !val.includes('\\') && !val.includes('/')) || $t('createProjectCard.inputWarning[2]'),
-        ]"
+        :rules="[value => !checkFilename(value) || checkFilename(value)]"
       />
       <div class="flex flex-center">
-        <q-btn v-close-popup :disable="disableBtn" color="primary" :label="$t('renameProject.renameBtn')" @click="renameProject()" />
+        <q-btn 
+          v-close-popup
+          :disable="checkFilename(newProjectName) !== ''"
+          color="primary"
+          :label="$t('renameProject.renameBtn')"
+          @click="renameProject()"
+        />
       </div>
     </q-card-section>
   </q-card>
@@ -30,6 +32,7 @@
 import { mapActions } from 'pinia';
 import { useProjectStore } from 'src/pinia/modules/project';
 import { PropType, defineComponent } from 'vue';
+import { checkFilename } from 'src/utils/misc';
 
 export default defineComponent({
   name: 'RenameProjectDialog',
@@ -42,12 +45,8 @@ export default defineComponent({
   data() {
     return {
       newProjectName: this.projectName,
+      checkFilename: checkFilename,
     };
-  },
-  computed: {
-    disableBtn() {
-      return this.newProjectName === '' || this.newProjectName.endsWith(' ') || this.newProjectName.includes('/') || this.newProjectName.includes('\\');
-    }
   },
   methods: {
     ...mapActions(useProjectStore, ['updateProjectSettings']),

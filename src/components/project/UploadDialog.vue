@@ -319,8 +319,8 @@ export default defineComponent({
       const sentIds: any[] = [];
       const sentences = fileContent.replace(/[\r]/g, "").split(/\n\n/).filter((sentence) => sentence);
       for (const sentence of sentences) {
-        if (sentenceConllToJson(sentence)['metaJson']['sent_id']) {
-          const sentId = sentenceConllToJson(sentence)['metaJson']['sent_id'];
+        const sentId = sentenceConllToJson(sentence)['metaJson']['sent_id'];
+        if (sentId) {
           sentIds.push(sentId);
         }
       }
@@ -359,6 +359,7 @@ export default defineComponent({
       this.uploadSample.submitting = true;
       for (const file of this.uploadSample.attachment.file) {
         form.append('files', file);
+        console.log ("======UploadDialog/uploadSamples======" + JSON.stringify(file));
       }
       form.append('userId', this.selectedUserId());
       form.append('rtl', JSON.stringify(this.rtl))

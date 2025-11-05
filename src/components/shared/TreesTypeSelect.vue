@@ -109,7 +109,7 @@ export default defineComponent({
       { value: 'validated', label: this.$t('grewSearch.validatedTree'), icon: 'verified' },
       { value: 'all', label: this.$t('grewSearch.allTree'), icon: 'groups' },
       { value: 'base_tree', label: this.$t('grewSearch.baseTree'), icon: 'linear_scale' },
-      { value: 'others', label: this.$t('grewSearch.otherTree'), icon: 'group' },
+      { value: 'others', label: this.$t('grewSearch.otherTree'), icon: 'person' },
     ];
     const treeType = this.collaborativeMode ?  this.treeOptions()[0] : treeTypes[2];
     const selectedSamples: sample_t[] = [];

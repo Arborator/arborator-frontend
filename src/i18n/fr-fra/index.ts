@@ -196,7 +196,7 @@ export default {
     pendingTree: 'Les arbres en attente, (les arbres des phrases qui ne sont pas encore validés)',
     allTree: 'Tous les arbres',
     baseTree: 'Les arbres de base',
-    otherTree: "Les arbres d'un sous-ensemble d'utilisateurs",
+    otherTree: "Les arbres d'un utilisateur spécifique",
     search: 'Rechercher',
     rewrite: 'Réécrire',
     tryRules: 'Essayer les règles',

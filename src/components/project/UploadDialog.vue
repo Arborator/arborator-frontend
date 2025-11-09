@@ -406,8 +406,9 @@ export default defineComponent({
         let index = 0;
         for (const subRel of splittedRel) {
           const found = deprels.some(({ values, join }) => values.includes(subRel) && relation.includes(join + subRel));
+          if (!found && !this.newRelationsList.some(rel => rel.value === subRel && rel.index === index))
+            this.newRelationsList.push({ value: subRel, index: index });
           index += 1;
-          if (!found) this.newRelationsList.push({ value: subRel, index: index });
         }
       }
     },

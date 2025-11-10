@@ -39,8 +39,7 @@
           <q-tooltip v-if="hasPendingChanges[user]">{{ $t('sentenceCard.saveModif') }}</q-tooltip>
           <q-tooltip v-else-if="lastModifiedTime[user]">
             <q-icon color="primary" name="schedule" size="14px" class="q-ml-xs" />
-            {{ $t('sentenceCard.modified[0]') }} {{ lastModifiedTime[user] }}
-            {{ $i18n.locale == 'en' ? $t('sentenceCard.modified[1]') : '' }}
+            {{ $t('sentenceCard.modified', [lastModifiedTime[user]]) }}
           </q-tooltip>
           <q-tooltip v-else>
             {{ $t('sentenceCard.automaticParsing') }}
@@ -281,21 +280,28 @@ export default defineComponent({
       const lastModifiedTime: { [key: string]: string } = {};
       for (const user of Object.keys(this.reactiveSentencesObj)) {
         const { timestamp } = this.reactiveSentencesObj[user].state.metaJson;
-        const timeDifferenceNumber = (Math.round(Date.now()) - parseInt(timestamp as string, 10)) / 1000;
+        const timestampNumber = parseInt(timestamp as string, 10)
         let timeDifferenceString = '';
-        if (timeDifferenceNumber < 10) {
-          timeDifferenceString = '< 10s';
-        } else if (timeDifferenceNumber / 60 < 1) {
-          timeDifferenceString = `${Math.round(timeDifferenceNumber)} ${this.$t('sentenceCard.modifTime[0]')}`;
-        } else if (timeDifferenceNumber / (60 * 60) < 1) {
-          timeDifferenceString = `${Math.round(timeDifferenceNumber / 60)} ${this.$t('sentenceCard.modifTime[1]')}`;
-        } else if (timeDifferenceNumber / (60 * 60 * 24) < 1) {
-          timeDifferenceString = `${Math.round(timeDifferenceNumber / (60 * 60))} ${this.$t('sentenceCard.modifTime[2]')}`;
-        } else if (timeDifferenceNumber / (60 * 60 * 24 * 365) < 1) {
-          timeDifferenceString = `${Math.round(timeDifferenceNumber / (60 * 60 * 24))} ${this.$t('sentenceCard.modifTime[3]')}`;
+        if (timestampNumber > 0) { // timestamp=0 for parser
+          const timeDifferenceNumber = (Math.round(Date.now()) - timestampNumber) / 1000;
+          if (timeDifferenceNumber / 60 < 1) {
+            const seconds = Math.round(timeDifferenceNumber)
+            timeDifferenceString = `${seconds} ${this.$t('sentenceCard.second', seconds)}`;
+          } else if (timeDifferenceNumber / (60 * 60) < 1) {
+            const minutes = Math.round(timeDifferenceNumber / 60);
+            timeDifferenceString = `${minutes} ${this.$t('sentenceCard.minute', minutes)}`;
+          } else if (timeDifferenceNumber / (60 * 60 * 24) < 1) {
+            const hours = Math.round(timeDifferenceNumber / (60 * 60));
+            timeDifferenceString = `${hours} ${this.$t('sentenceCard.hour', hours)}`;
+          } else if (timeDifferenceNumber / (60 * 60 * 24 * 365) < 1) {
+            const days = Math.round(timeDifferenceNumber / (60 * 60 * 24));
+            timeDifferenceString = `${days} ${this.$t('sentenceCard.day', days)}`;
+          } else {
+            const years = Math.round(timeDifferenceNumber / (60 * 60 * 24 * 365));
+            timeDifferenceString = `${years} ${this.$t('sentenceCard.year', years)}`;
+          }}
+          lastModifiedTime[user] = timeDifferenceString;
         }
-        lastModifiedTime[user] = timeDifferenceString;
-      }
       return lastModifiedTime;
     },
     showDiffValidator() {

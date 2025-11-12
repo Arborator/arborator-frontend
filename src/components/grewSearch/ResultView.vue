@@ -78,7 +78,17 @@
         </q-checkbox>
       </div>
       <div>
-        <q-btn :disable="!atLeastOneSelected" color="primary" :label="$t('grewSearch.applyRule')" @click="applyRules">
+        <q-btn :disable="!atLeastOneSelected" color="warning" :label="$t('grewSearch.applyRule')" @click="applyRules_TODELETE">
+          <q-tooltip v-if="!atLeastOneSelected">TODELETE{{ $t('grewSearch.applyRuleTooltip') }}</q-tooltip>
+        </q-btn>
+      </div>
+
+      <div v-for="user in availableSaveAs">
+        <q-btn 
+          :disable="!atLeastOneSelected"
+          :label="$t('grewSearch.applyRuleAs', [user])" 
+          color="primary"
+          @click="applyRules(user)">
           <q-tooltip v-if="!atLeastOneSelected">{{ $t('grewSearch.applyRuleTooltip') }}</q-tooltip>
         </q-btn>
       </div>
@@ -90,7 +100,7 @@
 </template>
 
 <script lang="ts">
-import { sentenceConllToJson, sentenceJsonToConll } from 'conllup/lib/conll';
+import { sentenceConllToJson, sentenceJsonToConll, emptySentenceJson } from 'conllup/lib/conll';
 import { mapActions, mapState, mapWritableState } from 'pinia';
 import { grewSearchResult_t, sample_t } from 'src/api/backend-types';
 import { useGithubStore } from 'src/pinia/modules/github';
@@ -127,7 +137,11 @@ export default defineComponent({
     treeLabel: {
       type: String as PropType<string>,
       required: false,
-    }
+    },
+    availableSaveAs: {
+      type: Array as PropType<string[]>,
+      required: false,
+    },
   },
 
   data() {
@@ -257,7 +271,37 @@ export default defineComponent({
       }
     },
 
-    applyRules() {
+    applyRules(saveAs: string) {
+      let selectedResults: grewSearchResult_t = {};
+      for (const item in this.samplesFrozen.selected) {
+        if (this.samplesFrozen.selected[item]) {
+          this.toSaveCounter += 1;
+          const sampleId = this.filteredResults[item][0];
+          const sentId = this.filteredResults[item][1];
+          let grewSearchResultSentence = this.searchResults[sampleId][sentId]
+          if (Object.keys(grewSearchResultSentence.conlls).length !== 1) { alert ("Not singleton user") } // assertion
+          // 1 item for loop!
+          let sentenceJson = emptySentenceJson()
+          for (let userId in grewSearchResultSentence.conlls) {
+            sentenceJson = sentenceConllToJson(grewSearchResultSentence.conlls[userId]);
+            sentenceJson.metaJson.user_id = saveAs;
+            sentenceJson.metaJson.timestamp = Math.round(Date.now());
+          }
+          grewSearchResultSentence["conlls"] = { saveAs: sentenceJsonToConll(sentenceJson)}
+          if (!selectedResults[sampleId]) selectedResults[sampleId] = {};
+          selectedResults[sampleId][sentId] = grewSearchResultSentence
+        }
+      }
+      const datasample = { data: selectedResults };
+      api.applyRule(this.projectName, datasample).then(() => {
+        this.reloadCommits += 1;
+        if (this.isLoggedIn) this.saveAppliedRule();
+        notifyMessage({ message: `Rule applied (user "${saveAs}" rewrote and saved "${this.toSaveCounter}" at once)` });
+        this.$emit('closed');
+      });
+    },
+
+    applyRules_TODELETE() {
       this.preprocessResults();
       if (this.toSaveCounter >= 1) {
         const datasample = { data: this.searchResultsCopy };

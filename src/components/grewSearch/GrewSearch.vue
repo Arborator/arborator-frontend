@@ -7,6 +7,7 @@
       :query="query" 
       :userType="userType" 
       :treeLabel="treeLabel"
+      :availableSaveAs="availableSaveAs"
       @reload-results="reloadResults" 
       @closed="closeDialog"
       />
@@ -52,6 +53,7 @@ export default defineComponent({
       query: string;
       userType: string;
       treeLabel: string;
+      availableSaveAs: string[];
     } = {
       resultSearchDialog: false,
       resultSearch: {},
@@ -59,12 +61,13 @@ export default defineComponent({
       query: '',
       userType: '',
       treeLabel: '',
+      availableSaveAs: ["toto"],
     };
     return result;
   },
   computed: {
-    ...mapState(useProjectStore, ['name']),
-    ...mapState(useUserStore, ['isLoggedIn']),
+    ...mapState(useProjectStore, ['name', 'isValidator', 'blindAnnotationMode']),
+    ...mapState(useUserStore, ['isLoggedIn', 'username']),
   },
   methods: {
     ...mapActions(useGrewHistoryStore, ['saveHistory']),
@@ -91,6 +94,18 @@ export default defineComponent({
       this.query = query;
       this.userType = userType;
       this.treeLabel = treeLabel;
+
+      this.availableSaveAs = [];
+      if (!this.blindAnnotationMode) {
+        this.availableSaveAs.push(this.username)
+      }
+      if (this.isValidator) {
+        this.availableSaveAs.push("validated");
+        if (this.blindAnnotationMode) {
+          this.availableSaveAs.push("base_tree");
+        }
+      }
+
       api
         .tryPackage(this.name, data)
         .then((response) => {

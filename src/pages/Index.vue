@@ -185,7 +185,7 @@
               class="my-card grid-style-transition shadow-2"
               @mouseover="hoverQuick = true" 
               @mouseleave="hoverQuick = false"
-              @click="openURL('https://arborator.ilpga.fr/q.cgi')"
+              @click="openURL('https://elizia.net/legacy-arborator/q.cgi')"
             >
               <q-card-section class="row text-weight-light">
                 {{ $t('homepage.toolsCard.content[2]') }}

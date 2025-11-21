@@ -37,26 +37,26 @@ export default {
   // first page (the index)
   homepage: {
     title: "Un outil d'annotation collaboratif pour le développement de treebanks.",
-    subtitle: "ArboratorGrew ouvre de nouvelles voies pour la création, la mise à jour, la gestion collectives d'arbres syntaxiques.",
+    subtitle: 'ArboratorGrew ouvre de nouvelles perspectives pour la création, la mise à jour, la maintenance et la gestion de corpus arborés.',
     accessTreebankBtn: 'Accéder aux corpus arborés',
     popularProjects: 'Projets populaires',
     aboutAg: "A propos d'ArboratorGrew",
     aboutUs: 'A propos de nous',
     descriptionCard: {
-      title: "Un outil d'annotation collaboratif pour corpus arborés",
+      title: "Un outil d'annotation collaboratif pour les corpus arborés",
       subtitle: "Une interface graphique facile d'utilisation rendant l'annotation plus attrayante.",
       content: [
         "Tirez l'arc d'un mot vers un autre pour les lier par une relation de dépendance. Cliquez sur un mot pour changer ses caractéristiques. Choisissez les mots à transformer en token. Les jeux d'étiquettes de dépendance et de caractéristiques sont personnalisables. Une préconfiguration est déjà en place pour",
         'et',
       ],
-      tooltipSud: 'SUD: Le surface-syntactic, version distribuées des Universal Dependencies',
-      tooltipUd: 'Universal Dependencies:  amazing collaborative treebank annotation project providing 150 treebanks in 90 languages',
+      tooltipSud: 'SUD: Surface-Syntactic Universal Dependencies',
+      tooltipUd: 'Universal Dependencies: un projet collaboratif de production de corpus arborés dans plus de 150 langues',
     },
     grewCard: {
-      title: "Requêtez à l'aide d'une puissance grammaire de graphes",
+      title: "Requêtez à l'aide de la recherche de graphes",
       subtitle: "Modifiez les résultats de la recherche directement dans l'interface",
       content: [
-        "L'assainissement, les vérifications et la résolution de problèmes sont les ingrédients d'un bon corpus arboré. Avec Arborator-Grew il n'est plus nécessaire de jongler entre plusieurs outils pour constituer ou corriger un corpus arboré, tout est présent en un outil collaboratif qui accepte plusieurs formats de fichiers CoNLL ! Le moteur de recherche utilise la syntaxe",
+        "La maintenance, les vérifications et les corrections sont les ingrédients d'un bon corpus arboré. Avec Arborator-Grew il n'est plus nécessaire de jongler entre plusieurs outils pour constituer ou corriger un corpus arboré, tout est présent en un outil collaboratif qui accepte plusieurs formats de fichiers CoNLL ! Le moteur de recherche utilise la syntaxe",
         'simple à apprendre et à manipuler et qui a fait ses preuves grâce aux multiples tutoriels.',
       ],
       tooltipGrew: 'La grammaire de graphes Grew.',

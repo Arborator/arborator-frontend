@@ -56,7 +56,7 @@ export default {
       tooltipUd: 'Universal Dependencies: The amazing collaborative treebank annotation project providing 150 treebanks in 90 languages',
     },
     grewCard: {
-      title: 'Search with a powerful graph grammar',
+      title: 'Search with a powerful graph matching based tool',
       subtitle: 'Modify the search results directly in the Web interface',
       content: [
         'A good treebank is a lot about curation, about finding the problems and correcting them coherently. With Arborator-Grew, there is no more back and forth between different websites or twisting your mind with complex greps in CoNLL files. Well, you got to learn the',

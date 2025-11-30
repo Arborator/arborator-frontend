@@ -61,9 +61,6 @@
           <q-tooltip v-if="!atLeastOneSelected">{{ $t('grewSearch.applyRuleTooltip') }}</q-tooltip>
         </q-btn>
       </div>
-      <div>
-        {{ treeLabel }}
-      </div>
     </q-bar>
   </div>
 </template>
@@ -146,23 +143,47 @@ export default defineComponent({
       return this.$route.params.projectname as string;
     },
     occurrencesCount() {
-      const users = new Set(); // set of users (to report how many ≠ users)
+      const userSet = new Set(); // set of users (to report how many ≠ users)
       let nb_occ = 0;
       let nb_sent = 0;
+      let nb_modified_nodes = 0;
+      let nb_modified_edges = 0;
       for (let sample_id in this.searchResults) { 
         for (let sent_id in this.searchResults[sample_id]) {
           nb_sent += 1;
           let sent_data = this.searchResults[sample_id][sent_id];
+          // The "matches" is present iff we are in SEARCH mode
           if ("matches" in sent_data) {
             for (let user_id in sent_data["matches"]) {
-              users.add (user_id);
+              userSet.add (user_id);
               nb_occ += sent_data["matches"][user_id].length
+            }
+          }
+          // The "packages" is present iff we are in REWRTIE mode
+          if ("packages" in sent_data) {
+            let packages = sent_data["packages"]
+            for (const userId in packages) {
+              userSet.add (userId);
+              const userPackages = packages[userId];
+              nb_modified_edges += userPackages.modified_edges.length;
+              nb_modified_nodes += userPackages.modified_nodes.length;
             }
           }
         }
       }
-      const nb_user = users.size
-      return `${nb_occ} occurence${nb_occ > 1 ? "s" : ""} in ${nb_sent} sentence${nb_sent > 1 ? "s" : ""} (for ${nb_user} user${nb_user > 1 ? "s" : ""})`
+      const nb_user = userSet.size
+      const users = this.$t(nb_user === 1 ? 'grewSearch.user' : 'grewSearch.user_plural', { count: nb_user });
+      const sents = this.$t(nb_sent === 1 ? 'grewSearch.sent' : 'grewSearch.sent_plural', { count: nb_sent });
+      if (this.queryType === 'REWRITE' ) {
+        const nodes = this.$t(nb_modified_nodes === 1 ? 'grewSearch.node' : 'grewSearch.node_plural', { count: nb_modified_nodes });
+        const edges = this.$t(nb_modified_edges === 1 ? 'grewSearch.edge' : 'grewSearch.edge_plural', { count: nb_modified_edges });
+        const message = this.$t('grewSearch.rewriteReport', { treeLabel: this.treeLabel, nodes: nodes, edges: edges, sents:sents, users:users })
+        return message 
+      } else {
+        const occs = this.$t(nb_occ === 1 ? 'grewSearch.occ' : 'grewSearch.occ_plural', { count: nb_occ });
+        const message = this.$t('grewSearch.searchReport', { occs: occs, sents:sents, users:users })
+        return message 
+      }
     },
     atLeastOneSelected() {
       return Object.values(this.samplesFrozen.selected).some((index) => index);

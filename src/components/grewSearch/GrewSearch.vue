@@ -96,14 +96,14 @@ export default defineComponent({
       this.treeLabel = treeLabel;
 
       this.availableSaveAs = [];
-      if (!this.blindAnnotationMode) {
-        this.availableSaveAs.push(this.username)
-      }
       if (this.isValidator) {
         this.availableSaveAs.push("validated");
         if (this.blindAnnotationMode) {
           this.availableSaveAs.push("base_tree");
         }
+      }
+      if (!this.blindAnnotationMode) {
+        this.availableSaveAs.push(this.username)
       }
 
       api

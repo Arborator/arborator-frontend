@@ -104,7 +104,7 @@ export interface package_t {
 
 export type conlls_t = { [userId: string]: string };
 export type matches_t = { [userId: string]: matche_t[] };
-export type packages_t = { [userId: string]: package_t[] };
+export type packages_t = { [userId: string]: package_t };
 
 export interface grewSearchResultSentence_t {
   sentence: string;

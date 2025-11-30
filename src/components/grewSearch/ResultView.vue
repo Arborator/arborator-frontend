@@ -7,33 +7,7 @@
       <q-space />
       <q-btn flat dense icon="close" @click="closeDial()" />
     </q-bar>
-    <div class="q-pa-md row q-gutter-md custom-frame1">
-      <q-select
-        class="col-7"
-        outlined
-        dense
-        v-model="selectedSample"
-        use-input
-        hide-dropdown-icon
-        input-debounce="0"
-        label="Filter results by sample name"
-        :options="filteredSamples"
-        @filter="filterSamples"
-      >
-        <template v-slot:selected-item="scope">
-          <q-chip v-if="scope.opt !== ''" removable @remove="scope.removeAtIndex(scope.index)" :tabindex="scope.tabindex" dense text-color="primary">
-            {{ scope.opt }}
-          </q-chip>
-        </template>
-        <template #append>
-          <q-icon name="search" />
-        </template>
-        <template v-slot:no-option>
-          <q-item>
-            <q-item-section class="text-grey"> No results </q-item-section>
-          </q-item>
-        </template>
-      </q-select>
+    <div class="q-pa-md row q-gutter-md custom-frame1 justify-end">
       <q-btn class="col-2" outline :disable="pendingModifications.size === 0" color="primary" label="Save pending trees" @click="saveAllTrees()">
         <q-badge v-if="pendingModifications.size > 0" color="red" floating>
           {{ pendingModifications.size }}
@@ -44,8 +18,8 @@
     <div>
       <template v-if="samplesFrozen.list.length > 0">
         <q-virtual-scroll
-          :key="filteredResults.length"
-          :items="filteredResults"
+          :key="samplesFrozen.list.length"
+          :items="samplesFrozen.list"
           style="max-width: 99vw"
           :virtual-scroll-slice-size="30"
           v-slot="{ item, index }"
@@ -73,7 +47,7 @@
       v-if="queryType === 'REWRITE' && samplesFrozen.list.length > 0 && canRewriteRule"
     >
       <div>
-        <q-checkbox v-if="queryType === 'REWRITE'" v-model="all" @click="selectAllSentences()">
+        <q-checkbox v-model="all" @click="selectAllSentences()">
           <q-tooltip>{{ $t('grewSearch.selectAllTooltip') }}</q-tooltip>
         </q-checkbox>
       </div>
@@ -182,7 +156,7 @@ export default defineComponent({
           if ("matches" in sent_data) {
             for (let user_id in sent_data["matches"]) {
               users.add (user_id);
-              nb_occ += sent_data["matches"][user_id].length    
+              nb_occ += sent_data["matches"][user_id].length
             }
           }
         }
@@ -195,12 +169,6 @@ export default defineComponent({
     },
     samplesNames() {
       return Object.keys(this.searchResults);
-    },
-    filteredResults() {
-      if (!this.selectedSample) {
-        return this.samplesFrozen.list;
-      }
-      return this.samplesFrozen.list.filter((value) => value[0] === this.selectedSample);
     },
   },
   watch: {
@@ -261,7 +229,7 @@ export default defineComponent({
     },
 
     selectAllSentences() {
-      for (const item in this.filteredResults) {
+      for (const item in this.samplesFrozen.list) {
         this.samplesFrozen.selected[item] = this.all;
       }
     },
@@ -271,8 +239,8 @@ export default defineComponent({
       for (const item in this.samplesFrozen.selected) {
         if (this.samplesFrozen.selected[item]) {
           this.toSaveCounter += 1;
-          const sampleId = this.filteredResults[item][0];
-          const sentId = this.filteredResults[item][1];
+          const sampleId = this.samplesFrozen.list[item][0];
+          const sentId = this.samplesFrozen.list[item][1];
           let grewSearchResultSentence = this.searchResults[sampleId][sentId]
           if (Object.keys(grewSearchResultSentence.conlls).length !== 1) { alert ("Please report: Not singleton user") } // assertion
           // 1 item for loop!

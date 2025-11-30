@@ -204,7 +204,6 @@ export default {
     grewRewriteTooltip: 'Examples de requêtes de recherche et remplacement de Grew',
     showDiffFaturesSelect: 'Sélectionnez la liste des features',
     showDiffBtn: 'Afficher les différences',
-    applyRule: 'Appliquer la règle TODELELETE',
     applyRuleAs: 'Sauver la sélection en tant que "{0}"',
     applyRuleTooltip: 'Sélectionnez au moins un arbre sur lequel vous souhaitez appliquer la règle',
     selectAllTooltip: 'Selectionnez tous',

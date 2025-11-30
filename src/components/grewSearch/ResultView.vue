@@ -77,11 +77,6 @@
           <q-tooltip>{{ $t('grewSearch.selectAllTooltip') }}</q-tooltip>
         </q-checkbox>
       </div>
-      <div>
-        <q-btn :disable="!atLeastOneSelected" color="warning" :label="$t('grewSearch.applyRule')" @click="applyRules_TODELETE">
-          <q-tooltip v-if="!atLeastOneSelected">TODELETE{{ $t('grewSearch.applyRuleTooltip') }}</q-tooltip>
-        </q-btn>
-      </div>
 
       <div v-for="user in availableSaveAs">
         <q-btn 
@@ -279,7 +274,7 @@ export default defineComponent({
           const sampleId = this.filteredResults[item][0];
           const sentId = this.filteredResults[item][1];
           let grewSearchResultSentence = this.searchResults[sampleId][sentId]
-          if (Object.keys(grewSearchResultSentence.conlls).length !== 1) { alert ("Not singleton user") } // assertion
+          if (Object.keys(grewSearchResultSentence.conlls).length !== 1) { alert ("Please report: Not singleton user") } // assertion
           // 1 item for loop!
           let sentenceJson = emptySentenceJson()
           for (let userId in grewSearchResultSentence.conlls) {
@@ -299,64 +294,6 @@ export default defineComponent({
         notifyMessage({ message: `Rule applied (user "${saveAs}" rewrote and saved "${this.toSaveCounter}" at once)` });
         this.$emit('closed');
       });
-    },
-
-    applyRules_TODELETE() {
-      this.preprocessResults();
-      if (this.toSaveCounter >= 1) {
-        const datasample = { data: this.searchResultsCopy };
-        api.applyRule(this.projectName, datasample).then(() => {
-          this.reloadCommits += 1;
-          if (this.isLoggedIn) this.saveAppliedRule();
-          notifyMessage({ message: `Rule applied (user "${this.username}" rewrote and saved "${this.toSaveCounter}" at once)` });
-          this.$emit('closed');
-        });
-      } else {
-        notifyMessage({
-          message: `Nothing to save (user "${this.username}" has "zero" tree matching rewriting pattern)`,
-          type: 'warning',
-        });
-      }
-    },
-
-    preprocessResults() {
-      let selectedResults = this.getSelectedResults();
-      this.searchResultsCopy = selectedResults;
-      for (const sample in selectedResults) {
-        for (const sentId in selectedResults[sample]) {
-          if (!this.isValidator || this.userType !== 'validated') {
-            let toSaveConll = '';
-            if (selectedResults[sample][sentId].conlls[this.username]) {
-              toSaveConll = selectedResults[sample][sentId].conlls[this.username];
-            } else {
-              toSaveConll = Object.values(selectedResults[sample][sentId].conlls)[0];
-            }
-            const sentenceJson = sentenceConllToJson(toSaveConll);
-            sentenceJson.metaJson.user_id = this.username;
-            sentenceJson.metaJson.timestamp = Math.round(Date.now());
-            this.searchResultsCopy[sample][sentId].conlls[this.username] = sentenceJsonToConll(sentenceJson);
-          }
-          for (const userId in this.searchResultsCopy[sample][sentId].conlls) {
-            if (!this.isValidator || this.userType !== 'validated') {
-              if (userId !== this.username) delete this.searchResultsCopy[sample][sentId].conlls[userId];
-            }
-          }
-          this.toSaveCounter += 1;
-        }
-      }
-    },
-
-    getSelectedResults() {
-      let selectedResults: grewSearchResult_t = {};
-      for (const item in this.samplesFrozen.selected) {
-        if (this.samplesFrozen.selected[item] === true) {
-          const sampleId = this.filteredResults[item][0];
-          const sentId = this.filteredResults[item][1];
-          if (!selectedResults[sampleId]) selectedResults[sampleId] = {};
-          selectedResults[sampleId][sentId] = this.searchResults[sampleId][sentId];
-        }
-      }
-      return selectedResults;
     },
 
     exportResults() {

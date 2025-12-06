@@ -47,18 +47,19 @@
       v-if="queryType === 'REWRITE' && samplesFrozen.list.length > 0 && canRewriteRule"
     >
       <div>
-        <q-checkbox v-model="all" @click="selectAllSentences()">
-          <q-tooltip>{{ $t('grewSearch.selectAllTooltip') }}</q-tooltip>
+        <q-checkbox v-model="all" @click="toggleAllSentences()">
+          <q-tooltip>{{ $t('grewSearch.toggleAllTooltip') }}</q-tooltip>
         </q-checkbox>
       </div>
+        {{countSelected}}/{{ samplesFrozen.list.length }}
 
       <div v-for="user in availableSaveAs">
         <q-btn 
-          :disable="!atLeastOneSelected"
+          :disable="countSelected === 0"
           :label="$t('grewSearch.applyRuleAs', [user])" 
           color="primary"
           @click="applyRules(user)">
-          <q-tooltip v-if="!atLeastOneSelected">{{ $t('grewSearch.applyRuleTooltip') }}</q-tooltip>
+          <q-tooltip v-if='countSelected === 0'>{{ $t('grewSearch.applyRuleTooltip') }}</q-tooltip>
         </q-btn>
       </div>
     </q-bar>
@@ -185,21 +186,13 @@ export default defineComponent({
         return message 
       }
     },
-    atLeastOneSelected() {
-      return Object.values(this.samplesFrozen.selected).some((index) => index);
+    countSelected() {
+      const c = Object.values(this.samplesFrozen.selected).reduce((partialSum, isSelected) => isSelected ? partialSum+1 : partialSum, 0);
+      this.all = c === this.samplesFrozen.list.length;
+      return c
     },
     samplesNames() {
       return Object.keys(this.searchResults);
-    },
-  },
-  watch: {
-    'samplesFrozen.selected': {
-      handler: function (newVal) {
-        if (Object.values(newVal).some((element) => !element)) {
-          this.all = false;
-        }
-      },
-      deep: true,
     },
   },
   mounted() {
@@ -249,7 +242,7 @@ export default defineComponent({
       });
     },
 
-    selectAllSentences() {
+    toggleAllSentences() {
       for (const item in this.samplesFrozen.list) {
         this.samplesFrozen.selected[item] = this.all;
       }

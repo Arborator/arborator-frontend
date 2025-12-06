@@ -206,7 +206,7 @@ export default {
     showDiffBtn: 'Afficher les différences',
     applyRuleAs: 'Sauver la sélection en tant que "{0}"',
     applyRuleTooltip: 'Sélectionnez au moins un arbre sur lequel vous souhaitez appliquer la règle',
-    selectAllTooltip: 'Selectionnez tous',
+    toggleAllTooltip: 'Inverser la sélection',
     btnDisabledTooltip: "Sélectionnez d'abord le nom d'utilisateur",
     selectUser: "Séléctionnez le nom d'utilisateur",
 

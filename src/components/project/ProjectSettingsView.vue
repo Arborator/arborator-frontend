@@ -275,8 +275,9 @@ export default defineComponent({
   data() {
     const uploadImage: { image: File | null; submitting: boolean } = { image: null, submitting: false };
     const annotationConfigOptions = [
-      { value: 'sud', label: 'SUD' },
       { value: 'ud', label: 'UD' },
+      { value: 'sud', label: 'SUD' },
+      { value: 'msud', label: 'mSUD' },
       { value: 'other', label: 'Other' },
     ];
     return {
@@ -323,8 +324,9 @@ export default defineComponent({
       'shownFeaturesChoices',
       'shownMetaChoices',
       'annotationFeatures',
-      'getSudConfig',
-      'getUdConfig',
+      'getSUDConfig',
+      'getmSUDConfig',
+      'getUDConfig',
       'image',
       'language',
       'languagesList',
@@ -481,7 +483,13 @@ export default defineComponent({
       this.updateProjectSettings(this.projectName, { language: this.selectedLanguage });
     },
     updateConlluSchema() {
-      this.annotationFeaturesJson = this.configType === 'ud' ? this.getUdConfig : this.getSudConfig;
+      if (this.configType === 'ud') {
+        this.annotationFeaturesJson = this.getUDConfig
+      } else if (this.configType === 'msud') {
+        this.annotationFeaturesJson = this.getmSUDConfig
+      } else {
+        this.annotationFeaturesJson = this.getSUDConfig
+      }
       notifyMessage({ message: "Your annotation config has been modified don't forget to save it ", type: 'warning' });
     }
   },

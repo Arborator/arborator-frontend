@@ -402,16 +402,12 @@
         "conj",
         "coord",
         "dicto",
-        "discourse",
-        "dislocated",
         "emph",
         "insert",
-        "num",
         "obj",
         "obl",
         "parenth",
         "periph",
-        "poss",
         "pred",
         "prt",
         "redup",
@@ -427,13 +423,20 @@
         "expl",
         "foreign",
         "lvc",
-        "m",
         "name",
         "num",
         "relcl",
         "scrap"
       ],
       "join": "@"
+    },
+    {
+      "name": "type",
+      "values": [
+        "",
+        "m"
+      ],
+      "join": "/"
     }
   ]
 }

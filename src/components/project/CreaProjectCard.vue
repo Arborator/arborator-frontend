@@ -193,8 +193,9 @@ export default defineComponent({
   },
   data() {
     const annotationConfigOptions = [
-      { value: 'sud', label: 'SUD' },
       { value: 'ud', label: 'UD' },
+      { value: 'sud', label: 'SUD' },
+      { value: 'msud', label: 'mSUD' },
       { value: 'other', label: 'Other' },
     ];
     return {
@@ -220,7 +221,7 @@ export default defineComponent({
   },
   computed: {
     ...mapState(useUserStore, ['username', 'loggedWithGithub']),
-    ...mapState(useProjectStore, ['languagesList', 'getSudConfig', 'getUdConfig']),
+    ...mapState(useProjectStore, ['languagesList', 'getSUDConfig', 'getmSUDConfig', 'getUDConfig']),
     canSyncWithGithub() {
       return this.loggedWithGithub && this.isShowSyncBtn && !this.isShowGithubSyncPanel;
     },
@@ -248,13 +249,19 @@ export default defineComponent({
           if (this.project.config === 'ud') {
             this.updateProjectConlluSchema(
               this.project.projectName, 
-              JSON.parse(this.getUdConfig) as annotationFeatures_t, 
+              JSON.parse(this.getUDConfig) as annotationFeatures_t, 
+              {} as annotationFeatures_t
+            );
+          } else if (this.project.config === 'msud') {
+            this.updateProjectConlluSchema(
+              this.project.projectName, 
+              JSON.parse(this.getmSUDConfig) as annotationFeatures_t, 
               {} as annotationFeatures_t
             );
           } else {
             this.updateProjectConlluSchema(
               this.project.projectName, 
-              JSON.parse(this.getSudConfig) as annotationFeatures_t, 
+              JSON.parse(this.getSUDConfig) as annotationFeatures_t, 
               {} as annotationFeatures_t
             );
           }

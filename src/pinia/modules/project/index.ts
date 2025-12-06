@@ -5,8 +5,9 @@ import { notifyError, notifyMessage } from 'src/utils/notify';
 import api from '../../../api/backend-api';
 import { useUserStore } from '../user';
 import defaultState from './defaultState';
-import sudConfig from 'assets/configs/sud-config.json';
-import udConfig from 'assets/configs/ud-config.json';
+import SUDConfig from 'assets/configs/sud-config.json';
+import mSUDConfig from 'assets/configs/msud-config.json';
+import UDConfig from 'assets/configs/ud-config.json';
 
 export const useProjectStore = defineStore('project', {
   state: () => {
@@ -81,11 +82,14 @@ export const useProjectStore = defineStore('project', {
     canExportTrees(state): boolean {
       return !state.blindAnnotationMode || (useUserStore().isLoggedIn && !this.isGuest);
     },
-    getSudConfig() {
-      return JSON.stringify(sudConfig, null, 4);
+    getSUDConfig() {
+      return JSON.stringify(SUDConfig, null, 4);
     },
-    getUdConfig() {
-      return JSON.stringify(udConfig, null, 4)
+    getmSUDConfig() {
+      return JSON.stringify(mSUDConfig, null, 4);
+    },
+    getUDConfig() {
+      return JSON.stringify(UDConfig, null, 4)
     },
     shownMetaChoices: (state) => state.annotationFeatures.META,
     shownFeaturesChoices: (state) =>
@@ -143,7 +147,13 @@ export const useProjectStore = defineStore('project', {
             .then((response) => {
               let fetchedAnnotationFeatures = response.data.annotationFeatures;
               if (typeof fetchedAnnotationFeatures !== 'object' || fetchedAnnotationFeatures === null) {
-                this.annotationFeatures = this.config === 'ud' ? JSON.parse(this.getUdConfig): JSON.parse(this.getSudConfig);
+                if (this.config === 'ud') {
+                  this.annotationFeatures = JSON.parse(this.getUDConfig)
+                } else if (this.config === 'msud') {
+                  this.annotationFeatures = JSON.parse(this.getmSUDConfig)
+                } else {
+                  this.annotationFeatures = JSON.parse(this.getSUDConfig)
+                }
               }
               else {
                 this.annotationFeatures = fetchedAnnotationFeatures;

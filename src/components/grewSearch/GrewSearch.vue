@@ -20,7 +20,7 @@ import { grewSearchResult_t, sample_t } from 'src/api/backend-types';
 import { useGrewHistoryStore } from 'src/pinia/modules/grewHistory';
 import { useProjectStore } from 'src/pinia/modules/project';
 import { useUserStore } from 'src/pinia/modules/user';
-import { notifyError } from 'src/utils/notify';
+import { notifyError, notifyMessage } from 'src/utils/notify';
 import { PropType, defineComponent } from 'vue';
 
 import api from '../../api/backend-api';
@@ -82,7 +82,11 @@ export default defineComponent({
         .then((response) => {
           this.resultSearch = response.data;
           if (this.isLoggedIn) this.saveSearchRequest(searchPattern);
-          this.resultSearchDialog = true;
+          if (Object.keys(this.resultSearch).length === 0) {
+            notifyMessage({ position: 'top', message: this.$t('grewSearch.requestNotFound'), icon: 'save' });
+          } else {
+            this.resultSearchDialog = true;
+          }
         })
         .catch((error) => {
           notifyError({ error, caller: 'onSearch' });
@@ -109,8 +113,12 @@ export default defineComponent({
       api
         .tryPackage(this.name, data)
         .then((response) => {
-          this.resultSearchDialog = true;
           this.resultSearch = response.data;
+          if (Object.keys(this.resultSearch).length === 0) {
+            notifyMessage({ position: 'top', message: this.$t('grewSearch.noRuleApply'), icon: 'save' });
+          } else {
+            this.resultSearchDialog = true;
+          }
         })
         .catch((error) => {
           notifyError({ error, caller: 'onTryRules' });

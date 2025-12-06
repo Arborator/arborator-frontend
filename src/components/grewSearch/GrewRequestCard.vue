@@ -153,7 +153,7 @@ export default defineComponent({
       this.data = val;
     },
     onSearch() {
-      this.parentOnSearch(this.currentQuery.normalize('NFC'), this.data.treeType, this.data.treeTypeLabel,  this.data.otherUser, this.data.selectedSamples);
+      this.parentOnSearch(this.currentQuery.normalize('NFC'), this.data.treeType, this.data.treeTypeLabel, this.data.otherUser, this.data.selectedSamples);
       this.changeLastGrewQuery({ text: this.currentQuery.normalize('NFC'), type: this.currentQueryType, userType: this.data.treeType });
     },
     tryRules() {

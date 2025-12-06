@@ -226,6 +226,10 @@ export default {
 
     rewriteReport: 'Rules applied to {treeLabel}: {nodes} and {edges} modified in {sents} (for {users})',
     searchReport: '{occs} in {sents} (for {users})',
+
+    requestNotFound: 'The request was not found in the selected samples',
+    noRuleApply: 'None of the rules apply to the selected samples',
+
   },
 
   relationTable: {

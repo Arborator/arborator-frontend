@@ -223,6 +223,9 @@ export default {
 
     rewriteReport: 'Règles appliquées sur {treeLabel}: {nodes} et {edges} modifiés dans {sents} (pour {users})',
     searchReport: '{occs} dans {sents} (pour {users})',
+
+    requestNotFound: "La requête n'a pas été trouvée dans les échantillons sélectionnés",
+    noRuleApply: "Aucune des règles ne s'applique aux échantillons sélectionnés",
   },
 
   relationTable: {

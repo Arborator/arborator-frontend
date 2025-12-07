@@ -1,5 +1,5 @@
 <template>
-  <q-dialog v-model="showHistoryDial" full-width persistent maximized>
+  <q-dialog v-model="showHistoryDial" full-width persistent>
     <q-card style="min-width: 50vw">
       <q-bar class="bg-primary text-white sticky-bar">
         <q-space />

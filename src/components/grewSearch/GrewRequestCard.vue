@@ -200,3 +200,11 @@ export default defineComponent({
   height: 40px;
 }
 </style>
+
+<style>
+/* TOREVIEW: This should be placed somewhere else */
+.CodeMirror-scroll {
+  font-family: Courier;
+  font-size: 14px;
+}
+</style>

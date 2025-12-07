@@ -23,7 +23,7 @@
 		{
 			"type": "SEARCH",
 			"name": "Relation and tags query",
-			"pattern": "% Search for a \"det\" dependency relation\n% such that the governor's tag is different from NOUN, PROPN and ADJ\n\npattern {\nX [upos <> NOUN|ADJ|PROPN];\nX -[det]-> Y;\n}"
+			"pattern": "% Search for a \"det\" dependency relation\n% such that the governor's tag is different from NOUN, PROPN and ADJ\n\npattern {\n  X [upos <> NOUN|ADJ|PROPN];\n  X -[det]-> Y;\n}"
 		},
 		{
 			"type": "SEARCH",
@@ -39,13 +39,18 @@
 		},
 		{
 			"type": "REWRITE",
+			"name": "Add a feature",
+			"pattern": "% Add the feature PronType=Prs to all PRON\nrule r {\n  pattern { X [upos=PRON] }\n  without { X.PronType = Prs }  % ⚠️ If this line is omitted, the rule can be applied infinitely!\n  commands { X.PronType = Prs }\n}"
+		},
+		{
+			"type": "REWRITE",
 			"name": "Rewrite Deprel label",
-			"pattern": "rule r {\n  pattern { e: X -[compound:vo]-> Y }\n  commands { \n  \t% If you want to rename the label main:aux@deep in one time:\n    e.label = \"comp:obj@agent/m\";\n    \n    % Or if you want to rename feature by feature: \n    % e.1 = comp;\n    % e.2 = obj;\n\t% e.deep = agent;\n\t% e.type = m;\n\t}\n}"
+			"pattern": "rule r {\n  pattern { e: X -[compound]-> Y }\n  commands { \n  \t% If you want to rename the label main:aux@deep in one time:\n    e.label = \"comp:obj@agent/m\";\n    \n    % Or if you want to rename feature by feature: \n    % e.1 = comp;\n    % e.2 = obj;\n    % e.deep = agent;  % (specific to SUD)\n    % e.type = m;      % (specific to mSUD)\n  }\n}"
 		},
 		{
 			"type": "REWRITE",
 			"name": "Delete Dependency",
-			"pattern": "rule r {\n  pattern { e: X -[det]-> Y }\n  commands { \n  \t% If you want to delete the dependency\n    del_edge e;\n\t}\n}"
+			"pattern": "rule r {\n  pattern { e: X -[det]-> Y }\n  commands { \n  \t% If you want to delete the dependency\n    del_edge e;\n  }\n}"
 		},
 		{
 			"type": "REWRITE",
@@ -55,12 +60,12 @@
 		{
 			"type": "REWRITE",
 			"name": "Expand Feature",
-			"pattern": "% The following two rules expand the feature Gloss=1SG by the two features Person=1, Number=Sing\nrule r1 {\n pattern { X [Gloss=\"1SG\"] }\n without{ X.Person=1 }\n commands { X.Person=1 } \n}\nrule r2 {\n  pattern { X [Gloss=\"1SG\"] }\n  without { X.Number=Sing }\n  commands { X.Number=Sing }\n}"
+			"pattern": "% The following two rules expand the feature Gloss=1SG by the two features Person=1, Number=Sing\nrule r1 {\n  pattern { X [Gloss=\"1SG\"] }\n  without{ X.Person=1 }\n  commands { X.Person=1 } \n}\nrule r2 {\n  pattern { X [Gloss=\"1SG\"] }\n  without { X.Number=Sing }\n  commands { X.Number=Sing }\n}"
 		},
 		{
 			"type": "REWRITE",
 			"name": "Shift Dependency",
-			"pattern": "% in this template rule, we inverse the relation from NOUN -> ADJ to ADJ -> NOUN\nrule r {\n  pattern {\n    X1 [upos=NOUN] ; \n    X2 [upos=ADJ] ; \n    e: X1 -[mod]-> X2 ; \n  }\n  commands { \n    del_edge e; % delete the edge\n    add_edge X2 -[mod]-> X1; % add the inverse edge\n    \n    % and then shift the in-edges pointing to X1 and redirect to X2\n    shift_in X1 ==> X2;\n    \n    % facultative: if you also want to redirect all out-edges (starting from X1) to X2 (will start from X2), use the following line:\n    %shift_out X1 ==> X2;\n\t}\n}"
+			"pattern": "% in this template rule, we inverse the relation from NOUN -> ADJ to ADJ -> NOUN\nrule r {\n  pattern {\n    X1 [upos=NOUN] ; \n    X2 [upos=ADJ] ; \n    e: X1 -[mod]-> X2 ; \n  }\n  commands { \n    del_edge e; % delete the edge\n    add_edge X2 -[mod]-> X1; % add the inverse edge\n    \n    % and then shift the in-edges pointing to X1 and redirect to X2\n    shift_in X1 ==> X2;\n    \n    % facultative: if you also want to redirect all out-edges (starting from X1) to X2 (will start from X2), use the following line:\n    %shift_out X1 ==> X2;\n  }\n}"
 		}
 	]
 }

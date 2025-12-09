@@ -106,9 +106,7 @@ export default defineComponent({
           this.availableSaveAs.push("base_tree");
         }
       }
-      if (!this.blindAnnotationMode) {
-        this.availableSaveAs.push(this.username)
-      }
+      this.availableSaveAs.push(this.username)
 
       api
         .tryPackage(this.name, data)

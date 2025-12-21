@@ -61,7 +61,7 @@ export default defineComponent({
       query: '',
       userType: '',
       treeLabel: '',
-      availableSaveAs: ["toto"],
+      availableSaveAs: [],
     };
     return result;
   },

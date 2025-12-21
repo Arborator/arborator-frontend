@@ -82,8 +82,8 @@ export default defineComponent({
           notifyMessage({ message: this.$t('github.commitDialog.commitMessage') + `"${this.repositoryName}"` });
           this.$emit('committed');
         })
-        .catch(() => {
-          notifyError({ error: 'Error while commiting changes' });
+        .catch((error) => {
+          notifyError({ error, caller: 'Error while commiting changes' });
         });
     },
     highlightedDiff(diff: string) {

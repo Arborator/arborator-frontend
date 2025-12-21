@@ -346,6 +346,9 @@ export default {
   commitChanges(projectName: string, data: any) {
     return API.post(`/projects/${projectName}/synchronize/commit`, data);
   },
+  commitNewSamples(projectName: string, data: any) {
+    return API.post(`/projects/${projectName}/synchronize/commit_samples`, data);
+  },
   checkPull(projectName: string) {
     return API.get(`/projects/${projectName}/synchronize/pull`);
   },

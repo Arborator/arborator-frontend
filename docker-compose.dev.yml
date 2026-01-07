@@ -4,8 +4,6 @@ services:
       context: .
       dockerfile: Dockerfile
     container_name: arborator-frontend-dev
-    env_file:
-      - .env
     volumes:
       - ./:/app
       - /app/node_modules

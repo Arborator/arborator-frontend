@@ -114,7 +114,15 @@
               (val) => (val && val.length > 0) || $t('uploadSample.emptyUsernameError'),
             ]"
           />
-          <q-separator />
+            <q-separator />
+            
+            <div 
+              v-if='userId == "validated" && isAllowdedToSync && syncGithubRepo'
+              class="q-pa-md bg-orange-1 text-orange-10"
+            >
+              <q-icon name="warning" class="q-mr-md" />
+              The uploaded sample will be pushed on GitHub ({{  syncGithubRepo }}) immediatly!
+          </div>
         </div>
         <q-item>
           <q-item-section side top>
@@ -138,7 +146,7 @@
             :loading="uploadSample.submitting"
             :disable="disableUploadBtn"
             @click="uploadSamples()"
-            >
+          >
             <q-tooltip v-if="uploadSample.attachment.file.length == 0" content-class="text-white bg-primary">
               {{ $t('uploadSample.uploadFileTooltip') }}
             </q-tooltip>
@@ -195,6 +203,10 @@ export default defineComponent({
     samples: {
       type: Object as PropType<sample_t[]>,
       required: true,
+    },
+    syncGithubRepo: {
+      type: String as PropType<string>,
+      required: false,
     },
   },
   setup(props, { emit }) {

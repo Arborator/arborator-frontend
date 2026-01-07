@@ -107,6 +107,7 @@
               <ProjectTable
                 :key="reload"
                 :samples="samples"
+                :syncGithubRepo="syncGithubRepo"
                 @selected-samples="getSelectedSamples"
               ></ProjectTable>
             </q-tab-panel>
@@ -136,7 +137,12 @@
       <q-dialog v-model="projectSettingsDial">
         <ProjectSettingsView :projectName="projectName" :samples="samples" @reload="loadProjectData()" />
       </q-dialog>
-      <UploadDialog v-model:uploadDial="uploadDial" :samples="samples" @uploaded:sample="loadProjectData()" />
+      <UploadDialog 
+        v-model:uploadDial="uploadDial" 
+        :samples="samples" 
+        @uploaded:sample="loadProjectData()"
+        :syncGithubRepo="syncGithubRepo"
+      />
     </div>
   </q-page>
 </template>

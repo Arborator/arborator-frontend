@@ -53,7 +53,7 @@
               touch-position
             > 
               <q-list>
-                <q-item v-close-popup clickable @click="showRenameSampleDial(props.row.sampleName)">
+                <q-item v-close-popup clickable @click="showRenameSampleDial(props.row.sampleName, 'validated' in props.row.treeByUser)">
                   <q-item-section>Rename sample</q-item-section>
                   <q-item-section side>
                     <q-icon name="edit" />
@@ -93,7 +93,12 @@
     </template>
   </q-table>
   <q-dialog v-model="isShowRenameDial">
-   <RenameSample :sample-name="selectedSample" /> 
+    <RenameSample
+      :sample-name="selectedSample"
+      :canChangeGithub="isAllowdedToSync"
+      :syncGithubRepo="syncGithubRepo"
+      :has-validated="hasValidated"
+    />
   </q-dialog>
 </template>
 <script lang="ts">
@@ -117,6 +122,10 @@ export default defineComponent({
     samples: {
       type: Array as PropType<sample_t[]>,
       required: true,
+    },
+    syncGithubRepo: {
+      type: String as PropType<string>,
+      required: false,
     },
   },
   data() {
@@ -192,10 +201,18 @@ export default defineComponent({
       ],
       isShowRenameDial: false,
       selectedSample: '',
+      hasValidated: false,
     };
   },
   computed: {
-    ...mapState(useProjectStore, ['name', 'isAdmin', 'freezed', 'isOwner', 'blindAnnotationMode']),
+    ...mapState(useProjectStore, [
+      'name',
+      'isAdmin',
+      'freezed',
+      'isOwner',
+      'isAllowdedToSync',
+      'blindAnnotationMode'
+    ]),
   },
   watch: {
     samples(newVal, oldVal) {
@@ -225,9 +242,10 @@ export default defineComponent({
           });
       }, 0);
     },
-    showRenameSampleDial(sampleName: string) {
+    showRenameSampleDial(sampleName: string, hasValidated: boolean) {
       this.isShowRenameDial = true;
       this.selectedSample = sampleName;
+      this.hasValidated = hasValidated;
     }
   },
 });

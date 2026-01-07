@@ -9,6 +9,12 @@
     </q-card-section>
     <q-separator />
     <q-card-section>
+      <div v-if='hasValidated && canChangeGithub && syncGithubRepo' style="margin-bottom: 15px;">
+        <div class="q-pa-md bg-orange-1 text-orange-10" >
+          <q-icon name="warning" class="q-mr-md" />
+          The sample will be renamed on GitHub ({{  syncGithubRepo }}) immediatly!
+        </div>
+      </div>
       <q-input
         outlined
         v-model="newSampleName"
@@ -24,11 +30,13 @@
           @click="renameSample()"
         />
       </div>
+
     </q-card-section>
   </q-card>
 </template>
 <script lang="ts">
 import { api } from 'src/boot/axios';
+import { sample_t } from 'src/api/backend-types';
 import { mapWritableState, mapState } from 'pinia';
 import { useProjectStore } from 'src/pinia/modules/project';
 import { notifyError, notifyMessage } from 'src/utils/notify';
@@ -41,7 +49,17 @@ export default defineComponent({
     sampleName: {
       type: String as PropType<string>,
       required: true,
-    }
+    },
+    canChangeGithub: {
+      type: Boolean as PropType<boolean>,
+    },
+    hasValidated: {
+      type: Boolean as PropType<boolean>,
+    },
+    syncGithubRepo: {
+      type: String as PropType<string>,
+      required: false,
+    },
   },
   data() {
     return {
@@ -60,6 +78,18 @@ export default defineComponent({
         .renameSample(this.name, this.sampleName, data)
         .then(() => {
           notifyMessage({ message: 'The sample name is modified' });
+          if (this.canChangeGithub && this.hasValidated && this.syncGithubRepo) {
+            const data = {
+              oldName: this.sampleName,
+              newName: this.newSampleName,
+            }
+            api
+              .githubRenameSample(this.name, data)
+              .then(() => {
+                notifyMessage({ message: 'The samples name was modified on GitHub' });
+              }
+            )
+          }
           this.reloadSamples = true;
         })
         .catch((error) => {

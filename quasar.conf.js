@@ -1,7 +1,9 @@
 // Configuration for your app
 // https://quasar.dev/quasar-cli/quasar-conf-js
 
-const source = 'https://arborator-backend:5000';
+const source = process.env.NODE_ENV === 'production' 
+  ? 'https://arborator-backend:5000'
+  : 'https://arborator-backend-dev:5000';
 
 /* eslint-env node */
 const ESLintPlugin = require('eslint-webpack-plugin');

@@ -29,7 +29,7 @@
         </q-toolbar>
       </q-card-section>
       <q-card-section>
-        <q-input outlined v-model="search" bottom-slots :label="$t('projectHub.emptySearch')" type="text" @update:model-value="getProjects()">
+        <q-input outlined v-model="search" bottom-slots :label="$t('projectHub.emptySearch')" type="text" @update:model-value="debouncedGetProjects()">
           <template #append>
             <div v-for="val in selectedLanguagesForFilter">
               <q-chip removable size="sm" @remove="removeFilter(val)">{{ val }}</q-chip>
@@ -175,6 +175,7 @@ export default defineComponent({
       ],
       projectType: { value: 'all_projects', label: this.$t('projectHub.allProjects') },
       search: '',
+      debouncedTimeout: null as ReturnType<typeof setTimeout> | null,
       listMode: true,
       creaProjectDial: false,
       initLoading: false,
@@ -245,6 +246,18 @@ export default defineComponent({
           notifyError({ error, caller: 'getProjects' });
         });
     },
+    debouncedGetProjects() {
+      // Clear the previous timeout
+      if (this.debouncedTimeout) {
+        clearTimeout(this.debouncedTimeout);
+      }
+      // Set a new timeout
+      this.debouncedTimeout = setTimeout(() => {
+        this.getProjects();
+      }, 500); // 500ms delay
+    },
+
+
     deleteProject(projectName: string) {
       api
         .deleteProject(projectName)

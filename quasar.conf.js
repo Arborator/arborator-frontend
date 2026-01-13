@@ -5,6 +5,9 @@ const source = process.env.NODE_ENV === 'production'
   ? 'https://arborator-backend:5000'
   : 'https://arborator-backend-dev:5000';
 
+
+const buildEnv = process.env.BUILD_ENV || 'prod';
+
 /* eslint-env node */
 const ESLintPlugin = require('eslint-webpack-plugin');
 
@@ -131,11 +134,15 @@ module.exports = configure((ctx) => ({
           // so on dev we'll have
           API: 'https://127.0.0.1:5000',
         }
-      : {
-          // and on build (production):
-          // API: JSON.stringify("https://arboratorgrew.elizia.net:8888"),
-          API: 'https://arborator.grew.fr',
-        },
+        : buildEnv === 'preprod'
+          ? {
+            API: 'https://ag-preprod.grew.fr',
+          }
+          : {
+            // and on build (production):
+            // API: JSON.stringify("https://arboratorgrew.elizia.net:8888"),
+            API: 'https://arborator.grew.fr',
+          },
     scopeHoisting: true,
     devtool: 'source-map',
     // vueRouterMode: 'history',

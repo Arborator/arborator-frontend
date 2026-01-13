@@ -1,10 +1,11 @@
 # Build
 FROM node:18-alpine AS builder
+ARG BUILD_ENV=prod
 WORKDIR /app
 COPY package*.json ./
 RUN npm install --legacy-peer-deps
 COPY . .
-RUN npm run buildProd
+RUN BUILD_ENV=$BUILD_ENV npm run buildProd
 
 # Prod
 FROM nginx:stable-alpine

@@ -32,7 +32,7 @@ import {
 } from './endpoints';
 
 export const API = axios.create({
-  baseURL: '/api',
+  baseURL: process.env.API ? `${process.env.API}/api` : '/api',
   timeout: 50000,
   withCredentials: false,
 });

@@ -1,0 +1,25 @@
+# Build
+FROM node:18-alpine AS builder
+ARG BUILD_ENV=prod
+WORKDIR /app
+COPY package*.json ./
+RUN npm install --legacy-peer-deps
+COPY . .
+RUN BUILD_ENV=$BUILD_ENV npm run buildProd
+
+# Prod
+FROM nginx:stable-alpine
+RUN rm -rf /usr/share/nginx/html/*
+COPY --from=builder /app/dist/spa /usr/share/nginx/html
+
+RUN echo 'server { \
+    listen 8080; \
+    root /usr/share/nginx/html; \
+    index index.html; \
+    location / { \
+        try_files $uri $uri/ /index.html; \
+    } \
+}' > /etc/nginx/conf.d/app.conf
+
+EXPOSE 8080
+CMD ["nginx", "-g", "daemon off;"]

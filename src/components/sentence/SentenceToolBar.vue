@@ -10,7 +10,7 @@
       readonly
       borderless
     >
-      <q-tooltip v-if="openTabUser !== ''" anchor="bottom middle" self="center middle" :offset="[10, 10]">
+    <q-tooltip v-if="openTabUser !== ''" anchor="bottom middle" self="center middle" :offset="[10, 10]">
         {{ $t('sentenceCard.selectTooltip') }}
       </q-tooltip>
     </q-input>
@@ -190,11 +190,16 @@
       @closed="showSentSegmentationDial = false"
     />
   </template>
+  <AudioPlayer v-if="isSound()"
+     :sentence-data="sentenceData"
+     :reactive-sentences-obj="(reactiveSentencesObj as reactive_sentences_obj_t)"
+   ></AudioPlayer>
 </template>
 
 <script lang="ts">
 import TagsMenu from './TagsMenu.vue';
 import SentenceSegmentation from './SentenceSegmentation.vue';
+import AudioPlayer from './AudioPlayer.vue';
 
 import  { sentenceConllToJson } from 'conllup/lib/conll';
 
@@ -214,6 +219,7 @@ export default defineComponent({
   components: {
     TagsMenu,
     SentenceSegmentation,
+    AudioPlayer,
   },
   props: {
     sentenceBus: {
@@ -342,7 +348,12 @@ export default defineComponent({
     chooseSegmentationOption(option: string) {
       this.showSentSegmentationDial = true;
       this.sentenceSegmentationOption = option;
-    }
+    },
+    isSound() {
+      const [conllData] = Object.values(this.sentenceData.conlls)
+      const soundUrl= conllData.match(/sound_url = (.*?)\n/)
+      return soundUrl !== null
+    },
   }
 });
 </script>

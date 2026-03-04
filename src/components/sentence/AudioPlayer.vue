@@ -1,15 +1,15 @@
 <template>
-    
-     <audio ref="audioPlayer" :src="currentUrl" @play="audio_play" @pause="audio_pause"
-      @seeking="audio_seeking" controls
+
+     <audio ref="audioPlayer" :src="currentUrl" @play="audioPlay" @pause="audioPause"
+      @seeking="audioSeeking" controls
       style="margin: 0.5%; width: 30%;">
       </audio>
 
 </template>
 
 <script lang="ts">
-import { mapState, mapActions } from 'pinia';
-import { useProjectStore } from 'src/pinia/modules/project';
+import { mapState } from 'pinia';
+import { useTreesStore } from 'src/pinia/modules/trees';
 import { PropType, defineComponent } from 'vue';
 
 import { grewSearchResultSentence_t } from 'src/api/backend-types';
@@ -19,13 +19,14 @@ export default defineComponent({
     name: "AudioPlayer",
     props: {
         sentenceData: {
-        type: Object as PropType<grewSearchResultSentence_t>,
-        required: true,
+            type: Object as PropType<grewSearchResultSentence_t>,
+            required: true,
         },
         reactiveSentencesObj: {
-        type: Object as PropType<reactive_sentences_obj_t>,
-        required: true,
+            type: Object as PropType<reactive_sentences_obj_t>,
+            required: true,
         },
+        
     },
     data() {
         return {
@@ -39,7 +40,7 @@ export default defineComponent({
         }
     },
     computed: {
-        ...mapState(useProjectStore, ["annotationFeatures", "diffUserId"])
+        ...mapState(useTreesStore, ["userIds"])
     },
     mounted(){
             this.conllData = this.getConllData() 
@@ -48,45 +49,41 @@ export default defineComponent({
             if (this.audioTokens[this.audioTokens.length -1] != undefined){
                 this.audioEnd = this.audioTokens[this.audioTokens.length -1].dataset.end
                 this.audioBegin = this.audioTokens[0].dataset.begin
+                //console.log(this.audioTokens, "fin : ", this.audioEnd)
             }
             clearInterval(this.audio_interval_id)
-            
-
             this.$nextTick(() => {
-               const audio = this.$refs.audioPlayer as HTMLAudioElement
-               audio.currentTime = this.audioBegin
-               this.audio_init()
+               const audioPlayer = this.$refs.audioPlayer as HTMLAudioElement
+               audioPlayer.currentTime = this.audioBegin
+               this.audioInit()
             })
-            //audio.load() reload mais src = vide 
     },
     methods: {
         getConllData(){
             const [conllData]  = Object.values(this.sentenceData.conlls)
             return conllData
         },
-        changeUrl(url : string){
-            this.currentUrl = url
+        getMeta(){
+            const meta = this.reactiveSentencesObj[this.getUserId()].state.metaJson
+            return meta
         },
-       
-        getSoundUrlConll(): string {
+        getUserId(){
+            const id = Object.entries(this.reactiveSentencesObj)[0][0]
+            if (id !== undefined){
+                 return id
+            }
+            return '';    
+        },
+        getSoundUrlConll() {
             const soundUrl = this.conllData.match(/sound_url = (.*?)\n/)
             if (soundUrl !== null){
-                return soundUrl[1] 
+                //return this.getMeta().sound_url.toString()
+                return soundUrl[1]
             }
             return "";
         },
-        getAllAlignEnd(){
-            const end = [...this.conllData.matchAll(/AlignEnd=(.*?)\|/g)];
-            const allEnds = end.map(m => parseFloat(m[1]));
-            return allEnds.sort((a, b) => a - b);
-        },
-        getAllAlignBegin(){
-            const begin = [...this.conllData.matchAll(/AlignBegin=(.*?)\|/g)];
-            const allBegins = begin.map(m => parseFloat(m[1]));
-            return allBegins.sort((a, b) => a - b);
-        },
         getAudioTokens(){
-            const regex = /AlignBegin=(.*?)\|AlignEnd=(.*?)\|/g;
+            const regex = /AlignBegin=(\d+)\|AlignEnd=(\d+)(?:\||\n|$)/g
             const matches = [...this.conllData.matchAll(regex)];
 
             return matches.map(m => {
@@ -101,20 +98,19 @@ export default defineComponent({
                 };
             });
         },
-        async audio_init() {
-            //on met au bon timeCode et en pause
-            const audio = this.$refs.audioPlayer as HTMLAudioElement
-            if (!audio) return
+        async audioInit() {
+            const audioPlayer = this.$refs.audioPlayer as HTMLAudioElement
+            if (!audioPlayer) return
 
-            if (audio.readyState < 1) {
+            if (audioPlayer.readyState < 1) {
                 await new Promise<void>((resolve) => {
-                audio.addEventListener('loadedmetadata', () => resolve(), { once: true })
+                audioPlayer.addEventListener('loadedmetadata', () => resolve(), { once: true })
                 })
             }
             //audio.currentTime = this.audioBegin
-            audio.pause()
+            audioPlayer.pause()
         },
-        audio_play(){
+        audioPlay(){
             console.log ("play")
             if (this.audioTokens != undefined && this.audioTokens.length > 0){
                 this.audio_interval_id = setInterval(() => {
@@ -140,7 +136,7 @@ export default defineComponent({
                 console.log("audioPlayer undefined dans update")
             }
         },
-        audio_pause(){
+        audioPause(){
             //clear l'interval et on remet au debut si fin durée
             console.log("pause")
             const audio = this.$refs.audioPlayer as HTMLAudioElement
@@ -158,7 +154,7 @@ export default defineComponent({
             }  
         },
 
-        audio_seeking(){
+        audioSeeking(){
             //console.log("seeking")
             const audioPlayer = this.$refs.audioPlayer as HTMLAudioElement
             if (audioPlayer != null){

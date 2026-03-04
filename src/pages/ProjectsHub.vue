@@ -29,7 +29,7 @@
         </q-toolbar>
       </q-card-section>
       <q-card-section>
-        <q-input outlined v-model="search" bottom-slots :label="$t('projectHub.emptySearch')" type="text" @update:model-value="debouncedGetProjects()">
+        <q-input outlined v-model="search" bottom-slots :label="$t('projectHub.emptySearch')" type="text" @update:model-value="debouncedGetProjects">
           <template #append>
             <div v-for="val in selectedLanguagesForFilter">
               <q-chip removable size="sm" @remove="removeFilter(val)">{{ val }}</q-chip>
@@ -150,6 +150,7 @@ import ProjectCard from 'src/components/project/ProjectCard.vue';
 import ProjectItem from 'src/components/project/ProjectItem.vue';
 import EmailCollectDialog from 'src/components/Index/EmailCollectDialog.vue';
 import LanguageSelect from 'src/components/shared/LanguageSelect.vue';
+import { debounce } from 'quasar';
 
 export default defineComponent({
   name: 'ProjectHub',
@@ -175,7 +176,6 @@ export default defineComponent({
       ],
       projectType: { value: 'all_projects', label: this.$t('projectHub.allProjects') },
       search: '',
-      debouncedTimeout: null as ReturnType<typeof setTimeout> | null,
       listMode: true,
       creaProjectDial: false,
       initLoading: false,
@@ -186,6 +186,7 @@ export default defineComponent({
       selectedLanguagesForFilter: [],
       projectsLanguages,
       totalPages: 1,
+      debouncedGetProjects: null as any,
     };
   },
   computed: {
@@ -198,13 +199,13 @@ export default defineComponent({
     },
     reloadProjects(newVal) {
       if (newVal) {
-        this.getProjects();
+        this.debouncedGetProjects();
         this.reloadProjects = false;
       }
     },
     selectedLanguagesForFilter: {
       handler() {
-        this.getProjects();
+        this.debouncedGetProjects();
       },
       deep: true,
     },
@@ -213,7 +214,12 @@ export default defineComponent({
     document.title = `ArboratorGrew: ${this.$t('projectHub.title')}`;
     this.initLoading = true;
     this.listMode = LocalStorage.getItem('project_view') || false;
-    this.getProjects();
+    
+    this.debouncedGetProjects = debounce(() => {
+      this.getProjects();
+    }, 500);
+    
+    this.debouncedGetProjects();
     this.getProjectsLanguages();
     this.projectCardWidth = Math.trunc(window.innerWidth / 7);
   },
@@ -246,18 +252,6 @@ export default defineComponent({
           notifyError({ error, caller: 'getProjects' });
         });
     },
-    debouncedGetProjects() {
-      // Clear the previous timeout
-      if (this.debouncedTimeout) {
-        clearTimeout(this.debouncedTimeout);
-      }
-      // Set a new timeout
-      this.debouncedTimeout = setTimeout(() => {
-        this.getProjects();
-      }, 500); // 500ms delay
-    },
-
-
     deleteProject(projectName: string) {
       api
         .deleteProject(projectName)

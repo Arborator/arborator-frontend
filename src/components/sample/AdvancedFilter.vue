@@ -2,8 +2,8 @@
   <div class="row q-pa-md">
     <Breadcrumbs :height="30" :font-size="16" />
   </div>
-  <div class="row q-pa-md q-gutter-md">
-    <div class="col-3">
+  <div class="row q-pa-sm q-gutter-sm items-center">
+    <div class="col-2">
       <q-input 
         v-model="textFilter" 
         :label="$t('advancedFilter.textFilter')" 
@@ -13,7 +13,7 @@
         @keyup.enter="applyAdvancedFilter()"
       ></q-input>
     </div>
-    <div class="col-1">
+    <div class="col-auto">
       <q-input v-model="sentIdFilter" outlined dense :label="$t('advancedFilter.sentIdFilter')" @keyup.enter="applyAdvancedFilter()" />
     </div>
     <div class="col-1">
@@ -37,7 +37,7 @@
         </template>
       </q-select>
     </div>
-    <div class="col-1">
+    <div class="col-auto">
       <q-btn @click="applyAdvancedFilter" color="primary">{{ $t('advancedFilter.applyFilter') }}</q-btn>
     </div>
     <div class="col-1">
@@ -50,7 +50,7 @@
         @update:model-value="orderFilteredTrees(order)"
        />
     </div>
-    <div class="col-1">
+    <div class="col-auto">
       <q-separator vertical />
       <q-btn no-caps v-if="config === 'ud' && !blindAnnotationMode" color="primary" :label="$t('advancedFilter.validateAllTrees')" @click="validateAllTrees()">
         <q-tooltip>
@@ -58,15 +58,14 @@
         </q-tooltip>
       </q-btn>
     </div>
-    <div class="col-2">
+        <div class="col-auto" v-for="user in userIds" v-if="isLoggedIn && !blindAnnotationMode">
       <q-btn 
-        v-if="isLoggedIn && !blindAnnotationMode" 
-        outline 
-        :disable="pendingModifications.size === 0" 
-        color="primary" 
-        :label="$t('advancedFilter.savePendingTrees')" 
-        @click="saveAllTrees()"
+        :disable="!pendingModifications.size"
+        :label="$t('grewSearch.applyRuleAs', [user])" 
+        color="primary"
+        @click="saveAllTreesAs(user)"
       >
+        <q-tooltip v-if='pendingModifications.size === 0'>{{ $t('grewSearch.applyRuleTooltip') }}</q-tooltip>
         <q-badge v-if="pendingModifications.size > 0" color="red" floating>
           {{ pendingModifications.size }}
         </q-badge>
@@ -275,6 +274,44 @@ export default defineComponent({
         .catch((error) => {
           notifyError({ error: `Error happened while saving trees ${error}` });
         });
+    },
+    saveAllTreesAs(saveAs: string) {
+      const modifiedSentences = [...this.pendingModifications.values()];
+      const groupedConlls: { [key: string]: string[] } = {};
+      
+      for (const sentence of modifiedSentences) {
+        const group = (groupedConlls[sentence.sampleName] || []);
+        const conllsentences = sentence.conll.split('\n');
+        const updatedConllsentences = conllsentences.map((sentenceLine: string) => {
+          if (sentenceLine.startsWith('# user_id =')) {
+            return `# user_id = ${saveAs}`;
+          }
+          if (sentenceLine.startsWith('# timestamp =')) {
+            return `# timestamp = ${Math.round(Date.now())}`;
+          }
+          return sentenceLine;
+        });
+        group.push(updatedConllsentences.join('\n'));
+        groupedConlls[sentence.sampleName] = group;
+      }
+
+      for (const [sampleName, conlls] of Object.entries(groupedConlls)) {
+        const data = { conllGraph: (conlls as string[]).join('\n\n') };
+        api
+          .saveAllTrees(this.name, sampleName, data)
+          .then(() => {
+            notifyMessage({ 
+              position: 'top', 
+              message: `Saved on the server as "${saveAs}"`, 
+              icon: 'save' 
+            });
+            this.emptyPendingModification();
+            this.$emit('trees-saved');
+          })
+          .catch((error) => {
+            notifyError({ error: `Error happened while saving trees ${error}` });
+          });
+      }
     },
     validateAllTrees() {
       this.parentOnValidate();

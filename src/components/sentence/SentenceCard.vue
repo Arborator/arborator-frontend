@@ -11,6 +11,12 @@
       :can-undo="canUndo"
       :can-redo="canRedo"
     ></SentenceToolBar>
+
+    <AudioPlayer v-if="isSound()"
+     :sentence-data="sentenceData"
+     :reactive-sentences-obj="(reactiveSentencesObj as reactive_sentences_obj_t)"
+    ></AudioPlayer>
+
     <div>
       <q-tabs
         v-model="openTabUser"
@@ -195,6 +201,7 @@ import VueDepTree from './VueDepTree.vue';
 import XposDialog from './XposDialog.vue';
 import RelationDialog from './RelationDialog.vue';
 import SentenceToolBar from './SentenceToolBar.vue';
+import AudioPlayer from './AudioPlayer.vue';
 
 
 function sentenceBusFactory(): sentence_bus_t {
@@ -218,6 +225,7 @@ export default defineComponent({
     MultiEditDialog,
     SentenceToolBar,
     RelationDialog,
+    AudioPlayer,
   },
   props: {
     index: {
@@ -510,6 +518,11 @@ export default defineComponent({
     },
     removeUserTag(tag: string) {
       this.removeTag(this.sentenceData, tag, this.sentenceBus, this.openTabUser);
+    },
+    isSound() {
+      const [conllData] = Object.values(this.sentenceData.conlls)
+      const soundUrl= conllData.match(/sound_url = (.*?)\n/)
+      return soundUrl !== null
     },
   },
 });

@@ -190,7 +190,7 @@
       @closed="showSentSegmentationDial = false"
     />
   </template>
-  <AudioPlayer v-if="isSound()"
+  <AudioPlayer v-if="isAudio()"
      :sentence-data="sentenceData"
      :reactive-sentences-obj="(reactiveSentencesObj as reactive_sentences_obj_t)"
    ></AudioPlayer>
@@ -349,7 +349,7 @@ export default defineComponent({
       this.showSentSegmentationDial = true;
       this.sentenceSegmentationOption = option;
     },
-    isSound() {
+    isAudio() {
       const [conllData] = Object.values(this.sentenceData.conlls)
       const soundUrl= conllData.match(/sound_url = (.*?)\n/)
       return soundUrl !== null

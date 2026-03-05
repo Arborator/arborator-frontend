@@ -1,15 +1,22 @@
 <template>
-
-     <audio ref="audioPlayer" :src="currentUrl" @play="audioPlay" @pause="audioPause"
-      @seeking="audioSeeking" controls
-      style="margin: 0.5%; width: 30%;">
+     <audio ref="audioPlayer" :src="currentUrl" @play="audioPlay" @pause="audioPause" 
+        @seeking="audioSeeking" controls 
+        style="margin: 0.5%; width: 30%;">
       </audio>
 
+      <div ref="text" style="margin: 0.5%;">
+        <span
+            v-for="item in spans"
+            :class="item.class + ' clickable'"
+            @click="clickWord(item.begin)"
+            @dblclick="dblClickWord"
+        >
+            {{ item.text }}
+        </span>
+      </div>
 </template>
 
 <script lang="ts">
-import { mapState } from 'pinia';
-import { useTreesStore } from 'src/pinia/modules/trees';
 import { PropType, defineComponent } from 'vue';
 
 import { grewSearchResultSentence_t } from 'src/api/backend-types';
@@ -26,164 +33,162 @@ export default defineComponent({
             type: Object as PropType<reactive_sentences_obj_t>,
             required: true,
         },
-        
     },
     data() {
         return {
          currentUrl: '',
          conllData: '',
-         audioTokens: [{dataset:{begin: 0, end: 0, dur: 0 }}],
+         audioTokens: [{begin: 0, end: 0 , word: ""}],
          audioBegin: 0,
          audioEnd : 0,
-         audio_interval_id: setInterval(this.update(), 50),
-         audio_speaking_index: 1,
+         audioIntervalId: setInterval(this.update(), 0),
+         audioSpeakingIndex: 0,
+         spans: [] as Array<{
+            text: string
+            begin: number
+            class?: string
+        }>
         }
     },
-    computed: {
-        ...mapState(useTreesStore, ["userIds"])
-    },
     mounted(){
-            this.conllData = this.getConllData() 
-            this.currentUrl = this.getSoundUrlConll()
-            this.audioTokens= this.getAudioTokens()
-            if (this.audioTokens[this.audioTokens.length -1] != undefined){
-                this.audioEnd = this.audioTokens[this.audioTokens.length -1].dataset.end
-                this.audioBegin = this.audioTokens[0].dataset.begin
-                //console.log(this.audioTokens, "fin : ", this.audioEnd)
+            this.conllData = this.sentenceData.conlls[this.getUserId()]
+            this.currentUrl = this.getSoundUrl()
+            this.audioTokens = this.getAudioTokens()
+            if (this.audioTokens.length > 0){
+                this.audioEnd = this.audioTokens[this.audioTokens.length -1].end
+                this.audioBegin = this.audioTokens[0].begin
             }
-            clearInterval(this.audio_interval_id)
-            this.$nextTick(() => {
-               const audioPlayer = this.$refs.audioPlayer as HTMLAudioElement
-               audioPlayer.currentTime = this.audioBegin
-               this.audioInit()
-            })
+            this.setText()
+            clearInterval(this.audioIntervalId)
+            this.audioInit()
     },
     methods: {
-        getConllData(){
-            const [conllData]  = Object.values(this.sentenceData.conlls)
-            return conllData
-        },
-        getMeta(){
-            const meta = this.reactiveSentencesObj[this.getUserId()].state.metaJson
-            return meta
-        },
         getUserId(){
             const id = Object.entries(this.reactiveSentencesObj)[0][0]
             if (id !== undefined){
                  return id
             }
-            return '';    
+            return '';
         },
-        getSoundUrlConll() {
-            const soundUrl = this.conllData.match(/sound_url = (.*?)\n/)
+        getSoundUrl() {
+            const soundUrl = this.reactiveSentencesObj[this.getUserId()].state.metaJson.sound_url
             if (soundUrl !== null){
-                //return this.getMeta().sound_url.toString()
-                return soundUrl[1]
+                return soundUrl.toString()
             }
             return "";
         },
         getAudioTokens(){
             const regex = /AlignBegin=(\d+)\|AlignEnd=(\d+)(?:\||\n|$)/g
+            const form = this.reactiveSentencesObj[this.getUserId()].state.treeJson.nodesJson
             const matches = [...this.conllData.matchAll(regex)];
-
+            let index = 1;
             return matches.map(m => {
                 const begin = parseFloat(m[1]);
                 const end = parseFloat(m[2]);
+                const word = form[index].FORM;
+                index++
                 return {
-                    dataset: {
-                        begin: begin/1000,
-                        end : end/1000,
-                        dur: (end - begin)/1000
-                    }
+                    begin: begin/1000,
+                    end : end/1000,
+                    word : word
                 };
             });
         },
-        async audioInit() {
+        audioInit() {
             const audioPlayer = this.$refs.audioPlayer as HTMLAudioElement
             if (!audioPlayer) return
-
-            if (audioPlayer.readyState < 1) {
-                await new Promise<void>((resolve) => {
-                audioPlayer.addEventListener('loadedmetadata', () => resolve(), { once: true })
-                })
-            }
-            //audio.currentTime = this.audioBegin
-            audioPlayer.pause()
+            audioPlayer.currentTime = this.audioBegin
+            //audioPlayer.pause()
         },
         audioPlay(){
-            console.log ("play")
             if (this.audioTokens != undefined && this.audioTokens.length > 0){
-                this.audio_interval_id = setInterval(() => {
+                this.audioIntervalId = setInterval(() => {
                     this.update()
                 }, 50)
             }
         },
         update(){
-            //on met pause quand nécéssaire
             const audioPlayer = this.$refs.audioPlayer as HTMLAudioElement
             if (audioPlayer != undefined){
                 if (audioPlayer.currentTime >= this.audioEnd){
                     audioPlayer.pause()
-                } else {                    
-                    let token_data = this.audioTokens[this.audio_speaking_index].dataset
-                    let token_end = Number(token_data.begin) + Number(token_data.dur)
+                } else {          
+                    let token_data = this.audioTokens[this.audioSpeakingIndex]
+                    let token_end = Number(token_data.end) 
                     if (audioPlayer.currentTime > token_end) {
                         //color text
-                        this.speakingToken(this.audio_speaking_index + 1)
+                        this.speakingToken(this.audioSpeakingIndex + 1)
                     }
                 }
-            }else{
-                console.log("audioPlayer undefined dans update")
             }
         },
         audioPause(){
-            //clear l'interval et on remet au debut si fin durée
-            console.log("pause")
-            const audio = this.$refs.audioPlayer as HTMLAudioElement
-            if (audio != undefined){
+            const audioPlayer = this.$refs.audioPlayer as HTMLAudioElement
+            if (audioPlayer != undefined){
                 if (this.audioTokens != undefined && this.audioTokens.length > 0){
-                    if (this.audio_interval_id){
-                        clearInterval(this.audio_interval_id)
+                    if (this.audioIntervalId){
+                        clearInterval(this.audioIntervalId)
                     }
-                    if (audio.currentTime >= this.audioEnd) {
-                        audio.currentTime = this.audioBegin
+                    if (audioPlayer.currentTime >= this.audioEnd) {
+                        audioPlayer.currentTime = this.audioBegin
                     }
-                }else{
-                    console.log("audiotoken est undefined dans pause")
                 }
-            }  
+            }
         },
-
         audioSeeking(){
-            //console.log("seeking")
             const audioPlayer = this.$refs.audioPlayer as HTMLAudioElement
             if (audioPlayer != null){
                 if (this.audioTokens != undefined && this.audioTokens.length > 0) {
                     let pos = 0
                     this.audioTokens.forEach (function (node,index) {
-                        //node.classList.remove('speaking')
-                        let begin = Number(node.dataset.begin)
-                        let end = begin + Number(node.dataset.dur)
+                        let begin = node.begin
+                        let end =  node.end
                         if (audioPlayer.currentTime >= begin && audioPlayer.currentTime <= end) {
-                            pos = index
+                            pos = index;
                         }
                     })
-                    //on met la coleur sur le bon mot
                     this.speakingToken(pos)
                 }
-            } else{
-                console.log("audioplayer null dans seeking")
-            }
+            } 
         },
         speakingToken(position : number){
-            let prev_word = this.audioTokens[this.audio_speaking_index]
-            //prev_word.classList.remove('speaking')
-            let new_word = this.audioTokens[position]
-            this.audio_speaking_index = position
-            //new_word.classList.add('speaking')
-        }
+            let prev_word = this.spans[this.audioSpeakingIndex]
+            prev_word.class = " ";
+            let newWord = this.spans[position]
+            this.audioSpeakingIndex = position
+            newWord.class = "speaking"
+        },
+        setText() {
+            const audioPlayer = this.$refs.audioPlayer as HTMLAudioElement
+            if (this.audioTokens && this.audioTokens.length > 0) {
+                this.spans = this.audioTokens.map((node) => ({
+                    text: " " + node.word,
+                    begin: Number(node.begin),
+                    class: ""
+                }))
+            } 
+        },
+        clickWord(begin : number) {
+            const audioPlayer = this.$refs.audioPlayer as HTMLAudioElement
+            if (audioPlayer){
+                audioPlayer.currentTime = begin
+            }
+        },
+        dblClickWord() {
+            const audioPlayer = this.$refs.audioPlayer as HTMLAudioElement
+            if (audioPlayer){
+                audioPlayer.play()
+            }
+        },
     }
 })
-
-
 </script>
+
+<style lang="css">
+.speaking{
+    background-color: yellow;
+}
+.clickable:hover {
+    cursor: pointer;
+}
+</style>

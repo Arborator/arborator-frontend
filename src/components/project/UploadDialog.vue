@@ -312,7 +312,7 @@ export default defineComponent({
         reader.onerror = () => {
           reject();
         };
-        reader.readAsText(file);
+        reader.readAsText(file, 'UTF-8');
       });
     },
     checkSentIdsErrors(fileContent: string, sampleName: string) {

@@ -58,27 +58,43 @@
         </q-tooltip>
       </q-btn>
     </div>
-        <div class="col-auto" v-for="user in userIds" v-if="isLoggedIn && !blindAnnotationMode">
-      <q-btn 
+    <div class="col-auto" v-if="isLoggedIn && !blindAnnotationMode">
+      <q-btn-dropdown 
         :disable="!pendingModifications.size"
-        :label="$t('grewSearch.applyRuleAs', [user])" 
         color="primary"
-        @click="saveAllTreesAs(user)"
       >
-        <q-tooltip v-if='pendingModifications.size === 0'>{{ $t('grewSearch.applyRuleTooltip') }}</q-tooltip>
-        <q-badge v-if="pendingModifications.size > 0" color="red" floating>
-          {{ pendingModifications.size }}
-        </q-badge>
+        <template v-slot:label>
+          <div class="row items-center no-wrap">
+            <div class="text-center">{{ $t('advancedFilter.savePendingTrees') }}</div>
+            <q-badge v-if="pendingModifications.size > 0" color="red" class="q-ml-sm" floating>
+              {{ pendingModifications.size }}
+            </q-badge>
+          </div>
+        </template>
+        <q-list>
+          <q-item v-for="user in userIds" :key="user" clickable @click="saveAllTreesAs(user)">
+            <q-item-section>{{ $t('grewSearch.applyRuleAs', [user]) }}</q-item-section>
+          </q-item>
+        </q-list>
+      </q-btn-dropdown>
+    </div>
+        <div class="col-auto">
+      <q-btn 
+        flat 
+        color="primary" 
+        :icon="showAdvancedFilters ? 'expand_less' : 'expand_more'"
+        @click="showAdvancedFilters = !showAdvancedFilters"
+      >
+        {{ $t('advancedFilter.advancedFilter') }}
       </q-btn>
     </div>
   </div>
-  <div class="q-pa-md">
-    <div class="row text-h6">
-      {{ $t('advancedFilter.advancedFilter') }}
+  <div class="q-pa-md" v-show="showAdvancedFilters">
+    <div class="row text-h6 items-center">
       <q-space />
       <q-btn flat color="primary" @click="clearAll()">{{ $t('advancedFilter.clearAll') }}</q-btn>
     </div>
-    <div v-for="(filter, index) in listFilters">
+    <div v-show="showAdvancedFilters" v-for="(filter, index) in listFilters">
       <div class="row q-gutter-md q-pt-md">
         <div class="col-6">
           <q-select
@@ -124,7 +140,7 @@
         <q-btn v-if="index == listFilters.length - 1 && index < 3" outline class="col-1" color="primary" icon="add" @click="addRow()" />
       </div>
     </div>
-    <div class="q-pt-md text-body1">
+    <div v-show="showAdvancedFilters" class="q-pt-md text-body1">
       <span
         >{{ Object.keys(filteredTrees).length }} trees
         <q-tooltip>{{ numberOfTreesPerUser }}</q-tooltip>
@@ -186,6 +202,7 @@ export default defineComponent({
       listFilters,
       order: 'initial',
       orderOptions: ['initial', 'ascending', 'descending'],
+      showAdvancedFilters: false,
     };
   },
   computed: {

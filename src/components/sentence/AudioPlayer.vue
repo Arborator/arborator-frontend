@@ -1,10 +1,5 @@
 <template>
-     <audio ref="audioPlayer" :src="currentUrl" @play="audioPlay" @pause="audioPause" 
-        @seeking="audioSeeking" controls 
-        style="margin: 0.5%; width: 30%;">
-      </audio>
-
-      <div ref="text" style="margin: 0.5%;">
+    <div v-if="hasToken()" ref="text" style="margin: 0.5%;">
         <span
             v-for="item in spans"
             :class="item.class + ' clickable'"
@@ -13,22 +8,27 @@
         >
             {{ item.text }}
         </span>
-      </div>
+    </div>
+
+    <audio 
+        ref="audioPlayer" 
+        preload="auto"
+        :src="currentUrl"
+        @play="audioPlay" 
+        @pause="audioPause" 
+        @seeking="audioSeeking" 
+        controls 
+        style="margin: 0.5%; width: 30%;"
+    ></audio>
 </template>
 
 <script lang="ts">
 import { PropType, defineComponent } from 'vue';
-
-import { grewSearchResultSentence_t } from 'src/api/backend-types';
 import { reactive_sentences_obj_t } from 'src/types/main_types';
 
 export default defineComponent({
     name: "AudioPlayer",
     props: {
-        sentenceData: {
-            type: Object as PropType<grewSearchResultSentence_t>,
-            required: true,
-        },
         reactiveSentencesObj: {
             type: Object as PropType<reactive_sentences_obj_t>,
             required: true,
@@ -37,28 +37,26 @@ export default defineComponent({
     data() {
         return {
          currentUrl: '',
-         conllData: '',
-         audioTokens: [{begin: 0, end: 0 , word: ""}],
-         audioBegin: 0,
-         audioEnd : 0,
-         audioIntervalId: setInterval(this.update(), 0),
-         audioSpeakingIndex: 0,
-         spans: [] as Array<{
+         audioTokens: [] as { begin: number; end: number; word: string; }[],
+         audioBegin: 0, //timeCode début de la phrase
+         audioEnd : 0, //timeCode fin de la phrase
+         audioIntervalId: setInterval(this.update(), 0), 
+         audioSpeakingIndex: 0, //index du mot actuellement prononcé 
+         spans: [] as Array<{   
             text: string
             begin: number
             class?: string
-        }>
+         }>
         }
     },
     mounted(){
-            this.conllData = this.sentenceData.conlls[this.getUserId()]
             this.currentUrl = this.getSoundUrl()
             this.audioTokens = this.getAudioTokens()
-            if (this.audioTokens.length > 0){
+            if (this.hasToken()){
                 this.audioEnd = this.audioTokens[this.audioTokens.length -1].end
                 this.audioBegin = this.audioTokens[0].begin
+                this.setText()
             }
-            this.setText()
             clearInterval(this.audioIntervalId)
             this.audioInit()
     },
@@ -78,30 +76,25 @@ export default defineComponent({
             return "";
         },
         getAudioTokens(){
-            const regex = /AlignBegin=(\d+)\|AlignEnd=(\d+)(?:\||\n|$)/g
             const form = this.reactiveSentencesObj[this.getUserId()].state.treeJson.nodesJson
-            const matches = [...this.conllData.matchAll(regex)];
-            let index = 1;
-            return matches.map(m => {
-                const begin = parseFloat(m[1]);
-                const end = parseFloat(m[2]);
-                const word = form[index].FORM;
-                index++
-                return {
-                    begin: begin/1000,
-                    end : end/1000,
-                    word : word
-                };
-            });
+            let result = [] as { begin: number; end: number; word: string; }[];
+            if (form[1].MISC.AlignBegin && form[1].MISC.AlignEnd){
+                 result = Object.values(form).map((token) =>({
+                        begin : Number(token.MISC.AlignBegin)/1000,
+                        end : Number(token.MISC.AlignEnd)/1000,
+                        word : token.FORM
+                 }))
+            }
+            return result;
         },
         audioInit() {
             const audioPlayer = this.$refs.audioPlayer as HTMLAudioElement
-            if (!audioPlayer) return
-            audioPlayer.currentTime = this.audioBegin
-            //audioPlayer.pause()
+            if (audioPlayer != undefined) {
+                audioPlayer.currentTime = this.audioBegin
+            } 
         },
         audioPlay(){
-            if (this.audioTokens != undefined && this.audioTokens.length > 0){
+            if (this.hasToken()){
                 this.audioIntervalId = setInterval(() => {
                     this.update()
                 }, 50)
@@ -116,7 +109,6 @@ export default defineComponent({
                     let token_data = this.audioTokens[this.audioSpeakingIndex]
                     let token_end = Number(token_data.end) 
                     if (audioPlayer.currentTime > token_end) {
-                        //color text
                         this.speakingToken(this.audioSpeakingIndex + 1)
                     }
                 }
@@ -125,7 +117,7 @@ export default defineComponent({
         audioPause(){
             const audioPlayer = this.$refs.audioPlayer as HTMLAudioElement
             if (audioPlayer != undefined){
-                if (this.audioTokens != undefined && this.audioTokens.length > 0){
+                if (this.hasToken()){
                     if (this.audioIntervalId){
                         clearInterval(this.audioIntervalId)
                     }
@@ -138,7 +130,7 @@ export default defineComponent({
         audioSeeking(){
             const audioPlayer = this.$refs.audioPlayer as HTMLAudioElement
             if (audioPlayer != null){
-                if (this.audioTokens != undefined && this.audioTokens.length > 0) {
+                if (this.hasToken()) {
                     let pos = 0
                     this.audioTokens.forEach (function (node,index) {
                         let begin = node.begin
@@ -159,8 +151,7 @@ export default defineComponent({
             newWord.class = "speaking"
         },
         setText() {
-            const audioPlayer = this.$refs.audioPlayer as HTMLAudioElement
-            if (this.audioTokens && this.audioTokens.length > 0) {
+            if (this.hasToken()) {
                 this.spans = this.audioTokens.map((node) => ({
                     text: " " + node.word,
                     begin: Number(node.begin),
@@ -180,6 +171,9 @@ export default defineComponent({
                 audioPlayer.play()
             }
         },
+        hasToken(){
+            return (this.getAudioTokens() != undefined && this.getAudioTokens().length > 0 )
+        }
     }
 })
 </script>

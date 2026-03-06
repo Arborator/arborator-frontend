@@ -2,7 +2,7 @@
   <q-bar class="row items-center custom-frame1">
     <span class="text-grey" style="padding-left: 10px">{{ index + 1 }}</span>
     <q-chip class="text-center" :color="$q.dark.isActive ? 'grey' : ''" dense> {{ sentenceData.sent_id }} </q-chip>&nbsp;&nbsp;&nbsp;
-    <q-input
+    <q-input v-if="!isAudio() || !hasAlign()"
       v-model="recentTreeText"
       :style="openTabUser === '' ? 'width: 100%' : 'width: 65%'"
       class="row items-center justify-center"
@@ -190,10 +190,10 @@
       @closed="showSentSegmentationDial = false"
     />
   </template>
-  <AudioPlayer v-if="isAudio()"
-     :sentence-data="sentenceData"
+   <AudioPlayer ref="text" v-if="isAudio()"
      :reactive-sentences-obj="(reactiveSentencesObj as reactive_sentences_obj_t)"
-   ></AudioPlayer>
+    >
+    </AudioPlayer>
 </template>
 
 <script lang="ts">
@@ -354,6 +354,11 @@ export default defineComponent({
       const soundUrl= conllData.match(/sound_url = (.*?)\n/)
       return soundUrl !== null
     },
+    hasAlign(){
+      const [conllData] = Object.values(this.sentenceData.conlls)
+      const Align = conllData.match(/AlignBegin=(\d+)\|AlignEnd=(\d+)(?:\||\n|$)/)
+      return Align !== null
+    }
   }
 });
 </script>

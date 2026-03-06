@@ -11,6 +11,7 @@
       :can-undo="canUndo"
       :can-redo="canRedo"
     ></SentenceToolBar>
+
     <div>
       <q-tabs
         v-model="openTabUser"

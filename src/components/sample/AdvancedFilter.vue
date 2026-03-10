@@ -72,7 +72,7 @@
           </div>
         </template>
         <q-list>
-          <q-item v-for="user in userIds" :key="user" clickable @click="saveAllTreesAs(user)">
+          <q-item v-for="user in userIdsWithValidated" :key="user" clickable @click="saveAllTreesAs(user)">
             <q-item-section>{{ $t('grewSearch.applyRuleAs', [user]) }}</q-item-section>
           </q-item>
         </q-list>
@@ -83,7 +83,7 @@
         flat 
         color="primary" 
         :icon="showAdvancedFilters ? 'expand_less' : 'expand_more'"
-        @click="showAdvancedFilters = !showAdvancedFilters"
+        @click="toggleAdvancedFilters"
       >
         {{ $t('advancedFilter.advancedFilter') }}
       </q-btn>
@@ -174,7 +174,7 @@ interface element_t {
 
 export default defineComponent({
   name: 'AdvancedFilter',
-  emits: ['trees-saved'],
+  emits: ['trees-saved', 'advanced-filters-toggled'],
   components: {
     Breadcrumbs,
   },
@@ -221,9 +221,16 @@ export default defineComponent({
       'selectedTags',
       'pendingModifications'
     ]),
-    ...mapState(useUserStore, ['isLoggedIn']),
+    ...mapState(useUserStore, ['isLoggedIn', 'username']),
     sampleName() {
       return this.$route.params.samplename as string;
+    },
+    userIdsWithValidated() {
+      const idf = ['validated'];
+      if (this.username && !idf.includes(this.username)) {
+        idf.push(this.username);
+      }
+      return idf;
     },
   },
   mounted() {
@@ -312,26 +319,31 @@ export default defineComponent({
         groupedConlls[sentence.sampleName] = group;
       }
 
-      for (const [sampleName, conlls] of Object.entries(groupedConlls)) {
+      const savePromises = Object.entries(groupedConlls).map(([sampleName, conlls]) => {
         const data = { conllGraph: (conlls as string[]).join('\n\n') };
-        api
-          .saveAllTrees(this.name, sampleName, data)
-          .then(() => {
-            notifyMessage({ 
-              position: 'top', 
-              message: `Saved on the server as "${saveAs}"`, 
-              icon: 'save' 
-            });
-            this.emptyPendingModification();
-            this.$emit('trees-saved');
-          })
-          .catch((error) => {
-            notifyError({ error: `Error happened while saving trees ${error}` });
+        return api.saveAllTrees(this.name, sampleName, data);
+      });
+
+      Promise.all(savePromises)
+        .then(() => {
+          notifyMessage({ 
+            position: 'top', 
+            message: `Saved on the server as "${saveAs}"`, 
+            icon: 'save' 
           });
-      }
+          this.emptyPendingModification();
+          this.$emit('trees-saved');
+        })
+        .catch((error) => {
+          notifyError({ error: `Error happened while saving trees ${error}` });
+        });
     },
     validateAllTrees() {
       this.parentOnValidate();
+    },
+    toggleAdvancedFilters() {
+      this.showAdvancedFilters = !this.showAdvancedFilters;
+      this.$emit('advanced-filters-toggled', this.showAdvancedFilters);
     }
   },
 });

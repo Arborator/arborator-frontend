@@ -25,7 +25,8 @@ export const useTreesStore = defineStore('trees', {
       selectedTags: [] as string[],
       reloadTrees: false as boolean,
       reloadValidation: false as boolean,
-      pendingModifications: new Map(), 
+      pendingModifications: new Map(),
+      treesReloadCounter: 0 as number,
     };
   },
   getters: {
@@ -101,6 +102,7 @@ export const useTreesStore = defineStore('trees', {
             this.trees = response.data.sample_trees;
             this.blindAnnotationLevel = response.data.blind_annotation_level;
             this.sortedSentIds = response.data.sent_ids;
+            this.treesReloadCounter++;
             this.applyFilterTrees();
             this.loading = false;
             resolve(JSON.parse(JSON.stringify(Object.values(this.trees))));

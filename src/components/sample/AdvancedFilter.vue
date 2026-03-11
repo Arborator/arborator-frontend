@@ -72,7 +72,7 @@
           </div>
         </template>
         <q-list>
-          <q-item v-for="user in userIdsWithValidated" :key="user" :disable="isNonCollaborativeMode && user !== 'validated'" clickable @click="saveAllTreesAs(user)">
+          <q-item v-for="user in userIdsWithValidated" :key="user" :disable="!SaveAs[user]" clickable @click="saveAllTreesAs(user)">
             <q-item-section>{{ $t('grewSearch.applyRuleAs', [user]) }}</q-item-section>
           </q-item>
         </q-list>
@@ -206,7 +206,7 @@ export default defineComponent({
     };
   },
   computed: {
-    ...mapState(useProjectStore, ['featuresSet', 'name', 'config', 'blindAnnotationMode', 'collaborativeMode']),
+    ...mapState(useProjectStore, ['featuresSet', 'name', 'config', 'blindAnnotationMode', 'collaborativeMode', 'isAdmin']),
     ...mapState(useTreesStore, ['trees', 'filteredTrees', 'numberOfTreesPerUser', 'numberOfTrees', 'userIds', 'sortedSentIds']),
     ...mapState(useTagsStore, ['userTags']),
     ...mapWritableState(useTreesStore, [
@@ -234,6 +234,21 @@ export default defineComponent({
     },
     isNonCollaborativeMode() {
       return !this.collaborativeMode;
+    },
+    SaveAs(): { [key: string]: boolean } {
+      const btn: { [key: string]: boolean } = {};
+      
+      for (const user of this.userIdsWithValidated) {
+        if (!this.isAdmin) {
+          btn[user] = user === this.username;
+        } else if (this.isNonCollaborativeMode) {
+          btn[user] = user === 'validated';
+        } else {
+          btn[user] = true;
+        }
+      }
+      
+      return btn;
     },
   },
   mounted() {

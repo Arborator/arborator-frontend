@@ -72,7 +72,7 @@
           </div>
         </template>
         <q-list>
-          <q-item v-for="user in userIdsWithValidated" :key="user" clickable @click="saveAllTreesAs(user)">
+          <q-item v-for="user in userIdsWithValidated" :key="user" :disable="isNonCollaborativeMode && user !== 'validated'" clickable @click="saveAllTreesAs(user)">
             <q-item-section>{{ $t('grewSearch.applyRuleAs', [user]) }}</q-item-section>
           </q-item>
         </q-list>
@@ -206,7 +206,7 @@ export default defineComponent({
     };
   },
   computed: {
-    ...mapState(useProjectStore, ['featuresSet', 'name', 'config', 'blindAnnotationMode']),
+    ...mapState(useProjectStore, ['featuresSet', 'name', 'config', 'blindAnnotationMode', 'collaborativeMode']),
     ...mapState(useTreesStore, ['trees', 'filteredTrees', 'numberOfTreesPerUser', 'numberOfTrees', 'userIds', 'sortedSentIds']),
     ...mapState(useTagsStore, ['userTags']),
     ...mapWritableState(useTreesStore, [
@@ -231,6 +231,9 @@ export default defineComponent({
         idf.push(this.username);
       }
       return idf;
+    },
+    isNonCollaborativeMode() {
+      return !this.collaborativeMode;
     },
   },
   mounted() {

@@ -33,9 +33,9 @@
                 :key="index"
                 :sentence="searchResults[item[0]][item[1]]"
                 :index="index"
-                :matches="searchResults[item[0]][item[1]]"
+                :matches="searchResults[item[0]][item[1]].matches"
                 :blind-annotation-level="4"
-              ></SentenceCard>
+              />
             </div>
           </div>
         </q-virtual-scroll>

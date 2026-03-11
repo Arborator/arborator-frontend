@@ -49,7 +49,6 @@ import { useUserStore } from 'src/pinia/modules/user';
 import { defineComponent } from 'vue';
 export default defineComponent({
   name: 'EmailCollectDialog',
-  props: {},
   data() {
     return {
       emailCollectDialog: true,
@@ -67,10 +66,11 @@ export default defineComponent({
       let emailRegExp = new RegExp('^[A-Za-z0-9._%+-]+@[a-z0-9-]+\.[A-Za-z]{2,4}$');
       return emailRegExp.test(val);
     },
-    emailRules() {
-      if (!this.notShareEmail) {
-        return [this.email.length > 0 || this.$t('homepage.inputErrorText[0]'), this.isValidEmail(this.email) || this.$t('homepage.inputErrorText[1]')];
-      }
+    emailRules(val: string) {
+      if (this.notShareEmail) return true;
+      if (!val) return this.$t('homepage.inputErrorText[0]');
+      if (!this.isValidEmail(val)) return this.$t('homepage.inputErrorText[1]');
+      return true;
     },
     chooseNotShareEmail() {
       this.shareEmail = false;

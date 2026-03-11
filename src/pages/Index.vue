@@ -264,7 +264,7 @@
       <q-item-label caption class="text-center text-grey-3">
         {{ $t('homepage.footertextmadewith') }}
         <q-icon name="favorite" style="font-size: 22px; color: #dd137b; height: 18px; vertical-align: text-bottom" />
-         v3.0 (2024)
+         v4.0 (2026)
       </q-item-label>
     </q-footer>
   </q-page>

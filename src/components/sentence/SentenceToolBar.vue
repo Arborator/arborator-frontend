@@ -2,7 +2,7 @@
   <q-bar class="row items-center custom-frame1">
     <span class="text-grey" style="padding-left: 10px">{{ index + 1 }}</span>
     <q-chip class="text-center" :color="$q.dark.isActive ? 'grey' : ''" dense> {{ sentenceData.sent_id }} </q-chip>&nbsp;&nbsp;&nbsp;
-    <q-input v-if="!isAudio() || !hasAlign()"
+    <q-input 
       v-model="recentTreeText"
       :style="openTabUser === '' ? 'width: 100%' : 'width: 65%'"
       class="row items-center justify-center"
@@ -190,8 +190,9 @@
       @closed="showSentSegmentationDial = false"
     />
   </template>
-   <AudioPlayer ref="text" v-if="isAudio()"
+   <AudioPlayer v-if="isAudio() && openTabUser !== ''"
      :reactive-sentences-obj="(reactiveSentencesObj as reactive_sentences_obj_t)"
+     :index="index"
     >
     </AudioPlayer>
 </template>
@@ -286,6 +287,9 @@ export default defineComponent({
       return this.$route.params.samplename as string;
     },
     recentTreeText() {
+      /*if (this.isAudio()){
+         return text
+      }*/
       if (this.openTabUser === '') {
         return this.sentenceData.sentence;
       }
@@ -358,7 +362,7 @@ export default defineComponent({
       const [conllData] = Object.values(this.sentenceData.conlls)
       const Align = conllData.match(/AlignBegin=(\d+)\|AlignEnd=(\d+)(?:\||\n|$)/)
       return Align !== null
-    }
+    },
   }
 });
 </script>

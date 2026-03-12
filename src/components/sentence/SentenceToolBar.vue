@@ -2,15 +2,16 @@
   <q-bar class="row items-center custom-frame1">
     <span class="text-grey" style="padding-left: 10px">{{ index + 1 }}</span>
     <q-chip class="text-center" :color="$q.dark.isActive ? 'grey' : ''" dense> {{ sentenceData.sent_id }} </q-chip>&nbsp;&nbsp;&nbsp;
-    <q-input
+    <q-input 
+      v-if="!isAudio() || !hasAlign() || !openTabUser"
       v-model="recentTreeText"
       :style="openTabUser === '' ? 'width: 100%' : 'width: 65%'"
       class="row items-center justify-center"
       v-bind="$attrs"
       readonly
       borderless
-    >
-      <q-tooltip v-if="openTabUser !== ''" anchor="bottom middle" self="center middle" :offset="[10, 10]">
+    > 
+    <q-tooltip v-if="openTabUser !== ''" anchor="bottom middle" self="center middle" :offset="[10, 10]">
         {{ $t('sentenceCard.selectTooltip') }}
       </q-tooltip>
     </q-input>
@@ -190,11 +191,17 @@
       @closed="showSentSegmentationDial = false"
     />
   </template>
+   <AudioPlayer v-if="isAudio() && openTabUser !== ''"
+     :reactive-sentences-obj="(reactiveSentencesObj as reactive_sentences_obj_t)"
+     :index="index"
+    >
+    </AudioPlayer>
 </template>
 
 <script lang="ts">
 import TagsMenu from './TagsMenu.vue';
 import SentenceSegmentation from './SentenceSegmentation.vue';
+import AudioPlayer from './AudioPlayer.vue';
 
 import  { sentenceConllToJson } from 'conllup/lib/conll';
 
@@ -214,6 +221,7 @@ export default defineComponent({
   components: {
     TagsMenu,
     SentenceSegmentation,
+    AudioPlayer,
   },
   props: {
     sentenceBus: {
@@ -280,6 +288,9 @@ export default defineComponent({
       return this.$route.params.samplename as string;
     },
     recentTreeText() {
+      /*if (this.isAudio()){
+         return text
+      }*/
       if (this.openTabUser === '') {
         return this.sentenceData.sentence;
       }
@@ -342,7 +353,17 @@ export default defineComponent({
     chooseSegmentationOption(option: string) {
       this.showSentSegmentationDial = true;
       this.sentenceSegmentationOption = option;
-    }
+    },
+    isAudio() {
+      const [conllData] = Object.values(this.sentenceData.conlls)
+      const soundUrl= conllData.match(/sound_url = (.*?)\n/)
+      return soundUrl !== null
+    },
+    hasAlign(){
+      const [conllData] = Object.values(this.sentenceData.conlls)
+      const Align = conllData.match(/AlignBegin=(\d+)\|AlignEnd=(\d+)(?:\||\n|$)/)
+      return Align !== null
+    },
   }
 });
 </script>

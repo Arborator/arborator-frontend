@@ -3,13 +3,14 @@
     <span class="text-grey" style="padding-left: 10px">{{ index + 1 }}</span>
     <q-chip class="text-center" :color="$q.dark.isActive ? 'grey' : ''" dense> {{ sentenceData.sent_id }} </q-chip>&nbsp;&nbsp;&nbsp;
     <q-input 
+      v-if="!isAudio() || !hasAlign() || !openTabUser"
       v-model="recentTreeText"
       :style="openTabUser === '' ? 'width: 100%' : 'width: 65%'"
       class="row items-center justify-center"
       v-bind="$attrs"
       readonly
       borderless
-    >
+    > 
     <q-tooltip v-if="openTabUser !== ''" anchor="bottom middle" self="center middle" :offset="[10, 10]">
         {{ $t('sentenceCard.selectTooltip') }}
       </q-tooltip>

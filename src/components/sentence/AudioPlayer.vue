@@ -1,5 +1,5 @@
 <template>
-    
+    <!-- -->
     <div v-if="hasToken()" class="q-ma-xs">
         <span v-if="isPreviousSentenceToggled() && hasPreviousSentence()"
             v-for="item in spansPrev"
@@ -29,7 +29,7 @@
         </span>
     </div>
 
-    <audio 
+    <audio
         ref="audioPlayer" 
         preload="auto"
         :src="currentUrl"
@@ -101,7 +101,7 @@ export default defineComponent({
          audioTokens: [] as { begin: number; end: number; word: string; }[],
          audioBegin: 0, //timeCode début de la phrase
          audioEnd : 0, //timeCode fin de la phrase
-         audioIntervalId: setInterval(this.update(), 50) as NodeJS.Timeout, 
+         audioIntervalId: setInterval(this.update(), 50), 
          audioSpeakingIndex: 0, //index du mot actuellement prononcé 
          spans: [] as Array<{   
             text: string
@@ -135,7 +135,7 @@ export default defineComponent({
             this.audioTokens = this.getAudioTokens()
             if (this.hasToken()){
                 this.audioEnd = this.audioTokens[this.audioTokens.length -1].end
-                this.audioBegin = this.audioTokens[0].begin 
+                this.audioBegin = this.audioTokens[0].begin
                 this.setText()
             }
             clearInterval(this.audioIntervalId)
@@ -190,13 +190,12 @@ export default defineComponent({
                 if (audioPlayer.currentTime >= this.audioEnd || audioPlayer.currentTime < this.audioBegin){
                     audioPlayer.pause()
                 } else {
-                    //get correspoding span (previous, current or next Sentence)
+                    //get corresponding span (previous, current or next Sentence)
                     if(audioPlayer.currentTime < this.audioTokens[0].begin){
                         token_data = this.audioTokensPrev[this.audioSpeakingIndex]
                         span = this.spansPrev
                         sentence = "prev"
-                        
-                    } else if(audioPlayer.currentTime > this.audioTokens[this.audioTokens.length - 1].end){
+                    } else if (audioPlayer.currentTime > this.audioTokens[this.audioTokens.length - 1].end){
                         token_data = this.audioTokensNext[this.audioSpeakingIndex]
                         span = this.spansNext
                         sentence = "next"
@@ -210,12 +209,14 @@ export default defineComponent({
                             case "prev" : if (this.spansNext[this.audioSpeakingIndex]) this.spansNext[this.audioSpeakingIndex].class = ""; break;
                         }
                         this.currentSentence = sentence
-                        this.audioSpeakingIndex = 0
+                        this.audioSpeakingIndex = 0 
                     }
                     if (token_data){
                         let token_end = Number(token_data.end)
                         if (audioPlayer.currentTime > token_end) {
                             this.speakingToken(this.audioSpeakingIndex + 1, span)
+                        } else {
+                            this.speakingToken(this.audioSpeakingIndex , span)
                         }
                     } 
                 }
@@ -232,25 +233,8 @@ export default defineComponent({
                 }
             }
         },
-        /*audioSeeking(){
-            const audioPlayer = this.$refs.audioPlayer as HTMLAudioElement
-            if (audioPlayer != null){
-                if (this.hasToken() ) {
-                    let pos = 0
-                    this.audioTokens.forEach (function (node,index) {
-                        let begin = node.begin
-                        let end =  node.end
-                        if (audioPlayer.currentTime >= begin && audioPlayer.currentTime <= end) {
-                            pos = index;
-                        }
-                    })
-                    this.speakingToken(pos, this.spans)
-                }
-            } 
-        },*/
         audioSeeking(){
             const audioPlayer = this.$refs.audioPlayer as HTMLAudioElement
-            let pos = 0
             let tokens = this.audioTokens
             let spans = this.spans
             let sentence = "current"
@@ -265,14 +249,7 @@ export default defineComponent({
                     spans = this.spansNext
                     sentence = "next"
                 }
-                
-                tokens.forEach (function (node,index) {
-                    let begin = node.begin
-                    let end =  node.end
-                    if (audioPlayer.currentTime >= begin && audioPlayer.currentTime <= end) {
-                        pos = index;
-                    }
-                })
+                const pos = this.getSpeakingTokenIndex(tokens)
                 if (sentence !== this.currentSentence){
                     //remove highlight class on previous word when changing sentence
                     switch(this.currentSentence){
@@ -283,7 +260,19 @@ export default defineComponent({
                     this.currentSentence = sentence
                 }
                 this.speakingToken(pos, spans)
-            } 
+            }
+        },
+         getSpeakingTokenIndex(tokens : {begin:number, end:number, word:string}[]){
+            const audioPlayer = this.$refs.audioPlayer as HTMLAudioElement
+            let pos = 0
+            tokens.forEach (function (node,index) {
+                    let begin = node.begin
+                    let end =  node.end
+                    if (audioPlayer.currentTime >= begin && audioPlayer.currentTime <= end) {
+                        pos = index
+                    }
+                })
+            return pos;
         },
         speakingToken(position : number, spans : Array<{text: string;begin: number;class: string; }>) {
             let prevWord = spans[this.audioSpeakingIndex]
@@ -333,7 +322,7 @@ export default defineComponent({
                 case "Five" : {
                     this.audioTokens[0].begin >= 5 ? secondesToRetrieve = 5 : secondesToRetrieve = this.audioTokens[0].begin 
                     timeBeforeEnd >= 5 ? secondesToAdd = 5 : secondesToAdd = timeBeforeEnd  
-                }; break
+                }; break;
                 default : break;
             }
             this.audioBegin = this.audioTokens[0].begin - secondesToRetrieve
@@ -401,7 +390,8 @@ export default defineComponent({
             this.audioEnd = Number(ends[ends.length - 1][1])/1000
         },
         getNextSentenceToken(conll: string){
-            const res = [...conll.matchAll(/^\d+\t([^\t]+)\t[^\t]*\t[^\t]*\t[^\t]*\t[^\t]*\t[^\t]*\t[^\t]*\t[^\t]*\t.*?AlignBegin=(\d+)\|AlignEnd=(\d+)/gm)]
+            const res = [...conll.matchAll(
+            /^\d+\t([^\t]+)(?:\t[^\t]*){7}\t.*?AlignBegin=(\d+)\|AlignEnd=(\d+)/gm)]
             this.audioTokensNext = Object.values(res).map(m => ({
                 begin: Number(m[2])/1000,
                 word : m[1],
@@ -415,7 +405,8 @@ export default defineComponent({
             ))
         },
         getPreviousSentenceToken(conll: string){
-            const res = [...conll.matchAll(/^\d+\t([^\t]+)\t[^\t]*\t[^\t]*\t[^\t]*\t[^\t]*\t[^\t]*\t[^\t]*\t[^\t]*\t.*?AlignBegin=(\d+)\|AlignEnd=(\d+)/gm)]
+            const res = [...conll.matchAll(
+            /^\d+\t([^\t]+)(?:\t[^\t]*){7}\t.*?AlignBegin=(\d+)\|AlignEnd=(\d+)/gm)]
             this.audioTokensPrev = Object.values(res).map(m => ({
                 begin: Number(m[2])/1000,
                 word : m[1],
@@ -427,7 +418,7 @@ export default defineComponent({
                     class: " ",
                 }
             ))
-        }
+        },
     }
 })
 </script>

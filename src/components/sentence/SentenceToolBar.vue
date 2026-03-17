@@ -1,8 +1,9 @@
 <template>
+
   <q-bar class="row items-center custom-frame1">
     <span class="text-grey" style="padding-left: 10px">{{ index + 1 }}</span>
     <q-chip class="text-center" :color="$q.dark.isActive ? 'grey' : ''" dense> {{ sentenceData.sent_id }} </q-chip>&nbsp;&nbsp;&nbsp;
-    <q-input 
+    <q-input
       v-if="!isAudio() || !hasAlign() || !openTabUser"
       v-model="recentTreeText"
       :style="openTabUser === '' ? 'width: 100%' : 'width: 65%'"
@@ -10,7 +11,7 @@
       v-bind="$attrs"
       readonly
       borderless
-    > 
+    >
     <q-tooltip v-if="openTabUser !== ''" anchor="bottom middle" self="center middle" :offset="[10, 10]">
         {{ $t('sentenceCard.selectTooltip') }}
       </q-tooltip>
@@ -235,7 +236,7 @@ export default defineComponent({
     index: {
       type: Number as PropType<number>,
       required: true,
-    }, 
+    },
     blindAnnotationLevel: {
       type: Number as PropType<number>,
       required: true,
@@ -272,9 +273,9 @@ export default defineComponent({
     ...mapWritableState(useGithubStore, ['reloadCommits']),
     ...mapState(useProjectStore, [
       'isAdmin',
-      'isValidator', 
-      'blindAnnotationMode', 
-      'canSaveTreeInProject', 
+      'isValidator',
+      'blindAnnotationMode',
+      'canSaveTreeInProject',
       'diffMode',
       'diffUserId',
       'collaborativeMode'
@@ -288,9 +289,6 @@ export default defineComponent({
       return this.$route.params.samplename as string;
     },
     recentTreeText() {
-      /*if (this.isAudio()){
-         return text
-      }*/
       if (this.openTabUser === '') {
         return this.sentenceData.sentence;
       }
@@ -302,7 +300,7 @@ export default defineComponent({
     canChangeSegmentation() {
       return this.isValidator && this.$route.params.samplename !== undefined // sentence segmentation option is available only in the sample view and only for validator
     },
-  }, 
+  },
   methods: {
     ...mapActions(useTreesStore, ['generateNewMetaText']),
     openStatisticsDialog() {

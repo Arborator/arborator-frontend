@@ -4,7 +4,7 @@
     <span class="text-grey" style="padding-left: 10px">{{ index + 1 }}</span>
     <q-chip class="text-center" :color="$q.dark.isActive ? 'grey' : ''" dense> {{ sentenceData.sent_id }} </q-chip>&nbsp;&nbsp;&nbsp;
     <q-input
-      v-if="!isAudio() || !hasAlign() || !openTabUser"
+      v-if="!isAudio() || !hasAlign() || !openTabUser "
       v-model="recentTreeText"
       :style="openTabUser === '' ? 'width: 100%' : 'width: 65%'"
       class="row items-center justify-center"
@@ -197,12 +197,17 @@
      :index="index"
     >
     </AudioPlayer>
+    <videoBtn v-if="isVideo() && openTabUser !== ''"
+      :reactive-sentences-obj="(reactiveSentencesObj as reactive_sentences_obj_t)"
+      :index="index"
+    ></videoBtn>
 </template>
 
 <script lang="ts">
 import TagsMenu from './TagsMenu.vue';
 import SentenceSegmentation from './SentenceSegmentation.vue';
 import AudioPlayer from './AudioPlayer.vue';
+import videoBtn from './videoBtn.vue';
 
 import  { sentenceConllToJson } from 'conllup/lib/conll';
 
@@ -223,6 +228,7 @@ export default defineComponent({
     TagsMenu,
     SentenceSegmentation,
     AudioPlayer,
+    videoBtn,
   },
   props: {
     sentenceBus: {
@@ -361,6 +367,11 @@ export default defineComponent({
       const [conllData] = Object.values(this.sentenceData.conlls)
       const Align = conllData.match(/AlignBegin=(\d+)\|AlignEnd=(\d+)(?:\||\n|$)/)
       return Align !== null
+    },
+    isVideo() {
+      const [conllData] = Object.values(this.sentenceData.conlls)
+      const videoUrl= conllData.match(/video_url = (.*?)\n/)
+      return videoUrl !== null
     },
   }
 });

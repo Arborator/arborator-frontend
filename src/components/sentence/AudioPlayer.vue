@@ -1,8 +1,7 @@
 <template>
-  <!-- -->
   <div v-if="hasToken()" class="q-ma-xs">
-
-    <span v-if="isPreviousSentenceToggled() && hasPreviousSentence()"
+    <span
+      v-if="isPreviousSentenceToggled() && hasPreviousSentence()"
       v-for="item in spansPrev"
       :class=" item.class +' cursor-pointer'"
       @click="clickWord(item.begin)"
@@ -20,11 +19,12 @@
         {{ item.text }}
     </span>
     <br>
-    <span v-if="isNextSentenceToggled() && hasNextSentence()"
-        v-for="item in spansNext"
-        :class="item.class + ' cursor-pointer'"
-        @click="clickWord(item.begin)"
-        @dblclick="dblClickWord"
+    <span
+      v-if="isNextSentenceToggled() && hasNextSentence()"
+      v-for="item in spansNext"
+      :class="item.class + ' cursor-pointer'"
+      @click="clickWord(item.begin)"
+      @dblclick="dblClickWord"
     >
         {{ item.text }}
     </span>
@@ -39,6 +39,7 @@
       @pause="audioPause"
       @seeking="audioSeeking"
       controls
+      controlsList="nodownload"
       class="q-ma-xs col-4"
     ></audio>
 
@@ -75,13 +76,13 @@
         @update:model-value="addSeconds();"
       >
         <q-tooltip v-if="AddSecondsDisable">
-          can't be used with next or previous sentence toggled
+          can't be used while next or previous sentence is toggled
         </q-tooltip>
 
         <template v-slot:zero v-if="!AddSecondsDisable">
-            <q-tooltip>
-              audio will <strong>start 0s earlier</strong> and <strong>end 0s later</strong>
-            </q-tooltip>
+          <q-tooltip>
+            audio will <strong>start 0s earlier</strong> and <strong>end 0s later</strong>
+          </q-tooltip>
         </template>
 
         <template v-slot:three v-if="!AddSecondsDisable">
@@ -198,7 +199,7 @@ export default defineComponent({
     audioInit() {
       const audioPlayer = this.$refs.audioPlayer as HTMLAudioElement
       if (audioPlayer != undefined) {
-          audioPlayer.currentTime = this.audioBegin
+        audioPlayer.currentTime = this.audioBegin
       }
     },
     audioPlay(){
@@ -294,11 +295,11 @@ export default defineComponent({
       const audioPlayer = this.$refs.audioPlayer as HTMLAudioElement
       let pos = 0
       tokens.forEach (function (node,index) {
-          let begin = node.begin
-          let end =  node.end
-          if (audioPlayer.currentTime >= begin && audioPlayer.currentTime <= end) {
-              pos = index
-          }
+        let begin = node.begin
+        let end =  node.end
+        if (audioPlayer.currentTime >= begin && audioPlayer.currentTime <= end) {
+          pos = index
+        }
       })
       return pos;
     },
@@ -384,22 +385,22 @@ export default defineComponent({
       return false
     },
     addContext(){
-        const audioPlayer = this.$refs.audioPlayer as HTMLAudioElement
-        if (this.hasNextSentence() && this.isNextSentenceToggled()){
-          this.addNextSentence()
-        } else {
-          this.audioEnd = this.audioTokens[this.audioTokens.length -1].end
-        }
-        if (this.hasPreviousSentence() && this.isPreviousSentenceToggled()){
-          this.addPreviousSentence()
-        } else {
-          this.audioBegin = this.audioTokens[0].begin
-        }
-        audioPlayer.currentTime = this.audioBegin
-        audioPlayer.pause()
-        if (!this.isNextSentenceToggled() && !this.isPreviousSentenceToggled()){
-          this.AddSecondsDisable = false
-        }
+      const audioPlayer = this.$refs.audioPlayer as HTMLAudioElement
+      if (this.hasNextSentence() && this.isNextSentenceToggled()){
+        this.addNextSentence()
+      } else {
+        this.audioEnd = this.audioTokens[this.audioTokens.length -1].end
+      }
+      if (this.hasPreviousSentence() && this.isPreviousSentenceToggled()){
+        this.addPreviousSentence()
+      } else {
+        this.audioBegin = this.audioTokens[0].begin
+      }
+      audioPlayer.currentTime = this.audioBegin
+      audioPlayer.pause()
+      if (!this.isNextSentenceToggled() && !this.isPreviousSentenceToggled()){
+        this.AddSecondsDisable = false
+      }
     },
     addNextSentence(){
       this.AddSecondsDisable = true

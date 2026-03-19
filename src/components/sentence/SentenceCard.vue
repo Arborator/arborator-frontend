@@ -45,13 +45,13 @@
           <q-tooltip v-else>
             {{ $t('sentenceCard.automaticParsing') }}
           </q-tooltip>
-          <q-badge 
-            v-if="!hasPendingChanges[user] && udValidationStatut[user] !== '' && udValidationStatut[user]" 
+          <q-badge
+            v-if="!hasPendingChanges[user] && udValidationStatut[user] !== '' && udValidationStatut[user]"
             :color="udValidationStatut[user]"
-            rounded 
-            floating 
-            :class="user === openTabUser ? 'clickable' : ''" 
-            @click.native.stop 
+            rounded
+            floating
+            :class="user === openTabUser ? 'clickable' : ''"
+            @click.native.stop
             @click="showUdValidation[user] = true"
           >
           </q-badge>
@@ -117,25 +117,25 @@
       <RelationDialog :sentence-bus="sentenceBus" />
       <UposDialog :sentence-bus="sentenceBus" :upos-options="annotationFeatures.UPOS"/>
       <XposDialog :sentence-bus="sentenceBus" :xpos-options="annotationFeatures.XPOS" />
-      <FeaturesDialog 
-        :sentence-bus="sentenceBus" 
-        :reactive-sentences-obj="(reactiveSentencesObj as reactive_sentences_obj_t)" 
-        @changed:meta-text="changeText()" 
+      <FeaturesDialog
+        :sentence-bus="sentenceBus"
+        :reactive-sentences-obj="(reactiveSentencesObj as reactive_sentences_obj_t)"
+        @changed:meta-text="changeText()"
         />
       <MetaDialog :sentence-bus="sentenceBus" />
-      <ConlluDialog 
-        :sentence-bus="sentenceBus" 
-        :reactive-sentences-obj="(reactiveSentencesObj as reactive_sentences_obj_t)" 
+      <ConlluDialog
+        :sentence-bus="sentenceBus"
+        :reactive-sentences-obj="(reactiveSentencesObj as reactive_sentences_obj_t)"
         :sentence-data="sentenceData"
       />
-      <ExportSVG 
-        :sentence-bus="sentenceBus" 
-        :reactive-sentences-obj="(reactiveSentencesObj as reactive_sentences_obj_t)" 
+      <ExportSVG
+        :sentence-bus="sentenceBus"
+        :reactive-sentences-obj="(reactiveSentencesObj as reactive_sentences_obj_t)"
         />
-      
-      <MultiEditDialog 
-        :sentence-bus="sentenceBus" 
-        :reactive-sentences-obj="(reactiveSentencesObj as reactive_sentences_obj_t)" 
+
+      <MultiEditDialog
+        :sentence-bus="sentenceBus"
+        :reactive-sentences-obj="(reactiveSentencesObj as reactive_sentences_obj_t)"
         />
       <StatisticsDialog :sentence-bus="sentenceBus" :conlls="sentenceData.conlls" />
     </template>
@@ -143,16 +143,16 @@
       <q-card style="width: 800px;max-width: 90vw;">
         <q-card-section>
           <div class="row text-h6">
-            {{ $t('sentenceCard.validation') }} 
+            {{ $t('sentenceCard.validation') }}
             <span>
               <q-icon name="bug_report" />
             </span>
           </div>
           <div class="row">
             <span v-if="!languageDetected">
-              {{ $t('sentenceCard.notDetectedLang[0]') }} 
+              {{ $t('sentenceCard.notDetectedLang[0]') }}
               <a href="https://quest.ms.mff.cuni.cz/udvalidator/cgi-bin/unidep/langspec/specify_feature.pl" target="_blank">
-                {{ $t('sentenceCard.notDetectedLang[1]') }} 
+                {{ $t('sentenceCard.notDetectedLang[1]') }}
               </a>
             </span>
           </div>
@@ -161,7 +161,7 @@
           <pre>{{ udValidationMsg[openTabUser] }}</pre>
         </q-card-section>
         <q-card-section v-else class="row">
-          {{ $t('sentenceCard.noValidationIssues') }} 
+          {{ $t('sentenceCard.noValidationIssues') }}
         </q-card-section>
       </q-card>
     </q-dialog>
@@ -370,10 +370,10 @@ export default defineComponent({
       let changedConllUser = this.username;
       let updateCommit = true;
       if (mode) changedConllUser = mode;
-      
+
       if (!mode && this.reactiveSentencesObj[this.openTabUser].exportConll() === this.sentenceData.conlls[this.openTabUser].trim()) {
         updateCommit = false;
-      } 
+      }
 
       const metaToReplace = {
         user_id: changedConllUser,
@@ -493,7 +493,7 @@ export default defineComponent({
           timestamp: parseInt(reactiveSentence.state.metaJson.timestamp as string, 10),
         });
       }
-      // sort from newest to oldest 
+      // sort from newest to oldest
       const orderedUserAndTimestamps = [...userAndTimestamps].sort((a, b) => b.timestamp - a.timestamp);
       const orderedConlls: { [key: string]: string } = {};
       for (const userAndTimestamp of orderedUserAndTimestamps) {

@@ -197,17 +197,12 @@
      :index="index"
     >
     </AudioPlayer>
-    <videoBtn v-if="isVideo() && openTabUser !== ''"
-      :reactive-sentences-obj="(reactiveSentencesObj as reactive_sentences_obj_t)"
-      :index="index"
-    ></videoBtn>
 </template>
 
 <script lang="ts">
 import TagsMenu from './TagsMenu.vue';
 import SentenceSegmentation from './SentenceSegmentation.vue';
 import AudioPlayer from './AudioPlayer.vue';
-import videoBtn from './videoBtn.vue';
 
 import  { sentenceConllToJson } from 'conllup/lib/conll';
 
@@ -228,7 +223,6 @@ export default defineComponent({
     TagsMenu,
     SentenceSegmentation,
     AudioPlayer,
-    videoBtn,
   },
   props: {
     sentenceBus: {
@@ -367,11 +361,6 @@ export default defineComponent({
       const [conllData] = Object.values(this.sentenceData.conlls)
       const Align = conllData.match(/AlignBegin=(\d+)\|AlignEnd=(\d+)(?:\||\n|$)/)
       return Align !== null
-    },
-    isVideo() {
-      const [conllData] = Object.values(this.sentenceData.conlls)
-      const videoUrl= conllData.match(/video_url = (.*?)\n/)
-      return videoUrl !== null
     },
   }
 });

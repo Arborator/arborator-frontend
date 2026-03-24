@@ -6,6 +6,10 @@
     <template v-slot:after>
       <div class="custom-frame1">
         <div v-show="!loading">
+          <Video
+          v-if="isVideo()"
+          >
+          </Video>
           <q-virtual-scroll
             :key="filteredTrees.length.toString() + Object.keys(filteredTrees).join('')"
             ref="virtualListRef"
@@ -40,18 +44,20 @@
 import api from 'src/api/backend-api';
 import AdvancedFilter from 'src/components/sample/AdvancedFilter.vue';
 import SentenceCard from '../components/sentence/SentenceCard.vue';
+import Video from 'src/components/sentence/Video.vue';
 import { QVirtualScroll } from 'quasar';
 
 import { mapActions, mapState, mapWritableState } from 'pinia';
 import { notifyError } from 'src/utils/notify';
 import { useTreesStore } from 'src/pinia/modules/trees';
 import { useProjectStore } from 'src/pinia/modules/project';
-import { PropType, defineComponent } from 'vue';
+import { PropType, defineComponent, ref } from 'vue';
 
 export default defineComponent({
   components: {
     SentenceCard,
     AdvancedFilter,
+    Video,
   },
   beforeRouteLeave(to, from, next) {
     if (this.pendingModifications.size > 0) {
@@ -89,11 +95,11 @@ export default defineComponent({
   },
   computed: {
     ...mapState(useTreesStore, [
-      'trees', 
-      'filteredTrees', 
-      'loading', 
-      'numberOfTrees', 
-      'userIds', 
+      'trees',
+      'filteredTrees',
+      'loading',
+      'numberOfTrees',
+      'userIds',
       'blindAnnotationLevel',
       'pendingModifications',
       'sortedSentIds'
@@ -168,6 +174,14 @@ export default defineComponent({
         .catch((error) => {
           notifyError({ error, caller: 'validateAllTrees' });
         });
+    },
+    isVideo(){
+      if(this.filteredTrees[0]){
+        const conll = Object.values(this.filteredTrees[0].conlls)[0]
+        const videoUrl= conll.match(/video_url = (.*?)\n/)
+        return videoUrl !== null
+      }
+      return false
     }
   },
 });

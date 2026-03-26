@@ -129,7 +129,7 @@ export default defineComponent({
       audioTokens: [] as { begin: number; end: number; word: string; }[],
       audioBegin: 0, //timeCode begining of sentence
       audioEnd : 0, //timeCode end of sentence
-      audioIntervalId: setInterval(this.update(), 50),
+      audioIntervalId: null as any,
       audioSpeakingIndex: 0,
       spans: [] as Array<{
         text: string
@@ -152,13 +152,15 @@ export default defineComponent({
         class: string
       }>,
       audioTokensPrev: [] as { begin: number; end: number; word: string; }[],
-      currentSentence: 'current'
+      currentSentence: 'current',
+      cachedUserId: ''
     }
   },
   computed: {
     ...mapState(useTreesStore, ["filteredTrees"] ),
   },
   mounted(){
+    this.cachedUserId = this.getUserId()
     this.currentUrl = this.getSoundUrl()
     this.audioTokens = this.getAudioTokens()
     if (this.hasToken()){
@@ -166,35 +168,29 @@ export default defineComponent({
       this.audioBegin = this.audioTokens[0].begin
       this.setText()
     }
-    clearInterval(this.audioIntervalId)
     this.audioInit()
   },
   methods: {
     getUserId(){
       const id = Object.entries(this.reactiveSentencesObj)[0][0]
-      if (id !== undefined){
-        return id
-      }
-      return '';
+      return id !== undefined ? id : ''
     },
     getSoundUrl() {
-      const soundUrl = this.reactiveSentencesObj[this.getUserId()].state.metaJson.sound_url
-      if (soundUrl !== null){
-        return soundUrl.toString()
-      }
-      return '';
+      const userId = this.cachedUserId || this.getUserId()
+      const soundUrl = this.reactiveSentencesObj[userId].state.metaJson.sound_url
+      return soundUrl ? soundUrl.toString() : ''
     },
     getAudioTokens(){
-      const form = this.reactiveSentencesObj[this.getUserId()].state.treeJson.nodesJson
-      let result = [] as { begin: number; end: number; word: string; }[];
-      if (form[1].MISC.AlignBegin && form[1].MISC.AlignEnd){
-        result = Object.values(form).map((token) =>({
+      const userId = this.cachedUserId || this.getUserId()
+      const form = this.reactiveSentencesObj[userId].state.treeJson.nodesJson
+      if (form[1]?.MISC?.AlignBegin && form[1]?.MISC?.AlignEnd){
+        return Object.values(form).map((token) =>({
           begin : Number(token.MISC.AlignBegin)/1000,
           end : Number(token.MISC.AlignEnd)/1000,
           word : token.FORM
         }))
       }
-      return result;
+      return []
     },
     audioInit() {
       const audioPlayer = this.$refs.audioPlayer as HTMLAudioElement
@@ -204,9 +200,7 @@ export default defineComponent({
     },
     audioPlay(){
       if (this.hasToken()){
-        this.audioIntervalId = setInterval(() => {
-          this.update()
-        }, 50)
+        this.audioIntervalId = setInterval(() => this.update(), 50)
       }
     },
     update(){
@@ -293,15 +287,8 @@ export default defineComponent({
     },
     getSpeakingTokenIndex(tokens : {begin:number, end:number, word:string}[]){
       const audioPlayer = this.$refs.audioPlayer as HTMLAudioElement
-      let pos = 0
-      tokens.forEach (function (node,index) {
-        let begin = node.begin
-        let end =  node.end
-        if (audioPlayer.currentTime >= begin && audioPlayer.currentTime <= end) {
-          pos = index
-        }
-      })
-      return pos;
+      const currentTime = audioPlayer.currentTime
+      return tokens.findIndex(token => currentTime >= token.begin && currentTime <= token.end)
     },
     speakingToken(position : number, spans : Array<{text: string;begin: number;class: string; }>) {
       let prevWord = spans[this.audioSpeakingIndex]
@@ -340,22 +327,19 @@ export default defineComponent({
     },
     addSeconds(){
       const audioPlayer = this.$refs.audioPlayer as HTMLAudioElement
-      let SecondsToAdd = 0
-      let SecondsToRetrieve = 0
-      let timeBeforeEnd = audioPlayer.duration - this.audioTokens[this.audioTokens.length -1].end
-      switch(this.addSecondsModel){
-          case "Three" : {
-            this.audioTokens[0].begin >= 3 ? SecondsToRetrieve = 3 : SecondsToRetrieve = this.audioTokens[0].begin
-            timeBeforeEnd >= 3 ? SecondsToAdd = 3 : SecondsToAdd = timeBeforeEnd
-          }; break;
-          case "Five" : {
-            this.audioTokens[0].begin >= 5 ? SecondsToRetrieve = 5 : SecondsToRetrieve = this.audioTokens[0].begin
-            timeBeforeEnd >= 5 ? SecondsToAdd = 5 : SecondsToAdd = timeBeforeEnd
-          }; break;
-          default : break;
-      }
-      this.audioBegin = this.audioTokens[0].begin - SecondsToRetrieve
-      this.audioEnd = this.audioTokens[this.audioTokens.length -1].end + SecondsToAdd
+      const secondsToAdd = { 'Three': 3, 'Five': 5, '0': 0 }[this.addSecondsModel] || 0
+      
+      if (secondsToAdd === 0) return
+      
+      const firstBegin = this.audioTokens[0].begin
+      const lastEnd = this.audioTokens[this.audioTokens.length - 1].end
+      const timeBeforeEnd = audioPlayer.duration - lastEnd
+      
+      const SecondsToRetrieve = Math.min(secondsToAdd, firstBegin)
+      const SecondsToAdd = Math.min(secondsToAdd, timeBeforeEnd)
+      
+      this.audioBegin = firstBegin - SecondsToRetrieve
+      this.audioEnd = lastEnd + SecondsToAdd
       audioPlayer.currentTime = this.audioBegin
     },
     isNextSentenceToggled(){
@@ -364,23 +348,23 @@ export default defineComponent({
     isPreviousSentenceToggled(){
       return this.togglePrevious
     },
+    extractSoundUrlFromConll(conll: string): string | null {
+      const match = conll.match(/sound_url = (.*?)\n/)
+      return match ? match[1] : null
+    },
     hasPreviousSentence(){
       if (this.index >= 1) {
         const conllPrev = Object.values(this.filteredTrees[this.index-1].conlls)[0]
-        const urlPreviousSentence = conllPrev.match(/sound_url = (.*?)\n/)
-        if (urlPreviousSentence !== null){
-          return  urlPreviousSentence[1] == this.getSoundUrl()
-        }
+        const urlPreviousSentence = this.extractSoundUrlFromConll(conllPrev)
+        return urlPreviousSentence === this.getSoundUrl()
       }
       return false
     },
     hasNextSentence(){
       if (this.index < this.filteredTrees.length - 1) {
         const conllNext = Object.values(this.filteredTrees[this.index+1].conlls)[0]
-        const urlNextSentence = conllNext.match(/sound_url = (.*?)\n/)
-        if (urlNextSentence !== null){
-          return  urlNextSentence[1] == this.getSoundUrl()
-        }
+        const urlNextSentence = this.extractSoundUrlFromConll(conllNext)
+        return urlNextSentence === this.getSoundUrl()
       }
       return false
     },
@@ -426,37 +410,33 @@ export default defineComponent({
       const ends = [...conll.matchAll(/AlignEnd=(\d+)(?:\||\n|$)/g)]
       this.audioEnd = Number(ends[ends.length - 1][1])/1000
     },
-    setNextSentenceToken(conll: string){
+    PrevNextFromConll(conll: string): { begin: number; end: number; word: string; }[] {
       const res = [...conll.matchAll(
-      /^\d+\t([^\t]+)(?:\t[^\t]*){7}\t.*?AlignBegin=(\d+)\|AlignEnd=(\d+)/gm)]
-      this.audioTokensNext = Object.values(res).map(m => ({
+        /^\d+\t([^\t]+)(?:\t[^\t]*){7}\t.*?AlignBegin=(\d+)\|AlignEnd=(\d+)/gm)]
+      return res.map(m => ({
         begin: Number(m[2])/1000,
         word : m[1],
         end : Number(m[3])/1000,
       }))
     },
+    setNextSentenceToken(conll: string){
+      this.audioTokensNext = this.PrevNextFromConll(conll)
+    },
     setPreviousSentenceToken(conll: string){
-      const res = [...conll.matchAll(
-      /^\d+\t([^\t]+)(?:\t[^\t]*){7}\t.*?AlignBegin=(\d+)\|AlignEnd=(\d+)/gm)]
-      this.audioTokensPrev = Object.values(res).map(m => ({
-        begin: Number(m[2])/1000,
-        word : m[1],
-        end : Number(m[3])/1000,
+      this.audioTokensPrev = this.PrevNextFromConll(conll)
+    },
+    PrevNextSentence(tokens: { begin: number; end: number; word: string; }[]): Array<{text: string; begin: number; class: string}> {
+      return tokens.map((token) => ({
+        text: " " + token.word,
+        begin: Number(token.begin),
+        class: " ",
       }))
     },
     setPreviousSentenceText(){
-      this.spansPrev = this.audioTokensPrev.map((token) => ({
-        text: " "+token.word,
-        begin: Number(token.begin),
-        class: " ",
-      }))
+      this.spansPrev = this.PrevNextSentence(this.audioTokensPrev)
     },
     setNextSentenceText(){
-      this.spansNext = this.audioTokensNext.map((token) => ({
-        text: " "+token.word,
-        begin: Number(token.begin),
-        class: " ",
-      }))
+      this.spansNext = this.PrevNextSentence(this.audioTokensNext)
     },
   }
 })

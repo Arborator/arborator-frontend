@@ -22,7 +22,7 @@
     </span>
     <br>
     <span
-        v-if="isNextSentenceToggled() && hasNextSentence()"
+        v-if="isNextSentenceToggled() && hasNextSentence() "
         v-for="item in spansNext"
         :class="item.class + ' cursor-pointer'"
         @click="clickWord(item.begin)"
@@ -33,7 +33,7 @@
   </div>
 
       <q-toggle
-        v-if="hasToken() && hasPreviousSentence()"
+        v-if="hasToken() && hasPreviousSentence() && !isInFiltre()"
         v-model="togglePrevious"
         color="primary: purple-7"
         label="previous sentence"
@@ -41,7 +41,7 @@
         @update:model-value="addContext()"
       />
       <q-toggle
-        v-if="hasToken() && hasNextSentence()"
+        v-if="hasToken() && hasNextSentence() && !isInFiltre()"
         v-model="toggleNext"
         color="primary : purple-7"
         label="next sentence"
@@ -139,10 +139,11 @@ export default defineComponent({
       }>,
       videoTokensPrev: [] as { begin: number; end: number; word: string; }[],
       currentSentence: 'current',
+      cachedUserId: ''
     }
   },
   computed: {
-    ...mapState(useTreesStore, ["filteredTrees"] ),
+    ...mapState(useTreesStore, ['trees', 'filteredTrees']),
     ...mapState(useVideoStore, ['videoRef']),
   },
   mounted(){
@@ -151,6 +152,7 @@ export default defineComponent({
       this.videoEnd = this.videoTokens[this.videoTokens.length -1].end
       this.videoBegin = this.videoTokens[0].begin
       this.setText()
+      this.cachedUserId = this.getUserId()
     }
     this.videoInit()
     //add eventListeners to video
@@ -158,8 +160,9 @@ export default defineComponent({
     this.videoRef?.addEventListener("pause", this.videoPause)
     this.videoRef?.addEventListener("seeking", this.videoSeeking)
   },
-  unmounted(){
-    //remove eventListener when component is unmounted
+  beforeUnmount(){
+    this.videoPause()
+    //remove eventListener before component is unmounted
     this.videoRef?.removeEventListener("play", this.videoPlay)
     this.videoRef?.removeEventListener("pause", this.videoPause)
     this.videoRef?.removeEventListener("seeking", this.videoSeeking)
@@ -168,20 +171,16 @@ export default defineComponent({
     ...mapActions(useVideoStore, ['pause', 'play', 'setTime']),
     getUserId(){
       const id = Object.entries(this.reactiveSentencesObj)[0][0]
-      if (id !== undefined){
-        return id
-      }
-      return '';
+      return id !== undefined ? id : ''
     },
     getVideoUrl() {
-      const videoUrl = this.reactiveSentencesObj[this.getUserId()].state.metaJson.sound_url
-      if (videoUrl !== null){
-        return videoUrl.toString()
-      }
-      return '';
+      const userId = this.cachedUserId || this.getUserId()
+      const videoUrl = this.reactiveSentencesObj[userId].state.metaJson.sound_url
+      return videoUrl ? videoUrl.toString() : '';
     },
     getVideoTokens() {
-      const form = this.reactiveSentencesObj[this.getUserId()].state.treeJson.nodesJson
+      const userId = this.cachedUserId || this.getUserId()
+      const form = this.reactiveSentencesObj[userId].state.treeJson.nodesJson
       let result = [] as { begin: number; end: number; word: string; }[];
       if (form[1].MISC.AlignBegin && form[1].MISC.AlignEnd){
         result = Object.values(form).map((token) =>({
@@ -195,11 +194,12 @@ export default defineComponent({
     videoInit() {
       if (this.videoRef != undefined) {
         this.videoRef.currentTime = this.videoBegin
+        this.videoRef.pause()
       }
     },
     videoPlay(){
-    if (this.videoRef !== null) this.videoRef.playbackRate = 0.2
-      if (this.hasToken()){
+    if (this.videoRef !== null)
+      if (this.videoRef && this.hasToken()){
         this.videoIntervalId = setInterval(() => {
           this.update()
         }, 50)
@@ -285,8 +285,7 @@ export default defineComponent({
           }
         })
       }
-      pos === null ? pos = [0]: pos = pos;
-      return pos;
+      return pos === null ? [0]: pos ;
     },
     speakingToken(position : number[], spans : Array<{text: string;begin: number;class: string; }>) {
       this.videoSpeakingTabIndex.forEach((index) =>{
@@ -326,25 +325,21 @@ export default defineComponent({
       return (this.getVideoTokens() != undefined && this.getVideoTokens().length > 0)
     },
     addSeconds(){
-      if (this.videoRef){
-        let SecondsToAdd = 0
-        let SecondsToRetrieve = 0
-        let timeBeforeEnd = this.videoRef.duration - this.videoTokens[this.videoTokens.length -1].end
-        switch(this.addSecondsModel){
-          case "Three" : {
-            this.videoTokens[0].begin >= 3 ? SecondsToRetrieve = 3 : SecondsToRetrieve = this.videoTokens[0].begin
-            timeBeforeEnd >= 3 ? SecondsToAdd = 3 : SecondsToAdd = timeBeforeEnd
-          }; break;
-          case "Five" : {
-            this.videoTokens[0].begin >= 5 ? SecondsToRetrieve = 5 : SecondsToRetrieve = this.videoTokens[0].begin
-            timeBeforeEnd >= 5 ? SecondsToAdd = 5 : SecondsToAdd = timeBeforeEnd
-          }; break;
-          default : break;
-        }
-        this.videoBegin = this.videoTokens[0].begin - SecondsToRetrieve
-        this.videoEnd = this.videoTokens[this.videoTokens.length -1].end + SecondsToAdd
-        this.videoRef.currentTime = this.videoBegin
-      }
+      const videoRef = this.videoRef as HTMLVideoElement
+      const secondsToAdd = { 'Three': 3, 'Five': 5, '0': 0 }[this.addSecondsModel] || 0
+
+      if (secondsToAdd === 0 || !videoRef) return
+
+      const firstBegin = this.videoTokens[0].begin
+      const lastEnd = this.videoTokens[this.videoTokens.length - 1].end
+      const timeBeforeEnd = videoRef.duration - lastEnd
+
+      const SecondsToRetrieve = Math.min(secondsToAdd, firstBegin)
+      const SecondsToAdd = Math.min(secondsToAdd, timeBeforeEnd)
+
+      this.videoBegin = firstBegin - SecondsToRetrieve
+      this.videoEnd = lastEnd + SecondsToAdd
+      videoRef.currentTime = this.videoBegin
     },
     isNextSentenceToggled(){
       return this.toggleNext
@@ -353,11 +348,14 @@ export default defineComponent({
       return this.togglePrevious
     },
     hasPreviousSentence(){
-      return this.index >= 1
+      return this.index >= 1 && Object.values(this.trees)[this.index-1]
     },
     hasNextSentence(){
-      return this.index < (this.filteredTrees.length - 1)
+      if (Object.values(this.trees).length - 1){
+        return this.index < (Object.values(this.trees).length - 1)
+      }
     },
+
     addContext(){
       if (this.videoRef){
         if (this.hasNextSentence() && this.isNextSentenceToggled()){
@@ -380,7 +378,7 @@ export default defineComponent({
     addNextSentence(){
       this.AddSecondsDisable = true
       this.addSecondsModel = '0'
-      const conllNext = Object.values(this.filteredTrees[this.index+1].conlls)[0]
+      const conllNext = Object.values(Object.values(this.trees)[this.index+1].conlls)[0]
       this.setEndFromNextSentence(conllNext)
       this.setNextSentenceToken(conllNext)
       this.setNextSentenceText()
@@ -388,7 +386,7 @@ export default defineComponent({
     addPreviousSentence(){
       this.AddSecondsDisable = true
       this.addSecondsModel = '0'
-      const conllPrev = Object.values(this.filteredTrees[this.index-1].conlls)[0]
+      const conllPrev = Object.values(Object.values(this.trees)[this.index-1].conlls)[0]
       this.setBeginFromPreviousSentence(conllPrev)
       this.setPreviousSentenceToken(conllPrev)
       this.setPreviousSentenceText()
@@ -401,23 +399,20 @@ export default defineComponent({
       const ends = [...conll.matchAll(/AlignEnd=(\d+)(?:\||\n|$)/g)]
       this.videoEnd = Number(ends[ends.length - 1][1])/1000
     },
-    setNextSentenceToken(conll: string){
+    PrevNextFromConll(conll: string): { begin: number; end: number; word: string; }[] {
       const res = [...conll.matchAll(
-      /^\d+\t([^\t]+)(?:\t[^\t]*){7}\t.*?AlignBegin=(\d+)\|AlignEnd=(\d+)/gm)]
-      this.videoTokensNext = Object.values(res).map(m => ({
+        /^\d+\t([^\t]+)(?:\t[^\t]*){7}\t.*?AlignBegin=(\d+)\|AlignEnd=(\d+)/gm)]
+      return res.map(m => ({
         begin: Number(m[2])/1000,
         word : m[1],
         end : Number(m[3])/1000,
       }))
     },
+    setNextSentenceToken(conll: string){
+      this.videoTokensNext = this.PrevNextFromConll(conll)
+    },
     setPreviousSentenceToken(conll: string){
-      const res = [...conll.matchAll(
-      /^\d+\t([^\t]+)(?:\t[^\t]*){7}\t.*?AlignBegin=(\d+)\|AlignEnd=(\d+)/gm)]
-      this.videoTokensPrev = Object.values(res).map(m => ({
-        begin: Number(m[2])/1000,
-        word : m[1],
-        end : Number(m[3])/1000,
-      }))
+      this.videoTokensPrev = this.PrevNextFromConll(conll)
     },
     setPreviousSentenceText(){
       this.spansPrev = this.videoTokensPrev.map((token) => ({
@@ -432,6 +427,9 @@ export default defineComponent({
         begin: Number(token.begin),
         class: " ",
       }))
+    },
+    isInFiltre(){
+      return Object.values(this.trees).length !== this.filteredTrees.length
     },
   }
 })

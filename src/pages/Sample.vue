@@ -4,10 +4,10 @@
       <AdvancedFilter @trees-saved="getTrees()" :parent-on-validate="validateAllTrees"  />
     </template>
     <template v-slot:after>
-      <div class="custom-frame1">
+      <div class="custom-frame1" >
         <div v-show="!loading">
           <Video
-          v-if="isVideo()"
+            v-if="isVideo()"
           >
           </Video>
           <q-virtual-scroll
@@ -17,14 +17,17 @@
             :style="{ maxHeight: `${splitterHeight * ((100 - splitterModel) / 100) - 1}px`, width: '100%' }"
             :virtual-scroll-slice-size="50"
             :virtual-scroll-item-size="70"
+            @virtual-scroll="sentenceCardRefs()"
           >
-            <template #default="{ item, index }">
+            <template #default="{ item, index }" >
               <SentenceCard
+                :ref="'card'+index"
                 :key="samplename + item.sent_id"
                 :sentence="item"
                 :index="index"
                 :blind-annotation-level="blindAnnotationLevel"
                 :ud-validation="udValidationPassed[item.sent_id] || {}"
+                @closeCards="closeAllCard()"
               >
               </SentenceCard>
             </template>
@@ -91,6 +94,7 @@ export default defineComponent({
       splitterHeight,
       udValidationPassed,
       languageDetected: false,
+      cardRefs: [] as any[]
     };
   },
   computed: {
@@ -182,6 +186,31 @@ export default defineComponent({
         return videoUrl !== null
       }
       return false
+    },
+    getVideoUrl(): string {
+      if(this.filteredTrees[0]){
+        const conll = Object.values(this.filteredTrees[0].conlls)[0]
+        const videoUrl= conll.match(/video_url = (.*?)\n/)
+        if (videoUrl){
+          return videoUrl[1].toString()
+        }
+      }
+      return ''
+    },
+    closeAllCard(){
+      this.cardRefs.forEach(card => {
+        card.closeCard()
+      });
+    },
+    sentenceCardRefs(){
+      let refs = [] as any[]
+      for (let i = 0; i < this.filteredTrees.length; i++) {
+        const sentenceCard = this.$refs['card' + i] as any;
+        if (sentenceCard) {
+          refs.push(sentenceCard)
+        }
+      }
+      this.cardRefs = refs
     }
   },
 });

@@ -17,12 +17,17 @@
     </div>
     <div>
       <template v-if="samplesFrozen.list.length > 0">
+        <Video
+          v-if="isVideo()"
+          :videoUrl="getVideoUrl()">
+        </Video>
         <q-virtual-scroll
           :key="samplesFrozen.list.length"
           :items="samplesFrozen.list"
           style="max-width: 99vw"
           :virtual-scroll-slice-size="30"
           v-slot="{ item, index }"
+          @virtual-scroll="sentenceCardRefs()"
         >
           <div :key="index" style="display: flex">
             <template v-if="queryType === 'REWRITE'">
@@ -30,11 +35,13 @@
             </template>
             <div style="flex-grow: 1; overflow: auto">
               <SentenceCard
+                :ref="'card'+index"
                 :key="index"
                 :sentence="searchResults[item[0]][item[1]]"
                 :index="index"
                 :matches="searchResults[item[0]][item[1]]"
                 :blind-annotation-level="4"
+                @closeCards="closeAllCard()"
               ></SentenceCard>
             </div>
           </div>
@@ -54,9 +61,9 @@
         {{countSelected}}/{{ samplesFrozen.list.length }}
 
       <div v-for="user in availableSaveAs">
-        <q-btn 
+        <q-btn
           :disable="countSelected === 0"
-          :label="$t('grewSearch.applyRuleAs', [user])" 
+          :label="$t('grewSearch.applyRuleAs', [user])"
           color="primary"
           @click="applyRules(user)">
           <q-tooltip v-if='countSelected === 0'>{{ $t('grewSearch.applyRuleTooltip') }}</q-tooltip>
@@ -81,9 +88,10 @@ import { PropType, defineComponent } from 'vue';
 
 import api from '../../api/backend-api';
 import SentenceCard from '../sentence/SentenceCard.vue';
+import Video from '../sentence/Video.vue';
 
 export default defineComponent({
-  components: { SentenceCard },
+  components: { SentenceCard, Video },
   props: {
     searchResults: {
       type: Object as PropType<grewSearchResult_t>,
@@ -132,6 +140,7 @@ export default defineComponent({
       all: false,
       toSaveCounter: 0,
       users: new Set(),
+      cardRefs: [] as any[]
     };
   },
   computed: {
@@ -149,7 +158,7 @@ export default defineComponent({
       let nb_sent = 0;
       let nb_modified_nodes = 0;
       let nb_modified_edges = 0;
-      for (let sample_id in this.searchResults) { 
+      for (let sample_id in this.searchResults) {
         for (let sent_id in this.searchResults[sample_id]) {
           nb_sent += 1;
           let sent_data = this.searchResults[sample_id][sent_id];
@@ -179,11 +188,11 @@ export default defineComponent({
         const nodes = this.$t(nb_modified_nodes === 1 ? 'grewSearch.node' : 'grewSearch.node_plural', { count: nb_modified_nodes });
         const edges = this.$t(nb_modified_edges === 1 ? 'grewSearch.edge' : 'grewSearch.edge_plural', { count: nb_modified_edges });
         const message = this.$t('grewSearch.rewriteReport', { treeLabel: this.treeLabel, nodes: nodes, edges: edges, sents:sents, users:users })
-        return message 
+        return message
       } else {
         const occs = this.$t(nb_occ === 1 ? 'grewSearch.occ' : 'grewSearch.occ_plural', { count: nb_occ });
         const message = this.$t('grewSearch.searchReport', { occs: occs, sents:sents, users:users })
-        return message 
+        return message
       }
     },
     countSelected() {
@@ -357,6 +366,44 @@ export default defineComponent({
       else {
         this.$emit('closed');
       }
+    },
+    isVideo(){
+      let isVideo = false
+      Object.values(this.searchResults).forEach(elt => {
+          const conll = Object.values(Object.values(elt)[0].conlls)[0]
+          const videoUrl = conll.match(/video_url = (.*?)\n/)
+          if (videoUrl){
+            isVideo = true
+          }
+      });
+      return isVideo
+    },
+     getVideoUrl(){
+      let video = ''
+      Object.values(this.searchResults).forEach(elt => {
+          const conll = Object.values(Object.values(elt)[0].conlls)[0]
+          const videoUrl = conll.match(/video_url = (.*?)\n/)
+          if (videoUrl){
+            video = videoUrl[1]
+          }
+      });
+      return video
+    },
+    closeAllCard(){
+      this.cardRefs.forEach(card => {
+        card.closeCard()
+      });
+    },
+    sentenceCardRefs(){
+      let refs = [] as any[]
+      console.log("length?", this.samplesFrozen)
+      for (let i = 0; i < this.filteredSamples.length; i++) {
+        const sentenceCard = this.$refs['card' + i] as any;
+        if (sentenceCard) {
+          refs.push(sentenceCard)
+        }
+      }
+      this.cardRefs = refs
     }
   },
 });

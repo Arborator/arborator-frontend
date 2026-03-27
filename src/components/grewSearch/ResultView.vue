@@ -19,7 +19,8 @@
       <template v-if="samplesFrozen.list.length > 0">
         <Video
           v-if="isVideo()"
-          :videoUrl="getVideoUrl()">
+          :videoUrl="getVideoUrl()"
+          :grewSearch="true">
         </Video>
         <q-virtual-scroll
           :key="samplesFrozen.list.length"

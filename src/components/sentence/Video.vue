@@ -22,7 +22,8 @@
         preload="auto"
         class="video"
         @play="changeVideoSpeed()"
-      >
+        disablePictureInPicture
+        >
       </video>
 
       <div class="speedChoice q-pl-md q-pr-md" >
@@ -65,7 +66,11 @@ export default defineComponent({
   name: "Video",
   props: {
     videoUrl: {
-      type : String as PropType<String> | undefined,
+      type : String ,
+      required : false,
+    },
+    grewSearch: {
+      type : Boolean  ,
       required : false,
     }
   },
@@ -84,11 +89,12 @@ export default defineComponent({
   },
   computed: {
     ...mapState(useTreesStore, ["filteredTrees"] ),
-    ...mapWritableState(useVideoStore, ["videoRef"]),
+    ...mapWritableState(useVideoStore, ["videoRef", "videoInGrewSearch"]),
   },
   mounted(){
     this.videoRef = this.$refs.video as HTMLVideoElement
     this.setVideoPosition()
+    this.videoInGrewSearch = this.grewSearch === true
   },
   methods: {
     changeHiddenValue(){

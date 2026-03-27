@@ -144,7 +144,7 @@ export default defineComponent({
   },
   computed: {
     ...mapState(useTreesStore, ['trees', 'filteredTrees']),
-    ...mapState(useVideoStore, ['videoRef']),
+    ...mapState(useVideoStore, ['videoRef', 'videoInGrewSearch']),
   },
   mounted(){
     this.videoTokens = this.getVideoTokens()
@@ -349,12 +349,10 @@ export default defineComponent({
       return this.togglePrevious
     },
     hasPreviousSentence(){
-      if (this.trees[(this.index - 1)]){
         return this.index >= 1 && Object.values(this.trees)[this.index-1]
-      }
     },
     hasNextSentence(){
-      if (Object.values(this.trees).length - 1){
+      if (Object.values(this.trees).length){
         return this.index < (Object.values(this.trees).length - 1)
       }
     },
@@ -430,7 +428,7 @@ export default defineComponent({
       this.spansNext = this.PrevNextSentence(this.videoTokensNext)
     },
     isInFiltre(){
-      return Object.values(this.trees).length !== this.filteredTrees.length
+      return Object.values(this.trees)?.length !== this.filteredTrees?.length || this.videoInGrewSearch
     },
     changeSrc(){
       //change video src if diff from CoNLL

@@ -175,14 +175,14 @@ export default defineComponent({
     },
     getVideoUrl() {
       const userId = this.cachedUserId || this.getUserId()
-      const videoUrl = this.reactiveSentencesObj[userId].state.metaJson.sound_url
+      const videoUrl = this.reactiveSentencesObj[userId].state.metaJson.video_url
       return videoUrl ? videoUrl.toString() : '';
     },
     getVideoTokens() {
       const userId = this.cachedUserId || this.getUserId()
       const form = this.reactiveSentencesObj[userId].state.treeJson.nodesJson
       let result = [] as { begin: number; end: number; word: string; }[];
-      if (form[1].MISC.AlignBegin && form[1].MISC.AlignEnd){
+      if (form[1]?.MISC?.AlignBegin && form[1]?.MISC?.AlignEnd){
         result = Object.values(form).map((token) =>({
           begin : Number(token.MISC.AlignBegin)/1000,
           end : Number(token.MISC.AlignEnd)/1000,
@@ -192,6 +192,7 @@ export default defineComponent({
       return result;
     },
     videoInit() {
+      this.changeSrc()
       if (this.videoRef != undefined) {
         this.videoRef.currentTime = this.videoBegin
         this.videoRef.pause()
@@ -348,7 +349,9 @@ export default defineComponent({
       return this.togglePrevious
     },
     hasPreviousSentence(){
-      return this.index >= 1 && Object.values(this.trees)[this.index-1]
+      if (this.trees[(this.index - 1)]){
+        return this.index >= 1 && Object.values(this.trees)[this.index-1]
+      }
     },
     hasNextSentence(){
       if (Object.values(this.trees).length - 1){
@@ -431,6 +434,11 @@ export default defineComponent({
     isInFiltre(){
       return Object.values(this.trees).length !== this.filteredTrees.length
     },
+    changeSrc(){
+      if (this.videoRef && this.videoRef?.src !== this.getVideoUrl()){
+        this.videoRef.src = this.getVideoUrl()
+      }
+    }
   }
 })
 </script>

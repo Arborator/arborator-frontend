@@ -396,8 +396,7 @@ export default defineComponent({
     },
     sentenceCardRefs(){
       let refs = [] as any[]
-      console.log("length?", this.samplesFrozen)
-      for (let i = 0; i < this.filteredSamples.length; i++) {
+      for (let i = 0; i < this.samplesFrozen.list.length; i++) {
         const sentenceCard = this.$refs['card' + i] as any;
         if (sentenceCard) {
           refs.push(sentenceCard)

@@ -353,7 +353,7 @@ export default defineComponent({
       return match ? match[1] : null
     },
     hasPreviousSentence(){
-      if (this.index >= 1) {
+      if (this.index >= 1 && this.filteredTrees[this.index-1]) {
         const conllPrev = Object.values(this.filteredTrees[this.index-1].conlls)[0]
         const urlPreviousSentence = this.extractSoundUrlFromConll(conllPrev)
         return urlPreviousSentence === this.getSoundUrl()

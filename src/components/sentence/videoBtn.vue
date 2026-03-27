@@ -162,7 +162,7 @@ export default defineComponent({
   },
   beforeUnmount(){
     this.videoPause()
-    //remove eventListener before component is unmounted
+    //remove eventListeners of video before it is unmounted
     this.videoRef?.removeEventListener("play", this.videoPlay)
     this.videoRef?.removeEventListener("pause", this.videoPause)
     this.videoRef?.removeEventListener("seeking", this.videoSeeking)
@@ -358,7 +358,6 @@ export default defineComponent({
         return this.index < (Object.values(this.trees).length - 1)
       }
     },
-
     addContext(){
       if (this.videoRef){
         if (this.hasNextSentence() && this.isNextSentenceToggled()){
@@ -417,24 +416,24 @@ export default defineComponent({
     setPreviousSentenceToken(conll: string){
       this.videoTokensPrev = this.PrevNextFromConll(conll)
     },
-    setPreviousSentenceText(){
-      this.spansPrev = this.videoTokensPrev.map((token) => ({
-        text: " "+token.word,
+    PrevNextSentence(tokens: { begin: number; end: number; word: string; }[]): Array<{text: string; begin: number; class: string}> {
+      return tokens.map((token) => ({
+        text: " " + token.word,
         begin: Number(token.begin),
         class: " ",
       }))
     },
+    setPreviousSentenceText(){
+      this.spansPrev = this.PrevNextSentence(this.videoTokensPrev)
+    },
     setNextSentenceText(){
-      this.spansNext = this.videoTokensNext.map((token) => ({
-        text: " "+token.word,
-        begin: Number(token.begin),
-        class: " ",
-      }))
+      this.spansNext = this.PrevNextSentence(this.videoTokensNext)
     },
     isInFiltre(){
       return Object.values(this.trees).length !== this.filteredTrees.length
     },
     changeSrc(){
+      //change video src if diff from CoNLL
       if (this.videoRef && this.videoRef?.src !== this.getVideoUrl()){
         this.videoRef.src = this.getVideoUrl()
       }

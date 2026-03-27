@@ -1,6 +1,6 @@
 <template>
   <div
-    v-if="!isVideoHidden"
+    v-show="!isVideoHidden"
     ref="videoDiv"
     class="fixed z-max videoSize"
     :style="{ top: y + 'px', left: x + 'px' }"
@@ -22,14 +22,13 @@
         preload="auto"
         class="video"
         @play="changeVideoSpeed()"
-        :playBackRate="playBackrate"
       >
       </video>
 
       <div class="speedChoice q-pl-md q-pr-md" >
         <q-select
           color="primary : purple-7"
-          v-model="model"
+          v-model="videoSpeedModel"
           :options="options"
           @update:model-value="changeVideoSpeed()
           ">
@@ -72,7 +71,6 @@ export default defineComponent({
   },
   data() {
     return {
-      video: null as HTMLVideoElement | null,
       hideText:'Hide video',
       isVideoHidden: false,
       x: ref(20),
@@ -80,11 +78,8 @@ export default defineComponent({
       dragging: false,
       offsetX: 0,
       offsetY: 0,
-      model: ref('1'),
+      videoSpeedModel: ref('1'),
       options: ['0.25', '0.5', '1', '1.5', '2'],
-      sliderValue: ref(1),
-      url:'',
-      playBackrate: 1,
     }
   },
   computed: {
@@ -94,37 +89,34 @@ export default defineComponent({
   mounted(){
     this.videoRef = this.$refs.video as HTMLVideoElement
     this.setVideoPosition()
-    this.url = this.getVideoUrl()
   },
   methods: {
     changeHiddenValue(){
       this.isVideoHidden = !this.isVideoHidden
     },
     hide(){
+      //hide video div and change hide video btn text
       this.changeHiddenValue()
-      if(this.isVideoHidden) {
-        this.hideText = "Show video"
-      } else {
-        this.hideText = "Hide video"
-      }
+      this.isVideoHidden ? this.hideText = "Show video" : this.hideText = "Hide video"
     },
     getVideoUrl(){
-      let url =''
       if (!this.videoUrl){
+        //search for video_url in CoNLL if this.videoUrl isn't given
         const conll = Object.values(this.filteredTrees[0].conlls)[0]
         const Url= conll.match(/video_url = (.*?)\n/)
           return Url ? Url[1] : ''
       }
-      url = this.videoUrl.toString()
-      return url
+      return this.videoUrl.toString()
     },
     moveDiv(e : MouseEvent) {
       if (!this.dragging) return
+      //set new position to mouse position
       this.x = e.clientX - this.offsetX
       this.y = e.clientY - this.offsetY
     },
     startDrag(e: MouseEvent) {
       this.dragging = true
+      //calcul distance between div and mouse
       this.offsetX = e.clientX - this.x
       this.offsetY = e.clientY - this.y
       window.addEventListener('mousemove', this.moveDiv)
@@ -135,12 +127,11 @@ export default defineComponent({
     },
     changeVideoSpeed(){
       if (this.videoRef){
-        this.videoRef.playbackRate = Number(this.model)
-        this.playBackrate = Number(this.model)
+        this.videoRef.playbackRate = Number(this.videoSpeedModel)
       }
     },
     setVideoPosition(){
-      //set position to 70% of window's width
+      //set video position to 70% of window's width
       this.x = window.innerWidth * (70/100)
     },
   }

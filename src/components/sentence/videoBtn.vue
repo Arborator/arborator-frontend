@@ -329,8 +329,6 @@ export default defineComponent({
       const videoRef = this.videoRef as HTMLVideoElement
       const secondsToAdd = { 'Three': 3, 'Five': 5, '0': 0 }[this.addSecondsModel] || 0
 
-      if (secondsToAdd === 0 || !videoRef) return
-
       const firstBegin = this.videoTokens[0].begin
       const lastEnd = this.videoTokens[this.videoTokens.length - 1].end
       const timeBeforeEnd = videoRef.duration - lastEnd

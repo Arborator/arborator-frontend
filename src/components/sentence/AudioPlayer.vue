@@ -288,7 +288,7 @@ export default defineComponent({
     getSpeakingTokenIndex(tokens : {begin:number, end:number, word:string}[]){
       const audioPlayer = this.$refs.audioPlayer as HTMLAudioElement
       const currentTime = audioPlayer.currentTime
-      return tokens.findIndex(token => currentTime >= token.begin && currentTime <= token.end)
+      return tokens.findIndex(token => currentTime >= token.begin && currentTime < token.end)
     },
     speakingToken(position : number, spans : Array<{text: string;begin: number;class: string; }>) {
       let prevWord = spans[this.audioSpeakingIndex]
@@ -328,9 +328,7 @@ export default defineComponent({
     addSeconds(){
       const audioPlayer = this.$refs.audioPlayer as HTMLAudioElement
       const secondsToAdd = { 'Three': 3, 'Five': 5, '0': 0 }[this.addSecondsModel] || 0
-
-      if (secondsToAdd === 0) return
-
+      
       const firstBegin = this.audioTokens[0].begin
       const lastEnd = this.audioTokens[this.audioTokens.length - 1].end
       const timeBeforeEnd = audioPlayer.duration - lastEnd

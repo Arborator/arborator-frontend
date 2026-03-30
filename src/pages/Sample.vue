@@ -1,7 +1,7 @@
 <template>
   <q-splitter v-model="splitterModel" horizontal :limits="[0, 100]" :style="{ height: `${splitterHeight}px` }" emit-immediately>
     <template v-slot:before>
-      <AdvancedFilter @trees-saved="getTrees()" :parent-on-validate="validateAllTrees"  />
+      <AdvancedFilter @trees-saved="getTrees()" @advanced-filters-toggled="handleAdvancedFiltersToggle" :parent-on-validate="validateAllTrees"  />
     </template>
     <template v-slot:after>
       <div class="custom-frame1" >
@@ -23,6 +23,7 @@
               <SentenceCard
                 :ref="'card'+index"
                 :key="samplename + item.sent_id"
+                :key="`${samplename}_${item.sent_id}_${treesReloadCounter}`"
                 :sentence="item"
                 :index="index"
                 :blind-annotation-level="blindAnnotationLevel"
@@ -86,7 +87,7 @@ export default defineComponent({
     },
   },
   data() {
-    const splitterModel: number = 13;
+    const splitterModel: number = 15;
     const splitterHeight: number = 0;
     const udValidationPassed: { [sentId: string]: { [userId: string]: { message: string, passed: boolean } } } = {};
     return {
@@ -106,7 +107,8 @@ export default defineComponent({
       'userIds',
       'blindAnnotationLevel',
       'pendingModifications',
-      'sortedSentIds'
+      'sortedSentIds',
+      'treesReloadCounter'
     ]),
     ...mapState(useProjectStore, ['name']),
     ...mapWritableState(useTreesStore, ['reloadTrees', 'reloadValidation']),
@@ -211,6 +213,11 @@ export default defineComponent({
         }
       }
       this.cardRefs = refs
+    },
+    handleAdvancedFiltersToggle(isOpen: boolean) {
+      const width = window.innerWidth;
+      const openedValue = width < 1500 ? 40 : 32;
+      this.splitterModel = isOpen ? openedValue : 15;
     }
   },
 });

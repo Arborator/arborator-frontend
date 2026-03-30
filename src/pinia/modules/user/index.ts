@@ -23,7 +23,7 @@ export const useUserStore = defineStore('user', {
       return 'perm_identity';
     },
     shareEmail(state): boolean {
-      return !state.notShareEmail && this.loggedWithGithub && state.email == null;
+      return !state.notShareEmail && state.email == null;
     },
 
     /**

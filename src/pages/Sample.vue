@@ -22,7 +22,6 @@
             <template #default="{ item, index }" >
               <SentenceCard
                 :ref="'card'+index"
-                :key="samplename + item.sent_id"
                 :key="`${samplename}_${item.sent_id}_${treesReloadCounter}`"
                 :sentence="item"
                 :index="index"

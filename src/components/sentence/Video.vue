@@ -12,27 +12,28 @@
     >
       <q-bar class="drag-handle bg-primary text-white " >
         <q-space />
-        <q-btn dense flat icon="close" @click="hide()"/>
+        <q-btn dense flat icon="close" @click="toggleVideo()"/>
       </q-bar>
 
       <video
-        ref = "video"
-        :src="getVideoUrl()"
+        ref="video"
+        :src="cachedVideoUrl"
         controls
         preload="auto"
         class="video"
         @play="changeVideoSpeed()"
+        :playbackRate="Number(model)"
         disablePictureInPicture
-        >
+      >
       </video>
 
       <div class="speedChoice q-pl-md q-pr-md" >
         <q-select
           color="primary : purple-7"
-          v-model="videoSpeedModel"
+          v-model="model"
           :options="options"
-          @update:model-value="changeVideoSpeed()
-          ">
+          @update:model-value="changeVideoSpeed()"
+        >
           <template v-slot:prepend>
             <q-icon name="speed"/>
           </template>
@@ -44,9 +45,9 @@
   <div class="fixed-bottom-right q-pa-md z-max">
     <q-btn
       class="float-right"
-      color="primary : purle-7"
+      color="primary : purple-7"
       no-caps
-      v-on:click="hide()"
+      @click="toggleVideo()"
     >
       {{ hideText }}
     </q-btn>
@@ -76,15 +77,16 @@ export default defineComponent({
   },
   data() {
     return {
-      hideText:'Hide video',
+      hideText: 'Hide video',
       isVideoHidden: false,
-      x: ref(20),
-      y: ref(100),
+      x: 20,
+      y: 100,
       dragging: false,
       offsetX: 0,
       offsetY: 0,
-      videoSpeedModel: ref('1'),
+      model: '1',
       options: ['0.25', '0.5', '1', '1.5', '2'],
+      cachedVideoUrl: '',
     }
   },
   computed: {
@@ -95,22 +97,22 @@ export default defineComponent({
     this.videoRef = this.$refs.video as HTMLVideoElement
     this.setVideoPosition()
     this.videoInGrewSearch = this.grewSearch === true
+    this.cachedVideoUrl = this.getVideoUrl()
   },
   methods: {
-    changeHiddenValue(){
+    toggleVideo(){
       this.isVideoHidden = !this.isVideoHidden
+      this.hideText = this.isVideoHidden ? "Show video" : "Hide video"
     },
-    hide(){
-      //hide video div and change hide video btn text
-      this.changeHiddenValue()
-      this.isVideoHidden ? this.hideText = "Show video" : this.hideText = "Hide video"
+    extractVideoUrlFromConll(conll: string): string {
+      const match = conll.match(/video_url = (.*?)\n/)
+      return match ? match[1] : ''
     },
     getVideoUrl(){
       if (!this.videoUrl){
         //search for video_url in CoNLL if this.videoUrl isn't given
         const conll = Object.values(this.filteredTrees[0].conlls)[0]
-        const Url= conll.match(/video_url = (.*?)\n/)
-          return Url ? Url[1] : ''
+        return this.extractVideoUrlFromConll(conll)
       }
       return this.videoUrl.toString()
     },
@@ -125,20 +127,20 @@ export default defineComponent({
       //calcul distance between div and mouse
       this.offsetX = e.clientX - this.x
       this.offsetY = e.clientY - this.y
-      window.addEventListener('mousemove', this.moveDiv)
+      window.addEventListener('mousemove', this.moveDiv.bind(this))
     },
     stopDrag() {
       this.dragging = false
-      window.removeEventListener('mousemove', this.moveDiv)
+      window.removeEventListener('mousemove', this.moveDiv.bind(this))
     },
     changeVideoSpeed(){
       if (this.videoRef){
-        this.videoRef.playbackRate = Number(this.videoSpeedModel)
+        this.videoRef.playbackRate = Number(this.model)
       }
     },
     setVideoPosition(){
       //set video position to 70% of window's width
-      this.x = window.innerWidth * (70/100)
+      this.x = window.innerWidth * 0.7
     },
   }
 })

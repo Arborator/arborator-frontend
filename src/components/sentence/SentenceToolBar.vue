@@ -1,8 +1,10 @@
 <template>
+
   <q-bar class="row items-center custom-frame1">
     <span class="text-grey" style="padding-left: 10px">{{ index + 1 }}</span>
     <q-chip class="text-center" :color="$q.dark.isActive ? 'grey' : ''" dense> {{ sentenceData.sent_id }} </q-chip>&nbsp;&nbsp;&nbsp;
     <q-input
+      v-if="!isAudio() || !hasAlign() || !openTabUser "
       v-model="recentTreeText"
       :style="openTabUser === '' ? 'width: 100%' : 'width: 65%'"
       class="row items-center justify-center"
@@ -10,7 +12,7 @@
       readonly
       borderless
     >
-      <q-tooltip v-if="openTabUser !== ''" anchor="bottom middle" self="center middle" :offset="[10, 10]">
+    <q-tooltip v-if="openTabUser !== ''" anchor="bottom middle" self="center middle" :offset="[10, 10]">
         {{ $t('sentenceCard.selectTooltip') }}
       </q-tooltip>
     </q-input>
@@ -190,11 +192,22 @@
       @closed="showSentSegmentationDial = false"
     />
   </template>
+   <AudioPlayer v-if="isAudio() && openTabUser !== ''"
+     :reactive-sentences-obj="(reactiveSentencesObj as reactive_sentences_obj_t)"
+     :index="index"
+    >
+    </AudioPlayer>
+    <videoBtn v-if="isVideo() && openTabUser !== ''"
+      :reactive-sentences-obj="(reactiveSentencesObj as reactive_sentences_obj_t)"
+      :index="index"
+    ></videoBtn>
 </template>
 
 <script lang="ts">
 import TagsMenu from './TagsMenu.vue';
 import SentenceSegmentation from './SentenceSegmentation.vue';
+import AudioPlayer from './AudioPlayer.vue';
+import videoBtn from './videoBtn.vue';
 
 import  { sentenceConllToJson } from 'conllup/lib/conll';
 
@@ -214,6 +227,8 @@ export default defineComponent({
   components: {
     TagsMenu,
     SentenceSegmentation,
+    AudioPlayer,
+    videoBtn,
   },
   props: {
     sentenceBus: {
@@ -227,7 +242,7 @@ export default defineComponent({
     index: {
       type: Number as PropType<number>,
       required: true,
-    }, 
+    },
     blindAnnotationLevel: {
       type: Number as PropType<number>,
       required: true,
@@ -264,9 +279,9 @@ export default defineComponent({
     ...mapWritableState(useGithubStore, ['reloadCommits']),
     ...mapState(useProjectStore, [
       'isAdmin',
-      'isValidator', 
-      'blindAnnotationMode', 
-      'canSaveTreeInProject', 
+      'isValidator',
+      'blindAnnotationMode',
+      'canSaveTreeInProject',
       'diffMode',
       'diffUserId',
       'collaborativeMode'
@@ -291,7 +306,7 @@ export default defineComponent({
     canChangeSegmentation() {
       return this.isValidator && this.$route.params.samplename !== undefined // sentence segmentation option is available only in the sample view and only for validator
     },
-  }, 
+  },
   methods: {
     ...mapActions(useTreesStore, ['generateNewMetaText']),
     openStatisticsDialog() {
@@ -342,7 +357,22 @@ export default defineComponent({
     chooseSegmentationOption(option: string) {
       this.showSentSegmentationDial = true;
       this.sentenceSegmentationOption = option;
-    }
+    },
+    isAudio() {
+      const [conllData] = Object.values(this.sentenceData.conlls)
+      const soundUrl= conllData.match(/sound_url = (.*?)\n/)
+      return soundUrl !== null
+    },
+    hasAlign(){
+      const [conllData] = Object.values(this.sentenceData.conlls)
+      const Align = conllData.match(/AlignBegin=(\d+)\|AlignEnd=(\d+)(?:\||\n|$)/)
+      return Align !== null
+    },
+    isVideo() {
+      const [conllData] = Object.values(this.sentenceData.conlls)
+      const videoUrl= conllData.match(/video_url = (.*?)\n/)
+      return videoUrl !== null
+    },
   }
 });
 </script>

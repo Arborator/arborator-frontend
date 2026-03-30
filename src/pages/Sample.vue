@@ -4,8 +4,12 @@
       <AdvancedFilter @trees-saved="getTrees()" @advanced-filters-toggled="handleAdvancedFiltersToggle" :parent-on-validate="validateAllTrees"  />
     </template>
     <template v-slot:after>
-      <div class="custom-frame1">
+      <div class="custom-frame1" >
         <div v-show="!loading">
+          <Video
+            v-if="isVideo()"
+          >
+          </Video>
           <q-virtual-scroll
             :key="filteredTrees.length.toString() + Object.keys(filteredTrees).join('')"
             ref="virtualListRef"
@@ -13,14 +17,18 @@
             :style="{ maxHeight: `${splitterHeight * ((100 - splitterModel) / 100) - 1}px`, width: '100%' }"
             :virtual-scroll-slice-size="50"
             :virtual-scroll-item-size="70"
+            @virtual-scroll="sentenceCardRefs()"
           >
-            <template #default="{ item, index }">
+            <template #default="{ item, index }" >
               <SentenceCard
+                :ref="'card'+index"
+                :key="samplename + item.sent_id"
                 :key="`${samplename}_${item.sent_id}_${treesReloadCounter}`"
                 :sentence="item"
                 :index="index"
                 :blind-annotation-level="blindAnnotationLevel"
                 :ud-validation="udValidationPassed[item.sent_id] || {}"
+                @closeCards="closeAllCard()"
               >
               </SentenceCard>
             </template>
@@ -40,18 +48,20 @@
 import api from 'src/api/backend-api';
 import AdvancedFilter from 'src/components/sample/AdvancedFilter.vue';
 import SentenceCard from '../components/sentence/SentenceCard.vue';
+import Video from 'src/components/sentence/Video.vue';
 import { QVirtualScroll } from 'quasar';
 
 import { mapActions, mapState, mapWritableState } from 'pinia';
 import { notifyError } from 'src/utils/notify';
 import { useTreesStore } from 'src/pinia/modules/trees';
 import { useProjectStore } from 'src/pinia/modules/project';
-import { PropType, defineComponent } from 'vue';
+import { PropType, defineComponent, ref } from 'vue';
 
 export default defineComponent({
   components: {
     SentenceCard,
     AdvancedFilter,
+    Video,
   },
   beforeRouteLeave(to, from, next) {
     if (this.pendingModifications.size > 0) {
@@ -85,15 +95,16 @@ export default defineComponent({
       splitterHeight,
       udValidationPassed,
       languageDetected: false,
+      cardRefs: [] as any[]
     };
   },
   computed: {
     ...mapState(useTreesStore, [
-      'trees', 
-      'filteredTrees', 
-      'loading', 
-      'numberOfTrees', 
-      'userIds', 
+      'trees',
+      'filteredTrees',
+      'loading',
+      'numberOfTrees',
+      'userIds',
       'blindAnnotationLevel',
       'pendingModifications',
       'sortedSentIds',
@@ -169,6 +180,39 @@ export default defineComponent({
         .catch((error) => {
           notifyError({ error, caller: 'validateAllTrees' });
         });
+    },
+    isVideo(){
+      if(this.filteredTrees[0]){
+        const conll = Object.values(this.filteredTrees[0].conlls)[0]
+        const videoUrl= conll.match(/video_url = (.*?)\n/)
+        return videoUrl !== null
+      }
+      return false
+    },
+    getVideoUrl(): string {
+      if(this.filteredTrees[0]){
+        const conll = Object.values(this.filteredTrees[0].conlls)[0]
+        const videoUrl= conll.match(/video_url = (.*?)\n/)
+        if (videoUrl){
+          return videoUrl[1].toString()
+        }
+      }
+      return ''
+    },
+    closeAllCard(){
+      this.cardRefs.forEach(card => {
+        card.closeCard()
+      });
+    },
+    sentenceCardRefs(){
+      let refs = [] as any[]
+      for (let i = 0; i < this.filteredTrees.length; i++) {
+        const sentenceCard = this.$refs['card' + i] as any;
+        if (sentenceCard) {
+          refs.push(sentenceCard)
+        }
+      }
+      this.cardRefs = refs
     },
     handleAdvancedFiltersToggle(isOpen: boolean) {
       const width = window.innerWidth;

@@ -4,7 +4,7 @@
       {{ selectedSamples.length }}
       <span v-if="selectedSamples.length === 1">{{ $t('projectOptions.sample[0]') }}</span>
       <span v-else>{{ $t('projectOptions.sample[1]') }}</span>
-      / 
+      /
       {{ samplesLength }}
       <span v-if="samplesLength === 1">{{ $t('projectOptions.sample[0]') }}</span>
       <span v-else>{{ $t('projectOptions.sample[1]') }}</span>
@@ -46,7 +46,8 @@
     <ExportDialog :samples="selectedSamples" />
   </q-dialog>
   <q-dialog v-model="isShowDeleteUserTreesDial">
-    <DeleteUserTreesDial :selected-samples="selectedSamples" />
+    <DeleteUserTreesDial :selected-samples="selectedSamples"
+    @userTreeDeleted="isShowDeleteUserTreesDial = false"/>
   </q-dialog>
   <q-dialog v-model="confirmActionDial">
     <ConfirmAction :parent-action="confirmActionCallback" :target-name="name" />
@@ -132,7 +133,7 @@ export default defineComponent({
       }
       this.confirmActionCallback = method;
       this.confirmActionDial = true;
-    }, 
+    },
     exportEvaluation() {
       const projectName = this.name;
       const sampleName = this.selectedSamples[0].sampleName;

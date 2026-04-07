@@ -10,7 +10,27 @@
     @mousedown="startDrag"
     @mouseup="stopDrag"
     >
-      <q-bar class="drag-handle bg-primary text-white " >
+      <q-bar class="drag-handle bg-primary text-white" >
+       <q-btn
+       icon="speed"
+       flat
+       @click="showSpeedBtn = !showSpeedBtn"
+       />
+        <q-btn-toggle
+          v-show="showSpeedBtn"
+          v-model="videoSpeed"
+          flat
+          no-caps
+          toggle-color="black"
+          :options="[
+            {label: 'x0.25', value: '0.25', slot: 'zero'},
+            {label: 'x0.5', value: '0.5', slot: 'three'},
+            {label: 'x1', value: '1', slot:'five'},
+            {label: 'x1.5', value: '1.5', slot:'five'},
+          ]"
+          @update:model-value="changeVideoSpeed()"
+        />
+
         <q-space />
         <q-btn dense flat icon="close" @click="toggleVideo()"/>
       </q-bar>
@@ -22,23 +42,11 @@
         preload="auto"
         class="video"
         @play="changeVideoSpeed()"
-        :playbackRate="Number(model)"
+        :playbackRate="Number(videoSpeed)"
         disablePictureInPicture
       >
       </video>
 
-      <div class="speedChoice q-pl-md q-pr-md" >
-        <q-select
-          color="primary : purple-7"
-          v-model="model"
-          :options="options"
-          @update:model-value="changeVideoSpeed()"
-        >
-          <template v-slot:prepend>
-            <q-icon name="speed"/>
-          </template>
-        </q-select>
-      </div>
     </q-card>
   </div>
 
@@ -51,13 +59,12 @@
     >
       {{ hideText }}
     </q-btn>
-
   </div>
 
 </template>
 
 <script lang="ts">
-import { defineComponent, PropType, ref } from 'vue';
+import { defineComponent } from 'vue';
 
 import { mapState, mapWritableState } from 'pinia';
 import { useTreesStore } from 'src/pinia/modules/trees';
@@ -84,9 +91,10 @@ export default defineComponent({
       dragging: false,
       offsetX: 0,
       offsetY: 0,
-      model: '1',
       options: ['0.25', '0.5', '1', '1.5', '2'],
       cachedVideoUrl: '',
+      videoSpeed: '1',
+      showSpeedBtn: true
     }
   },
   computed: {
@@ -135,7 +143,8 @@ export default defineComponent({
     },
     changeVideoSpeed(){
       if (this.videoRef){
-        this.videoRef.playbackRate = Number(this.model)
+        this.videoRef.playbackRate = Number(this.videoSpeed)
+        console.log("speed = ", this.videoSpeed)
       }
     },
     setVideoPosition(){
@@ -157,12 +166,5 @@ export default defineComponent({
 .video{
   width: 100%;
   height: auto;
-}
-.backgroundBtn{
-  background-color: "gray";
-}
-.speedChoice{
-  height: auto;
-  width: 22%;
 }
 </style>

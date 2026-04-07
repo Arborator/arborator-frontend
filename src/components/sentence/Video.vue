@@ -3,7 +3,7 @@
     v-show="!isVideoHidden"
     ref="videoDiv"
     class="fixed z-max videoSize"
-    :style="{ top: y + 'px', left: x + 'px' }"
+    :style="{ top: y + 'px', left: x + 'px', width: videoWidth + '%' }"
   >
 
     <q-card
@@ -23,10 +23,10 @@
           no-caps
           toggle-color="black"
           :options="[
-            {label: 'x0.25', value: '0.25', slot: 'zero'},
-            {label: 'x0.5', value: '0.5', slot: 'three'},
-            {label: 'x1', value: '1', slot:'five'},
-            {label: 'x1.5', value: '1.5', slot:'five'},
+            {label: 'x0.25', value: '0.25'},
+            {label: 'x0.5', value: '0.5'},
+            {label: 'x1', value: '1'},
+            {label: 'x1.5', value: '1.5'},
           ]"
           @update:model-value="changeVideoSpeed()"
         />
@@ -47,6 +47,12 @@
       >
       </video>
 
+      <q-badge
+        class="resize-handle "
+        @mousedown="startResize"
+      >
+        <q-icon name="crop" color="transparent"/>
+      </q-badge>
     </q-card>
   </div>
 
@@ -94,7 +100,9 @@ export default defineComponent({
       options: ['0.25', '0.5', '1', '1.5', '2'],
       cachedVideoUrl: '',
       videoSpeed: '1',
-      showSpeedBtn: true
+      showSpeedBtn: true,
+      videoWidth: 25,
+      isResizing: false,
     }
   },
   computed: {
@@ -125,12 +133,13 @@ export default defineComponent({
       return this.videoUrl.toString()
     },
     moveDiv(e : MouseEvent) {
-      if (!this.dragging) return
+      if (!this.dragging ) return
       //set new position to mouse position
       this.x = e.clientX - this.offsetX
       this.y = e.clientY - this.offsetY
     },
     startDrag(e: MouseEvent) {
+      if(this.isResizing) return
       this.dragging = true
       //calcul distance between div and mouse
       this.offsetX = e.clientX - this.x
@@ -144,12 +153,38 @@ export default defineComponent({
     changeVideoSpeed(){
       if (this.videoRef){
         this.videoRef.playbackRate = Number(this.videoSpeed)
-        console.log("speed = ", this.videoSpeed)
       }
     },
     setVideoPosition(){
       //set video position to 70% of window's width
       this.x = window.innerWidth * 0.7
+    },
+    startResize(e: MouseEvent) {
+      this.isResizing = true;
+      // Store the mouse position to calculate resizing
+      this.offsetX = e.clientX;
+      this.offsetY = e.clientY;
+      document.addEventListener('mousemove', this.resize);
+      document.addEventListener('mouseup', this.stopResize);
+    },
+    resize(e: MouseEvent) {
+      if (!this.isResizing) return;
+      // Calculate different of mouse position
+      const widthChange = this.offsetX - e.clientX - 0.5
+      // Update width based on mouse movement
+      this.videoWidth = Math.max(10, this.videoWidth + (widthChange / window.innerWidth) * 100);
+
+      //move video to the left
+      this.x = this.x - widthChange;
+
+      // Update the mouse offset for next movement
+      this.offsetX = e.clientX;
+      this.offsetY = e.clientY;
+    },
+    stopResize() {
+      this.isResizing = false;
+      document.removeEventListener('mousemove', this.resize);
+      document.removeEventListener('mouseup', this.stopResize);
     },
   }
 })
@@ -166,5 +201,14 @@ export default defineComponent({
 .video{
   width: 100%;
   height: auto;
+}
+.resize-handle {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 10px;
+  height: 10px;
+  cursor: ew-resize;
+  background-color: transparent;
 }
 </style>

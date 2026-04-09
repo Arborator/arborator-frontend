@@ -8,11 +8,6 @@
       <q-btn flat dense icon="close" @click="closeDial()" />
     </q-bar>
     <div class="q-pa-md row q-gutter-md custom-frame1 justify-end">
-      <q-btn class="col-2" outline :disable="pendingModifications.size === 0" color="primary" label="Save pending trees" @click="saveAllTrees()">
-        <q-badge v-if="pendingModifications.size > 0" color="red" floating>
-          {{ pendingModifications.size }}
-        </q-badge>
-      </q-btn>
       <q-btn class="col-2" color="primary" label="Export results" @click="exportResults()" />
     </div>
     <div>
@@ -61,9 +56,9 @@
       </div>
         {{countSelected}}/{{ samplesFrozen.list.length }}
 
-      <div v-for="user in availableSaveAs">
+      <div v-for="user in userIdsWithValidated">
         <q-btn
-          :disable="countSelected === 0"
+          :disable="countSelected === 0 || !SaveAs[user]"
           :label="$t('grewSearch.applyRuleAs', [user])"
           color="primary"
           @click="applyRules(user)">
@@ -145,7 +140,7 @@ export default defineComponent({
     };
   },
   computed: {
-    ...mapState(useProjectStore, ['name', 'canSaveTreeInProject', 'isValidator']),
+    ...mapState(useProjectStore, ['name', 'canSaveTreeInProject', 'isValidator', 'isAdmin', 'collaborativeMode']),
     ...mapState(useGrewSearchStore, ['canRewriteRule']),
     ...mapState(useUserStore, ['username', 'isLoggedIn']),
     ...mapState(useTreesStore, ['pendingModifications']),
@@ -203,6 +198,31 @@ export default defineComponent({
     },
     samplesNames() {
       return Object.keys(this.searchResults);
+    },
+    isNonCollaborativeMode() {
+      return !this.collaborativeMode;
+    },
+    userIdsWithValidated() {
+      const idf = ['validated'];
+      if (this.username && !idf.includes(this.username)) {
+        idf.push(this.username);
+      }
+      return idf;
+    },
+    SaveAs(): { [key: string]: boolean } {
+      const btn: { [key: string]: boolean } = {};
+      
+      for (const user of this.userIdsWithValidated) {
+        if (!this.isAdmin) {
+          btn[user] = user === this.username;
+        } else if (this.isNonCollaborativeMode) {
+          btn[user] = user === 'validated';
+        } else {
+          btn[user] = true;
+        }
+      }
+      
+      return btn;
     },
   },
   mounted() {

@@ -8,12 +8,27 @@
       <q-btn flat dense icon="close" @click="closeDial()" />
     </q-bar>
     <div class="q-pa-md row q-gutter-md custom-frame1 justify-end">
-      <q-btn class="col-2" outline :disable="pendingModifications.size === 0" color="primary" label="Save pending trees" @click="saveAllTrees()">
-        <q-badge v-if="pendingModifications.size > 0" color="red" floating>
-          {{ pendingModifications.size }}
-        </q-badge>
-      </q-btn>
-      <q-btn class="col-2" color="primary" label="Export results" @click="exportResults()" />
+      <q-btn class="col-auto" color="primary" label="Export results" @click="exportResults()" />
+      <q-btn-dropdown 
+        class="col-auto"
+        v-if="queryType !== 'REWRITE' && isLoggedIn"
+        :disable="!pendingModifications.size"
+        color="primary"
+      >
+        <template v-slot:label>
+          <div class="row items-center no-wrap">
+            <div class="text-center">{{ $t('advancedFilter.savePendingTrees') }}</div>
+            <q-badge v-if="pendingModifications.size > 0" color="red" class="q-ml-sm" floating>
+              {{ pendingModifications.size }}
+            </q-badge>
+          </div>
+        </template>
+        <q-list>
+          <q-item v-for="user in userIdsWithValidated" :key="user" :disable="!SaveAs[user]" clickable @click="saveAllTreesAs(user)">
+            <q-item-section>{{ $t('grewSearch.applyRuleAs', [user]) }}</q-item-section>
+          </q-item>
+        </q-list>
+      </q-btn-dropdown>
     </div>
     <div>
       <template v-if="samplesFrozen.list.length > 0">
@@ -61,9 +76,9 @@
       </div>
         {{countSelected}}/{{ samplesFrozen.list.length }}
 
-      <div v-for="user in availableSaveAs">
+      <div v-for="user in userIdsWithValidated">
         <q-btn
-          :disable="countSelected === 0"
+          :disable="countSelected === 0 || !SaveAs[user]"
           :label="$t('grewSearch.applyRuleAs', [user])"
           color="primary"
           @click="applyRules(user)">
@@ -141,11 +156,12 @@ export default defineComponent({
       all: false,
       toSaveCounter: 0,
       users: new Set(),
-      cardRefs: [] as any[]
+      cardRefs: [] as any[],
+      groupedConlls: {} as { [key: string]: string[] },
     };
   },
   computed: {
-    ...mapState(useProjectStore, ['name', 'canSaveTreeInProject', 'isValidator']),
+    ...mapState(useProjectStore, ['name', 'canSaveTreeInProject', 'isValidator', 'isAdmin', 'collaborativeMode']),
     ...mapState(useGrewSearchStore, ['canRewriteRule']),
     ...mapState(useUserStore, ['username', 'isLoggedIn']),
     ...mapState(useTreesStore, ['pendingModifications']),
@@ -203,6 +219,31 @@ export default defineComponent({
     },
     samplesNames() {
       return Object.keys(this.searchResults);
+    },
+    isNonCollaborativeMode() {
+      return !this.collaborativeMode;
+    },
+    userIdsWithValidated() {
+      const idf = ['validated'];
+      if (this.username && !idf.includes(this.username)) {
+        idf.push(this.username);
+      }
+      return idf;
+    },
+    SaveAs(): { [key: string]: boolean } {
+      const btn: { [key: string]: boolean } = {};
+      
+      for (const user of this.userIdsWithValidated) {
+        if (!this.isAdmin) {
+          btn[user] = user === this.username;
+        } else if (this.isNonCollaborativeMode) {
+          btn[user] = user === 'validated';
+        } else {
+          btn[user] = true;
+        }
+      }
+      
+      return btn;
     },
   },
   mounted() {
@@ -389,6 +430,45 @@ export default defineComponent({
           }
       });
       return video
+    },
+    saveAllTreesAs(saveAs: string) {
+      const modifiedSentences = [...this.pendingModifications.values()];
+      const groupedConlls: { [key: string]: string[] } = {};
+      
+      for (const sentence of modifiedSentences) {
+        const group = (groupedConlls[sentence.sampleName] || []);
+        const conllsentences = sentence.conll.split('\n');
+        const updatedConllsentences = conllsentences.map((sentenceLine: string) => {
+          if (sentenceLine.startsWith('# user_id =')) {
+            return `# user_id = ${saveAs}`;
+          }
+          if (sentenceLine.startsWith('# timestamp =')) {
+            return `# timestamp = ${Math.round(Date.now())}`;
+          }
+          return sentenceLine;
+        });
+        group.push(updatedConllsentences.join('\n'));
+        groupedConlls[sentence.sampleName] = group;
+      }
+
+      const savePromises = Object.entries(groupedConlls).map(([sampleName, conlls]) => {
+        const data = { conllGraph: (conlls as string[]).join('\n\n') };
+        return api.saveAllTrees(this.name, sampleName, data);
+      });
+
+      Promise.all(savePromises)
+        .then(() => {
+          notifyMessage({ 
+            position: 'top', 
+            message: `Saved on the server as "${saveAs}"`, 
+            icon: 'save' 
+          });
+          this.emptyPendingModification();
+          this.$emit('reload-results');
+        })
+        .catch((error) => {
+          notifyError({ error: `Error happened while saving trees ${error}` });
+        });
     },
     closeAllCard(){
       this.cardRefs.forEach(card => {

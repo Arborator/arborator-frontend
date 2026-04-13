@@ -9,29 +9,44 @@
     @mousedown="startDrag"
     @mouseup="stopDrag"
     >
-      <q-bar class="drag-handle bg-primary text-white" >
-       <q-btn
-       icon="speed"
-       flat
-       @click="showSpeedBtn = !showSpeedBtn"
-       />
-        <q-btn-toggle
-          v-show="showSpeedBtn"
-          v-model="videoSpeed"
+      <q-bar class="drag-handle bg-primary text-white bar-toolbar">
+        <q-btn
+          round
           flat
-          no-caps
-          toggle-color="grey"
-          :options="[
-            {label: 'x0.25', value: '0.25'},
-            {label: 'x0.5', value: '0.5'},
-            {label: 'x1', value: '1'},
-            {label: 'x1.5', value: '1.5'},
-          ]"
-          @update:model-value="changeVideoSpeed()"
-        />
+          dense
+          icon="speed"
+          size="sm"
+          class="speed-btn"
+          @click="showSpeedBtn = !showSpeedBtn"
+        >
+          <q-tooltip>Playback speed</q-tooltip>
+        </q-btn>
+
+        <transition name="fade-slide">
+          <q-btn-toggle
+            v-show="showSpeedBtn"
+            v-model="videoSpeed"
+            flat
+            no-caps
+            dense
+            toggle-color="secondary"
+            text-color="white"
+            unelevated
+            class="speed-toggle"
+            :options="[
+              {label: 'x0.25', value: '0.25'},
+              {label: 'x0.5', value: '0.5'},
+              {label: 'x1', value: '1'},
+              {label: 'x1.5', value: '1.5'},
+            ]"
+            @update:model-value="changeVideoSpeed()"
+          />
+        </transition>
 
         <q-space />
-        <q-btn dense flat icon="close" @click="toggleVideo()"/>
+        <q-btn round flat dense icon="close" size="sm" @click="toggleVideo()">
+          <q-tooltip>Close</q-tooltip>
+        </q-btn>
       </q-bar>
 
       <video
@@ -58,7 +73,7 @@
   <div class="fixed-bottom-right q-pa-md z-max">
     <q-btn
       class="float-right"
-      color="primary : purple-7"
+      color="primary"
       no-caps
       @click="toggleVideo()"
     >
@@ -102,6 +117,8 @@ export default defineComponent({
       showSpeedBtn: true,
       videoWidth: 25,
       isResizing: false,
+      boundResize: null as ((e: MouseEvent) => void) | null,
+      boundStopResize: null as (() => void) | null,
     }
   },
   computed: {
@@ -163,18 +180,21 @@ export default defineComponent({
       // Store the mouse position to calculate resizing
       this.offsetX = e.clientX;
       this.offsetY = e.clientY;
-      document.addEventListener('mousemove', this.resize);
-      document.addEventListener('mouseup', this.stopResize);
+      this.boundResize = this.resize.bind(this)
+      this.boundStopResize = this.stopResize.bind(this)
+      document.addEventListener('mousemove', this.boundResize);
+      document.addEventListener('mouseup', this.boundStopResize);
     },
     resize(e: MouseEvent) {
       if (!this.isResizing) return;
       // Calculate different of mouse position
-      const widthChange = this.offsetX - e.clientX - 0.5
+      const widthChange = this.offsetX - e.clientX - 0.5;
+      const prevWidth = this.videoWidth;
       // Update width based on mouse movement
       this.videoWidth = Math.max(10, this.videoWidth + (widthChange / window.innerWidth) * 100);
-
       //move video to the left
-      this.x = this.x - widthChange;
+      const actualWidthChangePx = ((this.videoWidth - prevWidth) / 100) * window.innerWidth;
+      this.x = this.x - actualWidthChangePx;
 
       // Update the mouse offset for next movement
       this.offsetX = e.clientX;
@@ -182,8 +202,10 @@ export default defineComponent({
     },
     stopResize() {
       this.isResizing = false;
-      document.removeEventListener('mousemove', this.resize);
-      document.removeEventListener('mouseup', this.stopResize);
+      if (this.boundResize) document.removeEventListener('mousemove', this.boundResize);
+      if (this.boundStopResize) document.removeEventListener('mouseup', this.boundStopResize);
+      this.boundResize = null;
+      this.boundStopResize = null;
     },
   }
 })
@@ -191,15 +213,54 @@ export default defineComponent({
   <style lang="css">
   .videoSize{
     width: 25%;
-    height:auto;
+    height: auto;
     text-align: center;
     resize: horizontal;
     overflow: auto;
     min-width: 100px;
+    border-radius: 8px;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.25);
   }
   .video{
     width: 100%;
     height: auto;
+    display: block;
+  }
+  .bar-toolbar {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    padding: 4px 8px;
+    cursor: grab;
+    user-select: none;
+    border-radius: 8px 8px 0 0;
+  }
+  .bar-toolbar:active {
+    cursor: grabbing;
+  }
+  .speed-btn {
+    opacity: 0.85;
+    transition: opacity 0.2s;
+  }
+  .speed-btn:hover {
+    opacity: 1;
+  }
+  .speed-toggle {
+    border-radius: 20px;
+    background: rgba(255,255,255,0.15);
+    padding: 0 4px;
+    font-size: 0.75rem;
+  }
+  .speed-toggle .q-btn {
+    border-radius: 16px;
+    min-height: unset;
+    padding: 2px 8px;
+    font-size: 0.72rem;
+  }
+  .speed-toggle .q-btn--active {
+    background: rgba(255,255,255,0.9) !important;
+    color: var(--q-primary) !important;
+    font-weight: 600;
   }
   .resize-handle {
     position: absolute;
@@ -212,5 +273,14 @@ export default defineComponent({
   }
   .bold{
     font-weight: bold;
+  }
+  .fade-slide-enter-active,
+  .fade-slide-leave-active {
+    transition: opacity 0.2s ease, transform 0.2s ease;
+  }
+  .fade-slide-enter-from,
+  .fade-slide-leave-to {
+    opacity: 0;
+    transform: translateX(-6px);
   }
 </style>

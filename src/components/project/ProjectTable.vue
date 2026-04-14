@@ -38,30 +38,30 @@
           <q-checkbox v-model="props.selected" dense />
         </q-td>
         <q-td key="samplename" :props="props">
-          <q-btn
-            :disable="freezed && !isOwner"
-            outline
-            color="white"
-            :text-color="$q.dark.isActive ? 'white' : 'black'"
-            class="full-width"
-            :to="'/projects/' + name + '/' + props.row.sampleName"
-            no-caps
-          >
-            {{ props.row.sampleName }}
-            <q-menu
-              context-menu
-              touch-position
-            > 
-              <q-list>
-                <q-item v-close-popup clickable @click="showRenameSampleDial(props.row.sampleName, 'validated' in props.row.treeByUser)">
-                  <q-item-section>Rename sample</q-item-section>
-                  <q-item-section side>
-                    <q-icon name="edit" />
-                  </q-item-section>
-                </q-item>
-              </q-list>
-            </q-menu>
-          </q-btn>
+          <div class="row items-center justify-center no-wrap q-gutter-xs">
+            <q-btn
+              :disable="freezed && !isOwner"
+              outline
+              color="white"
+              :text-color="$q.dark.isActive ? 'white' : 'black'"
+              class="col"
+              :to="'/projects/' + name + '/' + props.row.sampleName"
+              no-caps
+            >
+              {{ props.row.sampleName }}
+            </q-btn>
+            <q-btn
+              :disable="freezed && !isOwner"
+              flat
+              round
+              dense
+              icon="edit"
+              color="primary"
+              @click.stop="showRenameSampleDial(props.row.sampleName, 'validated' in props.row.treeByUser)"
+            >
+              <q-tooltip>Rename sample</q-tooltip>
+            </q-btn>
+          </div>
         </q-td>
         <q-td key="sentences" :props="props">{{ props.row.sentences }}</q-td>
         <q-td key="tokens" :props="props">{{ props.row.tokens }}</q-td>
@@ -137,6 +137,7 @@ export default defineComponent({
           label: this.$t('projectTable.tableFields[0]'),
           sortable: true,
           field: 'samplename',
+          align: 'center',
         },
         {
           name: 'sentences',

@@ -315,7 +315,7 @@ export default defineComponent({
             sentenceJson.metaJson.user_id = saveAs;
             sentenceJson.metaJson.timestamp = Math.round(Date.now());
           }
-          grewSearchResultSentence["conlls"] = { saveAs: sentenceJsonToConll(sentenceJson)}
+          grewSearchResultSentence["conlls"] = { [saveAs]: sentenceJsonToConll(sentenceJson) }
           if (!selectedResults[sampleId]) selectedResults[sampleId] = {};
           selectedResults[sampleId][sentId] = grewSearchResultSentence
         }
@@ -433,12 +433,9 @@ export default defineComponent({
     },
     saveAllTreesAs(saveAs: string) {
       const modifiedSentences = [...this.pendingModifications.values()];
-      const groupedConlls: { [key: string]: string[] } = {};
-      
-      for (const sentence of modifiedSentences) {
-        const group = (groupedConlls[sentence.sampleName] || []);
+      const savePromises = modifiedSentences.map((sentence) => {
         const conllsentences = sentence.conll.split('\n');
-        const updatedConllsentences = conllsentences.map((sentenceLine: string) => {
+        const updatedConll = conllsentences.map((sentenceLine: string) => {
           if (sentenceLine.startsWith('# user_id =')) {
             return `# user_id = ${saveAs}`;
           }
@@ -446,18 +443,23 @@ export default defineComponent({
             return `# timestamp = ${Math.round(Date.now())}`;
           }
           return sentenceLine;
-        });
-        group.push(updatedConllsentences.join('\n'));
-        groupedConlls[sentence.sampleName] = group;
-      }
+        }).join('\n');
 
-      const savePromises = Object.entries(groupedConlls).map(([sampleName, conlls]) => {
-        const data = { conllGraph: (conlls as string[]).join('\n\n') };
-        return api.saveAllTrees(this.name, sampleName, data);
+        const sentId = sentenceConllToJson(updatedConll).metaJson.sent_id as string;
+
+        return api.updateTree(this.name, sentence.sampleName, {
+          conll: updatedConll,
+          userId: saveAs,
+          updateCommit: true,
+          sentId,
+        });
       });
 
       Promise.all(savePromises)
         .then(() => {
+          if (saveAs === 'validated') {
+            this.reloadCommits += 1;
+          }
           notifyMessage({ 
             position: 'top', 
             message: `Saved on the server as "${saveAs}"`, 

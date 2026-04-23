@@ -1,17 +1,17 @@
 <template>
   <q-btn-dropdown outline color="primary" no-caps icon="fab fa-github" label="Github Options">
     <q-list>
-      <q-item :disable="changesNumber == 0" clickable v-close-popup @click="isShowCommitDialog = true">
+      <q-item clickable v-close-popup @click="isShowCommitDialog = true">
         <q-item-section avatar>
-          <q-avatar icon="commit" />
+          <q-avatar icon="published_with_changes" />
         </q-item-section>
         <q-item-section>
-          <q-item-label>commit</q-item-label>
+          <q-item-label>{{ $t('github.statusLabel') }}</q-item-label>
           <q-item-label v-if="changesNumber > 0" caption>
-            {{ $t('github.commitNotif[0]') }} {{ changesNumber }} <span v-if="changesNumber === 1">{{ $t('github.commitNotif[1]') }}</span
-            ><span v-else>{{ $t('github.commitNotif[2]') }}</span></q-item-label
+            {{ $t('github.statusNotif[0]') }} {{ changesNumber }} <span v-if="changesNumber === 1">{{ $t('github.statusNotif[1]') }}</span
+            ><span v-else>{{ $t('github.statusNotif[2]') }}</span></q-item-label
           >
-          <q-item-label v-else caption> {{ $t('github.commitNotif[3]') }} </q-item-label>
+          <q-item-label v-else caption> {{ $t('github.statusNotif[3]') }} </q-item-label>
         </q-item-section>
         <q-item-section side top>
           <q-badge color="primary" :label="changesNumber" />
@@ -71,6 +71,7 @@
 <script lang="ts">
 import { mapState } from 'pinia';
 
+import { useGithubStore } from 'src/pinia/modules/github';
 import { useProjectStore } from 'src/pinia/modules/project';
 import { useUserStore } from 'src/pinia/modules/user';
 import { notifyError, notifyMessage } from 'src/utils/notify';
@@ -113,6 +114,7 @@ export default defineComponent({
     };
   },
   computed: {
+    ...mapState(useGithubStore, ['reloadCommits']),
     ...mapState(useUserStore, ['username']),
     ...mapState(useProjectStore, ['isOwner']),
     repositoryLink() {
@@ -122,13 +124,18 @@ export default defineComponent({
   mounted() {
     this.getChanges();
   },
+  watch: {
+    reloadCommits() {
+      this.getChanges();
+    },
+  },
   methods: {
     getChanges() {
       api
         .getChanges(this.projectName)
         .then((response) => {
           this.modifiedSamples = response.data;
-          this.changesNumber = this.modifiedSamples.map((sample) => sample.changes_number).reduce((a, b) => a + b, 0);
+          this.changesNumber = this.modifiedSamples.length;
         })
         .catch((error) => {
           notifyError({ error, caller: 'GithubOptions.getChanges' });

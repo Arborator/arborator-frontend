@@ -38,6 +38,7 @@
 import { api } from 'src/boot/axios';
 import { sample_t } from 'src/api/backend-types';
 import { mapWritableState, mapState } from 'pinia';
+import { useGithubStore } from 'src/pinia/modules/github';
 import { useProjectStore } from 'src/pinia/modules/project';
 import { notifyError, notifyMessage } from 'src/utils/notify';
 import { defineComponent, PropType } from 'vue';
@@ -70,6 +71,7 @@ export default defineComponent({
   computed: {
     ...mapState(useProjectStore, ['name']), 
     ...mapWritableState(useProjectStore, ['reloadSamples']),
+    ...mapWritableState(useGithubStore, ['reloadCommits']),
   },
   methods: {
     renameSample() {
@@ -79,17 +81,19 @@ export default defineComponent({
         .then(() => {
           notifyMessage({ message: 'The sample name is modified' });
           if (this.canChangeGithub && this.hasValidated && this.syncGithubRepo) {
-            const data = {
+            const githubRenameData = {
               oldName: this.sampleName,
               newName: this.newSampleName,
-            }
-            api
-              .githubRenameSample(this.name, data)
+            };
+            return api
+              .githubRenameSample(this.name, githubRenameData)
               .then(() => {
                 notifyMessage({ message: 'The samples name was modified on GitHub' });
-              }
-            )
+                this.reloadCommits += 1;
+              });
           }
+        })
+        .then(() => {
           this.reloadSamples = true;
         })
         .catch((error) => {

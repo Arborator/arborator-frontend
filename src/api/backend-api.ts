@@ -346,6 +346,9 @@ export default {
   commitChanges(projectName: string, data: any) {
     return API.post(`/projects/${projectName}/synchronize/commit`, data);
   },
+  resetChanges(projectName: string, data: any) {
+    return API.patch(`/projects/${projectName}/synchronize/commit`, data);
+  },
   githubRenameSample(projectName: string, data: any) {
     return API.post(`/projects/${projectName}/synchronize/rename`, data);
   },

@@ -292,6 +292,7 @@ export default {
     selectBranch: 'Séléctionner une branche à cloner',
     arboratorgrewBranch: "Créer une nouvelle branche et l'utiliser pour les commits de ArboratorGrew.",
     newBranchName: 'Nom de la branche à utiliser',
+    branchAlreadyExists: 'Cette branche existe déjà ! Veuillez choisir un autre nom.',
     defaultBranch: ' Utiliser la branche sélectionnée (Attention si vous travaillez avec un dépôt qui a de nombreux collaborateurs).',
     synchronize: 'Synchroniser',
     syncBtnTooltip: "Vous devez d'abord définir le nom de la branche",

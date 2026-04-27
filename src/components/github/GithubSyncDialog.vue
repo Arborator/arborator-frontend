@@ -78,7 +78,16 @@
         {{ $t('github.arboratorgrewBranch') }}
       </div>
       <div class="col-4">
-        <q-input :disable="branchSyn !== 'new'" dense outlined v-model="branchToUse" :label="$t('github.newBranchName')"></q-input>
+        <q-input
+          :disable="branchSyn !== 'new'"
+          dense
+          outlined
+          v-model="branchToUse"
+          :label="$t('github.newBranchName')"
+          :error="branchExists"
+          :error-message="$t('github.branchAlreadyExists')"
+          @update:model-value="checkBranchExists"
+        />
       </div>
     </div>
     <div class="row q-gutter-md justify-center">
@@ -117,7 +126,7 @@ export default defineComponent({
   },
   data() {
     const repositories: githubRepository_t[] = [];
-    const repositoriesPerOwner: {}[] = [];
+    const repositoriesPerOwner: { name: string }[] = [];
     const listBranches: string[] = [];
     return {
       repositoriesPerOwner,
@@ -133,6 +142,7 @@ export default defineComponent({
       pageIndex: 1,
       totalItemPerPage: 8,
       loading: false,
+      branchExists: false,
     };
   },
   computed: {
@@ -150,7 +160,7 @@ export default defineComponent({
       );
     },
     disableSyncBtn() {
-      return this.branchSyn === 'new' && this.branchToUse === '';
+      return this.branchSyn === 'new' && (this.branchToUse === '' || this.branchExists);
     },
   },
   mounted() {
@@ -230,6 +240,9 @@ export default defineComponent({
           this.$emit('created');
           clearTimeout(interval);
         });
+    },
+    checkBranchExists() {
+      this.branchExists = this.listBranches.includes(this.branchToUse);
     },
   },
 });

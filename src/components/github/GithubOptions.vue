@@ -50,10 +50,6 @@
         </q-item-section>
         <q-item-section>
           <q-item-label> {{ $t('github.removeSync[0]') }} </q-item-label>
-          <q-item-label caption @click.native.stop>
-            {{ $t('github.removeSync[1]') }}
-            <a :href="repositoryLink" target="_blank"> {{ repositoryName }}</a>
-          </q-item-label>
         </q-item-section>
       </q-item>
     </q-list>
@@ -69,6 +65,7 @@
   </q-dialog>
 </template>
 <script lang="ts">
+import { AxiosError } from 'axios';
 import { mapState } from 'pinia';
 
 import { useGithubStore } from 'src/pinia/modules/github';
@@ -138,6 +135,15 @@ export default defineComponent({
           this.changesNumber = this.modifiedSamples.length;
         })
         .catch((error) => {
+          const axiosError = error as AxiosError;
+
+          if (axiosError.response?.status === 404) {
+            this.modifiedSamples = [];
+            this.changesNumber = 0;
+            this.checkPulls = false;
+            return;
+          }
+
           notifyError({ error, caller: 'GithubOptions.getChanges' });
         });
     },

@@ -98,6 +98,7 @@
       :canChangeGithub="isAllowdedToSync"
       :syncGithubRepo="syncGithubRepo"
       :has-validated="hasValidated"
+      :all-samples="samples"
     />
   </q-dialog>
 </template>

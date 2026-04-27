@@ -20,12 +20,14 @@
         v-model="newSampleName"
         label="New sample name"
         :rules="[value => !checkFilename(value) || checkFilename(value)]"
+        :error="newSampleNameError !== ''"
+        :error-message="newSampleNameError"
       />
       <div class="flex flex-center">
         <q-btn 
           v-close-popup 
           color="primary"
-          :disable="checkFilename(newSampleName) !== ''"
+          :disable="checkFilename(newSampleName) !== '' || newSampleNameError !== ''"
           label="Submit" type="submit" 
           @click="renameSample()"
         />
@@ -61,6 +63,10 @@ export default defineComponent({
       type: String as PropType<string>,
       required: false,
     },
+    allSamples:{
+      type: Array as PropType<sample_t[]>,
+      required: true,
+    },
   },
   data() {
     return {
@@ -72,14 +78,39 @@ export default defineComponent({
     ...mapState(useProjectStore, ['name']), 
     ...mapWritableState(useProjectStore, ['reloadSamples']),
     ...mapWritableState(useGithubStore, ['reloadCommits']),
+    newSampleNameError(): string {
+    if (!this.newSampleName || this.newSampleName.trim() === '') {
+      return '';
+    }
+    
+    if (this.newSampleName === this.sampleName) {
+      return  this.$t('renameSample.sameName');
+    }
+    
+    if (this.sampleNameExists(this.newSampleName)) {
+      return this.$t('renameSample.sampleNameExists');
+    }
+    
+    return '';
+  },
+  },
+  mounted() {
+    this.newSampleName = this.sampleName;
   },
   methods: {
+    sampleNameExists(name: string){
+      if (!this.allSamples || !Array.isArray(this.allSamples)) {
+        console.warn('allSamples is not available in RenameSample component');
+        return false;
+      }
+      return this.allSamples.some(sample => sample.sampleName === name);
+    },
     renameSample() {
       const data = { newSampleName: this.newSampleName };
       api
         .renameSample(this.name, this.sampleName, data)
         .then(() => {
-          notifyMessage({ message: 'The sample name is modified' });
+          notifyMessage({ message: this.$t('renameSample.sampleNameModified') });
           if (this.canChangeGithub && this.hasValidated && this.syncGithubRepo) {
             const githubRenameData = {
               oldName: this.sampleName,
@@ -88,7 +119,7 @@ export default defineComponent({
             return api
               .githubRenameSample(this.name, githubRenameData)
               .then(() => {
-                notifyMessage({ message: 'The samples name was modified on GitHub' });
+                notifyMessage({ message: this.$t('renameSample.sampleNameModifiedGithub') });
                 this.reloadCommits += 1;
               });
           }

@@ -126,6 +126,12 @@ export default {
     renameBtn: 'Rename',
     inputError: 'please type something',
   },
+  renameSample: {
+    sampleNameExists: 'A sample with this name already exists',
+    sameName: 'The new name must be different from the current name',
+    sampleNameModifiedGithub: 'The sample name was modified on GitHub',
+    sampleNameModified: 'The sample name is modified',
+  },
 
   // page when you enter a project ( samples info, etc)
   projectView: {

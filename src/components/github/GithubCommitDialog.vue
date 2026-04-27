@@ -34,7 +34,7 @@
             <q-btn size="sm" flat icon="open_in_full" @click="selectedModifiedSamples[index] = true">
               <q-tooltip>{{ $t('github.statusDialog.showChanges') }}</q-tooltip>
             </q-btn>
-            <q-btn size="sm" flat icon="restore" @click="resetSamples([sample.sample_name])">
+            <q-btn size="sm" flat icon="restore" @click="confirmResetSamples([sample.sample_name])">
               <q-tooltip>{{ $t('github.statusDialog.resetOne') }}</q-tooltip>
             </q-btn>
             <q-dialog v-model:model-value="selectedModifiedSamples[index]">
@@ -58,21 +58,34 @@
       <q-form class="q-gutter-md">
         <q-input outlined v-model="message" :label="$t('github.statusDialog.commitInput')" :disable="!statusEntries.length" />
         <div class="row q-gutter-md justify-center">
-          <q-btn no-caps flat color="primary" :disable="!selectedSamples.length || isSubmitting" :label="$t('github.statusDialog.resetSelected')" @click="resetSamples(selectedSamples)" />
+          <q-btn no-caps flat color="primary" :disable="!selectedSamples.length || isSubmitting" :label="$t('github.statusDialog.resetSelected')" @click="confirmResetSamples([...selectedSamples])" />
           <q-btn no-caps color="primary" :disable="!canPush" :loading="isSubmitting" :label="$t('github.statusDialog.pushSelected')" @click="commitChanges()" />
         </div>
       </q-form>
     </q-card-section>
   </q-card>
+  <q-dialog v-model="confirmActionDial">
+    <ConfirmAction
+      :parent-action="confirmActionCallback"
+      :target-name="projectName"
+      :message="confirmActionMessage"
+      :hint="confirmActionHint"
+      :label="confirmActionLabel"
+    />
+  </q-dialog>
 </template>
 <script lang="ts">
 import { notifyError, notifyMessage } from 'src/utils/notify';
 import { PropType, defineComponent } from 'vue';
 
 import api from '../../api/backend-api';
+import ConfirmAction from '../shared/ConfirmAction.vue';
 
 export default defineComponent({
   name: 'GithubCommitDialog',
+  components: {
+    ConfirmAction,
+  },
   props: {
     projectName: {
       type: String as PropType<string>,
@@ -88,12 +101,18 @@ export default defineComponent({
     },
   },
   data() {
+    const confirmActionCallback: CallableFunction = () => {};
     return {
       message: '',
       isSubmitting: false,
       statusEntries: [] as any[],
       selectedSamples: [] as string[],
       selectedModifiedSamples: [] as boolean[],
+      confirmActionCallback,
+      confirmActionDial: false,
+      confirmActionMessage: '',
+      confirmActionHint: '',
+      confirmActionLabel: '',
     };
   },
   mounted() {
@@ -175,6 +194,28 @@ export default defineComponent({
           }
         })
         .join('\n');
+    },
+    confirmResetSamples(sampleNames: string[]) {
+      const changesToReset = this.statusEntries
+        .filter((sample) => sampleNames.includes(sample.sample_name))
+        .reduce((total, sample) => total + Number(sample.changes_number || 0), 0);
+
+      if (!changesToReset || this.isSubmitting) {
+        return;
+      }
+
+      this.confirmActionCallback = () => {
+        this.resetSamples(sampleNames);
+      };
+      this.confirmActionMessage = this.$t('github.statusDialog.resetConfirmMessage', {
+        count: changesToReset,
+        plural: changesToReset > 1 ? 's' : '',
+      }) as string;
+      this.confirmActionHint = this.$t('github.statusDialog.resetConfirmHint', {
+        projectName: this.projectName,
+      }) as string;
+      this.confirmActionLabel = this.$t('github.statusDialog.resetConfirmLabel') as string;
+      this.confirmActionDial = true;
     },
   },
 });

@@ -8,6 +8,10 @@
     </q-bar>
     <q-card-section> {{ dialogMessage }}</q-card-section>
     <q-form class="q-gutter-md">
+      <q-card-section v-if="warningMessage" class="q-pa-md bg-orange-1 text-orange-10">
+        <q-icon name="warning" class="q-mr-md" />
+        {{ warningMessage }}
+      </q-card-section>
       <q-card-section>
         <q-input
           v-model="name"
@@ -56,6 +60,11 @@ export default defineComponent({
       default: '',
     },
     label: {
+      type: String as PropType<string>,
+      required: false,
+      default: '',
+    },
+    warningMessage: {
       type: String as PropType<string>,
       required: false,
       default: '',

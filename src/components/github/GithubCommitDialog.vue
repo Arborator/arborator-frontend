@@ -154,7 +154,7 @@ export default defineComponent({
           this.$emit('committed');
         })
         .catch((error) => {
-          notifyError({ error, caller: 'Error while commiting changes' });
+          notifyError({ error, caller: 'Error while committing changes' });
         })
         .finally(() => {
           this.isSubmitting = false;

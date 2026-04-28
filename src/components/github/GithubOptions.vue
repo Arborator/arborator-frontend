@@ -8,7 +8,16 @@
         <q-btn icon="close" flat round dense v-close-popup size="md" style="position: absolute; right: 12px; top: 50%; transform: translateY(-50%);" />
       </q-card-section>
 
-      <q-scroll-area style="height: calc(95vh - 160px); width: 100%;">
+      <q-card-section class="bg-orange-1 text-orange-10 q-pa-md q-mt-md">
+        <div class="row items-start no-wrap">
+         <q-icon name="warning" size="20px" class="q-mr-sm q-mt-xs" />
+         <div class="text-body2">
+          {{ $t('github.concurrentModificationsWarning') }}
+         </div>
+        </div>
+      </q-card-section>
+
+      <q-card-section class="q-pa-md" style="overflow: hidden; flex-grow: 1">
         <div class="q-pa-md">
           <div class="text-h6 text-weight-bold q-mb-md text-grey-8">
             {{ $t('github.statusLabel').toUpperCase() }}
@@ -115,7 +124,7 @@
             <div class="text-h6">{{ $t('github.statusNotif[3]') }}</div>
           </div>
         </div>
-      </q-scroll-area>
+      </q-card-section>
 
       <q-separator />
 

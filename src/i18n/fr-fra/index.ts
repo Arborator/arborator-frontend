@@ -304,6 +304,7 @@ export default {
     pullRequest: 'Ouvrir une nouvelle Pull request à partir de vos changements',
     removeSync: ['Supprimer la synchronisation', 'Votre projet est synchronisé avec'],
     deletionWarning: 'Cette action supprimera également le fichier de votre dépôt github synchronisé.',
+    concurrentModificationsWarning: 'ArboratorGrew ne gère pas les modifications concurrentes. Si vous prévoyez de modifier vos données à partir d\'ArboratorGrew et d\'une autre manière dans GitHub, veuillez gérer vous-même la synchronisation. Si deux modifications concurrentes sur l\'échantillon se produisent, une poussée depuis ArboratorGrew effacera la modification GitHub ; une extraction depuis ArboratorGrew effacera la modification ArboratorGrew. Si vous devez gérer les modifications concurrentes, utilisez une branche git spécifique pour l\'interaction avec ArboratorGrew.',
     statusDialog: {
       title: 'status',
       selection: '{selected} sélectionné(s) sur {total}',

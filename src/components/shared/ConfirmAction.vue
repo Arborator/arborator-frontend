@@ -6,7 +6,7 @@
       <q-space />
       <q-btn v-close-popup flat dense icon="close" />
     </q-bar>
-    <q-card-section> {{ dialogMessage }}</q-card-section>
+    <q-card-section v-if="dialogMessage"> {{ dialogMessage }}</q-card-section>
     <q-form class="q-gutter-md">
       <q-card-section v-if="warningMessage" class="q-pa-md bg-orange-1 text-orange-10">
         <q-icon name="warning" class="q-mr-md" />
@@ -80,6 +80,10 @@ export default defineComponent({
       return this.title || this.$t('confirmAction.title');
     },
     dialogMessage() {
+      if (this.warningMessage && !this.message) {
+        return '';
+      }
+
       return this.message || this.$t('confirmAction.message');
     },
     dialogHint() {

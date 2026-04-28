@@ -314,7 +314,7 @@ export default {
       resetOne: 'Reset ce fichier',
       resetSelected: 'Reset la sélection',
       resetMessage: 'Les changements sélectionnés ont été réinitialisés',
-      resetConfirmMessage: 'Êtes-vous sûr ? {count} changement{plural} a annulé. Voulez-vous vraiment continuer ?',
+      resetConfirmMessage: '{count} changement{plural} a annulé. Voulez-vous vraiment continuer ?',
       resetConfirmHint: 'Tapez le nom du projet : {projectName}',
       resetConfirmLabel: 'Nom du projet*',
       commitInput: 'Message du commit',

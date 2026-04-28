@@ -183,6 +183,7 @@
       :parent-action="confirmActionCallback" 
       :target-name="projectName"
       :message="confirmActionMessage"
+      :warning-message="confirmActionWarningMessage"
       :hint="confirmActionHint"
       :label="confirmActionLabel"
     />
@@ -229,6 +230,7 @@ export default defineComponent({
       confirmActionDial: false,
       confirmActionCallback,
       confirmActionMessage: '',
+      confirmActionWarningMessage: '',
       confirmActionHint: '',
       confirmActionLabel: '',
       checkPulls: false,
@@ -415,7 +417,8 @@ export default defineComponent({
       this.confirmActionCallback = () => {
         this.resetSamples(sampleNames);
       };
-      this.confirmActionMessage = this.$t('github.statusDialog.resetConfirmMessage', {
+      this.confirmActionMessage = '';
+      this.confirmActionWarningMessage = this.$t('github.statusDialog.resetConfirmMessage', {
         count: changesToReset,
         plural: changesToReset > 1 ? 's' : '',
       }) as string;
@@ -426,6 +429,8 @@ export default defineComponent({
       this.confirmActionDial = true;
     },
     triggerConfirm(method: CallableFunction) {
+      this.confirmActionMessage = '';
+      this.confirmActionWarningMessage = `${this.$t('github.removeSync[1]')} "${this.repositoryName}"`;
       this.confirmActionDial = true;
       this.confirmActionCallback = method;
     },

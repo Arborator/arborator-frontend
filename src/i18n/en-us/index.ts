@@ -320,7 +320,7 @@ export default {
       resetOne: 'Reset this file',
       resetSelected: 'Reset selection',
       resetMessage: 'Selected changes were reset',
-      resetConfirmMessage: 'Are you sure? {count} change{plural} will be discarded. Do you really want to proceed?',
+      resetConfirmMessage: '{count} change{plural} will be discarded. Do you really want to proceed?',
       resetConfirmHint: 'Type the project name: {projectName}',
       resetConfirmLabel: 'Project name*',
       commitInput: 'Commit message',

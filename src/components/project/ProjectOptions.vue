@@ -50,7 +50,7 @@
     @userTreeDeleted="isShowDeleteUserTreesDial = false"/>
   </q-dialog>
   <q-dialog v-model="confirmActionDial">
-    <ConfirmAction :parent-action="confirmActionCallback" :target-name="name" />
+    <ConfirmAction :parent-action="confirmActionCallback" :target-name="name" :warning-message="warningMessage" />
   </q-dialog>
 </template>
 <script lang="ts">
@@ -93,6 +93,7 @@ export default defineComponent({
       confirmActionDial: false,
       isShowExportDial: false,
       isShowDeleteUserTreesDial: false,
+      warningMessage: '',
     };
   },
   computed: {
@@ -128,9 +129,9 @@ export default defineComponent({
         });
     },
     triggerConfirmAction(method: CallableFunction) {
-      if (this.canDeleteFromGithub && this.hasValidatedTrees) {
-        notifyMessage({ message: 'These files will be also deleted from your synchronized Github repository', type: 'warning', position: 'top' });
-      }
+      this.warningMessage = this.canDeleteFromGithub && this.hasValidatedTrees 
+        ? 'These files will be also deleted from your synchronized Github repository' 
+        : '';
       this.confirmActionCallback = method;
       this.confirmActionDial = true;
     },

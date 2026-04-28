@@ -3,7 +3,8 @@
     <div class="row q-mb-xs">
       <div class="col">
         <q-btn-dropdown
-          :disable="repositories.length == 0"
+          :disable="isLoadingRepositories || repositories.length == 0"
+          :loading="isLoadingRepositories"
           class="float-left"
           size="md"
           outline
@@ -25,9 +26,10 @@
         </q-btn-dropdown>
       </div>
       <div class="col">
-        <q-input dense outlined v-model="search" :label="$t('github.search')" type="text" @update:model-value="searchRepo(search)">
+        <q-input dense outlined v-model="search" :disable="isLoadingRepositories" :label="$t('github.search')" type="text" @update:model-value="searchRepo(search)">
           <template #append>
-            <q-icon name="search" />
+            <q-spinner v-if="isLoadingRepositories" color="primary" size="18px" />
+            <q-icon v-else name="search" />
           </template>
         </q-input>
       </div>
@@ -78,7 +80,16 @@
         {{ $t('github.arboratorgrewBranch') }}
       </div>
       <div class="col-4">
-        <q-input :disable="branchSyn !== 'new'" dense outlined v-model="branchToUse" :label="$t('github.newBranchName')"></q-input>
+        <q-input
+          :disable="branchSyn !== 'new'"
+          dense
+          outlined
+          v-model="branchToUse"
+          :label="$t('github.newBranchName')"
+          :error="branchExists"
+          :error-message="$t('github.branchAlreadyExists')"
+          @update:model-value="checkBranchExists"
+        />
       </div>
     </div>
     <div class="row q-gutter-md justify-center">
@@ -117,7 +128,7 @@ export default defineComponent({
   },
   data() {
     const repositories: githubRepository_t[] = [];
-    const repositoriesPerOwner: {}[] = [];
+    const repositoriesPerOwner: { name: string }[] = [];
     const listBranches: string[] = [];
     return {
       repositoriesPerOwner,
@@ -133,6 +144,8 @@ export default defineComponent({
       pageIndex: 1,
       totalItemPerPage: 8,
       loading: false,
+      isLoadingRepositories: false,
+      branchExists: false,
     };
   },
   computed: {
@@ -150,7 +163,7 @@ export default defineComponent({
       );
     },
     disableSyncBtn() {
-      return this.branchSyn === 'new' && this.branchToUse === '';
+      return this.branchSyn === 'new' && (this.branchToUse === '' || this.branchExists);
     },
   },
   mounted() {
@@ -158,6 +171,7 @@ export default defineComponent({
   },
   methods: {
     getGithubRepositories() {
+      this.isLoadingRepositories = true;
       api
         .getGithubRepositories()
         .then((response) => {
@@ -166,6 +180,9 @@ export default defineComponent({
         })
         .catch((error) => {
           notifyError({ error, caller: 'getGithubRepositories' });
+        })
+        .finally(() => {
+          this.isLoadingRepositories = false;
         });
     },
     getRepositoriesPerOwner(owner: string) {
@@ -230,6 +247,9 @@ export default defineComponent({
           this.$emit('created');
           clearTimeout(interval);
         });
+    },
+    checkBranchExists() {
+      this.branchExists = this.listBranches.includes(this.branchToUse);
     },
   },
 });

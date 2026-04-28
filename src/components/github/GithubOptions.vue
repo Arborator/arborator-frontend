@@ -1,5 +1,5 @@
 <template>
-  <q-btn outline color="primary" no-caps icon="fab fa-github" label="Github Options" @click="isShowGithubDialog = true" />
+  <q-btn outline color="primary" no-caps icon="fab fa-github" label="Github Options" @click="openGithubDialog()" />
   
   <q-dialog v-model="isShowGithubDialog" style="backdrop-filter: blur(4px)">
     <q-card style="width: 90vw; max-width: 1000px; max-height: 95vh; border-radius: 12px; box-shadow: 0 10px 40px rgba(0,0,0,0.15)">
@@ -131,13 +131,15 @@
       <q-card-section class="q-pt-lg q-pb-md q-px-md q-gutter-sm row justify-center" style="gap: 16px;">
         <q-btn
           unelevated
-          :color="checkPulls ? 'secondary' : 'primary'"
+          :color="checkPulls ? 'positive' : 'grey-5'"
+          :disable="!checkPulls || isCheckingPulls"
+          :loading="isCheckingPulls"
           style="border-radius: 8px; text-transform: none; padding: 8px 16px; font-weight: 500; font-size: 13px; min-width: 120px;"
-          @click="handlePullClick()"
+          @click="pullChanges()"
           class="action-btn"
         >
-          <q-icon :name="checkPulls ? 'check_circle' : 'ion-md-git-pull-request'" size="18px" class="q-mr-sm" />
-          {{ !checkPulls ? $t('github.pullNotif[0]') : $t('github.pullNotif[2]') }}
+          <q-icon name="ion-md-git-pull-request" size="18px" class="q-mr-sm" />
+          Pull
         </q-btn>
 
         <q-btn
@@ -222,6 +224,7 @@ export default defineComponent({
       confirmActionHint: '',
       confirmActionLabel: '',
       checkPulls: false,
+      isCheckingPulls: false,
       changesNumber: 0,
       modifiedSamples,
       statusEntries: [] as any[],
@@ -251,6 +254,10 @@ export default defineComponent({
     },
   },
   methods: {
+    openGithubDialog() {
+      this.isShowGithubDialog = true;
+      this.getPulls(true);
+    },
     getChanges() {
       api
         .getChanges(this.projectName)
@@ -285,25 +292,27 @@ export default defineComponent({
     clearSelection() {
       this.selectedSamples = [];
     },
-    getPulls() {
+    getPulls(silent = false) {
+      this.isCheckingPulls = true;
       api
         .checkPull(this.projectName)
         .then((response) => {
           this.checkPulls = response.data;
-          if (!this.checkPulls && this.isOwner) {
+          if (this.checkPulls) {
+            notifyMessage({ message: 'New changes are available. Please pull the latest updates.' });
+            return;
+          }
+
+          if (!silent && !this.checkPulls && this.isOwner) {
             notifyMessage({ message: `You don't have changes to pull` });
           }
         })
         .catch((error) => {
           notifyError({ error, caller: 'getPulls' });
+        })
+        .finally(() => {
+          this.isCheckingPulls = false;
         });
-    },
-    handlePullClick() {
-      if (!this.checkPulls) {
-        this.getPulls();
-      } else {
-        this.pullChanges();
-      }
     },
     commitChanges() {
       this.isSubmitting = true;
@@ -355,6 +364,7 @@ export default defineComponent({
       api
         .pullChanges(this.projectName)
         .then(() => {
+          this.checkPulls = false;
           notifyMessage({ message: `The changes from ${this.repositoryName} are pulled in ${this.projectName}` });
           this.$emit('pulled');
         })

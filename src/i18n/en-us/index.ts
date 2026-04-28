@@ -1,3 +1,5 @@
+import { Loading } from "quasar";
+
 export default {
   failed: 'Action failed',
   success: 'Action successful',
@@ -324,6 +326,7 @@ export default {
       commitInput: 'Commit message',
       pushSelected: 'Create commit and push',
       commitMessage: 'New commit to',
+      loadingStatus: 'Loading status...',
       statuses: {
         added: 'added',
         modified: 'modified',

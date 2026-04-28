@@ -19,110 +19,118 @@
 
       <q-card-section class="q-pa-md" style="overflow: hidden; flex-grow: 1">
         <div class="q-pa-md">
-          <div class="text-h6 text-weight-bold q-mb-md text-grey-8">
-            {{ $t('github.statusLabel').toUpperCase() }}
-          </div>
-          
-          <div class="bg-blue-1 rounded-borders q-pa-sm q-mb-sm" style="border-left: 5px solid #667eea;">
-            <div class="row items-center">
-              <q-avatar 
-                icon="published_with_changes" 
-                size="32px" 
-                color="primary" 
-                text-color="white"
-              />
-              <div class="q-ml-sm">
-                <div v-if="changesNumber > 0" class="text-h6">
-                  <span class="text-weight-bold">{{ changesNumber }}</span>
-                  <span class="q-ml-sm">
-                    <span v-if="changesNumber === 1">{{ $t('github.statusNotif[1]') }}</span>
-                    <span v-else>{{ $t('github.statusNotif[2]') }}</span>
-                  </span>
-                </div>
-                <div v-else class="text-h6 text-green-8 text-weight-bold">
-                  {{ $t('github.statusNotif[3]') }}
-                </div>
-              </div>
+          <div v-if="isLoadingChanges" class="column items-center justify-center q-py-xl text-grey-7">
+            <q-spinner color="primary" size="40px" />
+            <div class="text-body1 q-mt-md">
+              {{ $t('github.statusDialog.loadingStatus') }}
             </div>
           </div>
-
-          <div v-if="statusEntries.length">
-            <div class="text-body2 text-grey-8 q-mb-md">
-              {{ $t('github.statusDialog.selection', { selected: selectedSamples.length, total: statusEntries.length }) }}
+          <template v-else>
+            <div class="text-h6 text-weight-bold q-mb-md text-grey-8">
+              {{ $t('github.statusLabel').toUpperCase() }}
             </div>
-            <div class="row q-gutter-md q-mb-lg">
-              <q-btn flat no-caps :label="$t('github.statusDialog.selectAll')" @click="selectAll()" />
-              <q-btn flat no-caps :label="$t('github.statusDialog.clearSelection')" @click="clearSelection()" />
-            </div>
-
-            <q-list bordered separator class="rounded-borders q-mb-lg">
-              <q-item v-for="(sample, index) in statusEntries" :key="sample.sample_name">
-                <q-item-section side>
-                  <q-checkbox v-model="selectedSamples" :val="sample.sample_name" size="lg" />
-                </q-item-section>
-                <q-item-section>
-                  <q-item-label class="text-weight-600 text-body1">{{ sample.sample_name }}</q-item-label>
-                  <q-item-label caption class="q-mt-sm">
-                    <q-badge outline color="primary" :label="statusLabel(sample.status)" />
-                  </q-item-label>
-                </q-item-section>
-                <q-item-section>
-                  <q-item-label class="text-body2">{{ sample.changes_number }} {{ sample.changes_number == 1 ? 'change' : 'changes' }}</q-item-label>
-                </q-item-section>
-                <q-item-section avatar>
-                  <div class="row q-gutter-sm">
-                    <q-btn size="md" flat icon="open_in_full" @click="selectedModifiedSamples[index] = true">
-                      <q-tooltip>{{ $t('github.statusDialog.showChanges') }}</q-tooltip>
-                    </q-btn>
-                    <q-btn size="md" flat icon="restore" @click="confirmResetSamples([sample.sample_name])">
-                      <q-tooltip>{{ $t('github.statusDialog.resetOne') }}</q-tooltip>
-                    </q-btn>
-                    <q-dialog v-model:model-value="selectedModifiedSamples[index]">
-                      <q-card style="min-width: 60vw">
-                        <q-card-section>
-                          <div class="text-h6 text-left">{{ sample.sample_name }}</div>
-                        </q-card-section>
-                        <q-card-section>
-                          <pre v-html="highlightedDiff(sample.diff)" style="font-size: 13px" />
-                        </q-card-section>
-                      </q-card>
-                    </q-dialog>
+            
+            <div class="bg-blue-1 rounded-borders q-pa-sm q-mb-sm" style="border-left: 5px solid #667eea;">
+              <div class="row items-center">
+                <q-avatar 
+                  icon="published_with_changes" 
+                  size="32px" 
+                  color="primary" 
+                  text-color="white"
+                />
+                <div class="q-ml-sm">
+                  <div v-if="changesNumber > 0" class="text-h6">
+                    <span class="text-weight-bold">{{ changesNumber }}</span>
+                    <span class="q-ml-sm">
+                      <span v-if="changesNumber === 1">{{ $t('github.statusNotif[1]') }}</span>
+                      <span v-else>{{ $t('github.statusNotif[2]') }}</span>
+                    </span>
                   </div>
-                </q-item-section>
-              </q-item>
-            </q-list>
-
-            <div class="q-mb-lg">
-              <q-input 
-                outlined 
-                v-model="message" 
-                :label="$t('github.statusDialog.commitInput')"
-                :disable="!statusEntries.length"
-                class="q-mb-lg"
-              />
-              <div class="row q-gutter-md justify-center">
-                <q-btn 
-                  no-caps 
-                  flat 
-                  color="primary"
-                  :disable="!selectedSamples.length || isSubmitting" 
-                  :label="$t('github.statusDialog.resetSelected')" 
-                  @click="confirmResetSamples([...selectedSamples])" 
-                />
-                <q-btn 
-                  no-caps 
-                  color="primary"
-                  :disable="!canPush" 
-                  :loading="isSubmitting" 
-                  :label="$t('github.statusDialog.pushSelected')" 
-                  @click="commitChanges()" 
-                />
+                  <div v-else class="text-h6 text-green-8 text-weight-bold">
+                    {{ $t('github.statusNotif[3]') }}
+                  </div>
+                </div>
               </div>
             </div>
-          </div>
-          <div v-else class="text-grey-7 text-center q-pa-md">
-            <div class="text-h6">{{ $t('github.statusNotif[3]') }}</div>
-          </div>
+
+            <div v-if="statusEntries.length">
+              <div class="text-body2 text-grey-8 q-mb-md">
+                {{ $t('github.statusDialog.selection', { selected: selectedSamples.length, total: statusEntries.length }) }}
+              </div>
+              <div class="row q-gutter-md q-mb-lg">
+                <q-btn flat no-caps :label="$t('github.statusDialog.selectAll')" @click="selectAll()" />
+                <q-btn flat no-caps :label="$t('github.statusDialog.clearSelection')" @click="clearSelection()" />
+              </div>
+
+              <q-list bordered separator class="rounded-borders q-mb-lg">
+                <q-item v-for="(sample, index) in statusEntries" :key="sample.sample_name">
+                  <q-item-section side>
+                    <q-checkbox v-model="selectedSamples" :val="sample.sample_name" size="lg" />
+                  </q-item-section>
+                  <q-item-section>
+                    <q-item-label class="text-weight-600 text-body1">{{ sample.sample_name }}</q-item-label>
+                    <q-item-label caption class="q-mt-sm">
+                      <q-badge outline color="primary" :label="statusLabel(sample.status)" />
+                    </q-item-label>
+                  </q-item-section>
+                  <q-item-section>
+                    <q-item-label class="text-body2">{{ sample.changes_number }} {{ sample.changes_number == 1 ? 'change' : 'changes' }}</q-item-label>
+                  </q-item-section>
+                  <q-item-section avatar>
+                    <div class="row q-gutter-sm">
+                      <q-btn size="md" flat icon="open_in_full" @click="selectedModifiedSamples[index] = true">
+                        <q-tooltip>{{ $t('github.statusDialog.showChanges') }}</q-tooltip>
+                      </q-btn>
+                      <q-btn size="md" flat icon="restore" @click="confirmResetSamples([sample.sample_name])">
+                        <q-tooltip>{{ $t('github.statusDialog.resetOne') }}</q-tooltip>
+                      </q-btn>
+                      <q-dialog v-model:model-value="selectedModifiedSamples[index]">
+                        <q-card style="min-width: 60vw">
+                          <q-card-section>
+                            <div class="text-h6 text-left">{{ sample.sample_name }}</div>
+                          </q-card-section>
+                          <q-card-section>
+                            <pre v-html="highlightedDiff(sample.diff)" style="font-size: 13px" />
+                          </q-card-section>
+                        </q-card>
+                      </q-dialog>
+                    </div>
+                  </q-item-section>
+                </q-item>
+              </q-list>
+
+              <div class="q-mb-lg">
+                <q-input 
+                  outlined 
+                  v-model="message" 
+                  :label="$t('github.statusDialog.commitInput')"
+                  :disable="!statusEntries.length"
+                  class="q-mb-lg"
+                />
+                <div class="row q-gutter-md justify-center">
+                  <q-btn 
+                    no-caps 
+                    flat 
+                    color="primary"
+                    :disable="!selectedSamples.length || isSubmitting" 
+                    :label="$t('github.statusDialog.resetSelected')" 
+                    @click="confirmResetSamples([...selectedSamples])" 
+                  />
+                  <q-btn 
+                    no-caps 
+                    color="primary"
+                    :disable="!canPush" 
+                    :loading="isSubmitting" 
+                    :label="$t('github.statusDialog.pushSelected')" 
+                    @click="commitChanges()" 
+                  />
+                </div>
+              </div>
+            </div>
+            <div v-else class="text-grey-7 text-center q-pa-md">
+              <div class="text-h6">{{ $t('github.statusNotif[3]') }}</div>
+            </div>
+          </template>
         </div>
       </q-card-section>
 
@@ -225,6 +233,7 @@ export default defineComponent({
       confirmActionLabel: '',
       checkPulls: false,
       isCheckingPulls: false,
+      isLoadingChanges: false,
       changesNumber: 0,
       modifiedSamples,
       statusEntries: [] as any[],
@@ -257,8 +266,10 @@ export default defineComponent({
     openGithubDialog() {
       this.isShowGithubDialog = true;
       this.getPulls(true);
+      this.getChanges();
     },
     getChanges() {
+      this.isLoadingChanges = true;
       api
         .getChanges(this.projectName)
         .then((response) => {
@@ -279,6 +290,9 @@ export default defineComponent({
           }
 
           notifyError({ error, caller: 'GithubOptions.getChanges' });
+        })
+        .finally(() => {
+          this.isLoadingChanges = false;
         });
     },
     resetLocalState(samples: any[]) {

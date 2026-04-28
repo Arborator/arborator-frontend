@@ -320,6 +320,7 @@ export default {
       commitInput: 'Message du commit',
       pushSelected: 'Créer le commit et push',
       commitMessage: 'Nouveau commit dans',
+      loadingStatus: 'Chargement du status...',
       statuses: {
         added: 'ajouté',
         modified: 'modifié',

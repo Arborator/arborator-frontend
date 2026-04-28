@@ -3,7 +3,8 @@
     <div class="row q-mb-xs">
       <div class="col">
         <q-btn-dropdown
-          :disable="repositories.length == 0"
+          :disable="isLoadingRepositories || repositories.length == 0"
+          :loading="isLoadingRepositories"
           class="float-left"
           size="md"
           outline
@@ -25,9 +26,10 @@
         </q-btn-dropdown>
       </div>
       <div class="col">
-        <q-input dense outlined v-model="search" :label="$t('github.search')" type="text" @update:model-value="searchRepo(search)">
+        <q-input dense outlined v-model="search" :disable="isLoadingRepositories" :label="$t('github.search')" type="text" @update:model-value="searchRepo(search)">
           <template #append>
-            <q-icon name="search" />
+            <q-spinner v-if="isLoadingRepositories" color="primary" size="18px" />
+            <q-icon v-else name="search" />
           </template>
         </q-input>
       </div>
@@ -142,6 +144,7 @@ export default defineComponent({
       pageIndex: 1,
       totalItemPerPage: 8,
       loading: false,
+      isLoadingRepositories: false,
       branchExists: false,
     };
   },
@@ -168,6 +171,7 @@ export default defineComponent({
   },
   methods: {
     getGithubRepositories() {
+      this.isLoadingRepositories = true;
       api
         .getGithubRepositories()
         .then((response) => {
@@ -176,6 +180,9 @@ export default defineComponent({
         })
         .catch((error) => {
           notifyError({ error, caller: 'getGithubRepositories' });
+        })
+        .finally(() => {
+          this.isLoadingRepositories = false;
         });
     },
     getRepositoriesPerOwner(owner: string) {

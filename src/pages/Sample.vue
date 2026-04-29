@@ -1,5 +1,5 @@
 <template>
-  <q-splitter v-model="splitterModel" horizontal :limits="[0, 100]" :style="{ height: `${splitterHeight}px` }" emit-immediately>
+  <q-splitter v-model="splitterModel" :disable="true" horizontal :limits="[0, 100]" :style="{ height: `${splitterHeight}px` }" emit-immediately>
     <template v-slot:before>
       <AdvancedFilter @trees-saved="getTrees()" @advanced-filters-toggled="handleAdvancedFiltersToggle" :parent-on-validate="validateAllTrees"  />
     </template>

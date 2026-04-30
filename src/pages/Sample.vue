@@ -1,46 +1,48 @@
 <template>
-  <q-splitter v-model="splitterModel" :disable="true" horizontal :limits="[0, 100]" :style="{ height: `${splitterHeight}px` }" emit-immediately>
-    <template v-slot:before>
-      <AdvancedFilter @trees-saved="getTrees()" @advanced-filters-toggled="handleAdvancedFiltersToggle" :parent-on-validate="validateAllTrees"  />
-    </template>
-    <template v-slot:after>
-      <div class="custom-frame1" >
-        <div v-show="!loading">
-          <Video
-            v-if="isVideo()"
-          >
-          </Video>
-          <q-virtual-scroll
-            :key="filteredTrees.length.toString() + Object.keys(filteredTrees).join('')"
-            ref="virtualListRef"
-            :items="Object.values(filteredTrees)"
-            :style="{ maxHeight: `${splitterHeight * ((100 - splitterModel) / 100) - 1}px`, width: '100%' }"
-            :virtual-scroll-slice-size="50"
-            :virtual-scroll-item-size="70"
-            @virtual-scroll="sentenceCardRefs()"
-          >
-            <template #default="{ item, index }" >
-              <SentenceCard
-                :ref="'card'+index"
-                :key="`${samplename}_${item.sent_id}_${treesReloadCounter}`"
-                :sentence="item"
-                :index="index"
-                :blind-annotation-level="blindAnnotationLevel"
-                :ud-validation="udValidationPassed[item.sent_id] || {}"
-                @closeCards="closeAllCard(); scrollSentence(index)"
-              >
-              </SentenceCard>
-            </template>
-          </q-virtual-scroll>
-        </div>
-        <div v-show="loading" class="q-pa-md row justify-center">
-          <div class="absolute-center">
-            <q-circular-progress indeterminate size="70px" :thickness="0.22" color="primary" track-color="grey-3" />
-          </div>
+  <div 
+  :style="{ height: `${splitterHeight}px` }" 
+  class="relative-position"
+  >
+    <div :style="{ height: splitterModel + '%' }" class="overflow-hidden">
+        <AdvancedFilter @trees-saved="getTrees()" @advanced-filters-toggled="handleAdvancedFiltersToggle" :parent-on-validate="validateAllTrees"  />
+    </div>
+
+    <div :style="{ height: (100 - splitterModel) + '%' }" class="overflow-hidden custom-frame1">
+      <div v-show="!loading">
+        <Video
+          v-if="isVideo()"
+        >
+        </Video>
+        <q-virtual-scroll
+          :key="filteredTrees.length.toString() + Object.keys(filteredTrees).join('')"
+          ref="virtualListRef"
+          :items="Object.values(filteredTrees)"
+          :style="{ maxHeight: `${splitterHeight * ((100 - splitterModel) / 100) - 1}px`, width: '100%' }"
+          :virtual-scroll-slice-size="50"
+          :virtual-scroll-item-size="70"
+          @virtual-scroll="sentenceCardRefs()"
+        >
+          <template #default="{ item, index }" >
+            <SentenceCard
+              :ref="'card'+index"
+              :key="`${samplename}_${item.sent_id}_${treesReloadCounter}`"
+              :sentence="item"
+              :index="index"
+              :blind-annotation-level="blindAnnotationLevel"
+              :ud-validation="udValidationPassed[item.sent_id] || {}"
+              @closeCards="closeAllCard(); scrollSentence(index)"
+            >
+            </SentenceCard>
+          </template>
+        </q-virtual-scroll>
+      </div>
+      <div v-show="loading" class="q-pa-md row justify-center">
+        <div class="absolute-center">
+          <q-circular-progress indeterminate size="70px" :thickness="0.22" color="primary" track-color="grey-3" />
         </div>
       </div>
-    </template>
-  </q-splitter>
+    </div>
+  </div>
 </template>
 
 <script lang="ts">

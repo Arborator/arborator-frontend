@@ -27,7 +27,7 @@
                 :index="index"
                 :blind-annotation-level="blindAnnotationLevel"
                 :ud-validation="udValidationPassed[item.sent_id] || {}"
-                @closeCards="closeAllCard()"
+                @closeCards="closeAllCard(); scrollSentence(index)"
               >
               </SentenceCard>
             </template>
@@ -227,6 +227,13 @@ export default defineComponent({
       const width = window.innerWidth;
       const openedValue = width < 1500 ? 40 : 32;
       this.splitterModel = isOpen ? openedValue : 15;
+    },
+    async scrollSentence(index: number){
+      const virtualListRef = this.$refs.virtualListRef as any
+      if (!virtualListRef) return
+      await this.$nextTick()
+      virtualListRef.refresh()
+      setTimeout(() => virtualListRef.scrollTo(index, 'center-force'), 50)
     }
   },
 });

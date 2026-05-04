@@ -150,9 +150,16 @@ export default defineComponent({
     },
     moveDiv(e : MouseEvent) {
       if (!this.dragging ) return
-      //set new position to mouse position
-      this.x = e.clientX - this.offsetX
-      this.y = e.clientY - this.offsetY
+      const container = this.$refs.videoDiv as HTMLDivElement
+      // calcul screen limits
+      const maxX = window.innerWidth - container.offsetWidth;
+      const maxY = window.innerHeight - container.offsetHeight;
+
+      const x = e.clientX - this.offsetX
+      const y = e.clientY - this.offsetY
+      // avoid div to go out of the screen
+      this.x = Math.max(0, Math.min(x, maxX));
+      this.y = Math.max(0, Math.min(y, maxY));
     },
     startDrag(e: MouseEvent) {
       if(this.isResizing) return

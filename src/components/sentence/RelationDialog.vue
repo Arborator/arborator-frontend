@@ -1,5 +1,5 @@
 <template>
-  <q-dialog v-model="relationDialogOpened" @keydown.enter="onChangeRelation()" class="notranslate">
+  <q-dialog v-model="relationDialogOpened" @keydown.enter="onChangeRelation()">
     <q-card style="min-width: 700px">
       <q-bar v-if="gov && dep" class="bg-primary text-white sticky-bar">
         <div class="text-weight-bold">

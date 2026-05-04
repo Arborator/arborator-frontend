@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div class="sentencebox notranslate">
+    <div class="sentencebox">
       <svg ref="svgWrapper" />
     </div>
   </div>

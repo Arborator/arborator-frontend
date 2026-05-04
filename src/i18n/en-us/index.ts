@@ -96,9 +96,10 @@ export default {
     checkboxEmailDialog: [
       'I understand that my email will be stored on the ArboratorGrew server located in Europe.',
       'I refuse to share my email.',
+      'I subscribe to the newsletter to be informed about new features or incidents on the platform (newsletter only, no more than a few emails per month).',
     ],
     inputErrorText: ['Please type something', 'Please type valid email'],
-    submitEmailBtn: 'Soumettre',
+    submitEmailBtn: 'Submit',
   },
 
   // list of projects page
@@ -385,6 +386,7 @@ export default {
   constructicon: {
     uploadBtn: 'Upload constructicon',
     uploadTooltip: 'Upload existing constructicon',
+    uploadFileLabel: 'Choose a file',
     downloadBtn: 'Download constructicon',
     downloadTooltip: 'Download existing constructicon',
     searchLabel: 'Search items ...',
@@ -392,11 +394,18 @@ export default {
     title: 'Title',
     description: 'Description',
     grewQuery: 'Grew Query',
+    tagsLabel: 'Tags',
     tagTooltip: 'Add new tags',
+    addTagPlaceholder: 'Add tag',
     saveBtn: 'Save',
     editBtn: 'Edit',
     deleteBtn: 'Delete',
     search: 'Search',
+    deleteSuccess: 'Entry "{title}" deleted',
+    deleteError: 'Error while deleting constructicon entry',
+    loadError: 'Error while loading constructicon entries',
+    saveSuccess: 'Changes saved',
+    saveError: 'Error while saving changes',
   },
   userSelect: {
     share: 'Share',
@@ -475,9 +484,9 @@ export default {
     usersSelect: 'Select set of users',
     filterOperators: ['Have', 'Not Have'],
     filterChoices: ['Trees', 'Differences'],
-    orderLength: 'Ordonner les phrases par taille',
+    orderLength: 'Sort sentences by length',
     validateAllTrees: 'Validate all trees',
-    validateAllTreesTooltip: "Appliquer le script de validation d'UD sur l'ensemble des arbres d'échantillon",
+    validateAllTreesTooltip: 'Apply the UD validation script to all trees in the sample',
     savePendingTrees: 'Save pending trees',
   },
   tokenReplaceDialog: {

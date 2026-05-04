@@ -26,6 +26,7 @@ import ConfirmAction from '../shared/ConfirmAction.vue';
 
 export default defineComponent({
   name: 'DeleteUserTreesDial',
+  emits: ['userTreeDeleted'],
   components: { ConfirmAction },
   props: {
     selectedSamples: {
@@ -54,6 +55,7 @@ export default defineComponent({
         api
           .deleteUserTrees(this.name, sample.sampleName, this.user)
           .then(() => {
+             this.$emit('userTreeDeleted')
             notifyMessage({ message: `${this.user} trees are removed successfully` });
           })
           .catch((error) => {

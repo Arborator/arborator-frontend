@@ -38,30 +38,30 @@
           <q-checkbox v-model="props.selected" dense />
         </q-td>
         <q-td key="samplename" :props="props">
-          <q-btn
-            :disable="freezed && !isOwner"
-            outline
-            color="white"
-            :text-color="$q.dark.isActive ? 'white' : 'black'"
-            class="full-width"
-            :to="'/projects/' + name + '/' + props.row.sampleName"
-            no-caps
-          >
-            {{ props.row.sampleName }}
-            <q-menu
-              context-menu
-              touch-position
-            > 
-              <q-list>
-                <q-item v-close-popup clickable @click="showRenameSampleDial(props.row.sampleName)">
-                  <q-item-section>Rename sample</q-item-section>
-                  <q-item-section side>
-                    <q-icon name="edit" />
-                  </q-item-section>
-                </q-item>
-              </q-list>
-            </q-menu>
-          </q-btn>
+          <div class="row items-center justify-center no-wrap q-gutter-xs">
+            <q-btn
+              :disable="freezed && !isOwner"
+              outline
+              color="white"
+              :text-color="$q.dark.isActive ? 'white' : 'black'"
+              class="col"
+              :to="'/projects/' + name + '/' + props.row.sampleName"
+              no-caps
+            >
+              {{ props.row.sampleName }}
+            </q-btn>
+            <q-btn
+              :disable="freezed && !isOwner"
+              flat
+              round
+              dense
+              icon="edit"
+              color="primary"
+              @click.stop="showRenameSampleDial(props.row.sampleName, 'validated' in props.row.treeByUser)"
+            >
+              <q-tooltip>Rename sample</q-tooltip>
+            </q-btn>
+          </div>
         </q-td>
         <q-td key="sentences" :props="props">{{ props.row.sentences }}</q-td>
         <q-td key="tokens" :props="props">{{ props.row.tokens }}</q-td>
@@ -93,7 +93,13 @@
     </template>
   </q-table>
   <q-dialog v-model="isShowRenameDial">
-   <RenameSample :sample-name="selectedSample" /> 
+    <RenameSample
+      :sample-name="selectedSample"
+      :canChangeGithub="isAllowdedToSync"
+      :syncGithubRepo="syncGithubRepo"
+      :has-validated="hasValidated"
+      :all-samples="samples"
+    />
   </q-dialog>
 </template>
 <script lang="ts">
@@ -118,6 +124,10 @@ export default defineComponent({
       type: Array as PropType<sample_t[]>,
       required: true,
     },
+    syncGithubRepo: {
+      type: String as PropType<string>,
+      required: false,
+    },
   },
   data() {
     const selected: sample_t[] = [];
@@ -128,6 +138,7 @@ export default defineComponent({
           label: this.$t('projectTable.tableFields[0]'),
           sortable: true,
           field: 'samplename',
+          align: 'center',
         },
         {
           name: 'sentences',
@@ -192,10 +203,18 @@ export default defineComponent({
       ],
       isShowRenameDial: false,
       selectedSample: '',
+      hasValidated: false,
     };
   },
   computed: {
-    ...mapState(useProjectStore, ['name', 'isAdmin', 'freezed', 'isOwner', 'blindAnnotationMode']),
+    ...mapState(useProjectStore, [
+      'name',
+      'isAdmin',
+      'freezed',
+      'isOwner',
+      'isAllowdedToSync',
+      'blindAnnotationMode'
+    ]),
   },
   watch: {
     samples(newVal, oldVal) {
@@ -225,9 +244,10 @@ export default defineComponent({
           });
       }, 0);
     },
-    showRenameSampleDial(sampleName: string) {
+    showRenameSampleDial(sampleName: string, hasValidated: boolean) {
       this.isShowRenameDial = true;
       this.selectedSample = sampleName;
+      this.hasValidated = hasValidated;
     }
   },
 });

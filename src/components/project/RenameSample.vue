@@ -9,27 +9,38 @@
     </q-card-section>
     <q-separator />
     <q-card-section>
+      <div v-if='hasValidated && canChangeGithub && syncGithubRepo' style="margin-bottom: 15px;">
+        <div class="q-pa-md bg-orange-1 text-orange-10" >
+          <q-icon name="warning" class="q-mr-md" />
+          The sample will be renamed on GitHub ({{  syncGithubRepo }}) immediatly!
+        </div>
+      </div>
       <q-input
         outlined
         v-model="newSampleName"
         label="New sample name"
         :rules="[value => !checkFilename(value) || checkFilename(value)]"
+        :error="newSampleNameError !== ''"
+        :error-message="newSampleNameError"
       />
       <div class="flex flex-center">
         <q-btn 
           v-close-popup 
           color="primary"
-          :disable="checkFilename(newSampleName) !== ''"
+          :disable="checkFilename(newSampleName) !== '' || newSampleNameError !== ''"
           label="Submit" type="submit" 
           @click="renameSample()"
         />
       </div>
+
     </q-card-section>
   </q-card>
 </template>
 <script lang="ts">
 import { api } from 'src/boot/axios';
+import { sample_t } from 'src/api/backend-types';
 import { mapWritableState, mapState } from 'pinia';
+import { useGithubStore } from 'src/pinia/modules/github';
 import { useProjectStore } from 'src/pinia/modules/project';
 import { notifyError, notifyMessage } from 'src/utils/notify';
 import { defineComponent, PropType } from 'vue';
@@ -41,7 +52,21 @@ export default defineComponent({
     sampleName: {
       type: String as PropType<string>,
       required: true,
-    }
+    },
+    canChangeGithub: {
+      type: Boolean as PropType<boolean>,
+    },
+    hasValidated: {
+      type: Boolean as PropType<boolean>,
+    },
+    syncGithubRepo: {
+      type: String as PropType<string>,
+      required: false,
+    },
+    allSamples:{
+      type: Array as PropType<sample_t[]>,
+      required: true,
+    },
   },
   data() {
     return {
@@ -52,14 +77,54 @@ export default defineComponent({
   computed: {
     ...mapState(useProjectStore, ['name']), 
     ...mapWritableState(useProjectStore, ['reloadSamples']),
+    ...mapWritableState(useGithubStore, ['reloadCommits']),
+    newSampleNameError(): string {
+    if (!this.newSampleName || this.newSampleName.trim() === '') {
+      return '';
+    }
+    
+    if (this.newSampleName === this.sampleName) {
+      return  this.$t('renameSample.sameName');
+    }
+    
+    if (this.sampleNameExists(this.newSampleName)) {
+      return this.$t('renameSample.sampleNameExists');
+    }
+    
+    return '';
+  },
+  },
+  mounted() {
+    this.newSampleName = this.sampleName;
   },
   methods: {
+    sampleNameExists(name: string){
+      if (!this.allSamples || !Array.isArray(this.allSamples)) {
+        console.warn('allSamples is not available in RenameSample component');
+        return false;
+      }
+      return this.allSamples.some(sample => sample.sampleName === name);
+    },
     renameSample() {
       const data = { newSampleName: this.newSampleName };
       api
         .renameSample(this.name, this.sampleName, data)
         .then(() => {
-          notifyMessage({ message: 'The sample name is modified' });
+          notifyMessage({ message: this.$t('renameSample.sampleNameModified') });
+          if (this.canChangeGithub && this.hasValidated && this.syncGithubRepo) {
+            const githubRenameData = {
+              oldName: this.sampleName,
+              newName: this.newSampleName,
+            };
+            return api
+              .githubRenameSample(this.name, githubRenameData)
+              .then(() => {
+                notifyMessage({ message: this.$t('renameSample.sampleNameModifiedGithub') });
+                this.reloadCommits += 1;
+              });
+          }
+        })
+        .then(() => {
           this.reloadSamples = true;
         })
         .catch((error) => {

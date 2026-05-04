@@ -114,7 +114,15 @@
               (val) => (val && val.length > 0) || $t('uploadSample.emptyUsernameError'),
             ]"
           />
-          <q-separator />
+            <q-separator />
+            
+            <div 
+              v-if='userId == "validated" && isAllowdedToSync && syncGithubRepo'
+              class="q-pa-md bg-orange-1 text-orange-10"
+            >
+              <q-icon name="warning" class="q-mr-md" />
+              The uploaded sample will be pushed on GitHub ({{  syncGithubRepo }}) immediatly!
+          </div>
         </div>
         <q-item>
           <q-item-section side top>
@@ -138,7 +146,7 @@
             :loading="uploadSample.submitting"
             :disable="disableUploadBtn"
             @click="uploadSamples()"
-            >
+          >
             <q-tooltip v-if="uploadSample.attachment.file.length == 0" content-class="text-white bg-primary">
               {{ $t('uploadSample.uploadFileTooltip') }}
             </q-tooltip>
@@ -196,6 +204,10 @@ export default defineComponent({
       type: Object as PropType<sample_t[]>,
       required: true,
     },
+    syncGithubRepo: {
+      type: String as PropType<string>,
+      required: false,
+    },
   },
   setup(props, { emit }) {
     return {
@@ -252,7 +264,7 @@ export default defineComponent({
 
   computed: {
     ...mapState(useUserStore, ['username', 'reservedUserIds']),
-    ...mapState(useProjectStore, ['blindAnnotationMode', 'collaborativeMode', 'annotationFeatures']),
+    ...mapState(useProjectStore, ['blindAnnotationMode', 'collaborativeMode', 'annotationFeatures', 'isAllowdedToSync']),
     disableTokenizeBtn() {
       if (this.option.value == 'plainText') {
         return this.text && !checkFilename(this.sampleName) && this.lang.value;
@@ -353,6 +365,16 @@ export default defineComponent({
         ],
       });
     },
+    commitNewSamples(new_samples: string[]) {
+      const data = { new_samples: new_samples }
+      if (new_samples.length > 0) {
+        api
+        .commitNewSamples(this.$route.params.projectname as string, data)
+        .then((response) => {
+          notifyMessage({ message: `${new_samples.length} new samples pushed to Github`});
+        })
+      }
+    },
     uploadSamples() {
       const form = new FormData();
       if (!this.collaborativeMode) this.customUserId = 'validated';
@@ -377,6 +399,9 @@ export default defineComponent({
           this.miscList = response.data.data.misc;
           this.posList = response.data.data.pos;
           this.relationsList = response.data.data.relations;
+          if (this.isAllowdedToSync) {
+            this.commitNewSamples(response.data.data.samples_to_commit)
+          }
           this.checkNewFeats();
           notifyMessage({ message: 'upload success' });
         })
@@ -423,10 +448,13 @@ export default defineComponent({
       };
       api
         .tokenizeSample(this.$route.params.projectname as string, data)
-        .then(() => {
+        .then((response) => {
           notifyMessage({ message: 'upload success' });
           this.$emit('uploaded:sample');
           this.uploadDialModel = false;
+          if (this.isAllowdedToSync) {
+            this.commitNewSamples(response.data.data.samples_to_commit)
+          }
         })
         .catch((error) => {
           notifyError({ error, caller: 'tokenizeSample' });

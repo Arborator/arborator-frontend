@@ -13,7 +13,11 @@
         <q-tooltip>{{ $t('constructicon.uploadTooltip') }}</q-tooltip>
       </q-btn>
       <q-dialog v-model="uploadConstructiconDialog">
-        <q-uploader :url="backendApi.generateURLforConstructiconUpload(name)" label="Choose a File" @uploaded="loadConstructiconEntries" />
+        <q-uploader
+          :url="backendApi.generateURLforConstructiconUpload(name)"
+          :label="$t('constructicon.uploadFileLabel')"
+          @uploaded="loadConstructiconEntries"
+        />
       </q-dialog>
       <q-btn no-caps outline color="primary" :label="$t('constructicon.downloadBtn')" dense icon="file_download" @click="downloadConstructicon">
         <q-tooltip>{{ $t('constructicon.downloadTooltip') }}</q-tooltip>
@@ -75,11 +79,11 @@
 
               <!-- QChip for tags -->
               <div class="q-mt-md">
-                <div class="text-h6 q-mb-xs">Tags</div>
+                <div class="text-h6 q-mb-xs">{{ $t('constructicon.tagsLabel') }}</div>
                 <q-chip v-for="(tag, index) in activeEntry.tags" :key="index" :removable="editMode" @remove="removeTag(index)">
                   {{ tag }}
                 </q-chip>
-                <q-input v-if="editMode" v-model="newTag" outlined dense placeholder="Add tag" @keyup.enter="addTag" />
+                <q-input v-if="editMode" v-model="newTag" outlined dense :placeholder="$t('constructicon.addTagPlaceholder')" @keyup.enter="addTag" />
               </div>
             </div>
 
@@ -199,11 +203,11 @@ export default defineComponent({
             this.editMode = false;
             this.loadConstructiconEntries();
             this.activeEntry = null;
-            notifyMessage({ message: `Entry '${toDeleteEntry.title}' deleted` });
+            notifyMessage({ message: this.$t('constructicon.deleteSuccess', { title: toDeleteEntry.title }) });
           })
           .catch((err) => {
             console.log(err);
-            notifyError({ error: 'Error while deleting constructicon entry' });
+            notifyError({ error: this.$t('constructicon.deleteError') });
           });
       }
     },
@@ -227,7 +231,7 @@ export default defineComponent({
         })
         .catch((err) => {
           console.log(err);
-          notifyError({ error: 'Error while loading constructicon entries' });
+          notifyError({ error: this.$t('constructicon.loadError') });
         });
     },
     grewSearch(query: string) {
@@ -245,11 +249,11 @@ export default defineComponent({
           .then(() => {
             this.editMode = false;
             this.loadConstructiconEntries();
-            notifyMessage({ message: 'Changes saved' });
+            notifyMessage({ message: this.$t('constructicon.saveSuccess') });
           })
           .catch((err) => {
             console.log(err);
-            notifyError({ error: 'Error while saving changes' });
+            notifyError({ error: this.$t('constructicon.saveError') });
           });
       } else {
         // enter edit mode

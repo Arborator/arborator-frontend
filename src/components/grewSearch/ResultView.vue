@@ -8,21 +8,42 @@
       <q-btn flat dense icon="close" @click="closeDial()" />
     </q-bar>
     <div class="q-pa-md row q-gutter-md custom-frame1 justify-end">
-      <q-btn class="col-2" outline :disable="pendingModifications.size === 0" color="primary" label="Save pending trees" @click="saveAllTrees()">
-        <q-badge v-if="pendingModifications.size > 0" color="red" floating>
-          {{ pendingModifications.size }}
-        </q-badge>
-      </q-btn>
-      <q-btn class="col-2" color="primary" label="Export results" @click="exportResults()" />
+      <q-btn class="col-auto" color="primary" label="Export results" @click="exportResults()" />
+      <q-btn-dropdown 
+        class="col-auto"
+        v-if="queryType !== 'REWRITE' && isLoggedIn"
+        :disable="!pendingModifications.size"
+        color="primary"
+      >
+        <template v-slot:label>
+          <div class="row items-center no-wrap">
+            <div class="text-center">{{ $t('advancedFilter.savePendingTrees') }}</div>
+            <q-badge v-if="pendingModifications.size > 0" color="red" class="q-ml-sm" floating>
+              {{ pendingModifications.size }}
+            </q-badge>
+          </div>
+        </template>
+        <q-list>
+          <q-item v-for="user in userIdsWithValidated" :key="user" :disable="!SaveAs[user]" clickable @click="saveAllTreesAs(user)">
+            <q-item-section>{{ $t('grewSearch.applyRuleAs', [user]) }}</q-item-section>
+          </q-item>
+        </q-list>
+      </q-btn-dropdown>
     </div>
     <div>
       <template v-if="samplesFrozen.list.length > 0">
+        <Video
+          v-if="isVideo()"
+          :videoUrl="getVideoUrl()"
+          :grewSearch="true">
+        </Video>
         <q-virtual-scroll
           :key="samplesFrozen.list.length"
           :items="samplesFrozen.list"
           style="max-width: 99vw"
           :virtual-scroll-slice-size="30"
           v-slot="{ item, index }"
+          @virtual-scroll="sentenceCardRefs()"
         >
           <div :key="index" style="display: flex">
             <template v-if="queryType === 'REWRITE'">
@@ -30,11 +51,13 @@
             </template>
             <div style="flex-grow: 1; overflow: auto">
               <SentenceCard
+                :ref="'card'+index"
                 :key="index"
                 :sentence="searchResults[item[0]][item[1]]"
                 :index="index"
                 :matches="searchResults[item[0]][item[1]].matches"
                 :blind-annotation-level="4"
+                @closeCards="closeAllCard()"
               />
             </div>
           </div>
@@ -53,10 +76,10 @@
       </div>
         {{countSelected}}/{{ samplesFrozen.list.length }}
 
-      <div v-for="user in availableSaveAs">
-        <q-btn 
-          :disable="countSelected === 0"
-          :label="$t('grewSearch.applyRuleAs', [user])" 
+      <div v-for="user in userIdsWithValidated">
+        <q-btn
+          :disable="countSelected === 0 || !SaveAs[user]"
+          :label="$t('grewSearch.applyRuleAs', [user])"
           color="primary"
           @click="applyRules(user)">
           <q-tooltip v-if='countSelected === 0'>{{ $t('grewSearch.applyRuleTooltip') }}</q-tooltip>
@@ -81,9 +104,10 @@ import { PropType, defineComponent } from 'vue';
 
 import api from '../../api/backend-api';
 import SentenceCard from '../sentence/SentenceCard.vue';
+import Video from '../sentence/Video.vue';
 
 export default defineComponent({
-  components: { SentenceCard },
+  components: { SentenceCard, Video },
   props: {
     searchResults: {
       type: Object as PropType<grewSearchResult_t>,
@@ -132,10 +156,12 @@ export default defineComponent({
       all: false,
       toSaveCounter: 0,
       users: new Set(),
+      cardRefs: [] as any[],
+      groupedConlls: {} as { [key: string]: string[] },
     };
   },
   computed: {
-    ...mapState(useProjectStore, ['name', 'canSaveTreeInProject', 'isValidator']),
+    ...mapState(useProjectStore, ['name', 'canSaveTreeInProject', 'isValidator', 'isAdmin', 'collaborativeMode']),
     ...mapState(useGrewSearchStore, ['canRewriteRule']),
     ...mapState(useUserStore, ['username', 'isLoggedIn']),
     ...mapState(useTreesStore, ['pendingModifications']),
@@ -149,7 +175,7 @@ export default defineComponent({
       let nb_sent = 0;
       let nb_modified_nodes = 0;
       let nb_modified_edges = 0;
-      for (let sample_id in this.searchResults) { 
+      for (let sample_id in this.searchResults) {
         for (let sent_id in this.searchResults[sample_id]) {
           nb_sent += 1;
           let sent_data = this.searchResults[sample_id][sent_id];
@@ -179,11 +205,11 @@ export default defineComponent({
         const nodes = this.$t(nb_modified_nodes === 1 ? 'grewSearch.node' : 'grewSearch.node_plural', { count: nb_modified_nodes });
         const edges = this.$t(nb_modified_edges === 1 ? 'grewSearch.edge' : 'grewSearch.edge_plural', { count: nb_modified_edges });
         const message = this.$t('grewSearch.rewriteReport', { treeLabel: this.treeLabel, nodes: nodes, edges: edges, sents:sents, users:users })
-        return message 
+        return message
       } else {
         const occs = this.$t(nb_occ === 1 ? 'grewSearch.occ' : 'grewSearch.occ_plural', { count: nb_occ });
         const message = this.$t('grewSearch.searchReport', { occs: occs, sents:sents, users:users })
-        return message 
+        return message
       }
     },
     countSelected() {
@@ -193,6 +219,31 @@ export default defineComponent({
     },
     samplesNames() {
       return Object.keys(this.searchResults);
+    },
+    isNonCollaborativeMode() {
+      return !this.collaborativeMode;
+    },
+    userIdsWithValidated() {
+      const idf = ['validated'];
+      if (this.username && !idf.includes(this.username)) {
+        idf.push(this.username);
+      }
+      return idf;
+    },
+    SaveAs(): { [key: string]: boolean } {
+      const btn: { [key: string]: boolean } = {};
+      
+      for (const user of this.userIdsWithValidated) {
+        if (!this.isAdmin) {
+          btn[user] = user === this.username;
+        } else if (this.isNonCollaborativeMode) {
+          btn[user] = user === 'validated';
+        } else {
+          btn[user] = true;
+        }
+      }
+      
+      return btn;
     },
   },
   mounted() {
@@ -264,7 +315,7 @@ export default defineComponent({
             sentenceJson.metaJson.user_id = saveAs;
             sentenceJson.metaJson.timestamp = Math.round(Date.now());
           }
-          grewSearchResultSentence["conlls"] = { saveAs: sentenceJsonToConll(sentenceJson)}
+          grewSearchResultSentence["conlls"] = { [saveAs]: sentenceJsonToConll(sentenceJson) }
           if (!selectedResults[sampleId]) selectedResults[sampleId] = {};
           selectedResults[sampleId][sentId] = grewSearchResultSentence
         }
@@ -357,6 +408,84 @@ export default defineComponent({
       else {
         this.$emit('closed');
       }
+    },
+    isVideo(){
+      let isVideo = false
+      Object.values(this.searchResults).forEach(elt => {
+          const conll = Object.values(Object.values(elt)[0].conlls)[0]
+          const videoUrl = conll.match(/video_url = (.*?)\n/)
+          if (videoUrl){
+            isVideo = true
+          }
+      });
+      return isVideo
+    },
+     getVideoUrl(){
+      let video = ''
+      Object.values(this.searchResults).forEach(elt => {
+          const conll = Object.values(Object.values(elt)[0].conlls)[0]
+          const videoUrl = conll.match(/video_url = (.*?)\n/)
+          if (videoUrl){
+            video = videoUrl[1]
+          }
+      });
+      return video
+    },
+    saveAllTreesAs(saveAs: string) {
+      const modifiedSentences = [...this.pendingModifications.values()];
+      const savePromises = modifiedSentences.map((sentence) => {
+        const conllsentences = sentence.conll.split('\n');
+        const updatedConll = conllsentences.map((sentenceLine: string) => {
+          if (sentenceLine.startsWith('# user_id =')) {
+            return `# user_id = ${saveAs}`;
+          }
+          if (sentenceLine.startsWith('# timestamp =')) {
+            return `# timestamp = ${Math.round(Date.now())}`;
+          }
+          return sentenceLine;
+        }).join('\n');
+
+        const sentId = sentenceConllToJson(updatedConll).metaJson.sent_id as string;
+
+        return api.updateTree(this.name, sentence.sampleName, {
+          conll: updatedConll,
+          userId: saveAs,
+          updateCommit: true,
+          sentId,
+        });
+      });
+
+      Promise.all(savePromises)
+        .then(() => {
+          if (saveAs === 'validated') {
+            this.reloadCommits += 1;
+          }
+          notifyMessage({ 
+            position: 'top', 
+            message: `Saved on the server as "${saveAs}"`, 
+            icon: 'save' 
+          });
+          this.emptyPendingModification();
+          this.$emit('reload-results');
+        })
+        .catch((error) => {
+          notifyError({ error: `Error happened while saving trees ${error}` });
+        });
+    },
+    closeAllCard(){
+      this.cardRefs.forEach(card => {
+        card.closeCard()
+      });
+    },
+    sentenceCardRefs(){
+      let refs = [] as any[]
+      for (let i = 0; i < this.samplesFrozen.list.length; i++) {
+        const sentenceCard = this.$refs['card' + i] as any;
+        if (sentenceCard) {
+          refs.push(sentenceCard)
+        }
+      }
+      this.cardRefs = refs
     }
   },
 });

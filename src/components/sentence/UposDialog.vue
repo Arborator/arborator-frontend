@@ -23,6 +23,5 @@ export default defineComponent({
       required: true,
     },
   },
- 
 });
 </script>

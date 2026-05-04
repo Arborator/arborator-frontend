@@ -3,6 +3,8 @@
   // "vetur.format.enable": true,
   // "eslint.validate": ["javascript", "javascriptreact", "typescript", "vue"],
   "vetur.experimental.templateInterpolationService": true,
+  "js/ts.tsdk.path": "node_modules/typescript/lib",
+  "js/ts.tsdk.promptToUseWorkspaceVersion": true,
   "editor.defaultFormatter": "dbaeumer.vscode-eslint",
   "eslint.alwaysShowStatus": true,
   "editor.formatOnSave": true,

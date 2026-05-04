@@ -1,3 +1,5 @@
+import { Loading } from "quasar";
+
 export default {
   failed: 'Action failed',
   success: 'Action successful',
@@ -125,6 +127,12 @@ export default {
     inputLabel: 'Project name',
     renameBtn: 'Rename',
     inputError: 'please type something',
+  },
+  renameSample: {
+    sampleNameExists: 'A sample with this name already exists',
+    sameName: 'The new name must be different from the current name',
+    sampleNameModifiedGithub: 'The sample name was modified on GitHub',
+    sampleNameModified: 'The sample name is modified',
   },
 
   // page when you enter a project ( samples info, etc)
@@ -290,22 +298,40 @@ export default {
     selectBranch: 'Select a branch to clone',
     arboratorgrewBranch: 'Create new branch and use it for the commits from ArboratorGrew.',
     newBranchName: 'Name of branch to use',
+    branchAlreadyExists: 'Branch already exists! Please choose another name.',
     defaultBranch: ' Use the selected branch (Be careful if you work with a repository that has many collaborators).',
     synchronize: 'Synchronize',
     syncBtnTooltip: 'You need to set the branch name first',
     syncWarningMessage: 'The repository is large, the synchronization will take some time',
     synchronizeMessage: 'is synchronized with',
-    commitNotif: ['You have', 'change', 'changes', "You don't have changes to commit"],
+    statusLabel: 'status',
+    statusNotif: ['You have', 'changed file', 'changed files', 'Your local branch is clean'],
     pullNotif: ['Check pull', 'Refresh to see if there are changes to pull', 'Pull available', 'Pull changes'],
     pullRequest: 'Open new Pull request from your changes',
     removeSync: ['Remove synchronization', 'Your project is synchronized with'],
     deletionWarning: 'This action will also remove the file from your synchronized github repository.',
-    commitDialog: {
-      title: 'Commit the changes',
+    concurrentModificationsWarning: 'ArboratorGrew does not manage concurrent modifications. If you plan to modify your data from ArboratorGrew and in some other way in GitHub, please take care of synchronisation by yourself. If two concurrent modifications on the sample occur, a push from ArboratorGrew will erase the GitHub modification; a pull from ArboratorGrew will erase the ArboratorGrew modification. If you need to handle concurrent modifications, use a specific git branch for interaction with ArboratorGrew.',
+    statusDialog: {
+      title: 'status',
+      selection: '{selected} selected out of {total}',
+      selectAll: 'Select all',
+      clearSelection: 'Clear selection',
+      showChanges: 'Show diff',
+      resetOne: 'Reset this file',
+      resetSelected: 'Reset selection',
+      resetMessage: 'Selected changes were reset',
+      resetConfirmMessage: '{count} change{plural} will be discarded. Do you really want to proceed?',
+      resetConfirmHint: 'Type the project name: {projectName}',
+      resetConfirmLabel: 'Project name*',
       commitInput: 'Commit message',
-      commitTreeSelect: 'Select the trees to commit',
-      commitTreeOptions: ['My trees', 'Most recent trees', 'Validated trees'],
+      pushSelected: 'Create commit and push',
       commitMessage: 'New commit to',
+      loadingStatus: 'Loading status...',
+      statuses: {
+        added: 'added',
+        modified: 'modified',
+        deleted: 'deleted',
+      },
     },
   },
   sentenceCard: {

@@ -73,6 +73,7 @@ export interface updateTree_ED {
   sentId: string;
   userId: string;
   conll: string;
+  updateCommit?: boolean;
 }
 
 //// GREW

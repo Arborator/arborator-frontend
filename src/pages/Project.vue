@@ -20,7 +20,11 @@
               <div class="text-caption text-weight-medium">
                 <span v-if="syncGithubRepo && !blindAnnotationMode">
                   {{ $t('projectView.synchronizedWith') }}:
-                  <q-chip outline color="secondary" size="sm"> {{ syncGithubRepo }}</q-chip>
+                  <a :href="syncGithubRepoLink" target="_blank" rel="noopener noreferrer" class="text-secondary">
+                    <q-chip outline color="secondary" size="sm">
+                      <u>{{ syncGithubRepo }}</u>
+                    </q-chip>
+                  </a>
                   @
                   <q-chip outline color="secondary" size="sm"> {{ syncGithubBranch }}</q-chip>
                 </span>
@@ -107,6 +111,7 @@
               <ProjectTable
                 :key="reload"
                 :samples="samples"
+                :syncGithubRepo="syncGithubRepo"
                 @selected-samples="getSelectedSamples"
               ></ProjectTable>
             </q-tab-panel>
@@ -136,7 +141,12 @@
       <q-dialog v-model="projectSettingsDial">
         <ProjectSettingsView :projectName="projectName" :samples="samples" @reload="loadProjectData()" />
       </q-dialog>
-      <UploadDialog v-model:uploadDial="uploadDial" :samples="samples" @uploaded:sample="loadProjectData()" />
+      <UploadDialog 
+        v-model:uploadDial="uploadDial" 
+        :samples="samples" 
+        @uploaded:sample="loadProjectData()"
+        :syncGithubRepo="syncGithubRepo"
+      />
     </div>
   </q-page>
 </template>
@@ -239,6 +249,9 @@ export default defineComponent({
     ...mapWritableState(useGrewSearchStore, ['reloadGrew']),
     projectName(): string {
       return this.$route.params.projectname as string;
+    },
+    syncGithubRepoLink(): string {
+      return `https://github.com/${this.syncGithubRepo}`;
     },
   },
   mounted() {

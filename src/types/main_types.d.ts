@@ -17,7 +17,7 @@ export interface field_t {
   label: string;
   sortable: boolean;
   field: string;
-  align?: string;
+  align?: 'left' | 'right' | 'center';
   // sort?: (a: any, b: any) => number;
 }
 

@@ -29,11 +29,8 @@ export const useGrewSearchStore = defineStore('grewSearch', {
       }
     },
     canRewriteRule(): boolean {
-      if (useProjectStore().blindAnnotationMode || !useProjectStore().collaborativeMode) {
-        return useProjectStore().isValidator;
-      } else {
-        return useProjectStore().canSaveTreeInProject;
-      }
+      // anyone who can save can rewrite (fix https://github.com/Arborator/arborator-frontend/issues/499)
+      return useProjectStore().canSaveTreeInProject;
     },
   },
   actions: {

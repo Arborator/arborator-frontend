@@ -482,7 +482,7 @@ export default {
   },
   tokenReplaceDialog: {
     merge: 'Fusionner',
-    mergeOptions: ['Fusionner à gauche', 'Fusionner à droit'],
+    mergeOptions: ['Fusionner à gauche', 'Fusionner à droite'],
     insert: 'Insérer',
     insertOptions: ['Insérer avant', 'Insérer après'],
     split: 'diviser token',

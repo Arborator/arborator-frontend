@@ -163,6 +163,7 @@ export default defineComponent({
     },
     startDrag(e: MouseEvent) {
       if(this.isResizing) return
+      this.setVIdeoWidth()
       this.dragging = true
       //calcul distance between div and mouse
       this.offsetX = e.clientX - this.x
@@ -184,6 +185,7 @@ export default defineComponent({
     },
     startResize(e: MouseEvent) {
       this.isResizing = true;
+      this.setVIdeoWidth()
       // Store the mouse position to calculate resizing
       this.offsetX = e.clientX;
       this.offsetY = e.clientY;
@@ -214,6 +216,13 @@ export default defineComponent({
       this.boundResize = null;
       this.boundStopResize = null;
     },
+    setVIdeoWidth(){
+      const container = this.$refs.videoDiv as HTMLDivElement
+      
+      //calcul actual height and convert px into %
+      const widthInPx = container.offsetWidth;
+      this.videoWidth = (widthInPx / window.innerWidth) * 100;
+    }
   }
 })
 </script>

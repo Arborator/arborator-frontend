@@ -135,6 +135,7 @@ export default defineComponent({
     toggleVideo(){
       this.isVideoHidden = !this.isVideoHidden
       this.hideText = this.isVideoHidden ? "Show video" : "Hide video"
+      this.videoRef?.pause()
     },
     extractVideoUrlFromConll(conll: string): string {
       const match = conll.match(/video_url = (.*?)\n/)

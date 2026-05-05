@@ -1,13 +1,13 @@
 <template>
   <div 
-  :style="{ height: `${splitterHeight}px` }" 
+  :style="{ height: `${splitterHeight}%` }" 
   class="relative-position"
   >
-    <div :style="{ height: splitterModel + '%' }" class="overflow-hidden">
+    <div :style="{ height: splitterModel + '%' }">
         <AdvancedFilter @trees-saved="getTrees()" @advanced-filters-toggled="handleAdvancedFiltersToggle" :parent-on-validate="validateAllTrees"  />
     </div>
 
-    <div :style="{ height: (100 - splitterModel) + '%' }" class="overflow-hidden custom-frame1">
+    <div :style="{ height: (100 - splitterModel) + '%' }" class="custom-frame1">
       <div v-show="!loading">
         <Video
           v-if="isVideo()"
@@ -17,7 +17,7 @@
           :key="filteredTrees.length.toString() + Object.keys(filteredTrees).join('')"
           ref="virtualListRef"
           :items="Object.values(filteredTrees)"
-          :style="{ maxHeight: `${splitterHeight * ((100 - splitterModel) / 100) - 1}px`, width: '100%' }"
+          :style="{ maxHeight: `70vh`, width: '100%' }"
           :virtual-scroll-slice-size="50"
           :virtual-scroll-item-size="70"
           @virtual-scroll="sentenceCardRefs()"
@@ -156,10 +156,10 @@ export default defineComponent({
     calculateHeight(): void {
       const header = document.getElementById('main-header');
       if (header !== null) {
-        this.splitterHeight = window.innerHeight - header.offsetHeight;
+        this.splitterHeight = ((window.innerHeight - header.offsetHeight)/window.innerHeight )* 100;
       } else {
         console.log("We didn't find the header, we will consider a header size of 35");
-        this.splitterHeight = window.innerHeight - 35;
+        this.splitterHeight = ((window.innerHeight - 35)/window.innerHeight )* 100;
       }
     },
     validateAllTrees() {

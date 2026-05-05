@@ -214,7 +214,7 @@ export default {
     grewRewriteTooltip: 'Examples de requêtes de recherche et remplacement de Grew',
     showDiffFaturesSelect: 'Sélectionnez la liste des features',
     showDiffBtn: 'Afficher les différences',
-    applyRuleAs: 'Sauver la sélection en tant que "{0}"',
+    applyRuleAs: 'Sauver les arbres modifiés en tant que "{0}"',
     applyRuleTooltip: 'Sélectionnez au moins un arbre sur lequel vous souhaitez appliquer la règle',
     toggleAllTooltip: 'Inverser la sélection',
     btnDisabledTooltip: "Sélectionnez d'abord le nom d'utilisateur",

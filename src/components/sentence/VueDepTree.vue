@@ -146,6 +146,15 @@ export default defineComponent({
     this.sentenceCaretaker = new SentenceCaretaker(this.reactiveSentence);
     this.sentenceCaretaker.backup();
 
+    const treesStore = useTreesStore();
+    const pendingKey = `${this.reactiveSentence.state.metaJson.sent_id}_${this.reactiveSentence.state.metaJson.user_id}`;
+    const pending = treesStore.pendingModifications.get(pendingKey);
+    if (pending) {
+      this.reactiveSentence.fromSentenceConll(pending.conll);
+      this.sentenceCaretaker.backup(); // currentStateIndex = 1, history_saveIndex stays at 0 → needSave = true
+      this.statusChangeHandler();
+    }
+
     this.sentenceBus.sentenceSVGs[this.treeUserId] = this.sentenceSVG;
 
     this.sentenceSVG.addEventListener('svg-click', (e) => {

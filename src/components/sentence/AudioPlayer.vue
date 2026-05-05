@@ -1,5 +1,5 @@
 <template>
-  <div v-if="hasToken()" class="q-ma-xs">
+  <div v-show="!isAudioHidden && hasToken()" class="q-ma-xs">
     <span
       v-if="isPreviousSentenceToggled() && hasPreviousSentence()"
       v-for="item in spansPrev"
@@ -30,7 +30,7 @@
     </span>
   </div>
 
-  <div class="row">
+  <div v-show="!isAudioHidden" class="row">
     <audio
       ref="audioPlayer"
       preload="auto"
@@ -102,6 +102,18 @@
     </div>
   </div>
 
+  <Teleport to="body">
+    <div style="position: fixed; bottom: 16px; right: 16px; z-index: 9999;">
+      <q-btn
+        color="primary"
+        no-caps
+        @click="toggleAudio()"
+      >
+        {{ hideText }}
+      </q-btn>
+    </div>
+  </Teleport>
+
 </template>
 
 <script lang="ts">
@@ -125,6 +137,8 @@ export default defineComponent({
   },
   data() {
     return {
+      hideText: 'Hide audio',
+      isAudioHidden: false,
       currentUrl: '',
       audioTokens: [] as { begin: number; end: number; word: string; }[],
       audioBegin: 0, //timeCode begining of sentence
@@ -171,6 +185,16 @@ export default defineComponent({
     this.audioInit()
   },
   methods: {
+    toggleAudio() {
+      this.isAudioHidden = !this.isAudioHidden
+      this.hideText = this.isAudioHidden ? 'Show audio' : 'Hide audio'
+
+      const audioPlayer = this.$refs.audioPlayer as HTMLAudioElement
+      if (this.isAudioHidden && audioPlayer) {
+        audioPlayer.pause()
+      }
+      this.$emit('toggle-audio', this.isAudioHidden)
+    },
     getUserId(){
       const id = Object.entries(this.reactiveSentencesObj)[0][0]
       return id !== undefined ? id : ''

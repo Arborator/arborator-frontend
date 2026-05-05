@@ -326,11 +326,14 @@ export default defineComponent({
     }
   },
   created() {
+    const treesStore = useTreesStore();
     for (const [userId, conll] of Object.entries(this.sentence.conlls)) {
       const reactiveSentence = new ReactiveSentence();
-      reactiveSentence.fromSentenceConll(conll);
+      const pendingKey = `${this.sentence.sent_id}_${userId}`;
+      const pending = treesStore.pendingModifications.get(pendingKey);
+      reactiveSentence.fromSentenceConll(pending ? pending.conll : conll);
       this.reactiveSentencesObj[userId] = reactiveSentence;
-      this.hasPendingChanges[userId] = false;
+      this.hasPendingChanges[userId] = !!pending;
       this.udValidationStatut[userId] = '';
       this.showUdValidation[userId] = false;
     }
@@ -504,7 +507,8 @@ export default defineComponent({
     leftClickHandler(user: string) {
       if (this.openTabUser === user) {
         this.openTabUser = '';
-      } else{
+      } else {
+        this.openTabUser = user
         this.$emit('closeCards')
       }
     },

@@ -24,7 +24,7 @@
           </div>
         </template>
         <q-list>
-          <q-item v-for="user in userIdsWithValidated" :key="user" :disable="!SaveAs[user]" clickable @click="saveAllTreesAs(user)">
+          <q-item v-for="user in userIdsWithValidated" :key="user" :disable="!SaveAs[user]" clickable v-close-popup @click="saveAllTreesAs(user)">
             <q-item-section>{{ $t('grewSearch.applyRuleAs', [user]) }}</q-item-section>
           </q-item>
         </q-list>

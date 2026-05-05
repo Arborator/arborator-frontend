@@ -180,6 +180,14 @@ export default defineComponent({
           notifyError({ error, caller: 'validateAllTrees' });
         });
     },
+    isAudio(){
+      if(this.filteredTrees[0]){
+        const conll = Object.values(this.filteredTrees[0].conlls)[0]
+        const soundUrl = conll.match(/sound_url = (.*?)\n/)
+        return soundUrl !== null
+      }
+      return false
+    },
     isVideo(){
       if(this.filteredTrees[0]){
         const conll = Object.values(this.filteredTrees[0].conlls)[0]
@@ -199,9 +207,11 @@ export default defineComponent({
       return ''
     },
     closeAllCard(){
-      this.cardRefs.forEach(card => {
-        card.closeCard()
-      });
+      if (this.isAudio() || this.isVideo()) {
+        this.cardRefs.forEach(card => {
+          card.closeCard()
+        });
+      }
     },
     sentenceCardRefs(){
       let refs = [] as any[]

@@ -216,7 +216,7 @@ export default {
     grewRewriteTooltip: 'Examples of Grew search and replacement statements',
     showDiffFaturesSelect: 'Select the set of features',
     showDiffFeaturesTooltip: 'if empty and at least two diff users are selected, all features will be taken into account for diff',
-    applyRuleAs: 'Save selected trees as "{0}"',
+    applyRuleAs: 'Save modified trees as "{0}"',
     applyRuleTooltip: 'Select at least one tree to which you wish to apply the rule',
     toggleAllTooltip: 'Toggle selection',
     btnDisabledTooltip: 'You need to select first the username',

@@ -504,7 +504,8 @@ export default defineComponent({
     leftClickHandler(user: string) {
       if (this.openTabUser === user) {
         this.openTabUser = '';
-      } else{
+      } else {
+        this.openTabUser = user
         this.$emit('closeCards')
       }
     },

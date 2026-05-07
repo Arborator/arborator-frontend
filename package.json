@@ -31,7 +31,7 @@
     "conllup": "^3.1.4",
     "core-js": "^3.6.5",
     "dependencytreejs": "2.4.5",
-    "diff": "^5.0.0",
+    "diff": "^8.0.3",
     "ip": "^2.0.1",
     "json-editor-vue": "^0.16.0",
     "jszip": "^3.8.0",

@@ -131,6 +131,13 @@ export default defineComponent({
     this.getTrees();
     this.calculateHeight();
     this.reloadValidation = false;
+    //call scrollSentenceFromUrl when loading is finished, to be sure that the sentences are loaded 
+    const checkReady = setInterval(() => {
+      if (this.loading === false) {
+        this.scrollSentenceFromUrl();
+        clearInterval(checkReady);
+      }
+    }, 100);
   },
   beforeUnmount() {
     window.removeEventListener('resize', this.calculateHeight);
@@ -236,7 +243,22 @@ export default defineComponent({
       await this.$nextTick()
       virtualListRef.refresh()
       setTimeout(() => virtualListRef.scrollTo(index, 'center-force'), 50)
-    }
+    },
+    scrollSentenceFromUrl() {
+     const sendId = this.$route.query.sent as string| undefined
+     const user = this.$route.query.user as string| undefined
+     if (!(sendId && user)) return
+      //calcule index of sentId 
+      const indexInValues = Object.values(this.trees).findIndex((tree) => tree.sent_id === sendId);
+      if (indexInValues !== -1) {
+        this.scrollSentence(indexInValues);
+        //open the sentenceCard
+        setTimeout(()=>{
+          const sentenceCard = this.$refs['card' + indexInValues] as any; 
+          sentenceCard.openTabUser = user}
+        , 1000);
+      }
+    },
   },
 });
 </script>

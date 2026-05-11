@@ -20,6 +20,18 @@
 
     <template v-if="openTabUser !== ''">
       <q-btn
+      v-if="isLoggedIn"
+        flat
+        round
+        dense
+        icon="link"
+        :disable="openTabUser === ''"
+        @click="saveAndShareLink"
+      >
+        <q-tooltip>save and share link</q-tooltip>
+      </q-btn>
+
+      <q-btn
         v-if="isLoggedIn && blindAnnotationLevel <= 3 && !isValidator"
         flat
         round
@@ -375,6 +387,21 @@ export default defineComponent({
       const videoUrl= conllData.match(/video_url = (.*?)\n/)
       return videoUrl !== null
     },
+    saveAndShareLink(){
+      const routeData = this.$router.resolve({
+        name: this.$route.name ?? undefined, 
+        query: { 
+          user: this.openTabUser, 
+          sent: this.sentenceData.sent_id 
+        }
+      });
+      const url = window.location.origin + window.location.pathname + routeData.href;
+      navigator.clipboard.writeText(url.toString()).then(() => {
+        this.$q.notify({ type: 'positive', message: 'link copied in your clipboard' });
+      }).catch((err) => {
+        this.$q.notify({ type: 'negative', message: 'linkCopyError :' + err.toString() });
+      });
+    }
   }
 });
 </script>

@@ -388,8 +388,10 @@ export default defineComponent({
       return videoUrl !== null
     },
     saveAndShareLink(){
+      const project = this.$route.params.projectname;
+      const sample = this.sentenceData.sample_name;
       const routeData = this.$router.resolve({
-        name: this.$route.name ?? undefined, 
+        path: `/projects/${project}/${sample}`,
         query: { 
           user: this.openTabUser, 
           sent: this.sentenceData.sent_id 

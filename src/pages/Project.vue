@@ -69,6 +69,7 @@
             </q-btn>
             <div v-if="isAllowdedToSync && syncGithubRepo">
               <GithubOptions
+                ref="githubOptionsRef"
                 :projectName="projectName"
                 :repositoryName="syncGithubRepo"
                 :key="reload"
@@ -266,6 +267,16 @@ export default defineComponent({
     },
     reloadSamples(newVal) {
       if (newVal) this.loadProjectData();
+    },
+    syncGithubRepo(newVal) {
+      if (newVal && this.$route.query.openGithubOptions === 'true') {
+        setTimeout(() => {
+          const githubOptions = this.$refs.githubOptionsRef as any;
+          if (githubOptions && githubOptions.openGithubDialog) {
+            githubOptions.openGithubDialog();
+          }
+        }, 500);
+      }
     }
   },
   methods: {

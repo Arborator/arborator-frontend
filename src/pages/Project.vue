@@ -268,6 +268,16 @@ export default defineComponent({
     reloadSamples(newVal) {
       if (newVal) this.loadProjectData();
     },
+    projectName(newVal) {
+      if (newVal) {
+        document.title = `ArboratorGrew: ${newVal}`;
+        this.syncGithubRepo = '';
+        this.syncGithubBranch = '';
+        this.loadProjectData();
+        this.getSynchronizedGithubRepo();
+        this.getStatistics(newVal);
+      }
+    },
     syncGithubRepo(newVal) {
       if (newVal && this.$route.query.openGithubOptions === 'true') {
         setTimeout(() => {

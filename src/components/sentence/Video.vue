@@ -117,6 +117,7 @@ export default defineComponent({
       showSpeedBtn: true,
       videoWidth: 25,
       isResizing: false,
+      boundMoveDiv: null as ((e: MouseEvent) => void) | null,
       boundResize: null as ((e: MouseEvent) => void) | null,
       boundStopResize: null as (() => void) | null,
     }
@@ -169,11 +170,13 @@ export default defineComponent({
       //calcul distance between div and mouse
       this.offsetX = e.clientX - this.x
       this.offsetY = e.clientY - this.y
-      window.addEventListener('mousemove', this.moveDiv.bind(this))
+      this.boundMoveDiv = this.moveDiv.bind(this)
+      window.addEventListener('mousemove', this.boundMoveDiv)
     },
     stopDrag() {
       this.dragging = false
-      window.removeEventListener('mousemove', this.moveDiv.bind(this))
+      if (this.boundMoveDiv) window.removeEventListener('mousemove', this.boundMoveDiv)
+      this.boundMoveDiv = null
     },
     changeVideoSpeed(){
       if (this.videoRef){

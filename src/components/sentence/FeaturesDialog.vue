@@ -48,7 +48,7 @@
         <q-expansion-item
           expand-separator
           label="Edit tokens"
-          @show="scrollToBottom()"
+          @after-show="scrollToBottom()"
         >
           <TokensReplaceDialog
             :sentence-bus="sentenceBus"
@@ -214,17 +214,11 @@ export default defineComponent({
       });
     },
     scrollToBottom() {
-      setTimeout(() => {
-        const container = this.$refs.scrollArea as any;
-
-        if (container) {
-          const el = (container.$el || container) as HTMLElement;
-          el.scrollTo({
-            top: el.scrollHeight,
-            behavior: 'smooth'
-          });
-        }
-      }, 280);
+      const container = this.$refs.scrollArea as any;
+      if (container) {
+        const el = (container.$el || container) as HTMLElement;
+        el.scrollTo({ top: el.scrollHeight, behavior: 'smooth' });
+      }
     }
   },
 });

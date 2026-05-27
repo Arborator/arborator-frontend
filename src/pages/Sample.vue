@@ -10,7 +10,7 @@
     <div :style="{ height: (100 - splitterModel) + '%' }" class="custom-frame1">
       <div v-show="!loading">
         <Video
-          v-if="isVideo()"
+          v-if="isVideo"
         >
         </Video>
         <q-virtual-scroll
@@ -115,7 +115,14 @@ export default defineComponent({
     ...mapWritableState(useTreesStore, ['reloadTrees', 'reloadValidation']),
     sampleName() {
       return this.$route.params.samplename as string;
-    }
+    },
+    isVideo(): boolean {
+      if (this.filteredTrees[0]) {
+        const conll = Object.values(this.filteredTrees[0].conlls)[0]
+        return conll.includes('video_url =')
+      }
+      return false
+    },
   },
   created() {
     window.addEventListener('resize', this.calculateHeight);
@@ -197,26 +204,8 @@ export default defineComponent({
       }
       return false
     },
-    isVideo(){
-      if(this.filteredTrees[0]){
-        const conll = Object.values(this.filteredTrees[0].conlls)[0]
-        const videoUrl= conll.match(/video_url = (.*?)\n/)
-        return videoUrl !== null
-      }
-      return false
-    },
-    getVideoUrl(): string {
-      if(this.filteredTrees[0]){
-        const conll = Object.values(this.filteredTrees[0].conlls)[0]
-        const videoUrl= conll.match(/video_url = (.*?)\n/)
-        if (videoUrl){
-          return videoUrl[1].toString()
-        }
-      }
-      return ''
-    },
     closeAllCard(){
-      if (this.isAudio() || this.isVideo()) {
+      if (this.isAudio() || this.isVideo) {
         this.cardRefs.forEach(card => {
           card.closeCard()
         });

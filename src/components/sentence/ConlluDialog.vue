@@ -1,17 +1,16 @@
 <template>
-  <q-dialog v-model="conlluDialogOpened" full-width>
-    <q-card flat bordered>
-      <q-bar class="bg-primary text-white sticky-bar">
-        <div class="text-weight-bold">{{ $t('conllDial.title') }}</div>
-        <q-space />
-        <q-btn v-close-popup flat dense icon="close" />
-      </q-bar>
-      <q-card-section>
-        <q-tabs v-model="view">
+  <q-dialog v-model="conlluDialogOpened" style="backdrop-filter: blur(4px)">
+    <q-card flat bordered class="column no-wrap rounded-borders shadow-10" style="width: 90vw; max-width: 1100px; max-height: 95vh; border-radius: 12px; box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15)">
+      <q-card-section class="bg-primary text-white q-pa-sm text-center relative-position">
+        <div class="text-h6 text-weight-bold">{{ $t('conllDial.title') }}</div>
+        <q-btn v-close-popup icon="close" flat round dense size="md" class="absolute-top-right q-ma-xs" />
+      </q-card-section>
+      <q-card-section class="q-pa-md col overflow-hidden">
+        <q-tabs v-model="view" class="q-mb-md" active-color="primary" indicator-color="primary" align="left">
           <q-tab v-if="isLoggedIn" no-caps name="table" label="Table" />
           <q-tab no-caps name="conll" label="Conll" />
         </q-tabs>
-        <q-tab-panels v-model="view">
+        <q-tab-panels v-model="view" animated>
           <q-tab-panel v-if="isLoggedIn" name="table">
             <q-table
               flat borderd
@@ -192,10 +191,37 @@
           </q-tab-panel>
         </q-tab-panels>
       </q-card-section>
-      <q-card-actions class="sticky-card-actions" align="around">
-        <q-btn v-close-popup outline color="primary" :label="$t('cancel')" style="width: 45%; margin-left: auto; margin-right: auto" />
-        <q-btn v-if="isLoggedIn && view === 'table'" v-close-popup color="primary" label="Ok" style="width: 45%;" @click="onConllDialogOk()" />
-        <q-btn v-else v-close-popup color="primary" :label="$t('conllDial.copyConll')" style="width: 45%;" @click="copyConll()" />
+      <q-separator />
+      <q-card-actions class="q-pt-md q-pb-md q-px-md row justify-center">
+        <q-btn
+          v-close-popup
+          outline
+          color="primary"
+          size="md"
+          no-caps
+          class="q-mx-xl q-px-xl q-py-lg"
+          :label="$t('cancel')"
+        />
+        <q-btn
+          v-if="isLoggedIn && view === 'table'"
+          v-close-popup
+          color="primary"
+          size="md"
+          no-caps
+          class="q-mx-xl q-px-xl q-py-lg"
+          label="Ok"
+          @click="onConllDialogOk()"
+        />
+        <q-btn
+          v-else
+          v-close-popup
+          color="primary"
+          size="md"
+          no-caps
+          class="q-mx-xl q-px-xl q-py-lg"
+          :label="$t('conllDial.copyConll')"
+          @click="copyConll()"
+        />
       </q-card-actions>
     </q-card>
   </q-dialog>
@@ -497,5 +523,24 @@ export default defineComponent({
 <style scoped>
 .bordered {
   border: 1px solid #999999;
+}
+
+.my-sticky-header-table {
+  height: 310px;
+}
+
+.my-sticky-header-table :deep(.q-table__top),
+.my-sticky-header-table :deep(.q-table__bottom),
+.my-sticky-header-table :deep(thead tr:first-child th) {
+  background-color: white;
+}
+
+.my-sticky-header-table :deep(thead tr th) {
+  position: sticky;
+  z-index: 1;
+}
+
+.my-sticky-header-table :deep(thead tr:first-child th) {
+  top: 0;
 }
 </style>

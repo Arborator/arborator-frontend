@@ -2,6 +2,71 @@ import { AxiosError } from 'axios';
 import { Notify } from 'quasar';
 import { i18n } from 'src/boot/i18n';
 
+const MAX_NOTIFICATION_ERROR_ITEMS = 10;
+
+function escapeHtml(value: string) {
+  return value
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/\"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
+
+function splitErrorEntries(message: string) {
+  const normalizedMessage = message.replace(/\r\n/g, '\n').trim();
+
+  if (!normalizedMessage.includes('sent_id =')) {
+    return null;
+  }
+
+  const firstEntryIndex = normalizedMessage.indexOf('sent_id =');
+  const header = normalizedMessage.slice(0, firstEntryIndex).trim().replace(/[\s:-]+$/, '');
+  const entries = normalizedMessage
+    .slice(firstEntryIndex)
+    .split(/(?=sent_id\s*=)/g)
+    .map((entry) => entry.trim())
+    .filter(Boolean);
+
+  if (!entries.length) {
+    return null;
+  }
+
+  return { header, entries };
+}
+
+function formatErrorMessage(message: string) {
+  const parsedError = splitErrorEntries(message);
+
+  if (!parsedError || parsedError.entries.length <= 1) {
+    return {
+      message,
+      html: false,
+      classes: '',
+    };
+  }
+
+  const visibleEntries = parsedError.entries.slice(0, MAX_NOTIFICATION_ERROR_ITEMS);
+  const hiddenEntriesCount = parsedError.entries.length - visibleEntries.length;
+  const title = parsedError.header || 'Parsing errors';
+  const summary = hiddenEntriesCount > 0 ? `<p class="notify-error-summary">+ ${hiddenEntriesCount} more errors</p>` : '';
+  const items = visibleEntries
+    .map((entry) => `<li>${escapeHtml(entry)}</li>`)
+    .join('');
+
+  return {
+    message: `
+      <div class="notify-error-list">
+        <p class="notify-error-title">${escapeHtml(title)}</p>
+        <ol>${items}</ol>
+        ${summary}
+      </div>
+    `,
+    html: true,
+    classes: 'notify-error-message',
+  };
+}
+
 interface ArboratorMessage_t {
   message: string;
   timeout?: number;
@@ -38,15 +103,19 @@ interface ArboratorGrewError_t {
 export function notifyError(ArboratorGrewError: ArboratorGrewError_t) {
   console.error('ArboratorGrewError : ', ArboratorGrewError);
 
-  const timeout = 0;
+  const timeout = ArboratorGrewError.timeout ?? 10000;
   if (typeof ArboratorGrewError.error === 'string') {
+    const formattedMessage = formatErrorMessage(ArboratorGrewError.error);
+
     Notify.create({
-      message: ArboratorGrewError.error,
+      message: formattedMessage.message,
       type: 'negative',
       icon: 'warning',
       position: 'top',
       closeBtn: 'X',
       timeout,
+      html: formattedMessage.html,
+      classes: formattedMessage.classes,
     });
     return;
   }
@@ -76,12 +145,17 @@ export function notifyError(ArboratorGrewError: ArboratorGrewError_t) {
   if (ArboratorGrewError.caller) {
     msg = `[${ArboratorGrewError.caller}] ${msg}`;
   }
+
+  const formattedMessage = formatErrorMessage(msg);
+
   Notify.create({
-    message: msg,
+    message: formattedMessage.message,
     type: 'negative',
     icon: 'warning',
     closeBtn: 'X',
     position: 'top',
     timeout,
+    html: formattedMessage.html,
+    classes: formattedMessage.classes,
   });
 }

@@ -54,7 +54,7 @@ import { mapActions, mapState, mapWritableState } from 'pinia';
 import { notifyError } from 'src/utils/notify';
 import { useTreesStore } from 'src/pinia/modules/trees';
 import { useProjectStore } from 'src/pinia/modules/project';
-import { PropType, defineComponent, ref } from 'vue';
+import { PropType, defineComponent } from 'vue';
 
 export default defineComponent({
   components: {
@@ -129,6 +129,12 @@ export default defineComponent({
     this.getTrees();
     this.calculateHeight();
     this.reloadValidation = false;
+    const checkReady = setInterval(() => {
+      if (this.loading === false) {
+        this.scrollSentenceFromUrl();
+        clearInterval(checkReady);
+      }
+    }, 100);
   },
   beforeUnmount() {
     window.removeEventListener('resize', this.calculateHeight);
@@ -149,6 +155,23 @@ export default defineComponent({
         const indexInValues = Object.values(this.trees).findIndex((tree) => tree.sent_id === sendId);
         const indexForScroll = indexInValues !== -1 ? indexInValues : nrAsInt;
         (this.$refs.virtualListRef as QVirtualScroll).scrollTo(indexForScroll, 'start-force');
+      }
+    },
+    scrollSentenceFromUrl() {
+      const sentId = this.$route.query.sent as string | undefined;
+      if (!sentId) return;
+      const indexInValues = Object.values(this.trees).findIndex((tree) => tree.sent_id === sentId);
+      if (indexInValues !== -1) {
+        (this.$refs.virtualListRef as QVirtualScroll).scrollTo(indexInValues, 'start-force');
+        setTimeout(() => {
+          const sentenceCard = this.$refs['card' + indexInValues] as any;
+          if (sentenceCard) {
+            const firstUser = Object.keys(sentenceCard.reactiveSentencesObj)[0];
+            if (firstUser) {
+              sentenceCard.openTabUser = firstUser;
+            }
+          }
+        }, 100);
       }
     },
     calculateHeight(): void {
@@ -195,16 +218,6 @@ export default defineComponent({
         return videoUrl !== null
       }
       return false
-    },
-    getVideoUrl(): string {
-      if(this.filteredTrees[0]){
-        const conll = Object.values(this.filteredTrees[0].conlls)[0]
-        const videoUrl= conll.match(/video_url = (.*?)\n/)
-        if (videoUrl){
-          return videoUrl[1].toString()
-        }
-      }
-      return ''
     },
     closeAllCard(){
       if (this.isAudio() || this.isVideo()) {

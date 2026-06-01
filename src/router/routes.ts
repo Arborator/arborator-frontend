@@ -7,6 +7,7 @@ const routes: RouteRecordRaw[] = [
       { path: '', component: () => { return import('src/pages/Index.vue'); }  },
       { path: '/home', component:() => { return import('src/pages/Index.vue') } },
       { path: '/projects', component: () => import('src/pages/ProjectsHub.vue') },
+      { path: '/s/:sentId', component: () => import('src/pages/SentenceRedirect.vue'), props: true },
       {
         path: '/projects/:projectname',
         component: () => import('src/pages/Project.vue'),

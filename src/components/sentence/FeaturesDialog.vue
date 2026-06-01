@@ -1,6 +1,6 @@
 <template>
   <q-dialog v-model="featuresDialogOpened">
-    <q-card style="width: 40vw">
+    <q-card style="width: 40vw" ref="scrollArea">
       <q-bar class="bg-primary text-white sticky-bar">
         <div class="text-weight-bold">{{ $t('attributeTable.features') }} "{{ token['FORM'] }}"</div>
         <q-space />
@@ -48,6 +48,7 @@
         <q-expansion-item
           expand-separator
           label="Edit tokens"
+          @after-show="scrollToBottom"
         >
           <TokensReplaceDialog
             :sentence-bus="sentenceBus"
@@ -212,6 +213,19 @@ export default defineComponent({
         userId: this.userId,
       });
     },
+    scrollToBottom() {
+      requestAnimationFrame(() => {
+        const container = this.$refs.scrollArea as any;
+
+        if (container) {
+          const el = (container.$el || container) as HTMLElement;
+          el.scrollTo({
+            top: el.scrollHeight,
+            behavior: 'smooth',
+          });
+        }
+      });
+    }
   },
 });
 </script>

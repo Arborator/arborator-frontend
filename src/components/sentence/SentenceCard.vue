@@ -467,6 +467,14 @@ export default defineComponent({
       else {
         this.sentenceText = this.sentenceData.sentence;
       }
+      
+      // Scroll the sentence card
+      this.$nextTick(() => {
+        const element = this.$el as HTMLElement;
+        if (element) {
+          element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+      });
     },
     toggleDiffMode() {
       this.diffMode = !this.diffMode;

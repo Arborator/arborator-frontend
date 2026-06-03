@@ -1,10 +1,13 @@
 import { sentenceConllToJson, sentenceJson_T } from 'conllup/lib/conll';
 import { defineStore } from 'pinia';
+import { LocalStorage } from 'quasar';
 import { grewSearchResultSentence_t } from 'src/api/backend-types';
 import { notifyError } from 'src/utils/notify';
 
 import api from '../../../api/backend-api';
 import { useTagsStore } from '../tags';
+
+const AUDIO_HIDDEN_STORAGE = 'sentence_audio_hidden';
 
 export const useTreesStore = defineStore('trees', {
   state: () => {
@@ -27,6 +30,7 @@ export const useTreesStore = defineStore('trees', {
       reloadValidation: false as boolean,
       pendingModifications: new Map(),
       treesReloadCounter: 0 as number,
+      audioHidden: LocalStorage.getItem(AUDIO_HIDDEN_STORAGE) === true,
     };
   },
   getters: {
@@ -86,6 +90,10 @@ export const useTreesStore = defineStore('trees', {
     }, 
     addPendingModification(sentId: string, conll: string, sampleName: string) {
       this.pendingModifications.set(sentId, { conll: conll, sampleName: sampleName});
+    },
+    setAudioHidden(hidden: boolean) {
+      this.audioHidden = hidden;
+      LocalStorage.set(AUDIO_HIDDEN_STORAGE, hidden);
     },
     removePendingModification(pendingModification: any) {
       this.pendingModifications.delete(pendingModification);

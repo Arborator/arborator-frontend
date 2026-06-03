@@ -1,5 +1,5 @@
 <template>
-  <div v-show="!isAudioHidden && hasToken()" class="q-ma-xs">
+  <div v-show="!audioHidden && hasToken()" class="q-ma-xs">
     <span
       v-if="isPreviousSentenceToggled() && hasPreviousSentence()"
       v-for="item in spansPrev"
@@ -30,7 +30,7 @@
     </span>
   </div>
 
-  <div v-show="!isAudioHidden" class="row">
+  <div v-show="!audioHidden" class="row">
     <audio
       ref="audioPlayer"
       preload="auto"
@@ -120,7 +120,7 @@
 import { PropType, defineComponent, ref } from 'vue';
 import { reactive_sentences_obj_t } from 'src/types/main_types';
 
-import { mapState } from 'pinia';
+import { mapState, mapActions } from 'pinia';
 import { useTreesStore } from 'src/pinia/modules/trees';
 
 export default defineComponent({
@@ -137,8 +137,6 @@ export default defineComponent({
   },
   data() {
     return {
-      hideText: 'Hide audio',
-      isAudioHidden: false,
       currentUrl: '',
       audioTokens: [] as { begin: number; end: number; word: string; }[],
       audioBegin: 0, //timeCode begining of sentence
@@ -171,7 +169,10 @@ export default defineComponent({
     }
   },
   computed: {
-    ...mapState(useTreesStore, ["filteredTrees"] ),
+    ...mapState(useTreesStore, ["filteredTrees", "audioHidden"] ),
+    hideText() {
+      return this.audioHidden ? 'Show audio' : 'Hide audio';
+    },
   },
   mounted(){
     this.cachedUserId = this.getUserId()
@@ -185,15 +186,16 @@ export default defineComponent({
     this.audioInit()
   },
   methods: {
+    ...mapActions(useTreesStore, ['setAudioHidden']),
     toggleAudio() {
-      this.isAudioHidden = !this.isAudioHidden
-      this.hideText = this.isAudioHidden ? 'Show audio' : 'Hide audio'
+      const nextHidden = !this.audioHidden
+      this.setAudioHidden(nextHidden)
 
       const audioPlayer = this.$refs.audioPlayer as HTMLAudioElement
-      if (this.isAudioHidden && audioPlayer) {
+      if (nextHidden && audioPlayer) {
         audioPlayer.pause()
       }
-      this.$emit('toggle-audio', this.isAudioHidden)
+      this.$emit('toggle-audio', nextHidden)
     },
     getUserId(){
       const id = Object.entries(this.reactiveSentencesObj)[0][0]

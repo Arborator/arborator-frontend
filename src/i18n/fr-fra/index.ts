@@ -343,6 +343,7 @@ export default {
     multiEditDial: "Edition de l'arbre de base",
     diffMode: ['Activer', 'Désactiver', 'le mode Diff'],
     treeLink: 'Obtenir un lien direct vers cet arbre',
+    copyAndShareLink: 'Copier et partager le lien',
     treeConll: 'Obtenir CoNLL-U de cet arbre',
     treeSVG: 'Obtenir le SVG de cet arbre',
     treePNG: 'Obtenir le PNG de cet arbre',

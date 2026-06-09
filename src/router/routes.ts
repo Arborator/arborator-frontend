@@ -7,7 +7,6 @@ const routes: RouteRecordRaw[] = [
       { path: '', component: () => { return import('src/pages/Index.vue'); }  },
       { path: '/home', component:() => { return import('src/pages/Index.vue') } },
       { path: '/projects', component: () => import('src/pages/ProjectsHub.vue') },
-      { path: '/s/:sentId', component: () => import('src/pages/SentenceRedirect.vue'), props: true },
       {
         path: '/projects/:projectname',
         component: () => import('src/pages/Project.vue'),
@@ -15,6 +14,7 @@ const routes: RouteRecordRaw[] = [
         name: 'project',
       },
       { path: '/projects/:projectname/:samplename', component: () => import('src/pages/Sample.vue'), props: true },
+      { path: '/:projectname/:samplename', component: () => import('src/pages/Sample.vue'), props: true },
       { path: '/myprojects', component: () => import('src/pages/MyProjects.vue'), props: true },
       { path: '/settings', component: () => import('src/pages/Settings.vue'), meta: { requiresAuth: true } },
       { path: '/klang', component: () => import('src/pages/Klang.vue') },

@@ -346,6 +346,7 @@ export default {
     multiEditDial: 'Base_tree edition',
     diffMode: ['Enter', 'Leave', 'Diff mode'],
     treeLink: 'Get direct link to this tree',
+    copyAndShareLink: 'Copy and share link',
     treeConll: 'Get CoNLL-U of this tree',
     treeSVG: 'Get SVG of this tree',
     treePNG: 'Get PNG of this tree',

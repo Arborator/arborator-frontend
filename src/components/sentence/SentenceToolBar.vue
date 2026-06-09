@@ -122,6 +122,15 @@
             </q-item-section>
           </q-item>
 
+          <q-item v-if="isLoggedIn" v-close-popup clickable @click="openTableConllDialog()">
+            <q-item-section avatar>
+              <q-avatar icon="table_chart" color="primary" text-color="white" />
+            </q-item-section>
+            <q-item-section>
+              <q-item-label>{{ $t('sentenceCard.editTableConll') }}</q-item-label>
+            </q-item-section>
+          </q-item>
+
           <q-item v-if="!blindAnnotationMode" v-close-popup clickable @click="toggleDiffMode()">
             <q-item-section avatar>
               <q-avatar icon="ion-git-network" color="primary" text-color="white" />
@@ -337,6 +346,9 @@ export default defineComponent({
     },
     openConllDialog() {
       this.sentenceBus.emit('open:conlluDialog', { userId: this.openTabUser });
+    },
+    openTableConllDialog() {
+      this.sentenceBus.emit('open:tableConlluDialog', { userId: this.openTabUser });
     },
     openMetaDialog() {
       this.sentenceBus.emit('open:metaDialog', { userId: this.openTabUser });

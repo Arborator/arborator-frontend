@@ -345,6 +345,7 @@ export default {
     treeLink: 'Obtenir un lien direct vers cet arbre',
     copyAndShareLink: 'Copier et partager le lien',
     treeConll: 'Obtenir CoNLL-U de cet arbre',
+    editTableConll: 'Éditer la table CoNLL-U',
     treeSVG: 'Obtenir le SVG de cet arbre',
     treePNG: 'Obtenir le PNG de cet arbre',
     addToken: 'Ajouter un nouveau token',
@@ -578,6 +579,9 @@ export default {
     tableView: 'Tableau',
     conllView: 'Conll',
     copyConll: 'Copier Conll',
+  },
+  tableConllDial: {
+    title: 'Éditer la table CoNLL',
   },
   detectedTagSet: {
     title: 'Traits détectés dans les fichiers importés',

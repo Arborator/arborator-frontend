@@ -128,6 +128,11 @@
         :reactive-sentences-obj="(reactiveSentencesObj as reactive_sentences_obj_t)"
         :sentence-data="sentenceData"
       />
+      <TableConlluDialog
+        :sentence-bus="sentenceBus"
+        :reactive-sentences-obj="(reactiveSentencesObj as reactive_sentences_obj_t)"
+        :sentence-data="sentenceData"
+      />
       <ExportSVG
         :sentence-bus="sentenceBus"
         :reactive-sentences-obj="(reactiveSentencesObj as reactive_sentences_obj_t)"
@@ -185,6 +190,7 @@ import { PropType, defineComponent } from 'vue';
 
 import  api  from 'src/api/backend-api';
 import ConlluDialog from './ConlluDialog.vue';
+import TableConlluDialog from './TableConlluDialog.vue';
 import ExportSVG from './ExportSVG.vue';
 import FeaturesDialog from './FeaturesDialog.vue';
 import MetaDialog from './MetaDialog.vue';
@@ -213,6 +219,7 @@ export default defineComponent({
     FeaturesDialog,
     MetaDialog,
     ConlluDialog,
+    TableConlluDialog,
     ExportSVG,
     TokensReplaceDialog,
     StatisticsDialog,

@@ -41,6 +41,7 @@ export interface reactive_sentences_obj_t {
 export type sentence_bus_events_t = {
   'open:metaDialog': { userId: string };
   'open:conlluDialog': { userId: string };
+  'open:tableConlluDialog': { userId: string };
   'open:statisticsDialog': { userId: string };
   'open:openMultiEditDialog': { userId: string };
   'open:relationDialog': { userId: string; dep: tokenJson_T; gov: tokenJson_T };

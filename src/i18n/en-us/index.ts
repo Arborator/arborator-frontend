@@ -348,6 +348,7 @@ export default {
     treeLink: 'Get direct link to this tree',
     copyAndShareLink: 'Copy and share link',
     treeConll: 'Get CoNLL-U of this tree',
+    editTableConll: 'Edit CoNLL-U Table',
     treeSVG: 'Get SVG of this tree',
     treePNG: 'Get PNG of this tree',
     addToken: 'Add new token',
@@ -576,6 +577,9 @@ export default {
     tableView: 'Table View',
     conllView: 'Conll View',
     copyConll: 'Copy Conll',
+  },
+  tableConllDial: {
+    title: 'Edit CoNLL Table',
   },
   detectedTagSet: {
     title: 'Tags detected in downloaded files',

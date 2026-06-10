@@ -325,6 +325,7 @@ export default {
       pushSelected: 'Créer le commit et push',
       commitMessage: 'Nouveau commit dans',
       loadingStatus: 'Chargement du status...',
+      willBeOverwritten: 'Le pull va écraser ce fichier',
       statuses: {
         added: 'ajouté',
         modified: 'modifié',

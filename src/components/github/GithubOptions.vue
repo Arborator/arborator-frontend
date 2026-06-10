@@ -68,8 +68,11 @@
                     <q-checkbox v-model="selectedSamples" :val="sample.sample_name" size="lg" />
                   </q-item-section>
                   <q-item-section>
-                    <q-item-label class="text-weight-600 text-body1">{{ sample.sample_name }}</q-item-label>
-                    <q-item-label caption class="q-mt-sm">
+                    <q-item-label :class="{ 'text-weight-600 text-body1': true, 'text-red': isConflictingSample(sample.sample_name) }">{{ sample.sample_name }}</q-item-label>
+                    <q-item-label caption :class="{ 'q-mt-sm': true, 'text-red text-weight-600': isConflictingSample(sample.sample_name) }" v-if="isConflictingSample(sample.sample_name)">
+                      {{ $t('github.statusDialog.willBeOverwritten') }}
+                    </q-item-label>
+                    <q-item-label caption class="q-mt-sm" v-else>
                       <q-badge outline color="primary" :label="statusLabel(sample.status)" />
                     </q-item-label>
                   </q-item-section>
@@ -241,6 +244,7 @@ export default defineComponent({
       statusEntries: [] as any[],
       selectedSamples: [] as string[],
       selectedModifiedSamples: [] as boolean[],
+      pullAffectedSamples: [] as any[],
       message: '',
       isSubmitting: false,
     };
@@ -301,6 +305,9 @@ export default defineComponent({
       this.statusEntries = [...samples];
       this.selectedModifiedSamples = new Array(samples.length).fill(false);
       this.selectedSamples = samples.map((sample) => sample.sample_name);
+      if (this.checkPulls) {
+        this.getPullAffectedSamples();
+      }
     },
     selectAll() {
       this.selectedSamples = this.statusEntries.map((sample) => sample.sample_name);
@@ -316,6 +323,7 @@ export default defineComponent({
           this.checkPulls = response.data;
           if (this.checkPulls) {
             notifyMessage({ message: 'New changes are available. Please pull the latest updates.' });
+            this.getPullAffectedSamples();
             return;
           }
 
@@ -427,6 +435,27 @@ export default defineComponent({
       }) as string;
       this.confirmActionLabel = this.$t('github.statusDialog.resetConfirmLabel') as string;
       this.confirmActionDial = true;
+    },
+    getPullAffectedSamples() {
+      api
+        .pullPreview(this.projectName)
+        .then((response) => {
+          this.pullAffectedSamples = Array.isArray(response.data) ? response.data : [];
+          console.log('Pull affected samples:', this.pullAffectedSamples);
+        })
+        .catch((error) => {
+          console.error('Error fetching pull preview:', error);
+          this.pullAffectedSamples = [];
+        });
+    },
+    isConflictingSample(sampleName: string): boolean {
+      const isLocallyModified = this.statusEntries.some(s => s.sample_name === sampleName);
+      const isRemotelyModified = this.pullAffectedSamples.some(s => s.sample_name === sampleName);
+      const isConflict = isLocallyModified && isRemotelyModified;
+      if (isConflict) {
+        console.log(`${sampleName} is a conflict: local=${isLocallyModified}, remote=${isRemotelyModified}`);
+      }
+      return isConflict;
     },
     triggerConfirm(method: CallableFunction) {
       this.confirmActionMessage = '';

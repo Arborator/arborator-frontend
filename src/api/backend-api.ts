@@ -361,6 +361,9 @@ export default {
   pullChanges(projectName: string) {
     return API.post(`/projects/${projectName}/synchronize/pull`);
   },
+  pullPreview(projectName: string) {
+    return API.get(`/projects/${projectName}/synchronize/pull-preview`);
+  },
   deleteFileFromGithub(projectName: string, data: any) {
     return API.patch(`/projects/${projectName}/synchronize/files`, data);
   },

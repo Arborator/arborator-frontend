@@ -3,7 +3,7 @@
   
   <q-dialog v-model="isShowGithubDialog" style="backdrop-filter: blur(4px)">
     <q-card style="width: 90vw; max-width: 1000px; max-height: 95vh; border-radius: 12px; box-shadow: 0 10px 40px rgba(0,0,0,0.15)">
-      <q-card-section class="bg-primary text-white q-pa-sm text-center" style="position: relative;">
+      <q-card-section class="bg-primary text-white q-pa-sm text-center" style="position: sticky; top: 0; z-index: 10;">
         <div class="text-h6 text-weight-bold">GITHUB OPTIONS</div>
         <q-btn icon="close" flat round dense v-close-popup size="md" style="position: absolute; right: 12px; top: 50%; transform: translateY(-50%);" />
       </q-card-section>
@@ -89,9 +89,11 @@
                       </q-btn>
                       <q-dialog v-model:model-value="selectedModifiedSamples[index]">
                         <q-card style="min-width: 60vw">
-                          <q-card-section>
-                            <div class="text-h6 text-left">{{ sample.sample_name }}</div>
+                          <q-card-section class="bg-primary text-white q-pa-sm row items-center justify-between" style="position: relative;">
+                            <div class="text-h6 text-weight-bold">{{ sample.sample_name }}</div>
+                            <q-btn icon="close" flat round dense v-close-popup size="md" />
                           </q-card-section>
+                          <q-separator />
                           <q-card-section>
                             <pre v-html="highlightedDiff(sample.diff)" style="font-size: 13px" />
                           </q-card-section>
@@ -155,7 +157,8 @@
 
         <q-btn
           unelevated
-          color="primary"
+          :color="changesNumber > 0 ? 'primary' : 'grey-5'"
+          :disable="changesNumber === 0"
           style="border-radius: 8px; text-transform: none; padding: 8px 16px; font-weight: 500; font-size: 13px; min-width: 120px;"
           @click="isShowGithubDialog = false; isShowPullRequestDialog = true"
           class="action-btn"

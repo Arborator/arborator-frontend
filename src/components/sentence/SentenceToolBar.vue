@@ -12,9 +12,6 @@
       readonly
       borderless
     >
-    <q-tooltip v-if="openTabUser !== ''" anchor="bottom middle" self="center middle" :offset="[10, 10]">
-        {{ $t('sentenceCard.selectTooltip') }}
-      </q-tooltip>
     </q-input>
     <q-space />
 

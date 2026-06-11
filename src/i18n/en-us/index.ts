@@ -337,7 +337,6 @@ export default {
     },
   },
   sentenceCard: {
-    selectTooltip: 'Select the sentence to split the tokens',
     annotationErrors: 'See your annotation errors',
     saveBaseTree: 'Save as base_tree',
     saveTree: ['Save tree', 'as'],

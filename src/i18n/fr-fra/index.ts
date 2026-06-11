@@ -334,7 +334,6 @@ export default {
     },
   },
   sentenceCard: {
-    selectTooltip: 'Sélectionnez la phrase pour diviser les tokens',
     annotationErrors: "Voir vos erreurs d'annotation",
     validateTree: 'Valider cet arbre',
     addTag: 'Ajouter des tags à cet arbre',

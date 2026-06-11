@@ -290,7 +290,7 @@ export default defineComponent({
     return {
       EMMETT: 'emmett.strickland',
       showSentSegmentationDial: false,
-      sentenceSegmentationOption: '',
+      sentenceSegmentationOption: 'SPLIT' as 'SPLIT' | 'MERGE',
     }
   },
   computed: {
@@ -373,7 +373,7 @@ export default defineComponent({
     saveTree(mode: string) {
       this.parentOnSave(mode);
     },
-    chooseSegmentationOption(option: string) {
+    chooseSegmentationOption(option: 'SPLIT' | 'MERGE') {
       this.showSentSegmentationDial = true;
       this.sentenceSegmentationOption = option;
     },

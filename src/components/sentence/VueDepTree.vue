@@ -239,8 +239,9 @@ export default defineComponent({
       if (targetLabel === 'DEPREL' && !this.isSplitDial) {
         const dep = clickedToken;
         const gov =
-          { ...this.sentenceSVG.treeJson.nodesJson[dep.HEAD] } ||
-          ({
+          (dep.HEAD && this.sentenceSVG.treeJson.nodesJson[dep.HEAD])
+          ? { ...this.sentenceSVG.treeJson.nodesJson[dep.HEAD] }
+          : ({
             FORM: 'ROOT',
             ID: 0,
           } as any as tokenJson_T); // handle if head is root , nasty type casting

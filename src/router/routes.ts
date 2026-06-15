@@ -14,6 +14,7 @@ const routes: RouteRecordRaw[] = [
         name: 'project',
       },
       { path: '/projects/:projectname/:samplename', component: () => import('src/pages/Sample.vue'), props: true },
+      { path: '/:projectname/:samplename', component: () => import('src/pages/Sample.vue'), props: true },
       { path: '/myprojects', component: () => import('src/pages/MyProjects.vue'), props: true },
       { path: '/settings', component: () => import('src/pages/Settings.vue'), meta: { requiresAuth: true } },
       { path: '/klang', component: () => import('src/pages/Klang.vue') },

@@ -325,6 +325,7 @@ export default {
       pushSelected: 'Créer le commit et push',
       commitMessage: 'Nouveau commit dans',
       loadingStatus: 'Chargement du status...',
+      willBeOverwritten: 'Le pull va écraser ce fichier',
       statuses: {
         added: 'ajouté',
         modified: 'modifié',
@@ -333,7 +334,6 @@ export default {
     },
   },
   sentenceCard: {
-    selectTooltip: 'Sélectionnez la phrase pour diviser les tokens',
     annotationErrors: "Voir vos erreurs d'annotation",
     validateTree: 'Valider cet arbre',
     addTag: 'Ajouter des tags à cet arbre',
@@ -343,7 +343,9 @@ export default {
     multiEditDial: "Edition de l'arbre de base",
     diffMode: ['Activer', 'Désactiver', 'le mode Diff'],
     treeLink: 'Obtenir un lien direct vers cet arbre',
+    copyAndShareLink: 'Copier et partager le lien',
     treeConll: 'Obtenir CoNLL-U de cet arbre',
+    editTableConll: 'Éditer la table CoNLL-U',
     treeSVG: 'Obtenir le SVG de cet arbre',
     treePNG: 'Obtenir le PNG de cet arbre',
     addToken: 'Ajouter un nouveau token',
@@ -480,10 +482,11 @@ export default {
   advancedFilter: {
     textFilter: 'Filtre du texte',
     sentIdFilter: 'Filtre du sent_id',
-    applyFilter: 'Filtrer',
+    filter: 'Filtres',
     advancedFilter: 'Filtres avancés',
     clearAll: 'Effacer tout',
     usersSelect: 'Sélectionner la liste des utilisateurs',
+    users: 'Utilisateurs',
     filterOperators: ['ont', "n'ont pas"],
     filterChoices: ['Arbres', 'Différences'],
     orderLength: 'Ordonner les phrases par taille',
@@ -577,6 +580,9 @@ export default {
     tableView: 'Tableau',
     conllView: 'Conll',
     copyConll: 'Copier Conll',
+  },
+  tableConllDial: {
+    title: 'Éditer la table CoNLL',
   },
   detectedTagSet: {
     title: 'Traits détectés dans les fichiers importés',

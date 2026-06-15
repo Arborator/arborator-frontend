@@ -328,6 +328,7 @@ export default {
       pushSelected: 'Create commit and push',
       commitMessage: 'New commit to',
       loadingStatus: 'Loading status...',
+      willBeOverwritten: 'Pull will overwrite this file',
       statuses: {
         added: 'added',
         modified: 'modified',
@@ -336,7 +337,6 @@ export default {
     },
   },
   sentenceCard: {
-    selectTooltip: 'Select the sentence to split the tokens',
     annotationErrors: 'See your annotation errors',
     saveBaseTree: 'Save as base_tree',
     saveTree: ['Save tree', 'as'],
@@ -346,7 +346,9 @@ export default {
     multiEditDial: 'Base_tree edition',
     diffMode: ['Enter', 'Leave', 'Diff mode'],
     treeLink: 'Get direct link to this tree',
+    copyAndShareLink: 'Copy and share link',
     treeConll: 'Get CoNLL-U of this tree',
+    editTableConll: 'Edit CoNLL-U Table',
     treeSVG: 'Get SVG of this tree',
     treePNG: 'Get PNG of this tree',
     addToken: 'Add new token',
@@ -479,9 +481,11 @@ export default {
     textFilter: 'Text filter',
     sentIdFilter: 'Sent_id filter',
     applyFilter: 'Apply filter',
+    filter: 'Filters',
     advancedFilter: 'Advanced Filter',
     clearAll: 'Clear All',
     usersSelect: 'Select set of users',
+    users: 'Users',
     filterOperators: ['Have', 'Not Have'],
     filterChoices: ['Trees', 'Differences'],
     orderLength: 'Sort sentences by length',
@@ -575,6 +579,9 @@ export default {
     tableView: 'Table View',
     conllView: 'Conll View',
     copyConll: 'Copy Conll',
+  },
+  tableConllDial: {
+    title: 'Edit CoNLL Table',
   },
   detectedTagSet: {
     title: 'Tags detected in downloaded files',

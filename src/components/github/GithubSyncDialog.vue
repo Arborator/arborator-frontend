@@ -232,6 +232,9 @@ export default defineComponent({
             params: {
               projectname: this.projectName,
             },
+            query: {
+              openGithubOptions: 'true'
+            }
           });
           this.$emit('created');
           clearTimeout(interval);

@@ -1,10 +1,13 @@
 import { sentenceConllToJson, sentenceJson_T } from 'conllup/lib/conll';
 import { defineStore } from 'pinia';
+import { LocalStorage } from 'quasar';
 import { grewSearchResultSentence_t } from 'src/api/backend-types';
 import { notifyError } from 'src/utils/notify';
 
 import api from '../../../api/backend-api';
 import { useTagsStore } from '../tags';
+
+const AUDIO_HIDDEN_STORAGE = 'sentence_audio_hidden';
 
 export const useTreesStore = defineStore('trees', {
   state: () => {
@@ -27,6 +30,7 @@ export const useTreesStore = defineStore('trees', {
       reloadValidation: false as boolean,
       pendingModifications: new Map(),
       treesReloadCounter: 0 as number,
+      audioHidden: LocalStorage.getItem(AUDIO_HIDDEN_STORAGE) === true,
     };
   },
   getters: {
@@ -87,6 +91,10 @@ export const useTreesStore = defineStore('trees', {
     addPendingModification(sentId: string, conll: string, sampleName: string) {
       this.pendingModifications.set(sentId, { conll: conll, sampleName: sampleName});
     },
+    setAudioHidden(hidden: boolean) {
+      this.audioHidden = hidden;
+      LocalStorage.set(AUDIO_HIDDEN_STORAGE, hidden);
+    },
     removePendingModification(pendingModification: any) {
       this.pendingModifications.delete(pendingModification);
     },
@@ -141,16 +149,22 @@ export const useTreesStore = defineStore('trees', {
       this.filteredTrees = this.sortedSentIds.map(
         (sentId) => Object.values(this.trees).find((tree) => tree.sent_id == sentId) as grewSearchResultSentence_t
       );
-      if (this.sentIdFilter !== '') {
-        this.filteredTrees = Object.values(this.trees).filter((tree) => {
-          return tree.sent_id === this.sentIdFilter;
-        });
-      }
 
-      if (this.textFilter !== '') {
-        this.filteredTrees = Object.values(this.trees).filter((tree) => {
-          return tree.sentence.toLowerCase().includes(this.textFilter.toLowerCase());
-        }, []);
+      // Apply text and sent_id filters together
+      if (this.textFilter !== '' || this.sentIdFilter !== '') {
+        this.filteredTrees = this.filteredTrees.filter((tree) => {
+          let matches = true;
+          
+          if (this.sentIdFilter !== '') {
+            matches = matches && tree.sent_id.toLowerCase().includes(this.sentIdFilter.toLowerCase());
+          }
+          
+          if (this.textFilter !== '') {
+            matches = matches && tree.sentence.toLowerCase().includes(this.textFilter.toLowerCase());
+          }
+          
+          return matches;
+        });
       }
 
       if (this.usersToHaveTree.length > 0) {

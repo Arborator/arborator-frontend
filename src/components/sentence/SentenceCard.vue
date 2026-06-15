@@ -51,8 +51,7 @@
             rounded
             floating
             :class="user === openTabUser ? 'clickable' : ''"
-            @click.native.stop
-            @click="showUdValidation[user] = true"
+            @click.stop="showUdValidation[user] = true"
           >
           </q-badge>
         </q-tab>
@@ -72,8 +71,8 @@
                 v-if="reactiveSentencesObj"
                 :card-id="index"
                 :conll="tree"
-                :reactive-sentence="reactiveSentencesObj[user]"
-                :reactive-sentences-obj="reactiveSentencesObj"
+                :reactive-sentence="(reactiveSentencesObj[user] as any)"
+                :reactive-sentences-obj="(reactiveSentencesObj as any)"
                 :diff-mode="showDiffValidator ? 'DIFF_VALIDATED' : diffMode ? 'DIFF_USER' : 'NO_DIFF'"
                 :sentence-bus="sentenceBus"
                 :tree-user-id="(user as string)"
@@ -81,7 +80,7 @@
                 :matches="
                   sentence.matches ? (sentence.matches[user] ? sentence.matches[user].map((match) => Object.values(match.nodes)).flat() : []) : []
                 "
-                :packages="sentence.packages ? (sentence.packages[user] ? sentence.packages[user] : {}) : {}"
+                :packages="sentence.packages && sentence.packages[user] ? sentence.packages[user] : undefined"
                 @statusChanged="handleStatusChange"
                 :sample-name="sentence.sample_name"
               >
@@ -128,6 +127,11 @@
         :reactive-sentences-obj="(reactiveSentencesObj as reactive_sentences_obj_t)"
         :sentence-data="sentenceData"
       />
+      <TableConlluDialog
+        :sentence-bus="sentenceBus"
+        :reactive-sentences-obj="(reactiveSentencesObj as reactive_sentences_obj_t)"
+        :sentence-data="sentenceData"
+      />
       <ExportSVG
         :sentence-bus="sentenceBus"
         :reactive-sentences-obj="(reactiveSentencesObj as reactive_sentences_obj_t)"
@@ -137,7 +141,7 @@
         :sentence-bus="sentenceBus"
         :reactive-sentences-obj="(reactiveSentencesObj as reactive_sentences_obj_t)"
         />
-      <StatisticsDialog :sentence-bus="sentenceBus" :conlls="sentenceData.conlls" />
+      <StatisticsDialog :sentence-bus="sentenceBus" :conlls="sentenceData.conlls as { [key: string]: string; validated: string }" />
     </template>
     <q-dialog v-model="showUdValidation[openTabUser]">
       <q-card style="width: 800px;max-width: 90vw;">
@@ -185,6 +189,7 @@ import { PropType, defineComponent } from 'vue';
 
 import  api  from 'src/api/backend-api';
 import ConlluDialog from './ConlluDialog.vue';
+import TableConlluDialog from './TableConlluDialog.vue';
 import ExportSVG from './ExportSVG.vue';
 import FeaturesDialog from './FeaturesDialog.vue';
 import MetaDialog from './MetaDialog.vue';
@@ -213,6 +218,7 @@ export default defineComponent({
     FeaturesDialog,
     MetaDialog,
     ConlluDialog,
+    TableConlluDialog,
     ExportSVG,
     TokensReplaceDialog,
     StatisticsDialog,
@@ -467,6 +473,14 @@ export default defineComponent({
       else {
         this.sentenceText = this.sentenceData.sentence;
       }
+      
+      // Scroll the sentence card
+      this.$nextTick(() => {
+        const element = this.$el as HTMLElement;
+        if (element) {
+          element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+      });
     },
     toggleDiffMode() {
       this.diffMode = !this.diffMode;

@@ -3,53 +3,7 @@
     <Breadcrumbs :height="30" :font-size="16" />
   </div>
   <div class="row q-pa-sm q-gutter-sm items-center">
-    <div class="col-2">
-      <q-input 
-        v-model="textFilter" 
-        :label="$t('advancedFilter.textFilter')" 
-        outlined 
-        dense 
-        color="primary"
-        @keyup.enter="applyAdvancedFilter()"
-      ></q-input>
-    </div>
-    <div class="col-auto">
-      <q-input v-model="sentIdFilter" outlined dense :label="$t('advancedFilter.sentIdFilter')" @keyup.enter="applyAdvancedFilter()" />
-    </div>
-    <div class="col-1">
-      <q-select
-        outlined
-        dense
-        v-model="selectedTags"
-        use-chips
-        multiple
-        option-value="value"
-        label="Tags"
-        :options="userTags"
-        emit-value
-        @focus="getUsersTags()"
-      >
-        <template class="q-pa-md" v-slot:option="scope">
-          <div class="row q-pa-xs">
-            <q-chip v-bind="scope.itemProps" size="sm" :label="scope.opt.value" />
-          </div>
-          <q-separator />
-        </template>
-      </q-select>
-    </div>
-    <div class="col-auto">
-      <q-btn @click="applyAdvancedFilter" color="primary">{{ $t('advancedFilter.applyFilter') }}</q-btn>
-    </div>
-    <div class="col-1">
-      <q-select
-        outlined
-        dense
-        v-model="order"
-        :options="orderOptions"
-        :label="$t('advancedFilter.orderLength')"
-        @update:model-value="orderFilteredTrees(order)"
-       />
-    </div>
+    <q-space />
     <div class="col-auto">
       <q-separator vertical />
       <q-btn no-caps v-if="config === 'ud' && !blindAnnotationMode" color="primary" :label="$t('advancedFilter.validateAllTrees')" @click="validateAllTrees()">
@@ -78,35 +32,84 @@
         </q-list>
       </q-btn-dropdown>
     </div>
-        <div class="col-auto">
+    <div class="col-auto">
       <q-btn 
         flat 
         color="primary" 
         :icon="showAdvancedFilters ? 'expand_less' : 'expand_more'"
         @click="toggleAdvancedFilters"
       >
-        {{ $t('advancedFilter.advancedFilter') }}
+        {{ $t('advancedFilter.filter') }}
       </q-btn>
     </div>
   </div>
   <div class="q-pa-md" v-show="showAdvancedFilters">
-    <div class="row text-h6 items-center">
+    <div class="row q-gutter-sm items-center q-pb-md" style="flex-wrap: wrap;">
+      <div class="col-12 col-sm-2">
+        <q-input 
+          v-model="textFilter" 
+          :label="$t('advancedFilter.textFilter')" 
+          outlined 
+          dense 
+          color="primary"
+          @keyup.enter="applyAdvancedFilter()"
+        ></q-input>
+      </div>
+      <div class="col-12 col-sm-auto">
+        <q-input v-model="sentIdFilter" outlined dense :label="$t('advancedFilter.sentIdFilter')" @keyup.enter="applyAdvancedFilter()" />
+      </div>
+      <div class="col-12 col-sm-2">
+        <q-select
+          outlined
+          dense
+          v-model="selectedTags"
+          use-chips
+          multiple
+          option-value="value"
+          label="Tags"
+          :options="userTags"
+          emit-value
+          @focus="getUsersTags()"
+        >
+          <template class="q-pa-md" v-slot:option="scope">
+            <div class="row q-pa-xs">
+              <q-chip v-bind="scope.itemProps" size="sm" :label="scope.opt.value" />
+            </div>
+            <q-separator />
+          </template>
+        </q-select>
+      </div>
+      <div class="col-12 col-sm-auto">
+        <q-btn @click="applyAdvancedFilter" color="primary">{{ $t('advancedFilter.applyFilter') }}</q-btn>
+      </div>
+      <div class="col-12 col-sm-2">
+        <q-select
+          outlined
+          dense
+          v-model="order"
+          :options="orderOptions"
+          :label="$t('advancedFilter.orderLength')"
+          @update:model-value="orderFilteredTrees(order)"
+         />
+      </div>
       <q-space />
-      <q-btn flat color="primary" @click="clearAll()">{{ $t('advancedFilter.clearAll') }}</q-btn>
+      <div class="col-12 col-sm-auto">
+        <q-btn flat color="primary" @click="clearAll()">{{ $t('advancedFilter.clearAll') }}</q-btn>
+      </div>
     </div>
-    <div v-show="showAdvancedFilters" v-for="(filter, index) in listFilters">
-      <div class="row q-gutter-md q-pt-md">
-        <div class="col-6">
-          <q-select
-            outlined
-            dense
-            v-model="filter.setUsers"
-            multiple
-            :options="userIds"
-            use-chips
-            stack-label
-            :label="$t('advancedFilter.usersSelect')"
-          />
+      <div v-show="showAdvancedFilters" v-for="(filter, index) in listFilters" :key="index" class="q-pt-md">
+        <div class="row q-gutter-md q-pt-md items-center">
+          <div class="col-12 col-sm-2">
+            <q-select
+              outlined
+              dense
+              v-model="filter.setUsers"
+              multiple
+              :options="userIds"
+              use-chips
+              stack-label
+              :label="$t('advancedFilter.users')"
+            />
         </div>
         <q-btn-dropdown outline split color="primary" :label="filter.operator.label">
           <q-list v-for="operator of filterOperators">
@@ -139,12 +142,6 @@
         <q-btn v-if="index != 0" outline class="col-1" color="primary" icon="delete" @click="removeRow(index)" />
         <q-btn v-if="index == listFilters.length - 1 && index < 3" outline class="col-1" color="primary" icon="add" @click="addRow()" />
       </div>
-    </div>
-    <div v-show="showAdvancedFilters" class="q-pt-md text-body1">
-      <span
-        >{{ Object.keys(filteredTrees).length }} trees
-        <q-tooltip>{{ numberOfTreesPerUser }}</q-tooltip>
-      </span>
     </div>
   </div>
 </template>

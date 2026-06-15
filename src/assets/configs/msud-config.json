@@ -92,6 +92,13 @@
       ]
     },
     {
+      "name": "Clusivity",
+      "values": [
+        "In",
+        "Ex"
+      ]
+    },
+    {
       "name": "Definite",
       "values": [
         "Com",
@@ -109,6 +116,25 @@
         "Equ",
         "Pos",
         "Sup"
+      ]
+    },
+    {
+      "name": "Deixis",
+      "values": [
+        "Abv",
+        "Bel",
+        "Even",
+        "Med",
+        "Nvis",
+        "Prox",
+        "Remt"
+      ]
+    },
+    {
+      "name": "DeixisRef",
+      "values": [
+        "1",
+        "2"
       ]
     },
     {
@@ -295,6 +321,12 @@
         "Past",
         "Pqp",
         "Pres"
+      ]
+    },
+    {
+      "name": "Typo",
+      "values": [
+        "Yes"
       ]
     },
     {

@@ -33,3 +33,62 @@
   --q-info: #7f90c0;
   --q-warning: #bd9b3b;
 }
+
+.q-notification__message {
+  word-break: break-word;
+}
+
+.notify-error-message {
+  max-width: min(960px, calc(100vw - 32px));
+  align-items: flex-start;
+  background: #b3261e !important;
+  color: #fff;
+}
+
+.notify-error-message .q-notification__wrapper {
+  align-items: flex-start;
+  justify-content: flex-start;
+}
+
+.notify-error-message .q-notification__content,
+.notify-error-message .q-notification__actions {
+  align-items: flex-start;
+}
+
+.notify-error-message .q-notification__actions {
+  align-self: flex-start;
+  padding-top: 8px;
+  color: #fff;
+}
+
+.notify-error-message .q-notification__icon {
+  align-self: flex-start;
+  margin-top: 2px;
+}
+
+.notify-error-list {
+  max-height: calc(10 * 1.45em + 3.5rem);
+  overflow: auto;
+  padding-right: 8px;
+}
+
+.notify-error-title {
+  margin: 0 0 8px;
+  font-weight: 700;
+}
+
+.notify-error-list ol {
+  margin: 0;
+  padding-left: 20px;
+}
+
+.notify-error-list li + li {
+  margin-top: 8px;
+  padding-top: 8px;
+  border-top: 1px solid rgba(255, 255, 255, 0.28);
+}
+
+.notify-error-summary {
+  margin: 10px 0 0;
+  font-weight: 600;
+}

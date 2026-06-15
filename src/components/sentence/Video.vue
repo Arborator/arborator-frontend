@@ -135,6 +135,7 @@ export default defineComponent({
     toggleVideo(){
       this.isVideoHidden = !this.isVideoHidden
       this.hideText = this.isVideoHidden ? "Show video" : "Hide video"
+      this.videoRef?.pause()
     },
     extractVideoUrlFromConll(conll: string): string {
       const match = conll.match(/video_url = (.*?)\n/)
@@ -150,12 +151,20 @@ export default defineComponent({
     },
     moveDiv(e : MouseEvent) {
       if (!this.dragging ) return
-      //set new position to mouse position
-      this.x = e.clientX - this.offsetX
-      this.y = e.clientY - this.offsetY
+      const container = this.$refs.videoDiv as HTMLDivElement
+      // calcul screen limits
+      const maxX = window.innerWidth - container.offsetWidth;
+      const maxY = window.innerHeight - container.offsetHeight;
+
+      const x = e.clientX - this.offsetX
+      const y = e.clientY - this.offsetY
+      // avoid div to go out of the screen
+      this.x = Math.max(0, Math.min(x, maxX));
+      this.y = Math.max(0, Math.min(y, maxY));
     },
     startDrag(e: MouseEvent) {
       if(this.isResizing) return
+      this.setVIdeoWidth()
       this.dragging = true
       //calcul distance between div and mouse
       this.offsetX = e.clientX - this.x
@@ -177,6 +186,7 @@ export default defineComponent({
     },
     startResize(e: MouseEvent) {
       this.isResizing = true;
+      this.setVIdeoWidth()
       // Store the mouse position to calculate resizing
       this.offsetX = e.clientX;
       this.offsetY = e.clientY;
@@ -207,6 +217,12 @@ export default defineComponent({
       this.boundResize = null;
       this.boundStopResize = null;
     },
+    setVIdeoWidth(){
+      const container = this.$refs.videoDiv as HTMLDivElement
+      //calcul actual height and convert px into %
+      const widthInPx = container.offsetWidth;
+      this.videoWidth = (widthInPx / window.innerWidth) * 100;
+    }
   }
 })
 </script>

@@ -4,7 +4,7 @@
     <span class="text-grey" style="padding-left: 10px">{{ index + 1 }}</span>
     <q-chip class="text-center" :color="$q.dark.isActive ? 'grey' : ''" dense> {{ sentenceData.sent_id }} </q-chip>&nbsp;&nbsp;&nbsp;
     <q-input
-      v-if="!isAudio() || !hasAlign() || !openTabUser || isAudioHidden"
+      v-if="!isAudio() || !hasAlign() || !openTabUser || audioHidden"
       v-model="recentTreeText"
       :style="openTabUser === '' ? 'width: 100%' : 'width: 65%'"
       class="row items-center justify-center"
@@ -12,13 +12,22 @@
       readonly
       borderless
     >
-    <q-tooltip v-if="openTabUser !== ''" anchor="bottom middle" self="center middle" :offset="[10, 10]">
-        {{ $t('sentenceCard.selectTooltip') }}
-      </q-tooltip>
     </q-input>
     <q-space />
 
     <template v-if="openTabUser !== ''">
+      <q-btn
+        v-if="isLoggedIn"
+        flat
+        round
+        dense
+        icon="link"
+        :disable="openTabUser === ''"
+        @click="saveAndShareLink"
+      >
+        <q-tooltip>{{ $t('sentenceCard.copyAndShareLink') }}</q-tooltip>
+      </q-btn>
+
       <q-btn
         v-if="isLoggedIn && blindAnnotationLevel <= 3 && !isValidator"
         flat
@@ -110,6 +119,15 @@
             </q-item-section>
           </q-item>
 
+          <q-item v-if="isLoggedIn" v-close-popup clickable @click="openTableConllDialog()">
+            <q-item-section avatar>
+              <q-avatar icon="table_chart" color="primary" text-color="white" />
+            </q-item-section>
+            <q-item-section>
+              <q-item-label>{{ $t('sentenceCard.editTableConll') }}</q-item-label>
+            </q-item-section>
+          </q-item>
+
           <q-item v-if="!blindAnnotationMode" v-close-popup clickable @click="toggleDiffMode()">
             <q-item-section avatar>
               <q-avatar icon="ion-git-network" color="primary" text-color="white" />
@@ -195,7 +213,6 @@
    <AudioPlayer v-if="isAudio() && openTabUser !== ''"
      :reactive-sentences-obj="(reactiveSentencesObj as reactive_sentences_obj_t)"
      :index="index"
-     @toggle-audio="(hidden: boolean) => isAudioHidden = hidden"
     >
     </AudioPlayer>
     <videoBtn v-if="isVideo() && openTabUser !== ''"
@@ -273,12 +290,12 @@ export default defineComponent({
     return {
       EMMETT: 'emmett.strickland',
       showSentSegmentationDial: false,
-      sentenceSegmentationOption: '',
-      isAudioHidden: false,
+      sentenceSegmentationOption: 'SPLIT' as 'SPLIT' | 'MERGE',
     }
   },
   computed: {
     ...mapWritableState(useGithubStore, ['reloadCommits']),
+    ...mapState(useTreesStore, ['audioHidden']),
     ...mapState(useProjectStore, [
       'isAdmin',
       'isValidator',
@@ -292,9 +309,6 @@ export default defineComponent({
     ...mapState(useTreesStore, ['sortedSentIds']),
     isBernardCaron() {
       return this.username === 'bernard.l.caron' || this.username === 'kirianguiller';
-    },
-    sampleName() {
-      return this.$route.params.samplename as string;
     },
     recentTreeText() {
       if (this.openTabUser === '') {
@@ -330,6 +344,9 @@ export default defineComponent({
     openConllDialog() {
       this.sentenceBus.emit('open:conlluDialog', { userId: this.openTabUser });
     },
+    openTableConllDialog() {
+      this.sentenceBus.emit('open:tableConlluDialog', { userId: this.openTabUser });
+    },
     openMetaDialog() {
       this.sentenceBus.emit('open:metaDialog', { userId: this.openTabUser });
     },
@@ -356,7 +373,7 @@ export default defineComponent({
     saveTree(mode: string) {
       this.parentOnSave(mode);
     },
-    chooseSegmentationOption(option: string) {
+    chooseSegmentationOption(option: 'SPLIT' | 'MERGE') {
       this.showSentSegmentationDial = true;
       this.sentenceSegmentationOption = option;
     },
@@ -375,6 +392,18 @@ export default defineComponent({
       const videoUrl= conllData.match(/video_url = (.*?)\n/)
       return videoUrl !== null
     },
+    saveAndShareLink() {
+      const projectname = this.$route.params.projectname;
+      const samplename = this.$route.params.samplename;
+      const sentId = encodeURIComponent(this.sentenceData.sent_id);
+      
+      const url = `${window.location.origin}/#/${projectname}/${samplename}?sent=${sentId}`;
+      navigator.clipboard.writeText(url.toString()).then(() => {
+        this.$q.notify({ type: 'positive', message: 'link copied in your clipboard' });
+      }).catch((err) => {
+        this.$q.notify({ type: 'negative', message: 'linkCopyError :' + err.toString() });
+      });
+    }
   }
 });
 </script>

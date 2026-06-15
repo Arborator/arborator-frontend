@@ -482,7 +482,6 @@ export default {
   advancedFilter: {
     textFilter: 'Filtre du texte',
     sentIdFilter: 'Filtre du sent_id',
-    applyFilter: 'Filtrer',
     filter: 'Filtres',
     advancedFilter: 'Filtres avancés',
     clearAll: 'Effacer tout',

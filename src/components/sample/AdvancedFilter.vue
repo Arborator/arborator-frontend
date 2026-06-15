@@ -67,7 +67,7 @@
           </template>
         </q-input>
       </div>
-      <div class="col-12 col-sm-2">
+      <div class="col-12 col-sm-1">
         <q-select
           outlined
           dense
@@ -88,10 +88,7 @@
           </template>
         </q-select>
       </div>
-      <div class="col-12 col-sm-auto">
-        <q-btn @click="applyAdvancedFilter" color="primary">{{ $t('advancedFilter.applyFilter') }}</q-btn>
-      </div>
-      <div class="col-12 col-sm-2">
+      <div class="col-12 col-sm-1">
         <q-select
           outlined
           dense
@@ -101,14 +98,10 @@
           @update:model-value="orderFilteredTrees(order)"
          />
       </div>
-      <q-space />
-      <div class="col-12 col-sm-auto">
-        <q-btn flat color="primary" @click="clearAll()">{{ $t('advancedFilter.clearAll') }}</q-btn>
-      </div>
     </div>
-      <div v-show="showAdvancedFilters" v-for="(filter, index) in listFilters" :key="index" class="q-pt-md">
+      <div v-show="showAdvancedFilters" v-for="(filter, index) in listFilters" :key="index" class="advanced-filter-row q-pt-md">
         <div class="row q-gutter-md q-pt-md items-center">
-          <div class="col-12 col-sm-2">
+          <div class="col-12 col-sm-1">
             <q-select
               outlined
               dense
@@ -148,8 +141,11 @@
         >
           <q-tooltip>{{ $t('grewSearch.showDiffFeaturesTooltip') }}</q-tooltip>
         </q-select>
-        <q-btn v-if="index != 0" outline class="col-1" color="primary" icon="delete" @click="removeRow(index)" />
-        <q-btn v-if="index == listFilters.length - 1 && index < 3" outline class="col-1" color="primary" icon="add" @click="addRow()" />
+        <q-btn v-if="index != 0" outline size="md" color="primary" icon="delete" @click="removeRow(index)" />
+        <q-btn v-if="index == listFilters.length - 1 && index < 3" outline size="md" color="primary" icon="add" @click="addRow()" />
+        <div class="col-12 col-sm-auto">
+          <q-btn flat color="primary" @click="clearAll()">{{ $t('advancedFilter.clearAll') }}</q-btn>
+      </div>
       </div>
     </div>
   </div>
@@ -296,8 +292,12 @@ export default defineComponent({
     },
     clearAll() {
       this.textFilter = '';
+      this.sentIdFilter = '';
+      this.selectedTags = [];
+      this.order = 'initial';
       this.initializeFilters();
       this.applyFilterTrees();
+      this.orderFilteredTrees(this.order);
       this.listFilters = [];
       this.addRow();
     },
@@ -307,6 +307,12 @@ export default defineComponent({
         operator: this.filterOperators[0],
         choice: this.filterChoices[0],
         diffSetFeatures: [],
+      });
+      this.$nextTick(() => {
+        const filterRows = document.querySelectorAll('.advanced-filter-row');
+        if (filterRows.length > 0) {
+          filterRows[filterRows.length - 1].scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }
       });
     },
     removeRow(index: number) {

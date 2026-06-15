@@ -149,16 +149,22 @@ export const useTreesStore = defineStore('trees', {
       this.filteredTrees = this.sortedSentIds.map(
         (sentId) => Object.values(this.trees).find((tree) => tree.sent_id == sentId) as grewSearchResultSentence_t
       );
-      if (this.sentIdFilter !== '') {
-        this.filteredTrees = Object.values(this.trees).filter((tree) => {
-          return tree.sent_id === this.sentIdFilter;
-        });
-      }
 
-      if (this.textFilter !== '') {
-        this.filteredTrees = Object.values(this.trees).filter((tree) => {
-          return tree.sentence.toLowerCase().includes(this.textFilter.toLowerCase());
-        }, []);
+      // Apply text and sent_id filters together
+      if (this.textFilter !== '' || this.sentIdFilter !== '') {
+        this.filteredTrees = this.filteredTrees.filter((tree) => {
+          let matches = true;
+          
+          if (this.sentIdFilter !== '') {
+            matches = matches && tree.sent_id.toLowerCase().includes(this.sentIdFilter.toLowerCase());
+          }
+          
+          if (this.textFilter !== '') {
+            matches = matches && tree.sentence.toLowerCase().includes(this.textFilter.toLowerCase());
+          }
+          
+          return matches;
+        });
       }
 
       if (this.usersToHaveTree.length > 0) {

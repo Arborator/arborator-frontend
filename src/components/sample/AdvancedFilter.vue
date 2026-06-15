@@ -52,11 +52,20 @@
           outlined 
           dense 
           color="primary"
-          @keyup.enter="applyAdvancedFilter()"
         ></q-input>
       </div>
       <div class="col-12 col-sm-auto">
-        <q-input v-model="sentIdFilter" outlined dense :label="$t('advancedFilter.sentIdFilter')" @keyup.enter="applyAdvancedFilter()" />
+        <q-input 
+          v-model="sentIdFilter" 
+          outlined 
+          dense 
+          :label="$t('advancedFilter.sentIdFilter')"
+          clearable
+        >
+          <template v-slot:append v-if="sentIdFilter">
+            <q-icon name="close" @click.stop="sentIdFilter = ''" class="cursor-pointer" />
+          </template>
+        </q-input>
       </div>
       <div class="col-12 col-sm-2">
         <q-select
@@ -155,6 +164,7 @@ import { useTagsStore } from 'src/pinia/modules/tags';
 import { useTreesStore } from 'src/pinia/modules/trees';
 import { useUserStore } from 'src/pinia/modules/user';
 import { notifyError, notifyMessage } from 'src/utils/notify';
+import { debounce } from 'quasar';
 
 import { defineComponent, PropType } from 'vue';
 import { api } from 'src/boot/axios';
@@ -250,6 +260,14 @@ export default defineComponent({
       
       return btn;
     },
+  },
+  watch: {
+    textFilter: debounce(function(this: any) {
+      this.applyFilterTrees();
+    }, 500),
+    sentIdFilter: debounce(function(this: any) {
+      this.applyFilterTrees();
+    }, 500),
   },
   mounted() {
     this.clearAll();

@@ -29,7 +29,7 @@
       </q-btn>
 
       <q-btn
-        v-if="isLoggedIn && blindAnnotationLevel <= 3 && !isValidator"
+        v-if="isLoggedIn && blindAnnotationLevel <= 3 && !isAdmin"
         flat
         round
         dense
@@ -40,12 +40,12 @@
         <q-tooltip>{{ $t('sentenceCard.annotationErrors') }}</q-tooltip>
       </q-btn>
 
-      <q-btn v-if="isValidator" flat round dense icon="verified" :disable="openTabUser === ''" @click="saveTree('validated')">
+      <q-btn v-if="isAdmin" flat round dense icon="verified" :disable="openTabUser === ''" @click="saveTree('validated')">
         <q-tooltip>{{ $t('sentenceCard.validateTree') }}</q-tooltip>
       </q-btn>
 
       <q-btn
-        v-if="isValidator && blindAnnotationMode"
+        v-if="isAdmin && blindAnnotationMode"
         flat
         round
         dense
@@ -68,7 +68,7 @@
       </q-btn>
 
       <q-btn
-        v-if="canSaveTreeInProject && (openTabUser === username || isValidator)"
+        v-if="canSaveTreeInProject && (openTabUser === username || isAdmin)"
         flat
         round
         dense
@@ -86,7 +86,7 @@
       </q-btn>
 
       <q-btn
-        v-if="isValidator && blindAnnotationMode"
+        v-if="isAdmin && blindAnnotationMode"
         flat
         round
         dense
@@ -298,7 +298,6 @@ export default defineComponent({
     ...mapState(useTreesStore, ['audioHidden']),
     ...mapState(useProjectStore, [
       'isAdmin',
-      'isValidator',
       'blindAnnotationMode',
       'canSaveTreeInProject',
       'diffMode',
@@ -320,7 +319,7 @@ export default defineComponent({
       }
     },
     canChangeSegmentation() {
-      return this.isValidator && this.$route.params.samplename !== undefined // sentence segmentation option is available only in the sample view and only for validator
+      return this.isAdmin && this.$route.params.samplename !== undefined // sentence segmentation option is available only in the sample view and only for admin
     },
   },
   methods: {

@@ -161,7 +161,7 @@ export default defineComponent({
     };
   },
   computed: {
-    ...mapState(useProjectStore, ['name', 'canSaveTreeInProject', 'isValidator', 'isAdmin', 'collaborativeMode']),
+    ...mapState(useProjectStore, ['name', 'canSaveTreeInProject', 'isAdmin', 'collaborativeMode']),
     ...mapState(useGrewSearchStore, ['canRewriteRule']),
     ...mapState(useUserStore, ['username', 'isLoggedIn']),
     ...mapState(useTreesStore, ['pendingModifications']),

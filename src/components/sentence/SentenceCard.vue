@@ -73,7 +73,7 @@
                 :conll="tree"
                 :reactive-sentence="(reactiveSentencesObj[user] as any)"
                 :reactive-sentences-obj="(reactiveSentencesObj as any)"
-                :diff-mode="showDiffValidator ? 'DIFF_VALIDATED' : diffMode ? 'DIFF_USER' : 'NO_DIFF'"
+                :diff-mode="showDiffAdmin ? 'DIFF_VALIDATED' : diffMode ? 'DIFF_USER' : 'NO_DIFF'"
                 :sentence-bus="sentenceBus"
                 :tree-user-id="(user as string)"
                 :has-pending-changes="hasPendingChanges"
@@ -102,7 +102,7 @@
         <div class="row">
           <div class="text-overline">Tags:</div>
           <div v-for="tag in userTags">
-            <q-chip v-if="openTabUser === username || isValidator" removable outline color="primary" size="sm" @remove="removeSentenceTag(tag)">
+            <q-chip v-if="openTabUser === username || isAdmin" removable outline color="primary" size="sm" @remove="removeSentenceTag(tag)">
               {{ tag }}
             </q-chip>
             <q-chip v-else outline color="primary" size="sm">
@@ -280,7 +280,7 @@ export default defineComponent({
     ...mapWritableState(useGithubStore, ['reloadCommits']),
     ...mapWritableState(useTreesStore, ['reloadTrees']),
     ...mapState(useTreesStore, ['reloadValidation']),
-    ...mapState(useProjectStore, ['isValidator', 'blindAnnotationMode', 'shownMeta', 'languageDetected', 'annotationFeatures']),
+    ...mapState(useProjectStore, ['isAdmin', 'blindAnnotationMode', 'shownMeta', 'languageDetected', 'annotationFeatures']),
     ...mapState(useUserStore, ['username']),
     ...mapState(useTagsStore, ['defaultTags']),
     lastModifiedTime() {
@@ -311,7 +311,7 @@ export default defineComponent({
         }
       return lastModifiedTime;
     },
-    showDiffValidator() {
+    showDiffAdmin() {
       return this.blindAnnotationMode && this.blindAnnotationLevel <= 2;
     },
     userTags() {
@@ -322,7 +322,7 @@ export default defineComponent({
     },
     filteredConlls() {
       let filteredConlls = this.sentenceData.conlls;
-      if (this.blindAnnotationLevel !== 1 && !this.isValidator && this.blindAnnotationMode) {
+      if (this.blindAnnotationLevel !== 1 && !this.isAdmin && this.blindAnnotationMode) {
         return Object.fromEntries(Object.entries(filteredConlls).filter(([user]) => user !== 'validated'));
       }
       return this.orderConlls(filteredConlls);

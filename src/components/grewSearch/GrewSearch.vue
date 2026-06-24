@@ -66,7 +66,7 @@ export default defineComponent({
     return result;
   },
   computed: {
-    ...mapState(useProjectStore, ['name', 'isValidator', 'blindAnnotationMode']),
+    ...mapState(useProjectStore, ['name', 'isAdmin', 'blindAnnotationMode']),
     ...mapState(useUserStore, ['isLoggedIn', 'username']),
   },
   methods: {
@@ -100,7 +100,7 @@ export default defineComponent({
       this.treeLabel = treeLabel;
 
       this.availableSaveAs = [];
-      if (this.isValidator) {
+      if (this.isAdmin) {
         this.availableSaveAs.push("validated");
         if (this.blindAnnotationMode) {
           this.availableSaveAs.push("base_tree");

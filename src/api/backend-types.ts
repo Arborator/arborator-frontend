@@ -48,9 +48,7 @@ export interface project_extended_t {
   users: string[];
   ownerAvatarUrl: string;
   admins: string[];
-  validators: string[];
   annotators: string[];
-  guests: string[];
   numberSentences: number;
   numberSamples: number;
   numberTrees: number;
@@ -74,9 +72,7 @@ export interface annotationFeatures_t {
 
 export interface project_access_t {
   admins: string[];
-  validators: string[];
   annotators: string[];
-  guests: string[];
 }
 
 //// SAMPLES

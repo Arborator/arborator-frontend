@@ -255,7 +255,7 @@ export default defineComponent({
   computed: {
     ...mapState(useGithubStore, ['reloadCommits']),
     ...mapState(useUserStore, ['username']),
-    ...mapState(useProjectStore, ['isOwner']),
+    ...mapState(useProjectStore, ['isAdmin']),
     repositoryLink() {
       return `https://github.com/${this.repositoryName}`;
     },
@@ -330,7 +330,7 @@ export default defineComponent({
             return;
           }
 
-          if (!silent && !this.checkPulls && this.isOwner) {
+          if (!silent && !this.checkPulls && this.isAdmin) {
             notifyMessage({ message: `You don't have changes to pull` });
           }
         })

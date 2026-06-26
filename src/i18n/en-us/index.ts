@@ -412,7 +412,7 @@ export default {
   userSelect: {
     share: 'Share',
     addUser: 'Add new user',
-    roles: ['Admin', 'Validator', 'Annotator', 'Guest'],
+    roles: ['Admin', 'Annotator'],
     revokeAccess: 'Revoke Access',
     noResult: 'No result',
     copyLink: 'Copy Link',
@@ -480,7 +480,6 @@ export default {
   advancedFilter: {
     textFilter: 'Text filter',
     sentIdFilter: 'Sent_id filter',
-    applyFilter: 'Apply filter',
     filter: 'Filters',
     advancedFilter: 'Advanced Filter',
     clearAll: 'Clear All',

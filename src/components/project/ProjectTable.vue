@@ -40,7 +40,7 @@
         <q-td key="samplename" :props="props">
           <div class="row items-center justify-center no-wrap q-gutter-xs">
             <q-btn
-              :disable="freezed && !isOwner"
+              :disable="freezed && !isAdmin"
               outline
               color="white"
               :text-color="$q.dark.isActive ? 'white' : 'black'"
@@ -51,7 +51,7 @@
               {{ props.row.sampleName }}
             </q-btn>
             <q-btn
-              :disable="freezed && !isOwner"
+              :disable="freezed && !isAdmin"
               flat
               round
               dense
@@ -211,7 +211,7 @@ export default defineComponent({
       'name',
       'isAdmin',
       'freezed',
-      'isOwner',
+      'isAdmin',
       'isAllowdedToSync',
       'blindAnnotationMode'
     ]),

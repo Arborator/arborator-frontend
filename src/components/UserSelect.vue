@@ -108,28 +108,12 @@
                       <q-item-label>{{ $t('userSelect.roles[0]') }}</q-item-label>
                     </q-item-section>
                   </q-item>
-                  <q-item clickable v-close-popup @click="updateExistingUserAccess(member, 'validator')">
-                    <q-item-section avatar>
-                      <q-icon v-if="validators.includes(member.username)" name="done" />
-                    </q-item-section>
-                    <q-item-section>
-                      <q-item-label>{{ $t('userSelect.roles[1]') }}</q-item-label>
-                    </q-item-section>
-                  </q-item>
                   <q-item clickable v-close-popup @click="updateExistingUserAccess(member, 'annotator')">
                     <q-item-section avatar>
                       <q-icon v-if="annotators.includes(member.username)" name="done" />
                     </q-item-section>
                     <q-item-section>
-                      <q-item-label>{{ $t('userSelect.roles[2]') }}</q-item-label>
-                    </q-item-section>
-                  </q-item>
-                  <q-item v-if="visibility == 0" clickable v-close-popup @click="updateExistingUserAccess(member, 'guest')">
-                    <q-item-section avatar>
-                      <q-icon v-if="guests.includes(member.username)" name="done" />
-                    </q-item-section>
-                    <q-item-section>
-                      <q-item-label>{{ $t('userSelect.roles[3]') }}</q-item-label>
+                      <q-item-label>{{ $t('userSelect.roles[1]') }}</q-item-label>
                     </q-item-section>
                   </q-item>
                   <q-separator />
@@ -187,7 +171,7 @@ export default defineComponent({
     const userOptions: userOption_t[] = [];
     const filteredUsers: userOption_t[] = [];
     const selectedUsers: userOption_t[] = [];
-    const roles: string[] = ['Admin', 'Validator', 'Annotator', 'Guest'];
+    const roles: string[] = ['Admin', 'Annotator'];
     return {
       users,
       userOptions,
@@ -199,10 +183,10 @@ export default defineComponent({
     };
   },
   computed: {
-    ...mapWritableState(useProjectStore, ['admins', 'validators', 'annotators', 'guests']),
-    ...mapState(useProjectStore, ['visibility', 'isOwner']),
+    ...mapWritableState(useProjectStore, ['admins', 'annotators']),
+    ...mapState(useProjectStore, ['visibility']),
     excludedUserOptions() {
-      return [...this.admins, ...this.validators, ...this.annotators, ...this.guests];
+      return [...this.admins, ...this.annotators];
     },
     projectMembers() {
       let projectMembers = [];
@@ -219,8 +203,7 @@ export default defineComponent({
       return projectMembers;
     },
     filteredRoles() {
-      if (this.visibility > 0) return this.roles.slice(0, -1);
-      else return this.roles;
+      return this.roles;
     },
   },
   mounted() {
@@ -257,9 +240,7 @@ export default defineComponent({
         .then((response) => {
           notifyMessage({ message: 'New members saved on the server', icon: 'save' });
           this.admins = response.data.admins;
-          this.guests = response.data.guests;
           this.annotators = response.data.annotators;
-          this.validators = response.data.validators;
           for (const user of data.selectedUsers) {
             this.sendEmail(user, data.targetRole);
           }
@@ -273,11 +254,9 @@ export default defineComponent({
       api
         .deleteProjectUserAccess(this.projectName, username)
         .then((response) => {
-          notifyMessage({ message: 'Guest removal saved on the server', icon: 'save' });
+          notifyMessage({ message: 'User removal saved on the server', icon: 'save' });
           this.admins = response.data.admins;
-          this.guests = response.data.guests;
           this.annotators = response.data.annotators;
-          this.validators = response.data.validators;
           this.getUsers();
         })
         .catch((error) => {
@@ -329,9 +308,7 @@ export default defineComponent({
     },
     userRole(username: string) {
       if (this.admins.includes(username)) return this.roles[0];
-      else if (this.validators.includes(username)) return this.roles[1];
-      else if (this.annotators.includes(username)) return this.roles[2];
-      else if (this.guests.includes(username)) return this.roles[3];
+      else if (this.annotators.includes(username)) return this.roles[1];
     },
   },
 });

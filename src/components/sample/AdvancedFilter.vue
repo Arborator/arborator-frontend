@@ -13,24 +13,20 @@
       </q-btn>
     </div>
     <div class="col-auto" v-if="isLoggedIn && !blindAnnotationMode">
-      <q-btn-dropdown 
+      <q-separator vertical />
+      <q-btn 
+        no-caps
         :disable="!pendingModifications.size"
         color="primary"
+        @click="saveAllTreesAs(username)"
       >
-        <template v-slot:label>
-          <div class="row items-center no-wrap">
-            <div class="text-center">{{ $t('advancedFilter.savePendingTrees') }}</div>
-            <q-badge v-if="pendingModifications.size > 0" color="red" class="q-ml-sm" floating>
-              {{ pendingModifications.size }}
-            </q-badge>
-          </div>
-        </template>
-        <q-list>
-          <q-item v-for="user in userIdsWithValidated" :key="user" :disable="!SaveAs[user]" clickable v-close-popup @click="saveAllTreesAs(user)">
-            <q-item-section>{{ $t('grewSearch.applyRuleAs', [user]) }}</q-item-section>
-          </q-item>
-        </q-list>
-      </q-btn-dropdown>
+        <div class="row items-center no-wrap">
+          <div class="text-center">{{ $t('advancedFilter.savePendingTrees') }} as {{ username }}</div>
+          <q-badge v-if="pendingModifications.size > 0" color="red" class="q-ml-sm" floating>
+            {{ pendingModifications.size }}
+          </q-badge>
+        </div>
+      </q-btn>
     </div>
     <div class="col-auto">
       <q-btn 

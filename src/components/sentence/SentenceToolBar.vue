@@ -40,27 +40,23 @@
         <q-tooltip>{{ $t('sentenceCard.annotationErrors') }}</q-tooltip>
       </q-btn>
 
-      <q-btn v-if="isAdmin" flat round dense icon="verified" :disable="openTabUser === ''" @click="saveTree('validated')">
-        <q-tooltip>{{ $t('sentenceCard.validateTree') }}</q-tooltip>
-      </q-btn>
-
       <q-btn
         v-if="isAdmin && blindAnnotationMode"
         flat
         round
         dense
         icon="linear_scale"
-        :disable="openTabUser === ''"
+        :disable="!canEditCurrentTree"
         @click="saveTree('base_tree')"
       >
         <q-tooltip>{{ $t('sentenceCard.saveBaseTree') }}</q-tooltip>
       </q-btn>
 
-      <q-btn v-if="isBernardCaron" flat round dense icon="face" :disable="openTabUser === ''" @click="saveTree(EMMETT)">
+      <q-btn v-if="isBernardCaron" flat round dense icon="face" :disable="!canEditCurrentTree" @click="saveTree(EMMETT)">
         <q-tooltip>Save as Emmett</q-tooltip>
       </q-btn>
 
-      <q-btn v-if="canSaveTreeInProject && collaborativeMode" flat round dense icon="save" :disable="openTabUser === ''" @click="saveTree('')">
+      <q-btn v-if="canSaveTreeInProject && collaborativeMode" flat round dense icon="save" :disable="!canEditCurrentTree" @click="saveTree('')">
         <q-tooltip>
           {{ $t('sentenceCard.saveTree[0]') }} {{ openTabUser }} {{ $t('sentenceCard.saveTree[1]') }}
           <b> {{ username }} </b>
@@ -91,7 +87,7 @@
         round
         dense
         icon="filter_9_plus"
-        :disable="openTabUser === ''"
+        :disable="!canEditCurrentTree"
         @click="openMultiEditDialog"
       >
         <q-tooltip>{{ $t('sentenceCard.multiEditDial') }}</q-tooltip>
@@ -99,7 +95,7 @@
 
       <q-btn-dropdown :disable="openTabUser === ''" icon="more_vert" flat dense>
         <q-list>
-          <q-item v-if="canSaveTreeInProject" v-close-popup clickable @click="openMetaDialog()">
+          <q-item v-if="canSaveTreeInProject && canEditCurrentTree" v-close-popup clickable @click="openMetaDialog()">
             <q-item-section avatar>
               <q-avatar icon="edit" color="primary" text-color="white" />
             </q-item-section>
@@ -119,7 +115,7 @@
             </q-item-section>
           </q-item>
 
-          <q-item v-if="isLoggedIn" v-close-popup clickable @click="openTableConllDialog()">
+          <q-item v-if="isLoggedIn && canEditCurrentTree" v-close-popup clickable @click="openTableConllDialog()">
             <q-item-section avatar>
               <q-avatar icon="table_chart" color="primary" text-color="white" />
             </q-item-section>
@@ -139,7 +135,7 @@
               </q-item-label>
             </q-item-section>
           </q-item>
-          <q-item v-if="canChangeSegmentation" v-close-popup clickable @click="chooseSegmentationOption('MERGE')">
+          <q-item v-if="canChangeSegmentation && canEditCurrentTree" v-close-popup clickable @click="chooseSegmentationOption('MERGE')">
             <q-item-section avatar>
               <q-avatar icon="merge_type" color="primary" text-color="white" />
             </q-item-section>
@@ -147,7 +143,7 @@
               <q-item-label>  {{ $t('sentenceSegmentation.segmentationOptions[1]') }}</q-item-label>
             </q-item-section>
           </q-item>
-          <q-item v-if="canChangeSegmentation" v-close-popup clickable @click="chooseSegmentationOption('SPLIT')">
+          <q-item v-if="canChangeSegmentation && canEditCurrentTree" v-close-popup clickable @click="chooseSegmentationOption('SPLIT')">
             <q-item-section avatar>
               <q-avatar icon="content_cut" color="primary" text-color="white" />
             </q-item-section>
@@ -320,6 +316,9 @@ export default defineComponent({
     },
     canChangeSegmentation() {
       return this.isAdmin && this.$route.params.samplename !== undefined // sentence segmentation option is available only in the sample view and only for admin
+    },
+    canEditCurrentTree() {
+      return this.openTabUser === this.username && this.openTabUser !== 'validated';
     },
   },
   methods: {

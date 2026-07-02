@@ -77,6 +77,7 @@
                 :sentence-bus="sentenceBus"
                 :tree-user-id="(user as string)"
                 :has-pending-changes="hasPendingChanges"
+                :interactive="canEditTree(user as string)"
                 :matches="
                   sentence.matches ? (sentence.matches[user] ? sentence.matches[user].map((match) => Object.values(match.nodes)).flat() : []) : []
                 "
@@ -102,7 +103,7 @@
         <div class="row">
           <div class="text-overline">Tags:</div>
           <div v-for="tag in userTags">
-            <q-chip v-if="openTabUser === username || isAdmin" removable outline color="primary" size="sm" @remove="removeSentenceTag(tag)">
+            <q-chip v-if="canEditTree(openTabUser)" removable outline color="primary" size="sm" @remove="removeSentenceTag(tag)">
               {{ tag }}
             </q-chip>
             <q-chip v-else outline color="primary" size="sm">
@@ -501,6 +502,9 @@ export default defineComponent({
     },
     changeText() {
       this.sentenceData.sentence = this.reactiveSentencesObj[this.openTabUser].getSentenceText();
+    },
+    canEditTree(userId: string) {
+      return !!userId && userId === this.username && userId !== 'validated';
     },
     orderConlls(filteredConlls: { [key: string]: string }) {
       const userAndTimestamps = [];

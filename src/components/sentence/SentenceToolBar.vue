@@ -56,7 +56,7 @@
         <q-tooltip>Save as Emmett</q-tooltip>
       </q-btn>
 
-      <q-btn v-if="canSaveTreeInProject && collaborativeMode" flat round dense icon="save" :disable="!canEditCurrentTree" @click="saveTree('')">
+      <q-btn v-if="canSaveTreeInProject && collaborativeMode" flat round dense icon="save" @click="saveTree('')">
         <q-tooltip>
           {{ $t('sentenceCard.saveTree[0]') }} {{ openTabUser }} {{ $t('sentenceCard.saveTree[1]') }}
           <b> {{ username }} </b>
@@ -177,7 +177,7 @@
         round
         dense
         icon="undo"
-        :disable="openTabUser === '' || !canUndo"
+        :disable="openTabUser === '' || !canEditCurrentTree || !canUndo"
         :class="'undo-button'"
         @click="undo()"
       >
@@ -188,7 +188,7 @@
         round
         dense
         icon="ion-redo"
-        :disable="openTabUser === '' || !canRedo"
+        :disable="openTabUser === '' || !canEditCurrentTree || !canRedo"
         :class="'redo-button'"
         @click="redo()"
       >

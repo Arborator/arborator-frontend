@@ -29,8 +29,8 @@
           :props="user"
           :name="user"
           :label="`${user}`"
-          :alert="hasPendingChanges[user] ? 'orange' : ''"
-          :alert-icon="hasPendingChanges[user] ? 'save' : ''"
+          :alert="hasPendingChanges[user] ? 'orange' : (stagedTrees[user] ? 'warning' : '')"
+          :alert-icon="hasPendingChanges[user] ? 'save' : (stagedTrees[user] ? 'circle' : '')"
           :icon="diffMode && user === diffUserId ? 'school' : 'person'"
           no-caps
           :ripple="false"
@@ -38,6 +38,10 @@
           @click="leftClickHandler(user as string)"
         >
           <q-tooltip v-if="hasPendingChanges[user]">{{ $t('sentenceCard.saveModif') }}</q-tooltip>
+          <q-tooltip v-else-if="stagedTrees[user]">
+            Staged by {{ stagedTrees[user]?.by || 'unknown' }}<br/>
+            at {{ stagedTrees[user]?.at || 'unknown' }}
+          </q-tooltip>
           <q-tooltip v-else-if="lastModifiedTime[user]">
             <q-icon color="primary" name="schedule" size="14px" class="q-ml-xs" />
             {{ $t('sentenceCard.modified', [lastModifiedTime[user]]) }}
@@ -330,6 +334,15 @@ export default defineComponent({
     },
     lastValidator() {
       return this.reactiveSentencesObj[this.openTabUser].state.metaJson['validated_by']
+    },
+    stagedTrees() {
+      const githubStore = useGithubStore();
+      const stagingMap: { [userId: string]: { by: string; at: string } | undefined } = {};
+      for (const userId of Object.keys(this.reactiveSentencesObj)) {
+        const stagingInfo = githubStore.getStagingInfo(this.sentence.sent_id, userId);
+        stagingMap[userId] = stagingInfo;
+      }
+      return stagingMap;
     }
   },
   created() {
@@ -375,13 +388,14 @@ export default defineComponent({
     removeSentenceTag(tag: string) {
       this.removeTag(this.sentenceData, tag, this.sentenceBus, this.openTabUser);
     },
-    save(mode: string) {
+    save(mode: string, options?: { gitAdd?: boolean }) {
+      const gitAdd = options?.gitAdd || false;
       const openedTreeUser = this.openTabUser;
       let changedConllUser = this.username;
       let updateCommit = true;
       if (mode) changedConllUser = mode;
 
-      if (!mode && this.reactiveSentencesObj[this.openTabUser].exportConll() === this.sentenceData.conlls[this.openTabUser].trim()) {
+      if (!mode && !gitAdd && this.reactiveSentencesObj[this.openTabUser].exportConll() === this.sentenceData.conlls[this.openTabUser].trim()) {
         updateCommit = false;
       }
 
@@ -392,12 +406,18 @@ export default defineComponent({
 
       const exportedConll = this.reactiveSentencesObj[openedTreeUser].exportConllWithModifiedMeta(metaToReplace);
 
-      const data = {
+      const data: any = {
         conll: exportedConll,
         userId: changedConllUser,
         updateCommit: updateCommit,
         sentId: this.sentenceData.sent_id,
       };
+
+      // Add gitAdd flag
+      if (gitAdd) {
+        data.gitAdd = true;
+      }
+
       if (!this.sentence.sample_name) {
         return;
       }
@@ -431,12 +451,37 @@ export default defineComponent({
             if (this.sentenceData.sent_id !== sentenceConllToJson(newConll).metaJson.sent_id ) {
               this.reloadTrees = true;
             }
-            notifyMessage({ position: 'top', message: 'Saved on the server', icon: 'save' });
+
+            // Handle staging response
+            if (response.data.staged) {
+              const githubStore = useGithubStore();
+              githubStore.setStagingInfo(
+                this.sentence.sent_id,
+                changedConllUser,
+                response.data.staged_by,
+                response.data.staged_at
+              );
+              notifyMessage({
+                position: 'top',
+                message: ' Staged for next push',
+                icon: 'cloud_upload',
+                type: 'positive'
+              });
+            } else {
+              notifyMessage({ position: 'top', message: 'Saved on the server', icon: 'save' });
+            }
             this.validateUdTree(newConll);
           }
         })
         .catch((error) => {
-          notifyError({ error, caller: 'SentenceCard.save' });
+          if (error.response?.status === 409) {
+            notifyError({
+              error: error.response.data?.message || 'Someone else has already staged this sentence',
+              caller: 'SentenceCard.save'
+            });
+          } else {
+            notifyError({ error, caller: 'SentenceCard.save' });
+          }
         });
     },
     validateUdTree(conll: string) {

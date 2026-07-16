@@ -63,6 +63,19 @@
         </q-tooltip>
       </q-btn>
 
+      <q-btn 
+        v-if="canSaveTreeInProject && collaborativeMode && isAdmin" 
+        flat 
+        round 
+        dense 
+        icon="cloud_upload" 
+        @click="saveTreeWithGitAdd"
+      >
+        <q-tooltip>
+          Save & stage for next GitHub push
+        </q-tooltip>
+      </q-btn>
+
       <q-btn
         v-if="canSaveTreeInProject && (openTabUser === username || isAdmin)"
         flat
@@ -370,6 +383,9 @@ export default defineComponent({
     },
     saveTree(mode: string) {
       this.parentOnSave(mode);
+    },
+    saveTreeWithGitAdd() {
+      this.parentOnSave('', { gitAdd: true });
     },
     chooseSegmentationOption(option: 'SPLIT' | 'MERGE') {
       this.showSentSegmentationDial = true;

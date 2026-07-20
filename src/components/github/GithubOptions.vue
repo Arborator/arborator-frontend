@@ -75,6 +75,44 @@
                     <q-item-label caption class="q-mt-sm" v-else>
                       <q-badge outline color="primary" :label="statusLabel(sample.status)" />
                     </q-item-label>
+                    <div v-if="sample.staged_list && sample.staged_list.length" class="q-mt-lg">
+                      <div class="row items-center q-mb-md">
+                        <span class="text-subtitle2 text-weight-bold text-positive">Staged for push</span>
+                        <q-badge color="positive" text-color="white" :label="`${sample.staged_list.length}`" class="q-ml-md" />
+                      </div>
+                      <div class="q-gutter-sm">
+                        <div 
+                          v-for="staged in sample.staged_list" 
+                          :key="`${staged.sent_id}_${staged.tree_user_id}`" 
+                          class="staged-card row items-center justify-between q-pa-md rounded-borders transition-all"
+                          style="background: linear-gradient(135deg, #f5f7fa 0%, #e8eef5 100%); border-left: 4px solid var(--q-primary);"
+                        >
+                          <div class="col-grow">
+                            <div class="row items-center q-gutter-sm q-mb-xs">
+                              <span class="text-body2 text-weight-bold text-primary">Sentence {{ staged.sent_id }}</span>
+                            </div>
+                            <div class="q-mt-xs text-caption text-grey-8">
+                              <strong>{{ staged.staged_by }}</strong>
+                              <span class="text-grey-6 q-ml-md">
+                                {{ formatDate(staged.staged_at) }}
+                              </span>
+                            </div>
+                          </div>
+                          <q-btn 
+                            size="md" 
+                            flat 
+                            dense 
+                            round
+                            icon="close" 
+                            color="negative"
+                            @click="unstageTree(sample.sample_name, staged.sent_id, staged.tree_user_id)"
+                            class="q-ml-md hover-scale"
+                          >
+                            <q-tooltip class="bg-negative">Remove from staging</q-tooltip>
+                          </q-btn>
+                        </div>
+                      </div>
+                    </div>
                   </q-item-section>
                   <q-item-section>
                     <q-item-label class="text-body2">{{ sample.changes_number }} {{ sample.changes_number == 1 ? 'change' : 'changes' }}</q-item-label>
@@ -416,6 +454,36 @@ export default defineComponent({
         })
         .join('\n');
     },
+    formatDate(dateString: string) {
+      if (!dateString) return '';
+      const date = new Date(dateString);
+      return date.toLocaleString('fr-FR', { 
+        year: 'numeric', 
+        month: '2-digit', 
+        day: '2-digit', 
+        hour: '2-digit', 
+        minute: '2-digit' 
+      });
+    },
+    unstageTree(sampleName: string, sentId: string, treeUserId: string) {
+      this.isSubmitting = true;
+      api
+        .unstageTree(this.projectName, {
+          sample_name: sampleName,
+          sent_id: sentId,
+          tree_user_id: treeUserId
+        })
+        .then(() => {
+          notifyMessage({ message: `Tree unstaged successfully` });
+          this.getChanges();
+        })
+        .catch((error) => {
+          notifyError({ error, caller: 'unstageTree' });
+        })
+        .finally(() => {
+          this.isSubmitting = false;
+        });
+    },
     confirmResetSamples(sampleNames: string[]) {
       const changesToReset = this.statusEntries
         .filter((sample) => sampleNames.includes(sample.sample_name))
@@ -482,4 +550,28 @@ pre
   &:hover
     transform translateY(-2px)
     box-shadow 0 6px 16px rgba(0, 0, 0, 0.15)
+
+.staged-card
+  cursor default
+  transition all 0.2s cubic-bezier(0.4, 0, 0.2, 1)
+  border-radius 8px
+  
+  &:hover
+    background linear-gradient(135deg, #eef2f9 0%, #e0e8f0 100%) !important
+    box-shadow 0 4px 12px rgba(102, 126, 234, 0.15)
+    transform translateX(4px)
+    
+  &:active
+    transform translateX(2px)
+
+.hover-scale
+  transition all 0.2s ease
+  
+  &:hover
+    transform scale(1.1)
+    background rgba(244, 67, 54, 0.1) !important
+
+// Animations
+.transition-all
+  transition all 0.3s ease
 </style>

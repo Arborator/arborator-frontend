@@ -349,6 +349,9 @@ export default {
   resetChanges(projectName: string, data: any) {
     return API.patch(`/projects/${projectName}/synchronize/commit`, data);
   },
+  unstageTree(projectName: string, data: any) {
+    return API.delete(`/projects/${projectName}/synchronize/stage`, { data });
+  },
   githubRenameSample(projectName: string, data: any) {
     return API.post(`/projects/${projectName}/synchronize/rename`, data);
   },

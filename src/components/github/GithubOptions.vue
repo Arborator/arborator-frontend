@@ -1,5 +1,14 @@
 <template>
-  <q-btn outline color="primary" no-caps icon="fab fa-github" label="Github Options" @click="openGithubDialog()" />
+  <q-btn 
+    outline 
+    color="primary" 
+    no-caps 
+    icon="fab fa-github" 
+    label="Github Options" 
+    @click="openGithubDialog()"
+    :disable="!canAccessGithubOptions"
+    :title="githubAccessTooltip"
+  />
   
   <q-dialog v-model="isShowGithubDialog" style="backdrop-filter: blur(4px)">
     <q-card style="width: 90vw; max-width: 1000px; max-height: 95vh; border-radius: 12px; box-shadow: 0 10px 40px rgba(0,0,0,0.15)">
@@ -288,6 +297,8 @@ export default defineComponent({
       pullAffectedSamples: [] as any[],
       message: '',
       isSubmitting: false,
+      isSynchronized: false,
+      hasGithubAccess: false,
     };
   },
   computed: {
@@ -300,13 +311,34 @@ export default defineComponent({
     canPush() {
       return this.selectedSamples.length > 0 && this.message.trim().length > 0 && !this.isSubmitting;
     },
+    canAccessGithubOptions() {
+      return this.isSynchronized && this.hasGithubAccess;
+    },
+    githubAccessTooltip() {
+      if (!this.isSynchronized) {
+        return 'Project is not synchronized with GitHub';
+      }
+      if (!this.hasGithubAccess) {
+        return 'You do not have push access to the GitHub repository';
+      }
+      return '';
+    },
   },
   mounted() {
     this.getChanges();
+    this.loadSyncInfo();
   },
   watch: {
     reloadCommits() {
       this.getChanges();
+    },
+    projectName() {
+      this.loadSyncInfo();
+    },
+    isShowGithubDialog(newVal) {
+      if (newVal) {
+        this.loadSyncInfo();
+      }
     },
   },
   methods: {
@@ -314,6 +346,30 @@ export default defineComponent({
       this.isShowGithubDialog = true;
       this.getPulls(true);
       this.getChanges();
+    },
+    loadSyncInfo() {
+      api
+        .getSynchronizedGithubRepository(this.projectName)
+        .then((response) => {
+          if (response.data) {
+            this.isSynchronized = true;
+            this.hasGithubAccess = response.data.hasGithubAccess ?? false;
+          } else {
+            this.isSynchronized = false;
+            this.hasGithubAccess = false;
+          }
+        })
+        .catch((error) => {
+          const axiosError = error as AxiosError;
+          if (axiosError.response?.status === 404 || axiosError.response?.status === 401) {
+            this.isSynchronized = false;
+            this.hasGithubAccess = false;
+            return;
+          }
+          notifyError({ error, caller: 'GithubOptions.loadSyncInfo' });
+          this.isSynchronized = false;
+          this.hasGithubAccess = false;
+        });
     },
     getChanges() {
       this.isLoadingChanges = true;

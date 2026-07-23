@@ -220,6 +220,7 @@ export interface githubRepository_t {
 export interface githubSynchronizedRepository_t {
   repositoryName: string;
   branch: string;
+  hasGithubAccess?: boolean;
 }
 
 ////////////////GrewHistory //////////////////

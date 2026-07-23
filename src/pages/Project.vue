@@ -160,7 +160,7 @@ import { useGrewSearchStore } from 'src/pinia/modules/grewSearch';
 import { useProjectStore } from 'src/pinia/modules/project';
 import { notifyError } from 'src/utils/notify';
 import { defineComponent } from 'vue';
-
+import { AxiosError } from 'axios';
 import api from '../api/backend-api';
 import ProjectSettingsView from '../components/project/ProjectSettingsView.vue';
 import LexiconMain from '../components/lexicon/LexiconMain.vue';
@@ -324,6 +324,11 @@ export default defineComponent({
           this.syncGithubBranch = response.data.branch;
         })
         .catch((error) => {
+          // 404 = no sync, 401 = no access (both are normal cases, not errors)
+          const axiosError = error as AxiosError;
+          if (axiosError.response?.status === 404 || axiosError.response?.status === 401) {
+            return;
+          }
           notifyError({ error, caller: 'getSynchronizedGithubRepo' });
         });
     },

@@ -64,7 +64,7 @@
       </q-btn>
 
       <q-btn 
-        v-if="canSaveTreeInProject && collaborativeMode && isAdmin" 
+        v-if="canSaveTreeInProject && collaborativeMode && isAdmin && hasGithubAccess && isSynchronized" 
         flat 
         round 
         dense 
@@ -293,6 +293,16 @@ export default defineComponent({
     canRedo: {
       type: Boolean as PropType<boolean>,
       required: true,
+    },
+    hasGithubAccess: {
+      type: Boolean as PropType<boolean>,
+      required: false,
+      default: false,
+    },
+    isSynchronized: {
+      type: Boolean as PropType<boolean>,
+      required: false,
+      default: false,
     }
   },
   data() {

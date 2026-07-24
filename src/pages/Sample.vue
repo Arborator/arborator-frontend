@@ -27,6 +27,8 @@
                 :index="index"
                 :blind-annotation-level="blindAnnotationLevel"
                 :ud-validation="udValidationPassed[item.sent_id] || {}"
+                :has-github-access="hasGithubAccess"
+                :is-synchronized="isSynchronized"
                 @closeCards="closeAllCard()"
               >
               </SentenceCard>
@@ -49,6 +51,7 @@ import AdvancedFilter from 'src/components/sample/AdvancedFilter.vue';
 import SentenceCard from '../components/sentence/SentenceCard.vue';
 import Video from 'src/components/sentence/Video.vue';
 import { QVirtualScroll } from 'quasar';
+import { AxiosError } from 'axios';
 
 import { mapActions, mapState, mapWritableState } from 'pinia';
 import { notifyError } from 'src/utils/notify';
@@ -94,7 +97,9 @@ export default defineComponent({
       splitterHeight,
       udValidationPassed,
       languageDetected: false,
-      cardRefs: [] as any[]
+      cardRefs: [] as any[],
+      hasGithubAccess: false,
+      isSynchronized: false,
     };
   },
   computed: {
@@ -129,6 +134,7 @@ export default defineComponent({
     this.getTrees();
     this.calculateHeight();
     this.reloadValidation = false;
+    this.loadSyncInfo();
     const checkReady = setInterval(() => {
       if (this.loading === false) {
         this.scrollSentenceFromUrl();
@@ -201,6 +207,29 @@ export default defineComponent({
         })
         .catch((error) => {
           notifyError({ error, caller: 'validateAllTrees' });
+        });
+    },
+    loadSyncInfo() {
+      api
+        .getSynchronizedGithubRepository(this.projectname)
+        .then((response) => {
+          if (response.data) {
+            this.isSynchronized = true;
+            this.hasGithubAccess = response.data.hasGithubAccess ?? false;
+          } else {
+            this.isSynchronized = false;
+            this.hasGithubAccess = false;
+          }
+        })
+        .catch((error) => {
+          const axiosError = error as AxiosError;
+          if (axiosError.response?.status === 404 || axiosError.response?.status === 401) {
+            this.isSynchronized = false;
+            this.hasGithubAccess = false;
+            return;
+          }
+          this.isSynchronized = false;
+          this.hasGithubAccess = false;
         });
     },
     isAudio(){

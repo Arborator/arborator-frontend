@@ -10,6 +10,8 @@
       :parent-on-save="save"
       :can-undo="canUndo"
       :can-redo="canRedo"
+      :has-github-access="hasGithubAccess"
+      :is-synchronized="isSynchronized"
     ></SentenceToolBar>
 
     <div>
@@ -251,6 +253,16 @@ export default defineComponent({
     udValidation: {
       type: Object as PropType<any>,
       required: false,
+    },
+    hasGithubAccess: {
+      type: Boolean as PropType<boolean>,
+      required: false,
+      default: false,
+    },
+    isSynchronized: {
+      type: Boolean as PropType<boolean>,
+      required: false,
+      default: false,
     },
   },
   data() {

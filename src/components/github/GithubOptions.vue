@@ -442,6 +442,12 @@ export default defineComponent({
       api
         .commitChanges(this.projectName, data)
         .then(() => {
+          const githubStore = useGithubStore();
+          const pushedAt = new Date().toISOString();
+          const pushedEntries = this.statusEntries
+            .filter((sample) => this.selectedSamples.includes(sample.sample_name))
+            .flatMap((sample) => sample.staged_list || []);
+          githubStore.markTreesAsPushed(pushedEntries, this.username, pushedAt);
           notifyMessage({ message: this.$t('github.statusDialog.commitMessage') + `"${this.repositoryName}"` });
           this.getChanges();
           this.message = '';

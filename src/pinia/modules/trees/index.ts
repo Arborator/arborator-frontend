@@ -116,7 +116,7 @@ export const useTreesStore = defineStore('trees', {
 
             const stagingStatus = response.data.staging_status || {};
             const githubStore = useGithubStore();
-            githubStore.updateFromStagingStatus(stagingStatus);
+            githubStore.replaceSampleStagingStatus(response.data.sent_ids || [], stagingStatus);
 
             this.loading = false;
             resolve(JSON.parse(JSON.stringify(Object.values(this.trees))));

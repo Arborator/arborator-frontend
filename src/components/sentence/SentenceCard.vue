@@ -31,8 +31,8 @@
           :props="user"
           :name="user"
           :label="`${user}`"
-          :alert="hasPendingChanges[user] ? 'orange' : (stagedTrees[user] ? 'warning' : '')"
-          :alert-icon="hasPendingChanges[user] ? 'save' : (stagedTrees[user] ? 'circle' : '')"
+          :alert="hasPendingChanges[user] ? 'orange' : (user !== 'validated' && stagedTrees[user] ? (stagedTrees[user].status === 'pushed' ? 'positive' : 'warning') : '')"
+          :alert-icon="hasPendingChanges[user] ? 'save' : (user !== 'validated' && stagedTrees[user] ? (stagedTrees[user].status === 'pushed' ? 'cloud_done' : 'circle') : '')"
           :icon="diffMode && user === diffUserId ? 'school' : 'person'"
           no-caps
           :ripple="false"
@@ -40,7 +40,11 @@
           @click="leftClickHandler(user as string)"
         >
           <q-tooltip v-if="hasPendingChanges[user]">{{ $t('sentenceCard.saveModif') }}</q-tooltip>
-          <q-tooltip v-else-if="stagedTrees[user]">
+          <q-tooltip v-else-if="user !== 'validated' && stagedTrees[user]?.status === 'pushed'">
+            Pushed by {{ stagedTrees[user]?.pushedBy || 'unknown' }}<br/>
+            at {{ stagedTrees[user]?.pushedAt || 'unknown' }}
+          </q-tooltip>
+          <q-tooltip v-else-if="user !== 'validated' && stagedTrees[user]">
             Staged by {{ stagedTrees[user]?.by || 'unknown' }}<br/>
             at {{ stagedTrees[user]?.at || 'unknown' }}
           </q-tooltip>
@@ -349,7 +353,15 @@ export default defineComponent({
     },
     stagedTrees() {
       const githubStore = useGithubStore();
-      const stagingMap: { [userId: string]: { by: string; at: string } | undefined } = {};
+      const stagingMap: {
+        [userId: string]: {
+          by: string;
+          at: string;
+          status: 'staged' | 'pushed';
+          pushedBy?: string;
+          pushedAt?: string;
+        } | undefined;
+      } = {};
       for (const userId of Object.keys(this.reactiveSentencesObj)) {
         const stagingInfo = githubStore.getStagingInfo(this.sentence.sent_id, userId);
         stagingMap[userId] = stagingInfo;
@@ -487,10 +499,7 @@ export default defineComponent({
         })
         .catch((error) => {
           if (error.response?.status === 409) {
-            notifyError({
-              error: error.response.data?.message || 'Someone else has already staged this sentence',
-              caller: 'SentenceCard.save'
-            });
+            notifyError({ error, caller: 'SentenceCard.save' });
           } else {
             notifyError({ error, caller: 'SentenceCard.save' });
           }

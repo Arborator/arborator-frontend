@@ -249,6 +249,7 @@ import { mapState } from 'pinia';
 
 import { useGithubStore } from 'src/pinia/modules/github';
 import { useProjectStore } from 'src/pinia/modules/project';
+import { useTreesStore } from 'src/pinia/modules/trees';
 import { useUserStore } from 'src/pinia/modules/user';
 import { notifyError, notifyMessage } from 'src/utils/notify';
 import { PropType, defineComponent } from 'vue';
@@ -464,11 +465,18 @@ export default defineComponent({
       api
         .resetChanges(this.projectName, { sampleNames })
         .then(() => {
+          const githubStore = useGithubStore();
+          const treesStore = useTreesStore();
+
+          githubStore.reloadCommits += 1;
+          treesStore.reloadTrees = true;
           notifyMessage({ message: this.$t('github.statusDialog.resetMessage') });
           return api.getChanges(this.projectName);
         })
         .then((response) => {
-          this.resetLocalState(response.data);
+          this.modifiedSamples = response.data;
+          this.changesNumber = this.modifiedSamples.length;
+          this.resetLocalState(this.modifiedSamples);
         })
         .catch((error) => {
           notifyError({ error, caller: 'Error while resetting changes' });

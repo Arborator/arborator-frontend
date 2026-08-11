@@ -69,10 +69,25 @@
         round 
         dense 
         icon="cloud_upload" 
+        :disable="!canStageCurrentTree"
         @click="saveTreeWithGitAdd"
       >
         <q-tooltip>
-          Save & stage for next GitHub push
+          {{ stageTooltip }}
+        </q-tooltip>
+      </q-btn>
+
+      <q-btn
+        v-if="canSaveTreeInProject && collaborativeMode && isAdmin && hasGithubAccess && isSynchronized"
+        flat
+        round
+        dense
+        icon="cloud_off"
+        :disable="!canUnstageCurrentTree"
+        @click="unstageCurrentTree"
+      >
+        <q-tooltip>
+          {{ unstageTooltip }}
         </q-tooltip>
       </q-btn>
 
@@ -244,9 +259,12 @@ import { useProjectStore } from 'src/pinia/modules/project';
 import { useUserStore } from 'src/pinia/modules/user';
 import { useGithubStore } from 'src/pinia/modules/github';
 import { useTreesStore } from 'src/pinia/modules/trees';
+import { notifyError, notifyMessage } from 'src/utils/notify';
 
 import { reactive_sentences_obj_t, sentence_bus_t } from 'src/types/main_types';
 import { defineComponent, PropType } from 'vue';
+
+import api from '../../api/backend-api';
 
 
 export default defineComponent({
@@ -314,6 +332,7 @@ export default defineComponent({
   },
   computed: {
     ...mapWritableState(useGithubStore, ['reloadCommits']),
+    ...mapState(useGithubStore, ['stagedTrees']),
     ...mapState(useTreesStore, ['audioHidden']),
     ...mapState(useProjectStore, [
       'isAdmin',
@@ -342,6 +361,50 @@ export default defineComponent({
     },
     canEditCurrentTree() {
       return this.openTabUser === this.username && this.openTabUser !== 'validated';
+    },
+    currentTreeStagingInfo() {
+      if (!this.openTabUser || this.openTabUser === 'validated') {
+        return undefined;
+      }
+
+      const stagingKey = `${this.sentenceData.sent_id}_${this.openTabUser}`;
+      return this.stagedTrees[stagingKey];
+    },
+    activeSentenceStaging() {
+      const sentPrefix = `${this.sentenceData.sent_id}_`;
+      const activeEntry = Object.entries(this.stagedTrees).find(([key, info]) => {
+        return key.startsWith(sentPrefix) && info.status === 'staged';
+      });
+
+      if (!activeEntry) {
+        return undefined;
+      }
+
+      const [key, info] = activeEntry;
+      return {
+        ...info,
+        treeUserId: key.slice(sentPrefix.length),
+      };
+    },
+    canStageCurrentTree() {
+      return !this.activeSentenceStaging || this.activeSentenceStaging.by === this.username;
+    },
+    canUnstageCurrentTree() {
+      return this.currentTreeStagingInfo?.status === 'staged';
+    },
+    stageTooltip() {
+      if (!this.activeSentenceStaging || this.activeSentenceStaging.by === this.username) {
+        return 'Save & stage for next GitHub push';
+      }
+
+      return `This sentence is already staged by ${this.activeSentenceStaging.by}`;
+    },
+    unstageTooltip() {
+      if (!this.currentTreeStagingInfo || this.currentTreeStagingInfo.status !== 'staged') {
+        return 'Tree is not staged';
+      }
+
+      return `Unstage tree staged by ${this.currentTreeStagingInfo.by}`;
     },
   },
   methods: {
@@ -396,6 +459,34 @@ export default defineComponent({
     },
     saveTreeWithGitAdd() {
       this.parentOnSave('', { gitAdd: true });
+    },
+    unstageCurrentTree() {
+      const currentTreeStagingInfo = this.currentTreeStagingInfo;
+
+      if (!this.sentenceData.sample_name || !this.openTabUser || !currentTreeStagingInfo || currentTreeStagingInfo.status !== 'staged') {
+        return;
+      }
+
+      api
+        .unstageTree(this.$route.params.projectname as string, {
+          sample_name: this.sentenceData.sample_name,
+          sent_id: this.sentenceData.sent_id,
+          tree_user_id: this.openTabUser,
+        })
+        .then(() => {
+          const githubStore = useGithubStore();
+          githubStore.clearStaging(this.sentenceData.sent_id, this.openTabUser);
+          this.reloadCommits += 1;
+          notifyMessage({
+            position: 'top',
+            message: 'Tree unstaged',
+            icon: 'cloud_off',
+            type: 'positive',
+          });
+        })
+        .catch((error) => {
+          notifyError({ error, caller: 'SentenceToolBar.unstageCurrentTree' });
+        });
     },
     chooseSegmentationOption(option: 'SPLIT' | 'MERGE') {
       this.showSentSegmentationDial = true;

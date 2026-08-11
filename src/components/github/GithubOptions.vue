@@ -72,11 +72,11 @@
               </div>
 
               <q-list bordered separator class="rounded-borders q-mb-lg">
-                <q-item v-for="(sample, index) in statusEntries" :key="sample.sample_name">
+                <q-item v-for="(sample, index) in statusEntries" :key="sample.sample_name" class="github-status-item items-start">
                   <q-item-section side>
                     <q-checkbox v-model="selectedSamples" :val="sample.sample_name" size="lg" />
                   </q-item-section>
-                  <q-item-section>
+                  <q-item-section class="sample-details">
                     <q-item-label :class="{ 'text-weight-600 text-body1': true, 'text-red': isConflictingSample(sample.sample_name) }">{{ sample.sample_name }}</q-item-label>
                     <q-item-label caption :class="{ 'q-mt-sm': true, 'text-red text-weight-600': isConflictingSample(sample.sample_name) }" v-if="isConflictingSample(sample.sample_name)">
                       {{ $t('github.statusDialog.willBeOverwritten') }}
@@ -84,49 +84,34 @@
                     <q-item-label caption class="q-mt-sm" v-else>
                       <q-badge outline color="primary" :label="statusLabel(sample.status)" />
                     </q-item-label>
-                    <div v-if="sample.staged_list && sample.staged_list.length" class="q-mt-lg">
-                      <div class="row items-center q-mb-md">
+                    <div v-if="sample.staged_list && sample.staged_list.length" class="q-mt-md">
+                      <div class="row items-center q-mb-sm">
                         <span class="text-subtitle2 text-weight-bold text-positive">Staged for push</span>
-                        <q-badge color="positive" text-color="white" :label="`${sample.staged_list.length}`" class="q-ml-md" />
+                        <q-badge color="positive" text-color="white" :label="`${sample.staged_list.length}`" class="q-ml-sm" />
                       </div>
-                      <div class="q-gutter-sm">
+                      <div class="staged-list column q-gutter-sm">
                         <div 
                           v-for="staged in sample.staged_list" 
                           :key="`${staged.sent_id}_${staged.tree_user_id}`" 
-                          class="staged-card row items-center justify-between q-pa-md rounded-borders transition-all"
+                          class="staged-card row items-center no-wrap rounded-borders transition-all"
                           style="background: linear-gradient(135deg, #f5f7fa 0%, #e8eef5 100%); border-left: 4px solid var(--q-primary);"
                         >
-                          <div class="col-grow">
-                            <div class="row items-center q-gutter-sm q-mb-xs">
-                              <span class="text-body2 text-weight-bold text-primary">Sentence {{ staged.sent_id }}</span>
+                          <div class="row items-center no-wrap staged-card-content">
+                            <div class="row items-center q-gutter-xs">
+                              <span class="text-caption text-weight-bold text-primary staged-sentence">Sentence {{ staged.sent_id }}</span>
                             </div>
-                            <div class="q-mt-xs text-caption text-grey-8">
+                            <div class="text-caption text-grey-8 staged-meta">
                               <strong>{{ staged.staged_by }}</strong>
-                              <span class="text-grey-6 q-ml-md">
+                              <span class="text-grey-6 q-ml-sm">
                                 {{ formatDate(staged.staged_at) }}
                               </span>
                             </div>
                           </div>
-                          <q-btn 
-                            size="md" 
-                            flat 
-                            dense 
-                            round
-                            icon="close" 
-                            color="negative"
-                            @click="unstageTree(sample.sample_name, staged.sent_id, staged.tree_user_id)"
-                            class="q-ml-md hover-scale"
-                          >
-                            <q-tooltip class="bg-negative">Remove from staging</q-tooltip>
-                          </q-btn>
                         </div>
                       </div>
                     </div>
                   </q-item-section>
-                  <q-item-section>
-                    <q-item-label class="text-body2">{{ sample.changes_number }} {{ sample.changes_number == 1 ? 'change' : 'changes' }}</q-item-label>
-                  </q-item-section>
-                  <q-item-section avatar>
+                  <q-item-section avatar class="sample-actions">
                     <div class="row q-gutter-sm">
                       <q-btn size="md" flat icon="open_in_full" @click="selectedModifiedSamples[index] = true">
                         <q-tooltip>{{ $t('github.statusDialog.showChanges') }}</q-tooltip>
@@ -535,25 +520,6 @@ export default defineComponent({
         minute: '2-digit' 
       });
     },
-    unstageTree(sampleName: string, sentId: string, treeUserId: string) {
-      this.isSubmitting = true;
-      api
-        .unstageTree(this.projectName, {
-          sample_name: sampleName,
-          sent_id: sentId,
-          tree_user_id: treeUserId
-        })
-        .then(() => {
-          notifyMessage({ message: `Tree unstaged successfully` });
-          this.getChanges();
-        })
-        .catch((error) => {
-          notifyError({ error, caller: 'unstageTree' });
-        })
-        .finally(() => {
-          this.isSubmitting = false;
-        });
-    },
     confirmResetSamples(sampleNames: string[]) {
       const changesToReset = this.statusEntries
         .filter((sample) => sampleNames.includes(sample.sample_name))
@@ -621,10 +587,25 @@ pre
     transform translateY(-2px)
     box-shadow 0 6px 16px rgba(0, 0, 0, 0.15)
 
+.github-status-item
+  width 100%
+
+.sample-details
+  flex 1 1 auto
+  min-width 0
+
+.sample-actions
+  margin-left auto
+  align-self flex-start
+
 .staged-card
   cursor default
   transition all 0.2s cubic-bezier(0.4, 0, 0.2, 1)
   border-radius 8px
+  padding 6px 10px
+  display flex
+  width 100%
+  box-sizing border-box
   
   &:hover
     background linear-gradient(135deg, #eef2f9 0%, #e0e8f0 100%) !important
@@ -634,12 +615,22 @@ pre
   &:active
     transform translateX(2px)
 
-.hover-scale
-  transition all 0.2s ease
-  
-  &:hover
-    transform scale(1.1)
-    background rgba(244, 67, 54, 0.1) !important
+.staged-list
+  align-items flex-start
+  width 100%
+  max-width 520px
+
+.staged-card-content
+  width 100%
+  justify-content space-between
+  gap 8px
+  white-space nowrap
+
+.staged-meta
+  white-space nowrap
+
+.staged-sentence
+  white-space nowrap
 
 // Animations
 .transition-all

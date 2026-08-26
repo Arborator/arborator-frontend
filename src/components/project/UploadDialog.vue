@@ -57,72 +57,9 @@
           </q-tab-panel>
         </q-tab-panels>
         <q-separator />
-        <div v-if="collaborativeMode" class="q-px-md">
-          <div class="text-h6">
-            {{ $t('uploadSample.userIdConfig') }}
-          </div>
-          <q-list>
-            <q-item>
-              <q-item-section avatar>
-                <q-radio v-model="userId" val="username" />
-              </q-item-section>
-              <q-item-section>
-                <q-item-label>
-                  {{ $t('uploadSample.userIdOptions[0]') }}
-                </q-item-label>
-              </q-item-section>
-            </q-item>
-            <q-item>
-              <q-item-section avatar>
-                <q-radio v-model="userId" val="validated" />
-              </q-item-section>
-              <q-item-section>
-                <q-item-label>
-                  {{ $t('uploadSample.userIdOptions[1]') }}
-                </q-item-label>
-              </q-item-section>
-            </q-item>
-            <q-item v-if="blindAnnotationMode">
-              <q-item-section avatar>
-                <q-radio v-model="userId" val="base_tree" />
-              </q-item-section>
-              <q-item-section>
-                <q-item-label>
-                  {{ $t('uploadSample.userIdOptions[2]') }}
-                </q-item-label>
-              </q-item-section>
-            </q-item>
-            <q-item>
-              <q-item-section avatar>
-                <q-radio v-model="userId" class="row" val="other" />
-              </q-item-section>
-              <q-item-section>
-                <q-item-label>
-                  {{ $t('uploadSample.userIdOptions[3]') }}
-                </q-item-label>
-              </q-item-section>
-            </q-item>
-          </q-list>
-          <q-input
-            v-if="userId === 'other'"
-            class="col"
-            outlined
-            v-model="customUserId"
-            :label="$t('uploadSample.customUsername')"
-            :rules="[
-              (val) => !reservedUserIds.includes(val.toLowerCase()) || `${val} ` + $t('uploadSample.reservedUsernameError'),
-              (val) => (val && val.length > 0) || $t('uploadSample.emptyUsernameError'),
-            ]"
-          />
-            <q-separator />
-            
-            <div 
-              v-if='userId == "validated" && isAllowdedToSync && syncGithubRepo'
-              class="q-pa-md bg-orange-1 text-orange-10"
-            >
-              <q-icon name="warning" class="q-mr-md" />
-              The uploaded sample will be pushed on GitHub ({{  syncGithubRepo }}) immediatly!
-          </div>
+        <div v-if="collaborativeMode" class="q-px-md q-gutter-sm">
+          <q-radio v-model="importMode" val="username" label="Import with username" />
+          <q-radio v-model="importMode" val="usernameAndStageAll" label="Import with username and stage all" />
         </div>
         <q-item>
           <q-item-section side top>
@@ -250,6 +187,7 @@ export default defineComponent({
       samplesWithoutSentIds,
       rtl: false,
       userId: 'username',
+      importMode: 'username',
       featsList: [] as string[], 
       miscList: [] as string[],
       posList: [] as string[],
@@ -384,7 +322,8 @@ export default defineComponent({
         console.log ("======UploadDialog/uploadSamples======" + JSON.stringify(file));
       }
       form.append('userId', this.selectedUserId());
-      form.append('rtl', JSON.stringify(this.rtl))
+      form.append('rtl', JSON.stringify(this.rtl));
+      form.append('stageAll', JSON.stringify(this.importMode === 'usernameAndStageAll'));
       if (this.generateNewSentIds) {
         form.append('samplesWithoutSentIds', JSON.stringify(this.samplesWithoutSentIds));
       }
@@ -399,9 +338,6 @@ export default defineComponent({
           this.miscList = response.data.data.misc;
           this.posList = response.data.data.pos;
           this.relationsList = response.data.data.relations;
-          if (this.isAllowdedToSync) {
-            this.commitNewSamples(response.data.data.samples_to_commit)
-          }
           this.checkNewFeats();
           notifyMessage({ message: 'upload success' });
         })
@@ -445,6 +381,7 @@ export default defineComponent({
         lang: this.lang.value,
         rtl: this.rtl,
         sampleName: this.sampleName,
+        stageAll: this.importMode === 'usernameAndStageAll',
       };
       api
         .tokenizeSample(this.$route.params.projectname as string, data)
@@ -452,9 +389,6 @@ export default defineComponent({
           notifyMessage({ message: 'upload success' });
           this.$emit('uploaded:sample');
           this.uploadDialModel = false;
-          if (this.isAllowdedToSync) {
-            this.commitNewSamples(response.data.data.samples_to_commit)
-          }
         })
         .catch((error) => {
           notifyError({ error, caller: 'tokenizeSample' });
@@ -464,15 +398,7 @@ export default defineComponent({
       if (!this.collaborativeMode) {
         return 'validated';
       }
-      else if (this.userId === 'username') {
-        return this.username;
-      }
-      else if (this.userId === 'other')  {
-        return this.customUserId;
-      }
-      else {
-        return this.userId;
-      }
+      return this.username;
     },
     closeDialog() {
       this.uploadDialModel = false;

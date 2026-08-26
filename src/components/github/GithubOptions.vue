@@ -86,7 +86,7 @@
                     </q-item-label>
                     <div v-if="sample.staged_list && sample.staged_list.length" class="q-mt-md">
                       <div class="row items-center q-mb-sm">
-                        <span class="text-subtitle2 text-weight-bold text-positive">Staged for push</span>
+                        <span class="text-subtitle2 text-weight-bold text-positive">Sentences staged for push</span>
                         <q-badge color="positive" text-color="white" :label="`${sample.staged_list.length}`" class="q-ml-sm" />
                       </div>
                       <div class="staged-list column q-gutter-sm">

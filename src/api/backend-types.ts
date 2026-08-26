@@ -85,6 +85,7 @@ export interface sample_t {
   blindAnnotationLevel: number;
   treeByUser: { [key: string]: number };
   tags: { [key: string]: number };
+  stagedCount: number;
 }
 
 //// GREW

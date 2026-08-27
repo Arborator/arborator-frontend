@@ -152,7 +152,11 @@
         :sentence-bus="sentenceBus"
         :reactive-sentences-obj="(reactiveSentencesObj as reactive_sentences_obj_t)"
         />
-      <StatisticsDialog :sentence-bus="sentenceBus" :conlls="sentenceData.conlls as { [key: string]: string; validated: string }" />
+      <StatisticsDialog
+        :sentence-bus="sentenceBus"
+        :conlls="sentenceData.conlls as { [key: string]: string }"
+        :reference-user-id="pushedReferenceUserId"
+      />
     </template>
     <q-dialog v-model="showUdValidation[openTabUser]">
       <q-card style="width: 800px;max-width: 90vw;">
@@ -367,6 +371,10 @@ export default defineComponent({
         stagingMap[userId] = stagingInfo;
       }
       return stagingMap;
+    },
+    pushedReferenceUserId() {
+      const pushedEntry = Object.entries(this.stagedTrees).find(([, info]) => info?.status === 'pushed');
+      return pushedEntry ? pushedEntry[0] : '';
     }
   },
   created() {

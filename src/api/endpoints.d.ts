@@ -75,6 +75,7 @@ export interface updateTree_ED {
   conll: string;
   updateCommit?: boolean;
   gitAdd?: boolean;
+  pinToGithub?: boolean;
 }
 
 //// GREW

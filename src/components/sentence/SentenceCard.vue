@@ -30,7 +30,7 @@
           class="small-tab"
           :props="user"
           :name="user"
-          :label="user === 'validated' ? 'github' : `${user}`"
+          :label="`${user}`"
           :alert="hasPendingChanges[user] ? 'orange' : (user !== 'validated' && stagedTrees[user] ? (stagedTrees[user].status === 'staged' ? 'warning' : 'positive') : '')"
           :alert-icon="hasPendingChanges[user] ? 'save' : (user !== 'validated' && stagedTrees[user] ? (stagedTrees[user].status === 'staged' ? 'circle' : 'cloud_done') : '')"
           :icon="diffMode && user === diffUserId ? 'school' : 'person'"
@@ -352,7 +352,7 @@ export default defineComponent({
     filteredConlls() {
       let filteredConlls = this.sentenceData.conlls;
       if (this.blindAnnotationLevel !== 1 && !this.isAdmin && this.blindAnnotationMode) {
-        return Object.fromEntries(Object.entries(filteredConlls).filter(([user]) => user !== 'validated'));
+        return Object.fromEntries(Object.entries(filteredConlls).filter(([user]) => user !== 'validated' && user !== 'github'));
       }
       return this.orderConlls(filteredConlls);
     },
@@ -583,7 +583,7 @@ export default defineComponent({
       this.sentenceData.sentence = this.reactiveSentencesObj[this.openTabUser].getSentenceText();
     },
     canEditTree(userId: string) {
-      return !!userId && userId === this.username && userId !== 'validated';
+      return !!userId && userId === this.username && userId !== 'validated' && userId !== 'github';
     },
     orderConlls(filteredConlls: { [key: string]: string }) {
       const userAndTimestamps = [];
@@ -596,11 +596,14 @@ export default defineComponent({
       // sort from newest to oldest
       const orderedUserAndTimestamps = [...userAndTimestamps].sort((a, b) => b.timestamp - a.timestamp);
       const orderedConlls: { [key: string]: string } = {};
+      if (filteredConlls.github) {
+        orderedConlls.github = filteredConlls.github;
+      }
       if (filteredConlls.validated) {
         orderedConlls.validated = filteredConlls.validated;
       }
       for (const userAndTimestamp of orderedUserAndTimestamps) {
-        if (userAndTimestamp.user === 'validated') {
+        if (userAndTimestamp.user === 'validated' || userAndTimestamp.user === 'github') {
           continue;
         }
         orderedConlls[userAndTimestamp.user] = filteredConlls[userAndTimestamp.user];

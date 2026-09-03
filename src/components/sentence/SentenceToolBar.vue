@@ -17,7 +17,7 @@
 
     <template v-if="openTabUser !== ''">
       <q-btn
-        v-if="openTabUser === 'validated' && collaborativeMode && isAdmin && hasGithubAccess && isSynchronized"
+        v-if="openTabUser === 'github' && collaborativeMode && isAdmin && hasGithubAccess && isSynchronized"
         flat
         round
         dense
@@ -29,13 +29,13 @@
       </q-btn>
 
       <q-btn
-        v-if="openTabUser === 'validated' && collaborativeMode && isAdmin && hasGithubAccess && isSynchronized"
+        v-if="openTabUser === 'github' && collaborativeMode && isAdmin && hasGithubAccess && isSynchronized"
         flat
         round
         dense
         color="negative"
         icon="delete"
-        @click="ignoreGithubReferenceTree"
+        @click="ignoreGithubReferenceTree()"
       >
         <q-tooltip>Ignore GitHub tree</q-tooltip>
       </q-btn>
@@ -385,10 +385,10 @@ export default defineComponent({
       return this.isAdmin && this.$route.params.samplename !== undefined // sentence segmentation option is available only in the sample view and only for admin
     },
     canEditCurrentTree() {
-      return this.openTabUser === this.username && this.openTabUser !== 'validated';
+      return this.openTabUser === this.username && this.openTabUser !== 'validated' && this.openTabUser !== 'github';
     },
     currentTreeStagingInfo() {
-      if (!this.openTabUser || this.openTabUser === 'validated') {
+      if (!this.openTabUser || this.openTabUser === 'validated' || this.openTabUser === 'github') {
         return undefined;
       }
 
@@ -524,7 +524,7 @@ export default defineComponent({
           notifyError({ error, caller: 'SentenceToolBar.unstageCurrentTree' });
         });
     },
-    ignoreGithubReferenceTree(showNotification = true) {
+    ignoreGithubReferenceTree(showNotification = true, keepTreeUserId = '') {
       if (!this.sentenceData.sample_name) {
         return;
       }
@@ -532,6 +532,7 @@ export default defineComponent({
       api
         .deleteGithubReferenceTree(this.$route.params.projectname as string, this.sentenceData.sample_name, {
           sentId: this.sentenceData.sent_id,
+          keepTreeUserId,
         })
         .then(() => {
           this.reloadCommits += 1;
@@ -550,7 +551,7 @@ export default defineComponent({
         });
     },
     acceptGithubReferenceTree() {
-      if (!this.sentenceData.sample_name || !this.reactiveSentencesObj.validated) {
+      if (!this.sentenceData.sample_name || !this.reactiveSentencesObj.github) {
         return;
       }
 
@@ -560,7 +561,7 @@ export default defineComponent({
         return;
       }
 
-      const sourceConll = this.reactiveSentencesObj.validated.exportConll();
+      const sourceConll = this.reactiveSentencesObj.github.exportConll();
       const updatedConll = sourceConll
         .split('\n')
         .map((line: string) => {
@@ -580,9 +581,10 @@ export default defineComponent({
           userId: targetUser,
           updateCommit: true,
           sentId: this.sentenceData.sent_id,
+          pinToGithub: true,
         })
         .then(() => {
-          this.ignoreGithubReferenceTree(false);
+          this.ignoreGithubReferenceTree(false, targetUser);
           notifyMessage({
             position: 'top',
             message: `GitHub tree accepted as ${targetUser}`,

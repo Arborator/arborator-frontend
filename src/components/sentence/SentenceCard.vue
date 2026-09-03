@@ -30,9 +30,9 @@
           class="small-tab"
           :props="user"
           :name="user"
-          :label="`${user}`"
-          :alert="hasPendingChanges[user] ? 'orange' : (user !== 'validated' && stagedTrees[user] ? (stagedTrees[user].status === 'pushed' ? 'positive' : 'warning') : '')"
-          :alert-icon="hasPendingChanges[user] ? 'save' : (user !== 'validated' && stagedTrees[user] ? (stagedTrees[user].status === 'pushed' ? 'cloud_done' : 'circle') : '')"
+          :label="user === 'validated' ? 'github' : `${user}`"
+          :alert="hasPendingChanges[user] ? 'orange' : (user !== 'validated' && stagedTrees[user] ? (stagedTrees[user].status === 'staged' ? 'warning' : 'positive') : '')"
+          :alert-icon="hasPendingChanges[user] ? 'save' : (user !== 'validated' && stagedTrees[user] ? (stagedTrees[user].status === 'staged' ? 'circle' : 'cloud_done') : '')"
           :icon="diffMode && user === diffUserId ? 'school' : 'person'"
           no-caps
           :ripple="false"
@@ -43,6 +43,10 @@
           <q-tooltip v-else-if="user !== 'validated' && stagedTrees[user]?.status === 'pushed'">
             Pushed by {{ stagedTrees[user]?.pushedBy || 'unknown' }}<br/>
             at {{ stagedTrees[user]?.pushedAt || 'unknown' }}
+          </q-tooltip>
+          <q-tooltip v-else-if="user !== 'validated' && stagedTrees[user]?.status === 'pinned'">
+            Pinned to current GitHub tree<br/>
+            at {{ stagedTrees[user]?.at || 'unknown' }}
           </q-tooltip>
           <q-tooltip v-else-if="user !== 'validated' && stagedTrees[user]">
             Staged by {{ stagedTrees[user]?.by || 'unknown' }}<br/>
@@ -361,7 +365,7 @@ export default defineComponent({
         [userId: string]: {
           by: string;
           at: string;
-          status: 'staged' | 'pushed';
+          status: 'staged' | 'pushed' | 'pinned';
           pushedBy?: string;
           pushedAt?: string;
         } | undefined;
@@ -499,6 +503,10 @@ export default defineComponent({
                 icon: 'cloud_upload',
                 type: 'positive'
               });
+            } else if (response.data.pinned) {
+              const githubStore = useGithubStore();
+              githubStore.setPinnedInfo(this.sentence.sent_id, changedConllUser, response.data.pinned_at || new Date().toISOString());
+              notifyMessage({ position: 'top', message: 'Pinned to GitHub tree', icon: 'cloud_done', type: 'positive' });
             } else {
               notifyMessage({ position: 'top', message: 'Saved on the server', icon: 'save' });
             }
@@ -591,7 +599,13 @@ export default defineComponent({
       // sort from newest to oldest
       const orderedUserAndTimestamps = [...userAndTimestamps].sort((a, b) => b.timestamp - a.timestamp);
       const orderedConlls: { [key: string]: string } = {};
+      if (filteredConlls.validated) {
+        orderedConlls.validated = filteredConlls.validated;
+      }
       for (const userAndTimestamp of orderedUserAndTimestamps) {
+        if (userAndTimestamp.user === 'validated') {
+          continue;
+        }
         orderedConlls[userAndTimestamp.user] = filteredConlls[userAndTimestamp.user];
       }
       return orderedConlls;

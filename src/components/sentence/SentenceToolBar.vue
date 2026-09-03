@@ -17,6 +17,30 @@
 
     <template v-if="openTabUser !== ''">
       <q-btn
+        v-if=" collaborativeMode && isAdmin && hasGithubAccess && isSynchronized"
+        flat
+        round
+        dense
+        color="positive"
+        icon="check"
+        @click="acceptGithubReferenceTree"
+      >
+        <q-tooltip>Accept GitHub tree</q-tooltip>
+      </q-btn>
+
+      <q-btn
+        v-if="collaborativeMode && isAdmin && hasGithubAccess && isSynchronized"
+        flat
+        round
+        dense
+        color="negative"
+        icon="delete"
+        @click="ignoreGithubReferenceTree"
+      >
+        <q-tooltip>Ignore GitHub tree</q-tooltip>
+      </q-btn>
+
+      <q-btn
         v-if="isLoggedIn"
         flat
         round
@@ -333,6 +357,7 @@ export default defineComponent({
   computed: {
     ...mapWritableState(useGithubStore, ['reloadCommits']),
     ...mapState(useGithubStore, ['stagedTrees']),
+    ...mapWritableState(useTreesStore, ['reloadTrees']),
     ...mapState(useTreesStore, ['audioHidden']),
     ...mapState(useProjectStore, [
       'isAdmin',
@@ -405,6 +430,17 @@ export default defineComponent({
       }
 
       return `Unstage tree staged by ${this.currentTreeStagingInfo.by}`;
+    },
+    pushedUserForSentence() {
+      const sentPrefix = `${this.sentenceData.sent_id}_`;
+      const pushedEntry = Object.entries(this.stagedTrees)
+        .find(([key, info]) => key.startsWith(sentPrefix) && info.status === 'pushed');
+
+      if (!pushedEntry) {
+        return '';
+      }
+
+      return pushedEntry[0].slice(sentPrefix.length);
     },
   },
   methods: {
@@ -486,6 +522,76 @@ export default defineComponent({
         })
         .catch((error) => {
           notifyError({ error, caller: 'SentenceToolBar.unstageCurrentTree' });
+        });
+    },
+    ignoreGithubReferenceTree(showNotification = true) {
+      if (!this.sentenceData.sample_name) {
+        return;
+      }
+
+      api
+        .deleteGithubReferenceTree(this.$route.params.projectname as string, this.sentenceData.sample_name, {
+          sentId: this.sentenceData.sent_id,
+        })
+        .then(() => {
+          this.reloadCommits += 1;
+          this.reloadTrees = true;
+          if (showNotification) {
+            notifyMessage({
+              position: 'top',
+              message: 'GitHub tree ignored for this sentence',
+              icon: 'delete',
+              type: 'positive',
+            });
+          }
+        })
+        .catch((error) => {
+          notifyError({ error, caller: 'SentenceToolBar.ignoreGithubReferenceTree' });
+        });
+    },
+    acceptGithubReferenceTree() {
+      if (!this.sentenceData.sample_name || !this.reactiveSentencesObj.validated) {
+        return;
+      }
+
+      const targetUser = this.pushedUserForSentence;
+      if (!targetUser) {
+        notifyError({ error: 'No pushed user found for this sentence', caller: 'SentenceToolBar.acceptGithubReferenceTree' });
+        return;
+      }
+
+      const sourceConll = this.reactiveSentencesObj.validated.exportConll();
+      const updatedConll = sourceConll
+        .split('\n')
+        .map((line: string) => {
+          if (line.startsWith('# user_id =')) {
+            return `# user_id = ${targetUser}`;
+          }
+          if (line.startsWith('# timestamp =')) {
+            return `# timestamp = ${Math.round(Date.now())}`;
+          }
+          return line;
+        })
+        .join('\n');
+
+      api
+        .updateTree(this.$route.params.projectname as string, this.sentenceData.sample_name, {
+          conll: updatedConll,
+          userId: targetUser,
+          updateCommit: true,
+          sentId: this.sentenceData.sent_id,
+        })
+        .then(() => {
+          this.ignoreGithubReferenceTree(false);
+          notifyMessage({
+            position: 'top',
+            message: `GitHub tree accepted as ${targetUser}`,
+            icon: 'cloud_done',
+            type: 'positive',
+          });
+        })
+        .catch((error) => {
+          notifyError({ error, caller: 'SentenceToolBar.acceptGithubReferenceTree' });
         });
     },
     chooseSegmentationOption(option: 'SPLIT' | 'MERGE') {

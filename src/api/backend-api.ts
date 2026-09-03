@@ -352,6 +352,9 @@ export default {
   unstageTree(projectName: string, data: any) {
     return API.delete(`/projects/${projectName}/synchronize/stage`, { data });
   },
+  deleteGithubReferenceTree(projectName: string, sampleName: string, data: any) {
+    return API.delete(`/projects/${projectName}/samples/${sampleName}/trees/github-reference`, { data });
+  },
   githubRenameSample(projectName: string, data: any) {
     return API.post(`/projects/${projectName}/synchronize/rename`, data);
   },

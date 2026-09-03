@@ -3,7 +3,7 @@ import { defineStore } from 'pinia';
 type StagingInfo = {
   by: string;
   at: string;
-  status: 'staged' | 'pushed';
+  status: 'staged' | 'pushed' | 'pinned';
   pushedBy?: string;
   pushedAt?: string;
 };
@@ -19,7 +19,7 @@ export const useGithubStore = defineStore('GithubStore', {
     replaceSampleStagingStatus(sentIds: string[], stagingStatus: {
       [sentId: string]: {
         [userId: string]: {
-          status?: 'staged' | 'pushed';
+          status?: 'staged' | 'pushed' | 'pinned';
           staged_by: string;
           staged_at: string;
           pushed_by?: string;
@@ -65,6 +65,11 @@ export const useGithubStore = defineStore('GithubStore', {
     ) {
       const key = `${sentId}_${userId}`;
       this.stagedTrees[key] = { by, at, status: 'staged' };
+    },
+
+    setPinnedInfo(sentId: string, userId: string, at: string) {
+      const key = `${sentId}_${userId}`;
+      this.stagedTrees[key] = { by: 'github', at, status: 'pinned' };
     },
 
     markTreesAsPushed(entries: Array<{ sent_id: string; tree_user_id: string }>, pushedBy: string, pushedAt: string) {

@@ -14,19 +14,31 @@
     </div>
     <div class="col-auto" v-if="isLoggedIn && !blindAnnotationMode">
       <q-separator vertical />
-      <q-btn 
-        no-caps
-        :disable="!pendingModifications.size"
-        color="primary"
-        @click="saveAllTreesAs(username)"
-      >
-        <div class="row items-center no-wrap">
-          <div class="text-center">{{ $t('advancedFilter.savePendingTrees') }} as {{ username }}</div>
-          <q-badge v-if="pendingModifications.size > 0" color="red" class="q-ml-sm" floating>
-            {{ pendingModifications.size }}
-          </q-badge>
-        </div>
-      </q-btn>
+      <div class="row items-center q-gutter-sm no-wrap">
+        <q-btn 
+          no-caps
+          :disable="!pendingModifications.size"
+          color="primary"
+          @click="saveAllTreesAs(username)"
+        >
+          <div class="row items-center no-wrap">
+            <div class="text-center">{{ $t('advancedFilter.savePendingTrees') }} as {{ username }}</div>
+            <q-badge v-if="pendingModifications.size > 0" color="red" class="q-ml-sm" floating>
+              {{ pendingModifications.size }}
+            </q-badge>
+          </div>
+        </q-btn>
+
+        <q-btn
+          v-if="collaborativeMode && isAdmin && hasGithubAccess && isSynchronized"
+          no-caps
+          color="primary"
+          @click="stageAllTreesForUser(username)"
+        >
+          Stage all as {{ username }} 
+          <q-tooltip>Stage all {{ username }} trees in this sample for next GitHub push</q-tooltip>
+        </q-btn>
+      </div>
     </div>
     <div class="col-auto">
       <q-btn 
@@ -183,7 +195,17 @@ export default defineComponent({
     parentOnValidate: {
       type: Function as PropType<CallableFunction>,
       required: true,
-    }
+    },
+    hasGithubAccess: {
+      type: Boolean as PropType<boolean>,
+      required: false,
+      default: false,
+    },
+    isSynchronized: {
+      type: Boolean as PropType<boolean>,
+      required: false,
+      default: false,
+    },
   },
   data() {
     const filterOperators: element_t[] = [
@@ -376,6 +398,27 @@ export default defineComponent({
         })
         .catch((error) => {
           notifyError({ error: `Error happened while saving trees ${error}` });
+        });
+    },
+    stageAllTreesForUser(treeUserId: string) {
+      api
+        .stageSample(this.name, {
+          sample_name: this.sampleName,
+          tree_user_id: treeUserId,
+        })
+        .then((response) => {
+          const stagedCount = response?.data?.staged_count ?? 0;
+          this.reloadCommits += 1;
+          notifyMessage({
+            position: 'top',
+            message: `${stagedCount} trees staged for ${treeUserId}`,
+            icon: 'cloud_upload',
+            type: 'positive',
+          });
+          this.$emit('trees-saved');
+        })
+        .catch((error) => {
+          notifyError({ error: `Error happened while staging trees ${error}` });
         });
     },
     validateAllTrees() {

@@ -17,7 +17,7 @@
 
     <template v-if="openTabUser !== ''">
       <q-btn
-        v-if=" collaborativeMode && isAdmin && hasGithubAccess && isSynchronized"
+        v-if="openTabUser === 'validated' && collaborativeMode && isAdmin && hasGithubAccess && isSynchronized"
         flat
         round
         dense
@@ -29,7 +29,7 @@
       </q-btn>
 
       <q-btn
-        v-if="collaborativeMode && isAdmin && hasGithubAccess && isSynchronized"
+        v-if="openTabUser === 'validated' && collaborativeMode && isAdmin && hasGithubAccess && isSynchronized"
         flat
         round
         dense

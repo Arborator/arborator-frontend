@@ -1,7 +1,13 @@
 <template>
   <q-splitter v-model="splitterModel" horizontal :disable="true" :limits="[0, 100]" :style="{ height: `${splitterHeight}px` }" emit-immediately>
     <template v-slot:before>
-      <AdvancedFilter @trees-saved="getTrees()" @advanced-filters-toggled="handleAdvancedFiltersToggle" :parent-on-validate="validateAllTrees"  />
+      <AdvancedFilter
+        @trees-saved="getTrees()"
+        @advanced-filters-toggled="handleAdvancedFiltersToggle"
+        :parent-on-validate="validateAllTrees"
+        :has-github-access="hasGithubAccess"
+        :is-synchronized="isSynchronized"
+      />
     </template>
     <template v-slot:after>
       <div class="custom-frame1" >

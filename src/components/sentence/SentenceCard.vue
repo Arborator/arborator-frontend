@@ -461,6 +461,7 @@ export default defineComponent({
         .updateTree(this.$route.params.projectname as string, this.sentence.sample_name, data)
         .then((response) => {
           if (response.status === 200) {
+            const githubStore = useGithubStore();
             this.sentenceBus.emit('action:saved', {
               userId: this.openTabUser,
             });
@@ -489,8 +490,7 @@ export default defineComponent({
             }
 
             // Handle staging response
-            if (response.data.staged) {
-              const githubStore = useGithubStore();
+            if (gitAdd && response.data.staged) {
               githubStore.setStagingInfo(
                 this.sentence.sent_id,
                 changedConllUser,
@@ -503,11 +503,8 @@ export default defineComponent({
                 icon: 'cloud_upload',
                 type: 'positive'
               });
-            } else if (response.data.pinned) {
-              const githubStore = useGithubStore();
-              githubStore.setPinnedInfo(this.sentence.sent_id, changedConllUser, response.data.pinned_at || new Date().toISOString());
-              notifyMessage({ position: 'top', message: 'Pinned to GitHub tree', icon: 'cloud_done', type: 'positive' });
             } else {
+              githubStore.clearStaging(this.sentence.sent_id, changedConllUser);
               notifyMessage({ position: 'top', message: 'Saved on the server', icon: 'save' });
             }
             this.validateUdTree(newConll);

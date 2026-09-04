@@ -360,6 +360,21 @@ export default defineComponent({
         });
     },
     saveAllTreesAs(saveAs: string) {
+      this.savePendingTreesAs(saveAs)
+        .then(() => {
+          notifyMessage({ 
+            position: 'top', 
+            message: `Saved on the server as "${saveAs}"`, 
+            icon: 'save' 
+          });
+          this.emptyPendingModification();
+          this.$emit('trees-saved');
+        })
+        .catch((error) => {
+          notifyError({ error: `Error happened while saving trees ${error}` });
+        });
+    },
+    savePendingTreesAs(saveAs: string) {
       const modifiedSentences = [...this.pendingModifications.values()];
       const savePromises = modifiedSentences.map((sentence) => {
         const conllsentences = sentence.conll.split('\n');
@@ -383,42 +398,34 @@ export default defineComponent({
         });
       });
 
-      Promise.all(savePromises)
-        .then(() => {
-          if (saveAs === 'validated') {
-            this.reloadCommits += 1;
-          }
-          notifyMessage({ 
-            position: 'top', 
-            message: `Saved on the server as "${saveAs}"`, 
-            icon: 'save' 
-          });
-          this.emptyPendingModification();
-          this.$emit('trees-saved');
-        })
-        .catch((error) => {
-          notifyError({ error: `Error happened while saving trees ${error}` });
-        });
+      return Promise.all(savePromises);
     },
     stageAllTreesForUser(treeUserId: string) {
-      api
-        .stageSample(this.name, {
-          sample_name: this.sampleName,
-          tree_user_id: treeUserId,
+      const saveThenStage = this.pendingModifications.size > 0
+        ? this.savePendingTreesAs(treeUserId)
+        : Promise.resolve([]);
+
+      saveThenStage
+        .then(() => {
+          this.emptyPendingModification();
+          return api.stageSample(this.name, {
+            sample_name: this.sampleName,
+            tree_user_id: treeUserId,
+          });
         })
         .then((response) => {
           const stagedCount = response?.data?.staged_count ?? 0;
           this.reloadCommits += 1;
           notifyMessage({
             position: 'top',
-            message: `${stagedCount} trees staged for ${treeUserId}`,
+            message: `Saved & staged ${stagedCount} trees for ${treeUserId}`,
             icon: 'cloud_upload',
             type: 'positive',
           });
           this.$emit('trees-saved');
         })
         .catch((error) => {
-          notifyError({ error: `Error happened while staging trees ${error}` });
+          notifyError({ error: `Error happened while save & stage trees ${error}` });
         });
     },
     validateAllTrees() {

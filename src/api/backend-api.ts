@@ -349,6 +349,9 @@ export default {
   stageSample(projectName: string, data: any) {
     return API.post(`/projects/${projectName}/synchronize/stage`, data);
   },
+  stageSelectedSentences(projectName: string, data: any) {
+    return API.post(`/projects/${projectName}/synchronize/stage-selected`, data);
+  },
   resetChanges(projectName: string, data: any) {
     return API.patch(`/projects/${projectName}/synchronize/commit`, data);
   },

@@ -31,6 +31,8 @@
               </div>
               <div class="text-caption text-weight-medium">
                 {{ $t('projectView.createdBy') }}: <q-chip outline color="secondary" size="sm"> {{ admins[0] }}</q-chip>
+                <span v-if="projectRole" class="q-ml-sm">Role:</span>
+                <q-chip v-if="projectRole" outline color="secondary" size="sm">{{ projectRole }}</q-chip>
               </div>
             </div>
             <div v-if="!$q.platform.is.mobile" class="col-4" style="display: flex; justify-content: flex-end">
@@ -237,6 +239,7 @@ export default defineComponent({
       'blindAnnotationMode',
       'admins',
       'isAdmin',
+      'isAnnotator',
       'isAllowdedToSync',
       'canExportTrees',
       'language',
@@ -251,6 +254,15 @@ export default defineComponent({
     },
     syncGithubRepoLink(): string {
       return `https://github.com/${this.syncGithubRepo}`;
+    },
+    projectRole(): string {
+      if (this.isAdmin) {
+        return 'admin';
+      }
+      if (this.isAnnotator) {
+        return 'annotator';
+      }
+      return '';
     },
   },
   mounted() {

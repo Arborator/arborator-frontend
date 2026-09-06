@@ -35,7 +35,7 @@
           color="primary"
           @click="stageAllTreesForUser(username)"
         >
-          Stage all as {{ username }} 
+          Save & Stage all as {{ username }} 
           <q-tooltip>Stage all {{ username }} trees in this sample for next GitHub push</q-tooltip>
         </q-btn>
       </div>
@@ -109,7 +109,7 @@
     </div>
       <div v-show="showAdvancedFilters" v-for="(filter, index) in listFilters" :key="index" class="advanced-filter-row q-pt-md">
         <div class="row q-gutter-md q-pt-md items-center">
-          <div class="col-12 col-sm-1">
+          <div class="col-12 col-md-2">
             <q-select
               outlined
               dense
@@ -282,6 +282,12 @@ export default defineComponent({
     sentIdFilter: debounce(function(this: any) {
       this.applyFilterTrees();
     }, 500),
+    listFilters: {
+      handler: debounce(function(this: any) {
+        this.applyAdvancedFilter();
+      }, 100),
+      deep: true,
+    },
   },
   mounted() {
     this.clearAll();

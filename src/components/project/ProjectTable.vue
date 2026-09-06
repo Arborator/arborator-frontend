@@ -51,6 +51,7 @@
               {{ props.row.sampleName }}
             </q-btn>
             <q-btn
+              v-if="isAdmin"
               :disable="freezed && !isAdmin"
               flat
               round
@@ -252,6 +253,9 @@ export default defineComponent({
       }, 0);
     },
     showRenameSampleDial(sampleName: string, hasValidated: boolean) {
+      if (!this.isAdmin) {
+        return;
+      }
       this.isShowRenameDial = true;
       this.selectedSample = sampleName;
       this.hasValidated = hasValidated;

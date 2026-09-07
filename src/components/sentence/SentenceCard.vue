@@ -27,12 +27,12 @@
         <q-tab
           v-for="(tree, user) in filteredConlls"
           :key="`${reactiveSentencesObj[user].state.metaJson.timestamp}-${user}`"
-          class="small-tab"
+          :class="['small-tab', user !== 'validated' && stagedTrees[user]?.status === 'staged' ? 'staged-alert-left' : '']"
           :props="user"
           :name="user"
           :label="`${user}`"
           :alert="hasPendingChanges[user] ? 'orange' : (user !== 'validated' && stagedTrees[user] ? (stagedTrees[user].status === 'staged' ? 'warning' : 'positive') : '')"
-          :alert-icon="hasPendingChanges[user] ? 'save' : (user !== 'validated' && stagedTrees[user] ? (stagedTrees[user].status === 'staged' ? 'circle' : 'cloud_done') : '')"
+          :alert-icon="hasPendingChanges[user] ? 'save' : (user !== 'validated' && stagedTrees[user] ? (stagedTrees[user].status === 'staged' ? 'cloud_upload' : 'cloud_done') : '')"
           :icon="diffMode && user === diffUserId ? 'school' : 'person'"
           no-caps
           :ripple="false"
@@ -636,5 +636,12 @@ export default defineComponent({
 }
 .clickable:hover {
   cursor: pointer;
+}
+.staged-alert-left :deep(.q-tab__alert),
+.staged-alert-left :deep(.q-tab__alert-icon) {
+  left: 0px !important;
+  right: auto !important;
+  inset-inline-start: 0px !important;
+  inset-inline-end: auto !important;
 }
 </style>

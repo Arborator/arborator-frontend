@@ -6,6 +6,7 @@ import { notifyError } from 'src/utils/notify';
 
 import api from '../../../api/backend-api';
 import { useTagsStore } from '../tags';
+import { useGithubStore } from '../github';
 
 const AUDIO_HIDDEN_STORAGE = 'sentence_audio_hidden';
 
@@ -112,6 +113,11 @@ export const useTreesStore = defineStore('trees', {
             this.sortedSentIds = response.data.sent_ids;
             this.treesReloadCounter++;
             this.applyFilterTrees();
+
+            const stagingStatus = response.data.staging_status || {};
+            const githubStore = useGithubStore();
+            githubStore.replaceSampleStagingStatus(response.data.sent_ids || [], stagingStatus);
+
             this.loading = false;
             resolve(JSON.parse(JSON.stringify(Object.values(this.trees))));
           })

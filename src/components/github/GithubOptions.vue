@@ -1,5 +1,14 @@
 <template>
-  <q-btn outline color="primary" no-caps icon="fab fa-github" label="Github Options" @click="openGithubDialog()" />
+  <q-btn 
+    outline 
+    color="primary" 
+    no-caps 
+    icon="fab fa-github" 
+    label="Github Options" 
+    @click="openGithubDialog()"
+    :disable="!canAccessGithubOptions"
+    :title="githubAccessTooltip"
+  />
   
   <q-dialog v-model="isShowGithubDialog" style="backdrop-filter: blur(4px)">
     <q-card style="width: 90vw; max-width: 1000px; max-height: 95vh; border-radius: 12px; box-shadow: 0 10px 40px rgba(0,0,0,0.15)">
@@ -63,11 +72,11 @@
               </div>
 
               <q-list bordered separator class="rounded-borders q-mb-lg">
-                <q-item v-for="(sample, index) in statusEntries" :key="sample.sample_name">
+                <q-item v-for="(sample, index) in statusEntries" :key="sample.sample_name" class="github-status-item items-start">
                   <q-item-section side>
                     <q-checkbox v-model="selectedSamples" :val="sample.sample_name" size="lg" />
                   </q-item-section>
-                  <q-item-section>
+                  <q-item-section class="sample-details">
                     <q-item-label :class="{ 'text-weight-600 text-body1': true, 'text-red': isConflictingSample(sample.sample_name) }">{{ sample.sample_name }}</q-item-label>
                     <q-item-label caption :class="{ 'q-mt-sm': true, 'text-red text-weight-600': isConflictingSample(sample.sample_name) }" v-if="isConflictingSample(sample.sample_name)">
                       {{ $t('github.statusDialog.willBeOverwritten') }}
@@ -75,11 +84,34 @@
                     <q-item-label caption class="q-mt-sm" v-else>
                       <q-badge outline color="primary" :label="statusLabel(sample.status)" />
                     </q-item-label>
+                    <div v-if="sample.staged_list && sample.staged_list.length" class="q-mt-md">
+                      <div class="row items-center q-mb-sm">
+                        <span class="text-subtitle2 text-weight-bold text-positive">Sentences staged for push</span>
+                        <q-badge color="positive" text-color="white" :label="`${sample.staged_list.length}`" class="q-ml-sm" />
+                      </div>
+                      <div class="staged-list column q-gutter-sm">
+                        <div 
+                          v-for="staged in sample.staged_list" 
+                          :key="`${staged.sent_id}_${staged.tree_user_id}`" 
+                          class="staged-card row items-center no-wrap rounded-borders transition-all"
+                          style="background: linear-gradient(135deg, #f5f7fa 0%, #e8eef5 100%); border-left: 4px solid var(--q-primary);"
+                        >
+                          <div class="row items-center no-wrap staged-card-content">
+                            <div class="row items-center q-gutter-xs">
+                              <span class="text-caption text-weight-bold text-primary staged-sentence">Sentence {{ staged.sent_id }}</span>
+                            </div>
+                            <div class="text-caption text-grey-8 staged-meta">
+                              <strong>{{ staged.staged_by }}</strong>
+                              <span class="text-grey-6 q-ml-sm">
+                                {{ formatDate(staged.staged_at) }}
+                              </span>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
                   </q-item-section>
-                  <q-item-section>
-                    <q-item-label class="text-body2">{{ sample.changes_number }} {{ sample.changes_number == 1 ? 'change' : 'changes' }}</q-item-label>
-                  </q-item-section>
-                  <q-item-section avatar>
+                  <q-item-section avatar class="sample-actions">
                     <div class="row q-gutter-sm">
                       <q-btn size="md" flat icon="open_in_full" @click="selectedModifiedSamples[index] = true">
                         <q-tooltip>{{ $t('github.statusDialog.showChanges') }}</q-tooltip>
@@ -202,6 +234,7 @@ import { mapState } from 'pinia';
 
 import { useGithubStore } from 'src/pinia/modules/github';
 import { useProjectStore } from 'src/pinia/modules/project';
+import { useTreesStore } from 'src/pinia/modules/trees';
 import { useUserStore } from 'src/pinia/modules/user';
 import { notifyError, notifyMessage } from 'src/utils/notify';
 import { PropType, defineComponent } from 'vue';
@@ -250,25 +283,48 @@ export default defineComponent({
       pullAffectedSamples: [] as any[],
       message: '',
       isSubmitting: false,
+      isSynchronized: false,
+      hasGithubAccess: false,
     };
   },
   computed: {
     ...mapState(useGithubStore, ['reloadCommits']),
     ...mapState(useUserStore, ['username']),
-    ...mapState(useProjectStore, ['isOwner']),
+    ...mapState(useProjectStore, ['isAdmin']),
     repositoryLink() {
       return `https://github.com/${this.repositoryName}`;
     },
     canPush() {
       return this.selectedSamples.length > 0 && this.message.trim().length > 0 && !this.isSubmitting;
     },
+    canAccessGithubOptions() {
+      return this.isSynchronized && this.hasGithubAccess;
+    },
+    githubAccessTooltip() {
+      if (!this.isSynchronized) {
+        return 'Project is not synchronized with GitHub';
+      }
+      if (!this.hasGithubAccess) {
+        return 'You do not have push access to the GitHub repository';
+      }
+      return '';
+    },
   },
   mounted() {
     this.getChanges();
+    this.loadSyncInfo();
   },
   watch: {
     reloadCommits() {
       this.getChanges();
+    },
+    projectName() {
+      this.loadSyncInfo();
+    },
+    isShowGithubDialog(newVal) {
+      if (newVal) {
+        this.loadSyncInfo();
+      }
     },
   },
   methods: {
@@ -276,6 +332,30 @@ export default defineComponent({
       this.isShowGithubDialog = true;
       this.getPulls(true);
       this.getChanges();
+    },
+    loadSyncInfo() {
+      api
+        .getSynchronizedGithubRepository(this.projectName)
+        .then((response) => {
+          if (response.data) {
+            this.isSynchronized = true;
+            this.hasGithubAccess = response.data.hasGithubAccess ?? false;
+          } else {
+            this.isSynchronized = false;
+            this.hasGithubAccess = false;
+          }
+        })
+        .catch((error) => {
+          const axiosError = error as AxiosError;
+          if (axiosError.response?.status === 404 || axiosError.response?.status === 401) {
+            this.isSynchronized = false;
+            this.hasGithubAccess = false;
+            return;
+          }
+          notifyError({ error, caller: 'GithubOptions.loadSyncInfo' });
+          this.isSynchronized = false;
+          this.hasGithubAccess = false;
+        });
     },
     getChanges() {
       this.isLoadingChanges = true;
@@ -330,7 +410,7 @@ export default defineComponent({
             return;
           }
 
-          if (!silent && !this.checkPulls && this.isOwner) {
+          if (!silent && !this.checkPulls && this.isAdmin) {
             notifyMessage({ message: `You don't have changes to pull` });
           }
         })
@@ -348,6 +428,12 @@ export default defineComponent({
       api
         .commitChanges(this.projectName, data)
         .then(() => {
+          const githubStore = useGithubStore();
+          const pushedAt = new Date().toISOString();
+          const pushedEntries = this.statusEntries
+            .filter((sample) => this.selectedSamples.includes(sample.sample_name))
+            .flatMap((sample) => sample.staged_list || []);
+          githubStore.markTreesAsPushed(pushedEntries, this.username, pushedAt);
           notifyMessage({ message: this.$t('github.statusDialog.commitMessage') + `"${this.repositoryName}"` });
           this.getChanges();
           this.message = '';
@@ -364,11 +450,18 @@ export default defineComponent({
       api
         .resetChanges(this.projectName, { sampleNames })
         .then(() => {
+          const githubStore = useGithubStore();
+          const treesStore = useTreesStore();
+
+          githubStore.reloadCommits += 1;
+          treesStore.reloadTrees = true;
           notifyMessage({ message: this.$t('github.statusDialog.resetMessage') });
           return api.getChanges(this.projectName);
         })
         .then((response) => {
-          this.resetLocalState(response.data);
+          this.modifiedSamples = response.data;
+          this.changesNumber = this.modifiedSamples.length;
+          this.resetLocalState(this.modifiedSamples);
         })
         .catch((error) => {
           notifyError({ error, caller: 'Error while resetting changes' });
@@ -415,6 +508,17 @@ export default defineComponent({
           }
         })
         .join('\n');
+    },
+    formatDate(dateString: string) {
+      if (!dateString) return '';
+      const date = new Date(dateString);
+      return date.toLocaleString('fr-FR', { 
+        year: 'numeric', 
+        month: '2-digit', 
+        day: '2-digit', 
+        hour: '2-digit', 
+        minute: '2-digit' 
+      });
     },
     confirmResetSamples(sampleNames: string[]) {
       const changesToReset = this.statusEntries
@@ -482,4 +586,53 @@ pre
   &:hover
     transform translateY(-2px)
     box-shadow 0 6px 16px rgba(0, 0, 0, 0.15)
+
+.github-status-item
+  width 100%
+
+.sample-details
+  flex 1 1 auto
+  min-width 0
+
+.sample-actions
+  margin-left auto
+  align-self flex-start
+
+.staged-card
+  cursor default
+  transition all 0.2s cubic-bezier(0.4, 0, 0.2, 1)
+  border-radius 8px
+  padding 6px 10px
+  display flex
+  width 100%
+  box-sizing border-box
+  
+  &:hover
+    background linear-gradient(135deg, #eef2f9 0%, #e0e8f0 100%) !important
+    box-shadow 0 4px 12px rgba(102, 126, 234, 0.15)
+    transform translateX(4px)
+    
+  &:active
+    transform translateX(2px)
+
+.staged-list
+  align-items flex-start
+  width 100%
+  max-width 520px
+
+.staged-card-content
+  width 100%
+  justify-content space-between
+  gap 8px
+  white-space nowrap
+
+.staged-meta
+  white-space nowrap
+
+.staged-sentence
+  white-space nowrap
+
+// Animations
+.transition-all
+  transition all 0.3s ease
 </style>

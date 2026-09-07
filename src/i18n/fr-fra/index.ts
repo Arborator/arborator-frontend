@@ -154,7 +154,7 @@ export default {
     tooltipSearch: 'Rechercher un échantillon',
     search: 'Rechercher',
     users: 'Utilisateurs',
-    tableFields: ['Nom', 'Nb phrases', 'Nb tokens', 'Arbres de', "Niveau d'annotation à l'aveugle"],
+    tableFields: ['Nom', 'Nb phrases', 'Nb tokens', 'Arbres de', "Niveau d'annotation à l'aveugle", 'Nb stage'],
   },
 
   // Component project options

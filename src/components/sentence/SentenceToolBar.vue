@@ -17,6 +17,30 @@
 
     <template v-if="openTabUser !== ''">
       <q-btn
+        v-if="openTabUser === 'github' && collaborativeMode && isAdmin && hasGithubAccess && isSynchronized"
+        flat
+        round
+        dense
+        color="positive"
+        icon="check"
+        @click="acceptGithubReferenceTree"
+      >
+        <q-tooltip>Accept GitHub tree</q-tooltip>
+      </q-btn>
+
+      <q-btn
+        v-if="openTabUser === 'github' && collaborativeMode && isAdmin && hasGithubAccess && isSynchronized"
+        flat
+        round
+        dense
+        color="negative"
+        icon="delete"
+        @click="ignoreGithubReferenceTree()"
+      >
+        <q-tooltip>Ignore GitHub tree</q-tooltip>
+      </q-btn>
+
+      <q-btn
         v-if="isLoggedIn"
         flat
         round
@@ -29,7 +53,7 @@
       </q-btn>
 
       <q-btn
-        v-if="isLoggedIn && blindAnnotationLevel <= 3 && !isValidator"
+        v-if="isLoggedIn && blindAnnotationLevel <= 3 && !isAdmin"
         flat
         round
         dense
@@ -40,35 +64,59 @@
         <q-tooltip>{{ $t('sentenceCard.annotationErrors') }}</q-tooltip>
       </q-btn>
 
-      <q-btn v-if="isValidator" flat round dense icon="verified" :disable="openTabUser === ''" @click="saveTree('validated')">
-        <q-tooltip>{{ $t('sentenceCard.validateTree') }}</q-tooltip>
-      </q-btn>
-
       <q-btn
-        v-if="isValidator && blindAnnotationMode"
+        v-if="isAdmin && blindAnnotationMode"
         flat
         round
         dense
         icon="linear_scale"
-        :disable="openTabUser === ''"
+        :disable="!canEditCurrentTree"
         @click="saveTree('base_tree')"
       >
         <q-tooltip>{{ $t('sentenceCard.saveBaseTree') }}</q-tooltip>
       </q-btn>
 
-      <q-btn v-if="isBernardCaron" flat round dense icon="face" :disable="openTabUser === ''" @click="saveTree(EMMETT)">
+      <q-btn v-if="isBernardCaron" flat round dense icon="face" :disable="!canEditCurrentTree" @click="saveTree(EMMETT)">
         <q-tooltip>Save as Emmett</q-tooltip>
       </q-btn>
 
-      <q-btn v-if="canSaveTreeInProject && collaborativeMode" flat round dense icon="save" :disable="openTabUser === ''" @click="saveTree('')">
+      <q-btn v-if="canSaveTreeInProject && collaborativeMode" flat round dense icon="save" @click="saveTree('')">
         <q-tooltip>
           {{ $t('sentenceCard.saveTree[0]') }} {{ openTabUser }} {{ $t('sentenceCard.saveTree[1]') }}
           <b> {{ username }} </b>
         </q-tooltip>
       </q-btn>
 
+      <q-btn 
+        v-if="canSaveTreeInProject && collaborativeMode && isAdmin && hasGithubAccess && isSynchronized" 
+        flat 
+        round 
+        dense 
+        icon="cloud_upload" 
+        :disable="!canStageCurrentTree"
+        @click="saveTreeWithGitAdd"
+      >
+        <q-tooltip>
+          {{ stageTooltip }}
+        </q-tooltip>
+      </q-btn>
+
       <q-btn
-        v-if="canSaveTreeInProject && (openTabUser === username || isValidator)"
+        v-if="canSaveTreeInProject && collaborativeMode && isAdmin && hasGithubAccess && isSynchronized"
+        flat
+        round
+        dense
+        icon="cloud_off"
+        :disable="!canUnstageCurrentTree"
+        @click="unstageCurrentTree"
+      >
+        <q-tooltip>
+          {{ unstageTooltip }}
+        </q-tooltip>
+      </q-btn>
+
+      <q-btn
+        v-if="canSaveTreeInProject && (openTabUser === username || isAdmin)"
         flat
         round
         dense
@@ -86,12 +134,12 @@
       </q-btn>
 
       <q-btn
-        v-if="isValidator && blindAnnotationMode"
+        v-if="isAdmin && blindAnnotationMode"
         flat
         round
         dense
         icon="filter_9_plus"
-        :disable="openTabUser === ''"
+        :disable="!canEditCurrentTree"
         @click="openMultiEditDialog"
       >
         <q-tooltip>{{ $t('sentenceCard.multiEditDial') }}</q-tooltip>
@@ -99,7 +147,7 @@
 
       <q-btn-dropdown :disable="openTabUser === ''" icon="more_vert" flat dense>
         <q-list>
-          <q-item v-if="canSaveTreeInProject" v-close-popup clickable @click="openMetaDialog()">
+          <q-item v-if="canSaveTreeInProject && canEditCurrentTree" v-close-popup clickable @click="openMetaDialog()">
             <q-item-section avatar>
               <q-avatar icon="edit" color="primary" text-color="white" />
             </q-item-section>
@@ -119,7 +167,7 @@
             </q-item-section>
           </q-item>
 
-          <q-item v-if="isLoggedIn" v-close-popup clickable @click="openTableConllDialog()">
+          <q-item v-if="isLoggedIn && canEditCurrentTree" v-close-popup clickable @click="openTableConllDialog()">
             <q-item-section avatar>
               <q-avatar icon="table_chart" color="primary" text-color="white" />
             </q-item-section>
@@ -139,7 +187,7 @@
               </q-item-label>
             </q-item-section>
           </q-item>
-          <q-item v-if="canChangeSegmentation" v-close-popup clickable @click="chooseSegmentationOption('MERGE')">
+          <q-item v-if="canChangeSegmentation && canEditCurrentTree" v-close-popup clickable @click="chooseSegmentationOption('MERGE')">
             <q-item-section avatar>
               <q-avatar icon="merge_type" color="primary" text-color="white" />
             </q-item-section>
@@ -147,7 +195,7 @@
               <q-item-label>  {{ $t('sentenceSegmentation.segmentationOptions[1]') }}</q-item-label>
             </q-item-section>
           </q-item>
-          <q-item v-if="canChangeSegmentation" v-close-popup clickable @click="chooseSegmentationOption('SPLIT')">
+          <q-item v-if="canChangeSegmentation && canEditCurrentTree" v-close-popup clickable @click="chooseSegmentationOption('SPLIT')">
             <q-item-section avatar>
               <q-avatar icon="content_cut" color="primary" text-color="white" />
             </q-item-section>
@@ -181,7 +229,7 @@
         round
         dense
         icon="undo"
-        :disable="openTabUser === '' || !canUndo"
+        :disable="openTabUser === '' || !canEditCurrentTree || !canUndo"
         :class="'undo-button'"
         @click="undo()"
       >
@@ -192,7 +240,7 @@
         round
         dense
         icon="ion-redo"
-        :disable="openTabUser === '' || !canRedo"
+        :disable="openTabUser === '' || !canEditCurrentTree || !canRedo"
         :class="'redo-button'"
         @click="redo()"
       >
@@ -235,9 +283,12 @@ import { useProjectStore } from 'src/pinia/modules/project';
 import { useUserStore } from 'src/pinia/modules/user';
 import { useGithubStore } from 'src/pinia/modules/github';
 import { useTreesStore } from 'src/pinia/modules/trees';
+import { notifyError, notifyMessage } from 'src/utils/notify';
 
 import { reactive_sentences_obj_t, sentence_bus_t } from 'src/types/main_types';
 import { defineComponent, PropType } from 'vue';
+
+import api from '../../api/backend-api';
 
 
 export default defineComponent({
@@ -284,6 +335,16 @@ export default defineComponent({
     canRedo: {
       type: Boolean as PropType<boolean>,
       required: true,
+    },
+    hasGithubAccess: {
+      type: Boolean as PropType<boolean>,
+      required: false,
+      default: false,
+    },
+    isSynchronized: {
+      type: Boolean as PropType<boolean>,
+      required: false,
+      default: false,
     }
   },
   data() {
@@ -295,10 +356,11 @@ export default defineComponent({
   },
   computed: {
     ...mapWritableState(useGithubStore, ['reloadCommits']),
+    ...mapState(useGithubStore, ['stagedTrees']),
+    ...mapWritableState(useTreesStore, ['reloadTrees']),
     ...mapState(useTreesStore, ['audioHidden']),
     ...mapState(useProjectStore, [
       'isAdmin',
-      'isValidator',
       'blindAnnotationMode',
       'canSaveTreeInProject',
       'diffMode',
@@ -320,7 +382,65 @@ export default defineComponent({
       }
     },
     canChangeSegmentation() {
-      return this.isValidator && this.$route.params.samplename !== undefined // sentence segmentation option is available only in the sample view and only for validator
+      return this.isAdmin && this.$route.params.samplename !== undefined // sentence segmentation option is available only in the sample view and only for admin
+    },
+    canEditCurrentTree() {
+      return this.openTabUser === this.username && this.openTabUser !== 'validated' && this.openTabUser !== 'github';
+    },
+    currentTreeStagingInfo() {
+      if (!this.openTabUser || this.openTabUser === 'validated' || this.openTabUser === 'github') {
+        return undefined;
+      }
+
+      const stagingKey = `${this.sentenceData.sent_id}_${this.openTabUser}`;
+      return this.stagedTrees[stagingKey];
+    },
+    activeSentenceStaging() {
+      const sentPrefix = `${this.sentenceData.sent_id}_`;
+      const activeEntry = Object.entries(this.stagedTrees).find(([key, info]) => {
+        return key.startsWith(sentPrefix) && info.status === 'staged';
+      });
+
+      if (!activeEntry) {
+        return undefined;
+      }
+
+      const [key, info] = activeEntry;
+      return {
+        ...info,
+        treeUserId: key.slice(sentPrefix.length),
+      };
+    },
+    canStageCurrentTree() {
+      return !this.activeSentenceStaging || this.activeSentenceStaging.by === this.username;
+    },
+    canUnstageCurrentTree() {
+      return this.currentTreeStagingInfo?.status === 'staged';
+    },
+    stageTooltip() {
+      if (!this.activeSentenceStaging || this.activeSentenceStaging.by === this.username) {
+        return 'Save & stage for next GitHub push';
+      }
+
+      return `This sentence is already staged by ${this.activeSentenceStaging.by}`;
+    },
+    unstageTooltip() {
+      if (!this.currentTreeStagingInfo || this.currentTreeStagingInfo.status !== 'staged') {
+        return 'Tree is not staged';
+      }
+
+      return `Unstage tree staged by ${this.currentTreeStagingInfo.by}`;
+    },
+    pushedUserForSentence() {
+      const sentPrefix = `${this.sentenceData.sent_id}_`;
+      const pushedEntry = Object.entries(this.stagedTrees)
+        .find(([key, info]) => key.startsWith(sentPrefix) && info.status === 'pushed');
+
+      if (!pushedEntry) {
+        return '';
+      }
+
+      return pushedEntry[0].slice(sentPrefix.length);
     },
   },
   methods: {
@@ -372,6 +492,109 @@ export default defineComponent({
     },
     saveTree(mode: string) {
       this.parentOnSave(mode);
+    },
+    saveTreeWithGitAdd() {
+      this.parentOnSave('', { gitAdd: true });
+    },
+    unstageCurrentTree() {
+      const currentTreeStagingInfo = this.currentTreeStagingInfo;
+
+      if (!this.sentenceData.sample_name || !this.openTabUser || !currentTreeStagingInfo || currentTreeStagingInfo.status !== 'staged') {
+        return;
+      }
+
+      api
+        .unstageTree(this.$route.params.projectname as string, {
+          sample_name: this.sentenceData.sample_name,
+          sent_id: this.sentenceData.sent_id,
+          tree_user_id: this.openTabUser,
+        })
+        .then(() => {
+          const githubStore = useGithubStore();
+          githubStore.clearStaging(this.sentenceData.sent_id, this.openTabUser);
+          this.reloadCommits += 1;
+          notifyMessage({
+            position: 'top',
+            message: 'Tree unstaged',
+            icon: 'cloud_off',
+            type: 'positive',
+          });
+        })
+        .catch((error) => {
+          notifyError({ error, caller: 'SentenceToolBar.unstageCurrentTree' });
+        });
+    },
+    ignoreGithubReferenceTree(showNotification = true, keepTreeUserId = '') {
+      if (!this.sentenceData.sample_name) {
+        return;
+      }
+
+      api
+        .deleteGithubReferenceTree(this.$route.params.projectname as string, this.sentenceData.sample_name, {
+          sentId: this.sentenceData.sent_id,
+          keepTreeUserId,
+        })
+        .then(() => {
+          this.reloadCommits += 1;
+          this.reloadTrees = true;
+          if (showNotification) {
+            notifyMessage({
+              position: 'top',
+              message: 'GitHub tree ignored for this sentence',
+              icon: 'delete',
+              type: 'positive',
+            });
+          }
+        })
+        .catch((error) => {
+          notifyError({ error, caller: 'SentenceToolBar.ignoreGithubReferenceTree' });
+        });
+    },
+    acceptGithubReferenceTree() {
+      if (!this.sentenceData.sample_name || !this.reactiveSentencesObj.github) {
+        return;
+      }
+
+      const targetUser = this.pushedUserForSentence;
+      if (!targetUser) {
+        notifyError({ error: 'No pushed user found for this sentence', caller: 'SentenceToolBar.acceptGithubReferenceTree' });
+        return;
+      }
+
+      const sourceConll = this.reactiveSentencesObj.github.exportConll();
+      const updatedConll = sourceConll
+        .split('\n')
+        .map((line: string) => {
+          if (line.startsWith('# user_id =')) {
+            return `# user_id = ${targetUser}`;
+          }
+          if (line.startsWith('# timestamp =')) {
+            return `# timestamp = ${Math.round(Date.now())}`;
+          }
+          return line;
+        })
+        .join('\n');
+
+      api
+        .updateTree(this.$route.params.projectname as string, this.sentenceData.sample_name, {
+          conll: updatedConll,
+          userId: targetUser,
+          updateCommit: true,
+          sentId: this.sentenceData.sent_id,
+          pinToGithub: true,
+        })
+        .then(() => {
+          this.ignoreGithubReferenceTree(false, targetUser);
+          notifyMessage({
+            position: 'top',
+            message: `GitHub tree accepted as ${targetUser}`,
+            icon: 'cloud_done',
+            type: 'positive',
+          });
+        })
+        .catch((error) => {
+          notifyError({ error, caller: 'SentenceToolBar.acceptGithubReferenceTree' });
+        });
     },
     chooseSegmentationOption(option: 'SPLIT' | 'MERGE') {
       this.showSentSegmentationDial = true;

@@ -9,7 +9,7 @@
     </q-card-section>
     <q-separator />
     <q-card-section>
-      <div v-if='hasValidated && canChangeGithub && syncGithubRepo' style="margin-bottom: 15px;">
+      <div v-if='canChangeGithub && syncGithubRepo' style="margin-bottom: 15px;">
         <div class="q-pa-md bg-orange-1 text-orange-10" >
           <q-icon name="warning" class="q-mr-md" />
           The sample will be renamed on GitHub ({{  syncGithubRepo }}) immediatly!
@@ -111,7 +111,7 @@ export default defineComponent({
         .renameSample(this.name, this.sampleName, data)
         .then(() => {
           notifyMessage({ message: this.$t('renameSample.sampleNameModified') });
-          if (this.canChangeGithub && this.hasValidated && this.syncGithubRepo) {
+          if (this.canChangeGithub && this.syncGithubRepo) {
             const githubRenameData = {
               oldName: this.sampleName,
               newName: this.newSampleName,

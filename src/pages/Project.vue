@@ -31,6 +31,8 @@
               </div>
               <div class="text-caption text-weight-medium">
                 {{ $t('projectView.createdBy') }}: <q-chip outline color="secondary" size="sm"> {{ admins[0] }}</q-chip>
+                <span v-if="projectRole" class="q-ml-sm">Role:</span>
+                <q-chip v-if="projectRole" outline color="secondary" size="sm">{{ projectRole }}</q-chip>
               </div>
             </div>
             <div v-if="!$q.platform.is.mobile" class="col-4" style="display: flex; justify-content: flex-end">
@@ -160,7 +162,7 @@ import { useGrewSearchStore } from 'src/pinia/modules/grewSearch';
 import { useProjectStore } from 'src/pinia/modules/project';
 import { notifyError } from 'src/utils/notify';
 import { defineComponent } from 'vue';
-
+import { AxiosError } from 'axios';
 import api from '../api/backend-api';
 import ProjectSettingsView from '../components/project/ProjectSettingsView.vue';
 import LexiconMain from '../components/lexicon/LexiconMain.vue';
@@ -236,9 +238,8 @@ export default defineComponent({
       'image',
       'blindAnnotationMode',
       'admins',
-      'isOwner',
       'isAdmin',
-      'isValidator',
+      'isAnnotator',
       'isAllowdedToSync',
       'canExportTrees',
       'language',
@@ -253,6 +254,15 @@ export default defineComponent({
     },
     syncGithubRepoLink(): string {
       return `https://github.com/${this.syncGithubRepo}`;
+    },
+    projectRole(): string {
+      if (this.isAdmin) {
+        return 'admin';
+      }
+      if (this.isAnnotator) {
+        return 'annotator';
+      }
+      return '';
     },
   },
   mounted() {
@@ -326,6 +336,11 @@ export default defineComponent({
           this.syncGithubBranch = response.data.branch;
         })
         .catch((error) => {
+          // 404 = no sync, 401 = no access (both are normal cases, not errors)
+          const axiosError = error as AxiosError;
+          if (axiosError.response?.status === 404 || axiosError.response?.status === 401) {
+            return;
+          }
           notifyError({ error, caller: 'getSynchronizedGithubRepo' });
         });
     },

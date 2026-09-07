@@ -58,7 +58,7 @@
       <div class="row q-pa-md">
         <q-btn
           v-if="searchReplaceTab === 'SEARCH'"
-          :disable="disableBtn || (freezed && !isOwner)"
+          :disable="disableBtn || (freezed && !isAdmin)"
           color="primary"
           :label="$t('grewSearch.search')"
           no-caps
@@ -72,7 +72,7 @@
             The project is freezed
           </q-tooltip>
         </q-btn>
-        <q-btn v-else :disable="disableBtn || (freezed && !isOwner)" color="primary" :label="$t('grewSearch.tryRules')" no-caps icon="autorenew" @click="tryRules">
+        <q-btn v-else :disable="disableBtn || (freezed && !isAdmin)" color="primary" :label="$t('grewSearch.tryRules')" no-caps icon="autorenew" @click="tryRules">
           <q-tooltip v-if="disableBtn">
             {{ $t('grewSearch.btnDisabledTooltip') }}
           </q-tooltip>
@@ -135,7 +135,7 @@ export default defineComponent({
   computed: {
     ...mapState(useGrewSearchStore, ['lastQuery', 'canRewriteRule']),
     ...mapState(useUserStore, ['isLoggedIn']),
-    ...mapState(useProjectStore, ['freezed', 'isOwner']),
+    ...mapState(useProjectStore, ['freezed', 'isAdmin']),
     disableBtn() {
       return this.data.treeType === 'others' && !this.data.otherUser;
     },

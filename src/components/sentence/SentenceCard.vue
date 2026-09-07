@@ -10,6 +10,8 @@
       :parent-on-save="save"
       :can-undo="canUndo"
       :can-redo="canRedo"
+      :has-github-access="hasGithubAccess"
+      :is-synchronized="isSynchronized"
     ></SentenceToolBar>
 
     <div>
@@ -25,12 +27,12 @@
         <q-tab
           v-for="(tree, user) in filteredConlls"
           :key="`${reactiveSentencesObj[user].state.metaJson.timestamp}-${user}`"
-          class="small-tab"
+          :class="['small-tab', user !== 'validated' && stagedTrees[user]?.status === 'staged' ? 'staged-alert-left' : '']"
           :props="user"
           :name="user"
           :label="`${user}`"
-          :alert="hasPendingChanges[user] ? 'orange' : ''"
-          :alert-icon="hasPendingChanges[user] ? 'save' : ''"
+          :alert="hasPendingChanges[user] ? 'orange' : (user !== 'validated' && stagedTrees[user] ? (stagedTrees[user].status === 'staged' ? 'warning' : 'positive') : '')"
+          :alert-icon="hasPendingChanges[user] ? 'save' : (user !== 'validated' && stagedTrees[user] ? (stagedTrees[user].status === 'staged' ? 'cloud_upload' : 'cloud_done') : '')"
           :icon="diffMode && user === diffUserId ? 'school' : 'person'"
           no-caps
           :ripple="false"
@@ -38,6 +40,18 @@
           @click="leftClickHandler(user as string)"
         >
           <q-tooltip v-if="hasPendingChanges[user]">{{ $t('sentenceCard.saveModif') }}</q-tooltip>
+          <q-tooltip v-else-if="user !== 'validated' && stagedTrees[user]?.status === 'pushed'">
+            Pushed by {{ stagedTrees[user]?.pushedBy || 'unknown' }}<br/>
+            at {{ stagedTrees[user]?.pushedAt || 'unknown' }}
+          </q-tooltip>
+          <q-tooltip v-else-if="user !== 'validated' && stagedTrees[user]?.status === 'pinned'">
+            Pinned to current GitHub tree<br/>
+            at {{ stagedTrees[user]?.at || 'unknown' }}
+          </q-tooltip>
+          <q-tooltip v-else-if="user !== 'validated' && stagedTrees[user]">
+            Staged by {{ stagedTrees[user]?.by || 'unknown' }}<br/>
+            at {{ stagedTrees[user]?.at || 'unknown' }}
+          </q-tooltip>
           <q-tooltip v-else-if="lastModifiedTime[user]">
             <q-icon color="primary" name="schedule" size="14px" class="q-ml-xs" />
             {{ $t('sentenceCard.modified', [lastModifiedTime[user]]) }}
@@ -73,10 +87,11 @@
                 :conll="tree"
                 :reactive-sentence="(reactiveSentencesObj[user] as any)"
                 :reactive-sentences-obj="(reactiveSentencesObj as any)"
-                :diff-mode="showDiffValidator ? 'DIFF_VALIDATED' : diffMode ? 'DIFF_USER' : 'NO_DIFF'"
+                :diff-mode="showDiffAdmin ? 'DIFF_VALIDATED' : diffMode ? 'DIFF_USER' : 'NO_DIFF'"
                 :sentence-bus="sentenceBus"
                 :tree-user-id="(user as string)"
                 :has-pending-changes="hasPendingChanges"
+                :interactive="canEditTree(user as string)"
                 :matches="
                   sentence.matches ? (sentence.matches[user] ? sentence.matches[user].map((match) => Object.values(match.nodes)).flat() : []) : []
                 "
@@ -102,7 +117,7 @@
         <div class="row">
           <div class="text-overline">Tags:</div>
           <div v-for="tag in userTags">
-            <q-chip v-if="openTabUser === username || isValidator" removable outline color="primary" size="sm" @remove="removeSentenceTag(tag)">
+            <q-chip v-if="canEditTree(openTabUser)" removable outline color="primary" size="sm" @remove="removeSentenceTag(tag)">
               {{ tag }}
             </q-chip>
             <q-chip v-else outline color="primary" size="sm">
@@ -141,7 +156,11 @@
         :sentence-bus="sentenceBus"
         :reactive-sentences-obj="(reactiveSentencesObj as reactive_sentences_obj_t)"
         />
-      <StatisticsDialog :sentence-bus="sentenceBus" :conlls="sentenceData.conlls as { [key: string]: string; validated: string }" />
+      <StatisticsDialog
+        :sentence-bus="sentenceBus"
+        :conlls="sentenceData.conlls as { [key: string]: string }"
+        :reference-user-id="pushedReferenceUserId"
+      />
     </template>
     <q-dialog v-model="showUdValidation[openTabUser]">
       <q-card style="width: 800px;max-width: 90vw;">
@@ -247,6 +266,16 @@ export default defineComponent({
       type: Object as PropType<any>,
       required: false,
     },
+    hasGithubAccess: {
+      type: Boolean as PropType<boolean>,
+      required: false,
+      default: false,
+    },
+    isSynchronized: {
+      type: Boolean as PropType<boolean>,
+      required: false,
+      default: false,
+    },
   },
   data() {
     const hasPendingChanges: { [key: string]: boolean } = {};
@@ -280,7 +309,7 @@ export default defineComponent({
     ...mapWritableState(useGithubStore, ['reloadCommits']),
     ...mapWritableState(useTreesStore, ['reloadTrees']),
     ...mapState(useTreesStore, ['reloadValidation']),
-    ...mapState(useProjectStore, ['isValidator', 'blindAnnotationMode', 'shownMeta', 'languageDetected', 'annotationFeatures']),
+    ...mapState(useProjectStore, ['isAdmin', 'blindAnnotationMode', 'shownMeta', 'languageDetected', 'annotationFeatures']),
     ...mapState(useUserStore, ['username']),
     ...mapState(useTagsStore, ['defaultTags']),
     lastModifiedTime() {
@@ -311,7 +340,7 @@ export default defineComponent({
         }
       return lastModifiedTime;
     },
-    showDiffValidator() {
+    showDiffAdmin() {
       return this.blindAnnotationMode && this.blindAnnotationLevel <= 2;
     },
     userTags() {
@@ -322,13 +351,34 @@ export default defineComponent({
     },
     filteredConlls() {
       let filteredConlls = this.sentenceData.conlls;
-      if (this.blindAnnotationLevel !== 1 && !this.isValidator && this.blindAnnotationMode) {
-        return Object.fromEntries(Object.entries(filteredConlls).filter(([user]) => user !== 'validated'));
+      if (this.blindAnnotationLevel !== 1 && !this.isAdmin && this.blindAnnotationMode) {
+        return Object.fromEntries(Object.entries(filteredConlls).filter(([user]) => user !== 'validated' && user !== 'github'));
       }
       return this.orderConlls(filteredConlls);
     },
     lastValidator() {
       return this.reactiveSentencesObj[this.openTabUser].state.metaJson['validated_by']
+    },
+    stagedTrees() {
+      const githubStore = useGithubStore();
+      const stagingMap: {
+        [userId: string]: {
+          by: string;
+          at: string;
+          status: 'staged' | 'pushed' | 'pinned';
+          pushedBy?: string;
+          pushedAt?: string;
+        } | undefined;
+      } = {};
+      for (const userId of Object.keys(this.reactiveSentencesObj)) {
+        const stagingInfo = githubStore.getStagingInfo(this.sentence.sent_id, userId);
+        stagingMap[userId] = stagingInfo;
+      }
+      return stagingMap;
+    },
+    pushedReferenceUserId() {
+      const pushedEntry = Object.entries(this.stagedTrees).find(([, info]) => info?.status === 'pushed');
+      return pushedEntry ? pushedEntry[0] : '';
     }
   },
   created() {
@@ -374,13 +424,14 @@ export default defineComponent({
     removeSentenceTag(tag: string) {
       this.removeTag(this.sentenceData, tag, this.sentenceBus, this.openTabUser);
     },
-    save(mode: string) {
+    save(mode: string, options?: { gitAdd?: boolean }) {
+      const gitAdd = options?.gitAdd || false;
       const openedTreeUser = this.openTabUser;
       let changedConllUser = this.username;
       let updateCommit = true;
       if (mode) changedConllUser = mode;
 
-      if (!mode && this.reactiveSentencesObj[this.openTabUser].exportConll() === this.sentenceData.conlls[this.openTabUser].trim()) {
+      if (!mode && !gitAdd && this.reactiveSentencesObj[this.openTabUser].exportConll() === this.sentenceData.conlls[this.openTabUser].trim()) {
         updateCommit = false;
       }
 
@@ -391,12 +442,18 @@ export default defineComponent({
 
       const exportedConll = this.reactiveSentencesObj[openedTreeUser].exportConllWithModifiedMeta(metaToReplace);
 
-      const data = {
+      const data: any = {
         conll: exportedConll,
         userId: changedConllUser,
         updateCommit: updateCommit,
         sentId: this.sentenceData.sent_id,
       };
+
+      // Add gitAdd flag
+      if (gitAdd) {
+        data.gitAdd = true;
+      }
+
       if (!this.sentence.sample_name) {
         return;
       }
@@ -404,6 +461,7 @@ export default defineComponent({
         .updateTree(this.$route.params.projectname as string, this.sentence.sample_name, data)
         .then((response) => {
           if (response.status === 200) {
+            const githubStore = useGithubStore();
             this.sentenceBus.emit('action:saved', {
               userId: this.openTabUser,
             });
@@ -430,12 +488,34 @@ export default defineComponent({
             if (this.sentenceData.sent_id !== sentenceConllToJson(newConll).metaJson.sent_id ) {
               this.reloadTrees = true;
             }
-            notifyMessage({ position: 'top', message: 'Saved on the server', icon: 'save' });
+
+            // Handle staging response
+            if (gitAdd && response.data.staged) {
+              githubStore.setStagingInfo(
+                this.sentence.sent_id,
+                changedConllUser,
+                response.data.staged_by,
+                response.data.staged_at
+              );
+              notifyMessage({
+                position: 'top',
+                message: ' Staged for next push',
+                icon: 'cloud_upload',
+                type: 'positive'
+              });
+            } else {
+              githubStore.clearStaging(this.sentence.sent_id, changedConllUser);
+              notifyMessage({ position: 'top', message: 'Saved on the server', icon: 'save' });
+            }
             this.validateUdTree(newConll);
           }
         })
         .catch((error) => {
-          notifyError({ error, caller: 'SentenceCard.save' });
+          if (error.response?.status === 409) {
+            notifyError({ error, caller: 'SentenceCard.save' });
+          } else {
+            notifyError({ error, caller: 'SentenceCard.save' });
+          }
         });
     },
     validateUdTree(conll: string) {
@@ -502,6 +582,9 @@ export default defineComponent({
     changeText() {
       this.sentenceData.sentence = this.reactiveSentencesObj[this.openTabUser].getSentenceText();
     },
+    canEditTree(userId: string) {
+      return !!userId && userId === this.username && userId !== 'validated' && userId !== 'github';
+    },
     orderConlls(filteredConlls: { [key: string]: string }) {
       const userAndTimestamps = [];
       for (const [user, reactiveSentence] of Object.entries(this.reactiveSentencesObj)) {
@@ -513,7 +596,16 @@ export default defineComponent({
       // sort from newest to oldest
       const orderedUserAndTimestamps = [...userAndTimestamps].sort((a, b) => b.timestamp - a.timestamp);
       const orderedConlls: { [key: string]: string } = {};
+      if (filteredConlls.github) {
+        orderedConlls.github = filteredConlls.github;
+      }
+      if (filteredConlls.validated) {
+        orderedConlls.validated = filteredConlls.validated;
+      }
       for (const userAndTimestamp of orderedUserAndTimestamps) {
+        if (userAndTimestamp.user === 'validated' || userAndTimestamp.user === 'github') {
+          continue;
+        }
         orderedConlls[userAndTimestamp.user] = filteredConlls[userAndTimestamp.user];
       }
       return orderedConlls;
@@ -544,5 +636,12 @@ export default defineComponent({
 }
 .clickable:hover {
   cursor: pointer;
+}
+.staged-alert-left :deep(.q-tab__alert),
+.staged-alert-left :deep(.q-tab__alert-icon) {
+  left: 0px !important;
+  right: auto !important;
+  inset-inline-start: 0px !important;
+  inset-inline-end: auto !important;
 }
 </style>

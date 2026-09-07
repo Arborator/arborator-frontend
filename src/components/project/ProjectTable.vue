@@ -40,7 +40,7 @@
         <q-td key="samplename" :props="props">
           <div class="row items-center justify-center no-wrap q-gutter-xs">
             <q-btn
-              :disable="freezed && !isOwner"
+              :disable="freezed && !isAdmin"
               outline
               color="white"
               :text-color="$q.dark.isActive ? 'white' : 'black'"
@@ -51,7 +51,8 @@
               {{ props.row.sampleName }}
             </q-btn>
             <q-btn
-              :disable="freezed && !isOwner"
+              v-if="isAdmin"
+              :disable="freezed && !isAdmin"
               flat
               round
               dense
@@ -65,6 +66,7 @@
         </q-td>
         <q-td key="sentences" :props="props">{{ props.row.sentences }}</q-td>
         <q-td key="tokens" :props="props">{{ props.row.tokens }}</q-td>
+        <q-td key="stagedCount" :props="props">{{ props.row.stagedCount }}</q-td>
         <q-td key="treesFrom" :props="props">
           <div v-if="Object.keys(props.row.treeByUser).length >= 5">
             {{ props.row.treesFrom.length }} {{ $t('projectTable.users') }}
@@ -153,6 +155,12 @@ export default defineComponent({
           field: 'number_tokens',
         },
         {
+          name: 'stagedCount',
+          label: this.$t('projectTable.tableFields[5]'),
+          sortable: true,
+          field: 'stagedCount',
+        },
+        {
           name: 'treesFrom',
           label: this.$t('projectTable.tableFields[3]'),
           sortable: true,
@@ -166,8 +174,8 @@ export default defineComponent({
         },
       ],
       selected,
-      visibleColumns: ['samplename', 'treesFrom', 'tokens', 'sentences'],
-      visibleColumnsBlindAnnotationMode: ['samplename', 'blindAnnotationLevel', 'treesFrom', 'tokens', 'sentences'],
+      visibleColumns: ['samplename', 'treesFrom', 'tokens', 'stagedCount', 'sentences'],
+      visibleColumnsBlindAnnotationMode: ['samplename', 'blindAnnotationLevel', 'treesFrom', 'tokens', 'stagedCount', 'sentences'],
       filter: '',
       loading: false,
       pagination: {
@@ -211,7 +219,7 @@ export default defineComponent({
       'name',
       'isAdmin',
       'freezed',
-      'isOwner',
+      'isAdmin',
       'isAllowdedToSync',
       'blindAnnotationMode'
     ]),
@@ -245,6 +253,9 @@ export default defineComponent({
       }, 0);
     },
     showRenameSampleDial(sampleName: string, hasValidated: boolean) {
+      if (!this.isAdmin) {
+        return;
+      }
       this.isShowRenameDial = true;
       this.selectedSample = sampleName;
       this.hasValidated = hasValidated;

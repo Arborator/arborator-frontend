@@ -86,6 +86,7 @@ export interface sample_t {
   treeByUser: { [key: string]: number };
   tags: { [key: string]: number };
   stagedCount: number;
+  pushedCount: number;
 }
 
 //// GREW

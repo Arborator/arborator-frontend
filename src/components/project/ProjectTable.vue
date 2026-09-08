@@ -67,6 +67,7 @@
         <q-td key="sentences" :props="props">{{ props.row.sentences }}</q-td>
         <q-td key="tokens" :props="props">{{ props.row.tokens }}</q-td>
         <q-td key="stagedCount" :props="props">{{ props.row.stagedCount }}</q-td>
+        <q-td key="pushedCount" :props="props">{{ props.row.pushedCount }}</q-td>
         <q-td key="treesFrom" :props="props">
           <div v-if="Object.keys(props.row.treeByUser).length >= 5">
             {{ props.row.treesFrom.length }} {{ $t('projectTable.users') }}
@@ -161,6 +162,12 @@ export default defineComponent({
           field: 'stagedCount',
         },
         {
+          name: 'pushedCount',
+          label: this.$t('projectTable.tableFields[6]'),
+          sortable: true,
+          field: 'pushedCount',
+        },
+        {
           name: 'treesFrom',
           label: this.$t('projectTable.tableFields[3]'),
           sortable: true,
@@ -174,8 +181,8 @@ export default defineComponent({
         },
       ],
       selected,
-      visibleColumns: ['samplename', 'treesFrom', 'tokens', 'stagedCount', 'sentences'],
-      visibleColumnsBlindAnnotationMode: ['samplename', 'blindAnnotationLevel', 'treesFrom', 'tokens', 'stagedCount', 'sentences'],
+      visibleColumns: ['samplename', 'treesFrom', 'tokens', 'stagedCount', 'pushedCount', 'sentences'],
+      visibleColumnsBlindAnnotationMode: ['samplename', 'blindAnnotationLevel', 'treesFrom', 'tokens', 'stagedCount','pushedCount', 'sentences'],
       filter: '',
       loading: false,
       pagination: {

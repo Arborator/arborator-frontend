@@ -156,7 +156,7 @@ export default {
     tooltipSearch: 'Search a sample',
     search: 'Search',
     users: 'User',
-    tableFields: ['Name', 'Nb sentences', 'Nb tokens', 'Trees from', 'Blind annotation level', 'Nb staged'],
+    tableFields: ['Name', 'Nb sentences', 'Nb tokens', 'Trees from', 'Blind annotation level', 'Nb staged', 'nb pushed'],
   },
 
   // Component project options

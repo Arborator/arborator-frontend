@@ -412,12 +412,25 @@ export default defineComponent({
       };
     },
     canStageCurrentTree() {
-      return !this.activeSentenceStaging || this.activeSentenceStaging.by === this.username;
+      const canStageByOwnership = !this.activeSentenceStaging || this.activeSentenceStaging.by === this.username;
+      if (!canStageByOwnership) {
+        return false;
+      }
+
+      if (this.currentTreeStagingInfo?.status === 'pushed' && !this.hasUnsavedChanges) {
+        return false;
+      }
+
+      return true;
     },
     canUnstageCurrentTree() {
       return this.currentTreeStagingInfo?.status === 'staged';
     },
     stageTooltip() {
+      if (this.currentTreeStagingInfo?.status === 'pushed' && !this.hasUnsavedChanges) {
+        return 'Tree already pushed to GitHub and unchanged';
+      }
+
       if (!this.activeSentenceStaging || this.activeSentenceStaging.by === this.username) {
         return 'Save & stage for next GitHub push';
       }
@@ -441,6 +454,19 @@ export default defineComponent({
       }
 
       return pushedEntry[0].slice(sentPrefix.length);
+    },
+    hasUnsavedChanges() {
+      if (!this.openTabUser || this.openTabUser === 'validated' || this.openTabUser === 'github') {
+        return false;
+      }
+
+      const localServerTree = this.sentenceData.conlls[this.openTabUser];
+      const reactiveTree = this.reactiveSentencesObj[this.openTabUser];
+      if (!localServerTree || !reactiveTree) {
+        return false;
+      }
+
+      return reactiveTree.exportConll() !== localServerTree.trim();
     },
   },
   methods: {

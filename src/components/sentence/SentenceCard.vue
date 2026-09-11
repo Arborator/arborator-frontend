@@ -33,7 +33,7 @@
           :label="`${user}`"
           :alert="hasPendingChanges[user] ? 'orange' : (user !== 'validated' && stagedTrees[user] ? (stagedTrees[user].status === 'staged' ? 'warning' : 'positive') : '')"
           :alert-icon="hasPendingChanges[user] ? 'save' : (user !== 'validated' && stagedTrees[user] ? (stagedTrees[user].status === 'staged' ? 'cloud_upload' : 'cloud_done') : '')"
-          :icon="diffMode && user === diffUserId ? 'school' : 'person'"
+          :icon="diffMode && user === diffUserId ? 'school' : (hasGithubReferenceForSentence ? 'person_add' : 'person')"
           no-caps
           :ripple="false"
           @contextmenu="rightClickHandler($event, user as string)"
@@ -125,6 +125,17 @@
             </q-chip>
           </div>
         </div>
+        <div v-if="githubComparison" class="q-mt-md q-pr-md">
+          <q-banner v-if="githubComparison.status === 'missing' && isSynchronized && hasGithubAccess" class="bg-orange-2 text-orange-10 rounded-borders">
+            Cette phrase n'existe pas sur GitHub.
+          </q-banner>
+          <q-banner v-else-if="githubComparison.status === 'same'" class="bg-green-2 text-green-10 rounded-borders">
+            Cette phrase est la même sur GitHub.
+          </q-banner>
+          <q-banner v-else class="bg-grey-1 text-grey-10 rounded-borders">
+            <div v-html="githubComparison.diff" class="github-diff-pre"></div>
+          </q-banner>
+        </div>
       </div>
     </div>
     <template>
@@ -193,6 +204,7 @@
 
 <script lang="ts">
 import { ReactiveSentence } from 'dependencytreejs/src/ReactiveSentence';
+import { diffLines } from 'diff';
 import { constructTextFromTreeJson, sentenceConllToJson } from 'conllup/lib/conll';
 import mitt, { Emitter } from 'mitt';
 import { mapActions, mapState, mapWritableState } from 'pinia';
@@ -270,6 +282,16 @@ export default defineComponent({
       type: Boolean as PropType<boolean>,
       required: false,
       default: false,
+    },
+    githubSampleDiff: {
+      type: String as PropType<string>,
+      required: false,
+      default: '',
+    },
+    githubReferenceConll: {
+      type: String as PropType<string>,
+      required: false,
+      default: '',
     },
     isSynchronized: {
       type: Boolean as PropType<boolean>,
@@ -379,7 +401,38 @@ export default defineComponent({
     pushedReferenceUserId() {
       const pushedEntry = Object.entries(this.stagedTrees).find(([, info]) => info?.status === 'pushed');
       return pushedEntry ? pushedEntry[0] : '';
-    }
+    },
+    currentDisplayedConll() {
+      if (!this.openTabUser || !this.reactiveSentencesObj[this.openTabUser]) {
+        return '';
+      }
+
+      return this.reactiveSentencesObj[this.openTabUser].exportConll();
+    },
+    resolvedGithubReferenceConll() {
+      return this.githubReferenceConll || (this.sentenceData.conlls.github ?? '');
+    },
+    hasGithubReferenceForSentence() {
+      return !!this.resolvedGithubReferenceConll;
+    },
+    githubComparison() {
+      if (!this.openTabUser || this.openTabUser === 'validated') {
+        return null;
+      }
+
+      if (!this.resolvedGithubReferenceConll) {
+        return { status: 'missing' };
+      }
+
+      if (this.normalizeConllForGithubComparison(this.currentDisplayedConll) === this.normalizeConllForGithubComparison(this.resolvedGithubReferenceConll)) {
+        return { status: 'same' };
+      }
+
+      return {
+        status: 'diff',
+        diff: this.buildGithubDiff(this.currentDisplayedConll, this.resolvedGithubReferenceConll),
+      };
+    },
   },
   created() {
     const treesStore = useTreesStore();
@@ -417,6 +470,39 @@ export default defineComponent({
   methods: {
     ...mapActions(useTagsStore, ['removeTag']),
     ...mapActions(useTreesStore, ['removePendingModification']),
+    normalizeConllForGithubComparison(conll: string) {
+      return conll
+        .split('\n')
+        .filter((line: string) => !line.startsWith('# user_id =') && !line.startsWith('# timestamp ='))
+        .join('\n')
+        .trim();
+    },
+    escapeHtml(text: string) {
+      return text
+        .replaceAll('&', '&amp;')
+        .replaceAll('<', '&lt;')
+        .replaceAll('>', '&gt;')
+        .replaceAll('"', '&quot;')
+        .replaceAll("'", '&#39;');
+    },
+    buildGithubDiff(currentConll: string, githubConll: string) {
+      return diffLines(
+        this.normalizeConllForGithubComparison(githubConll),
+        this.normalizeConllForGithubComparison(currentConll)
+      )
+        .map((part) => {
+          const escapedValue = this.escapeHtml(part.value);
+          if (part.added) {
+            return `<span class="text-green">+${escapedValue}</span>`;
+          }
+          if (part.removed) {
+            return `<span class="text-red">-${escapedValue}</span>`;
+          }
+          return `<span>${escapedValue}</span>`;
+        })
+        .join('')
+        .replace(/\n/g, '<br/>');
+    },
     handleStatusChange(event: { canUndo: boolean; canRedo: boolean }) {
       this.canUndo = event.canUndo;
       this.canRedo = event.canRedo;
@@ -449,7 +535,6 @@ export default defineComponent({
         sentId: this.sentenceData.sent_id,
       };
 
-      // Add gitAdd flag
       if (gitAdd) {
         data.gitAdd = true;
       }
@@ -469,12 +554,10 @@ export default defineComponent({
             this.removePendingModification(`${this.sentence.sent_id}_${this.openTabUser}`);
             this.reloadCommits += 1;
             if (this.sentenceData.conlls[changedConllUser]) {
-              // the user already had a tree
               this.hasPendingChanges[changedConllUser] = false;
               this.sentenceData.conlls[changedConllUser] = newConll;
               this.reactiveSentencesObj[changedConllUser].fromSentenceConll(newConll);
             } else {
-              // user still don't have a tree for this sentence, creating it.
               this.sentenceData.conlls[changedConllUser] = newConll;
               this.reactiveSentencesObj[changedConllUser] = new ReactiveSentence();
             }
@@ -489,7 +572,6 @@ export default defineComponent({
               this.reloadTrees = true;
             }
 
-            // Handle staging response
             if (gitAdd && response.data.staged) {
               githubStore.setStagingInfo(
                 this.sentence.sent_id,
@@ -554,7 +636,6 @@ export default defineComponent({
         this.sentenceText = this.sentenceData.sentence;
       }
       
-      // Scroll the sentence card
       this.$nextTick(() => {
         const element = this.$el as HTMLElement;
         if (element) {
@@ -593,7 +674,6 @@ export default defineComponent({
           timestamp: parseInt(reactiveSentence.state.metaJson.timestamp as string, 10),
         });
       }
-      // sort from newest to oldest
       const orderedUserAndTimestamps = [...userAndTimestamps].sort((a, b) => b.timestamp - a.timestamp);
       const orderedConlls: { [key: string]: string } = {};
       if (filteredConlls.github) {
@@ -636,6 +716,11 @@ export default defineComponent({
 }
 .clickable:hover {
   cursor: pointer;
+}
+.github-diff-pre {
+  white-space: pre-wrap;
+  margin: 0;
+  overflow-x: auto;
 }
 .staged-alert-left :deep(.q-tab__alert),
 .staged-alert-left :deep(.q-tab__alert-icon) {

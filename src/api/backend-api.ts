@@ -159,6 +159,9 @@ export default {
   getSampleTrees(projectName: string, samplename: string) {
     return API.get(`/projects/${projectName}/samples/${samplename}/trees`);
   },
+  getGithubReferenceTrees(projectName: string, samplename: string) {
+    return API.get(`/projects/${projectName}/samples/${samplename}/trees/github-reference`);
+  },
   updateTree(projectName: string, samplename: string, data: updateTree_ED) {
     return API.post(`/projects/${projectName}/samples/${samplename}/trees`, data);
   },

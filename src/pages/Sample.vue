@@ -35,6 +35,8 @@
                 :ud-validation="udValidationPassed[item.sent_id] || {}"
                 :has-github-access="hasGithubAccess"
                 :is-synchronized="isSynchronized"
+                :github-reference-conll="githubReferenceTrees[item.sent_id] || ''"
+                :github-sample-diff="githubSampleDiffs[samplename] || ''"
                 @closeCards="closeAllCard()"
               >
               </SentenceCard>
@@ -106,6 +108,8 @@ export default defineComponent({
       cardRefs: [] as any[],
       hasGithubAccess: false,
       isSynchronized: false,
+      githubReferenceTrees: {} as { [sentId: string]: string },
+      githubSampleDiffs: {} as { [sampleName: string]: string },
     };
   },
   computed: {
@@ -138,6 +142,8 @@ export default defineComponent({
     document.title = `${this.projectname}/${this.samplename}`;
     this.emptyPendingModification();
     this.getTrees();
+    this.loadGithubReferenceTrees();
+    this.loadGithubSampleDiffs();
     this.calculateHeight();
     this.reloadValidation = false;
     this.loadSyncInfo();
@@ -154,6 +160,37 @@ export default defineComponent({
   methods: {
     ...mapActions(useTreesStore, ['emptyPendingModification']),
     ...mapActions(useTreesStore, ['getSampleTrees', 'applyFilterTrees', 'getUsersTags']),
+    loadGithubReferenceTrees() {
+      api
+        .getGithubReferenceTrees(this.projectname, this.samplename)
+        .then((response) => {
+          this.githubReferenceTrees = response.data.github_reference_trees || {};
+        })
+        .catch((error) => {
+          notifyError({ error, caller: 'loadGithubReferenceTrees' });
+          this.githubReferenceTrees = {};
+        });
+    },
+    loadGithubSampleDiffs() {
+      api
+        .getChanges(this.projectname)
+        .then((response) => {
+          const diffs: { [sampleName: string]: string } = {};
+          for (const sample of response.data || []) {
+            if (sample.sample_name) {
+              diffs[sample.sample_name] = sample.diff || '';
+            }
+          }
+          this.githubSampleDiffs = diffs;
+        })
+        .catch((error) => {
+          this.githubSampleDiffs = {};
+          const axiosError = error as AxiosError;
+          if (axiosError.response?.status !== 404) {
+            notifyError({ error, caller: 'loadGithubSampleDiffs' });
+          }
+        });
+    },
     getTrees() {
       this.getSampleTrees({ projectName: this.projectname, sampleName: this.samplename }).then(() => {
         this.scrollToIndexFromURL();

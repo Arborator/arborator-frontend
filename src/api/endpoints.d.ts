@@ -78,6 +78,10 @@ export interface updateTree_ED {
   pinToGithub?: boolean;
 }
 
+export interface getGithubReferenceTrees_RV {
+  github_reference_trees: { [sentId: string]: string };
+}
+
 //// GREW
 export type grewSearch_RV = grewSearchResult_t;
 

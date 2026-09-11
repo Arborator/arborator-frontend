@@ -12,7 +12,7 @@
     :filter="table.filter"
     :filter-method="searchSamples"
     binary-state-sort
-    :visible-columns="blindAnnotationMode ? table.visibleColumnsBlindAnnotationMode : table.visibleColumns"
+    :visible-columns="blindAnnotationMode ? visibleColumnsBlindAnnotationModeComputed : visibleColumnsComputed"
     selection="multiple"
     :table-header-class="$q.dark.isActive ? 'text-white' : 'text-primary'"
     virtual-scroll
@@ -66,8 +66,8 @@
         </q-td>
         <q-td key="sentences" :props="props">{{ props.row.sentences }}</q-td>
         <q-td key="tokens" :props="props">{{ props.row.tokens }}</q-td>
-        <q-td key="stagedCount" :props="props">{{ props.row.stagedCount }}</q-td>
-        <q-td key="pushedCount" :props="props">{{ props.row.pushedCount }}</q-td>
+        <q-td v-if="isProjectSynchronized" key="stagedCount" :props="props">{{ props.row.stagedCount }}</q-td>
+        <q-td v-if="isProjectSynchronized" key="pushedCount" :props="props">{{ props.row.pushedCount }}</q-td>
         <q-td key="treesFrom" :props="props">
           <div v-if="Object.keys(props.row.treeByUser).length >= 5">
             {{ props.row.treesFrom.length }} {{ $t('projectTable.users') }}
@@ -230,6 +230,23 @@ export default defineComponent({
       'isAllowdedToSync',
       'blindAnnotationMode'
     ]),
+    isProjectSynchronized() {
+      return !!this.syncGithubRepo;
+    },
+    visibleColumnsComputed() {
+      const visibleColumns = this.table?.visibleColumns ?? [];
+      if (this.isProjectSynchronized) {
+        return visibleColumns;
+      }
+      return visibleColumns.filter((column) => column !== 'stagedCount' && column !== 'pushedCount');
+    },
+    visibleColumnsBlindAnnotationModeComputed() {
+      const visibleColumnsBlind = this.table?.visibleColumnsBlindAnnotationMode ?? [];
+      if (this.isProjectSynchronized) {
+        return visibleColumnsBlind;
+      }
+      return visibleColumnsBlind.filter((column) => column !== 'stagedCount' && column !== 'pushedCount');
+    },
   },
   watch: {
     samples(newVal, oldVal) {

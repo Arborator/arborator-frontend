@@ -132,7 +132,7 @@
           <q-banner v-else-if="githubComparison.status === 'same'" class="bg-green-2 text-green-10 rounded-borders">
             Cette phrase est la même sur GitHub.
           </q-banner>
-          <q-banner v-else class="bg-grey-1 text-grey-10 rounded-borders">
+          <q-banner v-else-if="githubComparison.status === 'diff'" class="bg-grey-1 text-grey-10 rounded-borders">
             <div v-html="githubComparison.diff" class="github-diff-pre"></div>
           </q-banner>
         </div>
@@ -490,18 +490,26 @@ export default defineComponent({
         this.normalizeConllForGithubComparison(githubConll),
         this.normalizeConllForGithubComparison(currentConll)
       )
-        .map((part) => {
-          const escapedValue = this.escapeHtml(part.value);
-          if (part.added) {
-            return `<span class="text-green">+${escapedValue}</span>`;
+        .flatMap((part) => {
+          const lines = part.value.split('\n');
+          if (lines[lines.length - 1] === '') {
+            lines.pop();
           }
-          if (part.removed) {
-            return `<span class="text-red">-${escapedValue}</span>`;
-          }
-          return `<span>${escapedValue}</span>`;
+
+          const rowClass = part.added
+            ? 'github-diff-line github-diff-line--added'
+            : part.removed
+            ? 'github-diff-line github-diff-line--removed'
+            : 'github-diff-line github-diff-line--same';
+
+          const prefix = part.added ? '+' : part.removed ? '-' : '&nbsp;';
+
+          return lines.map((line) => {
+            const escapedLine = this.escapeHtml(line || ' ');
+            return `<div class="${rowClass}"><span class="github-diff-prefix">${prefix}</span><span class="github-diff-content">${escapedLine}</span></div>`;
+          });
         })
-        .join('')
-        .replace(/\n/g, '<br/>');
+        .join('');
     },
     handleStatusChange(event: { canUndo: boolean; canRedo: boolean }) {
       this.canUndo = event.canUndo;
@@ -718,9 +726,40 @@ export default defineComponent({
   cursor: pointer;
 }
 .github-diff-pre {
-  white-space: pre-wrap;
+  white-space: normal;
   margin: 0;
   overflow-x: auto;
+}
+:deep(.github-diff-line) {
+  display: grid;
+  grid-template-columns: 18px 1fr;
+  gap: 8px;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, Liberation Mono, Courier New, monospace;
+  font-size: 12px;
+  line-height: 1.5;
+  padding: 1px 6px;
+  border-radius: 3px;
+}
+:deep(.github-diff-prefix) {
+  text-align: center;
+  user-select: none;
+  opacity: 0.9;
+}
+:deep(.github-diff-content) {
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+:deep(.github-diff-line--added) {
+  color: #1b5e20;
+  background: #e8f5e9;
+}
+:deep(.github-diff-line--removed) {
+  color: #b71c1c;
+  background: #ffebee;
+}
+:deep(.github-diff-line--same) {
+  color: #455a64;
+  background: transparent;
 }
 .staged-alert-left :deep(.q-tab__alert),
 .staged-alert-left :deep(.q-tab__alert-icon) {

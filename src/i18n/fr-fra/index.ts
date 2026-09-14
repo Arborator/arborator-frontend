@@ -363,6 +363,8 @@ export default {
     validation: "Problèmes de validation",
     notDetectedLang: ["La langue du projet n'a pas été trouvée dans la liste des langues d'UD ", "(La liste des langues d'UD)"],
     noValidationIssues: 'Votre annotation est valide',
+    ingithub: "Cette phrase est la même sur GitHub",
+    outgithub: "Cette phrase n'existe pas sur GitHub",
   },
   tagsMenu: {
     enterTags: 'Saisir les tags',

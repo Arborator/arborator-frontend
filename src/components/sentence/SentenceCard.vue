@@ -126,12 +126,12 @@
           </div>
         </div>
         <div v-if="githubComparison" class="q-mt-md q-pr-md">
-          <q-banner v-if="githubComparison.status === 'missing' && isSynchronized && hasGithubAccess" class="bg-orange-2 text-orange-10 rounded-borders">
-            Cette phrase n'existe pas sur GitHub.
-          </q-banner>
-          <q-banner v-else-if="githubComparison.status === 'same'" class="bg-green-2 text-green-10 rounded-borders">
-            Cette phrase est la même sur GitHub.
-          </q-banner>
+          <div v-if="githubComparison.status === 'missing' && isSynchronized && hasGithubAccess" class="github-status-info github-status-info--missing">
+            {{ $t('sentenceCard.outgithub') }}
+          </div>
+          <div v-else-if="githubComparison.status === 'same'" class="github-status-info github-status-info--same">
+            {{ $t('sentenceCard.ingithub') }}
+          </div>
           <q-banner v-else-if="githubComparison.status === 'diff'" class="bg-grey-1 text-grey-10 rounded-borders">
             <div v-html="githubComparison.diff" class="github-diff-pre"></div>
           </q-banner>
@@ -729,6 +729,24 @@ export default defineComponent({
   white-space: normal;
   margin: 0;
   overflow-x: auto;
+}
+.github-status-info {
+  display: inline-block;
+  padding: 6px 10px;
+  border-radius: 10px;
+  font-size: 12px;
+  line-height: 1.4;
+  margin-bottom: 4px;
+}
+.github-status-info--missing {
+  color: #8a4b00;
+  background: #ffefcc;
+  border: 1px solid #ffd9a1;
+}
+.github-status-info--same {
+  color: #1b5e20;
+  background: #e8f5e9;
+  border: 1px solid #b7e1bb;
 }
 :deep(.github-diff-line) {
   display: grid;

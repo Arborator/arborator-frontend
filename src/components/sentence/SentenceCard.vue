@@ -132,8 +132,31 @@
           <div v-else-if="githubComparison.status === 'same'" class="github-status-info github-status-info--same">
             {{ $t('sentenceCard.ingithub') }}
           </div>
-          <q-banner v-else-if="githubComparison.status === 'diff'" class="bg-grey-1 text-grey-10 rounded-borders">
-            <div v-html="githubComparison.diff" class="github-diff-pre"></div>
+          <q-banner
+            v-else-if="githubComparison.status === 'diff'"
+            class="bg-grey-1 text-grey-10 rounded-borders"
+          >
+            <div
+              class="github-diff-toggle"
+              @click="showGithubDiff = !showGithubDiff"
+            >
+              <q-icon
+                :name="showGithubDiff ? 'expand_less' : 'expand_more'"
+                size="18px"
+              />
+              <span>
+                {{ $t('sentenceCard.githubDiffclick') }}
+                {{ githubDiffCount }}
+                {{ githubDiffCount === 1
+                  ? $t('sentenceCard.githubDiffOne')
+                  : $t('sentenceCard.githubDiffMany') }}
+              </span>
+            </div>
+            <div
+              v-if="showGithubDiff"
+              v-html="githubComparison.diff"
+              class="github-diff-pre"
+            ></div>
           </q-banner>
         </div>
       </div>
@@ -324,6 +347,7 @@ export default defineComponent({
       udValidationMsg,
       udValidationStatut,
       showUdValidation,
+      showGithubDiff: false,
     };
   },
   computed: {
@@ -432,6 +456,47 @@ export default defineComponent({
         status: 'diff',
         diff: this.buildGithubDiff(this.currentDisplayedConll, this.resolvedGithubReferenceConll),
       };
+    },
+    githubDiffCount() {
+      if (!this.githubComparison || this.githubComparison.status !== 'diff') {
+        return 0;
+      }
+
+      const diff = diffLines(
+        this.normalizeConllForGithubComparison(this.resolvedGithubReferenceConll),
+        this.normalizeConllForGithubComparison(this.currentDisplayedConll)
+      );
+
+      let count = 0;
+
+      for (let i = 0; i < diff.length; i++) {
+        const part = diff[i];
+
+        if (part.removed) {
+          const removedLines = part.value
+            .split('\n')
+            .filter((line) => line !== '').length;
+
+          const nextPart = diff[i + 1];
+
+          if (nextPart?.added) {
+            const addedLines = nextPart.value
+              .split('\n')
+              .filter((line) => line !== '').length;
+
+            count += Math.max(removedLines, addedLines);
+            i++;
+          } else {
+            count += removedLines;
+          }
+        } else if (part.added) {
+          count += part.value
+            .split('\n')
+            .filter((line) => line !== '').length;
+        }
+      }
+
+      return count;
     },
   },
   created() {
@@ -785,5 +850,21 @@ export default defineComponent({
   right: auto !important;
   inset-inline-start: 0px !important;
   inset-inline-end: auto !important;
+}
+.github-diff-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 500;
+  padding: 4px 8px;
+  border-radius: 6px;
+  user-select: none;
+  color: var(--q-primary);
+}
+
+.github-diff-toggle:hover {
+  background: #e0e0e0;
 }
 </style>

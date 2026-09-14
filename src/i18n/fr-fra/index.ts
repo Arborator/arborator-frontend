@@ -365,6 +365,9 @@ export default {
     noValidationIssues: 'Votre annotation est valide',
     ingithub: "Cette phrase est la même sur GitHub",
     outgithub: "Cette phrase n'existe pas sur GitHub",
+    githubDiffclick: 'Cliquez pour voir',
+    githubDiffOne: 'différence avec GitHub',
+    githubDiffMany: 'différences avec GitHub',
   },
   tagsMenu: {
     enterTags: 'Saisir les tags',

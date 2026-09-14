@@ -368,6 +368,10 @@ export default {
     noValidationIssues: 'Your annotation has no issues',
     ingithub: 'This sentence is the same on GitHub',
     outgithub: 'This sentence does not exist on GitHub',
+    githubDiffclick: 'Click to view',
+    githubDiffOne: 'difference with GitHub',
+    githubDiffMany: 'differences with GitHub',
+    
   },
   tagsMenu: {
     enterTags: 'Enter tags',

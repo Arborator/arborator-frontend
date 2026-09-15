@@ -218,6 +218,7 @@ export interface githubRepository_t {
   name: string;
   owner_name: string;
   owner_avatar: string;
+  default_branch: string;
 }
 export interface githubSynchronizedRepository_t {
   repositoryName: string;

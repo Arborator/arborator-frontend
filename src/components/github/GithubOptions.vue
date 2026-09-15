@@ -119,15 +119,17 @@
                       <q-btn size="md" flat icon="restore" @click="confirmResetSamples([sample.sample_name])">
                         <q-tooltip>{{ $t('github.statusDialog.resetOne') }}</q-tooltip>
                       </q-btn>
-                      <q-dialog v-model:model-value="selectedModifiedSamples[index]">
-                        <q-card style="min-width: 60vw">
-                          <q-card-section class="bg-primary text-white q-pa-sm row items-center justify-between" style="position: relative;">
+                      <q-dialog v-model="selectedModifiedSamples[index]">
+                        <q-card style="min-width: 60vw; height: 70vh;" class="column no-wrap">
+                          <q-card-section class="bg-primary text-white q-pa-sm row items-center justify-between col-auto">
                             <div class="text-h6 text-weight-bold">{{ sample.sample_name }}</div>
                             <q-btn icon="close" flat round dense v-close-popup size="md" />
                           </q-card-section>
+                    
                           <q-separator />
-                          <q-card-section>
-                            <pre v-html="highlightedDiff(sample.diff)" style="font-size: 13px" />
+
+                          <q-card-section class="col scroll">
+                            <pre v-html="highlightedDiff(sample.diff)" style="font-size: 13px; margin: 0; white-space: pre-wrap; word-break: break-word;" />
                           </q-card-section>
                         </q-card>
                       </q-dialog>

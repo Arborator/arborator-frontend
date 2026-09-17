@@ -31,8 +31,8 @@
           :props="user"
           :name="user"
           :label="`${user}`"
-          :alert="hasPendingChanges[user] ? 'orange' : (user !== 'validated' && stagedTrees[user] ? (stagedTrees[user].status === 'staged' ? 'warning' : 'positive') : '')"
-          :alert-icon="hasPendingChanges[user] ? 'save' : (user !== 'validated' && stagedTrees[user] ? (stagedTrees[user].status === 'staged' ? 'cloud_upload' : 'cloud_done') : '')"
+          :alert="getTabAlertColor(user as string)"
+          :alert-icon="getTabAlertIcon(user as string)"
           :icon="diffMode && user === diffUserId ? 'school' : (hasGithubReferenceForSentence ? 'person_add' : 'person')"
           no-caps
           :ripple="false"
@@ -51,6 +51,9 @@
           <q-tooltip v-else-if="user !== 'validated' && stagedTrees[user]">
             Staged by {{ stagedTrees[user]?.by || 'unknown' }}<br/>
             at {{ stagedTrees[user]?.at || 'unknown' }}
+          </q-tooltip>
+          <q-tooltip v-else-if="isTreeEqualToGithub(user as string)">
+            Same as GitHub reference
           </q-tooltip>
           <q-tooltip v-else-if="lastModifiedTime[user]">
             <q-icon color="primary" name="schedule" size="14px" class="q-ml-xs" />
@@ -136,21 +139,32 @@
             v-else-if="githubComparison.status === 'diff'"
             class="bg-grey-1 text-grey-10 rounded-borders"
           >
-            <div
-              class="github-diff-toggle"
-              @click="showGithubDiff = !showGithubDiff"
-            >
-              <q-icon
-                :name="showGithubDiff ? 'expand_less' : 'expand_more'"
-                size="18px"
+            <div class="row items-center justify-between">
+              <div
+                class="github-diff-toggle"
+                @click="showGithubDiff = !showGithubDiff"
+              >
+                <q-icon
+                  :name="showGithubDiff ? 'expand_less' : 'expand_more'"
+                  size="18px"
+                />
+                <span>
+                  {{ $t('sentenceCard.githubDiffclick') }}
+                  {{ githubDiffCount }}
+                  {{ githubDiffCount === 1
+                    ? $t('sentenceCard.githubDiffOne')
+                    : $t('sentenceCard.githubDiffMany') }}
+                </span>
+              </div>
+              <q-btn
+                v-if="canDiscardGithubDiff"
+                dense
+                flat
+                color="negative"
+                icon="undo"
+                label="Discard changes"
+                @click.stop="discardChangesToGithubReference"
               />
-              <span>
-                {{ $t('sentenceCard.githubDiffclick') }}
-                {{ githubDiffCount }}
-                {{ githubDiffCount === 1
-                  ? $t('sentenceCard.githubDiffOne')
-                  : $t('sentenceCard.githubDiffMany') }}
-              </span>
             </div>
             <div
               v-if="showGithubDiff"
@@ -439,6 +453,22 @@ export default defineComponent({
     hasGithubReferenceForSentence() {
       return !!this.resolvedGithubReferenceConll;
     },
+    canDiscardGithubDiff() {
+      return (
+        !!this.openTabUser
+        && this.openTabUser !== 'validated'
+        && this.openTabUser !== 'github'
+        && this.githubComparison?.status === 'diff'
+        && !!this.resolvedGithubReferenceConll
+        && !!this.sentenceData.sample_name
+      );
+    },
+    currentTreeStagingInfo() {
+      if (!this.openTabUser) {
+        return undefined;
+      }
+      return this.stagedTrees[this.openTabUser];
+    },
     githubComparison() {
       if (!this.openTabUser || this.openTabUser === 'validated') {
         return null;
@@ -575,6 +605,126 @@ export default defineComponent({
           });
         })
         .join('');
+    },
+    getTabAlertColor(user: string) {
+      if (this.hasPendingChanges[user]) {
+        return 'orange';
+      }
+
+      if (user !== 'validated' && this.stagedTrees[user]) {
+        return this.stagedTrees[user]?.status === 'staged' ? 'warning' : 'positive';
+      }
+
+      if (this.isTreeEqualToGithub(user)) {
+        return 'positive';
+      }
+
+      return '';
+    },
+    getTabAlertIcon(user: string) {
+      if (this.hasPendingChanges[user]) {
+        return 'save';
+      }
+
+      if (user !== 'validated' && this.stagedTrees[user]) {
+        return this.stagedTrees[user]?.status === 'staged' ? 'cloud_upload' : 'cloud_done';
+      }
+
+      if (this.isTreeEqualToGithub(user)) {
+        return 'cloud_done';
+      }
+
+      return '';
+    },
+    isTreeEqualToGithub(user: string) {
+      if (!this.resolvedGithubReferenceConll || user === 'validated' || user === 'github') {
+        return false;
+      }
+
+      const userConll = user === this.openTabUser && this.reactiveSentencesObj[user]
+        ? this.reactiveSentencesObj[user].exportConll()
+        : (this.sentenceData.conlls[user] ?? '');
+
+      return this.normalizeConllForGithubComparison(userConll)
+        === this.normalizeConllForGithubComparison(this.resolvedGithubReferenceConll);
+    },
+    discardChangesToGithubReference() {
+      const openedTreeUser = this.openTabUser;
+
+      if (!openedTreeUser || openedTreeUser === 'validated' || openedTreeUser === 'github') {
+        return;
+      }
+
+      if (!this.sentenceData.sample_name || !this.resolvedGithubReferenceConll) {
+        return;
+      }
+
+      const restoredConll = this.resolvedGithubReferenceConll
+        .split('\n')
+        .map((line: string) => {
+          if (line.startsWith('# user_id =')) {
+            return `# user_id = ${openedTreeUser}`;
+          }
+          if (line.startsWith('# timestamp =')) {
+            return `# timestamp = ${Math.round(Date.now())}`;
+          }
+          return line;
+        })
+        .join('\n');
+
+      api
+        .updateTree(this.$route.params.projectname as string, this.sentenceData.sample_name, {
+          conll: restoredConll,
+          userId: openedTreeUser,
+          updateCommit: true,
+          sentId: this.sentenceData.sent_id,
+        })
+        .then((response) => {
+          const githubStore = useGithubStore();
+          const newConll = response.data?.new_conll ?? restoredConll;
+
+          this.removePendingModification(`${this.sentence.sent_id}_${openedTreeUser}`);
+          this.hasPendingChanges[openedTreeUser] = false;
+          this.sentenceData.conlls[openedTreeUser] = newConll;
+          this.reactiveSentencesObj[openedTreeUser].fromSentenceConll(newConll);
+          this.sentenceBus.emit('action:saved', {
+            userId: openedTreeUser,
+          });
+
+          const clearLocalStagingState = () => {
+            githubStore.clearStaging(this.sentenceData.sent_id, openedTreeUser);
+            this.reloadCommits += 1;
+          };
+
+          if (this.currentTreeStagingInfo?.status === 'staged') {
+            api
+              .unstageTree(this.$route.params.projectname as string, {
+                sample_name: this.sentenceData.sample_name,
+                sent_id: this.sentenceData.sent_id,
+                tree_user_id: openedTreeUser,
+              })
+              .then(() => {
+                clearLocalStagingState();
+              })
+              .catch((error) => {
+                clearLocalStagingState();
+                notifyError({ error, caller: 'SentenceCard.discardChangesToGithubReference.unstageTree' });
+              });
+          } else {
+            clearLocalStagingState();
+          }
+
+          this.validateUdTree(newConll);
+          notifyMessage({
+            position: 'top',
+            message: 'Changes discarded and tree restored to GitHub state',
+            icon: 'undo',
+            type: 'positive',
+          });
+        })
+        .catch((error) => {
+          notifyError({ error, caller: 'SentenceCard.discardChangesToGithubReference' });
+        });
     },
     handleStatusChange(event: { canUndo: boolean; canRedo: boolean }) {
       this.canUndo = event.canUndo;

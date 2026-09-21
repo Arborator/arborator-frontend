@@ -42,15 +42,15 @@
           <q-tooltip v-if="hasPendingChanges[user]">{{ $t('sentenceCard.saveModif') }}</q-tooltip>
           <q-tooltip v-else-if="user !== 'validated' && stagedTrees[user]?.status === 'pushed'">
             Pushed by {{ stagedTrees[user]?.pushedBy || 'unknown' }}<br/>
-            at {{ stagedTrees[user]?.pushedAt || 'unknown' }}
+            {{ formatRelativeTime(stagedTrees[user]?.pushedAt) }}
           </q-tooltip>
           <q-tooltip v-else-if="user !== 'validated' && stagedTrees[user]?.status === 'pinned'">
             Pinned to current GitHub tree<br/>
-            at {{ stagedTrees[user]?.at || 'unknown' }}
+            {{ formatRelativeTime(stagedTrees[user]?.at) }}
           </q-tooltip>
           <q-tooltip v-else-if="user !== 'validated' && stagedTrees[user]">
             Staged by {{ stagedTrees[user]?.by || 'unknown' }}<br/>
-            at {{ stagedTrees[user]?.at || 'unknown' }}
+            {{ formatRelativeTime(stagedTrees[user]?.at) }}
           </q-tooltip>
           <q-tooltip v-else-if="isTreeEqualToGithub(user as string)">
             Same as GitHub reference
@@ -579,6 +579,53 @@ export default defineComponent({
         .replaceAll('>', '&gt;')
         .replaceAll('"', '&quot;')
         .replaceAll("'", '&#39;');
+    },
+    formatRelativeTime(value?: string) {
+      if (!value) {
+        return 'unknown';
+      }
+
+      let date = new Date(value);
+
+      if (Number.isNaN(date.getTime())) {
+        const numeric = Number(value);
+        if (Number.isFinite(numeric)) {
+          const ms = numeric > 1e12 ? numeric : numeric * 1000;
+          date = new Date(ms);
+        }
+      }
+
+      if (Number.isNaN(date.getTime())) {
+        return 'unknown';
+      }
+
+      const diffMs = Date.now() - date.getTime();
+      if (diffMs < 0) {
+        return 'a l\'instant';
+      }
+
+      const diffSec = Math.floor(diffMs / 1000);
+      if (diffSec < 60) {
+        return `il y a ${diffSec}s`;
+      }
+
+      const diffMin = Math.floor(diffSec / 60);
+      if (diffMin < 60) {
+        return `il y a ${diffMin} min`;
+      }
+
+      const diffHours = Math.floor(diffMin / 60);
+      if (diffHours < 24) {
+        return `il y a ${diffHours} h`;
+      }
+
+      const diffDays = Math.floor(diffHours / 24);
+      if (diffDays < 365) {
+        return `il y a ${diffDays} j`;
+      }
+
+      const diffYears = Math.floor(diffDays / 365);
+      return `il y a ${diffYears} an${diffYears > 1 ? 's' : ''}`;
     },
     buildGithubDiff(currentConll: string, githubConll: string) {
       return diffLines(

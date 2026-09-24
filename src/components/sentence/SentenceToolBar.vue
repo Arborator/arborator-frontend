@@ -80,15 +80,26 @@
         <q-tooltip>Save as Emmett</q-tooltip>
       </q-btn>
 
-      <q-btn v-if="canSaveTreeInProject && collaborativeMode" flat round dense icon="save" @click="saveTree('')">
+      <q-btn v-if="canSaveTreeInProject && collaborativeMode && isOwnDraftUser(openTabUser)" flat round dense icon="save" @click="saveTree('')">
         <q-tooltip>
           {{ $t('sentenceCard.saveTree[0]') }} {{ openTabUser }} {{ $t('sentenceCard.saveTree[1]') }}
           <b> {{ username }} </b>
         </q-tooltip>
       </q-btn>
 
+      <q-btn
+        v-if="canSaveTreeInProject && collaborativeMode && isOwnDraftUser(openTabUser)"
+        flat
+        round
+        dense
+        icon="save_as"
+        @click="saveTree(username)"
+      >
+        <q-tooltip>Save draft as {{ username }}</q-tooltip>
+      </q-btn>
+
       <q-btn 
-        v-if="canSaveTreeInProject && collaborativeMode && isAdmin && hasGithubAccess && isSynchronized" 
+        v-if="canSaveTreeInProject && collaborativeMode && isAdmin && hasGithubAccess && isSynchronized && !isOwnDraftUser(openTabUser)" 
         flat 
         round 
         dense 
@@ -102,7 +113,7 @@
       </q-btn>
 
       <q-btn
-        v-if="canSaveTreeInProject && collaborativeMode && isAdmin && hasGithubAccess && isSynchronized"
+        v-if="canSaveTreeInProject && collaborativeMode && isAdmin && hasGithubAccess && isSynchronized && !isOwnDraftUser(openTabUser)"
         flat
         round
         dense
@@ -185,6 +196,22 @@
                 >{{ diffMode ? $t('sentenceCard.diffMode[1]') : $t('sentenceCard.diffMode[0]') }}
                 {{ $t('sentenceCard.diffMode[2]') }}
               </q-item-label>
+            </q-item-section>
+          </q-item>
+          <q-item v-if="isLoggedIn && openTabUser !== '' && openTabUser !== 'github'" v-close-popup clickable @click="createDraftFromCurrentTree()">
+            <q-item-section avatar>
+              <q-avatar icon="edit_note" color="secondary" text-color="white" />
+            </q-item-section>
+            <q-item-section>
+              <q-item-label>Add draft from current tree</q-item-label>
+            </q-item-section>
+          </q-item>
+          <q-item v-if="isOwnDraftUser(openTabUser)" v-close-popup clickable @click="deleteCurrentDraft()">
+            <q-item-section avatar>
+              <q-avatar icon="delete" color="negative" text-color="white" />
+            </q-item-section>
+            <q-item-section>
+              <q-item-label>Delete current draft</q-item-label>
             </q-item-section>
           </q-item>
           <q-item v-if="canChangeSegmentation && canEditCurrentTree" v-close-popup clickable @click="chooseSegmentationOption('MERGE')">
@@ -328,6 +355,16 @@ export default defineComponent({
       type: Function as PropType<CallableFunction>,
       required: true,
     },
+    parentOnCreateDraft: {
+      type: Function as PropType<CallableFunction>,
+      required: false,
+      default: undefined,
+    },
+    parentOnDeleteDraft: {
+      type: Function as PropType<CallableFunction>,
+      required: false,
+      default: undefined,
+    },
     canUndo: {
       type: Boolean as PropType<boolean>,
       required: true,
@@ -385,7 +422,7 @@ export default defineComponent({
       return this.isAdmin && this.$route.params.samplename !== undefined // sentence segmentation option is available only in the sample view and only for admin
     },
     canEditCurrentTree() {
-      return this.openTabUser === this.username && this.openTabUser !== 'validated' && this.openTabUser !== 'github';
+      return this.openTabUser === this.username || this.isOwnDraftUser(this.openTabUser);
     },
     currentTreeStagingInfo() {
       if (!this.openTabUser || this.openTabUser === 'validated' || this.openTabUser === 'github') {
@@ -514,6 +551,19 @@ export default defineComponent({
       this.diffMode = !this.diffMode;
       if (!this.diffUserId) {
         this.diffUserId = this.openTabUser;
+      }
+    },
+    isOwnDraftUser(userId: string) {
+      return !!userId && userId.startsWith(`${this.username}_draft`);
+    },
+    createDraftFromCurrentTree() {
+      if (this.parentOnCreateDraft) {
+        this.parentOnCreateDraft();
+      }
+    },
+    deleteCurrentDraft() {
+      if (this.parentOnDeleteDraft) {
+        this.parentOnDeleteDraft();
       }
     },
     saveTree(mode: string) {

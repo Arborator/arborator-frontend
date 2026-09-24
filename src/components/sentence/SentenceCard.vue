@@ -8,6 +8,8 @@
       :open-tab-user="openTabUser"
       :sentence-data="sentenceData"
       :parent-on-save="save"
+      :parent-on-create-draft="createDraftFromCurrentTree"
+      :parent-on-delete-draft="deleteCurrentDraft"
       :can-undo="canUndo"
       :can-redo="canRedo"
       :has-github-access="hasGithubAccess"
@@ -33,7 +35,7 @@
           :label="`${user}`"
           :alert="getTabAlertColor(user as string)"
           :alert-icon="getTabAlertIcon(user as string)"
-          :icon="diffMode && user === diffUserId ? 'school' : (hasGithubReferenceForSentence ? 'person_add' : 'person')"
+          :icon="getTabIcon(user as string)"
           no-caps
           :ripple="false"
           @contextmenu="rightClickHandler($event, user as string)"
@@ -683,6 +685,23 @@ export default defineComponent({
 
       return '';
     },
+    getTabIcon(user: string) {
+      if (this.diffMode && user === this.diffUserId) {
+        return 'school';
+      }
+
+      if (this.isDraftUser(user)) {
+        return 'edit_note';
+      }
+
+      return this.hasGithubReferenceForSentence ? 'person_add' : 'person';
+    },
+    isDraftUser(user: string) {
+      return !!user && user.includes('_draft');
+    },
+    isOwnDraftUser(user: string) {
+      return !!user && user.startsWith(`${this.username}_draft`);
+    },
     isTreeEqualToGithub(user: string) {
       if (!this.resolvedGithubReferenceConll || user === 'validated' || user === 'github') {
         return false;
@@ -773,6 +792,122 @@ export default defineComponent({
           notifyError({ error, caller: 'SentenceCard.discardChangesToGithubReference' });
         });
     },
+    createDraftFromCurrentTree() {
+      const sourceUser = this.openTabUser;
+
+      if (!sourceUser || sourceUser === 'github' || !this.sentenceData.sample_name) {
+        return;
+      }
+
+      const sourceConll = this.reactiveSentencesObj[sourceUser]
+        ? this.reactiveSentencesObj[sourceUser].exportConll()
+        : (this.sentenceData.conlls[sourceUser] ?? '');
+
+      if (!sourceConll) {
+        return;
+      }
+
+      const draftPrefix = `${this.username}_draft`;
+      const existingDraftIndexes = Object.keys(this.sentenceData.conlls)
+        .filter((userId) => userId.startsWith(draftPrefix))
+        .map((userId) => Number(userId.slice(draftPrefix.length)))
+        .filter((n) => Number.isFinite(n));
+      const nextDraftIndex = existingDraftIndexes.length ? Math.max(...existingDraftIndexes) + 1 : 1;
+      const draftUserId = `${draftPrefix}${nextDraftIndex}`;
+
+      let hasUserId = false;
+      let hasTimestamp = false;
+      const draftConllLines = sourceConll.split('\n').map((line: string) => {
+        if (line.startsWith('# user_id =')) {
+          hasUserId = true;
+          return `# user_id = ${draftUserId}`;
+        }
+        if (line.startsWith('# timestamp =')) {
+          hasTimestamp = true;
+          return `# timestamp = ${Math.round(Date.now())}`;
+        }
+        return line;
+      });
+      if (!hasUserId) {
+        draftConllLines.unshift(`# user_id = ${draftUserId}`);
+      }
+      if (!hasTimestamp) {
+        draftConllLines.unshift(`# timestamp = ${Math.round(Date.now())}`);
+      }
+      const draftConll = draftConllLines.join('\n');
+
+      api
+        .updateTree(this.$route.params.projectname as string, this.sentenceData.sample_name, {
+          conll: draftConll,
+          userId: draftUserId,
+          updateCommit: true,
+          sentId: this.sentenceData.sent_id,
+        })
+        .then((response) => {
+          const newConll = response.data?.new_conll ?? draftConll;
+          this.sentenceData.conlls[draftUserId] = newConll;
+
+          const reactiveSentence = new ReactiveSentence();
+          reactiveSentence.fromSentenceConll(newConll);
+          this.reactiveSentencesObj[draftUserId] = reactiveSentence;
+
+          this.hasPendingChanges[draftUserId] = false;
+          this.udValidationStatut[draftUserId] = '';
+          this.udValidationMsg[draftUserId] = '';
+          this.udValidationPassed[draftUserId] = false;
+          this.showUdValidation[draftUserId] = false;
+
+          this.openTabUser = draftUserId;
+          this.reloadCommits += 1;
+          notifyMessage({
+            position: 'top',
+            message: `Draft ${draftUserId} created`,
+            icon: 'edit_note',
+            type: 'positive',
+          });
+        })
+        .catch((error) => {
+          notifyError({ error, caller: 'SentenceCard.createDraftFromCurrentTree' });
+        });
+    },
+    deleteCurrentDraft() {
+      const draftUserId = this.openTabUser;
+
+      if (!draftUserId || !this.isOwnDraftUser(draftUserId) || !this.sentenceData.sample_name) {
+        return;
+      }
+
+      api
+        .deleteSentenceDraftTree(this.$route.params.projectname as string, this.sentenceData.sample_name, {
+          sentId: this.sentenceData.sent_id,
+          userId: draftUserId,
+        })
+        .then(() => {
+          const githubStore = useGithubStore();
+          this.removePendingModification(`${this.sentence.sent_id}_${draftUserId}`);
+          githubStore.clearStaging(this.sentence.sent_id, draftUserId);
+
+          delete this.sentenceData.conlls[draftUserId];
+          delete this.reactiveSentencesObj[draftUserId];
+          delete this.hasPendingChanges[draftUserId];
+          delete this.udValidationStatut[draftUserId];
+          delete this.udValidationMsg[draftUserId];
+          delete this.udValidationPassed[draftUserId];
+          delete this.showUdValidation[draftUserId];
+
+          this.openTabUser = this.username in this.reactiveSentencesObj ? this.username : '';
+          this.reloadCommits += 1;
+          notifyMessage({
+            position: 'top',
+            message: `Draft ${draftUserId} deleted`,
+            icon: 'delete',
+            type: 'positive',
+          });
+        })
+        .catch((error) => {
+          notifyError({ error, caller: 'SentenceCard.deleteCurrentDraft' });
+        });
+    },
     handleStatusChange(event: { canUndo: boolean; canRedo: boolean }) {
       this.canUndo = event.canUndo;
       this.canRedo = event.canRedo;
@@ -783,7 +918,7 @@ export default defineComponent({
     save(mode: string, options?: { gitAdd?: boolean }) {
       const gitAdd = options?.gitAdd || false;
       const openedTreeUser = this.openTabUser;
-      let changedConllUser = this.username;
+      let changedConllUser = openedTreeUser;
       let updateCommit = true;
       if (mode) changedConllUser = mode;
 
@@ -934,7 +1069,7 @@ export default defineComponent({
       this.sentenceData.sentence = this.reactiveSentencesObj[this.openTabUser].getSentenceText();
     },
     canEditTree(userId: string) {
-      return !!userId && userId === this.username && userId !== 'validated' && userId !== 'github';
+      return !!userId && (userId === this.username || this.isOwnDraftUser(userId)) && userId !== 'validated' && userId !== 'github';
     },
     orderConlls(filteredConlls: { [key: string]: string }) {
       const userAndTimestamps = [];

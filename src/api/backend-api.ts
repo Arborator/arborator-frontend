@@ -364,6 +364,9 @@ export default {
   deleteGithubReferenceTree(projectName: string, sampleName: string, data: any) {
     return API.delete(`/projects/${projectName}/samples/${sampleName}/trees/github-reference`, { data });
   },
+  deleteSentenceDraftTree(projectName: string, sampleName: string, data: any) {
+    return API.delete(`/projects/${projectName}/samples/${sampleName}/trees/draft`, { data });
+  },
   githubRenameSample(projectName: string, data: any) {
     return API.post(`/projects/${projectName}/synchronize/rename`, data);
   },

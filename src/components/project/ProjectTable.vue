@@ -52,7 +52,7 @@
             </q-btn>
             <q-btn
               v-if="isAdmin"
-              :disable="freezed && !isAdmin"
+              :disable="(freezed && !isAdmin) || props.row.stagedCount > 0"
               flat
               round
               dense

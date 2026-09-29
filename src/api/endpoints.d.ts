@@ -146,6 +146,14 @@ interface parserParseStatus_RV_success {
       };
 }
 
+export interface parserStatus_RV {
+status: string;
+availability: {
+parse: any;
+train: any;
+};
+}
+
 export type parserParseStatus_RV = parser_generic_RV_failure | parserParseStatus_RV_success;
 
 //////////// Github //////////

@@ -325,6 +325,9 @@ export default {
     };
     return API.post<parserParseStatus_RV>(`/parser/parse/status`, data);
   },
+  parserStatus() {
+    return API.get('/parser/status');
+  },
   // -------------------------------------------------------- //
   // ---------------          Github         --------------- //
   // -------------------------------------------------------- //

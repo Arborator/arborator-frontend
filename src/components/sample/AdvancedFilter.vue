@@ -154,6 +154,20 @@
         <div class="col-12 col-sm-auto">
           <q-btn flat color="primary" @click="clearAll()">{{ $t('advancedFilter.clearAll') }}</q-btn>
       </div>
+      <div class="col-12 col-sm-auto">
+      <q-checkbox
+      v-model="filterNotStaged"
+      label="Not staged"
+      color="primary"
+      />
+      </div>
+      <div class="col-12 col-sm-auto">
+      <q-checkbox
+      v-model="filterNotPushed"
+      label="Not pushed"
+      color="primary"
+      />
+      </div>
       </div>
     </div>
   </div>
@@ -226,6 +240,8 @@ export default defineComponent({
       order: 'initial',
       orderOptions: ['initial', 'ascending', 'descending'],
       showAdvancedFilters: false,
+      filterNotPushed: false,
+      filterNotStaged: false,
     };
   },
   computed: {
@@ -242,7 +258,9 @@ export default defineComponent({
       'featuresSetForDiffs',
       'featuresSetForNotDiffs',
       'selectedTags',
-      'pendingModifications'
+      'pendingModifications',
+      'filterNotPushed',
+      'filterNotStaged',
     ]),
     ...mapWritableState(useGithubStore, ['reloadCommits']),
     ...mapState(useUserStore, ['isLoggedIn', 'username']),
@@ -288,6 +306,14 @@ export default defineComponent({
       }, 100),
       deep: true,
     },
+    filterNotPushed() {
+      this.applyFilterTrees();
+    },
+
+    filterNotStaged() {
+      this.applyFilterTrees();
+    },
+
   },
   mounted() {
     this.clearAll();
@@ -324,6 +350,8 @@ export default defineComponent({
       this.orderFilteredTrees(this.order);
       this.listFilters = [];
       this.addRow();
+      this.filterNotPushed = false;
+      this.filterNotStaged = false;
     },
     addRow() {
       this.listFilters.push({

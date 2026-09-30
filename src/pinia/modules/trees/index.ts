@@ -20,6 +20,8 @@ export const useTreesStore = defineStore('trees', {
       sortedSentIds: [] as string[],
       textFilter: '' as string,
       sentIdFilter: '' as string,
+      filterNotPushed: false as boolean,
+      filterNotStaged: false as boolean,
       usersToHaveTree: [] as string[],
       usersToNotHaveTree: [] as string[],
       usersToHaveDiffs: [] as string[],
@@ -156,6 +158,27 @@ export const useTreesStore = defineStore('trees', {
         (sentId) => Object.values(this.trees).find((tree) => tree.sent_id == sentId) as grewSearchResultSentence_t
       );
 
+      const githubStore = useGithubStore();
+        if (this.filterNotStaged) {
+        this.filteredTrees = this.filteredTrees.filter((tree) => {
+        const hasStagedVersion = Object.entries(githubStore.stagedTrees)
+        .some(([key, info]) =>
+        key.startsWith(`${tree.sent_id}_`) &&
+        info.status === 'staged'
+        );
+        return !hasStagedVersion;
+        });
+        }
+        if (this.filterNotPushed) {
+        this.filteredTrees = this.filteredTrees.filter((tree) => {
+        const hasPushedVersion = Object.entries(githubStore.stagedTrees)
+        .some(([key, info]) =>
+        key.startsWith(`${tree.sent_id}_`) &&
+        info.status === 'pushed'
+        );
+        return !hasPushedVersion;
+        });
+        }
       // Apply text and sent_id filters together
       if (this.textFilter !== '' || this.sentIdFilter !== '') {
         this.filteredTrees = this.filteredTrees.filter((tree) => {

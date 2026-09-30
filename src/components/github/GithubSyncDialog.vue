@@ -195,18 +195,20 @@ export default defineComponent({
       });
     },
     getRepoBranches(repoName: string) {
-      this.selectedRepository = repoName;
-      api
-        .getGithubRepoBranches(this.selectedRepository)
-        .then((response) => {
-          this.listBranches = response.data;
-          this.branchToUse = this.listBranches.includes('arboratorgrew') ? '' : 'arboratorgrew';
-          this.branch = this.listBranches[0];
-        })
-        .catch((error) => {
-          notifyError({ error, caller: 'getRepoBranches' });
-        });
-    },
+    this.selectedRepository = repoName;
+    const repository = this.repositories.find((repo) => repo.name === repoName);
+    api
+      .getGithubRepoBranches(this.selectedRepository)
+      .then((response) => {
+        this.listBranches = response.data;
+        this.branchToUse = this.listBranches.includes('arboratorgrew') ? '' : 'arboratorgrew';
+
+        this.branch = repository?.default_branch || this.listBranches[0];
+      })
+      .catch((error) => {
+        notifyError({ error, caller: 'getRepoBranches' });
+      });
+  },
     async synchronizeWithGitRepo(repoName: string, branch: string, branchSyn: string) {
       const data = {
         fullName: repoName,

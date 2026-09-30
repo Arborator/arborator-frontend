@@ -98,9 +98,12 @@ export default defineComponent({
     };
   },
   computed: {
-    ...mapState(useProjectStore, ['diffUserId', 'shownFeatures', 'isStudent']),
+    ...mapState(useProjectStore, ['diffUserId', 'shownFeatures', 'blindAnnotationMode', 'isAdmin']),
     ...mapState(useUserStore, ['username', 'isLoggedIn']),
     ...mapState(useTreesStore, ['pendingModifications']),
+    isStudent(): boolean {
+      return !this.isAdmin && this.blindAnnotationMode;
+    },
   },
   watch: {
     diffMode() {
@@ -125,7 +128,7 @@ export default defineComponent({
     this.reactiveSentence.attach(this);
     this.reactiveSentence.fromSentenceConll(this.conll);
     const sentenceSVGOptions = defaultSentenceSVGOptions();
-    sentenceSVGOptions.shownFeatures = this.shownFeatures;
+    sentenceSVGOptions.shownFeatures = this.shownFeatures as any;
     sentenceSVGOptions.drawEnhancedTokens = true;
     sentenceSVGOptions.interactive = !(this.isStudent && this.treeUserId === 'validated') && this.interactive;
     sentenceSVGOptions.arcHeight = 40;

@@ -191,6 +191,25 @@
         <div class="row text-h6">
           {{ $t('parser.pipelineSummary') }}
         </div>
+        <div
+          v-if="parserData.availability?.parse?.can_start_now"
+          class="text-positive"
+          >
+          GPU free starts now
+        </div>
+        <div
+          v-if="parserData.availability?.parse?.blocked_by === 'queue'"
+          class="text-warning"
+          >
+          {{ parserData.availability.parse.tasks_ahead }}
+          tasks ahead in the queue, estimated wait time: {{ parserData.availability.parse.estimated_wait_time }} mn
+        </div>
+        <div
+          v-if="parserData.availability?.parse?.blocked_by === 'gpu_memory'"
+          class="text-negative"
+          >
+          GPU busy with other services
+        </div>
         <div>
           <q-item bordered separator>
             <q-item-section v-if="parserData.param.pipelineChoice === 'TRAIN_AND_PARSE' || parserData.param.pipelineChoice === 'TRAIN_ONLY'">
@@ -279,6 +298,7 @@ interface parser_t {
   progress: string;
   taskStatus: taskStatus_t;
   isHealthy: boolean;
+  availability: any;
   param: {
     pipelineChoice: pipelineChoice_t;
     availableModels: any[];
@@ -381,6 +401,7 @@ export default defineComponent({
       progress: 'bootstrap parsing',
       taskStatus: null,
       isHealthy: true,
+      availability: null,
       param: {
         pipelineChoice: '',
         availableModels: [],
@@ -513,8 +534,20 @@ export default defineComponent({
   },
   mounted() {
     this.fetchBaseModelsAvailables();
+    this.loadParserAvailability();
+ 
+    setInterval(() => {
+    this.loadParserAvailability();
+    }, 15000);
   },
   methods: {
+    loadParserAvailability() {
+      api
+      .parserStatus()
+      .then((response) => {
+      this.parserData.availability = response.data.availability;
+      });
+    },
     getTreesUsersFromSamples(samples: sample_t[]) {
       const allTreesFromWithDuplicate = samples.map((sample) => sample.treesFrom).reduce((a: string[], b: string[]) => [...a, ...b], []);
       return [...new Set(allTreesFromWithDuplicate)];
@@ -641,6 +674,20 @@ export default defineComponent({
       api
         .parserTrainStatus(modelInfo, trainTaskId)
         .then((response) => {
+          const progress = (response.data as any).progress;
+          if (progress) {
+            if (this.parserData.taskStatus) {
+              this.parserData.taskStatus.taskAdditionalMessage =
+              `${progress.phase} - ${progress.percent}%`;
+            }
+          }
+          if (progress?.epoch) {
+            if (this.parserData.taskStatus) {
+              this.parserData.taskStatus.taskAdditionalMessage =
+              `${progress.phase} - epoch ${progress.epoch}
+              (${progress.percent}%)`;
+            }
+          }
           if (response.data.status === 'failure') {
             notifyError({ error: response.data.error });
             this.clearCurrentTask();
@@ -726,6 +773,19 @@ export default defineComponent({
       api
         .parserParseStatus(projectName, modelInfo, parseTaskId, parserSuffix)
         .then((response) => {
+          const progress = (response.data as any).progress;
+          if (progress) {
+            if (this.parserData.taskStatus) {
+              this.parserData.taskStatus.taskAdditionalMessage =
+              `${progress.phase} - ${progress.percent}%`;
+            }
+          }
+          if (progress?.phase === 'loading_model') {
+            if (this.parserData.taskStatus) {
+              this.parserData.taskStatus.taskAdditionalMessage =
+              'Loading model...';
+            }
+          }
           if (response.data.status === 'failure') {
             notifyError({ error: response.data.error });
             this.clearCurrentTask();

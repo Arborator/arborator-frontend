@@ -154,7 +154,7 @@ export default {
     tooltipSearch: 'Rechercher un échantillon',
     search: 'Rechercher',
     users: 'Utilisateurs',
-    tableFields: ['Nom', 'Nb phrases', 'Nb tokens', 'Arbres de', "Niveau d'annotation à l'aveugle"],
+    tableFields: ['Nom', 'Nb phrases', 'Nb tokens', 'Arbres de', "Niveau d'annotation à l'aveugle", 'Nb staged', 'Nb pushed'],
   },
 
   // Component project options
@@ -363,6 +363,11 @@ export default {
     validation: "Problèmes de validation",
     notDetectedLang: ["La langue du projet n'a pas été trouvée dans la liste des langues d'UD ", "(La liste des langues d'UD)"],
     noValidationIssues: 'Votre annotation est valide',
+    ingithub: "Cette phrase est la même sur GitHub",
+    outgithub: "Cette phrase n'existe pas sur GitHub",
+    githubDiffclick: 'Cliquez pour voir',
+    githubDiffOne: 'différence avec GitHub',
+    githubDiffMany: 'différences avec GitHub',
   },
   tagsMenu: {
     enterTags: 'Saisir les tags',

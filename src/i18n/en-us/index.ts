@@ -156,7 +156,7 @@ export default {
     tooltipSearch: 'Search a sample',
     search: 'Search',
     users: 'User',
-    tableFields: ['Name', 'Nb sentences', 'Nb tokens', 'Trees from', 'Blind annotation level'],
+    tableFields: ['Name', 'Nb sentences', 'Nb tokens', 'Trees from', 'Blind annotation level', 'Nb staged', 'nb pushed'],
   },
 
   // Component project options
@@ -366,6 +366,12 @@ export default {
     validation: 'Validation Issues',
     notDetectedLang: ["The project language wasn't detected in UD languages list", '(UD Languages list)'],
     noValidationIssues: 'Your annotation has no issues',
+    ingithub: 'This sentence is the same on GitHub',
+    outgithub: 'This sentence does not exist on GitHub',
+    githubDiffclick: 'Click to view',
+    githubDiffOne: 'difference with GitHub',
+    githubDiffMany: 'differences with GitHub',
+    
   },
   tagsMenu: {
     enterTags: 'Enter tags',
@@ -412,7 +418,7 @@ export default {
   userSelect: {
     share: 'Share',
     addUser: 'Add new user',
-    roles: ['Admin', 'Validator', 'Annotator', 'Guest'],
+    roles: ['Admin', 'Annotator'],
     revokeAccess: 'Revoke Access',
     noResult: 'No result',
     copyLink: 'Copy Link',
@@ -480,7 +486,6 @@ export default {
   advancedFilter: {
     textFilter: 'Text filter',
     sentIdFilter: 'Sent_id filter',
-    applyFilter: 'Apply filter',
     filter: 'Filters',
     advancedFilter: 'Advanced Filter',
     clearAll: 'Clear All',

@@ -40,8 +40,13 @@ export default defineComponent({
       required: true,
     },
     conlls: {
-      type: Object as PropType<{ validated: string }>,
+      type: Object as PropType<{ [key: string]: string }>,
       required: true,
+    },
+    referenceUserId: {
+      type: String as PropType<string>,
+      required: false,
+      default: '',
     },
   },
   data() {
@@ -59,7 +64,7 @@ export default defineComponent({
   mounted() {
     this.sentenceBus.on('open:statisticsDialog', ({ userId }) => {
       this.userId = userId;
-      const stats = this.sentenceBus.sentenceSVGs[this.userId].getDiffStats(this.conlls.validated) as stats_t;
+      const stats = this.sentenceBus.sentenceSVGs[this.userId].getDiffStats(this.conlls[this.referenceUserId]) as stats_t;
       this.corrects = stats.corrects;
       this.totals = stats.totals;
       this.statisticsDialogOpened = true;

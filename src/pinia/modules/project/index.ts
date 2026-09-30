@@ -21,35 +21,25 @@ export const useProjectStore = defineStore('project', {
     isAdmin(state): boolean {
       return state.admins.includes(useUserStore().username) || useUserStore().superAdmin;
     },
-    isValidator(state): boolean {
-      return state.validators.includes(useUserStore().username) || this.isAdmin;
-    },
     isAnnotator(state): boolean {
       return state.annotators.includes(useUserStore().username) && !useUserStore().superAdmin;
     },
-    isGuest: (state) => state.guests.includes(useUserStore().username) && !useUserStore().superAdmin,
-    isStudent(state): boolean {
-      return !this.isValidator && state.blindAnnotationMode;
-    },
     isProjectMember(): boolean {
-      return this.isAdmin || this.isValidator || this.isAnnotator || this.isGuest;
+      return this.isAdmin || this.isAnnotator;
     },
     isAllowdedToSync(): boolean {
-      return useUserStore().loggedWithGithub && this.isOwner && !this.blindAnnotationMode;
+      return useUserStore().loggedWithGithub && this.isAdmin && !this.blindAnnotationMode;
     },
     canSaveTreeInProject(state): boolean {
       if (!useUserStore().isLoggedIn) {
         // people not logged in can't save in any case
         return false;
       }
-      if (this.isGuest) {
+      if (!this.collaborativeMode && !this.isAdmin) {
         return false;
       }
-      if (!this.collaborativeMode && !this.isValidator) {
-        return false;
-      }
-      if (this.isValidator && this.blindAnnotationMode) {
-        // In the blind annotation Validator can't save a tree. They can only save special tree : base_tree and Validated
+      if (this.isAdmin && this.blindAnnotationMode) {
+        // In the blind annotation Admin can't save a tree. They can only save special tree : base_tree and Validated
         return false;
       }
       if (state.visibility === 2) {
@@ -57,7 +47,7 @@ export const useProjectStore = defineStore('project', {
         return true;
       }
       // in other projects all members can save tree except the guest in the private project
-      return this.isAdmin || this.isValidator || this.isAnnotator;
+      return this.isAdmin || this.isAnnotator;
     },
     canSeeOtherUsersTrees(state): boolean {
       if (this.isAdmin) {
@@ -65,9 +55,8 @@ export const useProjectStore = defineStore('project', {
         return true;
       }
       if (state.blindAnnotationMode) {
-        // if project in blind annotation mode, only isValidator can see trees of others on project scale
-        // (students still can see Validated trees in difficulty 1 and 2, but this is addressed elsewhere)
-        return this.isValidator;
+        // if project in blind annotation mode, only isAdmin can see trees of others on project scale
+        return this.isAdmin;
       }
       if (state.visibility >= 1) {
         // everyone can see trees from other in "visible" and "public" projects
@@ -80,7 +69,7 @@ export const useProjectStore = defineStore('project', {
       return false;
     },
     canExportTrees(state): boolean {
-      return !state.blindAnnotationMode || (useUserStore().isLoggedIn && !this.isGuest);
+      return !state.blindAnnotationMode || (useUserStore().isLoggedIn);
     },
     getSUDConfig() {
       return JSON.stringify(SUDConfig, null, 4);
@@ -131,9 +120,7 @@ export const useProjectStore = defineStore('project', {
           });
           api.getProjectUsersAccess(projectName).then((response) => {
             this.admins = response.data.admins;
-            this.validators = response.data.validators;
             this.annotators = response.data.annotators;
-            this.guests = response.data.guests;
           });
           api.getProjectFeatures(projectName).then((response) => {
             this.shownMeta = response.data.shownMeta;

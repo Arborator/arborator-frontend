@@ -80,7 +80,7 @@
         <q-tooltip>Save as Emmett</q-tooltip>
       </q-btn>
 
-      <q-btn v-if="canSaveTreeInProject && collaborativeMode && isOwnDraftUser(openTabUser)" flat round dense icon="save" @click="saveTree('')">
+      <q-btn v-if="canShowSaveAsUsername" flat round dense icon="save" @click="saveTree('')">
         <q-tooltip>
           {{ $t('sentenceCard.saveTree[0]') }} {{ openTabUser }} {{ $t('sentenceCard.saveTree[1]') }}
           <b> {{ username }} </b>
@@ -423,6 +423,13 @@ export default defineComponent({
     },
     canEditCurrentTree() {
       return this.openTabUser === this.username || this.isOwnDraftUser(this.openTabUser);
+    },
+    canShowSaveAsUsername() {
+      return !!this.openTabUser
+        && this.openTabUser !== 'github'
+        && this.openTabUser == this.username
+        && this.canSaveTreeInProject
+        && this.collaborativeMode;
     },
     currentTreeStagingInfo() {
       if (!this.openTabUser || this.openTabUser === 'validated' || this.openTabUser === 'github') {

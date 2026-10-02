@@ -80,7 +80,7 @@
         <q-tooltip>Save as Emmett</q-tooltip>
       </q-btn>
 
-      <q-btn v-if="canShowSaveAsUsername" flat round dense icon="save" @click="saveTree('')">
+      <q-btn v-if="canShowSaveAsUsernameOrOthersDraft" flat round dense icon="save" @click="saveTree(username)">
         <q-tooltip>
           {{ $t('sentenceCard.saveTree[0]') }} {{ openTabUser }} {{ $t('sentenceCard.saveTree[1]') }}
           <b> {{ username }} </b>
@@ -88,18 +88,29 @@
       </q-btn>
 
       <q-btn
-        v-if="canSaveTreeInProject && collaborativeMode && isOwnDraftUser(openTabUser)"
+        v-if="canShowSaveDraftOnly"
+        flat
+        round
+        dense
+        icon="save"
+        @click="saveTree('')"
+      >
+        <q-tooltip>Save {{ openTabUser }}</q-tooltip>
+      </q-btn>
+
+      <q-btn
+        v-if="canShowSaveAsUsernameForOwnDraft"
         flat
         round
         dense
         icon="save_as"
-        @click="saveTree(username)"
+        @click="saveDraftAndAsUsername()"
       >
         <q-tooltip>Save draft as {{ username }}</q-tooltip>
       </q-btn>
 
       <q-btn 
-        v-if="canSaveTreeInProject && collaborativeMode && isAdmin && hasGithubAccess && isSynchronized && !isOwnDraftUser(openTabUser)" 
+        v-if="canSaveTreeInProject && collaborativeMode && isAdmin && hasGithubAccess && isSynchronized && !isOwnDraftUser(openTabUser) && !isDraftUser(openTabUser)" 
         flat 
         round 
         dense 
@@ -113,7 +124,7 @@
       </q-btn>
 
       <q-btn
-        v-if="canSaveTreeInProject && collaborativeMode && isAdmin && hasGithubAccess && isSynchronized && !isOwnDraftUser(openTabUser)"
+        v-if="canSaveTreeInProject && collaborativeMode && isAdmin && hasGithubAccess && isSynchronized && !isOwnDraftUser(openTabUser) && !isDraftUser(openTabUser)"
         flat
         round
         dense
@@ -127,7 +138,7 @@
       </q-btn>
 
       <q-btn
-        v-if="canSaveTreeInProject && (openTabUser === username || isAdmin)"
+        v-if="canSaveTreeInProject && (openTabUser === username || isAdmin) && !isOthersDraft(openTabUser)"
         flat
         round
         dense
@@ -145,7 +156,7 @@
       </q-btn>
 
       <q-btn
-        v-if="isAdmin && blindAnnotationMode"
+        v-if="isAdmin && blindAnnotationMode && !isOthersDraft(openTabUser)"
         flat
         round
         dense
@@ -427,7 +438,20 @@ export default defineComponent({
     canShowSaveAsUsername() {
       return !!this.openTabUser
         && this.openTabUser !== 'github'
-        && this.openTabUser == this.username
+        && !this.isOwnDraftUser(this.openTabUser)
+        && this.canSaveTreeInProject
+        && this.collaborativeMode;
+    },
+    canShowSaveAsUsernameOrOthersDraft() {
+      return this.canShowSaveAsUsername;
+    },
+    canShowSaveDraftOnly() {
+      return this.isOwnDraftUser(this.openTabUser)
+        && this.canSaveTreeInProject
+        && this.collaborativeMode;
+    },
+    canShowSaveAsUsernameForOwnDraft() {
+      return this.isOwnDraftUser(this.openTabUser)
         && this.canSaveTreeInProject
         && this.collaborativeMode;
     },
@@ -563,6 +587,12 @@ export default defineComponent({
     isOwnDraftUser(userId: string) {
       return !!userId && userId.startsWith(`${this.username}_draft`);
     },
+    isDraftUser(userId: string) {
+      return !!userId && userId.includes('_draft');
+    },
+    isOthersDraft(userId: string) {
+      return this.isDraftUser(userId) && !this.isOwnDraftUser(userId);
+    },
     createDraftFromCurrentTree() {
       if (this.parentOnCreateDraft) {
         this.parentOnCreateDraft();
@@ -575,6 +605,13 @@ export default defineComponent({
     },
     saveTree(mode: string) {
       this.parentOnSave(mode);
+    },
+    saveDraftAndAsUsername() {
+      // First save the draft itself, then save as username
+      this.parentOnSave('');
+      setTimeout(() => {
+        this.parentOnSave(this.username);
+      }, 100);
     },
     saveTreeWithGitAdd() {
       this.parentOnSave('', { gitAdd: true });

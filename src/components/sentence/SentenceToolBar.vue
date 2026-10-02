@@ -217,7 +217,7 @@
               <q-item-label>Add draft from current tree</q-item-label>
             </q-item-section>
           </q-item>
-          <q-item v-if="isOwnDraftUser(openTabUser)" v-close-popup clickable @click="deleteCurrentDraft()">
+          <q-item v-if="isOwnDraftUser(openTabUser) || (isAdmin && isDraftUser(openTabUser))" v-close-popup clickable @click="deleteCurrentDraft()">
             <q-item-section avatar>
               <q-avatar icon="delete" color="negative" text-color="white" />
             </q-item-section>

@@ -59,6 +59,7 @@
         <q-separator />
         <div v-if="collaborativeMode" class="q-px-md q-gutter-sm">
           <q-radio v-model="importMode" val="username" label="Import with username" />
+          <q-radio v-model="importMode" val="usernameDraft" label="Import with username draft" />
           <q-radio v-if="isSynchronized" v-model="importMode" val="usernameAndStageAll" label="Import with username and stage all" />
         </div>
         <q-item>
@@ -353,7 +354,7 @@ export default defineComponent({
       }
       form.append('userId', this.selectedUserId());
       form.append('rtl', JSON.stringify(this.rtl));
-      form.append('stageAll', JSON.stringify(this.importMode === 'usernameAndStageAll'));
+      form.append('importMode', this.importMode);
       if (this.generateNewSentIds) {
         form.append('samplesWithoutSentIds', JSON.stringify(this.samplesWithoutSentIds));
       }
@@ -411,7 +412,7 @@ export default defineComponent({
         lang: this.lang.value,
         rtl: this.rtl,
         sampleName: this.sampleName,
-        stageAll: this.importMode === 'usernameAndStageAll',
+        importMode: this.importMode,
       };
       api
         .tokenizeSample(this.$route.params.projectname as string, data)

@@ -59,7 +59,7 @@
         <q-separator />
         <div v-if="collaborativeMode" class="q-px-md q-gutter-sm">
           <q-radio v-model="importMode" val="username" label="Import with username" />
-          <q-radio v-model="importMode" val="usernameAndStageAll" label="Import with username and stage all" />
+          <q-radio v-if="isSynchronized" v-model="importMode" val="usernameAndStageAll" label="Import with username and stage all" />
         </div>
         <q-item>
           <q-item-section side top>
@@ -197,12 +197,17 @@ export default defineComponent({
       newPosList: [] as string[],
       newRelationsList: [] as { value: string, index: number }[],
       checkFilename: checkFilename,
+      isSynchronized: false,
+      hasGithubAccess: false,
     };
   },
 
   computed: {
     ...mapState(useUserStore, ['username', 'reservedUserIds']),
     ...mapState(useProjectStore, ['blindAnnotationMode', 'collaborativeMode', 'annotationFeatures', 'isAllowdedToSync']),
+    projectName(): string {
+      return this.$route.params.projectname as string;
+    },
     disableTokenizeBtn() {
       if (this.option.value == 'plainText') {
         return this.text && !checkFilename(this.sampleName) && this.lang.value;
@@ -226,7 +231,32 @@ export default defineComponent({
       return this.newFeatsList.length >  0 || this.newPosList.length > 0 || this.newRelationsList.length > 0 || this.newMiscList.length > 0;
     }
   },
+  watch: {
+    projectName: {
+      immediate: true,
+      handler() {
+        this.loadSyncInfo();
+      },
+    },
+  },
   methods: {
+    loadSyncInfo() {
+      api
+        .getSynchronizedGithubRepository(this.projectName)
+        .then((response) => {
+          if (response.data && response.data.repositoryName) {
+            this.isSynchronized = true;
+            this.hasGithubAccess = response.data.hasGithubAccess ?? false;
+          } else {
+            this.isSynchronized = false;
+            this.hasGithubAccess = false;
+          }
+        })
+        .catch(() => {
+          this.isSynchronized = false;
+          this.hasGithubAccess = false;
+        });
+    },
     async preprocess() {
       this.warningMessage = '';
       this.samplesWithoutSentIds = [];

@@ -186,9 +186,6 @@ export default defineComponent({
         .catch((error) => {
           this.githubSampleDiffs = {};
           const axiosError = error as AxiosError;
-          if (axiosError.response?.status !== 404) {
-            notifyError({ error, caller: 'loadGithubSampleDiffs' });
-          }
         });
     },
     getTrees() {

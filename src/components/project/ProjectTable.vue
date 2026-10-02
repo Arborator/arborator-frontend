@@ -189,7 +189,7 @@ export default defineComponent({
         sortBy: 'samplename',
         descending: true,
         page: 1,
-        rowsPerPage: 50,
+        rowsPerPage: 0,
       },
       loadingDelete: false,
       exporting: false,

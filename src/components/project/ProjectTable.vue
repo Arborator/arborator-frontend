@@ -12,7 +12,7 @@
     :filter="table.filter"
     :filter-method="searchSamples"
     binary-state-sort
-    :visible-columns="blindAnnotationMode ? table.visibleColumnsBlindAnnotationMode : table.visibleColumns"
+    :visible-columns="blindAnnotationMode ? visibleColumnsBlindAnnotationModeComputed : visibleColumnsComputed"
     selection="multiple"
     :table-header-class="$q.dark.isActive ? 'text-white' : 'text-primary'"
     virtual-scroll
@@ -40,7 +40,7 @@
         <q-td key="samplename" :props="props">
           <div class="row items-center justify-center no-wrap q-gutter-xs">
             <q-btn
-              :disable="freezed && !isOwner"
+              :disable="freezed && !isAdmin"
               outline
               color="white"
               :text-color="$q.dark.isActive ? 'white' : 'black'"
@@ -51,7 +51,8 @@
               {{ props.row.sampleName }}
             </q-btn>
             <q-btn
-              :disable="freezed && !isOwner"
+              v-if="isAdmin"
+              :disable="(freezed && !isAdmin) || props.row.stagedCount > 0"
               flat
               round
               dense
@@ -64,6 +65,8 @@
           </div>
         </q-td>
         <q-td key="sentences" :props="props">{{ props.row.sentences }}</q-td>
+        <q-td v-if="isProjectSynchronized" key="stagedCount" :props="props">{{ props.row.stagedCount }}</q-td>
+        <q-td v-if="isProjectSynchronized" key="pushedCount" :props="props">{{ props.row.pushedCount }}</q-td>
         <q-td key="tokens" :props="props">{{ props.row.tokens }}</q-td>
         <q-td key="treesFrom" :props="props">
           <div v-if="Object.keys(props.row.treeByUser).length >= 5">
@@ -147,6 +150,18 @@ export default defineComponent({
           field: 'sentences',
         },
         {
+          name: 'stagedCount',
+          label: this.$t('projectTable.tableFields[5]'),
+          sortable: true,
+          field: 'stagedCount',
+        },
+        {
+          name: 'pushedCount',
+          label: this.$t('projectTable.tableFields[6]'),
+          sortable: true,
+          field: 'pushedCount',
+        },
+        {
           name: 'tokens',
           label: this.$t('projectTable.tableFields[2]'),
           sortable: true,
@@ -166,15 +181,15 @@ export default defineComponent({
         },
       ],
       selected,
-      visibleColumns: ['samplename', 'treesFrom', 'tokens', 'sentences'],
-      visibleColumnsBlindAnnotationMode: ['samplename', 'blindAnnotationLevel', 'treesFrom', 'tokens', 'sentences'],
+      visibleColumns: ['samplename', 'treesFrom', 'tokens', 'stagedCount', 'pushedCount', 'sentences'],
+      visibleColumnsBlindAnnotationMode: ['samplename', 'blindAnnotationLevel', 'treesFrom', 'tokens', 'stagedCount','pushedCount', 'sentences'],
       filter: '',
       loading: false,
       pagination: {
         sortBy: 'samplename',
         descending: true,
         page: 1,
-        rowsPerPage: 50,
+        rowsPerPage: 0,
       },
       loadingDelete: false,
       exporting: false,
@@ -211,10 +226,27 @@ export default defineComponent({
       'name',
       'isAdmin',
       'freezed',
-      'isOwner',
+      'isAdmin',
       'isAllowdedToSync',
       'blindAnnotationMode'
     ]),
+    isProjectSynchronized() {
+      return !!this.syncGithubRepo;
+    },
+    visibleColumnsComputed() {
+      const visibleColumns = this.table?.visibleColumns ?? [];
+      if (this.isProjectSynchronized) {
+        return visibleColumns;
+      }
+      return visibleColumns.filter((column) => column !== 'stagedCount' && column !== 'pushedCount');
+    },
+    visibleColumnsBlindAnnotationModeComputed() {
+      const visibleColumnsBlind = this.table?.visibleColumnsBlindAnnotationMode ?? [];
+      if (this.isProjectSynchronized) {
+        return visibleColumnsBlind;
+      }
+      return visibleColumnsBlind.filter((column) => column !== 'stagedCount' && column !== 'pushedCount');
+    },
   },
   watch: {
     samples(newVal, oldVal) {
@@ -245,6 +277,9 @@ export default defineComponent({
       }, 0);
     },
     showRenameSampleDial(sampleName: string, hasValidated: boolean) {
+      if (!this.isAdmin) {
+        return;
+      }
       this.isShowRenameDial = true;
       this.selectedSample = sampleName;
       this.hasValidated = hasValidated;

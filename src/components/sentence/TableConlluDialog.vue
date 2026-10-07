@@ -5,7 +5,7 @@
         <div class="text-h6 text-weight-bold">{{ $t('tableConllDial.title') }}</div>
         <q-btn v-close-popup icon="close" flat round dense size="md" class="absolute-top-right q-ma-xs" />
       </q-card-section>
-      <q-card-section class="q-pa-md col overflow-hidden">
+      <q-card-section class="q-pa-md col overflow-hidden" style="max-height: calc(200vh - 300px); overflow-y: auto;">
         <q-table
           flat borderd
           :rows="conllTable"
@@ -476,7 +476,7 @@ export default defineComponent({
 
 <style scoped>
 .my-sticky-header-table {
-  height: 310px;
+  height: calc(90vh - 200px);
 }
 
 .my-sticky-header-table :deep(.q-table__top),

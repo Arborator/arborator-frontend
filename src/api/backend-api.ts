@@ -159,6 +159,9 @@ export default {
   getSampleTrees(projectName: string, samplename: string) {
     return API.get(`/projects/${projectName}/samples/${samplename}/trees`);
   },
+  getGithubReferenceTrees(projectName: string, samplename: string) {
+    return API.get(`/projects/${projectName}/samples/${samplename}/trees/github-reference`);
+  },
   updateTree(projectName: string, samplename: string, data: updateTree_ED) {
     return API.post(`/projects/${projectName}/samples/${samplename}/trees`, data);
   },
@@ -322,6 +325,9 @@ export default {
     };
     return API.post<parserParseStatus_RV>(`/parser/parse/status`, data);
   },
+  parserStatus() {
+    return API.get('/parser/status');
+  },
   // -------------------------------------------------------- //
   // ---------------          Github         --------------- //
   // -------------------------------------------------------- //
@@ -346,8 +352,23 @@ export default {
   commitChanges(projectName: string, data: any) {
     return API.post(`/projects/${projectName}/synchronize/commit`, data);
   },
+  stageSample(projectName: string, data: any) {
+    return API.post(`/projects/${projectName}/synchronize/stage`, data);
+  },
+  stageSelectedSentences(projectName: string, data: any) {
+    return API.post(`/projects/${projectName}/synchronize/stage-selected`, data);
+  },
   resetChanges(projectName: string, data: any) {
     return API.patch(`/projects/${projectName}/synchronize/commit`, data);
+  },
+  unstageTree(projectName: string, data: any) {
+    return API.delete(`/projects/${projectName}/synchronize/stage`, { data });
+  },
+  deleteGithubReferenceTree(projectName: string, sampleName: string, data: any) {
+    return API.delete(`/projects/${projectName}/samples/${sampleName}/trees/github-reference`, { data });
+  },
+  deleteSentenceDraftTree(projectName: string, sampleName: string, data: any) {
+    return API.delete(`/projects/${projectName}/samples/${sampleName}/trees/draft`, { data });
   },
   githubRenameSample(projectName: string, data: any) {
     return API.post(`/projects/${projectName}/synchronize/rename`, data);

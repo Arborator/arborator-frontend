@@ -1,7 +1,13 @@
 <template>
   <q-splitter v-model="splitterModel" horizontal :disable="true" :limits="[0, 100]" :style="{ height: `${splitterHeight}px` }" emit-immediately>
     <template v-slot:before>
-      <AdvancedFilter @trees-saved="getTrees()" @advanced-filters-toggled="handleAdvancedFiltersToggle" :parent-on-validate="validateAllTrees"  />
+      <AdvancedFilter
+        @trees-saved="getTrees()"
+        @advanced-filters-toggled="handleAdvancedFiltersToggle"
+        :parent-on-validate="validateAllTrees"
+        :has-github-access="hasGithubAccess"
+        :is-synchronized="isSynchronized"
+      />
     </template>
     <template v-slot:after>
       <div class="custom-frame1" >
@@ -27,6 +33,10 @@
                 :index="index"
                 :blind-annotation-level="blindAnnotationLevel"
                 :ud-validation="udValidationPassed[item.sent_id] || {}"
+                :has-github-access="hasGithubAccess"
+                :is-synchronized="isSynchronized"
+                :github-reference-conll="githubReferenceTrees[item.sent_id] || ''"
+                :github-sample-diff="githubSampleDiffs[samplename] || ''"
                 @closeCards="closeAllCard()"
               >
               </SentenceCard>
@@ -49,6 +59,7 @@ import AdvancedFilter from 'src/components/sample/AdvancedFilter.vue';
 import SentenceCard from '../components/sentence/SentenceCard.vue';
 import Video from 'src/components/sentence/Video.vue';
 import { QVirtualScroll } from 'quasar';
+import { AxiosError } from 'axios';
 
 import { mapActions, mapState, mapWritableState } from 'pinia';
 import { notifyError } from 'src/utils/notify';
@@ -94,7 +105,11 @@ export default defineComponent({
       splitterHeight,
       udValidationPassed,
       languageDetected: false,
-      cardRefs: [] as any[]
+      cardRefs: [] as any[],
+      hasGithubAccess: false,
+      isSynchronized: false,
+      githubReferenceTrees: {} as { [sentId: string]: string },
+      githubSampleDiffs: {} as { [sampleName: string]: string },
     };
   },
   computed: {
@@ -127,8 +142,11 @@ export default defineComponent({
     document.title = `${this.projectname}/${this.samplename}`;
     this.emptyPendingModification();
     this.getTrees();
+    this.loadGithubReferenceTrees();
+    this.loadGithubSampleDiffs();
     this.calculateHeight();
     this.reloadValidation = false;
+    this.loadSyncInfo();
     const checkReady = setInterval(() => {
       if (this.loading === false) {
         this.scrollSentenceFromUrl();
@@ -142,6 +160,34 @@ export default defineComponent({
   methods: {
     ...mapActions(useTreesStore, ['emptyPendingModification']),
     ...mapActions(useTreesStore, ['getSampleTrees', 'applyFilterTrees', 'getUsersTags']),
+    loadGithubReferenceTrees() {
+      api
+        .getGithubReferenceTrees(this.projectname, this.samplename)
+        .then((response) => {
+          this.githubReferenceTrees = response.data.github_reference_trees || {};
+        })
+        .catch((error) => {
+          notifyError({ error, caller: 'loadGithubReferenceTrees' });
+          this.githubReferenceTrees = {};
+        });
+    },
+    loadGithubSampleDiffs() {
+      api
+        .getChanges(this.projectname)
+        .then((response) => {
+          const diffs: { [sampleName: string]: string } = {};
+          for (const sample of response.data || []) {
+            if (sample.sample_name) {
+              diffs[sample.sample_name] = sample.diff || '';
+            }
+          }
+          this.githubSampleDiffs = diffs;
+        })
+        .catch((error) => {
+          this.githubSampleDiffs = {};
+          const axiosError = error as AxiosError;
+        });
+    },
     getTrees() {
       this.getSampleTrees({ projectName: this.projectname, sampleName: this.samplename }).then(() => {
         this.scrollToIndexFromURL();
@@ -201,6 +247,29 @@ export default defineComponent({
         })
         .catch((error) => {
           notifyError({ error, caller: 'validateAllTrees' });
+        });
+    },
+    loadSyncInfo() {
+      api
+        .getSynchronizedGithubRepository(this.projectname)
+        .then((response) => {
+          if (response.data) {
+            this.isSynchronized = true;
+            this.hasGithubAccess = response.data.hasGithubAccess ?? false;
+          } else {
+            this.isSynchronized = false;
+            this.hasGithubAccess = false;
+          }
+        })
+        .catch((error) => {
+          const axiosError = error as AxiosError;
+          if (axiosError.response?.status === 404 || axiosError.response?.status === 401) {
+            this.isSynchronized = false;
+            this.hasGithubAccess = false;
+            return;
+          }
+          this.isSynchronized = false;
+          this.hasGithubAccess = false;
         });
     },
     isAudio(){

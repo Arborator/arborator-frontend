@@ -414,7 +414,10 @@ export default defineComponent({
     filteredConlls() {
       let filteredConlls = this.sentenceData.conlls;
       if (this.blindAnnotationLevel !== 1 && !this.isAdmin && this.blindAnnotationMode) {
-        return Object.fromEntries(Object.entries(filteredConlls).filter(([user]) => user !== 'validated' && user !== 'github'));
+        const sortedEntries = Object.entries(filteredConlls)
+          .filter(([user]) => user !== 'validated' && user !== 'github')
+          .sort((a, b) => a[0].localeCompare(b[0]));
+        return Object.fromEntries(sortedEntries);
       }
       return this.orderConlls(filteredConlls);
     },
@@ -1079,7 +1082,12 @@ export default defineComponent({
           timestamp: parseInt(reactiveSentence.state.metaJson.timestamp as string, 10),
         });
       }
-      const orderedUserAndTimestamps = [...userAndTimestamps].sort((a, b) => b.timestamp - a.timestamp);
+      const orderedUserAndTimestamps = [...userAndTimestamps].sort((a, b) => {
+        if (b.timestamp !== a.timestamp) {
+          return b.timestamp - a.timestamp;
+        }
+        return a.user.localeCompare(b.user);
+      });
       const orderedConlls: { [key: string]: string } = {};
       if (filteredConlls.github) {
         orderedConlls.github = filteredConlls.github;

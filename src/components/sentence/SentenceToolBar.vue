@@ -727,7 +727,7 @@ export default defineComponent({
     },
     hasAlign(){
       const [conllData] = Object.values(this.sentenceData.conlls)
-      const Align = conllData.match(/AlignBegin=(\d+)\|AlignEnd=(\d+)(?:\||\n|$)/)
+      const Align = conllData.match(/(?:AlignBegin|WordAlignmentBegin)=(\d+)\|(?:AlignEnd|WordAlignmentEnd)=(\d+)(?:\||\n|$)/)
       return Align !== null
     },
     isVideo() {

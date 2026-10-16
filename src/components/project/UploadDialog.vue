@@ -420,20 +420,30 @@ export default defineComponent({
       const annotationFeats = Object.values(this.annotationFeatures.FEATS).map(feat => feat.name);
       const annotationMisc = Object.values(this.annotationFeatures.MISC).map(misc => misc.name);
       const deprels = this.annotationFeatures.DEPREL;
-      const splitRegex = new RegExp(`[${deprels.map(({ join }) => join).join('')}]`, 'g');
+      const joins = deprels.map(({ join }) => join || '');
+      // keep the separators in the split: [part, join, part, join, part…]
+      const splitRegex = new RegExp(`([${joins.filter((join) => join).map((join) => join.replace(/[\\\]^-]/g, '\\$&')).join('')}])`);
 
       this.newPosList = this.posList.filter(pos => !annotationUpos.includes(pos));
       this.newFeatsList = this.featsList.filter(feat => !annotationFeats.includes(feat));
       this.newMiscList = this.miscList.filter(misc => !annotationMisc.includes(misc));
-      
+
       for (const relation of this.relationsList) {
-        const splittedRel = relation.split(splitRegex);
-        let index = 0;
-        for (const subRel of splittedRel) {
-          const found = deprels.some(({ values, join }) => values.includes(subRel) && relation.includes(join + subRel));
-          if (!found && !this.newRelationsList.some(rel => rel.value === subRel && rel.index === index))
+        // Each part goes to the DEPREL slot of the separator before it, not to the slot of the same position:
+        // in `mod@appos`, `appos` belongs to the slot joined by `@` (deep), not to the second one (subrel).
+        // When several slots share a separator, the n-th part after it goes to the n-th of these slots.
+        const pieces = relation.split(splitRegex);
+        const seen: Record<string, number> = {};
+        for (let k = 0; k < pieces.length; k += 2) {
+          const subRel = pieces[k];
+          const join = k === 0 ? '' : pieces[k - 1];
+          seen[join] = (seen[join] ?? -1) + 1;
+          const slots = joins.map((slotJoin, slot) => (slotJoin === join ? slot : -1)).filter((slot) => slot >= 0);
+          if (!subRel || !slots.length) continue;
+          const index = slots[Math.min(seen[join], slots.length - 1)];
+          if (deprels[index].values.includes(subRel)) continue;
+          if (!this.newRelationsList.some(rel => rel.value === subRel && rel.index === index))
             this.newRelationsList.push({ value: subRel, index: index });
-          index += 1;
         }
       }
     },

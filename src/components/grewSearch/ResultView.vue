@@ -9,26 +9,6 @@
     </q-bar>
     <div class="q-pa-md row q-gutter-md custom-frame1 justify-end">
       <q-btn class="col-auto" color="primary" label="Export results" @click="exportResults()" />
-      <q-btn-dropdown 
-        class="col-auto"
-        v-if="queryType !== 'REWRITE' && isLoggedIn"
-        :disable="!pendingModifications.size"
-        color="primary"
-      >
-        <template v-slot:label>
-          <div class="row items-center no-wrap">
-            <div class="text-center">{{ $t('advancedFilter.savePendingTrees') }}</div>
-            <q-badge v-if="pendingModifications.size > 0" color="red" class="q-ml-sm" floating>
-              {{ pendingModifications.size }}
-            </q-badge>
-          </div>
-        </template>
-        <q-list>
-          <q-item v-for="user in userIdsWithValidated" :key="user" :disable="!SaveAs[user]" clickable v-close-popup @click="saveAllTreesAs(user)">
-            <q-item-section>{{ $t('grewSearch.applyRuleAs', [user]) }}</q-item-section>
-          </q-item>
-        </q-list>
-      </q-btn-dropdown>
     </div>
     <div>
       <template v-if="samplesFrozen.list.length > 0">

@@ -675,9 +675,9 @@ export default defineComponent({
         return;
       }
 
-      const targetUser = this.pushedUserForSentence;
+      const targetUser = this.pushedUserForSentence || this.username;
       if (!targetUser) {
-        notifyError({ error: 'No pushed user found for this sentence', caller: 'SentenceToolBar.acceptGithubReferenceTree' });
+        notifyError({ error: 'No user found to accept this GitHub tree', caller: 'SentenceToolBar.acceptGithubReferenceTree' });
         return;
       }
 

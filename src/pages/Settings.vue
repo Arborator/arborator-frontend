@@ -6,7 +6,7 @@
           <q-banner rounded :class="$q.dark.isActive ? '' : 'bg-grey-3'">
             <template #avatar>
               <q-avatar :key="avatarKey" color="default" text-color="white" size="100px">
-                <img :src="pictureUrl" alt="avatar" />
+                <img :src="pictureUrl ?? undefined" alt="avatar" />
               </q-avatar>
             </template>
             <div class="row">
@@ -105,9 +105,9 @@
               <ProjectVisibility :visibility="props.row.visibility" :blindAnnotationMode="props.row.blindAnnotationMode" /> 
             </q-td>
           </template>
-          <template #body-cell-lastAccess="props">
-            <q-td key="lastAccess" :props="props">
-              {{ timeAgo(props.row.lastAccess) }}
+          <template #body-cell-lastModified="props">
+            <q-td key="lastModified" :props="props">
+              {{ timeAgo(props.row.lastModified) }}
             </q-td>
           </template>
           <template #body-cell-lastWriteAccess="props">

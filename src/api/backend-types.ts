@@ -48,9 +48,7 @@ export interface project_extended_t {
   users: string[];
   ownerAvatarUrl: string;
   admins: string[];
-  validators: string[];
   annotators: string[];
-  guests: string[];
   numberSentences: number;
   numberSamples: number;
   numberTrees: number;
@@ -74,9 +72,7 @@ export interface annotationFeatures_t {
 
 export interface project_access_t {
   admins: string[];
-  validators: string[];
   annotators: string[];
-  guests: string[];
 }
 
 //// SAMPLES
@@ -89,6 +85,8 @@ export interface sample_t {
   blindAnnotationLevel: number;
   treeByUser: { [key: string]: number };
   tags: { [key: string]: number };
+  stagedCount: number;
+  pushedCount: number;
 }
 
 //// GREW
@@ -220,10 +218,12 @@ export interface githubRepository_t {
   name: string;
   owner_name: string;
   owner_avatar: string;
+  default_branch: string;
 }
 export interface githubSynchronizedRepository_t {
   repositoryName: string;
   branch: string;
+  hasGithubAccess?: boolean;
 }
 
 ////////////////GrewHistory //////////////////

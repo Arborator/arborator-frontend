@@ -74,6 +74,12 @@ export interface updateTree_ED {
   userId: string;
   conll: string;
   updateCommit?: boolean;
+  gitAdd?: boolean;
+  pinToGithub?: boolean;
+}
+
+export interface getGithubReferenceTrees_RV {
+  github_reference_trees: { [sentId: string]: string };
 }
 
 //// GREW
@@ -138,6 +144,14 @@ interface parserParseStatus_RV_success {
         ready: true;
         model_info: ModelInfo_t;
       };
+}
+
+export interface parserStatus_RV {
+status: string;
+availability: {
+parse: any;
+train: any;
+};
 }
 
 export type parserParseStatus_RV = parser_generic_RV_failure | parserParseStatus_RV_success;

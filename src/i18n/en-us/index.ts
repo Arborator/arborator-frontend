@@ -156,7 +156,7 @@ export default {
     tooltipSearch: 'Search a sample',
     search: 'Search',
     users: 'User',
-    tableFields: ['Name', 'Nb sentences', 'Nb tokens', 'Trees from', 'Blind annotation level'],
+    tableFields: ['Name', 'Nb sentences', 'Nb tokens', 'Trees from', 'Blind annotation level', 'Nb staged', 'nb pushed'],
   },
 
   // Component project options
@@ -318,10 +318,10 @@ export default {
       selectAll: 'Select all',
       clearSelection: 'Clear selection',
       showChanges: 'Show diff',
-      resetOne: 'Reset this file',
-      resetSelected: 'Reset selection',
-      resetMessage: 'Selected changes were reset',
-      resetConfirmMessage: '{count} change{plural} will be discarded. Do you really want to proceed?',
+      resetOne: 'Discard changes in this file',
+      resetSelected: 'Discard changes',
+      resetMessage: 'Selected changes were Discarded',
+      resetConfirmMessage: '{count} change{plural} will be Discarded. Do you really want to proceed?',
       resetConfirmHint: 'Type the project name: {projectName}',
       resetConfirmLabel: 'Project name*',
       commitInput: 'Commit message',
@@ -366,6 +366,12 @@ export default {
     validation: 'Validation Issues',
     notDetectedLang: ["The project language wasn't detected in UD languages list", '(UD Languages list)'],
     noValidationIssues: 'Your annotation has no issues',
+    ingithub: 'This sentence is the same on GitHub',
+    outgithub: 'This sentence does not exist on GitHub',
+    githubDiffclick: 'Click to view',
+    githubDiffOne: 'difference with GitHub',
+    githubDiffMany: 'differences with GitHub',
+    
   },
   tagsMenu: {
     enterTags: 'Enter tags',
@@ -412,7 +418,7 @@ export default {
   userSelect: {
     share: 'Share',
     addUser: 'Add new user',
-    roles: ['Admin', 'Validator', 'Annotator', 'Guest'],
+    roles: ['Admin', 'Annotator'],
     revokeAccess: 'Revoke Access',
     noResult: 'No result',
     copyLink: 'Copy Link',
@@ -480,7 +486,6 @@ export default {
   advancedFilter: {
     textFilter: 'Text filter',
     sentIdFilter: 'Sent_id filter',
-    applyFilter: 'Apply filter',
     filter: 'Filters',
     advancedFilter: 'Advanced Filter',
     clearAll: 'Clear All',
@@ -539,7 +544,8 @@ export default {
       'The sent_id is the same sent_id used in the second sentence',
       'The sent_id is the same sent_id used in the first sentence',
     ],
-    selectMergeLabel: 'Select the sent_id of the phrase you wish to merge with the current phrase',
+    selectMergeLabel: 'Select the previous or next sentence to merge',
+    selectAdjacentError: 'Select an adjacent sentence to merge',
     proposedMetadata: 'Proposed Metadata',
     showResultBtn: 'Show results',
   },

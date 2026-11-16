@@ -6,9 +6,7 @@ import languages from '../../../assets/languoid.json';
 interface configState {
   name: string;
   admins: string[];
-  validators: string[];
   annotators: string[];
-  guests: string[];
   visibility: number;
   description: string;
   image: string;
@@ -35,9 +33,7 @@ export default function defaultState(): configState {
   return {
     name: '',
     admins: [],
-    validators: [],
     annotators: [],
-    guests: [],
     visibility: 2,
     description: '',
     image: '',

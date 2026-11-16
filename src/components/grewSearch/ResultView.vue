@@ -9,26 +9,6 @@
     </q-bar>
     <div class="q-pa-md row q-gutter-md custom-frame1 justify-end">
       <q-btn class="col-auto" color="primary" label="Export results" @click="exportResults()" />
-      <q-btn-dropdown 
-        class="col-auto"
-        v-if="queryType !== 'REWRITE' && isLoggedIn"
-        :disable="!pendingModifications.size"
-        color="primary"
-      >
-        <template v-slot:label>
-          <div class="row items-center no-wrap">
-            <div class="text-center">{{ $t('advancedFilter.savePendingTrees') }}</div>
-            <q-badge v-if="pendingModifications.size > 0" color="red" class="q-ml-sm" floating>
-              {{ pendingModifications.size }}
-            </q-badge>
-          </div>
-        </template>
-        <q-list>
-          <q-item v-for="user in userIdsWithValidated" :key="user" :disable="!SaveAs[user]" clickable v-close-popup @click="saveAllTreesAs(user)">
-            <q-item-section>{{ $t('grewSearch.applyRuleAs', [user]) }}</q-item-section>
-          </q-item>
-        </q-list>
-      </q-btn-dropdown>
     </div>
     <div>
       <template v-if="samplesFrozen.list.length > 0">
@@ -76,7 +56,7 @@
       </div>
         {{countSelected}}/{{ samplesFrozen.list.length }}
 
-      <div v-for="user in userIdsWithValidated">
+      <div v-for="user in rewriteSaveUsers" :key="`rewrite-save-${user}`">
         <q-btn
           :disable="countSelected === 0 || !SaveAs[user]"
           :label="$t('grewSearch.applyRuleAs', [user])"
@@ -85,6 +65,19 @@
           <q-tooltip v-if='countSelected === 0'>{{ $t('grewSearch.applyRuleTooltip') }}</q-tooltip>
         </q-btn>
       </div>
+      <q-btn
+        v-if="username"
+        :disable="countSelected === 0 || !isAdmin || !collaborativeMode || !isSynchronized || !hasGithubAccess"
+        :label="`Save and stage trees selected as ${username}`"
+        color="primary"
+        @click="applyRulesAndStageSelected()"
+      >
+        <q-tooltip v-if="countSelected === 0">{{ $t('grewSearch.applyRuleTooltip') }}</q-tooltip>
+        <q-tooltip v-else-if="!isAdmin || !collaborativeMode">Admin collaborative mode required</q-tooltip>
+        <q-tooltip v-else-if="!isSynchronized">GitHub sync is not enabled for this project</q-tooltip>
+        <q-tooltip v-else-if="!hasGithubAccess">You do not have access to the synchronized GitHub repository</q-tooltip>
+        <q-tooltip v-else>Save rewrite and stage selected sentences</q-tooltip>
+      </q-btn>
     </q-bar>
   </div>
 </template>
@@ -158,10 +151,12 @@ export default defineComponent({
       users: new Set(),
       cardRefs: [] as any[],
       groupedConlls: {} as { [key: string]: string[] },
+      hasGithubAccess: false,
+      isSynchronized: false,
     };
   },
   computed: {
-    ...mapState(useProjectStore, ['name', 'canSaveTreeInProject', 'isValidator', 'isAdmin', 'collaborativeMode']),
+    ...mapState(useProjectStore, ['name', 'canSaveTreeInProject', 'isAdmin', 'collaborativeMode']),
     ...mapState(useGrewSearchStore, ['canRewriteRule']),
     ...mapState(useUserStore, ['username', 'isLoggedIn']),
     ...mapState(useTreesStore, ['pendingModifications']),
@@ -223,6 +218,9 @@ export default defineComponent({
     isNonCollaborativeMode() {
       return !this.collaborativeMode;
     },
+    rewriteSaveUsers() {
+      return this.username ? [this.username] : [];
+    },
     userIdsWithValidated() {
       const idf = ['validated'];
       if (this.username && !idf.includes(this.username)) {
@@ -248,6 +246,7 @@ export default defineComponent({
   },
   mounted() {
     this.freezeSamples();
+    this.loadSyncInfo();
   },
   methods: {
     ...mapActions(useGrewHistoryStore, ['saveHistory']),
@@ -293,6 +292,24 @@ export default defineComponent({
       });
     },
 
+    loadSyncInfo() {
+      api
+        .getSynchronizedGithubRepository(this.projectName)
+        .then((response) => {
+          if (response.data) {
+            this.isSynchronized = true;
+            this.hasGithubAccess = response.data.hasGithubAccess ?? false;
+          } else {
+            this.isSynchronized = false;
+            this.hasGithubAccess = false;
+          }
+        })
+        .catch(() => {
+          this.isSynchronized = false;
+          this.hasGithubAccess = false;
+        });
+    },
+
     toggleAllSentences() {
       for (const item in this.samplesFrozen.list) {
         this.samplesFrozen.selected[item] = this.all;
@@ -300,6 +317,7 @@ export default defineComponent({
     },
 
     applyRules(saveAs: string) {
+      this.toSaveCounter = 0;
       let selectedResults: grewSearchResult_t = {};
       for (const item in this.samplesFrozen.selected) {
         if (this.samplesFrozen.selected[item]) {
@@ -327,6 +345,65 @@ export default defineComponent({
         notifyMessage({ message: `Rule applied (user "${saveAs}" rewrote and saved "${this.toSaveCounter}" at once)` });
         this.$emit('closed');
       });
+    },
+
+    applyRulesAndStageSelected() {
+      if (!this.username) {
+        return;
+      }
+
+      this.toSaveCounter = 0;
+      let selectedResults: grewSearchResult_t = {};
+      const selectedBySample: { [sampleName: string]: string[] } = {};
+
+      for (const item in this.samplesFrozen.selected) {
+        if (!this.samplesFrozen.selected[item]) {
+          continue;
+        }
+
+        this.toSaveCounter += 1;
+        const sampleId = this.samplesFrozen.list[item][0];
+        const sentId = this.samplesFrozen.list[item][1];
+        let grewSearchResultSentence = this.searchResults[sampleId][sentId];
+        if (Object.keys(grewSearchResultSentence.conlls).length !== 1) { alert ("Please report: Not singleton user") }
+
+        let sentenceJson = emptySentenceJson();
+        for (let userId in grewSearchResultSentence.conlls) {
+          sentenceJson = sentenceConllToJson(grewSearchResultSentence.conlls[userId]);
+          sentenceJson.metaJson.user_id = this.username;
+          sentenceJson.metaJson.timestamp = Math.round(Date.now());
+        }
+
+        grewSearchResultSentence["conlls"] = { [this.username]: sentenceJsonToConll(sentenceJson) };
+        if (!selectedResults[sampleId]) selectedResults[sampleId] = {};
+        selectedResults[sampleId][sentId] = grewSearchResultSentence;
+        if (!selectedBySample[sampleId]) {
+          selectedBySample[sampleId] = [];
+        }
+        selectedBySample[sampleId].push(sentId);
+      }
+
+      const datasample = { data: selectedResults };
+      api.applyRule(this.projectName, datasample)
+        .then(() => Promise.all(
+          Object.entries(selectedBySample).map(([sampleName, sentIds]) => api.stageSelectedSentences(this.projectName, {
+            sample_name: sampleName,
+            tree_user_id: this.username,
+            sent_ids: sentIds,
+          }))
+        ))
+        .then(() => {
+          this.reloadCommits += 1;
+          if (this.isLoggedIn) this.saveAppliedRule();
+          notifyMessage({
+            message: `Rule applied and staged selected trees as "${this.username}"`,
+            type: 'positive',
+          });
+          this.$emit('closed');
+        })
+        .catch((error) => {
+          notifyError({ error, caller: 'applyRulesAndStageSelected' });
+        });
     },
 
     exportResults() {

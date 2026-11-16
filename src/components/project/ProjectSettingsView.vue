@@ -101,7 +101,7 @@
               <q-toggle v-model="diffModeLocal" color="primary" checked-icon="check" unchecked-icon="clear" />
             </q-item-section>
           </q-item>
-          <q-item v-if="isOwner">
+          <q-item v-if="isAdmin">
             <q-item-section>
               <q-item-label>{{ $t('projectSettings.freezeProject') }}</q-item-label>
               <q-item-label caption>{{ $t('projectSettings.freezeProjectCaption') }}</q-item-label>
@@ -320,7 +320,7 @@ export default defineComponent({
       'config'
     ]),
     ...mapState(useProjectStore, [
-      'isOwner',
+      'isAdmin',
       'shownFeaturesChoices',
       'shownMetaChoices',
       'annotationFeatures',

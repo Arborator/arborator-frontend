@@ -29,7 +29,7 @@ import { mapState } from 'pinia';
 import { useUserStore } from 'src/pinia/modules/user';
 import { notifyError, notifyMessage } from 'src/utils/notify';
 import { PropType, defineComponent } from 'vue';
-
+import { AxiosError } from 'axios';
 import api from '../../api/backend-api';
 
 export default defineComponent({
@@ -75,6 +75,11 @@ export default defineComponent({
           this.synchronizedBranch = response.data.branch;
         })
         .catch((error) => {
+          // 404 = no sync, 401 = no access (both are normal cases, not errors)
+          const axiosError = error as AxiosError;
+          if (axiosError.response?.status === 404 || axiosError.response?.status === 401) {
+            return;
+          }
           notifyError({ error, caller: 'getSynchronizedGithubRepo' });
         });
     },

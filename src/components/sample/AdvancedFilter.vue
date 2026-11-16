@@ -13,24 +13,32 @@
       </q-btn>
     </div>
     <div class="col-auto" v-if="isLoggedIn && !blindAnnotationMode">
-      <q-btn-dropdown 
-        :disable="!pendingModifications.size"
-        color="primary"
-      >
-        <template v-slot:label>
+      <q-separator vertical />
+      <div class="row items-center q-gutter-sm no-wrap">
+        <q-btn 
+          no-caps
+          :disable="!pendingModifications.size"
+          color="primary"
+          @click="saveAllTreesAs(username)"
+        >
           <div class="row items-center no-wrap">
-            <div class="text-center">{{ $t('advancedFilter.savePendingTrees') }}</div>
+            <div class="text-center">{{ $t('advancedFilter.savePendingTrees') }} as {{ username }}</div>
             <q-badge v-if="pendingModifications.size > 0" color="red" class="q-ml-sm" floating>
               {{ pendingModifications.size }}
             </q-badge>
           </div>
-        </template>
-        <q-list>
-          <q-item v-for="user in userIdsWithValidated" :key="user" :disable="!SaveAs[user]" clickable v-close-popup @click="saveAllTreesAs(user)">
-            <q-item-section>{{ $t('grewSearch.applyRuleAs', [user]) }}</q-item-section>
-          </q-item>
-        </q-list>
-      </q-btn-dropdown>
+        </q-btn>
+
+        <q-btn
+          v-if="collaborativeMode && isAdmin && hasGithubAccess && isSynchronized"
+          no-caps
+          color="primary"
+          @click="stageAllTreesForUser(username)"
+        >
+          Save & Stage all as {{ username }} 
+          <q-tooltip>Stage all {{ username }} trees in this sample for next GitHub push</q-tooltip>
+        </q-btn>
+      </div>
     </div>
     <div class="col-auto">
       <q-btn 
@@ -101,7 +109,7 @@
     </div>
       <div v-show="showAdvancedFilters" v-for="(filter, index) in listFilters" :key="index" class="advanced-filter-row q-pt-md">
         <div class="row q-gutter-md q-pt-md items-center">
-          <div class="col-12 col-sm-1">
+          <div class="col-12 col-md-2">
             <q-select
               outlined
               dense
@@ -146,6 +154,20 @@
         <div class="col-12 col-sm-auto">
           <q-btn flat color="primary" @click="clearAll()">{{ $t('advancedFilter.clearAll') }}</q-btn>
       </div>
+      <div class="col-12 col-sm-auto">
+      <q-checkbox
+      v-model="filterNotStaged"
+      label="Not staged"
+      color="primary"
+      />
+      </div>
+      <div class="col-12 col-sm-auto">
+      <q-checkbox
+      v-model="filterNotPushed"
+      label="Not pushed"
+      color="primary"
+      />
+      </div>
       </div>
     </div>
   </div>
@@ -187,7 +209,17 @@ export default defineComponent({
     parentOnValidate: {
       type: Function as PropType<CallableFunction>,
       required: true,
-    }
+    },
+    hasGithubAccess: {
+      type: Boolean as PropType<boolean>,
+      required: false,
+      default: false,
+    },
+    isSynchronized: {
+      type: Boolean as PropType<boolean>,
+      required: false,
+      default: false,
+    },
   },
   data() {
     const filterOperators: element_t[] = [
@@ -208,6 +240,8 @@ export default defineComponent({
       order: 'initial',
       orderOptions: ['initial', 'ascending', 'descending'],
       showAdvancedFilters: false,
+      filterNotPushed: false,
+      filterNotStaged: false,
     };
   },
   computed: {
@@ -224,7 +258,9 @@ export default defineComponent({
       'featuresSetForDiffs',
       'featuresSetForNotDiffs',
       'selectedTags',
-      'pendingModifications'
+      'pendingModifications',
+      'filterNotPushed',
+      'filterNotStaged',
     ]),
     ...mapWritableState(useGithubStore, ['reloadCommits']),
     ...mapState(useUserStore, ['isLoggedIn', 'username']),
@@ -264,6 +300,20 @@ export default defineComponent({
     sentIdFilter: debounce(function(this: any) {
       this.applyFilterTrees();
     }, 500),
+    listFilters: {
+      handler: debounce(function(this: any) {
+        this.applyAdvancedFilter();
+      }, 100),
+      deep: true,
+    },
+    filterNotPushed() {
+      this.applyFilterTrees();
+    },
+
+    filterNotStaged() {
+      this.applyFilterTrees();
+    },
+
   },
   mounted() {
     this.clearAll();
@@ -300,6 +350,8 @@ export default defineComponent({
       this.orderFilteredTrees(this.order);
       this.listFilters = [];
       this.addRow();
+      this.filterNotPushed = false;
+      this.filterNotStaged = false;
     },
     addRow() {
       this.listFilters.push({
@@ -342,6 +394,21 @@ export default defineComponent({
         });
     },
     saveAllTreesAs(saveAs: string) {
+      this.savePendingTreesAs(saveAs)
+        .then(() => {
+          notifyMessage({ 
+            position: 'top', 
+            message: `Saved on the server as "${saveAs}"`, 
+            icon: 'save' 
+          });
+          this.emptyPendingModification();
+          this.$emit('trees-saved');
+        })
+        .catch((error) => {
+          notifyError({ error: `Error happened while saving trees ${error}` });
+        });
+    },
+    savePendingTreesAs(saveAs: string) {
       const modifiedSentences = [...this.pendingModifications.values()];
       const savePromises = modifiedSentences.map((sentence) => {
         const conllsentences = sentence.conll.split('\n');
@@ -365,21 +432,34 @@ export default defineComponent({
         });
       });
 
-      Promise.all(savePromises)
+      return Promise.all(savePromises);
+    },
+    stageAllTreesForUser(treeUserId: string) {
+      const saveThenStage = this.pendingModifications.size > 0
+        ? this.savePendingTreesAs(treeUserId)
+        : Promise.resolve([]);
+
+      saveThenStage
         .then(() => {
-          if (saveAs === 'validated') {
-            this.reloadCommits += 1;
-          }
-          notifyMessage({ 
-            position: 'top', 
-            message: `Saved on the server as "${saveAs}"`, 
-            icon: 'save' 
-          });
           this.emptyPendingModification();
+          return api.stageSample(this.name, {
+            sample_name: this.sampleName,
+            tree_user_id: treeUserId,
+          });
+        })
+        .then((response) => {
+          const stagedCount = response?.data?.staged_count ?? 0;
+          this.reloadCommits += 1;
+          notifyMessage({
+            position: 'top',
+            message: `Saved & staged ${stagedCount} trees for ${treeUserId}`,
+            icon: 'cloud_upload',
+            type: 'positive',
+          });
           this.$emit('trees-saved');
         })
         .catch((error) => {
-          notifyError({ error: `Error happened while saving trees ${error}` });
+          notifyError({ error: `Error happened while save & stage trees ${error}` });
         });
     },
     validateAllTrees() {

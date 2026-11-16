@@ -144,14 +144,14 @@
               outlined
               v-model="mergedSentId"
               :label="$t('sentenceSegmentation.selectMergeLabel')"
-              :options="sortedSentIds.filter((sent) => sent !== sentId)"
+              :options="mergeCandidates"
               @update:model-value="MergeSentences()"
             >
             </q-select>
           </div>
           <div class="col">
             <q-btn
-              :disable="mergedSentId == ''"
+              :disable="orderedMergeSentIds.length !== 2"
               flat
               color="primary"
               :label="$t('sentenceSegmentation.showResultBtn')"
@@ -291,6 +291,18 @@ export default defineComponent({
     ...mapState(useTreesStore, ['sortedSentIds', 'filteredTrees', 'trees']),
     ...mapWritableState(useTreesStore, ['reloadTrees']),
     ...mapState(useProjectStore, ['name']),
+    mergeCandidates(): string[] {
+      const index = this.sortedSentIds.indexOf(this.sentId);
+      if (index === -1) return [];
+      return this.sortedSentIds.slice(Math.max(0, index - 1), index + 2)
+        .filter((id) => id !== this.sentId);
+    },
+    orderedMergeSentIds(): string[] {
+      if (!this.mergeCandidates.includes(this.mergedSentId)) return [];
+      return this.sortedSentIds.indexOf(this.sentId) < this.sortedSentIds.indexOf(this.mergedSentId)
+        ? [this.sentId, this.mergedSentId]
+        : [this.mergedSentId, this.sentId];
+    },
     disableSaveResultBtn(): boolean {
       const firstSentId = this.firstReactiveSentence[this.userId].state.metaJson.sent_id as string;
       const sencondSentId = this.secondReactiveSentence[this.userId].state.metaJson.sent_id as string;
@@ -425,19 +437,30 @@ export default defineComponent({
       }
     },
     MergeSentences() {
+      this.showResults = false;
+      this.mergedSentences = {};
+      this.mergedReactiveSentence = {};
       const usersDiff = [];
       this.mergeWarningMessage = '';
+      if (this.orderedMergeSentIds.length !== 2) {
+        notifyError({ error: this.$t('sentenceSegmentation.selectAdjacentError') });
+        return;
+      }
       const secondSentenceConlls = this.trees[this.mergedSentId].conlls;
+      const selectedSentenceFirst = this.orderedMergeSentIds[0] === this.mergedSentId;
+      const mergedSentId = this.proposeMergedSentId(this.orderedMergeSentIds[0], this.orderedMergeSentIds[1]);
     
       for (const [userId, reactiveSentence] of Object.entries(this.reactiveSentencesObj)) {
         if (Object.keys(secondSentenceConlls).includes(userId)) {
           const firstSentenceConll = reactiveSentence.exportConll();
           const secondSentenceConll = secondSentenceConlls[userId];
-          this.mergedSentences[userId] = this.mergeConlls(firstSentenceConll, secondSentenceConll) ;
+          this.mergedSentences[userId] = selectedSentenceFirst
+            ? this.mergeConlls(secondSentenceConll, firstSentenceConll)
+            : this.mergeConlls(firstSentenceConll, secondSentenceConll);
         } 
         else {
           usersDiff.push(userId);
-          this.mergedSentences[userId] = reactiveSentence.state;
+          this.mergedSentences[userId] = sentenceConllToJson(reactiveSentence.exportConll());
         }
       }
       for (const userId of Object.keys(secondSentenceConlls)) {
@@ -445,6 +468,9 @@ export default defineComponent({
           usersDiff.push(userId);
           this.mergedSentences[userId] = sentenceConllToJson(secondSentenceConlls[userId]);
         }
+      }
+      for (const sentence of Object.values(this.mergedSentences)) {
+        sentence.metaJson.sent_id = mergedSentId;
       }
       if (usersDiff.length) {
         this.mergeWarningMessage = `Users "${usersDiff.join(', ')}" do not have trees in both sentences, so their trees are merged with empty trees`;
@@ -524,10 +550,14 @@ export default defineComponent({
       }
     },
     saveMergeResults() {
+      if (this.orderedMergeSentIds.length !== 2) {
+        notifyError({ error: this.$t('sentenceSegmentation.selectAdjacentError') });
+        return;
+      }
       this.updateChangedMetadata(this.mergedSentences, this.mergedReactiveSentence as reactive_sentences_obj_t);
       const data = {
-        firstSentId: this.sentId,
-        secondSentId: this.mergedSentId,
+        firstSentId: this.orderedMergeSentIds[0],
+        secondSentId: this.orderedMergeSentIds[1],
         mergedSentences: this.mergedSentences,
       };
       api

@@ -21,9 +21,9 @@
     </q-btn>
     <q-btn
       flat
-      v-if="isValidator && blindAnnotationMode"
+      v-if="isAdmin && blindAnnotationMode"
       icon="analytics"
-      :disable="(visibility === 0 && isGuest) || selectedSamples.length !== 1"
+      :disable="selectedSamples.length !== 1"
       @click="exportEvaluation()"
     >
       <q-tooltip>
@@ -97,7 +97,7 @@ export default defineComponent({
     };
   },
   computed: {
-    ...mapState(useProjectStore, ['name', 'visibility', 'blindAnnotationMode', 'isAdmin', 'isValidator', 'isGuest', 'canExportTrees']),
+    ...mapState(useProjectStore, ['name', 'visibility', 'blindAnnotationMode', 'isAdmin', 'canExportTrees']),
     hasValidatedTrees() {
       const treesFrom = this.selectedSamples.map((sample) => sample.treesFrom).reduce((a: string[], b: string[]) => [...a, ...b], []);
       return [...new Set(treesFrom)].includes('validated');

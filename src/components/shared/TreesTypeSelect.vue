@@ -106,7 +106,6 @@ export default defineComponent({
     const treeTypes = [
       { value: 'recent', label: this.$t('grewSearch.recentTree'), icon: 'schedule' },
       { value: 'user', label: this.$t('grewSearch.userTree') },
-      { value: 'validated', label: this.$t('grewSearch.validatedTree'), icon: 'verified' },
       { value: 'all', label: this.$t('grewSearch.allTree'), icon: 'groups' },
       { value: 'base_tree', label: this.$t('grewSearch.baseTree'), icon: 'linear_scale' },
       { value: 'others', label: this.$t('grewSearch.otherTree'), icon: 'person' },

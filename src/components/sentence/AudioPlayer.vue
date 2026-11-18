@@ -208,11 +208,11 @@ export default defineComponent({
     },
     getAudioTokens(){
       const userId = this.cachedUserId || this.getUserId()
-      const form = this.reactiveSentencesObj[userId].state.treeJson.nodesJson
-      if (form[1]?.MISC?.AlignBegin && form[1]?.MISC?.AlignEnd){
-        return Object.values(form).map((token) =>({
-          begin : Number(token.MISC.AlignBegin)/1000,
-          end : Number(token.MISC.AlignEnd)/1000,
+      const tokens = this.reactiveSentencesObj[userId].state.treeJson.nodesJson
+      if (tokens[1]?.MISC?.AlignBegin || tokens[1]?.MISC?.WordAlignmentBegin) {
+        return Object.values(tokens).map((token) =>({
+          begin : Number(token.MISC.AlignBegin || token.MISC.WordAlignmentBegin)/1000,
+          end : Number(token.MISC.AlignEnd || token.MISC.WordAlignmentEnd)/1000,
           word : token.FORM
         }))
       }
@@ -427,16 +427,16 @@ export default defineComponent({
       this.setPreviousSentenceText()
     },
     setBeginFromPreviousSentence(conll: string){
-      const begins = [...conll.matchAll(/AlignBegin=(\d+)(?:\||\n|$)/g)]
+      const begins = [...conll.matchAll(/(?:AlignBegin|WordAlignmentBegin)=(\d+)(?:\||\n|$)/g)]
       this.audioBegin = Number(begins[0][1])/1000
     },
     setEndFromNextSentence(conll : string){
-      const ends = [...conll.matchAll(/AlignEnd=(\d+)(?:\||\n|$)/g)]
+      const ends = [...conll.matchAll(/(?:AlignEnd|WordAlignmentEnd)=(\d+)(?:\||\n|$)/g)]
       this.audioEnd = Number(ends[ends.length - 1][1])/1000
     },
     PrevNextFromConll(conll: string): { begin: number; end: number; word: string; }[] {
       const res = [...conll.matchAll(
-        /^\d+\t([^\t]+)(?:\t[^\t]*){7}\t.*?AlignBegin=(\d+)\|AlignEnd=(\d+)/gm)]
+        /^\d+\t([^\t]+)(?:\t[^\t]*){7}\t.*?(?:AlignBegin|WordAlignmentBegin)=(\d+)\|(?:AlignEnd|WordAlignmentEnd)=(\d+)/gm)]
       return res.map(m => ({
         begin: Number(m[2])/1000,
         word : m[1],
